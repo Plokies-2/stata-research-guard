@@ -7,9 +7,9 @@
   "pruned_workflow_files": 163,
   "max_indexed_loop_depth": 2,
   "packages": 35,
-  "command_families": 39,
-  "indexed_commands": 97,
-  "command_families_observed_in_corpus": 30,
+  "command_families": 43,
+  "indexed_commands": 109,
+  "command_families_observed_in_corpus": 32,
   "stage_counts": {
     "cleaning_labels": 1485,
     "descriptives_balance_sample_flow": 942,

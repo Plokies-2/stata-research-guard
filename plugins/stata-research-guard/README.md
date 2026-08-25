@@ -7,6 +7,8 @@ Local Codex plugin for complete Stata research workflows. It provides:
 - a self-contained source-byte archive for cited runtime labels, so an installed plugin can rehash selected corpus spans without access to the development workspace
 - span-level retrieval from a curated research-practice code corpus
 - human-labeled atomic workflow blocks covering setup, preparation, validation, estimation, post-estimation, and export, with input/output contracts and multiple adjudicated researcher variants per checkpoint
+- a two-layer resolver that always supplies one bounded official/maintainer guide-mechanics card when available, while separately selecting at most one compatible research-usage template
+- an audited Top 50 command contract covering 50 command groups and 203 material variants, plus 48 variants from 15 additional user-written command groups
 - compact source-evidenced `input_signature` and six-field `template_input_profile` metadata for every non-negative label, so target topology is compared before minimal editing
 - structure-aware raw-to-result workflow plans that preserve compatible existing projects and use only the user-approved new-project tree
 - overhaul previews that show the exact proposed file tree, new persistent variable names and reader-facing descriptions, source/formula, unit and observation level, creation file, period/geography, coding/missing rule, use, and the root README action before any project write
@@ -23,21 +25,25 @@ The tool does not claim journal certification. It distinguishes useful spans fro
 
 ## Package-first command catalog
 
-`annotations/package_command_registry.json` is the single source of truth for common official Stata command families and community packages. It currently indexes 39 families and 97 canonical command anchors, including separate `estpost`/`eststo`/`esttab`, `ivreg2`/`ivreghdfe`, modern staggered-DiD families, RD, resampling, and high-dimensional fixed-effects workflows. `scripts/build_reference_data.py` compiles it into `data/package_command_catalog.json` with observed corpus counts; the static registry remains the policy source even when a package has not yet appeared in a retained corpus span.
+`annotations/package_command_registry.json` is the single source of truth for common official Stata command families and community packages. It currently indexes 43 families and 109 canonical command anchors, including separate `estpost`/`eststo`/`esttab`, `ivreg2`/`ivreghdfe`, modern staggered-DiD families, RD, resampling, and high-dimensional fixed-effects workflows. `scripts/build_reference_data.py` compiles it into `data/package_command_catalog.json` with observed corpus counts; the static registry remains the policy source even when a package has not yet appeared in a retained corpus span.
 
 For every registry gap, extend the command index and add a small state-compatible atomic template or explicitly keep the family reference-only until its identifying inputs are known. Do not respond by extending estimator-name detectors. Templates may produce Excel, PDF, or a durable `.ster` when required; they never install or probe packages and never emit TeX. Manual coefficient/standard-error reconstruction and manual result transfer into a final table are quarantined rather than templated.
 
 The target is researcher-readable, executable Stata code, not a distribution or submission package. Before any project write or full execution, the agent inspects the target read-only, lists every folder and file to create or modify plus any move, rename, deletion, or overwrite, states the entrypoint and execution command, and waits for approval. An overhaul preview also shows one proposed tree and every new persistent analysis variable with a reader-facing description, raw source unit plus exact formula or threshold, output unit and observation level, creation file, period/geography, coding/missing rule, use, and the root README action. The approved actual tree and variable dictionary are retained in that README for researchers, and each persistent variable is labeled in its creation do-file. New-project paths and master calls come from the approved prompt or plan; manual-root and direct-call examples are reference evidence, not forced templates. An existing compatible structure is preserved. The plugin does not add installers, dependency inventories, deployment metadata, or submission checklists. `research_output_check` verifies only the approved local research workflow and outputs.
 
-The evidence layers are independent:
+The evidence layers are independent and never share a ranking score:
 
-- StataCorp manuals define valid Stata syntax.
-- Clean selected spans from the collected research-practice code packages define the target researcher style.
+- Official Stata manuals and user-written command guides define syntax and command-state mechanics. Their cards are always `auto_selectable=false` and never decide the sample, estimand, model, fixed effects, VCE, key, axis, sheet, or output placement.
+- Audited deposited research-code spans show target usage. Only an exact compatible usage row may supply a writable template.
 - Replication-safety rules check portability, paths, data lineage, and orchestration.
 
 Generated do-file comments describe the current project, not the plugin's retrieval history. They may explain inputs, variable definitions, retained merge/filter rules, samples or specifications, and output purpose. In a newly created master do-file, every individual `do` call has one Korean comment sentence immediately above it explaining the called file's project-local role. Journal/repository names, template/source names, internal IDs, source paths, and provenance markers belong in session or audit evidence, unless a named source is itself part of the project's data-acquisition contract.
 
-`search_labeled_checkpoints` is the first retrieval layer for substantive reusable transitions. An exact checkpoint narrows the relevant evidence; it does not gate whether GPT may write code. The tool returns small state-transition blocks with `keep`, `conditional_keep`, or `drop` decisions, selection conditions, tradeoffs, minimal edit fields, compatible neighbors, source line spans, and hashes. A genuinely close block follows the existing template path and is minimally bound. When no suitable block exists or the selection proves wrong, GPT enters fallback and receives the rank-relative nearest candidate only as a nonbinding hint. That candidate may still be absolutely distant or incompatible. A variant group contains alternatives for one transition, so generation does not splice them; distinct sequential groups may be composed when their state contracts connect.
+`resolve_transition_evidence` is the first retrieval layer for every substantive atomic transition. It deterministically returns one primary guide card (at most 12 lines or 600 characters), up to two alternative guide variants as metadata, and at most one separately matched usage example. Exact audited usage produces `guide+usage_template`; missing or incompatible usage produces `guide+fallback` or `guide_informed_fallback`. A known six-field profile contradiction prevents usage auto-selection. Unrelated multi-command requests return `split_required`, and unresolved material choices return `selection_required`. Guide and usage scores are never combined.
+
+`search_labeled_checkpoints`, `search_stata_manual`, and `search_approved_patterns` remain compatibility and diagnosis tools after the resolver reports a gap or mismatch. The new 262 audited guide atoms are excluded from their legacy selector score and workflow-planner ranking. Existing deposited and legacy reference labels retain their prior behavior, including the rule that only `preferred_candidate` or `conditional_candidate` rows with `auto_select_allowed: true` are writable.
+
+The generated companion indexes contain 264 guide cards with zero auto-selectable rows and 128 research-usage examples, of which 46 retain legacy audited auto-selection eligibility. Nineteen bounded AEA/openICPSR rows are explanation-only exact-usage support and never generation authority; nine rejected AEA candidates remain audit counts only and are excluded from generated evidence.
 
 The selector keeps the ordinary template-first path: a genuinely close writable block is selected and minimally bound. Beside the candidates it returns a `general_rule_fallback_policy` for cases where no suitable block exists or the selected template proves wrong. That policy injects the highest-ranked writable candidate, or the highest-ranked reference candidate when none is writable, only as a nonbinding hint. Nearest is rank-relative and may still be absolutely distant or incompatible. Record `nearest_template_hint`, `fallback_trigger`, and `hint_used`; do not argue that fallback code is better or preserve a mismatched structure. Fallback writes only an already-declared atomic transition and lists hard stops for unresolved substantive, event-axis, output-flow, raw-table, and sheet-cardinality contracts. It keeps one final path and shallow indentation. One active loop is preferred; depth 2 is allowed only for substantial repetition of one mechanical body over two plain named lists or numeric ranges, with all research and output choices visible. Depth 3, registries, dispatchers, positional job strings, one-use programs, unused interfaces, dependency probes, manual event dummies, and coefficient reconstruction are blocked. See `skills/stata-replication-workflow/references/general-rule-fallback.md` for the source-backed writing rules.
 
@@ -135,7 +141,11 @@ Build the human-labeled atomic checkpoint layer after changing annotations or ch
 
 ```powershell
 python scripts\build_labeled_checkpoints.py
+python scripts\build_evidence_layers.py
+python scripts\build_command_template_coverage.py --write-review
 ```
+
+`build_evidence_layers.py` produces the non-competing guide and research-usage indexes. `build_command_template_coverage.py` verifies the 50-group/203-variant Top 50 contract and writes `review/command_template_coverage.md`. The research basis and limitations of the priority list are recorded in `review/top50_command_research_basis.md`.
 
 Merge the independently reviewed package batches and rebuild package-by-checkpoint accounting:
 

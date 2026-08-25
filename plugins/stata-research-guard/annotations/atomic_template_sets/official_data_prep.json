@@ -1,0 +1,2574 @@
+[
+  {
+    "label_id": "input.import_delimited_header.v1",
+    "checkpoint": "input_load.single_source",
+    "variant_group": "input_load.import_delimited",
+    "variant_id": "import_delimited_header_clear",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        3,
+        3
+      ]
+    ],
+    "research_situations": [
+      "한 개의 명시된 CSV 원천을 변수명 행과 함께 새 Stata 자료로 읽어야 한다"
+    ],
+    "selection_conditions": [
+      "원천 파일 경로와 구분자가 사전에 고정되어 있다",
+      "새 입력 자료를 여는 것이며 기존 메모리 자료 보존은 요구되지 않는다"
+    ],
+    "required_changes": [
+      "원천 경로와 이미 승인된 delimiter 옵션만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "source path",
+      "delimiter"
+    ],
+    "tradeoffs": [
+      "첫 행을 변수명으로 처리한다",
+      "clear는 메모리 자료를 대체하므로 호출 전 보존 여부를 확인해야 한다"
+    ],
+    "state_signature": {
+      "requires": [
+        "declared delimited source",
+        "declared header role"
+      ],
+      "observable_signals": [
+        "import",
+        "delimited",
+        "varnames",
+        "clear"
+      ],
+      "produces": [
+        "active imported dataset"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "delimited_file",
+      "record_unit": "one source-file row",
+      "required_keys": [],
+      "source_basis": "official import delimited mechanics",
+      "time_structure": "not_stated",
+      "variable_characteristics": [
+        "header row",
+        "declared delimiter"
+      ]
+    },
+    "source_specific_elements": [
+      "source path and delimiter placeholders"
+    ],
+    "reusable_core": "명시한 CSV 원천의 첫 행을 변수명으로 읽어 active 자료로 만든다.",
+    "generality_rationale_ko": "원천 경로와 delimiter만 바꾸는 입력 상태 전이이며 변수의 의미나 표본을 추론하지 않는다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. source semantics, encoding, and schema checks are separate.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "import.delimited_header_delimiter_encoding_id_types"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate import_delimited_header_clear: observable mechanics [import, delimited, varnames] produce active imported dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "input.import_delimited_noheader.v1",
+    "checkpoint": "input_load.single_source",
+    "variant_group": "input_load.import_delimited",
+    "variant_id": "import_delimited_no_header_clear",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        4,
+        4
+      ]
+    ],
+    "research_situations": [
+      "헤더가 없는 구분 파일을 명시한 변수명 계약으로 읽어야 한다"
+    ],
+    "selection_conditions": [
+      "원천 파일에 변수명 행이 없다는 사실과 열 순서가 문서화되어 있다",
+      "새 입력 자료를 여는 것이 승인되어 있다"
+    ],
+    "required_changes": [
+      "원천 경로와 승인된 varnames 매핑만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "source path",
+      "declared variable names"
+    ],
+    "tradeoffs": [
+      "헤더 오독을 피한다",
+      "열 순서와 변수명 계약을 별도로 유지해야 한다"
+    ],
+    "state_signature": {
+      "requires": [
+        "headerless delimited source",
+        "declared column-name mapping"
+      ],
+      "observable_signals": [
+        "import",
+        "delimited",
+        "varnames",
+        "clear"
+      ],
+      "produces": [
+        "active imported dataset"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "delimited_file",
+      "record_unit": "one source-file row",
+      "required_keys": [],
+      "source_basis": "official import delimited mechanics",
+      "time_structure": "not_stated",
+      "variable_characteristics": [
+        "no header row",
+        "declared column names"
+      ]
+    },
+    "source_specific_elements": [
+      "source path and variable-name placeholders"
+    ],
+    "reusable_core": "헤더 없는 구분 파일을 사전 선언한 변수명으로 읽는다.",
+    "generality_rationale_ko": "헤더 유무가 다른 입력 상태를 별도 계약으로 보존한다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Never invent names from data values.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [],
+    "canonical_generation_class": "reference_only",
+    "variant_distinction": "Separate import_delimited_no_header_clear: observable mechanics [import, delimited, varnames] produce active imported dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "unmapped_reason": "Bounded guide mechanics retained in the noncompeting reference reservoir; no current Top 50 or additional user-written contract claims this variant."
+  },
+  {
+    "label_id": "input.import_excel_sheet_firstrow.v1",
+    "checkpoint": "input_load.single_source",
+    "variant_group": "input_load.import_excel",
+    "variant_id": "import_excel_sheet_firstrow",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        5,
+        5
+      ]
+    ],
+    "research_situations": [
+      "지정한 Excel sheet의 첫 행을 변수명으로 읽어야 한다"
+    ],
+    "selection_conditions": [
+      "workbook와 sheet 이름이 고정되어 있다",
+      "first-row header가 원천 문서와 일치한다"
+    ],
+    "required_changes": [
+      "workbook 경로와 sheet 이름만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "workbook path",
+      "sheet name"
+    ],
+    "tradeoffs": [
+      "sheet를 명시해 다른 탭을 잘못 읽지 않는다",
+      "열 유형 자동 추정은 별도 검증이 필요하다"
+    ],
+    "state_signature": {
+      "requires": [
+        "declared workbook",
+        "declared sheet",
+        "header row"
+      ],
+      "observable_signals": [
+        "import",
+        "excel",
+        "sheet",
+        "firstrow",
+        "clear"
+      ],
+      "produces": [
+        "active imported dataset"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "excel_sheet",
+      "record_unit": "one worksheet row",
+      "required_keys": [],
+      "source_basis": "official import excel mechanics",
+      "time_structure": "not_stated",
+      "variable_characteristics": [
+        "first-row headers",
+        "worksheet identifier"
+      ]
+    },
+    "source_specific_elements": [
+      "workbook and sheet placeholders"
+    ],
+    "reusable_core": "지정된 Excel worksheet를 firstrow 규칙으로 active 자료에 적재한다.",
+    "generality_rationale_ko": "sheet 선택과 header 처리만 고정하며 분석 표본을 선택하지 않는다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Check dates, numeric coercion, and duplicate header names separately.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "import.excel_firstrow_sheet"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate import_excel_sheet_firstrow: observable mechanics [import, excel, sheet] produce active imported dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "input.import_excel_cellrange.v1",
+    "checkpoint": "input_load.single_source",
+    "variant_group": "input_load.import_excel",
+    "variant_id": "import_excel_cellrange_firstrow",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        6,
+        6
+      ]
+    ],
+    "research_situations": [
+      "worksheet 전체가 아니라 문서화한 cell range만 읽어야 한다"
+    ],
+    "selection_conditions": [
+      "sheet와 cell range 경계가 원천 자료에서 고정되어 있다",
+      "첫 행 header 처리가 명시되어 있다"
+    ],
+    "required_changes": [
+      "workbook, sheet, cell range만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "workbook path",
+      "sheet name",
+      "cell range"
+    ],
+    "tradeoffs": [
+      "주석·합계 행을 범위 밖으로 제외한다",
+      "범위가 바뀌면 schema 재검증이 필요하다"
+    ],
+    "state_signature": {
+      "requires": [
+        "declared worksheet",
+        "declared cell range",
+        "header row"
+      ],
+      "observable_signals": [
+        "import",
+        "excel",
+        "cellrange",
+        "firstrow",
+        "clear"
+      ],
+      "produces": [
+        "active range-limited dataset"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "excel_sheet_range",
+      "record_unit": "one row inside declared range",
+      "required_keys": [],
+      "source_basis": "official import excel cellrange mechanics",
+      "time_structure": "not_stated",
+      "variable_characteristics": [
+        "bounded worksheet range",
+        "first-row headers"
+      ]
+    },
+    "source_specific_elements": [
+      "workbook, sheet, and range placeholders"
+    ],
+    "reusable_core": "문서화한 worksheet cell range만 firstrow 입력으로 읽는다.",
+    "generality_rationale_ko": "전체 sheet 입력과 범위 제한 입력은 자료 상태가 달라 별도 템플릿으로 둔다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Range endpoints must be fixed from source documentation.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "import.excel_fixed_cellrange"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate import_excel_cellrange_firstrow: observable mechanics [import, excel, cellrange] produce active range-limited dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "export.delimited_replace.v1",
+    "checkpoint": "exports.dataset_file",
+    "variant_group": "exports.delimited",
+    "variant_id": "export_delimited_replace",
+    "stage": "exports",
+    "source_spans": [
+      [
+        7,
+        7
+      ]
+    ],
+    "research_situations": [
+      "현재 자료를 선언한 delimited 파일로 내보내야 한다"
+    ],
+    "selection_conditions": [
+      "출력 경로와 overwrite 역할이 명시되어 있다",
+      "현재 active 자료의 변수와 표본이 이미 확정되어 있다"
+    ],
+    "required_changes": [
+      "출력 경로와 승인된 delimiter만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "output path",
+      "delimiter"
+    ],
+    "tradeoffs": [
+      "단순하고 이식성이 높다",
+      "기존 파일을 대체하므로 경로 소유권을 확인해야 한다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared output path",
+        "declared replace role"
+      ],
+      "observable_signals": [
+        "export",
+        "delimited",
+        "replace"
+      ],
+      "produces": [
+        "one delimited output file"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one active-data observation",
+      "required_keys": [],
+      "source_basis": "official export delimited mechanics",
+      "time_structure": "inherited",
+      "variable_characteristics": [
+        "declared output delimiter"
+      ]
+    },
+    "source_specific_elements": [
+      "output path placeholder"
+    ],
+    "reusable_core": "active 자료를 선언한 delimited 파일로 replace export한다.",
+    "generality_rationale_ko": "자료 선택과 파일 출력 역할을 분리해 export 경로만 재사용한다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Never use for final Excel workbook output.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "export.delimited_replace_with_declared_schema"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate export_delimited_replace: observable mechanics [export, delimited, replace] produce one delimited output file; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "export.excel_firstrow_replace.v1",
+    "checkpoint": "exports.dataset_file",
+    "variant_group": "exports.excel",
+    "variant_id": "export_excel_firstrow_variables_replace",
+    "stage": "exports",
+    "source_spans": [
+      [
+        8,
+        8
+      ]
+    ],
+    "research_situations": [
+      "active 자료를 새 Excel sheet에 변수명을 포함해 내보내야 한다"
+    ],
+    "selection_conditions": [
+      "workbook 경로, sheet 역할, replace 여부가 명시되어 있다"
+    ],
+    "required_changes": [
+      "workbook과 sheet만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "workbook path",
+      "sheet name"
+    ],
+    "tradeoffs": [
+      "변수명을 첫 행에 보존한다",
+      "replace는 기존 sheet를 덮으므로 결과물 소유권을 확인해야 한다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared workbook and sheet",
+        "replace role"
+      ],
+      "observable_signals": [
+        "export",
+        "excel",
+        "firstrow",
+        "replace"
+      ],
+      "produces": [
+        "one Excel worksheet"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one active-data observation",
+      "required_keys": [],
+      "source_basis": "official export excel mechanics",
+      "time_structure": "inherited",
+      "variable_characteristics": [
+        "first-row variable names",
+        "declared worksheet"
+      ]
+    },
+    "source_specific_elements": [
+      "workbook and sheet placeholders"
+    ],
+    "reusable_core": "active 자료를 firstrow 변수명과 함께 지정한 Excel sheet로 export한다.",
+    "generality_rationale_ko": "Excel 출력과 delimited 출력의 파일 계약을 분리한다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. This is generic data export, not a regression-table exporter.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "export.excel_new_workbook_first_sheet"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate export_excel_firstrow_variables_replace: observable mechanics [export, excel, firstrow] produce one Excel worksheet; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "data.generate_indicator.v1",
+    "checkpoint": "preparation.transform",
+    "variant_group": "preparation.generate_replace",
+    "variant_id": "generate_declared_indicator",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        9,
+        9
+      ]
+    ],
+    "research_situations": [
+      "고정된 원변수로 이진 indicator를 새 변수로 생성해야 한다"
+    ],
+    "selection_conditions": [
+      "indicator 정의가 사전에 선언되어 있다",
+      "새 변수명과 라벨 역할이 고정되어 있다"
+    ],
+    "required_changes": [
+      "원변수와 새 변수명만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "source variable",
+      "new variable",
+      "declared condition"
+    ],
+    "tradeoffs": [
+      "원변수를 보존한다",
+      "indicator 정의의 누락·결측 처리는 별도 명시가 필요하다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared source variable",
+        "declared indicator rule"
+      ],
+      "observable_signals": [
+        "generate",
+        "==",
+        "replace"
+      ],
+      "produces": [
+        "one new indicator variable"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one active-data observation",
+      "required_keys": [],
+      "source_basis": "official generate mechanics",
+      "time_structure": "inherited",
+      "variable_characteristics": [
+        "declared source variable",
+        "binary indicator rule"
+      ]
+    },
+    "source_specific_elements": [
+      "source and indicator placeholders"
+    ],
+    "reusable_core": "선언한 조건을 만족하는 행에 indicator를 생성한다.",
+    "generality_rationale_ko": "분석 의미를 추론하지 않고 명시된 조건식만 재사용한다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Missing-value behavior must be explicit.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "generate.missing_preserving_indicator"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate generate_declared_indicator: observable mechanics [generate, ==, replace] produce one new indicator variable; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "data.replace_conditional.v1",
+    "checkpoint": "preparation.transform",
+    "variant_group": "preparation.generate_replace",
+    "variant_id": "replace_declared_condition",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        10,
+        10
+      ]
+    ],
+    "research_situations": [
+      "기존 변수의 승인된 값 일부를 조건부로 수정해야 한다"
+    ],
+    "selection_conditions": [
+      "수정 대상 조건과 새 값이 원천 문서에 명시되어 있다",
+      "변수 overwrite가 허용되어 있다"
+    ],
+    "required_changes": [
+      "변수명, 새 값, 조건만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "target variable",
+      "new value",
+      "condition"
+    ],
+    "tradeoffs": [
+      "원변수에 직접 반영한다",
+      "원본 보존이 필요하면 먼저 복사하거나 별도 snapshot을 만들어야 한다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active target variable",
+        "declared replacement rule"
+      ],
+      "observable_signals": [
+        "replace",
+        "if"
+      ],
+      "produces": [
+        "modified target variable"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one row satisfying declared condition",
+      "required_keys": [],
+      "source_basis": "official replace mechanics",
+      "time_structure": "inherited",
+      "variable_characteristics": [
+        "existing target variable",
+        "declared conditional update"
+      ]
+    },
+    "source_specific_elements": [
+      "target, value, and condition placeholders"
+    ],
+    "reusable_core": "선언한 조건을 만족하는 기존 변수 값만 replace한다.",
+    "generality_rationale_ko": "생성(generate)과 기존 값 수정(replace)은 자료 상태가 달라 분리한다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. No inferred data cleaning or winsorization.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "replace.conditional_update_preserving_other_values"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate replace_declared_condition: observable mechanics [replace, if] produce modified target variable; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "data.egen_rowtotal.v1",
+    "checkpoint": "preparation.transform",
+    "variant_group": "preparation.egen",
+    "variant_id": "egen_rowtotal_declared_vars",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        11,
+        11
+      ]
+    ],
+    "research_situations": [
+      "행 단위로 선언된 구성요소의 합계 변수를 만들어야 한다"
+    ],
+    "selection_conditions": [
+      "구성요소 목록과 missing 처리 정책이 고정되어 있다",
+      "새 합계 변수의 의미가 문서화되어 있다"
+    ],
+    "required_changes": [
+      "구성요소와 새 변수명만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "component variables",
+      "new variable",
+      "missing policy"
+    ],
+    "tradeoffs": [
+      "행별 집계 결과를 보존한다",
+      "missing 처리 방식이 합계 의미에 직접 영향을 준다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active component variables",
+        "declared row-total policy"
+      ],
+      "observable_signals": [
+        "egen",
+        "rowtotal"
+      ],
+      "produces": [
+        "one row-total variable"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one observation",
+      "required_keys": [],
+      "source_basis": "official egen rowtotal mechanics",
+      "time_structure": "inherited",
+      "variable_characteristics": [
+        "numeric components",
+        "declared missing policy"
+      ]
+    },
+    "source_specific_elements": [
+      "component and output placeholders"
+    ],
+    "reusable_core": "선언된 구성요소의 행별 합계를 egen으로 생성한다.",
+    "generality_rationale_ko": "행 집계와 group 집계의 키·출력 상태가 다르므로 별도 variant다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Do not infer whether missing equals zero.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "egen.rowtotal_missing_rule"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate egen_rowtotal_declared_vars: observable mechanics [egen, rowtotal] produce one row-total variable; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "data.egen_group_id.v1",
+    "checkpoint": "preparation.transform",
+    "variant_group": "preparation.egen",
+    "variant_id": "egen_group_identifier",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        12,
+        12
+      ]
+    ],
+    "research_situations": [
+      "복합 키의 고유 group identifier가 필요하다"
+    ],
+    "selection_conditions": [
+      "group key 변수 목록이 확정되어 있고 missing key 처리도 문서화되어 있다"
+    ],
+    "required_changes": [
+      "키 목록과 새 id 변수명만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "group keys",
+      "new id variable"
+    ],
+    "tradeoffs": [
+      "반복되는 복합 키를 단일 id로 다룬다",
+      "id 숫자값 자체에는 substantive 의미가 없다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active key variables",
+        "declared group-id output"
+      ],
+      "observable_signals": [
+        "egen",
+        "group"
+      ],
+      "produces": [
+        "one group identifier variable"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one observation assigned to one key group",
+      "required_keys": [
+        "group keys"
+      ],
+      "source_basis": "official egen group mechanics",
+      "time_structure": "inherited",
+      "variable_characteristics": [
+        "categorical or identifier keys"
+      ]
+    },
+    "source_specific_elements": [
+      "key and id placeholders"
+    ],
+    "reusable_core": "복합 키별 group id를 생성한다.",
+    "generality_rationale_ko": "키를 숫자 id로 압축하는 기계적 변환이며 그룹의 의미는 선택자가 제공해야 한다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Do not use as a substitute for uniqueness validation.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "egen.group_id"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate egen_group_identifier: observable mechanics [egen, group] produce one group identifier variable; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "data.egen_group_mean_by.v1",
+    "checkpoint": "preparation.transform",
+    "variant_group": "preparation.egen",
+    "variant_id": "egen_group_mean_by_key",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        13,
+        13
+      ]
+    ],
+    "research_situations": [
+      "각 group의 평균을 원자료 각 행에 병합한 변수가 필요하다"
+    ],
+    "selection_conditions": [
+      "group key와 평균 대상 변수가 고정되어 있다",
+      "행 수준으로 평균을 반복 보존하는 것이 의도되어 있다"
+    ],
+    "required_changes": [
+      "평균 대상, group key, 새 변수명만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "target variable",
+      "group key",
+      "new variable"
+    ],
+    "tradeoffs": [
+      "원자료 행 수를 유지한다",
+      "평균의 표본·결측 규칙은 별도 명시가 필요하다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active target variable",
+        "declared group key",
+        "row-preserving group statistic"
+      ],
+      "observable_signals": [
+        "egen",
+        "mean",
+        "by"
+      ],
+      "produces": [
+        "one row-preserving group-mean variable"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one observation within a group",
+      "required_keys": [
+        "group key"
+      ],
+      "source_basis": "official egen mean by mechanics",
+      "time_structure": "inherited",
+      "variable_characteristics": [
+        "numeric target",
+        "group key"
+      ]
+    },
+    "source_specific_elements": [
+      "target, key, and output placeholders"
+    ],
+    "reusable_core": "group별 평균을 계산해 원자료 각 행에 보존한다.",
+    "generality_rationale_ko": "collapse의 group-level output과 달리 원자료 행을 보존하는 variant다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Do not infer a causal peer effect.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "egen.group_mean"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate egen_group_mean_by_key: observable mechanics [egen, mean, by] produce one row-preserving group-mean variable; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "sample.keep_if_declared.v1",
+    "checkpoint": "sample.restriction",
+    "variant_group": "sample.restriction",
+    "variant_id": "keep_if_declared_sample",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        14,
+        14
+      ]
+    ],
+    "research_situations": [
+      "사전에 승인된 분석 표본 조건만 남겨야 한다"
+    ],
+    "selection_conditions": [
+      "조건식과 표본 정의가 연구계획에 명시되어 있다",
+      "제외 행의 영향과 count를 기록할 수 있다"
+    ],
+    "required_changes": [
+      "선언된 sample condition만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "sample condition"
+    ],
+    "tradeoffs": [
+      "표본을 직접 제한한다",
+      "조건이 substantive 표본 선택을 포함하므로 자동 추론하면 안 된다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "pre-approved sample rule"
+      ],
+      "observable_signals": [
+        "keep",
+        "if"
+      ],
+      "produces": [
+        "restricted active dataset"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one retained observation",
+      "required_keys": [],
+      "source_basis": "official keep mechanics",
+      "time_structure": "inherited",
+      "variable_characteristics": [
+        "declared eligibility condition"
+      ]
+    },
+    "source_specific_elements": [
+      "sample condition placeholder"
+    ],
+    "reusable_core": "사전 승인된 조건을 만족하는 관측치만 유지한다.",
+    "generality_rationale_ko": "표본 제한은 명령은 단순해도 연구 판단이 들어가므로 조건을 반드시 외부에서 선언한다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Selection is conditional and never inferred from outcome availability.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "keep_drop.declared_eligibility_restriction"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate keep_if_declared_sample: observable mechanics [keep, if] produce restricted active dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "sample.drop_if_missing.v1",
+    "checkpoint": "sample.restriction",
+    "variant_group": "sample.restriction",
+    "variant_id": "drop_if_declared_missing",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        15,
+        15
+      ]
+    ],
+    "research_situations": [
+      "분석 변수 결측 행을 사전 승인된 규칙으로 제외해야 한다"
+    ],
+    "selection_conditions": [
+      "complete-case 규칙과 변수 목록이 고정되어 있다",
+      "결측으로 제외되는 count를 기록한다"
+    ],
+    "required_changes": [
+      "변수 목록만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "analysis variable list"
+    ],
+    "tradeoffs": [
+      "complete-case 표본을 명시적으로 만든다",
+      "결측 메커니즘이나 대체의 적절성을 판단하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared complete-case variables"
+      ],
+      "observable_signals": [
+        "drop",
+        "missing"
+      ],
+      "produces": [
+        "complete-case active dataset"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one complete-case observation",
+      "required_keys": [],
+      "source_basis": "official drop missing mechanics",
+      "time_structure": "inherited",
+      "variable_characteristics": [
+        "declared analysis variables"
+      ]
+    },
+    "source_specific_elements": [
+      "analysis variable placeholders"
+    ],
+    "reusable_core": "선언된 분석변수 중 하나라도 결측인 행을 제외한다.",
+    "generality_rationale_ko": "keep if 조건과 complete-case drop은 표본 상태와 감사 신호가 다르다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Do not present complete-case deletion as missing-data correction.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "keep_drop.declared_required_missing_exclusion"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate drop_if_declared_missing: observable mechanics [drop, missing] produce complete-case active dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "data.sort_ascending_keys.v1",
+    "checkpoint": "preparation.transform",
+    "variant_group": "preparation.sort_order",
+    "variant_id": "sort_ascending_declared_keys",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        16,
+        16
+      ]
+    ],
+    "research_situations": [
+      "자료를 선언한 복합 키의 오름차순으로 정렬해야 한다"
+    ],
+    "selection_conditions": [
+      "후속 명령이 요구하는 정렬 키와 순서가 명시되어 있다"
+    ],
+    "required_changes": [
+      "정렬 키만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "sort keys"
+    ],
+    "tradeoffs": [
+      "후속 by/group 처리에 필요한 순서를 명시한다",
+      "정렬 자체가 key uniqueness를 보장하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared ascending keys"
+      ],
+      "observable_signals": [
+        "sort"
+      ],
+      "produces": [
+        "active dataset ordered by keys"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one observation ordered within keys",
+      "required_keys": [
+        "sort keys"
+      ],
+      "source_basis": "official sort mechanics",
+      "time_structure": "may be panel or cross-section",
+      "variable_characteristics": [
+        "ordered identifiers"
+      ]
+    },
+    "source_specific_elements": [
+      "key placeholders"
+    ],
+    "reusable_core": "선언된 키를 오름차순으로 자료를 정렬한다.",
+    "generality_rationale_ko": "gsort의 내림차순과 정렬 방향이 달라 별도 variant다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Check uniqueness separately.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [],
+    "canonical_generation_class": "reference_only",
+    "variant_distinction": "Separate sort_ascending_declared_keys: observable mechanics [sort] produce active dataset ordered by keys; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "unmapped_reason": "Bounded guide mechanics retained in the noncompeting reference reservoir; no current Top 50 or additional user-written contract claims this variant."
+  },
+  {
+    "label_id": "data.gsort_descending_key.v1",
+    "checkpoint": "preparation.transform",
+    "variant_group": "preparation.sort_order",
+    "variant_id": "gsort_descending_declared_key",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        17,
+        17
+      ]
+    ],
+    "research_situations": [
+      "순위나 최신값을 기준으로 내림차순 정렬해야 한다"
+    ],
+    "selection_conditions": [
+      "내림차순 키와 tie-breaker가 고정되어 있다"
+    ],
+    "required_changes": [
+      "정렬 키와 방향만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "descending key",
+      "tie-breaker"
+    ],
+    "tradeoffs": [
+      "descending order를 명시한다",
+      "정렬 결과는 자료의 substantive 순위가 아니다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared descending key"
+      ],
+      "observable_signals": [
+        "gsort",
+        "-"
+      ],
+      "produces": [
+        "active dataset ordered descending"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one observation ordered by descending key",
+      "required_keys": [
+        "sort key"
+      ],
+      "source_basis": "official gsort mechanics",
+      "time_structure": "inherited",
+      "variable_characteristics": [
+        "numeric or date-like order key"
+      ]
+    },
+    "source_specific_elements": [
+      "key and tie-breaker placeholders"
+    ],
+    "reusable_core": "선언한 키를 gsort로 내림차순 정렬한다.",
+    "generality_rationale_ko": "정렬 방향이 분석 후속 상태에 영향을 주므로 sort와 분리한다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Do not use sorting as a ranking estimator.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [],
+    "canonical_generation_class": "reference_only",
+    "variant_distinction": "Separate gsort_descending_declared_key: observable mechanics [gsort, -] produce active dataset ordered descending; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "unmapped_reason": "Bounded guide mechanics retained in the noncompeting reference reservoir; no current Top 50 or additional user-written contract claims this variant."
+  },
+  {
+    "label_id": "input.merge_11_assert_keep.v1",
+    "checkpoint": "merge_reshape.integration",
+    "variant_group": "input_load.merge",
+    "variant_id": "merge_11_assert_match_master_using",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        18,
+        18
+      ]
+    ],
+    "research_situations": [
+      "두 자료를 1:1 키로 결합하면서 match 상태를 명시적으로 점검해야 한다"
+    ],
+    "selection_conditions": [
+      "master와 using 키가 각각 unique임을 사전 점검했다",
+      "보존할 merge 결과 상태가 명시되어 있다"
+    ],
+    "required_changes": [
+      "키와 using 경로, keep 상태만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "key",
+      "using path",
+      "keep states"
+    ],
+    "tradeoffs": [
+      "1:1 가정과 보존 상태를 visible하게 한다",
+      "assert는 실제 key 오류를 숨기지 않으며 실패 시 중단한다"
+    ],
+    "state_signature": {
+      "requires": [
+        "unique master key",
+        "unique using key",
+        "declared retention states"
+      ],
+      "observable_signals": [
+        "merge",
+        "1:1",
+        "assert",
+        "keep"
+      ],
+      "produces": [
+        "merged active dataset"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "two keyed datasets",
+      "record_unit": "one master row matched to at most one using row",
+      "required_keys": [
+        "merge key"
+      ],
+      "source_basis": "official merge 1:1 mechanics",
+      "time_structure": "inherited",
+      "variable_characteristics": [
+        "unique keys on both sides"
+      ]
+    },
+    "source_specific_elements": [
+      "key and using path placeholders"
+    ],
+    "reusable_core": "unique 1:1 키를 검증하면서 지정한 merge 상태만 유지한다.",
+    "generality_rationale_ko": "1:1과 m:1은 허용되는 중복 구조가 달라 별도 variant다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. No m:m merge, update, or forced conflict resolution.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "merge.one_to_one_master_retained"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate merge_11_assert_match_master_using: observable mechanics [merge, 1:1, assert] produce merged active dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "input.merge_m1_keepusing.v1",
+    "checkpoint": "merge_reshape.integration",
+    "variant_group": "input_load.merge",
+    "variant_id": "merge_m1_keepusing",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        19,
+        19
+      ]
+    ],
+    "research_situations": [
+      "반복되는 master key에 using 자료의 한 행을 붙여야 한다"
+    ],
+    "selection_conditions": [
+      "using key가 unique이고 master key는 반복될 수 있음을 점검했다",
+      "using에서 가져올 변수와 retention 상태가 선언되어 있다"
+    ],
+    "required_changes": [
+      "키, using 경로, keepusing 변수만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "key",
+      "using path",
+      "keepusing variables"
+    ],
+    "tradeoffs": [
+      "many-to-one 관계와 using 변수 범위를 명시한다",
+      "using key uniqueness는 별도 integrity check다"
+    ],
+    "state_signature": {
+      "requires": [
+        "repeating master key",
+        "unique using key",
+        "declared using variables"
+      ],
+      "observable_signals": [
+        "merge",
+        "m:1",
+        "keepusing"
+      ],
+      "produces": [
+        "merged active dataset"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "many-to-one keyed datasets",
+      "record_unit": "one master row receiving one using-group record",
+      "required_keys": [
+        "merge key"
+      ],
+      "source_basis": "official merge m:1 mechanics",
+      "time_structure": "inherited",
+      "variable_characteristics": [
+        "repeating master keys",
+        "unique using keys"
+      ]
+    },
+    "source_specific_elements": [
+      "key, using path, and keepusing placeholders"
+    ],
+    "reusable_core": "unique using key의 선택 변수만 반복 master 행에 m:1로 결합한다.",
+    "generality_rationale_ko": "1:1 템플릿과 달리 master 중복을 허용하고 using payload를 제한한다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. No m:m merge or update semantics.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "merge.many_to_one_master_retained"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate merge_m1_keepusing: observable mechanics [merge, m:1, keepusing] produce merged active dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "input.append_multi_source_id.v1",
+    "checkpoint": "input_load.combine",
+    "variant_group": "input_load.append",
+    "variant_id": "append_multiple_sources_with_id",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        20,
+        21
+      ]
+    ],
+    "research_situations": [
+      "동일 schema의 여러 source를 순차 결합하면서 source id를 보존해야 한다"
+    ],
+    "selection_conditions": [
+      "모든 source의 row unit, 변수명, 단위가 호환됨을 확인했다",
+      "source 순서와 id 의미가 고정되어 있다"
+    ],
+    "required_changes": [
+      "using source 목록과 source id 변수명만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "using source paths",
+      "source-id variable"
+    ],
+    "tradeoffs": [
+      "여러 source를 한 번에 결합하고 출처를 남긴다",
+      "schema compatibility는 append가 검증하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active master",
+        "multiple compatible using sources",
+        "declared source id"
+      ],
+      "observable_signals": [
+        "append",
+        "generate"
+      ],
+      "produces": [
+        "combined active dataset with source id"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "multiple same-schema datasets",
+      "record_unit": "one row from one source",
+      "required_keys": [],
+      "source_basis": "official append mechanics",
+      "time_structure": "inherited",
+      "variable_characteristics": [
+        "compatible schema",
+        "source provenance"
+      ]
+    },
+    "source_specific_elements": [
+      "source paths and source-id placeholder"
+    ],
+    "reusable_core": "호환된 여러 using 자료를 append하고 source identifier를 보존한다.",
+    "generality_rationale_ko": "단일 source append와 여러 source의 상태 및 provenance가 달라 분리한다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Preflight schema checks are mandatory.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "append.multiple_sources_with_provenance_id"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate append_multiple_sources_with_id: observable mechanics [append, generate] produce combined active dataset with source id; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "data.reshape_long_panel.v1",
+    "checkpoint": "merge_reshape.integration",
+    "variant_group": "preparation.reshape",
+    "variant_id": "reshape_long_i_j",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        22,
+        22
+      ]
+    ],
+    "research_situations": [
+      "wide 반복 변수들을 i-j long panel로 바꿔야 한다"
+    ],
+    "selection_conditions": [
+      "i identifier, j time/index, stubname과 wide naming rule이 고정되어 있다",
+      "wide key uniqueness를 점검했다"
+    ],
+    "required_changes": [
+      "i, j, stubname, time/index 규칙만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "i key",
+      "j key",
+      "stubname"
+    ],
+    "tradeoffs": [
+      "panel 분석에 적합한 long row unit을 만든다",
+      "reshape 후 row 수와 missing structure가 달라진다"
+    ],
+    "state_signature": {
+      "requires": [
+        "wide data",
+        "declared i and j keys",
+        "declared stubname"
+      ],
+      "observable_signals": [
+        "reshape",
+        "long"
+      ],
+      "produces": [
+        "long active dataset"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "wide_panel",
+      "record_unit": "one unit-time observation after reshape",
+      "required_keys": [
+        "i key",
+        "j key"
+      ],
+      "source_basis": "official reshape long mechanics",
+      "time_structure": "panel index",
+      "variable_characteristics": [
+        "stubname-indexed wide variables"
+      ]
+    },
+    "source_specific_elements": [
+      "i, j, and stubname placeholders"
+    ],
+    "reusable_core": "선언한 i·j·stub 규칙으로 wide 자료를 long 자료로 변환한다.",
+    "generality_rationale_ko": "long과 wide는 서로 역방향의 자료 구조와 key 계약을 가지므로 별도 variant다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Do not infer time meaning from suffixes.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "reshape.wide_to_long_declared_i_j"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate reshape_long_i_j: observable mechanics [reshape, long] produce long active dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "data.reshape_wide_panel.v1",
+    "checkpoint": "merge_reshape.integration",
+    "variant_group": "preparation.reshape",
+    "variant_id": "reshape_wide_i_j",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        23,
+        23
+      ]
+    ],
+    "research_situations": [
+      "long unit-time 자료를 wide 변수 구조로 펼쳐야 한다"
+    ],
+    "selection_conditions": [
+      "i-j key 조합이 unique임을 확인했다",
+      "stubname과 j 값의 변수명 생성 규칙이 고정되어 있다"
+    ],
+    "required_changes": [
+      "i, j, stubname만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "i key",
+      "j key",
+      "stubname"
+    ],
+    "tradeoffs": [
+      "wide 결과로 후속 표·그림 입력을 맞춘다",
+      "j 값이 변수명에 들어가므로 이름 규칙과 결측을 점검해야 한다"
+    ],
+    "state_signature": {
+      "requires": [
+        "long data",
+        "unique i-j keys",
+        "declared stubname"
+      ],
+      "observable_signals": [
+        "reshape",
+        "wide"
+      ],
+      "produces": [
+        "wide active dataset"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "long_panel",
+      "record_unit": "one unit-time observation before reshape",
+      "required_keys": [
+        "i key",
+        "j key"
+      ],
+      "source_basis": "official reshape wide mechanics",
+      "time_structure": "panel index",
+      "variable_characteristics": [
+        "one row per unit-time"
+      ]
+    },
+    "source_specific_elements": [
+      "i, j, and stubname placeholders"
+    ],
+    "reusable_core": "선언한 i·j·stub 규칙으로 long 자료를 wide 자료로 변환한다.",
+    "generality_rationale_ko": "wide 출력은 long 출력과 역방향이며 key uniqueness 요구가 달라 별도 계약이다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. No implicit aggregation of duplicate i-j keys.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "reshape.long_to_wide_declared_i_j"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate reshape_wide_i_j: observable mechanics [reshape, wide] produce wide active dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "data.collapse_mean_by.v1",
+    "checkpoint": "descriptives.entity_collapse",
+    "variant_group": "preparation.collapse",
+    "variant_id": "collapse_mean_by_key",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        24,
+        24
+      ]
+    ],
+    "research_situations": [
+      "group-level 평균 자료만 남기는 집계를 수행해야 한다"
+    ],
+    "selection_conditions": [
+      "group key와 평균 대상이 고정되어 있다",
+      "원자료 행을 유지할 필요가 없는 집계 산출물이다"
+    ],
+    "required_changes": [
+      "평균 대상과 group key만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "target variables",
+      "group keys"
+    ],
+    "tradeoffs": [
+      "group-level dataset으로 축약한다",
+      "원자료는 메모리에서 사라지므로 저장·preserve 계획이 필요하다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared group keys",
+        "declared statistics"
+      ],
+      "observable_signals": [
+        "collapse",
+        "mean",
+        "by"
+      ],
+      "produces": [
+        "group-level active dataset"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "microdata",
+      "record_unit": "one group after aggregation",
+      "required_keys": [
+        "group keys"
+      ],
+      "source_basis": "official collapse mean mechanics",
+      "time_structure": "inherited group index",
+      "variable_characteristics": [
+        "numeric target variables"
+      ]
+    },
+    "source_specific_elements": [
+      "target and key placeholders"
+    ],
+    "reusable_core": "지정된 키별 평균만 남기는 group-level 자료를 만든다.",
+    "generality_rationale_ko": "sum/count와 statistic 및 출력 구조가 달라 별도 variant다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Preserve the microdata when later consumers need it.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [],
+    "canonical_generation_class": "reference_only",
+    "variant_distinction": "Separate collapse_mean_by_key: observable mechanics [collapse, mean, by] produce group-level active dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "unmapped_reason": "Bounded guide mechanics retained in the noncompeting reference reservoir; no current Top 50 or additional user-written contract claims this variant."
+  },
+  {
+    "label_id": "data.collapse_sum_count_by.v1",
+    "checkpoint": "descriptives.entity_collapse",
+    "variant_group": "preparation.collapse",
+    "variant_id": "collapse_sum_count_by_key",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        25,
+        25
+      ]
+    ],
+    "research_situations": [
+      "group별 합계와 관측치 수를 집계해야 한다"
+    ],
+    "selection_conditions": [
+      "합계·count statistic과 group key가 고정되어 있다",
+      "group-level 결과가 후속 소비자의 입력이다"
+    ],
+    "required_changes": [
+      "sum/count 대상과 group key만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "sum variables",
+      "count variable",
+      "group keys"
+    ],
+    "tradeoffs": [
+      "합계와 표본 수를 함께 보존한다",
+      "평균과 달리 규모와 결측 규칙이 다르다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared group keys",
+        "declared sum and count targets"
+      ],
+      "observable_signals": [
+        "collapse",
+        "sum",
+        "count",
+        "by"
+      ],
+      "produces": [
+        "group-level sum-count dataset"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "microdata",
+      "record_unit": "one group after aggregation",
+      "required_keys": [
+        "group keys"
+      ],
+      "source_basis": "official collapse sum count mechanics",
+      "time_structure": "inherited group index",
+      "variable_characteristics": [
+        "numeric amount",
+        "declared count target"
+      ]
+    },
+    "source_specific_elements": [
+      "sum, count, and key placeholders"
+    ],
+    "reusable_core": "지정된 group별 합계와 관측치 수를 남기는 축약 자료를 만든다.",
+    "generality_rationale_ko": "mean 집계와 출력 통계·해석이 달라 별도 variant다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Count and missingness interpretation require explicit review.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [],
+    "canonical_generation_class": "reference_only",
+    "variant_distinction": "Separate collapse_sum_count_by_key: observable mechanics [collapse, sum, count] produce group-level sum-count dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "unmapped_reason": "Bounded guide mechanics retained in the noncompeting reference reservoir; no current Top 50 or additional user-written contract claims this variant."
+  },
+  {
+    "label_id": "labels.define_values.v1",
+    "checkpoint": "preparation.transform",
+    "variant_group": "preparation.labels",
+    "variant_id": "label_define_values",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        26,
+        27
+      ]
+    ],
+    "research_situations": [
+      "범주 코드와 표시값을 명시한 value label을 부여해야 한다"
+    ],
+    "selection_conditions": [
+      "코드-문자열 매핑과 label name이 원천 문서에 고정되어 있다"
+    ],
+    "required_changes": [
+      "label name, code, text, 변수명만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "label name",
+      "code-text mapping",
+      "variable"
+    ],
+    "tradeoffs": [
+      "표와 진단에서 범주 의미를 보존한다",
+      "label은 원자료 코드값을 바꾸지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active coded variable",
+        "declared code-label mapping"
+      ],
+      "observable_signals": [
+        "label",
+        "define",
+        "values"
+      ],
+      "produces": [
+        "labeled active variable"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one observation with coded category",
+      "required_keys": [],
+      "source_basis": "official label define/values mechanics",
+      "time_structure": "inherited",
+      "variable_characteristics": [
+        "numeric categorical code",
+        "declared labels"
+      ]
+    },
+    "source_specific_elements": [
+      "label name, mapping, and variable placeholders"
+    ],
+    "reusable_core": "선언된 code-text 매핑을 정의하고 변수에 value label을 연결한다.",
+    "generality_rationale_ko": "label metadata만 추가하며 코드값·표본·분석 의미를 추론하지 않는다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Do not rewrite imported source labels without an explicit contract.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "label.value_label_define_attach"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate label_define_values: observable mechanics [label, define, values] produce labeled active variable; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "data.destring_generate.v1",
+    "checkpoint": "preparation.transform",
+    "variant_group": "preparation.type_conversion",
+    "variant_id": "destring_generate_numeric",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        28,
+        28
+      ]
+    ],
+    "research_situations": [
+      "숫자처럼 저장된 문자열을 새 numeric 변수로 변환해야 한다"
+    ],
+    "selection_conditions": [
+      "문자열의 numeric 표현과 nonnumeric 처리 정책이 고정되어 있다",
+      "원문 문자열을 보존해야 한다"
+    ],
+    "required_changes": [
+      "원변수와 새 변수명만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "string variable",
+      "new numeric variable",
+      "nonnumeric policy"
+    ],
+    "tradeoffs": [
+      "원문을 보존하며 numeric 변수를 만든다",
+      "변환 실패와 부호·콤마 처리는 별도 확인이 필요하다"
+    ],
+    "state_signature": {
+      "requires": [
+        "string numeric-like variable",
+        "declared output variable"
+      ],
+      "observable_signals": [
+        "destring",
+        "generate"
+      ],
+      "produces": [
+        "new numeric variable"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one observation",
+      "required_keys": [],
+      "source_basis": "official destring generate mechanics",
+      "time_structure": "inherited",
+      "variable_characteristics": [
+        "numeric-like string",
+        "declared conversion policy"
+      ]
+    },
+    "source_specific_elements": [
+      "source and output placeholders"
+    ],
+    "reusable_core": "문자열 숫자를 새 numeric 변수로 destring한다.",
+    "generality_rationale_ko": "overwrite 변환과 원변수 보존 변환은 자료 안전성이 달라 원변수 보존 variant로 고정한다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Do not silently coerce identifiers with leading zeros.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "type_conversion.destring_generate_validated"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate destring_generate_numeric: observable mechanics [destring, generate] produce new numeric variable; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "data.tostring_generate.v1",
+    "checkpoint": "preparation.transform",
+    "variant_group": "preparation.type_conversion",
+    "variant_id": "tostring_generate_string",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        29,
+        29
+      ]
+    ],
+    "research_situations": [
+      "숫자 identifier를 표시·결합용 문자열로 새 변수에 저장해야 한다"
+    ],
+    "selection_conditions": [
+      "출력 형식과 leading-zero 보존 여부가 고정되어 있다",
+      "원래 numeric 변수를 보존해야 한다"
+    ],
+    "required_changes": [
+      "원변수, 새 변수명, format만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "numeric variable",
+      "new string variable",
+      "format"
+    ],
+    "tradeoffs": [
+      "원 numeric 값을 유지한다",
+      "표시 형식과 실제 값의 차이를 문서화해야 한다"
+    ],
+    "state_signature": {
+      "requires": [
+        "numeric source variable",
+        "declared string format"
+      ],
+      "observable_signals": [
+        "tostring",
+        "generate"
+      ],
+      "produces": [
+        "new string variable"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one observation",
+      "required_keys": [],
+      "source_basis": "official tostring generate mechanics",
+      "time_structure": "inherited",
+      "variable_characteristics": [
+        "numeric identifier",
+        "declared display format"
+      ]
+    },
+    "source_specific_elements": [
+      "source, output, and format placeholders"
+    ],
+    "reusable_core": "숫자 변수를 선언된 format으로 새 문자열 변수에 저장한다.",
+    "generality_rationale_ko": "destring의 반대 방향이며 보존 변수와 format 계약이 달라 분리한다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Never use display strings as numeric measures.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "type_conversion.tostring_generate_format_preserved"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate tostring_generate_string: observable mechanics [tostring, generate] produce new string variable; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "data.encode_generate.v1",
+    "checkpoint": "preparation.transform",
+    "variant_group": "preparation.type_conversion",
+    "variant_id": "encode_string_category",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        30,
+        30
+      ]
+    ],
+    "research_situations": [
+      "문자열 범주를 numeric code와 value label로 변환해야 한다"
+    ],
+    "selection_conditions": [
+      "범주 문자열이 명목형 코드로 사용될 것이며 코드 순서에 substantive 의미가 없다",
+      "출력 변수명이 고정되어 있다"
+    ],
+    "required_changes": [
+      "문자열 원변수와 새 numeric 변수명만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "string category",
+      "new numeric variable"
+    ],
+    "tradeoffs": [
+      "Stata factor/분석 명령과 호환되는 numeric code를 만든다",
+      "자동 code 순서는 substantive 순서를 의미하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "string categorical variable",
+        "declared output name"
+      ],
+      "observable_signals": [
+        "encode",
+        "generate"
+      ],
+      "produces": [
+        "numeric labeled category"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one categorical observation",
+      "required_keys": [],
+      "source_basis": "official encode mechanics",
+      "time_structure": "inherited",
+      "variable_characteristics": [
+        "string nominal category"
+      ]
+    },
+    "source_specific_elements": [
+      "source and output placeholders"
+    ],
+    "reusable_core": "문자열 범주를 value label이 붙은 numeric 변수로 encode한다.",
+    "generality_rationale_ko": "문자열→numeric과 numeric→문자열은 변환 방향과 label 상태가 달라 별도 variant다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Do not infer ordinal meaning from encoded values.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "type_conversion.encode_declared_categories_direct"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate encode_string_category: observable mechanics [encode, generate] produce numeric labeled category; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "data.decode_generate.v1",
+    "checkpoint": "preparation.transform",
+    "variant_group": "preparation.type_conversion",
+    "variant_id": "decode_labeled_numeric",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        31,
+        31
+      ]
+    ],
+    "research_situations": [
+      "value label이 붙은 numeric code를 표시 문자열로 새 변수에 복원해야 한다"
+    ],
+    "selection_conditions": [
+      "원 numeric variable의 label dictionary가 존재한다",
+      "문자열 출력 변수가 필요한 downstream 계약이 고정되어 있다"
+    ],
+    "required_changes": [
+      "numeric 원변수와 새 문자열 변수만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "labeled numeric variable",
+      "new string variable"
+    ],
+    "tradeoffs": [
+      "사람이 읽는 문자열을 만든다",
+      "label text는 원래 code와 동등한 숫자 분석값이 아니다"
+    ],
+    "state_signature": {
+      "requires": [
+        "labeled numeric variable",
+        "declared output name"
+      ],
+      "observable_signals": [
+        "decode",
+        "generate"
+      ],
+      "produces": [
+        "new string label text variable"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one labeled categorical observation",
+      "required_keys": [],
+      "source_basis": "official decode mechanics",
+      "time_structure": "inherited",
+      "variable_characteristics": [
+        "numeric value label",
+        "string output"
+      ]
+    },
+    "source_specific_elements": [
+      "source and output placeholders"
+    ],
+    "reusable_core": "label dictionary를 사용해 numeric code를 문자열로 decode한다.",
+    "generality_rationale_ko": "encode와 역방향 변환이며 label dictionary가 필수라 별도 template이다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Preserve the coded variable for analysis.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "type_conversion.decode_to_new_string"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate decode_labeled_numeric: observable mechanics [decode, generate] produce new string label text variable; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "integrity.duplicates_report_key.v1",
+    "checkpoint": "integrity.audit",
+    "variant_group": "integrity.duplicates",
+    "variant_id": "duplicates_report_declared_key",
+    "stage": "validation",
+    "source_spans": [
+      [
+        32,
+        32
+      ]
+    ],
+    "research_situations": [
+      "선언한 key의 중복 분포를 자료 변경 없이 감사해야 한다"
+    ],
+    "selection_conditions": [
+      "중복 여부가 중요한 key가 사전 정의되어 있다",
+      "진단만 수행하고 자료를 삭제하지 않는다"
+    ],
+    "required_changes": [
+      "key 목록만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "key variables"
+    ],
+    "tradeoffs": [
+      "중복 분포를 직접 보인다",
+      "중복 원인을 해결하거나 행을 제거하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared key"
+      ],
+      "observable_signals": [
+        "duplicates",
+        "report"
+      ],
+      "produces": [
+        "visible duplicate audit"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one observation within declared key",
+      "required_keys": [
+        "key"
+      ],
+      "source_basis": "official duplicates report mechanics",
+      "time_structure": "inherited",
+      "variable_characteristics": [
+        "identifier candidate"
+      ]
+    },
+    "source_specific_elements": [
+      "key placeholders"
+    ],
+    "reusable_core": "선언한 key의 중복 분포를 report로 표시한다.",
+    "generality_rationale_ko": "tag로 flag를 생성하는 변형과 달리 비파괴적 표시만 수행하므로 별도 audit variant다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Do not treat a report as proof of uniqueness without reading counts.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "duplicates.report_list_tag_direct"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate duplicates_report_declared_key: observable mechanics [duplicates, report] produce visible duplicate audit; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "integrity.duplicates_tag_flag.v1",
+    "checkpoint": "integrity.audit",
+    "variant_group": "integrity.duplicates",
+    "variant_id": "duplicates_tag_generate_flag",
+    "stage": "validation",
+    "source_spans": [
+      [
+        33,
+        33
+      ]
+    ],
+    "research_situations": [
+      "중복 key 행을 후속 검토할 flag로 표시해야 한다"
+    ],
+    "selection_conditions": [
+      "flag 변수명과 key가 고정되어 있다",
+      "flag를 검토용으로만 사용하고 자동 삭제하지 않는다"
+    ],
+    "required_changes": [
+      "key와 flag 변수명만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "key variables",
+      "flag variable"
+    ],
+    "tradeoffs": [
+      "후속 행 검토가 쉬워진다",
+      "새 변수가 생기며 중복을 해결하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared key",
+        "declared flag name"
+      ],
+      "observable_signals": [
+        "duplicates",
+        "tag",
+        "generate"
+      ],
+      "produces": [
+        "duplicate flag variable"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one observation within declared key",
+      "required_keys": [
+        "key"
+      ],
+      "source_basis": "official duplicates tag mechanics",
+      "time_structure": "inherited",
+      "variable_characteristics": [
+        "identifier candidate",
+        "review flag"
+      ]
+    },
+    "source_specific_elements": [
+      "key and flag placeholders"
+    ],
+    "reusable_core": "중복 key를 식별하는 검토용 flag를 생성한다.",
+    "generality_rationale_ko": "report-only audit와 달리 후속 검토 상태를 자료에 남기는 variant다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. No automatic drop based on this flag.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "duplicates.report_list_tag_direct"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate duplicates_tag_generate_flag: observable mechanics [duplicates, tag, generate] produce duplicate flag variable; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "integrity.preserve_restore_transaction.v1",
+    "checkpoint": "integrity.audit",
+    "variant_group": "integrity.preserve_restore",
+    "variant_id": "preserve_restore_non_destructive_audit",
+    "stage": "validation",
+    "source_spans": [
+      [
+        34,
+        36
+      ]
+    ],
+    "research_situations": [
+      "임시 진단 뒤 원자료 상태를 정확히 복원해야 한다"
+    ],
+    "selection_conditions": [
+      "중간 진단 명령이 자료 상태를 바꾸며 restore가 반드시 한 쌍으로 실행된다",
+      "preserve 범위와 후속 상태가 고정되어 있다"
+    ],
+    "required_changes": [
+      "중간 진단 명령과 필요한 변수명만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "temporary diagnostic block"
+    ],
+    "tradeoffs": [
+      "진단 전후 원자료 상태를 보존한다",
+      "중간 블록에서 오류가 나면 복원이 보장되지 않을 수 있어 실행 로그를 점검해야 한다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "paired preserve and restore",
+        "temporary diagnostic"
+      ],
+      "observable_signals": [
+        "preserve",
+        "restore"
+      ],
+      "produces": [
+        "original active dataset restored"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one original observation before and after temporary block",
+      "required_keys": [],
+      "source_basis": "official preserve/restore mechanics",
+      "time_structure": "inherited",
+      "variable_characteristics": [
+        "temporary diagnostics",
+        "no durable mutation"
+      ]
+    },
+    "source_specific_elements": [
+      "temporary diagnostic placeholder"
+    ],
+    "reusable_core": "임시 진단을 preserve와 restore 사이에 두고 원자료 상태를 돌려놓는다.",
+    "generality_rationale_ko": "단순 진단과 달리 자료 상태 복원을 보장하는 paired transaction이라 별도 template다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Keep the pair contiguous; no nested preserve or destructive cleanup.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "preserve_restore.paired_state_guard_embedded_in_consumer"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate preserve_restore_non_destructive_audit: observable mechanics [preserve, restore] produce original active dataset restored; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "panel.tsset_unit_time.v1",
+    "checkpoint": "integrity.audit",
+    "variant_group": "preparation.panel_index",
+    "variant_id": "tsset_unit_time",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        37,
+        37
+      ]
+    ],
+    "research_situations": [
+      "자료의 panel unit과 time variable을 선언해야 한다"
+    ],
+    "selection_conditions": [
+      "unit-time key와 time 형식이 검증되어 있다",
+      "후속 time-series/panel 명령이 해당 선언을 요구한다"
+    ],
+    "required_changes": [
+      "unit과 time 변수만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "panel unit",
+      "time variable"
+    ],
+    "tradeoffs": [
+      "ts operator와 gap 검사를 위한 panel index를 설정한다",
+      "선언은 중복·정렬을 자동으로 고치지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared unit and time"
+      ],
+      "observable_signals": [
+        "tsset"
+      ],
+      "produces": [
+        "declared panel-time settings"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "panel_data",
+      "record_unit": "one unit-time observation",
+      "required_keys": [
+        "panel unit",
+        "time variable"
+      ],
+      "source_basis": "official tsset mechanics",
+      "time_structure": "declared time index",
+      "variable_characteristics": [
+        "unit identifier",
+        "numeric/date time"
+      ]
+    },
+    "source_specific_elements": [
+      "unit and time placeholders"
+    ],
+    "reusable_core": "panel unit과 time index를 tsset으로 선언한다.",
+    "generality_rationale_ko": "xtset은 panel-specific declaration interface가 달라 별도 variant다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Check duplicate unit-time keys before use.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "xtset_tsset.panel_id_time"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate tsset_unit_time: observable mechanics [tsset] produce declared panel-time settings; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "panel.xtset_unit_time.v1",
+    "checkpoint": "integrity.audit",
+    "variant_group": "preparation.panel_index",
+    "variant_id": "xtset_unit_time",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        38,
+        38
+      ]
+    ],
+    "research_situations": [
+      "Stata panel 명령에 사용할 panel variable과 time variable을 선언해야 한다"
+    ],
+    "selection_conditions": [
+      "panel unit-time key와 time 형식이 검증되어 있다",
+      "xt 계열 estimator 또는 postestimation이 선택되어 있다"
+    ],
+    "required_changes": [
+      "panel과 time 변수만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "panel variable",
+      "time variable"
+    ],
+    "tradeoffs": [
+      "xt 계열 명령의 panel context를 명시한다",
+      "xtset은 key uniqueness를 대신 검사하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared panel and time"
+      ],
+      "observable_signals": [
+        "xtset"
+      ],
+      "produces": [
+        "declared panel-time settings"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "panel_data",
+      "record_unit": "one panel-time observation",
+      "required_keys": [
+        "panel variable",
+        "time variable"
+      ],
+      "source_basis": "official xtset mechanics",
+      "time_structure": "declared time index",
+      "variable_characteristics": [
+        "panel identifier",
+        "time variable"
+      ]
+    },
+    "source_specific_elements": [
+      "panel and time placeholders"
+    ],
+    "reusable_core": "panel과 time 변수를 xtset으로 선언한다.",
+    "generality_rationale_ko": "tsset과 같은 정보지만 사용 interface와 후속 소비자가 달라 별도 template다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Check duplicate panel-time keys before use.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "xtset_tsset.panel_id_time"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate xtset_unit_time: observable mechanics [xtset] produce declared panel-time settings; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "integrity.contract_frequency.v1",
+    "checkpoint": "integrity.audit",
+    "variant_group": "integrity.contract",
+    "variant_id": "contract_frequency_key",
+    "stage": "validation",
+    "source_spans": [
+      [
+        39,
+        39
+      ]
+    ],
+    "research_situations": [
+      "선언된 범주 조합의 빈도 자료를 만들어 중복·분포를 점검해야 한다"
+    ],
+    "selection_conditions": [
+      "범주 변수와 zero-cell 처리 여부가 고정되어 있다",
+      "contract 결과가 진단용 산출물임을 명시한다"
+    ],
+    "required_changes": [
+      "범주 변수와 승인된 옵션만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "categorical variables",
+      "zero-cell policy"
+    ],
+    "tradeoffs": [
+      "조합별 빈도와 unique cell을 compact하게 보여준다",
+      "active 자료를 빈도 자료로 바꾸므로 preserve/save 계획이 필요하다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active categorical data",
+        "declared category keys"
+      ],
+      "observable_signals": [
+        "contract"
+      ],
+      "produces": [
+        "frequency dataset"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "microdata",
+      "record_unit": "one unique category combination",
+      "required_keys": [
+        "categorical keys"
+      ],
+      "source_basis": "official contract mechanics",
+      "time_structure": "inherited if a key",
+      "variable_characteristics": [
+        "categorical variables",
+        "frequency count"
+      ]
+    },
+    "source_specific_elements": [
+      "category keys and option placeholders"
+    ],
+    "reusable_core": "선언한 범주 조합별 빈도 자료를 contract로 만든다.",
+    "generality_rationale_ko": "tabulate 표시와 달리 active dataset 자체를 frequency data로 바꾸므로 별도 상태 계약이다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Use preserve/save when the original row-level data is needed later.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "collapse.frequency_contract"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate contract_frequency_key: observable mechanics [contract] produce frequency dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "sample.random_predeclared.v1",
+    "checkpoint": "sample.restriction",
+    "variant_group": "sample.random",
+    "variant_id": "set_seed_sample_count",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        40,
+        41
+      ]
+    ],
+    "research_situations": [
+      "사전에 정한 크기의 재현 가능한 무작위 표본을 추출해야 한다"
+    ],
+    "selection_conditions": [
+      "표본 크기 또는 비율과 seed가 연구계획에 고정되어 있다",
+      "무작위 표본 추출이 분석 설계에서 승인되어 있다"
+    ],
+    "required_changes": [
+      "seed와 표본 크기만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "seed",
+      "sample size or proportion"
+    ],
+    "tradeoffs": [
+      "재현 가능한 random sample을 만든다",
+      "표본 추출 자체는 substantive 설계이므로 자동 선택해서는 안 된다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "pre-approved random sampling design",
+        "declared seed"
+      ],
+      "observable_signals": [
+        "set seed",
+        "sample"
+      ],
+      "produces": [
+        "reproducibly restricted active dataset"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one sampled observation",
+      "required_keys": [],
+      "source_basis": "official set seed/sample mechanics",
+      "time_structure": "inherited",
+      "variable_characteristics": [
+        "declared random-sample size",
+        "reproducibility seed"
+      ]
+    },
+    "source_specific_elements": [
+      "seed and sample target placeholders"
+    ],
+    "reusable_core": "선언한 seed로 승인된 크기의 random sample을 추출한다.",
+    "generality_rationale_ko": "sample은 단순 명령이지만 표본선택을 직접 바꾸므로 별도 강한 조건을 둔다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Reference-only unless sampling design and seed are explicit.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [],
+    "canonical_generation_class": "reference_only",
+    "variant_distinction": "Separate set_seed_sample_count: observable mechanics [set seed, sample] produce reproducibly restricted active dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "unmapped_reason": "Bounded guide mechanics retained in the noncompeting reference reservoir; no current Top 50 or additional user-written contract claims this variant."
+  },
+  {
+    "label_id": "descriptives.correlate_pairwise.v1",
+    "checkpoint": "descriptives.command_result",
+    "variant_group": "descriptives.correlation",
+    "variant_id": "correlate_complete_pairwise",
+    "stage": "descriptives",
+    "source_spans": [
+      [
+        42,
+        42
+      ]
+    ],
+    "research_situations": [
+      "선언한 numeric 변수들의 complete-case 상관행렬을 보고해야 한다"
+    ],
+    "selection_conditions": [
+      "변수 목록과 complete-case 해석이 고정되어 있다",
+      "상관관계를 인과효과로 해석하지 않는다"
+    ],
+    "required_changes": [
+      "변수 목록만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "numeric variable list"
+    ],
+    "tradeoffs": [
+      "간결한 상관행렬을 제공한다",
+      "결측·비선형성·인과성은 별도 검토 대상이다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active numeric variables",
+        "declared correlation purpose"
+      ],
+      "observable_signals": [
+        "correlate"
+      ],
+      "produces": [
+        "visible correlation matrix"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one observation used in pairwise correlation",
+      "required_keys": [],
+      "source_basis": "official correlate mechanics",
+      "time_structure": "inherited",
+      "variable_characteristics": [
+        "numeric variables"
+      ]
+    },
+    "source_specific_elements": [
+      "variable list placeholder"
+    ],
+    "reusable_core": "선언된 numeric 변수들의 correlate 행렬을 표시한다.",
+    "generality_rationale_ko": "pwcorr의 significance·observation 표시 variant와 출력 계약이 달라 분리한다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Descriptive correlation is not a causal estimate.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "correlate_pwcorr_tabstat.correlate_direct"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate correlate_complete_pairwise: observable mechanics [correlate] produce visible correlation matrix; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  },
+  {
+    "label_id": "descriptives.pwcorr_sig_obs.v1",
+    "checkpoint": "descriptives.command_result",
+    "variant_group": "descriptives.correlation",
+    "variant_id": "pwcorr_significance_observations",
+    "stage": "descriptives",
+    "source_spans": [
+      [
+        43,
+        43
+      ]
+    ],
+    "research_situations": [
+      "상관계수와 significance 및 pairwise 관측치 수를 함께 점검해야 한다"
+    ],
+    "selection_conditions": [
+      "변수 목록과 표시할 significance/observation 정보가 선언되어 있다",
+      "유의성을 causal evidence로 해석하지 않는다"
+    ],
+    "required_changes": [
+      "변수 목록과 승인된 표시 옵션만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "numeric variable list",
+      "display options"
+    ],
+    "tradeoffs": [
+      "결측으로 인한 pairwise N 차이를 visible하게 한다",
+      "다중검정과 causal interpretation은 포함하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active numeric variables",
+        "declared pairwise display"
+      ],
+      "observable_signals": [
+        "pwcorr",
+        "sig",
+        "obs"
+      ],
+      "produces": [
+        "visible pairwise correlation and N matrix"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one pairwise-complete observation",
+      "required_keys": [],
+      "source_basis": "official pwcorr mechanics",
+      "time_structure": "inherited",
+      "variable_characteristics": [
+        "numeric variables",
+        "pairwise N"
+      ]
+    },
+    "source_specific_elements": [
+      "variable list and display option placeholders"
+    ],
+    "reusable_core": "pairwise 상관계수에 유의성과 관측치 수를 함께 표시한다.",
+    "generality_rationale_ko": "단순 correlate보다 출력·결측 상태가 풍부한 별도 variant다.",
+    "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Never infer causality from p-values.",
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "audit_status": "candidate_pre_audit",
+    "contract_ids": [
+      "correlate_pwcorr_tabstat.pwcorr_observations_significance"
+    ],
+    "canonical_generation_class": "conditional_candidate",
+    "variant_distinction": "Separate pwcorr_significance_observations: observable mechanics [pwcorr, sig, obs] produce visible pairwise correlation and N matrix; sibling variants with different options or state contracts must not be substituted or spliced.",
+    "runtime_status": "pending",
+    "selector_status": "pending"
+  }
+]

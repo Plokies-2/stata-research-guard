@@ -106,16 +106,17 @@ const PLANNED_VARIABLE_SCHEMA = {
 };
 const INSTRUCTIONS = [
   "Use this server whenever generating or revising Stata research code.",
+  "For every substantive atomic transition, call resolve_transition_evidence first. It uses two non-competing evidence layers: guide mechanics are always returned when a matching guide card exists and are never auto-selectable, while deposited or genuinely independent research usage may supply at most one audited usage template. Guide mechanics explain syntax and state handling only; they never supply or resolve a sample, estimand, model, treatment, merge key, VCE, event axis, workbook sheet, or output placement. Keep search_labeled_checkpoints, search_stata_manual, and search_approved_patterns only for compatibility, diagnosis, or a deliberately broader inspection after the resolver reports fallback, mismatch, or missing coverage.",
   "For every atomic implementation step, write only the statements required by the current concrete input-to-output contract. Do not design for future outcomes, sheets, callers, options, or reuse. Do not add unused syntax options, one-item loops, one-use programs, registries, dispatchers, optional branches, or generic interfaces. Repetition is abstracted only when that repetition exists in the current request and a direct block cannot provide the required interface.",
   "Reserve globals for intentional cross-do-file contracts. Keep shared directory roots such as project, data, table, figures, and ster in setup when multiple stages consume them. Do not hoist a leaf filename such as summary_excel = $table/file.xlsx into setup when only one child do-file consumes it; declare it as a local in that child near its first use, or write the literal directly when it appears once and is clearer. A leaf file binding may remain global only when two or more do-files intentionally share that exact producer-consumer artifact contract. Put repeated regression-specific controls, sample restrictions, event-study RHS terms, fixed effects, clustering choices, and other single-consumer specification bindings in local macros inside the do-file that consumes them, close to the estimation block; keep a one-use list explicit in the command when clearer. Put same-file event selectors, display order, reference position, and notes in locals as well. Fingerprinted macro names are evidence to classify their scope, not a reason to preserve private or single-consumer globals. Format long variable, outcome, estimate, or option lists as meaningfully grouped multiline blocks: use whitespace to align comparable entries, indent continuation lines, and keep short lists on one line. Never align or reflow quoted labels, paths, or other text where whitespace is data. Use /// only when the command continues on the immediately following physical line, indent continuation lines beyond the command start, and omit /// from the final physical line.",
-  "First decide whether the request needs code. Korean or English review, audit, inspection, assessment, diagnosis, analysis, explanation, and explicit no-change requests are review_only and load no writable code; caller checkpoints cannot override that write boundary. A separate unnegated write clause authorizes only its stated mutation scope. If code is needed, classify its state-transition footprint and resolve only that bounded footprint using bilingual aliases, exact command anchors, input/output state, and target input signature. Search the labeled dictionary first for substantive reusable transitions. Preserve the ordinary template-first path: when a genuinely close complete block exists, select one variant and change only permitted bindings. When no suitable block exists or the selected block proves wrong under inspection, lint, runtime, or output evidence, enter general-rule fallback, inject the search-ranked nearest inspected candidate only as a nonbinding hint, write the narrow transition, and lint it immediately. Ask the user only when a substantive research choice remains unresolved.",
+  "First decide whether the request needs code. Korean or English review, audit, inspection, assessment, diagnosis, analysis, explanation, and explicit no-change requests are review_only and load no writable code; caller checkpoints cannot override that write boundary. A separate unnegated write clause authorizes only its stated mutation scope. If code is needed, classify its state-transition footprint and resolve only that bounded footprint using bilingual aliases, exact command anchors, input/output state, and target input signature. Call resolve_transition_evidence first. Within the independent research-usage layer, preserve the ordinary template-first path: follow guide+usage_template only for one exact audited usage variant with no known profile contradiction. Otherwise follow guide+fallback or guide_informed_fallback, and stop at selection_required whenever a substantive choice or material variant remains unresolved. Guide cards never compete with usage examples and never authorize template-mode reuse.",
   "For every non-template substantive transition, apply the general-rule fallback reference. Inject the highest-ranked writable candidate, or the highest-ranked reference candidate when none is writable, as a nonbinding hint. State explicitly that nearest-by-ranking may still be absolutely distant or incompatible. Record nearest_template_hint=<label_id|none>, fallback_trigger=<no_suitable_template|wrong_selection>, and hint_used=<borrowed command, ordering, state handling, or output idiom|none>. Do not require a claim that fallback code is better. It implements only an already-declared atomic contract and never supplies an unresolved sample, estimand, merge key, treatment rule, model, event axis, sheet group, or output placement. Keep one readable final path and shallow indentation. Prefer one active loop; permit exactly two active loop levels only when both axes are plain named lists or numeric ranges, the same mechanical body is repeated, the reduction is substantial, and sample, estimand, specification, grouping, and output placement remain visible at the loop site. Loop depth three is always blocked. Do not use a registry, dispatcher, positional job string, one-use program, unused interface, dependency probe, manual event dummy, or coefficient reconstruction.",
   "Iteration is allowed; judge the final frozen source, not the number of drafts. Revise only from concrete lint, runtime, or output evidence. For a binding-only failure inside declared minimal edits, delete the affected span and cleanly re-render it from the same selected block. If frame, algorithm, control flow, interface, or output contract must change, discard that span and reselect a complete variant. Never stack patches, wrappers, compatibility branches, fallback residue, or dead helpers on already modified generated code. Before freezing, leave exactly one final implementation path per atomic transition.",
   "Inspect the project structure read-only before planning any write. Preserve a compatible existing layout; use the default-style tree only for an explicitly new first build.",
   "Audit scope defaults to scope.mode reachable from scope.entrypoints or the selected top-level master. Only active files are fully linted and contribute to blocking status; inactive files are listed as informational discoveries until scope.mode all or project-relative scope.include_paths promotes them. Multiple plausible top-level masters produce a review finding asking for explicit scope.entrypoints.",
   "Before creating or modifying any project file or folder, show the exact folders to create, files to create, modify, move, rename, delete, or overwrite, and the entrypoint and execution command, then wait for explicit user approval.",
   "For an overhaul, present a display-ready proposed file tree, every new persistent analysis variable with its reader-facing description, and whether the root README.md will be created or amended. Put the approved tree and variable dictionary in that root README. If there are no new persistent variables, say so explicitly. Do not write until the user approves this preview, and show a revised preview if the plan changes.",
-  "For each substantive reusable state transition call search_labeled_checkpoints before broader corpus search. Harmless setup, declared input loading, inspection, assertion, naming, logging, and other direct primitives do not need a checkpoint, ledger row, or template. Compare the target with a candidate's six-field template_input_profile before copying; a known contradiction blocks template-mode reuse but may leave that search-ranked candidate available to fallback only as a nonbinding hint. A variant_group contains alternatives for the same transition, while distinct sequential groups may be composed in order. Treat preparation, validation, estimation, and post-estimation blocks as equal sources of useful patterns rather than mandatory coverage quotas.",
+  "For each substantive reusable state transition call resolve_transition_evidence before compatibility searches. Harmless setup, declared input loading, inspection, assertion, naming, logging, and other direct primitives do not need a checkpoint, ledger row, or template. Compare the target with a usage example's six-field template_input_profile before copying; a known contradiction blocks usage auto-selection but does not suppress an independently matching guide-mechanics card. A variant_group contains alternatives for the same transition, while distinct sequential groups may be composed only for an explicitly inseparable bounded producer-consumer handoff. Treat preparation, validation, estimation, and post-estimation blocks as equal sources of useful patterns rather than mandatory coverage quotas.",
   "Keep selected label, source hash, target span, declared selection conditions, and edited-field evidence in the session or audit result. Do not create a manifest folder or template-reuse manifest in the research project by default.",
   "Write reader-facing do-file comments only for project-local state transitions: input meaning, a new variable formula or definition, a retained merge or filter rule, the active sample or specification, and output purpose. Never put journal or repository names, template or source names, internal label/checkpoint/substep IDs, source paths, or provenance markers in generated comments. Keep those details in session or audit evidence, unless a named source is itself part of the project's data-acquisition contract.",
   "For schema 2.0, decompose broad headwords into atomic substeps only when a persistent template-reuse audit is requested. Merge retained-state handling, panel-key declaration, CPI transformation, dataset finalization, age/entity collapse, e(sample) mean, estimation, ster save, ster load, Excel assembly, and figure assembly remain separately reviewable. Use one genuinely close template with permitted bindings when available; otherwise use general-rule fallback with the rank-relative nearest candidate only as a nonbinding hint. A matching template that was not used is an advisory unless the caller explicitly enables strict template-reuse enforcement. Native audit rows keep project-local target evidence, fallback trigger, and hint used; template availability alone is not a blocker.",
@@ -133,12 +134,12 @@ const INSTRUCTIONS = [
   "When the caller has already approved one master log path and the exact ordered do-file paths, write only log using, flat direct do calls in that exact order, log close, and optionally the exact approved completion display. Immediately above every individual do call, write one Korean comment sentence that states the called do-file's project-local role. This prompt-only shell uses no template, ledger, provenance or fallback marker. Do not infer stages, paths, or order; do not add loops, programs, registries, dispatchers, conditionals, positional strings, dependency probes, captured stage-failure handling, or alternate setup. Every approved do target must already exist. Lint a newly created master with lint_do_file role master and authoring_state new; modified master omissions are warnings and existing audits are not retroactively blocked. Existing master labels remain reference-only.",
   "Prefer explicit sequential blocks or one flat loop. Use a two-level loop only for plainly declared repeated axes when it materially removes an otherwise duplicated mechanical block without hiding a research choice. Block active loop depth three and positional strings that encode outcome, sample, specification, or graph jobs for later word parsing. Report braced structural depth four as a complexity warning on its separate scale; a longer directly readable block remains preferable to hidden research-spec dispatch.",
   "After Stata code creation or revision, apply report_policy required, optional, or disabled. Required records every selected template and general_rule_fallback in project-root report.md and passes authored_spans so confidently substantive changed lines are coverage-checked. Optional permits omission. Disabled, including an explicit no-report request, forbids creating or modifying report.md. require_report true is only a compatibility alias for required. Harmless primitives and untouched legacy code do not gain provenance requirements.",
-  "For a new project call workflow_blueprint with project_mode new, then search_labeled_checkpoints and search_approved_patterns for every relevant stage, lint each authored do-file, apply the selected report_policy, and audit the active reachable workflow.",
+  "For a new project call workflow_blueprint with project_mode new, then resolve_transition_evidence for every substantive atomic transition; use compatibility searches only when the resolver routes to fallback or diagnosis. Lint each authored do-file, apply the selected report_policy, and audit the active reachable workflow.",
   "When execution verification is requested, run the approved entrypoint from a clean generated-results state and call research_output_check with the exact contracted output patterns and counts, the actual main log, the selected report_policy, and the approved README tree and variable documentation when applicable. Keep runtime success, static audit, and substantive validity separate. For every persistent variable preserve its reader description, raw source unit plus exact formula or threshold, output unit and observation level, and a nearby label variable statement; never translate a numeric threshold into another unit unless the conversion is explicit and correct.",
   "For blind workflow validation, treat the natural-language contract as the only task input. Never expose the source do-file, earlier outputs, or example code as an answer key; use workflow_reproduction_check for semantic stage, lineage, and deliverable checks.",
   "For a source-isolated blind trial, use only the staged inputs, contract, installed plugin local data/manual/archive, and exposed stataResearchGuard calls. Do not use Browser, web search, external URLs, shell retrieval, external connectors, prior generated code, or evaluator answer assets. Source isolation protects evidence boundaries; it does not require template-only code. After local template and manual checks, harmless primitives and narrow fallback implementations are allowed from the declared contract, with the rank-relative nearest inspected candidate injected only as a nonbinding hint and never presumed compatible. Stop only when a substantive research choice is unresolved, required input or execution capability is unavailable, or a hard safety/output contract would be violated.",
   "Native Stata python script with one declared .py path and optional args() is an explicit embedded-script integration, not a shell, winexec, bang, or inline Python process escape. Do not block it solely as process_escape, but verify its runtime exit evidence and concrete output effects separately. Continue to block arbitrary shell, winexec, Unix, bang, Java, Rscript, and inline Python escapes.",
-  "For grouped summary statistics used by both a table and a figure, search descriptives.summary_dataset, exports.descriptive_excel_sheet, and figures.descriptive_bar first. Compose only source-backed deposited-paper atoms whose producer-consumer states connect, build one named canonical summary dataset with the complete declared statistic set, and make both consumers read it. A one-off summarize or tabstat used only for inspection is harmless; a saved summary dataset, paper workbook, or figure is substantive. If mixed statistics, formatting, or target semantics exceed the source spans, use the closest summary atom as a sequencing scaffold and record the narrow fallback comparison.",
+  "For grouped summary statistics used by both a table and a figure, resolve the producer, Excel consumer, and figure consumer as separate atomic transitions unless their exact producer-consumer state is declared inseparable and bounded. Compose only source-backed deposited-paper usage atoms whose producer-consumer states connect, while consulting guide mechanics independently for each chosen command. Build one named canonical summary dataset with the complete declared statistic set and make both consumers read it. A one-off summarize or tabstat used only for inspection is harmless; a saved summary dataset, paper workbook, or figure is substantive.",
   "Never manually generate treat_y2015, _y2015, or similar treatment-by-year event variables. For a conventional event-study RHS with a declared window, omit the design reference and list every nonreference level as a native level-specific no-base term such as 2015bn.time#1.treatment 2016bn.time#1.treatment; do not use plain i(<levels>), the invalid ibn(<levels>) form, or ## there. This does not prohibit a justified year##c.control heterogeneous slope inside absorb(). Runtime verification must find every declared nonreference level under the exact raw e(b) token Stata returns, including a retained first-term bn marker or an estimator-created o marker. Treat outreg2 output as the raw source of record and preserve native coefficient, standard-error, omitted/base, and note rows; if outreg2 emits 2024o.year#1o.treat2019, keep that exact row. Final Excel may only arrange placement and add adjusted R-squared plus dependent-variable mean. Event-study selectors must target native coefficient names.",
   "When an existing Dropbox or replication output is the declared baseline, compare every contracted outcome, sample, and specification for coefficient, standard error, and base/omitted status. A representative regression is only a smoke test. Keep the baseline immutable and write comparison evidence separately.",
   "For an existing project audit first.",
@@ -174,6 +175,15 @@ const OFFICIAL_WEB_SOURCES = loadJson("official_web_sources.json");
 const WORKFLOWS = loadJson("workflow_examples.json");
 const PACKAGES = loadJson("reference_packages.json");
 const LABELED_CHECKPOINTS = loadJsonl("labeled_checkpoints.jsonl");
+const GUIDE_MECHANICS_CARDS = fs.existsSync(path.join(DATA, "guide_mechanics_cards.jsonl"))
+  ? loadJsonl("guide_mechanics_cards.jsonl")
+  : [];
+const GUIDE_MECHANICS_LABEL_IDS = new Set(GUIDE_MECHANICS_CARDS
+  .filter((row) => row.provenance?.promotion_audit)
+  .map((row) => row.label_id));
+const RESEARCH_USAGE_EXAMPLES = fs.existsSync(path.join(DATA, "research_usage_examples.jsonl"))
+  ? loadJsonl("research_usage_examples.jsonl")
+  : [];
 const WORKFLOW_DICTIONARY = loadJson("workflow_block_dictionary.json");
 const PACKAGE_COVERAGE = fs.existsSync(path.join(DATA, "package_checkpoint_coverage.json"))
   ? loadJson("package_checkpoint_coverage.json")
@@ -1860,6 +1870,10 @@ function searchLabeledCheckpoints(args) {
   const includeDropped = Boolean(args.include_dropped);
   const limit = Math.min(Math.max(Number(args.limit) || 8, 1), 20);
   const eligibleRows = LABELED_CHECKPOINTS.filter((row) => {
+    // Guide mechanics are resolved by resolve_transition_evidence as an
+    // always-present, non-competing companion layer.  They must never enter
+    // the legacy template score or displace deposited/reusable examples.
+    if (GUIDE_MECHANICS_LABEL_IDS.has(row.label_id)) return false;
     if (!includeDropped && row.decision === "drop") return false;
     if (!args.include_project_specific && row.reuse_scope === "project_specific" && !row.explicit_canonical_exception) return false;
     if (args.checkpoint && row.checkpoint !== args.checkpoint) return false;
@@ -2398,6 +2412,311 @@ function compareTemplateInputProfile(templateProfile, targetProfile) {
   };
 }
 
+const GUIDE_CODE_MAX_LINES = 12;
+const GUIDE_CODE_MAX_CHARS = 600;
+const MATERIAL_ALTERNATIVE_LIMIT = 2;
+
+function normalizeEvidenceCommand(value) {
+  return canonicalReferenceCommand(String(value || "").trim().toLowerCase());
+}
+
+function normalizedCardCommands(card) {
+  return unique((card.command_anchors || []).map(normalizeEvidenceCommand).filter(Boolean));
+}
+
+function normalizeStateSignals(values) {
+  return unique((Array.isArray(values) ? values : [])
+    .map((value) => String(value || "").trim().toLowerCase())
+    .filter(Boolean));
+}
+
+function cardStateMatches(card, transition) {
+  const signature = card.state_signature || {};
+  const current = normalizeStateSignals(transition.current_state_signals);
+  const target = normalizeStateSignals(transition.target_state_signals);
+  const availableCurrent = new Set([
+    ...normalizeStateSignals(signature.requires),
+    ...normalizeStateSignals(signature.observable_signals),
+  ]);
+  const availableTarget = new Set(normalizeStateSignals(signature.produces));
+  return current.every((signal) => availableCurrent.has(signal))
+    && target.every((signal) => availableTarget.has(signal));
+}
+
+function capGuideCode(value) {
+  const source = String(value || "");
+  const sourceLines = source.split(/\r?\n/);
+  let code = sourceLines.slice(0, GUIDE_CODE_MAX_LINES).join("\n");
+  let characterTruncated = false;
+  if (code.length > GUIDE_CODE_MAX_CHARS) {
+    code = code.slice(0, GUIDE_CODE_MAX_CHARS);
+    characterTruncated = true;
+  }
+  return {
+    code,
+    source_line_count: sourceLines.length,
+    returned_line_count: code ? code.split("\n").length : 0,
+    returned_character_count: code.length,
+    truncated: sourceLines.length > GUIDE_CODE_MAX_LINES || characterTruncated,
+    cap: { max_lines: GUIDE_CODE_MAX_LINES, max_characters: GUIDE_CODE_MAX_CHARS },
+  };
+}
+
+function materialAlternativeMetadata(card) {
+  return {
+    layer_id: card.layer_id,
+    label_id: card.label_id,
+    checkpoint: card.checkpoint,
+    variant_group: card.variant_group,
+    variant_id: card.variant_id,
+    command_anchors: card.command_anchors || [],
+    authority_tier: card.authority_tier || null,
+    source_tier: card.source_tier || card.evidence_layer,
+    evidence_role: card.evidence_role || null,
+    contract_ids: card.contract_ids || [],
+    disposition: card.disposition || null,
+    code_available: card.code_available !== false && Boolean(card.code),
+    provenance: card.provenance || null,
+  };
+}
+
+function publicGuideCard(card) {
+  if (!card) return null;
+  const capped = capGuideCode(card.code);
+  return {
+    layer_id: card.layer_id,
+    label_id: card.label_id,
+    checkpoint: card.checkpoint,
+    variant_group: card.variant_group,
+    variant_id: card.variant_id,
+    authority_tier: card.authority_tier,
+    command_anchors: card.command_anchors || [],
+    state_signature: card.state_signature || {},
+    template_input_profile: card.template_input_profile || {},
+    code: capped.code,
+    context: {
+      source_line_count: capped.source_line_count,
+      returned_line_count: capped.returned_line_count,
+      returned_character_count: capped.returned_character_count,
+      truncated: capped.truncated,
+      cap: capped.cap,
+    },
+    auto_selectable: false,
+    research_decisions_supplied: false,
+    provenance: card.provenance || null,
+  };
+}
+
+function publicUsageExample(card, profileComparison) {
+  if (!card) return null;
+  return {
+    layer_id: card.layer_id,
+    label_id: card.label_id,
+    checkpoint: card.checkpoint,
+    variant_group: card.variant_group,
+    variant_id: card.variant_id,
+    command_anchors: card.command_anchors || [],
+    state_signature: card.state_signature || {},
+    template_input_profile: card.template_input_profile || {},
+    template_input_profile_comparison: profileComparison,
+    selection_conditions: card.selection_conditions || [],
+    minimal_edit_fields: card.minimal_edit_fields || [],
+    code: card.code || "",
+    auto_selectable: card.auto_selectable === true,
+    source_tier: card.source_tier,
+    provenance: card.provenance || null,
+  };
+}
+
+function filterEvidenceCards(cards, transition, options = {}) {
+  const requestedCommands = unique((transition.commands || []).map(normalizeEvidenceCommand).filter(Boolean));
+  const requestedContractIds = new Set((transition.contract_ids || []).map((value) => String(value).trim()).filter(Boolean));
+  const exactSupport = (card) => card.evidence_role === "exact_usage_support";
+  let rows = cards.slice();
+  if (transition.checkpoint) rows = rows.filter((card) => card.checkpoint === transition.checkpoint || exactSupport(card));
+  else if (transition.stage) rows = rows.filter((card) => card.stage === transition.stage || exactSupport(card));
+  if (transition.unit_kind) rows = rows.filter((card) => card.unit_kind === transition.unit_kind || exactSupport(card));
+  if (transition.variant_group) rows = rows.filter((card) => card.variant_group === transition.variant_group);
+  if (transition.variant_id) rows = rows.filter((card) => card.variant_id === transition.variant_id);
+  if (requestedContractIds.size) {
+    rows = rows.filter((card) => !exactSupport(card)
+      || (card.contract_ids || []).some((contractId) => requestedContractIds.has(contractId)));
+  }
+  if (requestedCommands.length) {
+    const fullyCovered = rows.filter((card) => {
+      const anchors = new Set(normalizedCardCommands(card));
+      return requestedCommands.every((command) => anchors.has(command));
+    });
+    if (fullyCovered.length || !options.allowBoundedPartialCommandMatch) rows = fullyCovered;
+    else rows = rows.filter((card) => normalizedCardCommands(card).includes(requestedCommands[0]));
+  }
+  if (transition.current_state_signals?.length || transition.target_state_signals?.length) {
+    rows = rows.filter((card) => cardStateMatches(card, transition));
+  }
+  return rows.sort((left, right) => String(left.label_id).localeCompare(String(right.label_id)));
+}
+
+function validBoundedProducerConsumerException(transition) {
+  const composition = transition.composition || {};
+  const commands = unique((transition.commands || []).map(normalizeEvidenceCommand).filter(Boolean));
+  return composition.kind === "inseparable_producer_consumer"
+    && commands.length === 2
+    && typeof composition.producer_state === "string"
+    && composition.producer_state.trim().length > 0
+    && composition.producer_state.trim() === String(composition.consumer_requires || "").trim();
+}
+
+function assessTransitionAtomicity(transition, evidenceCards) {
+  const commands = unique((transition.commands || []).map(normalizeEvidenceCommand).filter(Boolean));
+  if (commands.length <= 1) return { status: "atomic", commands };
+  const jointlyCovered = evidenceCards.some((card) => {
+    const anchors = new Set(normalizedCardCommands(card));
+    return commands.every((command) => anchors.has(command));
+  });
+  if (jointlyCovered) return { status: "atomic_joint_command_contract", commands };
+  if (validBoundedProducerConsumerException(transition)) {
+    return {
+      status: "bounded_inseparable_producer_consumer",
+      commands,
+      producer_state: transition.composition.producer_state,
+    };
+  }
+  return {
+    status: "split_required",
+    commands,
+    reason: "No single audited atomic evidence card covers every requested command, and no exact bounded producer-consumer handoff was declared.",
+  };
+}
+
+function unresolvedSubstantiveChoices(args) {
+  const choices = args.substantive_choices || {};
+  const unresolved = unique((choices.unresolved || []).map((value) => String(value).trim()).filter(Boolean));
+  if (choices.status === "unresolved" && !unresolved.length) unresolved.push("unspecified substantive choice");
+  return unresolved;
+}
+
+function resolveTransitionEvidence(args, sources = {}) {
+  const transition = args.transition || {};
+  const guideCards = sources.guideCards || GUIDE_MECHANICS_CARDS;
+  const usageCards = sources.usageCards || RESEARCH_USAGE_EXAMPLES;
+  const atomicity = assessTransitionAtomicity(transition, [...guideCards, ...usageCards]);
+  const baseTransition = {
+    checkpoint: transition.checkpoint || null,
+    stage: transition.stage || null,
+    unit_kind: transition.unit_kind || null,
+    variant_group: transition.variant_group || null,
+    variant_id: transition.variant_id || null,
+    task: transition.task || "",
+    commands: atomicity.commands,
+    contract_ids: unique((transition.contract_ids || []).map((value) => String(value).trim()).filter(Boolean)),
+    current_state_signals: normalizeStateSignals(transition.current_state_signals),
+    target_state_signals: normalizeStateSignals(transition.target_state_signals),
+    atomicity: atomicity.status,
+  };
+  if (atomicity.status === "split_required") {
+    return {
+      transition: baseTransition,
+      guide_layer: { status: "not_evaluated_until_split", primary_card: null, material_alternatives: [] },
+      usage_layer: { status: "not_evaluated_until_split", example: null, material_alternatives: [] },
+      implementation_route: { mode: "split_required", reason: atomicity.reason, auto_select_allowed: false },
+      safety: {
+        guide_auto_selectable_count: 0,
+        guide_and_usage_scores_combined: false,
+        maximum_guide_cards: 1,
+        maximum_material_alternatives: MATERIAL_ALTERNATIVE_LIMIT,
+        maximum_usage_examples: 1,
+        bounded_composition: false,
+      },
+    };
+  }
+
+  const allowBoundedPartialCommandMatch = atomicity.status === "bounded_inseparable_producer_consumer";
+  const guides = filterEvidenceCards(guideCards, transition, { allowBoundedPartialCommandMatch });
+  const usagesBeforeProfile = filterEvidenceCards(usageCards, transition, { allowBoundedPartialCommandMatch });
+  const targetProfile = args.target_input_profile || null;
+  const usageComparisons = usagesBeforeProfile.map((card) => ({
+    card,
+    comparison: compareTemplateInputProfile(card.template_input_profile, targetProfile),
+  }));
+  const profileMismatches = usageComparisons.filter((item) => item.comparison.status === "incompatible");
+  const compatibleUsages = usageComparisons.filter((item) => item.comparison.status !== "incompatible");
+  const autoUsages = compatibleUsages.filter((item) => item.card.auto_selectable === true
+    && item.card.decision !== "drop"
+    && item.card.provenance?.audit_gate?.passed === true);
+  const unresolved = unresolvedSubstantiveChoices(args);
+  const materialVariants = unique(autoUsages.map((item) => `${item.card.variant_group || ""}:${item.card.variant_id || item.card.label_id}`));
+  const multipleVariants = materialVariants.length > 1 && !transition.variant_id;
+  const primaryGuide = guides[0] || null;
+  const guideAlternatives = guides.slice(1, 1 + MATERIAL_ALTERNATIVE_LIMIT).map(materialAlternativeMetadata);
+
+  let routeMode;
+  let routeReason;
+  let selectedUsage = null;
+  if (unresolved.length) {
+    routeMode = "selection_required";
+    routeReason = `Unresolved substantive choice(s): ${unresolved.join(", ")}`;
+  } else if (multipleVariants) {
+    routeMode = "selection_required";
+    routeReason = "Multiple materially distinct audited usage variants remain after deterministic filtering.";
+  } else if (autoUsages.length === 1) {
+    routeMode = "guide+usage_template";
+    routeReason = "Exactly one audited research-usage example matches the declared variant, command, state, and profile gates.";
+    selectedUsage = autoUsages[0];
+  } else if (usagesBeforeProfile.length || compatibleUsages.length) {
+    routeMode = "guide+fallback";
+    routeReason = profileMismatches.length
+      ? "Known target-profile contradiction blocks research-usage auto-selection."
+      : "Only reference, non-auto-selectable, or non-unique research usage remains.";
+  } else {
+    routeMode = "guide_informed_fallback";
+    routeReason = "No research-usage example matches the declared atomic transition.";
+  }
+
+  return {
+    transition: baseTransition,
+    guide_layer: {
+      status: primaryGuide ? "provided" : "not_available",
+      primary_card: publicGuideCard(primaryGuide),
+      material_alternatives: guideAlternatives,
+      selection_rule: "Guide mechanics are selected independently by exact transition fields and are never part of usage ranking or auto-selection.",
+    },
+    usage_layer: {
+      status: selectedUsage ? "audited_exact_match"
+        : profileMismatches.length ? "profile_mismatch"
+          : usagesBeforeProfile.some((item) => item.evidence_role === "exact_usage_support") ? "exact_usage_support_only"
+            : usagesBeforeProfile.length ? "reference_or_ambiguous" : "not_available",
+      example: selectedUsage ? publicUsageExample(selectedUsage.card, selectedUsage.comparison) : null,
+      material_alternatives: compatibleUsages
+        .filter((item) => !selectedUsage || item.card.layer_id !== selectedUsage.card.layer_id)
+        .slice(0, MATERIAL_ALTERNATIVE_LIMIT)
+        .map((item) => materialAlternativeMetadata(item.card)),
+      profile_mismatches: profileMismatches.slice(0, MATERIAL_ALTERNATIVE_LIMIT).map((item) => ({
+        ...materialAlternativeMetadata(item.card),
+        contradictions: item.comparison.contradictions,
+      })),
+      selection_rule: "Research usage is filtered independently. A known profile contradiction, unresolved substantive choice, or multiple material variants prevents auto-selection.",
+    },
+    implementation_route: {
+      mode: routeMode,
+      reason: routeReason,
+      auto_select_allowed: routeMode === "guide+usage_template",
+      unresolved_substantive_choices: unresolved,
+    },
+    safety: {
+      guide_auto_selectable_count: guides.filter((card) => card.auto_selectable === true).length,
+      guide_exists_but_omitted: guides.length > 0 && !primaryGuide,
+      guide_and_usage_scores_combined: false,
+      deterministic_filters: ["variant", "command", "state", "profile"],
+      maximum_guide_cards: 1,
+      maximum_material_alternatives: MATERIAL_ALTERNATIVE_LIMIT,
+      maximum_usage_examples: 1,
+      guide_context_cap: { max_lines: GUIDE_CODE_MAX_LINES, max_characters: GUIDE_CODE_MAX_CHARS },
+      bounded_composition: allowBoundedPartialCommandMatch,
+      research_decisions_from_guide: false,
+    },
+  };
+}
+
 function scanProjectForDictionary(root, scopeInput = {}) {
   const includePaths = (scopeInput.include_paths || []).map((value) => normalizeRelativePath(value, "scope.include_paths").replace(/\/$/, ""));
   const excludePaths = (scopeInput.exclude_paths || []).map((value) => normalizeRelativePath(value, "scope.exclude_paths").replace(/\/$/, ""));
@@ -2764,12 +3083,14 @@ const HEADWORD_SEQUENCE = [
   "workflow_orchestration.master",
   "input_load.single_source",
   "input_load.combine",
+  "preparation.transform",
   "clean.id_normalize",
   "clean.derive_variables",
   "treatment.arm_mapping",
   "outlier.winsorize",
   "integrity.audit",
   "merge_reshape.integration",
+  "sample.restriction",
   "sample.trade_share_threshold",
   "sample.arm_response_eligibility",
   "feature.aggregate_household",
@@ -2785,8 +3106,10 @@ const HEADWORD_SEQUENCE = [
   "postest.sample_flag",
   "scale.standardize_esample",
   "descriptives.sample_mean",
+  "descriptives.command_result",
   "postest.persist_estimate",
   "postest.margins",
+  "postest.command_result",
   "postest.export_sample_keys",
   "postest.estimator_comparison_unsafe",
   "robustness.placebo",
@@ -2800,13 +3123,16 @@ const HEADWORD_SEQUENCE = [
   "exports.descriptive_excel_sheet",
   "exports.estimate_text_table",
   "exports.matrix_excel",
+  "exports.dataset_file",
   "figures.descriptive_bar",
   "figures.descriptive_scatter",
+  "figures.descriptive_graph",
   "figures.event_study",
   "figures.marginsplot",
   "figures.coefplot_named_estimates",
   "figures.named_graph_combine",
   "figures.export_pdf",
+  "tables.collection_result",
   "final_excel_assembly",
   "cleanup",
 ];
@@ -3587,7 +3913,8 @@ function planDictionaryRepairs(args) {
   const dictionaryUnmapped = retrievalPlan.code_required && !headwords.length;
 
   const interventions = headwords.map((checkpoint) => {
-    const checkpointLabels = LABELED_CHECKPOINTS.filter((row) => row.checkpoint === checkpoint);
+    const checkpointLabels = LABELED_CHECKPOINTS.filter((row) =>
+      row.checkpoint === checkpoint && !GUIDE_MECHANICS_LABEL_IDS.has(row.label_id));
     const checkpointCommandAnchors = exactCommandAnchors.filter((anchor) => DYNAMIC_COMMAND_CHECKPOINTS.get(normalizedCommandAnchor(anchor))?.has(checkpoint));
     const finalExcelFlow = checkpoint === "final_excel_assembly"
       ? buildOutputFlowProfile(observed, args.available_state || {})
@@ -5093,6 +5420,81 @@ function workflowReproductionCheck(args) {
 
 const TOOLS = [
   {
+    name: "resolve_transition_evidence",
+    description: "Resolve one substantive atomic Stata transition through two non-competing evidence layers. It always returns one matching guide-mechanics card when available, capped at 12 lines and 600 characters, but guide code is never auto-selectable and never supplies research decisions. Separately, it may return at most one audited deposited/independent research-usage example. Routes are guide+usage_template, guide+fallback, guide_informed_fallback, selection_required, or split_required. Known target-profile contradictions block usage auto-selection; unrelated multi-command requests must be split except for one explicitly declared bounded inseparable producer-consumer handoff.",
+    inputSchema: {
+      type: "object",
+      additionalProperties: false,
+      required: ["transition"],
+      properties: {
+        transition: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            checkpoint: { type: "string", enum: CHECKPOINTS },
+            stage: { type: "string", enum: STAGES },
+            unit_kind: { type: "string", enum: ["setup", "orchestration", "preparation", "validation", "estimation", "post_estimation", "post_estimation_export", "cleanup"] },
+            variant_group: { type: "string" },
+            variant_id: { type: "string" },
+            task: { type: "string" },
+            commands: { type: "array", minItems: 1, maxItems: 2, uniqueItems: true, items: { type: "string", minLength: 1 } },
+            contract_ids: { type: "array", maxItems: 20, uniqueItems: true, items: { type: "string", minLength: 1 } },
+            current_state_signals: { type: "array", maxItems: 20, uniqueItems: true, items: { type: "string", minLength: 1 } },
+            target_state_signals: { type: "array", maxItems: 20, uniqueItems: true, items: { type: "string", minLength: 1 } },
+            composition: {
+              type: "object",
+              additionalProperties: false,
+              required: ["kind", "producer_state", "consumer_requires"],
+              properties: {
+                kind: { type: "string", enum: ["inseparable_producer_consumer"] },
+                producer_state: { type: "string", minLength: 1 },
+                consumer_requires: { type: "string", minLength: 1 },
+              },
+            },
+          },
+          anyOf: [
+            { required: ["checkpoint"] },
+            { required: ["variant_id"] },
+            { required: ["commands"] },
+          ],
+        },
+        target_input_profile: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            data_structure: { type: "string" },
+            record_unit: { type: "string" },
+            required_keys: { type: "array", uniqueItems: true, items: { type: "string" } },
+            source_basis: { type: "string" },
+            time_structure: { type: "string" },
+            variable_characteristics: { type: "array", uniqueItems: true, items: { type: "string" } },
+          },
+        },
+        substantive_choices: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            status: { type: "string", enum: ["resolved", "unresolved"] },
+            unresolved: { type: "array", maxItems: 20, uniqueItems: true, items: { type: "string", minLength: 1 } },
+          },
+        },
+      },
+    },
+    outputSchema: {
+      type: "object",
+      additionalProperties: false,
+      required: ["transition", "guide_layer", "usage_layer", "implementation_route", "safety"],
+      properties: {
+        transition: { type: "object", additionalProperties: true },
+        guide_layer: { type: "object", additionalProperties: true },
+        usage_layer: { type: "object", additionalProperties: true },
+        implementation_route: { type: "object", additionalProperties: true },
+        safety: { type: "object", additionalProperties: true },
+      },
+    },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  {
     name: "search_stata_manual",
     description: "Search page-level StataCorp official manuals first, or explicitly requested community maintainer references. Returns authority, URL, page, hashes, and excerpts; it never declares code passed.",
     inputSchema: { type: "object", additionalProperties: false, properties: {
@@ -5446,6 +5848,7 @@ async function dispatch(method, params) {
     const name = params?.name;
     const args = params?.arguments || {};
     try {
+      if (name === "resolve_transition_evidence") return resolveTransitionEvidence(args);
       if (name === "search_stata_manual") return searchManual(args);
       if (name === "get_verified_stata_examples") return getVerifiedExamples(args);
       if (name === "search_approved_patterns") return searchApproved(args);
@@ -5478,23 +5881,36 @@ function send(value) {
   process.stdout.write(`${JSON.stringify(value)}\n`);
 }
 
-const input = readline.createInterface({ input: process.stdin, crlfDelay: Infinity });
-input.on("line", async (line) => {
-  if (!line.trim()) return;
-  let request;
-  try {
-    request = JSON.parse(line);
-  } catch (error) {
-    send({ jsonrpc: "2.0", id: null, error: { code: -32700, message: "Parse error" } });
-    return;
-  }
-  if (request.id === undefined) return;
-  try {
-    const result = await dispatch(request.method, request.params || {});
-    if (result?.__toolError) send({ jsonrpc: "2.0", id: request.id, result: fail(result.message) });
-    else if (request.method === "tools/call") send({ jsonrpc: "2.0", id: request.id, result: asText(result) });
-    else send({ jsonrpc: "2.0", id: request.id, result });
-  } catch (error) {
-    send({ jsonrpc: "2.0", id: request.id, error: { code: -32601, message: error.message } });
-  }
-});
+if (require.main === module) {
+  const input = readline.createInterface({ input: process.stdin, crlfDelay: Infinity });
+  input.on("line", async (line) => {
+    if (!line.trim()) return;
+    let request;
+    try {
+      request = JSON.parse(line);
+    } catch (error) {
+      send({ jsonrpc: "2.0", id: null, error: { code: -32700, message: "Parse error" } });
+      return;
+    }
+    if (request.id === undefined) return;
+    try {
+      const result = await dispatch(request.method, request.params || {});
+      if (result?.__toolError) send({ jsonrpc: "2.0", id: request.id, result: fail(result.message) });
+      else if (request.method === "tools/call") send({ jsonrpc: "2.0", id: request.id, result: asText(result) });
+      else send({ jsonrpc: "2.0", id: request.id, result });
+    } catch (error) {
+      send({ jsonrpc: "2.0", id: request.id, error: { code: -32601, message: error.message } });
+    }
+  });
+}
+
+module.exports = {
+  GUIDE_CODE_MAX_CHARS,
+  GUIDE_CODE_MAX_LINES,
+  MATERIAL_ALTERNATIVE_LIMIT,
+  assessTransitionAtomicity,
+  capGuideCode,
+  dispatch,
+  filterEvidenceCards,
+  resolveTransitionEvidence,
+};

@@ -1,6 +1,6 @@
 {
   "name": "stata-research-guard",
-  "version": "0.2.0+codex.20260825210135",
+  "version": "0.2.0+codex.20260825225433",
   "description": "Compose Stata workflows from a human-labeled dictionary of curated research-practice code blocks, then lint and audit them.",
   "author": {
     "name": "song7"

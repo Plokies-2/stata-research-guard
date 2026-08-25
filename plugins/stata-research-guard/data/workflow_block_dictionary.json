@@ -29,6 +29,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 0,
       "reference_only_count": 3,
+      "guide_mechanics_count": 0,
       "aliases": [
         "전처리",
         "recode",
@@ -1541,6 +1542,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 0,
       "reference_only_count": 2,
+      "guide_mechanics_count": 0,
       "aliases": [
         "ID 정리",
         "identifier normalization",
@@ -1983,6 +1985,7 @@
       "maturity": "prototype",
       "auto_selectable_count": 0,
       "reference_only_count": 1,
+      "guide_mechanics_count": 0,
       "aliases": [
         "cleanup",
         "임시파일 정리",
@@ -3289,6 +3292,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 1,
       "reference_only_count": 3,
+      "guide_mechanics_count": 0,
       "aliases": [
         "분석자료 저장",
         "final dataset",
@@ -4871,6 +4875,58 @@
       ]
     },
     {
+      "headword": "descriptives.command_result",
+      "name_ko": "기초통계 명령 결과",
+      "name_en": "Descriptive command result",
+      "purpose_ko": "선언한 변수·집단·가중치에 대한 상관·분위수·집단 요약 결과를 만든다.",
+      "maturity": "guide_only",
+      "auto_selectable_count": 0,
+      "reference_only_count": 0,
+      "guide_mechanics_count": 11,
+      "aliases": [
+        "correlation",
+        "pwcorr",
+        "quantiles",
+        "group summary",
+        "기초통계 결과"
+      ],
+      "unit_kind": "preparation_validation",
+      "input_contract": [
+        "fixed analysis sample",
+        "declared variables, groups, weights, and statistics"
+      ],
+      "output_contract": [
+        "one active or materialized descriptive result with declared statistics only"
+      ],
+      "common_commands": [],
+      "retrieval_features": [
+        "preparation_validation",
+        "fixed analysis sample",
+        "declared variables, groups, weights, and statistics",
+        "one active or materialized descriptive result with declared statistics only",
+        "correlation",
+        "pwcorr",
+        "quantiles",
+        "group summary",
+        "기초통계 결과"
+      ],
+      "composition": {
+        "can_follow": [
+          "sample.restriction",
+          "dataset.finalize_keep_label_save",
+          "preparation.transform"
+        ],
+        "can_precede": [
+          "exports.descriptive_excel_sheet",
+          "figures.descriptive_graph"
+        ],
+        "incompatible_with": [
+          "undeclared statistic, weight, group, or observation unit"
+        ]
+      },
+      "variants": []
+    },
+    {
       "headword": "descriptives.entity_collapse",
       "name_ko": "개체단위 기초통계 집계",
       "name_en": "Entity-level descriptive collapse",
@@ -4878,6 +4934,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 3,
       "reference_only_count": 0,
+      "guide_mechanics_count": 6,
       "aliases": [
         "collapse",
         "개체 단위 집계",
@@ -5739,6 +5796,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 4,
       "reference_only_count": 0,
+      "guide_mechanics_count": 4,
       "aliases": [
         "estpost summarize",
         "estpost tabstat",
@@ -6498,6 +6556,7 @@
       "maturity": "prototype",
       "auto_selectable_count": 1,
       "reference_only_count": 0,
+      "guide_mechanics_count": 0,
       "aliases": [
         "sample flow",
         "sample-flow dataset",
@@ -6755,6 +6814,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 1,
       "reference_only_count": 2,
+      "guide_mechanics_count": 0,
       "aliases": [
         "종속변수 평균",
         "e(sample)",
@@ -7407,6 +7467,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 3,
       "reference_only_count": 1,
+      "guide_mechanics_count": 4,
       "aliases": [
         "summary statistics",
         "descriptive statistics",
@@ -8485,6 +8546,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 8,
       "reference_only_count": 2,
+      "guide_mechanics_count": 73,
       "aliases": [
         "회귀",
         "OLS",
@@ -10633,6 +10695,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 8,
       "reference_only_count": 2,
+      "guide_mechanics_count": 0,
       "aliases": [
         "staggered DID",
         "jwdid",
@@ -13212,6 +13275,56 @@
       ]
     },
     {
+      "headword": "exports.dataset_file",
+      "name_ko": "자료 파일 내보내기",
+      "name_en": "Dataset-file export",
+      "purpose_ko": "확정된 자료 상태를 선언한 delimited 또는 Excel 파일 계약으로 내보낸다.",
+      "maturity": "guide_only",
+      "auto_selectable_count": 0,
+      "reference_only_count": 0,
+      "guide_mechanics_count": 6,
+      "aliases": [
+        "export delimited",
+        "export excel",
+        "dataset export",
+        "자료 파일 내보내기"
+      ],
+      "unit_kind": "post_estimation_export",
+      "input_contract": [
+        "active finalized dataset",
+        "declared variable schema, destination, and overwrite role"
+      ],
+      "output_contract": [
+        "one declared external data file with auditable row and column schema"
+      ],
+      "common_commands": [],
+      "retrieval_features": [
+        "post_estimation_export",
+        "active finalized dataset",
+        "declared variable schema, destination, and overwrite role",
+        "one declared external data file with auditable row and column schema",
+        "export delimited",
+        "export excel",
+        "dataset export",
+        "자료 파일 내보내기"
+      ],
+      "composition": {
+        "can_follow": [
+          "dataset.finalize_keep_label_save",
+          "preparation.transform",
+          "descriptives.command_result"
+        ],
+        "can_precede": [
+          "cleanup"
+        ],
+        "incompatible_with": [
+          "undeclared overwrite",
+          "silent variable or observation filtering"
+        ]
+      },
+      "variants": []
+    },
+    {
       "headword": "exports.descriptive_excel_sheet",
       "name_ko": "기초통계 Excel 시트",
       "name_en": "Descriptive-statistics Excel sheet",
@@ -13219,6 +13332,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 2,
       "reference_only_count": 0,
+      "guide_mechanics_count": 0,
       "aliases": [
         "descriptive Excel",
         "summary statistics workbook",
@@ -13858,6 +13972,7 @@
       "maturity": "prototype",
       "auto_selectable_count": 1,
       "reference_only_count": 0,
+      "guide_mechanics_count": 3,
       "aliases": [
         "esttab",
         "estout",
@@ -14093,6 +14208,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 2,
       "reference_only_count": 0,
+      "guide_mechanics_count": 2,
       "aliases": [
         "putexcel",
         "collect export",
@@ -14501,6 +14617,7 @@
       "maturity": "prototype",
       "auto_selectable_count": 1,
       "reference_only_count": 0,
+      "guide_mechanics_count": 0,
       "aliases": [
         "household aggregate",
         "가구별 합계",
@@ -14730,6 +14847,7 @@
       "maturity": "prototype",
       "auto_selectable_count": 0,
       "reference_only_count": 1,
+      "guide_mechanics_count": 0,
       "aliases": [
         "section exposure",
         "구역별 노출",
@@ -14980,6 +15098,7 @@
       "maturity": "prototype",
       "auto_selectable_count": 1,
       "reference_only_count": 0,
+      "guide_mechanics_count": 2,
       "aliases": [
         "coefplot",
         "stored estimates plot",
@@ -15276,6 +15395,7 @@
       "maturity": "prototype",
       "auto_selectable_count": 1,
       "reference_only_count": 0,
+      "guide_mechanics_count": 0,
       "aliases": [
         "graph bar",
         "bar chart",
@@ -15549,6 +15669,62 @@
       ]
     },
     {
+      "headword": "figures.descriptive_graph",
+      "name_ko": "일반 기초통계 그림",
+      "name_en": "General descriptive graph",
+      "purpose_ko": "선언한 변수·표본·축 의미로 하나의 Stata graph를 만들고 활성 상태로 남긴다.",
+      "maturity": "guide_only",
+      "auto_selectable_count": 0,
+      "reference_only_count": 0,
+      "guide_mechanics_count": 11,
+      "aliases": [
+        "twoway",
+        "histogram",
+        "line",
+        "scatter",
+        "confidence band",
+        "descriptive graph"
+      ],
+      "unit_kind": "post_estimation_export",
+      "input_contract": [
+        "active data or compatible post-estimation result",
+        "declared plot variables, sample, geometry, and axis meaning"
+      ],
+      "output_contract": [
+        "one active reproducible Stata graph; PDF export remains separate"
+      ],
+      "common_commands": [],
+      "retrieval_features": [
+        "post_estimation_export",
+        "active data or compatible post-estimation result",
+        "declared plot variables, sample, geometry, and axis meaning",
+        "one active reproducible Stata graph; PDF export remains separate",
+        "twoway",
+        "histogram",
+        "line",
+        "scatter",
+        "confidence band",
+        "descriptive graph"
+      ],
+      "composition": {
+        "can_follow": [
+          "descriptives.command_result",
+          "postest.command_result",
+          "estimation.conventional"
+        ],
+        "can_precede": [
+          "figures.named_graph_combine",
+          "figures.export_pdf"
+        ],
+        "incompatible_with": [
+          "undeclared axis or sample choice",
+          "manual graph editing",
+          "bundled non-PDF final output"
+        ]
+      },
+      "variants": []
+    },
+    {
       "headword": "figures.descriptive_scatter",
       "name_ko": "기초통계 산점도",
       "name_en": "Descriptive scatter plot",
@@ -15556,6 +15732,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 1,
       "reference_only_count": 2,
+      "guide_mechanics_count": 0,
       "aliases": [
         "scatter plot",
         "기초통계 그림",
@@ -16229,6 +16406,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 4,
       "reference_only_count": 5,
+      "guide_mechanics_count": 6,
       "aliases": [
         "event study figure",
         "계수 그림",
@@ -18623,6 +18801,7 @@
       "maturity": "prototype",
       "auto_selectable_count": 1,
       "reference_only_count": 0,
+      "guide_mechanics_count": 4,
       "aliases": [
         "graph export",
         "graph export PDF",
@@ -18862,6 +19041,7 @@
       "maturity": "prototype",
       "auto_selectable_count": 1,
       "reference_only_count": 0,
+      "guide_mechanics_count": 0,
       "aliases": [
         "marginsplot",
         "margins plot",
@@ -19091,6 +19271,7 @@
       "maturity": "prototype",
       "auto_selectable_count": 1,
       "reference_only_count": 0,
+      "guide_mechanics_count": 0,
       "aliases": [
         "graph combine",
         "named graph combine",
@@ -19328,6 +19509,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 1,
       "reference_only_count": 2,
+      "guide_mechanics_count": 8,
       "aliases": [
         "최종 회귀표",
         "outreg2",
@@ -20571,6 +20753,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 1,
       "reference_only_count": 1,
+      "guide_mechanics_count": 3,
       "aliases": [
         "불러오기",
         "append",
@@ -21088,6 +21271,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 3,
       "reference_only_count": 1,
+      "guide_mechanics_count": 5,
       "aliases": [
         "single source import",
         "원자료 불러오기",
@@ -22218,6 +22402,7 @@
       "maturity": "negative_only",
       "auto_selectable_count": 0,
       "reference_only_count": 0,
+      "guide_mechanics_count": 0,
       "aliases": [
         "adjacent duplicate drop",
         "인접행 삭제",
@@ -22448,6 +22633,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 6,
       "reference_only_count": 3,
+      "guide_mechanics_count": 11,
       "aliases": [
         "키 검사",
         "고유키 검사",
@@ -25248,6 +25434,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 7,
       "reference_only_count": 3,
+      "guide_mechanics_count": 11,
       "aliases": [
         "merge",
         "reshape",
@@ -29118,6 +29305,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 1,
       "reference_only_count": 1,
+      "guide_mechanics_count": 5,
       "aliases": [
         "winsor",
         "winsorize",
@@ -29966,6 +30154,7 @@
       "maturity": "prototype",
       "auto_selectable_count": 1,
       "reference_only_count": 0,
+      "guide_mechanics_count": 0,
       "aliases": [
         "tsfill",
         "panel time grid",
@@ -30522,6 +30711,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 0,
       "reference_only_count": 2,
+      "guide_mechanics_count": 0,
       "aliases": [
         "wave stacking",
         "시점 쌓기",
@@ -31075,6 +31265,7 @@
       "maturity": "prototype",
       "auto_selectable_count": 0,
       "reference_only_count": 1,
+      "guide_mechanics_count": 0,
       "aliases": [
         "패널 구축",
         "cohort",
@@ -31524,6 +31715,7 @@
       "maturity": "prototype",
       "auto_selectable_count": 0,
       "reference_only_count": 1,
+      "guide_mechanics_count": 0,
       "aliases": [
         "turnover",
         "first event",
@@ -32148,6 +32340,59 @@
       ]
     },
     {
+      "headword": "postest.command_result",
+      "name_ko": "사후추정 명령 결과",
+      "name_en": "Post-estimation command result",
+      "purpose_ko": "호환되는 활성 추정치에서 예측·검정·집계 등 하나의 사후추정 상태 전이를 수행한다.",
+      "maturity": "guide_only",
+      "auto_selectable_count": 0,
+      "reference_only_count": 0,
+      "guide_mechanics_count": 28,
+      "aliases": [
+        "predict",
+        "test",
+        "lincom",
+        "estat",
+        "postestimation"
+      ],
+      "unit_kind": "post_estimation",
+      "input_contract": [
+        "compatible active estimation state",
+        "caller-declared post-estimation target"
+      ],
+      "output_contract": [
+        "one command-specific post-estimation result or generated variable"
+      ],
+      "common_commands": [],
+      "retrieval_features": [
+        "post_estimation",
+        "compatible active estimation state",
+        "caller-declared post-estimation target",
+        "one command-specific post-estimation result or generated variable",
+        "predict",
+        "test",
+        "lincom",
+        "estat",
+        "postestimation"
+      ],
+      "composition": {
+        "can_follow": [
+          "estimation.conventional",
+          "estimation.staggered_did"
+        ],
+        "can_precede": [
+          "figures.event_study",
+          "figures.descriptive_graph",
+          "exports.matrix_excel"
+        ],
+        "incompatible_with": [
+          "incompatible active estimate",
+          "manual coefficient or standard-error reconstruction"
+        ]
+      },
+      "variants": []
+    },
+    {
       "headword": "postest.estimator_comparison_unsafe",
       "name_ko": "미검증 추정량 비교",
       "name_en": "Unsafe estimator comparison",
@@ -32155,6 +32400,7 @@
       "maturity": "negative_only",
       "auto_selectable_count": 0,
       "reference_only_count": 0,
+      "guide_mechanics_count": 0,
       "aliases": [
         "unchecked estimator merge",
         "unsafe comparison",
@@ -32560,6 +32806,7 @@
       "maturity": "prototype",
       "auto_selectable_count": 1,
       "reference_only_count": 0,
+      "guide_mechanics_count": 0,
       "aliases": [
         "sample dta",
         "e(sample) keys",
@@ -32937,6 +33184,7 @@
       "maturity": "prototype",
       "auto_selectable_count": 1,
       "reference_only_count": 0,
+      "guide_mechanics_count": 2,
       "aliases": [
         "margins",
         "marginal effects",
@@ -33166,6 +33414,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 7,
       "reference_only_count": 2,
+      "guide_mechanics_count": 6,
       "aliases": [
         "estimate persistence",
         "ster",
@@ -35235,6 +35484,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 2,
       "reference_only_count": 1,
+      "guide_mechanics_count": 0,
       "aliases": [
         "e(sample) flag",
         "공통 추정표본",
@@ -36129,6 +36379,63 @@
       ]
     },
     {
+      "headword": "preparation.transform",
+      "name_ko": "일반 자료 변환",
+      "name_en": "General data transformation",
+      "purpose_ko": "호출자가 선언한 식·형식·라벨·순서 규칙으로 자료를 한 단계 변환한다.",
+      "maturity": "guide_only",
+      "auto_selectable_count": 0,
+      "reference_only_count": 0,
+      "guide_mechanics_count": 28,
+      "aliases": [
+        "자료 변환",
+        "type conversion",
+        "labels",
+        "order",
+        "egen",
+        "generate",
+        "replace"
+      ],
+      "unit_kind": "preparation",
+      "input_contract": [
+        "active data",
+        "caller-declared variables and transformation semantics"
+      ],
+      "output_contract": [
+        "one inspectable transformed data state with original meaning preserved where required"
+      ],
+      "common_commands": [],
+      "retrieval_features": [
+        "preparation",
+        "active data",
+        "caller-declared variables and transformation semantics",
+        "one inspectable transformed data state with original meaning preserved where required",
+        "자료 변환",
+        "type conversion",
+        "labels",
+        "order",
+        "egen",
+        "generate",
+        "replace"
+      ],
+      "composition": {
+        "can_follow": [
+          "input_load.single_source",
+          "input_load.combine",
+          "merge_reshape.integration"
+        ],
+        "can_precede": [
+          "integrity.audit",
+          "sample.restriction",
+          "estimation.conventional"
+        ],
+        "incompatible_with": [
+          "undeclared recode, missing-value rule, overwrite, or category mapping"
+        ]
+      },
+      "variants": []
+    },
+    {
       "headword": "project_setup.paths",
       "name_ko": "프로젝트 경로 설정",
       "name_en": "Project path setup",
@@ -36136,6 +36443,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 1,
       "reference_only_count": 1,
+      "guide_mechanics_count": 0,
       "aliases": [
         "경로 설정",
         "프로젝트 루트",
@@ -36766,6 +37074,7 @@
       "maturity": "prototype",
       "auto_selectable_count": 1,
       "reference_only_count": 0,
+      "guide_mechanics_count": 5,
       "aliases": [
         "boottest",
         "wild bootstrap",
@@ -37006,6 +37315,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 0,
       "reference_only_count": 3,
+      "guide_mechanics_count": 0,
       "aliases": [
         "heterogeneity",
         "이질성",
@@ -37713,6 +38023,7 @@
       "maturity": "prototype",
       "auto_selectable_count": 1,
       "reference_only_count": 0,
+      "guide_mechanics_count": 0,
       "aliases": [
         "jackknife",
         "재표집",
@@ -38208,6 +38519,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 0,
       "reference_only_count": 2,
+      "guide_mechanics_count": 3,
       "aliases": [
         "placebo",
         "위약 검정",
@@ -38873,6 +39185,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 0,
       "reference_only_count": 2,
+      "guide_mechanics_count": 0,
       "aliases": [
         "적격 표본",
         "study eligibility",
@@ -39325,6 +39638,59 @@
       ]
     },
     {
+      "headword": "sample.restriction",
+      "name_ko": "명시적 표본 제한",
+      "name_en": "Declared sample restriction",
+      "purpose_ko": "연구자가 미리 선언한 적격성·기간·결측 규칙으로 이름 있는 분석 표본을 만든다.",
+      "maturity": "guide_only",
+      "auto_selectable_count": 0,
+      "reference_only_count": 0,
+      "guide_mechanics_count": 4,
+      "aliases": [
+        "표본 제한",
+        "sample restriction",
+        "eligibility",
+        "time window",
+        "required missing exclusion"
+      ],
+      "unit_kind": "preparation",
+      "input_contract": [
+        "active data",
+        "caller-declared eligibility, time-window, or required-variable rule"
+      ],
+      "output_contract": [
+        "one auditable restricted sample whose exclusion rule remains visible"
+      ],
+      "common_commands": [],
+      "retrieval_features": [
+        "preparation",
+        "active data",
+        "caller-declared eligibility, time-window, or required-variable rule",
+        "one auditable restricted sample whose exclusion rule remains visible",
+        "표본 제한",
+        "sample restriction",
+        "eligibility",
+        "time window",
+        "required missing exclusion"
+      ],
+      "composition": {
+        "can_follow": [
+          "preparation.transform",
+          "integrity.audit",
+          "merge_reshape.integration"
+        ],
+        "can_precede": [
+          "estimation.conventional",
+          "estimation.staggered_did",
+          "descriptives.command_result"
+        ],
+        "incompatible_with": [
+          "outcome-informed or source-inferred sample restriction"
+        ]
+      },
+      "variants": []
+    },
+    {
       "headword": "sample.trade_share_threshold",
       "name_ko": "무역비중 임계값 표본",
       "name_en": "Trade-share threshold sample",
@@ -39332,6 +39698,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 0,
       "reference_only_count": 2,
+      "guide_mechanics_count": 0,
       "aliases": [
         "무역표본",
         "trade share threshold",
@@ -40179,6 +40546,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 1,
       "reference_only_count": 1,
+      "guide_mechanics_count": 0,
       "aliases": [
         "standardize",
         "z-score",
@@ -40789,6 +41157,60 @@
       ]
     },
     {
+      "headword": "tables.collection_result",
+      "name_ko": "표 collection 결과",
+      "name_en": "Table collection result",
+      "purpose_ko": "table·dtable·etable·collect 명령으로 하나의 명시된 collection 상태를 만든다.",
+      "maturity": "guide_only",
+      "auto_selectable_count": 0,
+      "reference_only_count": 0,
+      "guide_mechanics_count": 11,
+      "aliases": [
+        "table",
+        "dtable",
+        "etable",
+        "collect get",
+        "collect style",
+        "collection result"
+      ],
+      "unit_kind": "post_estimation_export",
+      "input_contract": [
+        "active data or compatible estimation result",
+        "declared rows, columns, statistics, model set, and Stata-version interface"
+      ],
+      "output_contract": [
+        "one populated and inspectable Stata collection; Excel export remains a separate transition"
+      ],
+      "common_commands": [],
+      "retrieval_features": [
+        "post_estimation_export",
+        "active data or compatible estimation result",
+        "declared rows, columns, statistics, model set, and Stata-version interface",
+        "one populated and inspectable Stata collection; Excel export remains a separate transition",
+        "table",
+        "dtable",
+        "etable",
+        "collect get",
+        "collect style",
+        "collection result"
+      ],
+      "composition": {
+        "can_follow": [
+          "descriptives.command_result",
+          "estimation.conventional",
+          "postest.command_result"
+        ],
+        "can_precede": [
+          "exports.matrix_excel"
+        ],
+        "incompatible_with": [
+          "legacy table syntax without a version contract",
+          "manual coefficient or standard-error bridge"
+        ]
+      },
+      "variants": []
+    },
+    {
       "headword": "treatment.arm_mapping",
       "name_ko": "처치군 매핑",
       "name_en": "Treatment-arm mapping",
@@ -40796,6 +41218,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 0,
       "reference_only_count": 2,
+      "guide_mechanics_count": 0,
       "aliases": [
         "처치군 재코딩",
         "treatment mapping",
@@ -41253,6 +41676,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 1,
       "reference_only_count": 2,
+      "guide_mechanics_count": 0,
       "aliases": [
         "master do-file",
         "runall",
@@ -42571,11 +42995,20 @@
     "collect export": [
       "exports.matrix_excel"
     ],
+    "collect get": [
+      "tables.collection_result"
+    ],
+    "collect style": [
+      "tables.collection_result"
+    ],
     "collect xlsx": [
       "exports.matrix_excel"
     ],
     "collection Excel": [
       "exports.matrix_excel"
+    ],
+    "collection result": [
+      "tables.collection_result"
     ],
     "combine panels": [
       "figures.named_graph_combine"
@@ -42589,14 +43022,23 @@
     "compress save": [
       "dataset.finalize_keep_label_save"
     ],
+    "confidence band": [
+      "figures.descriptive_graph"
+    ],
     "confidence interval PDF": [
       "figures.event_study"
     ],
     "conventional estimation": [
       "estimation.conventional"
     ],
+    "correlation": [
+      "descriptives.command_result"
+    ],
     "coverage cutoff": [
       "sample.trade_share_threshold"
+    ],
+    "dataset export": [
+      "exports.dataset_file"
     ],
     "dependent variable mean": [
       "descriptives.sample_mean"
@@ -42607,11 +43049,17 @@
     "descriptive Excel": [
       "exports.descriptive_excel_sheet"
     ],
+    "descriptive graph": [
+      "figures.descriptive_graph"
+    ],
     "descriptive statistics": [
       "descriptives.summary_dataset"
     ],
     "destring id": [
       "clean.id_normalize"
+    ],
+    "dtable": [
+      "tables.collection_result"
     ],
     "e(sample)": [
       "descriptives.sample_mean"
@@ -42622,15 +43070,24 @@
     "e(sample) keys": [
       "postest.export_sample_keys"
     ],
+    "egen": [
+      "preparation.transform"
+    ],
     "egen total": [
       "feature.aggregate_household",
       "feature.aggregate_section_exposure"
+    ],
+    "eligibility": [
+      "sample.restriction"
     ],
     "entity-level descriptives": [
       "descriptives.entity_collapse"
     ],
     "erase": [
       "cleanup"
+    ],
+    "estat": [
+      "postest.command_result"
     ],
     "estimate persistence": [
       "postest.persist_estimate"
@@ -42674,6 +43131,9 @@
     "esttab": [
       "exports.estimate_text_table"
     ],
+    "etable": [
+      "tables.collection_result"
+    ],
     "event study estimation": [
       "estimation.staggered_did"
     ],
@@ -42682,6 +43142,12 @@
     ],
     "event time": [
       "panel.treatment_cohort"
+    ],
+    "export delimited": [
+      "exports.dataset_file"
+    ],
+    "export excel": [
+      "exports.dataset_file"
     ],
     "export excel sheet": [
       "exports.descriptive_excel_sheet"
@@ -42706,6 +43172,9 @@
     ],
     "fixed sample": [
       "postest.sample_flag"
+    ],
+    "generate": [
+      "preparation.transform"
     ],
     "global data": [
       "project_setup.paths"
@@ -42747,11 +43216,17 @@
     "gravity sample": [
       "sample.trade_share_threshold"
     ],
+    "group summary": [
+      "descriptives.command_result"
+    ],
     "grouped descriptive bar": [
       "figures.descriptive_bar"
     ],
     "heterogeneity": [
       "robustness.heterogeneity"
+    ],
+    "histogram": [
+      "figures.descriptive_graph"
     ],
     "household aggregate": [
       "feature.aggregate_household"
@@ -42796,13 +43271,18 @@
       "postest.export_sample_keys"
     ],
     "labels": [
-      "clean.derive_variables"
+      "clean.derive_variables",
+      "preparation.transform"
     ],
     "leave-one-out": [
       "robustness.jackknife"
     ],
     "lincom": [
+      "postest.command_result",
       "robustness.heterogeneity"
+    ],
+    "line": [
+      "figures.descriptive_graph"
     ],
     "marginal effects": [
       "postest.margins"
@@ -42852,6 +43332,9 @@
     "orchestration": [
       "workflow_orchestration.master"
     ],
+    "order": [
+      "preparation.transform"
+    ],
     "outreg2": [
       "final_excel_assembly"
     ],
@@ -42876,8 +43359,14 @@
     "post postclose": [
       "descriptives.sample_flow"
     ],
+    "postestimation": [
+      "postest.command_result"
+    ],
     "postfile count dataset": [
       "descriptives.sample_flow"
+    ],
+    "predict": [
+      "postest.command_result"
     ],
     "predicted margins": [
       "postest.margins"
@@ -42888,11 +43377,23 @@
     "putexcel": [
       "exports.matrix_excel"
     ],
+    "pwcorr": [
+      "descriptives.command_result"
+    ],
+    "quantiles": [
+      "descriptives.command_result"
+    ],
     "recode": [
       "clean.derive_variables"
     ],
     "relative time": [
       "panel.turnover_event_time"
+    ],
+    "replace": [
+      "preparation.transform"
+    ],
+    "required missing exclusion": [
+      "sample.restriction"
     ],
     "resampling": [
       "robustness.jackknife"
@@ -42918,6 +43419,9 @@
     "sample indicator": [
       "postest.sample_flag"
     ],
+    "sample restriction": [
+      "sample.restriction"
+    ],
     "sample-flow dataset": [
       "descriptives.sample_flow"
     ],
@@ -42926,6 +43430,9 @@
     ],
     "savefprefix": [
       "postest.persist_estimate"
+    ],
+    "scatter": [
+      "figures.descriptive_graph"
     ],
     "scatter plot": [
       "figures.descriptive_scatter"
@@ -42978,6 +43485,9 @@
     "summary statistics workbook": [
       "exports.descriptive_excel_sheet"
     ],
+    "table": [
+      "tables.collection_result"
+    ],
     "tabstat matrix": [
       "descriptives.summary_dataset"
     ],
@@ -42986,6 +43496,12 @@
     ],
     "temporary files": [
       "cleanup"
+    ],
+    "test": [
+      "postest.command_result"
+    ],
+    "time window": [
+      "sample.restriction"
     ],
     "trade share threshold": [
       "sample.trade_share_threshold"
@@ -43001,6 +43517,12 @@
     ],
     "turnover": [
       "panel.turnover_event_time"
+    ],
+    "twoway": [
+      "figures.descriptive_graph"
+    ],
+    "type conversion": [
+      "preparation.transform"
     ],
     "unchecked estimator merge": [
       "postest.estimator_comparison_unsafe"
@@ -43081,6 +43603,9 @@
     "기초통계 Excel": [
       "exports.descriptive_excel_sheet"
     ],
+    "기초통계 결과": [
+      "descriptives.command_result"
+    ],
     "기초통계 그림": [
       "figures.descriptive_scatter"
     ],
@@ -43147,8 +43672,14 @@
     "임시파일 정리": [
       "cleanup"
     ],
+    "자료 변환": [
+      "preparation.transform"
+    ],
     "자료 통합": [
       "merge_reshape.integration"
+    ],
+    "자료 파일 내보내기": [
+      "exports.dataset_file"
     ],
     "재표집": [
       "robustness.jackknife"
@@ -43206,6 +43737,9 @@
     ],
     "표본 수 기록": [
       "descriptives.sample_flow"
+    ],
+    "표본 제한": [
+      "sample.restriction"
     ],
     "표본 흐름": [
       "descriptives.sample_flow"

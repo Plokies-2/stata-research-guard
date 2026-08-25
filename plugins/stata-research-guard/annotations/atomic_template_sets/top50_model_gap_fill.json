@@ -1,0 +1,2150 @@
+[
+  {
+    "label_id": "estimation.regress_classical.v1",
+    "contract_ids": [
+      "regress.classical"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.conventional",
+    "variant_group": "estimation.regress",
+    "variant_id": "regress_classical_default_vce",
+    "stage": "estimation",
+    "method_family": "regress",
+    "source_spans": [
+      [
+        2,
+        2
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rregress.pdf"
+    ],
+    "research_situations": [
+      "a researcher has explicitly selected an unweighted linear regression with default VCE"
+    ],
+    "selection_conditions": [
+      "outcome, regressors, sample, and estimand are supplied",
+      "the default VCE is an explicit research decision"
+    ],
+    "required_changes": [
+      "replace declared outcome and regressors only"
+    ],
+    "minimal_edit_fields": [
+      "outcome",
+      "regressors",
+      "declared sample"
+    ],
+    "tradeoffs": [
+      "uses Stata default VCE",
+      "does not choose covariates, sample, estimand, or inference"
+    ],
+    "state_signature": {
+      "requires": [
+        "active analysis data",
+        "declared outcome and regressors"
+      ],
+      "observable_signals": [
+        "regress",
+        "default VCE"
+      ],
+      "produces": [
+        "active e-class linear estimate",
+        "active e(sample)"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "cross_section_or_panel",
+      "record_unit": "one declared analysis observation",
+      "required_keys": [],
+      "source_basis": "official Stata regress manual mechanics",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "numeric outcome",
+        "declared regressors"
+      ]
+    },
+    "source_specific_elements": [
+      "placeholder outcome and regressors"
+    ],
+    "reusable_core": "선언된 outcome과 regressors로 기본 VCE의 regress를 실행한다.",
+    "generality_rationale_ko": "공식 구문만 제공하며 추정식·표본·VCE 선택을 공급하지 않는다.",
+    "variant_distinction": "[regress_classical_default_vce] default VCE is distinct from pweight plus clustered VCE.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. e(sample)은 추정 표본을 나타내지만 표본 선택을 정당화하지 않는다. 감사 전 reference-only다."
+  },
+  {
+    "label_id": "estimation.regress_pweight_clustered.v1",
+    "contract_ids": [
+      "regress.pweight_clustered"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.conventional",
+    "variant_group": "estimation.regress",
+    "variant_id": "regress_pweight_clustered",
+    "stage": "estimation",
+    "method_family": "regress",
+    "source_spans": [
+      [
+        3,
+        3
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rregress.pdf"
+    ],
+    "research_situations": [
+      "a researcher has explicitly selected pweights and a cluster VCE for linear regression"
+    ],
+    "selection_conditions": [
+      "probability-weight meaning and cluster level are declared",
+      "outcome, regressors, sample, and estimand are supplied"
+    ],
+    "required_changes": [
+      "replace declared variables, pweight, and cluster only"
+    ],
+    "minimal_edit_fields": [
+      "outcome",
+      "regressors",
+      "pweight",
+      "cluster",
+      "declared sample"
+    ],
+    "tradeoffs": [
+      "keeps pweight and cluster visible",
+      "does not justify weighting or clustering"
+    ],
+    "state_signature": {
+      "requires": [
+        "active analysis data",
+        "declared pweight",
+        "declared cluster"
+      ],
+      "observable_signals": [
+        "regress",
+        "pw",
+        "vce(cluster)"
+      ],
+      "produces": [
+        "active e-class weighted clustered estimate",
+        "active e(sample)"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "weighted_cross_section_or_panel",
+      "record_unit": "one weighted analysis observation",
+      "required_keys": [
+        "cluster identifier"
+      ],
+      "source_basis": "official Stata regress manual mechanics",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "numeric outcome",
+        "probability weight",
+        "cluster identifier"
+      ]
+    },
+    "source_specific_elements": [
+      "weight and cluster placeholders"
+    ],
+    "reusable_core": "명시된 pweight와 cluster를 포함한 regress를 실행한다.",
+    "generality_rationale_ko": "가중·군집 VCE를 기본 OLS와 분리해 보존한다.",
+    "variant_distinction": "[regress_pweight_clustered] pweight plus clustered VCE is not interchangeable with default VCE.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. weight type와 cluster는 연구자가 선언해야 하며 감사 전 reference-only다."
+  },
+  {
+    "label_id": "estimation.areg_absorb_unclustered.v1",
+    "contract_ids": [
+      "areg.absorb_unclustered"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.conventional",
+    "variant_group": "estimation.areg",
+    "variant_id": "areg_absorb_default_vce",
+    "stage": "estimation",
+    "method_family": "areg",
+    "source_spans": [
+      [
+        4,
+        4
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rareg.pdf"
+    ],
+    "research_situations": [
+      "a researcher has selected one absorbed categorical effect with default VCE"
+    ],
+    "selection_conditions": [
+      "absorbed effect, outcome, regressors, sample, and estimand are supplied",
+      "default VCE is explicit"
+    ],
+    "required_changes": [
+      "replace declared variables and absorbed identifier only"
+    ],
+    "minimal_edit_fields": [
+      "outcome",
+      "regressors",
+      "absorbed identifier",
+      "declared sample"
+    ],
+    "tradeoffs": [
+      "absorbs one declared effect",
+      "does not establish FE validity or inference choice"
+    ],
+    "state_signature": {
+      "requires": [
+        "active analysis data",
+        "declared absorbed identifier"
+      ],
+      "observable_signals": [
+        "areg",
+        "absorb"
+      ],
+      "produces": [
+        "active e-class absorbed-effect estimate",
+        "active e(sample)"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "cross_section_or_panel_with_groups",
+      "record_unit": "one observation within declared absorbed group",
+      "required_keys": [
+        "absorbed identifier"
+      ],
+      "source_basis": "official Stata areg manual mechanics",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "numeric outcome",
+        "declared regressors",
+        "group identifier"
+      ]
+    },
+    "source_specific_elements": [
+      "absorbed identifier placeholder"
+    ],
+    "reusable_core": "선언한 effect를 absorb하는 areg를 실행한다.",
+    "generality_rationale_ko": "absorb 상태와 VCE 선택을 분리해 보존한다.",
+    "variant_distinction": "[areg_absorb_default_vce] default VCE differs from clustered and weighted clustered areg.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. absorb 대상과 표본은 자동 판단하지 않으며 감사 전 reference-only다."
+  },
+  {
+    "label_id": "guide.estimation.areg_absorb_clustered.v1",
+    "contract_ids": [
+      "areg.absorb_clustered"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.conventional",
+    "variant_group": "estimation.areg",
+    "variant_id": "areg_absorb_clustered",
+    "stage": "estimation",
+    "method_family": "areg",
+    "source_spans": [
+      [
+        5,
+        5
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rareg.pdf"
+    ],
+    "research_situations": [
+      "a researcher has selected one absorbed effect and clustered inference"
+    ],
+    "selection_conditions": [
+      "absorbed and cluster identifiers are declared",
+      "outcome, regressors, sample, and estimand are supplied"
+    ],
+    "required_changes": [
+      "replace declared variables, absorbed identifier, and cluster only"
+    ],
+    "minimal_edit_fields": [
+      "outcome",
+      "regressors",
+      "absorbed identifier",
+      "cluster",
+      "declared sample"
+    ],
+    "tradeoffs": [
+      "keeps absorb and cluster visible",
+      "does not justify either identifier"
+    ],
+    "state_signature": {
+      "requires": [
+        "active analysis data",
+        "declared absorbed and cluster identifiers"
+      ],
+      "observable_signals": [
+        "areg",
+        "absorb",
+        "vce(cluster)"
+      ],
+      "produces": [
+        "active e-class clustered absorbed-effect estimate",
+        "active e(sample)"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "cross_section_or_panel_with_groups",
+      "record_unit": "one observation within declared absorbed and cluster groups",
+      "required_keys": [
+        "absorbed identifier",
+        "cluster identifier"
+      ],
+      "source_basis": "official Stata areg manual mechanics",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "numeric outcome",
+        "declared regressors",
+        "group identifiers"
+      ]
+    },
+    "source_specific_elements": [
+      "absorbed and cluster placeholders"
+    ],
+    "reusable_core": "선언한 absorb와 cluster를 포함한 areg를 실행한다.",
+    "generality_rationale_ko": "clustered inference가 필요한 absorbed-effect variant를 분리한다.",
+    "variant_distinction": "[areg_absorb_clustered] clustered VCE differs from default and pweight clustered areg.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. VCE 수준과 FE 역할은 연구자가 결정하며 감사 전 reference-only다."
+  },
+  {
+    "label_id": "estimation.areg_absorb_weighted_clustered.v1",
+    "contract_ids": [
+      "areg.absorb_weighted_clustered"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.conventional",
+    "variant_group": "estimation.areg",
+    "variant_id": "areg_absorb_pweight_clustered",
+    "stage": "estimation",
+    "method_family": "areg",
+    "source_spans": [
+      [
+        6,
+        6
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rareg.pdf"
+    ],
+    "research_situations": [
+      "a researcher has selected pweights, one absorbed effect, and clustered inference"
+    ],
+    "selection_conditions": [
+      "weight meaning, absorbed effect, and cluster are declared",
+      "outcome, regressors, sample, and estimand are supplied"
+    ],
+    "required_changes": [
+      "replace declared variables, pweight, absorb, and cluster only"
+    ],
+    "minimal_edit_fields": [
+      "outcome",
+      "regressors",
+      "pweight",
+      "absorbed identifier",
+      "cluster"
+    ],
+    "tradeoffs": [
+      "makes weight, absorb, and cluster visible",
+      "does not justify them"
+    ],
+    "state_signature": {
+      "requires": [
+        "active analysis data",
+        "declared pweight",
+        "declared absorbed and cluster identifiers"
+      ],
+      "observable_signals": [
+        "areg",
+        "pw",
+        "absorb",
+        "vce(cluster)"
+      ],
+      "produces": [
+        "active e-class weighted clustered absorbed-effect estimate",
+        "active e(sample)"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "weighted_cross_section_or_panel_with_groups",
+      "record_unit": "one weighted observation within declared groups",
+      "required_keys": [
+        "absorbed identifier",
+        "cluster identifier"
+      ],
+      "source_basis": "official Stata areg manual mechanics",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "numeric outcome",
+        "probability weight",
+        "group identifiers"
+      ]
+    },
+    "source_specific_elements": [
+      "weight, absorb, and cluster placeholders"
+    ],
+    "reusable_core": "선언한 pweight, absorb, cluster로 areg를 실행한다.",
+    "generality_rationale_ko": "가중·흡수·군집의 결합 상태를 별도 variant로 보존한다.",
+    "variant_distinction": "[areg_absorb_pweight_clustered] pweight clustered areg is distinct from unweighted areg variants.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. weight/VCE/FE 선택은 연구 설계 판단이며 감사 전 reference-only다."
+  },
+  {
+    "label_id": "estimation.xtreg_fixed_effects.v1",
+    "contract_ids": [
+      "xtreg.fixed_effects"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.conventional",
+    "variant_group": "estimation.xtreg",
+    "variant_id": "xtreg_fe_default_vce",
+    "stage": "estimation",
+    "method_family": "xtreg",
+    "source_spans": [
+      [
+        7,
+        7
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/xtxtreg.pdf"
+    ],
+    "research_situations": [
+      "a researcher has selected a fixed-effects panel estimator after declaring panel settings"
+    ],
+    "selection_conditions": [
+      "xtset state, outcome, regressors, sample, and estimand are supplied",
+      "fixed effects are an explicit research decision"
+    ],
+    "required_changes": [
+      "replace declared variables only"
+    ],
+    "minimal_edit_fields": [
+      "outcome",
+      "regressors",
+      "declared sample"
+    ],
+    "tradeoffs": [
+      "requires existing panel declaration",
+      "does not choose panel key, FE, or VCE"
+    ],
+    "state_signature": {
+      "requires": [
+        "active data with prior xtset",
+        "declared outcome and regressors"
+      ],
+      "observable_signals": [
+        "xtreg",
+        "fe"
+      ],
+      "produces": [
+        "active e-class fixed-effects estimate",
+        "active e(sample)"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "panel_data",
+      "record_unit": "one declared panel-time observation",
+      "required_keys": [
+        "panel identifier",
+        "time identifier"
+      ],
+      "source_basis": "official Stata xtreg manual mechanics",
+      "time_structure": "prior xtset declaration",
+      "variable_characteristics": [
+        "numeric outcome",
+        "within-panel covariate variation"
+      ]
+    },
+    "source_specific_elements": [
+      "panel declaration is external state"
+    ],
+    "reusable_core": "기존 xtset 상태에서 fixed-effects xtreg를 실행한다.",
+    "generality_rationale_ko": "panel 선언과 FE 선택을 분리해 공식 실행 mechanics만 보존한다.",
+    "variant_distinction": "[xtreg_fe_default_vce] fixed-effects xtreg differs from random-effects or clustered variants.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. active e-class/e(sample)은 생성하지만 panel 구조·VCE는 자동 선택하지 않는다."
+  },
+  {
+    "label_id": "estimation.logistic_weighted.v1",
+    "contract_ids": [
+      "logit_logistic.weighted"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.conventional",
+    "variant_group": "estimation.logit_logistic",
+    "variant_id": "logistic_pweight_default_vce",
+    "stage": "estimation",
+    "method_family": "logistic",
+    "source_spans": [
+      [
+        8,
+        8
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rlogit.pdf"
+    ],
+    "research_situations": [
+      "a researcher has selected a weighted binary-response logistic model"
+    ],
+    "selection_conditions": [
+      "binary outcome, pweight meaning, sample, regressors, and estimand are supplied"
+    ],
+    "required_changes": [
+      "replace declared binary outcome, regressors, and pweight only"
+    ],
+    "minimal_edit_fields": [
+      "binary outcome",
+      "regressors",
+      "pweight",
+      "declared sample"
+    ],
+    "tradeoffs": [
+      "logistic displays odds-ratio scale",
+      "does not establish binary coding, weights, or inference choice"
+    ],
+    "state_signature": {
+      "requires": [
+        "active data",
+        "declared binary outcome",
+        "declared pweight"
+      ],
+      "observable_signals": [
+        "logistic",
+        "pw"
+      ],
+      "produces": [
+        "active e-class logistic estimate",
+        "active e(sample)"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "weighted_cross_section_or_panel",
+      "record_unit": "one weighted binary-outcome observation",
+      "required_keys": [],
+      "source_basis": "official Stata logit/logistic manual mechanics",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "binary outcome",
+        "probability weight",
+        "declared regressors"
+      ]
+    },
+    "source_specific_elements": [
+      "binary outcome and pweight placeholders"
+    ],
+    "reusable_core": "선언한 binary outcome과 pweight로 logistic을 실행한다.",
+    "generality_rationale_ko": "가중 binary-response mechanics만 제공하며 coding·estimand를 결정하지 않는다.",
+    "variant_distinction": "[logistic_pweight_default_vce] weighted logistic differs from unweighted logit and from probit.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. logistic/logit 링크와 weight 선택은 연구자가 명시해야 하며 감사 전 reference-only다."
+  },
+  {
+    "label_id": "estimation.probit_default.v1",
+    "contract_ids": [
+      "probit.default"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.conventional",
+    "variant_group": "estimation.probit",
+    "variant_id": "probit_default_vce",
+    "stage": "estimation",
+    "method_family": "probit",
+    "source_spans": [
+      [
+        9,
+        9
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rprobit.pdf"
+    ],
+    "research_situations": [
+      "a researcher has selected an unweighted probit model with default VCE"
+    ],
+    "selection_conditions": [
+      "binary outcome, regressors, sample, and estimand are supplied",
+      "default VCE is explicit"
+    ],
+    "required_changes": [
+      "replace declared binary outcome and regressors only"
+    ],
+    "minimal_edit_fields": [
+      "binary outcome",
+      "regressors",
+      "declared sample"
+    ],
+    "tradeoffs": [
+      "uses probit link and default VCE",
+      "does not choose coding, link, sample, or inference"
+    ],
+    "state_signature": {
+      "requires": [
+        "active data",
+        "declared binary outcome"
+      ],
+      "observable_signals": [
+        "probit",
+        "default VCE"
+      ],
+      "produces": [
+        "active e-class probit estimate",
+        "active e(sample)"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "cross_section_or_panel",
+      "record_unit": "one binary-outcome observation",
+      "required_keys": [],
+      "source_basis": "official Stata probit manual mechanics",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "binary outcome",
+        "declared regressors"
+      ]
+    },
+    "source_specific_elements": [
+      "binary outcome placeholder"
+    ],
+    "reusable_core": "선언한 binary outcome에 기본 VCE probit을 실행한다.",
+    "generality_rationale_ko": "probit link의 공식 mechanics만 제공한다.",
+    "variant_distinction": "[probit_default_vce] default probit differs from the explicit post-marginal-effects handoff.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. binary outcome coding과 inference는 연구자가 책임지며 감사 전 reference-only다."
+  },
+  {
+    "label_id": "postest.probit_marginal_effect_handoff.v1",
+    "contract_ids": [
+      "probit.marginal_effect_handoff"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "postest.command_result",
+    "variant_group": "estimation.probit",
+    "variant_id": "probit_to_margins_dydx_post",
+    "stage": "post_estimation",
+    "method_family": "probit margins",
+    "source_spans": [
+      [
+        10,
+        11
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rprobit.pdf",
+      "https://www.stata.com/manuals/rmargins.pdf"
+    ],
+    "research_situations": [
+      "a declared probit estimate must hand off to a declared marginal-effect calculation"
+    ],
+    "selection_conditions": [
+      "active e-class estimate is the declared probit model",
+      "marginal-effect variable and post behavior are explicitly requested"
+    ],
+    "required_changes": [
+      "replace binary outcome, regressors, and declared dydx variable only"
+    ],
+    "minimal_edit_fields": [
+      "binary outcome",
+      "regressors",
+      "dydx variable"
+    ],
+    "tradeoffs": [
+      "post replaces active estimation state with margins results",
+      "does not choose the estimand or evaluation values"
+    ],
+    "state_signature": {
+      "requires": [
+        "active e-class probit estimate",
+        "active e(sample)",
+        "declared marginal-effect variable"
+      ],
+      "observable_signals": [
+        "probit",
+        "margins",
+        "dydx",
+        "post"
+      ],
+      "produces": [
+        "posted e-class margins result",
+        "marginal-effect result tied to prior e(sample)"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "cross_section_or_panel",
+      "record_unit": "one observation in prior probit e(sample)",
+      "required_keys": [],
+      "source_basis": "official Stata probit and margins manual mechanics",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "binary outcome",
+        "declared focal regressor"
+      ]
+    },
+    "source_specific_elements": [
+      "prior estimator and dydx placeholder"
+    ],
+    "reusable_core": "probit 직후 명시한 변수의 dydx margins를 post한다.",
+    "generality_rationale_ko": "추정과 post-estimation 결과 상태 전이를 명시적으로 보존한다.",
+    "variant_distinction": "[probit_to_margins_dydx_post] post-margins handoff is distinct from an unposted probit estimate.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. margins estimand와 evaluation values는 guide가 결정하지 않으며 post는 active e-class를 바꾼다."
+  },
+  {
+    "label_id": "estimation.poisson_weighted.v1",
+    "contract_ids": [
+      "poisson_nbreg.poisson_weighted"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.conventional",
+    "variant_group": "estimation.poisson_nbreg",
+    "variant_id": "poisson_pweight_clustered",
+    "stage": "estimation",
+    "method_family": "poisson",
+    "source_spans": [
+      [
+        12,
+        12
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rpoisson.pdf"
+    ],
+    "research_situations": [
+      "a researcher has selected weighted Poisson regression with clustered VCE"
+    ],
+    "selection_conditions": [
+      "count outcome, pweight, cluster, sample, regressors, and estimand are supplied"
+    ],
+    "required_changes": [
+      "replace declared count outcome, regressors, pweight, and cluster only"
+    ],
+    "minimal_edit_fields": [
+      "count outcome",
+      "regressors",
+      "pweight",
+      "cluster",
+      "declared sample"
+    ],
+    "tradeoffs": [
+      "keeps weight and cluster visible",
+      "does not choose count model or VCE level"
+    ],
+    "state_signature": {
+      "requires": [
+        "active data",
+        "declared nonnegative count outcome",
+        "declared pweight and cluster"
+      ],
+      "observable_signals": [
+        "poisson",
+        "pw",
+        "vce(cluster)"
+      ],
+      "produces": [
+        "active e-class weighted Poisson estimate",
+        "active e(sample)"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "weighted_cross_section_or_panel",
+      "record_unit": "one weighted count observation",
+      "required_keys": [
+        "cluster identifier"
+      ],
+      "source_basis": "official Stata poisson manual mechanics",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "nonnegative count outcome",
+        "probability weight",
+        "cluster identifier"
+      ]
+    },
+    "source_specific_elements": [
+      "count, weight, and cluster placeholders"
+    ],
+    "reusable_core": "선언한 pweight와 cluster를 포함한 Poisson을 실행한다.",
+    "generality_rationale_ko": "count model·weight·VCE 결정은 제공하지 않고 mechanics만 보존한다.",
+    "variant_distinction": "[poisson_pweight_clustered] weighted clustered Poisson differs from unweighted Poisson and NBREG.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. count model·weight·cluster 선택은 연구자가 명시하며 감사 전 reference-only다."
+  },
+  {
+    "label_id": "estimation.nbreg_constant_dispersion_reference.v1",
+    "contract_ids": [
+      "poisson_nbreg.nbreg_constant_dispersion_reference"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.conventional",
+    "variant_group": "estimation.poisson_nbreg",
+    "variant_id": "nbreg_default_constant_dispersion",
+    "stage": "estimation",
+    "method_family": "nbreg",
+    "source_spans": [
+      [
+        13,
+        13
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rnbreg.pdf"
+    ],
+    "research_situations": [
+      "a researcher has selected NBREG with its default constant-dispersion parameterization"
+    ],
+    "selection_conditions": [
+      "count outcome, regressors, sample, and NBREG choice are supplied",
+      "constant dispersion is explicitly accepted"
+    ],
+    "required_changes": [
+      "replace declared count outcome and regressors only"
+    ],
+    "minimal_edit_fields": [
+      "count outcome",
+      "regressors",
+      "declared sample"
+    ],
+    "tradeoffs": [
+      "uses default constant dispersion",
+      "does not select NBREG over Poisson or validate dispersion"
+    ],
+    "state_signature": {
+      "requires": [
+        "active data",
+        "declared nonnegative count outcome"
+      ],
+      "observable_signals": [
+        "nbreg",
+        "constant dispersion"
+      ],
+      "produces": [
+        "active e-class NBREG estimate",
+        "active e(sample)"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "cross_section_or_panel",
+      "record_unit": "one count-outcome observation",
+      "required_keys": [],
+      "source_basis": "official Stata nbreg manual mechanics",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "nonnegative count outcome",
+        "declared regressors"
+      ]
+    },
+    "source_specific_elements": [
+      "count outcome and regressor placeholders"
+    ],
+    "reusable_core": "기본 constant-dispersion NBREG mechanics를 실행한다.",
+    "generality_rationale_ko": "NBREG의 분산 가정은 reference로만 표시하고 모형 선택을 자동화하지 않는다.",
+    "variant_distinction": "[nbreg_default_constant_dispersion] default constant-dispersion NBREG differs from Poisson and other dispersion specifications.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. overdispersion 진단과 NBREG 선택은 연구 판단이며 감사 전 reference-only다."
+  },
+  {
+    "label_id": "estimation.ivregress_liml_reference.v1",
+    "contract_ids": [
+      "ivregress.liml_or_gmm_reference"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.conventional",
+    "variant_group": "estimation.ivregress",
+    "variant_id": "ivregress_liml_reference",
+    "stage": "estimation",
+    "method_family": "ivregress",
+    "source_spans": [
+      [
+        14,
+        14
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rivregress.pdf"
+    ],
+    "research_situations": [
+      "a researcher has already selected LIML IV estimation and declared endogenous variables and instruments"
+    ],
+    "selection_conditions": [
+      "outcome, exogenous controls, endogenous regressor, instruments, sample, and identification justification are supplied"
+    ],
+    "required_changes": [
+      "replace declared outcome, controls, endogenous regressor, and instruments only"
+    ],
+    "minimal_edit_fields": [
+      "outcome",
+      "exogenous controls",
+      "endogenous regressor",
+      "instruments",
+      "declared sample"
+    ],
+    "tradeoffs": [
+      "keeps LIML syntax visible",
+      "does not validate exclusion, relevance, or estimator choice"
+    ],
+    "state_signature": {
+      "requires": [
+        "active data",
+        "declared endogenous regressor and excluded instruments"
+      ],
+      "observable_signals": [
+        "ivregress",
+        "liml",
+        "instrument list"
+      ],
+      "produces": [
+        "active e-class LIML IV estimate",
+        "active e(sample)"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "cross_section_or_panel",
+      "record_unit": "one IV analysis observation",
+      "required_keys": [],
+      "source_basis": "official Stata ivregress manual mechanics",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "numeric outcome",
+        "endogenous regressor",
+        "excluded instruments"
+      ]
+    },
+    "source_specific_elements": [
+      "endogenous and instrument placeholders"
+    ],
+    "reusable_core": "선언한 endogenous regressor와 instruments로 ivregress liml을 실행한다.",
+    "generality_rationale_ko": "식별 가정과 LIML 선택을 공급하지 않는 reference mechanics다.",
+    "variant_distinction": "[ivregress_liml_reference] LIML is distinct from GMM IV syntax and substantive identification review.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. instrument validity·weak-IV·estimand 판단은 포함하지 않으며 감사 전 reference-only다."
+  },
+  {
+    "label_id": "estimation.ivregress_gmm_reference.v1",
+    "contract_ids": [
+      "ivregress.liml_or_gmm_reference"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.conventional",
+    "variant_group": "estimation.ivregress",
+    "variant_id": "ivregress_gmm_reference",
+    "stage": "estimation",
+    "method_family": "ivregress",
+    "source_spans": [
+      [
+        15,
+        15
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rivregress.pdf"
+    ],
+    "research_situations": [
+      "a researcher has already selected GMM IV estimation and declared endogenous variables and instruments"
+    ],
+    "selection_conditions": [
+      "outcome, exogenous controls, endogenous regressor, instruments, sample, and identification justification are supplied"
+    ],
+    "required_changes": [
+      "replace declared outcome, controls, endogenous regressor, and instruments only"
+    ],
+    "minimal_edit_fields": [
+      "outcome",
+      "exogenous controls",
+      "endogenous regressor",
+      "instruments",
+      "declared sample"
+    ],
+    "tradeoffs": [
+      "keeps GMM syntax visible",
+      "does not validate identification or weight matrix choice"
+    ],
+    "state_signature": {
+      "requires": [
+        "active data",
+        "declared endogenous regressor and excluded instruments"
+      ],
+      "observable_signals": [
+        "ivregress",
+        "gmm",
+        "instrument list"
+      ],
+      "produces": [
+        "active e-class GMM IV estimate",
+        "active e(sample)"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "cross_section_or_panel",
+      "record_unit": "one IV analysis observation",
+      "required_keys": [],
+      "source_basis": "official Stata ivregress manual mechanics",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "numeric outcome",
+        "endogenous regressor",
+        "excluded instruments"
+      ]
+    },
+    "source_specific_elements": [
+      "endogenous and instrument placeholders"
+    ],
+    "reusable_core": "선언한 endogenous regressor와 instruments로 ivregress gmm을 실행한다.",
+    "generality_rationale_ko": "식별 가정과 GMM 선택을 공급하지 않는 reference mechanics다.",
+    "variant_distinction": "[ivregress_gmm_reference] GMM is distinct from LIML syntax and substantive identification review.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. instrument validity·GMM weighting·estimand 판단은 포함하지 않으며 감사 전 reference-only다."
+  },
+  {
+    "label_id": "postest.margins_over_post.v1",
+    "contract_ids": [
+      "margins_marginsplot.over_post"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "postest.command_result",
+    "variant_group": "postest.margins_marginsplot",
+    "variant_id": "margins_over_post",
+    "stage": "post_estimation",
+    "method_family": "margins",
+    "source_spans": [
+      [
+        16,
+        16
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rmargins.pdf"
+    ],
+    "research_situations": [
+      "an active declared e-class model requires over-group margins posted for a known downstream consumer"
+    ],
+    "selection_conditions": [
+      "active e-class estimate and e(sample) are the intended producer",
+      "over group and post behavior are explicitly declared"
+    ],
+    "required_changes": [
+      "replace declared over group only"
+    ],
+    "minimal_edit_fields": [
+      "over group",
+      "declared prediction/estimand"
+    ],
+    "tradeoffs": [
+      "post replaces active e-class estimation state",
+      "does not choose group, prediction scale, or estimand"
+    ],
+    "state_signature": {
+      "requires": [
+        "active e-class estimate",
+        "active e(sample)",
+        "declared over group"
+      ],
+      "observable_signals": [
+        "margins",
+        "over",
+        "post"
+      ],
+      "produces": [
+        "posted e-class margins result",
+        "margins defined on prior e(sample)"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "model_estimation_state",
+      "record_unit": "one observation in prior model e(sample)",
+      "required_keys": [
+        "over group"
+      ],
+      "source_basis": "official Stata margins manual mechanics",
+      "time_structure": "inherited_from_prior_estimate",
+      "variable_characteristics": [
+        "declared margin grouping variable"
+      ]
+    },
+    "source_specific_elements": [
+      "over group placeholder"
+    ],
+    "reusable_core": "active e-class 추정 뒤 선언한 group별 margins를 post한다.",
+    "generality_rationale_ko": "post가 e-class를 바꾸는 결과 상태를 독립 원자로 보존한다.",
+    "variant_distinction": "[margins_over_post] over-group post margins differs from contrast/predict margins and unposted margins.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. margins estimand, over group, predict option은 연구자가 선언해야 하며 post는 e-class를 교체한다."
+  },
+  {
+    "label_id": "postest.margins_contrast_predict_post.v1",
+    "contract_ids": [
+      "margins_marginsplot.contrast_predict_post"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "postest.command_result",
+    "variant_group": "postest.margins_marginsplot",
+    "variant_id": "margins_contrast_predict_post",
+    "stage": "post_estimation",
+    "method_family": "margins",
+    "source_spans": [
+      [
+        17,
+        17
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rmargins.pdf"
+    ],
+    "research_situations": [
+      "an active declared e-class model requires a declared contrast on a declared prediction scale"
+    ],
+    "selection_conditions": [
+      "active e-class estimate and e(sample) are intended",
+      "contrast variable, predict scale, and post behavior are explicitly declared"
+    ],
+    "required_changes": [
+      "replace declared factor and predict option only"
+    ],
+    "minimal_edit_fields": [
+      "contrast factor",
+      "predict option",
+      "declared estimand"
+    ],
+    "tradeoffs": [
+      "post replaces active e-class state",
+      "does not choose contrast coding or prediction scale"
+    ],
+    "state_signature": {
+      "requires": [
+        "active e-class estimate",
+        "active e(sample)",
+        "declared contrast factor and predict option"
+      ],
+      "observable_signals": [
+        "margins",
+        "contrast",
+        "predict",
+        "post"
+      ],
+      "produces": [
+        "posted e-class contrast-margins result",
+        "result based on prior e(sample)"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "model_estimation_state",
+      "record_unit": "one observation in prior model e(sample)",
+      "required_keys": [],
+      "source_basis": "official Stata margins manual mechanics",
+      "time_structure": "inherited_from_prior_estimate",
+      "variable_characteristics": [
+        "declared factor levels",
+        "estimator-supported predict statistic"
+      ]
+    },
+    "source_specific_elements": [
+      "contrast factor and predict placeholders"
+    ],
+    "reusable_core": "선언한 contrast와 predict scale로 margins를 post한다.",
+    "generality_rationale_ko": "contrast·predict·post의 상태 의존성을 명시하되 estimand를 결정하지 않는다.",
+    "variant_distinction": "[margins_contrast_predict_post] contrast/predict post margins differs from over-group post margins.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. estimator가 지원하는 predict statistic, contrast 및 post 소비자는 연구자가 명시해야 한다."
+  },
+  {
+    "label_id": "figures.marginsplot_single_profile_ci.v1",
+    "contract_ids": [
+      "margins_marginsplot.marginsplot_single_profile_ci"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "figures.descriptive_graph",
+    "variant_group": "postest.margins_marginsplot",
+    "variant_id": "marginsplot_single_profile_ci",
+    "stage": "figures",
+    "method_family": "marginsplot",
+    "source_spans": [
+      [
+        18,
+        18
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rmarginsplot.pdf"
+    ],
+    "research_situations": [
+      "a single declared margins profile requires a line and confidence-area display"
+    ],
+    "selection_conditions": [
+      "the active margins result has one intended profile",
+      "line and CI rendering are explicitly requested"
+    ],
+    "required_changes": [
+      "replace only approved graph labels or declared output bindings"
+    ],
+    "minimal_edit_fields": [
+      "approved labels",
+      "declared output binding"
+    ],
+    "tradeoffs": [
+      "uses a line plus rarea CI rendering",
+      "does not choose confidence level or graph interpretation"
+    ],
+    "state_signature": {
+      "requires": [
+        "active compatible margins result"
+      ],
+      "observable_signals": [
+        "marginsplot",
+        "recast(line)",
+        "recastci(rarea)"
+      ],
+      "produces": [
+        "active single-profile margins graph"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_margins_result",
+      "record_unit": "one declared margin profile point",
+      "required_keys": [],
+      "source_basis": "official Stata marginsplot manual mechanics",
+      "time_structure": "inherited_from_margins",
+      "variable_characteristics": [
+        "one margins profile",
+        "confidence interval"
+      ]
+    },
+    "source_specific_elements": [
+      "graph label/output placeholders"
+    ],
+    "reusable_core": "active single-profile margins 결과를 line과 CI area로 그린다.",
+    "generality_rationale_ko": "margin 계산과 graph rendering을 분리해 figure mechanics만 제공한다.",
+    "variant_distinction": "[marginsplot_single_profile_ci] single profile differs from multiple-series marginsplot and fixed-axis rendering.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. graph scale, confidence level, profile 의미는 연구자가 정하며 감사 전 reference-only다."
+  },
+  {
+    "label_id": "figures.marginsplot_multi_series.v1",
+    "contract_ids": [
+      "margins_marginsplot.marginsplot_multi_series"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "figures.descriptive_graph",
+    "variant_group": "postest.margins_marginsplot",
+    "variant_id": "marginsplot_multiple_series_styles",
+    "stage": "figures",
+    "method_family": "marginsplot",
+    "source_spans": [
+      [
+        19,
+        19
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rmarginsplot.pdf"
+    ],
+    "research_situations": [
+      "a declared margins result contains multiple intended series requiring distinct line styles"
+    ],
+    "selection_conditions": [
+      "active margins result has the declared number/order of series",
+      "series styling is explicitly requested"
+    ],
+    "required_changes": [
+      "replace only declared style bindings and approved labels"
+    ],
+    "minimal_edit_fields": [
+      "series style bindings",
+      "approved labels",
+      "declared output binding"
+    ],
+    "tradeoffs": [
+      "makes two series styles visible",
+      "does not infer series order or comparisons"
+    ],
+    "state_signature": {
+      "requires": [
+        "active multi-series margins result",
+        "declared series order"
+      ],
+      "observable_signals": [
+        "marginsplot",
+        "plot1opts",
+        "plot2opts"
+      ],
+      "produces": [
+        "active multiple-series margins graph"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_margins_result",
+      "record_unit": "one margin point in each declared series",
+      "required_keys": [
+        "declared series order"
+      ],
+      "source_basis": "official Stata marginsplot manual mechanics",
+      "time_structure": "inherited_from_margins",
+      "variable_characteristics": [
+        "multiple margin profiles",
+        "declared series mapping"
+      ]
+    },
+    "source_specific_elements": [
+      "series style placeholders"
+    ],
+    "reusable_core": "선언한 series order에 맞춰 multi-series marginsplot을 그린다.",
+    "generality_rationale_ko": "여러 series의 mapping·style 상태를 single-profile과 분리한다.",
+    "variant_distinction": "[marginsplot_multiple_series_styles] multiple series requires an explicit series order and differs from a single profile.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. series 수·순서·비교 해석은 자동 추론하지 않으며 감사 전 reference-only다."
+  },
+  {
+    "label_id": "figures.marginsplot_declared_fixed_axis.v1",
+    "contract_ids": [
+      "margins_marginsplot.marginsplot_declared_fixed_axis"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "figures.descriptive_graph",
+    "variant_group": "postest.margins_marginsplot",
+    "variant_id": "marginsplot_declared_fixed_axis",
+    "stage": "figures",
+    "method_family": "marginsplot",
+    "source_spans": [
+      [
+        20,
+        20
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rmarginsplot.pdf"
+    ],
+    "research_situations": [
+      "a researcher has declared a fixed probability-scale axis for a compatible margins plot"
+    ],
+    "selection_conditions": [
+      "active margins result and fixed axis endpoints/ticks are supplied",
+      "a fixed axis is justified outside this template"
+    ],
+    "required_changes": [
+      "replace only declared axis endpoints and tick labels"
+    ],
+    "minimal_edit_fields": [
+      "axis range",
+      "axis ticks",
+      "approved labels"
+    ],
+    "tradeoffs": [
+      "preserves a declared comparable scale",
+      "does not choose axis range or evidence interpretation"
+    ],
+    "state_signature": {
+      "requires": [
+        "active compatible margins result",
+        "declared fixed axis"
+      ],
+      "observable_signals": [
+        "marginsplot",
+        "yscale(range)",
+        "ylabel"
+      ],
+      "produces": [
+        "active margins graph with declared fixed y-axis"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_margins_result",
+      "record_unit": "one declared margin point",
+      "required_keys": [],
+      "source_basis": "official Stata marginsplot manual mechanics",
+      "time_structure": "inherited_from_margins",
+      "variable_characteristics": [
+        "margins on declared probability-compatible scale",
+        "fixed axis specification"
+      ]
+    },
+    "source_specific_elements": [
+      "axis range and tick placeholders"
+    ],
+    "reusable_core": "선언한 축 범위와 tick으로 marginsplot을 그린다.",
+    "generality_rationale_ko": "축 고정은 비교의 의미를 바꾸므로 별도 reference-only variant다.",
+    "variant_distinction": "[marginsplot_declared_fixed_axis] declared fixed-axis rendering differs from default-axis marginsplot.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. 축 범위는 연구자가 사전 선언해야 하며 이 template이 선택하지 않는다."
+  },
+  {
+    "label_id": "postest.predict_standard_error.v1",
+    "contract_ids": [
+      "predict.standard_error"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "postest.command_result",
+    "variant_group": "postest.predict",
+    "variant_id": "predict_stdp",
+    "stage": "post_estimation",
+    "method_family": "predict",
+    "source_spans": [
+      [
+        21,
+        21
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rpredict.pdf"
+    ],
+    "research_situations": [
+      "a declared active estimator supports standard-error-of-linear-prediction output"
+    ],
+    "selection_conditions": [
+      "active e-class estimator documents stdp support",
+      "new variable name and intended prediction statistic are supplied"
+    ],
+    "required_changes": [
+      "replace declared prediction variable only"
+    ],
+    "minimal_edit_fields": [
+      "new prediction variable",
+      "estimator-supported prediction statistic"
+    ],
+    "tradeoffs": [
+      "stdp is not generally the residual or outcome prediction error",
+      "does not infer estimator support or reporting purpose"
+    ],
+    "state_signature": {
+      "requires": [
+        "active compatible e-class estimate",
+        "active e(sample) when required by estimator"
+      ],
+      "observable_signals": [
+        "predict",
+        "stdp"
+      ],
+      "produces": [
+        "one prediction-standard-error variable"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "model_estimation_state",
+      "record_unit": "one active-data observation eligible for estimator prediction",
+      "required_keys": [],
+      "source_basis": "official Stata predict postestimation mechanics",
+      "time_structure": "inherited_from_prior_estimate",
+      "variable_characteristics": [
+        "new numeric prediction variable",
+        "estimator-supported stdp"
+      ]
+    },
+    "source_specific_elements": [
+      "prediction variable placeholder"
+    ],
+    "reusable_core": "active estimator가 지원하는 stdp를 새 변수로 predict한다.",
+    "generality_rationale_ko": "predict option의 estimator-specific support를 자동 추론하지 않는 reference mechanics다.",
+    "variant_distinction": "[predict_stdp] standard error of prediction differs from xb, residual, probability, or count predictions.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. active e-class와 estimator별 predict 지원을 실행 전에 확인해야 하며 감사 전 reference-only다."
+  },
+  {
+    "label_id": "postest.predict_equation_specific_reference.v1",
+    "contract_ids": [
+      "predict.equation_specific_reference"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "postest.command_result",
+    "variant_group": "postest.predict",
+    "variant_id": "predict_xb_named_equation",
+    "stage": "post_estimation",
+    "method_family": "predict",
+    "source_spans": [
+      [
+        22,
+        22
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rpredict.pdf"
+    ],
+    "research_situations": [
+      "a declared multi-equation active estimator requires prediction from one named equation"
+    ],
+    "selection_conditions": [
+      "active estimator exposes the declared equation name",
+      "prediction statistic and equation are supplied by the researcher"
+    ],
+    "required_changes": [
+      "replace new variable, statistic, and declared equation name only"
+    ],
+    "minimal_edit_fields": [
+      "new prediction variable",
+      "prediction statistic",
+      "equation name"
+    ],
+    "tradeoffs": [
+      "requires exact equation naming from active estimator",
+      "does not infer equation semantics or support"
+    ],
+    "state_signature": {
+      "requires": [
+        "active compatible multi-equation e-class estimate",
+        "declared equation name"
+      ],
+      "observable_signals": [
+        "predict",
+        "xb",
+        "equation"
+      ],
+      "produces": [
+        "one equation-specific prediction variable"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "multi_equation_model_state",
+      "record_unit": "one active-data observation eligible for prediction",
+      "required_keys": [
+        "exact equation name"
+      ],
+      "source_basis": "official Stata predict postestimation mechanics",
+      "time_structure": "inherited_from_prior_estimate",
+      "variable_characteristics": [
+        "new numeric prediction variable",
+        "estimator equation name"
+      ]
+    },
+    "source_specific_elements": [
+      "new variable and equation placeholders"
+    ],
+    "reusable_core": "active multi-equation estimator의 선언한 equation에서 predict한다.",
+    "generality_rationale_ko": "equation name은 추정 결과에 의존하므로 reference-only로 보존한다.",
+    "variant_distinction": "[predict_xb_named_equation] named-equation prediction differs from a default single-equation prediction.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. equation name과 predict statistic은 active estimator의 e() 결과와 문서를 근거로 선언해야 한다."
+  },
+  {
+    "label_id": "postest.test_single_linear_hypothesis.v1",
+    "contract_ids": [
+      "test_testparm_lincom.single_linear_hypothesis"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "postest.command_result",
+    "variant_group": "postest.test_testparm_lincom",
+    "variant_id": "test_single_linear_hypothesis",
+    "stage": "post_estimation",
+    "method_family": "test",
+    "source_spans": [
+      [
+        23,
+        23
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rtest.pdf"
+    ],
+    "research_situations": [
+      "an active e-class estimate requires one declared linear hypothesis test"
+    ],
+    "selection_conditions": [
+      "active e-class estimate contains the declared coefficient",
+      "null value and hypothesis are specified"
+    ],
+    "required_changes": [
+      "replace declared coefficient and null value only"
+    ],
+    "minimal_edit_fields": [
+      "coefficient name",
+      "null value"
+    ],
+    "tradeoffs": [
+      "returns r-class test results",
+      "does not choose the hypothesis or multiple-testing policy"
+    ],
+    "state_signature": {
+      "requires": [
+        "active e-class estimate",
+        "declared coefficient and null"
+      ],
+      "observable_signals": [
+        "test",
+        "="
+      ],
+      "produces": [
+        "active r-class test statistics",
+        "visible linear-hypothesis result"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "model_estimation_state",
+      "record_unit": "one active e-class coefficient restriction",
+      "required_keys": [],
+      "source_basis": "official Stata test manual mechanics",
+      "time_structure": "inherited_from_prior_estimate",
+      "variable_characteristics": [
+        "exact coefficient name",
+        "declared null value"
+      ]
+    },
+    "source_specific_elements": [
+      "coefficient and null placeholders"
+    ],
+    "reusable_core": "active e-class 추정의 한 선형 가설을 test한다.",
+    "generality_rationale_ko": "가설 자체는 자동 선택하지 않고 r-class 결과 상태만 명시한다.",
+    "variant_distinction": "[test_single_linear_hypothesis] single-equation single hypothesis differs from cross-equation restrictions and lincom.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. test 뒤 r()가 갱신되므로 필요한 반환값은 즉시 소비·기록해야 하며 감사 전 reference-only다."
+  },
+  {
+    "label_id": "postest.test_cross_equation.v1",
+    "contract_ids": [
+      "test_testparm_lincom.cross_equation"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "postest.command_result",
+    "variant_group": "postest.test_testparm_lincom",
+    "variant_id": "test_cross_equation_restriction",
+    "stage": "post_estimation",
+    "method_family": "test",
+    "source_spans": [
+      [
+        24,
+        24
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rtest.pdf"
+    ],
+    "research_situations": [
+      "a declared multi-equation active estimator requires a cross-equation coefficient restriction"
+    ],
+    "selection_conditions": [
+      "active multi-equation e-class estimate exposes both exact coefficient names",
+      "restriction is substantively declared"
+    ],
+    "required_changes": [
+      "replace declared equation and coefficient names only"
+    ],
+    "minimal_edit_fields": [
+      "left equation coefficient",
+      "right equation coefficient",
+      "declared null"
+    ],
+    "tradeoffs": [
+      "depends on exact e(b) equation naming",
+      "does not validate model comparability or hypothesis choice"
+    ],
+    "state_signature": {
+      "requires": [
+        "active compatible multi-equation e-class estimate",
+        "exact equation-qualified coefficient names"
+      ],
+      "observable_signals": [
+        "test",
+        "[equation]coefficient"
+      ],
+      "produces": [
+        "active r-class cross-equation test statistics"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "multi_equation_model_state",
+      "record_unit": "one declared restriction across active model equations",
+      "required_keys": [
+        "exact equation names"
+      ],
+      "source_basis": "official Stata test manual mechanics",
+      "time_structure": "inherited_from_prior_estimate",
+      "variable_characteristics": [
+        "equation-qualified coefficient names"
+      ]
+    },
+    "source_specific_elements": [
+      "equation and coefficient placeholders"
+    ],
+    "reusable_core": "active multi-equation e-class 추정의 cross-equation restriction을 test한다.",
+    "generality_rationale_ko": "equation-qualified e(b) 이름에 의존하므로 reference-only로 보존한다.",
+    "variant_distinction": "[test_cross_equation_restriction] cross-equation restriction differs from a single-equation hypothesis.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. 두 equation의 계수 비교 가능성과 exact e(b) 이름은 연구자·runtime 검증이 필요하다."
+  },
+  {
+    "label_id": "postest.lincom_eform.v1",
+    "contract_ids": [
+      "test_testparm_lincom.lincom_eform"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "postest.command_result",
+    "variant_group": "postest.test_testparm_lincom",
+    "variant_id": "lincom_eform",
+    "stage": "post_estimation",
+    "method_family": "lincom",
+    "source_spans": [
+      [
+        25,
+        25
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rtest.pdf"
+    ],
+    "research_situations": [
+      "an active compatible e-class estimate requires a declared linear combination displayed on an exponentiated scale"
+    ],
+    "selection_conditions": [
+      "active e-class coefficient and eform scale are appropriate and explicitly declared"
+    ],
+    "required_changes": [
+      "replace declared linear combination only"
+    ],
+    "minimal_edit_fields": [
+      "linear combination",
+      "declared effect scale"
+    ],
+    "tradeoffs": [
+      "eform transforms displayed combination scale",
+      "does not decide whether exponentiation is interpretable"
+    ],
+    "state_signature": {
+      "requires": [
+        "active compatible e-class estimate",
+        "declared linear combination"
+      ],
+      "observable_signals": [
+        "lincom",
+        "eform"
+      ],
+      "produces": [
+        "active r-class linear-combination result",
+        "exponentiated displayed result"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "model_estimation_state",
+      "record_unit": "one declared linear combination of active e-class coefficients",
+      "required_keys": [],
+      "source_basis": "official Stata lincom manual mechanics",
+      "time_structure": "inherited_from_prior_estimate",
+      "variable_characteristics": [
+        "exact coefficient names",
+        "declared exponentiated scale"
+      ]
+    },
+    "source_specific_elements": [
+      "linear-combination placeholder"
+    ],
+    "reusable_core": "선언한 linear combination을 eform scale로 lincom한다.",
+    "generality_rationale_ko": "eform 해석 가능성은 자동 판단하지 않는 reference mechanics다.",
+    "variant_distinction": "[lincom_eform] eform lincom differs from untransformed lincom and joint test.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. eform 해석과 coefficient combination은 연구자가 선언하며 lincom 결과는 r-class다."
+  },
+  {
+    "label_id": "postest.test_immediate_rclass_capture.v1",
+    "contract_ids": [
+      "test_testparm_lincom.immediate_rclass_capture"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "postest.command_result",
+    "variant_group": "postest.test_testparm_lincom",
+    "variant_id": "test_immediate_rclass_capture",
+    "stage": "post_estimation",
+    "method_family": "test",
+    "source_spans": [
+      [
+        26,
+        27
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rtest.pdf"
+    ],
+    "research_situations": [
+      "a declared test p-value must be retained immediately before later r-class commands overwrite it"
+    ],
+    "selection_conditions": [
+      "active e-class estimate contains declared restriction",
+      "a local r(p) handoff is explicitly required by the consuming block"
+    ],
+    "required_changes": [
+      "replace declared restriction and local name only"
+    ],
+    "minimal_edit_fields": [
+      "restriction",
+      "local result name"
+    ],
+    "tradeoffs": [
+      "preserves r(p) before it is overwritten",
+      "does not select the restriction or reporting threshold"
+    ],
+    "state_signature": {
+      "requires": [
+        "active e-class estimate",
+        "declared test restriction"
+      ],
+      "observable_signals": [
+        "test",
+        "r(p)",
+        "local"
+      ],
+      "produces": [
+        "active r-class test result",
+        "local macro holding immediate r(p) value"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "model_estimation_state",
+      "record_unit": "one declared active e-class restriction",
+      "required_keys": [],
+      "source_basis": "official Stata test returned-results mechanics",
+      "time_structure": "inherited_from_prior_estimate",
+      "variable_characteristics": [
+        "exact coefficient restriction",
+        "r-class p-value consumer"
+      ]
+    },
+    "source_specific_elements": [
+      "restriction and local macro placeholders"
+    ],
+    "reusable_core": "test 직후 r(p)를 local에 즉시 저장해 반환 상태 덮어쓰기를 방지한다.",
+    "generality_rationale_ko": "r-class 반환값의 즉시 소비는 state handoff라 별도 원자로 둔다.",
+    "variant_distinction": "[test_immediate_rclass_capture] immediate r-class capture differs from a visible test with no downstream result handoff.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. test restriction과 r(p)의 후속 용도는 연구자가 선언해야 하며 감사 전 reference-only다."
+  },
+  {
+    "label_id": "estimation.xtreg_fixed_effects_weighted_clustered.v1",
+    "contract_ids": [
+      "xtreg.fixed_effects_weighted_clustered"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.conventional",
+    "variant_group": "estimation.xtreg",
+    "variant_id": "xtreg_fe_pweight_clustered",
+    "stage": "estimation",
+    "method_family": "xtreg",
+    "source_spans": [
+      [
+        28,
+        28
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/xtxtreg.pdf"
+    ],
+    "research_situations": [
+      "a researcher has explicitly selected a pweighted fixed-effects panel estimator with clustered VCE"
+    ],
+    "selection_conditions": [
+      "prior xtset state, pweight meaning, cluster level, outcome, regressors, sample, and estimand are supplied",
+      "fixed effects rather than random effects is an explicit research decision"
+    ],
+    "required_changes": [
+      "replace declared variables, pweight, and cluster only"
+    ],
+    "minimal_edit_fields": [
+      "outcome",
+      "regressors",
+      "pweight",
+      "cluster",
+      "declared sample"
+    ],
+    "tradeoffs": [
+      "preserves FE, pweight, and cluster in one visible specification",
+      "does not choose panel key, FE versus RE, weighting, or VCE level"
+    ],
+    "state_signature": {
+      "requires": [
+        "active data with prior xtset",
+        "declared pweight",
+        "declared cluster identifier"
+      ],
+      "observable_signals": [
+        "xtreg",
+        "fe",
+        "pw",
+        "vce(cluster)"
+      ],
+      "produces": [
+        "active e-class pweighted fixed-effects clustered estimate",
+        "active e(sample)"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "weighted_panel_data",
+      "record_unit": "one weighted declared panel-time observation",
+      "required_keys": [
+        "panel identifier",
+        "time identifier",
+        "cluster identifier"
+      ],
+      "source_basis": "official Stata xtreg manual mechanics",
+      "time_structure": "prior xtset declaration",
+      "variable_characteristics": [
+        "numeric outcome",
+        "within-panel covariate variation",
+        "probability weight"
+      ]
+    },
+    "source_specific_elements": [
+      "prior xtset state, pweight, and cluster placeholders"
+    ],
+    "reusable_core": "기존 xtset 상태에서 pweight와 clustered VCE를 포함한 fixed-effects xtreg를 실행한다.",
+    "generality_rationale_ko": "FE·pweight·cluster의 결합 상태를 RE와 분리해 공식 mechanics만 보존한다.",
+    "variant_distinction": "[xtreg_fe_pweight_clustered] this is FE with pweight and clustered VCE; it is not a random-effects specification or unweighted FE.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. FE 대 RE, pweight, cluster, panel key와 estimand 선택은 연구자가 명시해야 하며 감사 전 reference-only다."
+  },
+  {
+    "label_id": "tables.modern_table_two_way_statistics.v1",
+    "contract_ids": [
+      "table_dtable.modern_table_two_way_statistics"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "tables.collection_result",
+    "variant_group": "tables.modern_table",
+    "variant_id": "table_two_way_statistics",
+    "stage": "tables",
+    "method_family": "table",
+    "source_spans": [
+      [
+        29,
+        29
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rtable.pdf"
+    ],
+    "research_situations": [
+      "a researcher has declared a two-way descriptive table with row and column dimensions and summary statistics"
+    ],
+    "selection_conditions": [
+      "row variable, column variable, outcome, statistics, missing-value policy, and presentation purpose are supplied",
+      "two-way layout is explicitly required"
+    ],
+    "required_changes": [
+      "replace declared row variable, column variable, outcome, and statistic list only"
+    ],
+    "minimal_edit_fields": [
+      "row variable",
+      "column variable",
+      "outcome",
+      "statistic list",
+      "declared missing policy"
+    ],
+    "tradeoffs": [
+      "modern table creates a two-dimensional result collection",
+      "does not choose tabulation dimensions, statistics, display, or causal interpretation"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared row and column variables",
+        "declared summary statistics"
+      ],
+      "observable_signals": [
+        "table",
+        "two dimensions",
+        "statistic"
+      ],
+      "produces": [
+        "active modern table collection",
+        "visible two-way statistics table"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one observation assigned to declared row-column cell",
+      "required_keys": [
+        "row variable",
+        "column variable"
+      ],
+      "source_basis": "official Stata modern table manual mechanics",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "two categorical dimensions",
+        "numeric outcome",
+        "declared summary statistics"
+      ]
+    },
+    "source_specific_elements": [
+      "row, column, outcome, and statistics placeholders"
+    ],
+    "reusable_core": "선언한 row·column 두 차원에 대해 modern table statistics를 만든다.",
+    "generality_rationale_ko": "one-way table과 달리 두 범주 차원 및 collection 결과 상태를 분리한다.",
+    "variant_distinction": "[table_two_way_statistics] two-way modern table statistics differs from one-way table, dtable, and legacy table,c() syntax.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 manual mechanics 후보다. row/column 분류, 통계량, missing 처리와 해석은 연구자가 선언해야 하며 감사 전 reference-only다."
+  }
+]

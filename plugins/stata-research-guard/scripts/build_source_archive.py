@@ -10,7 +10,7 @@ import re
 import tempfile
 from pathlib import Path, PurePosixPath
 
-from build_labeled_checkpoints import expand_compact_package_templates
+from build_labeled_checkpoints import expand_compact_package_templates, load_audited_atomic_template_sets
 
 
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -102,11 +102,15 @@ def resolve_source(plugin_root: Path, workspace_root: Path, source_path: str) ->
         raise ValueError(f"source_path escapes an approved provenance root: {source_path}")
     if relative.parts[0].endswith(":"):
         raise ValueError(f"source_path must not contain a drive prefix: {source_path}")
-    if source_path.startswith("corpus/") or source_path.startswith(PLUGIN_SOURCE_PREFIX):
+    if source_path.startswith("corpus/"):
         approved_root = workspace_root.resolve(strict=True)
+        candidate = approved_root.joinpath(*relative.parts)
+    elif source_path.startswith(PLUGIN_SOURCE_PREFIX):
+        approved_root = plugin_root.resolve(strict=True)
+        plugin_relative = PurePosixPath(source_path[len(PLUGIN_SOURCE_PREFIX) :])
+        candidate = approved_root.joinpath(*plugin_relative.parts)
     else:
         raise ValueError(f"source_path has no approved provenance prefix: {source_path}")
-    candidate = approved_root.joinpath(*relative.parts)
     if not candidate.exists():
         raise FileNotFoundError(f"source file is missing: {source_path}")
     resolved = candidate.resolve(strict=True)
@@ -133,9 +137,13 @@ def atomic_write(path: Path, value: bytes) -> None:
 
 def build() -> dict[str, int]:
     plugin_root = Path(__file__).resolve().parents[1]
-    workspace_root = plugin_root.parents[1]
+    workspace_root = next(
+        (parent for parent in plugin_root.parents if (parent / "corpus").is_dir() and (parent / "catalog").is_dir()),
+        plugin_root.parents[1],
+    )
     annotation_path = plugin_root / "annotations" / "labeled_checkpoints.json"
     compact_annotation_path = plugin_root / "annotations" / "package_first_atomic_templates.json"
+    atomic_template_dir = plugin_root / "annotations" / "atomic_template_sets"
     rubric_path = plugin_root / "annotations" / "generality_rubric.json"
     runtime_path = plugin_root / "data" / "labeled_checkpoints.jsonl"
     archive_root = plugin_root / "data" / "source_archive"
@@ -147,6 +155,17 @@ def build() -> dict[str, int]:
         rubric = read_json(rubric_path)
         hard_fail_rule_ids = [row["id"] for row in rubric["hard_fail_rules"]]
         annotation_values.extend(expand_compact_package_templates(compact_values, hard_fail_rule_ids))
+    if atomic_template_dir.exists():
+        rubric = read_json(rubric_path)
+        hard_fail_rule_ids = [row["id"] for row in rubric["hard_fail_rules"]]
+        legacy_label_count = len(annotation_values)
+        annotation_values.extend(
+            load_audited_atomic_template_sets(
+                plugin_root,
+                hard_fail_rule_ids,
+                legacy_label_count=legacy_label_count,
+            )
+        )
     annotation_rows = labels_by_id(annotation_values, annotation_path)
     runtime_rows = labels_by_id(read_jsonl(runtime_path), runtime_path)
     cross_check_labels(annotation_rows, runtime_rows)

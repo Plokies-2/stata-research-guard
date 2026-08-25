@@ -223,7 +223,7 @@ class GeneralityMetadataTests(unittest.TestCase):
 
     def test_source_grounded_input_signatures_cover_every_label_without_inference(self) -> None:
         built = [json.loads(line) for line in (ROOT / "data/labeled_checkpoints.jsonl").read_text(encoding="utf-8").splitlines() if line]
-        self.assertEqual(len(built), 148)
+        self.assertEqual(len(built), 410)
         allowed_structures = {"cross_section", "panel", "repeated_cross_section", "time_series", "other", "unknown"}
         self.assertTrue(all(row["input_signature"]["data_structure"] in allowed_structures for row in built))
         self.assertTrue(all(row["input_signature"]["observation_unit"] for row in built))
@@ -244,7 +244,10 @@ class GeneralityMetadataTests(unittest.TestCase):
                 self.assertTrue(evidence["required_keys"])
             if signature["variable_characteristics"] != ["not_stated"]:
                 self.assertTrue(evidence["variable_characteristics"])
-        self.assertEqual(Counter(row["input_signature"]["data_structure"] for row in built), {"unknown": 111, "panel": 37})
+        self.assertEqual(
+            Counter(row["input_signature"]["data_structure"] for row in built),
+            {"unknown": 257, "panel": 118, "time_series": 35},
+        )
         cohort = next(row for row in built if row["label_id"] == "panel.cohort_anticipation_exit_filter.v1")
         self.assertEqual(cohort["input_signature"]["data_structure"], "panel")
         self.assertEqual(cohort["input_signature"]["required_keys"], ["id_ci_cj", "year"])

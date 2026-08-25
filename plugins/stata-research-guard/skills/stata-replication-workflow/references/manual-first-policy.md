@@ -1,6 +1,6 @@
 # Official-manual fallback policy
 
-The workflow dictionary and all collected approved researcher examples are searched first. The official manual is the fallback for syntax, returned results, and command-state mechanics. It does not supply a researcher-style choice when the corpus has none.
+Call `resolve_transition_evidence` first. Its bounded official/maintainer guide card is retained whenever available, while an independently matched usage row may supply at most one template. Search the legacy workflow dictionary and collected researcher examples only for diagnosis or a nearest nonbinding hint after the resolver reports fallback or mismatch; use deeper official-manual search only for syntax, returned results, and command-state mechanics. None of these guide sources supplies a researcher-style choice when usage evidence has none.
 
 ## Three independent questions
 
@@ -8,7 +8,7 @@ The workflow dictionary and all collected approved researcher examples are searc
 2. Does it match the target researcher style? Use only clean selected spans from the collected research-practice code packages.
 3. Is it portable and auditable? Use replication-safety checks.
 
-If the dictionary, corpus, and official manual still do not resolve the request, ask the user. Ask immediately when the unresolved point is a substantive estimator, sample, comparison group, control, fixed-effect, clustering, or reporting choice; do not manufacture that choice from a manual example.
+Use `resolve_transition_evidence` before the legacy dictionary, corpus, or manual searches. Its guide card is the always-present mechanics companion when coverage exists, while its usage result is independently matched and may supply at most one template. Never combine their scores or treat guide authority as research-usage support. If the resolver, diagnostic corpus search, and deeper official manual check still do not resolve the request, ask the user. Ask immediately when the unresolved point is a substantive estimator, sample, comparison group, control, fixed-effect, clustering, or reporting choice; do not manufacture that choice from a manual example.
 
 Never collapse these questions. `foreach`, `forvalues`, macros, factor variables, `program define`, `_b[]`, `_se[]`, `putexcel`, and `putdocx` can be valid Stata syntax even when a specific use does not match the target research-code style.
 

@@ -241,6 +241,21 @@
       "bytes": 27473,
       "sha256": "aafc2517b0a31ffcbcae07d4ffe8ff655fc431d4cf79cb303fe53f507b759a74"
     },
+    "plugins/stata-research-guard/annotations/source_snapshots/community_hdfe_iv_guide_templates.do": {
+      "archive_path": "data/source_archive/files/7d7553cec649abc7bb084402fb28c4f64be7c9908c8a37cef3d05170fa56eb3c.source",
+      "bytes": 5532,
+      "sha256": "7d7553cec649abc7bb084402fb28c4f64be7c9908c8a37cef3d05170fa56eb3c"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/community_methods_guide_templates.do": {
+      "archive_path": "data/source_archive/files/720287476312c3c15a6bd883e2abe9112833bd08b534806b084c1872912a167f.source",
+      "bytes": 6567,
+      "sha256": "720287476312c3c15a6bd883e2abe9112833bd08b534806b084c1872912a167f"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/community_reporting_guide_templates.do": {
+      "archive_path": "data/source_archive/files/08d5616661fd1ac5f3633564716e670cef95081353055ebc7f1a427187c4c206.source",
+      "bytes": 4966,
+      "sha256": "08d5616661fd1ac5f3633564716e670cef95081353055ebc7f1a427187c4c206"
+    },
     "plugins/stata-research-guard/annotations/source_snapshots/default_style_estadd_ymean.do": {
       "archive_path": "data/source_archive/files/991356a8f8271bf136e02f62cd080e095d6e209123364d44f666cf58e7787c06.source",
       "bytes": 331,
@@ -271,10 +286,20 @@
       "bytes": 448,
       "sha256": "af0c57117c6af86fd2e7d0ba836493c6ec8be10f70d536723308fc8ec0ee423d"
     },
+    "plugins/stata-research-guard/annotations/source_snapshots/official_data_prep_guide_templates.do": {
+      "archive_path": "data/source_archive/files/f86f1eb3e20cf090d6143e30c319f09987e0637f0390610f7b5e7d548ac70978.source",
+      "bytes": 2096,
+      "sha256": "f86f1eb3e20cf090d6143e30c319f09987e0637f0390610f7b5e7d548ac70978"
+    },
     "plugins/stata-research-guard/annotations/source_snapshots/official_import_delimited_single_source.do": {
       "archive_path": "data/source_archive/files/920a29063d15465f3b1bd54945e657620a3ea8b9fc8bb08bacb4e487646b49ce.source",
       "bytes": 286,
       "sha256": "920a29063d15465f3b1bd54945e657620a3ea8b9fc8bb08bacb4e487646b49ce"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/official_models_tables_guide_templates.do": {
+      "archive_path": "data/source_archive/files/0f389323105279b13d34322e0f55fd20d8954030b070e46eb00247610350a097.source",
+      "bytes": 3060,
+      "sha256": "0f389323105279b13d34322e0f55fd20d8954030b070e46eb00247610350a097"
     },
     "plugins/stata-research-guard/annotations/source_snapshots/official_postfile_named_sample_flow.do": {
       "archive_path": "data/source_archive/files/a5c779dea5020bf619a1c150499462ab4dd776878a696c119a9999a56c89cb98.source",
@@ -340,6 +365,21 @@
       "archive_path": "data/source_archive/files/f573f4962bf0904a7ab52c170232ab4b5ea356ddd8c2f299b0a82d7901aef984.source",
       "bytes": 548,
       "sha256": "f573f4962bf0904a7ab52c170232ab4b5ea356ddd8c2f299b0a82d7901aef984"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/top50_model_gap_fill_guide_templates.do": {
+      "archive_path": "data/source_archive/files/cbe0302de967afd514ed5e69670e7f350c9b524d270ae15c56324acf5b1d3613.source",
+      "bytes": 1726,
+      "sha256": "cbe0302de967afd514ed5e69670e7f350c9b524d270ae15c56324acf5b1d3613"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/top50_prep_gap_fill_guide_templates.do": {
+      "archive_path": "data/source_archive/files/c8c72a1c17fd704509c8b96c69ac1b7d948be489a620b9a5c9a5f6d2763c71fc.source",
+      "bytes": 2944,
+      "sha256": "c8c72a1c17fd704509c8b96c69ac1b7d948be489a620b9a5c9a5f6d2763c71fc"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/top50_reporting_gap_fill_guide_templates.do": {
+      "archive_path": "data/source_archive/files/53bc392f372089c45694467fca9b9ecc3b9122830af36696167be3cc7b4eb643.source",
+      "bytes": 4058,
+      "sha256": "53bc392f372089c45694467fca9b9ecc3b9122830af36696167be3cc7b4eb643"
     }
   }
 }

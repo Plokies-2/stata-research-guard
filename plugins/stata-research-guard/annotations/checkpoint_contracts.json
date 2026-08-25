@@ -51,7 +51,14 @@
     "figures.export_pdf": {"ko": "PDF 그림 내보내기", "en": "Figure PDF export"},
     "final_excel_assembly": {"ko": "최종 Excel 회귀표 조립", "en": "Final Excel regression-table assembly"},
     "cleanup": {"ko": "임시파일 정리", "en": "Temporary-file cleanup"},
-    "panel.materialize_time_grid": {"ko": "패널 시점 격자 생성", "en": "Panel time-grid materialization"}
+    "panel.materialize_time_grid": {"ko": "패널 시점 격자 생성", "en": "Panel time-grid materialization"},
+    "preparation.transform": {"ko": "일반 자료 변환", "en": "General data transformation"},
+    "sample.restriction": {"ko": "명시적 표본 제한", "en": "Declared sample restriction"},
+    "descriptives.command_result": {"ko": "기초통계 명령 결과", "en": "Descriptive command result"},
+    "postest.command_result": {"ko": "사후추정 명령 결과", "en": "Post-estimation command result"},
+    "figures.descriptive_graph": {"ko": "일반 기초통계 그림", "en": "General descriptive graph"},
+    "exports.dataset_file": {"ko": "자료 파일 내보내기", "en": "Dataset-file export"},
+    "tables.collection_result": {"ko": "표 collection 결과", "en": "Table collection result"}
   },
   "contracts": [
     {
@@ -592,6 +599,83 @@
       "can_follow": ["estimation.conventional", "estimation.staggered_did"],
       "can_precede": ["final_excel_assembly"],
       "incompatible_with": ["two or more nested active loops"]
+    },
+    {
+      "checkpoint": "preparation.transform",
+      "unit_kind": "preparation",
+      "purpose_ko": "호출자가 선언한 식·형식·라벨·순서 규칙으로 자료를 한 단계 변환한다.",
+      "aliases": ["자료 변환", "type conversion", "labels", "order", "egen", "generate", "replace"],
+      "input_contract": ["active data", "caller-declared variables and transformation semantics"],
+      "output_contract": ["one inspectable transformed data state with original meaning preserved where required"],
+      "can_follow": ["input_load.single_source", "input_load.combine", "merge_reshape.integration"],
+      "can_precede": ["integrity.audit", "sample.restriction", "estimation.conventional"],
+      "incompatible_with": ["undeclared recode, missing-value rule, overwrite, or category mapping"]
+    },
+    {
+      "checkpoint": "sample.restriction",
+      "unit_kind": "preparation",
+      "purpose_ko": "연구자가 미리 선언한 적격성·기간·결측 규칙으로 이름 있는 분석 표본을 만든다.",
+      "aliases": ["표본 제한", "sample restriction", "eligibility", "time window", "required missing exclusion"],
+      "input_contract": ["active data", "caller-declared eligibility, time-window, or required-variable rule"],
+      "output_contract": ["one auditable restricted sample whose exclusion rule remains visible"],
+      "can_follow": ["preparation.transform", "integrity.audit", "merge_reshape.integration"],
+      "can_precede": ["estimation.conventional", "estimation.staggered_did", "descriptives.command_result"],
+      "incompatible_with": ["outcome-informed or source-inferred sample restriction"]
+    },
+    {
+      "checkpoint": "descriptives.command_result",
+      "unit_kind": "preparation_validation",
+      "purpose_ko": "선언한 변수·집단·가중치에 대한 상관·분위수·집단 요약 결과를 만든다.",
+      "aliases": ["correlation", "pwcorr", "quantiles", "group summary", "기초통계 결과"],
+      "input_contract": ["fixed analysis sample", "declared variables, groups, weights, and statistics"],
+      "output_contract": ["one active or materialized descriptive result with declared statistics only"],
+      "can_follow": ["sample.restriction", "dataset.finalize_keep_label_save", "preparation.transform"],
+      "can_precede": ["exports.descriptive_excel_sheet", "figures.descriptive_graph"],
+      "incompatible_with": ["undeclared statistic, weight, group, or observation unit"]
+    },
+    {
+      "checkpoint": "postest.command_result",
+      "unit_kind": "post_estimation",
+      "purpose_ko": "호환되는 활성 추정치에서 예측·검정·집계 등 하나의 사후추정 상태 전이를 수행한다.",
+      "aliases": ["predict", "test", "lincom", "estat", "postestimation"],
+      "input_contract": ["compatible active estimation state", "caller-declared post-estimation target"],
+      "output_contract": ["one command-specific post-estimation result or generated variable"],
+      "can_follow": ["estimation.conventional", "estimation.staggered_did"],
+      "can_precede": ["figures.event_study", "figures.descriptive_graph", "exports.matrix_excel"],
+      "incompatible_with": ["incompatible active estimate", "manual coefficient or standard-error reconstruction"]
+    },
+    {
+      "checkpoint": "figures.descriptive_graph",
+      "unit_kind": "post_estimation_export",
+      "purpose_ko": "선언한 변수·표본·축 의미로 하나의 Stata graph를 만들고 활성 상태로 남긴다.",
+      "aliases": ["twoway", "histogram", "line", "scatter", "confidence band", "descriptive graph"],
+      "input_contract": ["active data or compatible post-estimation result", "declared plot variables, sample, geometry, and axis meaning"],
+      "output_contract": ["one active reproducible Stata graph; PDF export remains separate"],
+      "can_follow": ["descriptives.command_result", "postest.command_result", "estimation.conventional"],
+      "can_precede": ["figures.named_graph_combine", "figures.export_pdf"],
+      "incompatible_with": ["undeclared axis or sample choice", "manual graph editing", "bundled non-PDF final output"]
+    },
+    {
+      "checkpoint": "exports.dataset_file",
+      "unit_kind": "post_estimation_export",
+      "purpose_ko": "확정된 자료 상태를 선언한 delimited 또는 Excel 파일 계약으로 내보낸다.",
+      "aliases": ["export delimited", "export excel", "dataset export", "자료 파일 내보내기"],
+      "input_contract": ["active finalized dataset", "declared variable schema, destination, and overwrite role"],
+      "output_contract": ["one declared external data file with auditable row and column schema"],
+      "can_follow": ["dataset.finalize_keep_label_save", "preparation.transform", "descriptives.command_result"],
+      "can_precede": ["cleanup"],
+      "incompatible_with": ["undeclared overwrite", "silent variable or observation filtering"]
+    },
+    {
+      "checkpoint": "tables.collection_result",
+      "unit_kind": "post_estimation_export",
+      "purpose_ko": "table·dtable·etable·collect 명령으로 하나의 명시된 collection 상태를 만든다.",
+      "aliases": ["table", "dtable", "etable", "collect get", "collect style", "collection result"],
+      "input_contract": ["active data or compatible estimation result", "declared rows, columns, statistics, model set, and Stata-version interface"],
+      "output_contract": ["one populated and inspectable Stata collection; Excel export remains a separate transition"],
+      "can_follow": ["descriptives.command_result", "estimation.conventional", "postest.command_result"],
+      "can_precede": ["exports.matrix_excel"],
+      "incompatible_with": ["legacy table syntax without a version contract", "manual coefficient or standard-error bridge"]
     }
   ]
 }

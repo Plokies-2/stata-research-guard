@@ -7,6 +7,8 @@ import re
 from collections import Counter
 from pathlib import Path
 
+from build_command_template_coverage import validate_promotion_audit
+
 
 REQUIRED = {
     "label_id",
@@ -39,7 +41,24 @@ DECISIONS = {"keep", "conditional_keep", "drop"}
 ADAPTATION_MODES = {"minimal_substitution", "structural_reference", "do_not_reuse"}
 REUSE_SCOPES = {"general", "method_specific", "project_specific", "negative"}
 RUBRIC_CLASSES = {"preferred_candidate", "conditional_candidate", "reference_only", "exclude"}
+def is_noncompeting_guide_mechanics(row: dict) -> bool:
+    """Return true only for the new audited companion-layer guide atoms.
+
+    Two legacy official-manual mechanics labels remain compatibility evidence
+    in the old diagnostic search; they are reference-only and cannot be
+    auto-selected.  The new audited batch is isolated from all legacy ranking.
+    """
+    return bool(row.get("promotion_audit"))
 INPUT_DATA_STRUCTURES = {"cross_section", "panel", "repeated_cross_section", "time_series", "other", "unknown"}
+TEMPLATE_INPUT_PROFILE_FIELDS = {
+    "data_structure",
+    "record_unit",
+    "required_keys",
+    "source_basis",
+    "time_structure",
+    "variable_characteristics",
+}
+STATE_SIGNATURE_FIELDS = {"requires", "observable_signals", "produces"}
 LOOP_OPEN = re.compile(r"(?i)^\s*(?:foreach|forv(?:al(?:ues)?)?|while)\b.*\{")
 TEX_OUTPUT = re.compile(r"(?i)^\s*(?:texdoc|tex\s|esttab\b.*\.tex\b|estout\b.*\.tex\b)")
 PANEL_DECLARATION = re.compile(r"(?im)^\s*(?:xtset|tsset)\s+([^,\n]+)")
@@ -95,7 +114,13 @@ COMMAND_ALIASES = {
 COMMAND_NOISE = {"else", "forvalues", "forval", "forv", "foreach", "if", "timer", "while"}
 
 
-def expand_compact_package_templates(entries: list[dict], hard_fail_rule_ids: list[str]) -> list[dict]:
+def expand_compact_package_templates(
+    entries: list[dict],
+    hard_fail_rule_ids: list[str],
+    *,
+    source_path: str = "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+    batch_kind: str = "package_first_atomic_template_batch",
+) -> list[dict]:
     """Expand a deliberately narrow, reviewable batch of derived atomic templates.
 
     The compact file is not a second source corpus.  It only prevents the same
@@ -107,6 +132,25 @@ def expand_compact_package_templates(entries: list[dict], hard_fail_rule_ids: li
     for entry in entries:
         label_id = entry["label_id"]
         review_note = entry["review_notes"]
+        generation_class = entry.get("canonical_generation_class", "conditional_candidate")
+        if generation_class not in {"preferred_candidate", "conditional_candidate", "reference_only"}:
+            raise ValueError(f"invalid canonical_generation_class for {label_id}: {generation_class}")
+        is_reference = generation_class == "reference_only"
+        entry_source_kind = entry.get("source_kind", "derived_canonical_implementation")
+        provenance = {
+            "kind": batch_kind,
+            "independent_support": False,
+            "researcher_style_evidence": False,
+            "raw_source_bytes_claimed": False,
+            "reason": (
+                "The command contract is isolated from an official or maintainer guide as a mechanics atom; "
+                "the guide does not supply the research design, sample, estimand, fixed effects, or VCE choice."
+                if "guide" in batch_kind
+                else "The command contract is isolated as a canonical Stata atom; it is not represented as a verbatim deposited research span."
+            ),
+            "source_collection_next_step": "Add independent deposited research-code support when available without treating guide examples as researcher-style evidence.",
+        }
+        provenance.update(entry.get("derivation_provenance", {}))
         hard_fails = [
             {
                 "rule_id": rule_id,
@@ -120,19 +164,16 @@ def expand_compact_package_templates(entries: list[dict], hard_fail_rule_ids: li
         ]
         expanded.append(
             {
-                "decision": "conditional_keep",
-                "adaptation_mode": "minimal_substitution",
+                "decision": entry.get("decision", "conditional_keep"),
+                "adaptation_mode": entry.get("adaptation_mode", "structural_reference" if is_reference else "minimal_substitution"),
                 "relationships": {"alternatives": [], "duplicates": [], "supersedes": []},
-                "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
-                "source_kind": "derived_canonical_implementation",
-                "derivation_provenance": {
-                    "kind": "package_first_atomic_template_batch",
-                    "independent_support": False,
-                    "raw_source_bytes_claimed": False,
-                    "reason": "The command contract is isolated as a canonical Stata atom; it is not represented as a verbatim deposited research span.",
-                    "source_collection_next_step": "Replace or supplement with an exact deposited replication span when one is curated; retain this snapshot as an auditable derived implementation.",
-                },
-                "promotion_status": "provisional_derived",
+                "source_path": source_path,
+                "source_kind": entry_source_kind,
+                "derivation_provenance": provenance,
+                "promotion_status": entry.get(
+                    "promotion_status",
+                    "provisional_derived" if batch_kind == "package_first_atomic_template_batch" else "staged_pending_independent_audit",
+                ),
                 "reuse_scope": entry.get("reuse_scope", "general"),
                 "readability_score": entry.get("readability_score", 5),
                 "portability_score": entry.get("portability_score", 4),
@@ -142,7 +183,7 @@ def expand_compact_package_templates(entries: list[dict], hard_fail_rule_ids: li
                 "generality_review": {
                     "status": "external_evidence_rubric_reviewed",
                     "version": "2.0",
-                    "criterion": "derived package command atom with explicit state and bounded substitutions",
+                    "criterion": "guide-derived or canonical command atom with explicit state and bounded substitutions",
                     "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46",
                 },
                 "quality_rubric_review": {
@@ -166,18 +207,19 @@ def expand_compact_package_templates(entries: list[dict], hard_fail_rule_ids: li
                         "loop_program_abstraction": 5, "reproducibility": 4,
                         "project_specific_coupling": 4, "minimal_adaptation": 5,
                     },
-                    "weighted_score": 84,
-                    "classification": "conditional_candidate",
-                    "reviewer_classification": "conditional_candidate",
+                    "weighted_score": entry.get("weighted_score", 76 if is_reference else 84),
+                    "classification": generation_class,
+                    "reviewer_classification": generation_class,
                     "classification_calibration_override": None,
-                    "preferred_eligible": False,
+                    "preferred_eligible": generation_class == "preferred_candidate",
                     "reviewer_notes_ko": "독립 연구 코드라고 주장하지 않는 derived package atom이다. 명령 선택, 입력 상태, 출력 경계와 수정 가능한 binding을 각각 확인한다.",
                     "uncertainty": "패키지 설치 상태와 연구 설계의 타당성은 별도 target runtime 및 설계 검토가 필요하다.",
                     "current_vs_recommended_changes": [],
                     "canonical_exception_override": None,
                 },
                 **entry,
-                "review_notes": review_note + " Derived canonical implementation; independent_support=false.",
+                "source_path": source_path,
+                "review_notes": review_note + " Guide/canonical mechanics candidate; independent_support=false; promotion requires the separate audit ledger.",
             }
         )
     return expanded
@@ -193,8 +235,290 @@ def read_text(path: Path) -> str:
     raise RuntimeError(f"cannot decode {path}")
 
 
+def resolve_annotation_source(workspace: Path, plugin: Path, source_path: str) -> Path:
+    """Resolve corpus evidence from the workspace and plugin snapshots from this checkout."""
+    plugin_prefix = "plugins/stata-research-guard/"
+    if source_path.startswith(plugin_prefix):
+        source = (plugin / source_path[len(plugin_prefix) :]).resolve()
+        if not source.is_relative_to(plugin):
+            raise ValueError(f"plugin source leaves plugin root: {source_path}")
+        return source
+    source = (workspace / source_path).resolve()
+    if not source.is_relative_to(workspace):
+        raise ValueError(f"source leaves workspace: {source_path}")
+    return source
+
+
 def sha256_text(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def canonical_json_sha256(value: object) -> str:
+    """Hash a JSON value using one documented, whitespace-independent encoding."""
+    canonical = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return sha256_text(canonical)
+
+
+def source_span_spec(spans: list[list[int]]) -> str:
+    """Return the canonical audit-ledger spelling of one or more exact line spans."""
+    values = []
+    for start, end in spans:
+        values.append(str(start) if start == end else f"{start}-{end}")
+    return ",".join(values)
+
+
+def _audit_record_map(audit: dict) -> dict[str, dict]:
+    records: dict[str, dict] = {}
+    for record in audit["candidate_records"]:
+        label_id = record["label_id"]
+        if label_id in records:
+            raise ValueError(f"duplicate atomic promotion audit label_id: {label_id}")
+        records[label_id] = record
+    return records
+
+
+def _require_exact_profile(label_id: str, name: str, observed: object, expected: object, fields: set[str]) -> None:
+    if not isinstance(expected, dict) or set(expected) != fields:
+        raise ValueError(f"atomic candidate {label_id}.{name} must contain exactly {sorted(fields)}")
+    if observed != expected:
+        raise ValueError(f"atomic promotion audit {name} mismatch for {label_id}")
+
+
+def audit_atomic_template_entry(
+    entry: dict,
+    record: dict,
+    *,
+    source_path: str,
+    snapshot_path: Path,
+) -> dict | None:
+    """Fail closed on one atomic candidate and apply its audited disposition.
+
+    Hash boundaries are deliberately distinct: ``candidate_inventory_sha256``
+    covers the complete compact JSON object, ``source.sha256`` covers the raw
+    snapshot bytes, and ``template_sha256`` covers the normalized exact span
+    returned by :func:`extract_block`.
+    """
+    label_id = entry.get("label_id")
+    if not isinstance(label_id, str) or not label_id:
+        raise ValueError("atomic candidate has no label_id")
+    if record.get("label_id") != label_id:
+        raise ValueError(f"atomic promotion audit label_id mismatch for {label_id}")
+    if record.get("contract_ids") != entry.get("contract_ids"):
+        raise ValueError(f"atomic promotion audit contract_ids mismatch for {label_id}")
+    expected_entry_hash = canonical_json_sha256(entry)
+    if record.get("candidate_inventory_sha256") != expected_entry_hash:
+        raise ValueError(f"atomic promotion audit candidate_inventory_sha256 mismatch for {label_id}")
+
+    spans = entry.get("source_spans")
+    if not isinstance(spans, list) or not spans:
+        raise ValueError(f"atomic candidate {label_id} has no source_spans")
+    source = record.get("source")
+    if not isinstance(source, dict):
+        raise ValueError(f"atomic promotion audit source missing for {label_id}")
+    if source.get("path") != source_path:
+        raise ValueError(f"atomic promotion audit source.path mismatch for {label_id}")
+    if not isinstance(source.get("role"), str) or not source["role"].strip():
+        raise ValueError(f"atomic promotion audit source.role missing for {label_id}")
+    source_layers = record.get("source_layers")
+    source_layer = source_layers.get(source["role"]) if isinstance(source_layers, dict) else None
+    if not isinstance(source_layer, dict) or source_layer.get("status") != "pass" or not source_layer.get("source_id"):
+        raise ValueError(f"atomic promotion audit source.role must identify a passed source layer for {label_id}")
+    if source.get("kind") != entry.get("source_kind"):
+        raise ValueError(f"atomic promotion audit source.kind mismatch for {label_id}")
+    if source.get("span") != source_span_spec(spans):
+        raise ValueError(f"atomic promotion audit source.span mismatch for {label_id}")
+    snapshot_bytes = snapshot_path.read_bytes()
+    if source.get("sha256") != hashlib.sha256(snapshot_bytes).hexdigest():
+        raise ValueError(f"atomic promotion audit source.sha256 mismatch for {label_id}")
+    source_text = read_text(snapshot_path)
+    template = extract_block(source_text, spans)
+    if record.get("template_sha256") != sha256_text(template):
+        raise ValueError(f"atomic promotion audit template_sha256 mismatch for {label_id}")
+
+    _require_exact_profile(
+        label_id,
+        "input_profile",
+        record.get("input_profile"),
+        entry.get("template_input_profile"),
+        TEMPLATE_INPUT_PROFILE_FIELDS,
+    )
+    _require_exact_profile(
+        label_id,
+        "state_signature",
+        record.get("state_signature"),
+        entry.get("state_signature"),
+        STATE_SIGNATURE_FIELDS,
+    )
+    distinctness = record.get("variant_distinctness")
+    if not isinstance(distinctness, dict) or distinctness.get("reason") != entry.get("variant_distinction"):
+        raise ValueError(f"atomic promotion audit variant_distinctness mismatch for {label_id}")
+    safety = record.get("safety_checks")
+    if not isinstance(safety, dict) or safety.get("nested_loop") != "pass" or safety.get("tex_output") != "pass":
+        raise ValueError(f"atomic promotion audit safety_checks must pass for {label_id}")
+    auditor = record.get("auditor")
+    if not isinstance(auditor, dict) or auditor.get("status") != "pass" or not auditor.get("reviewer"):
+        raise ValueError(f"atomic promotion audit auditor must be an independent passed review for {label_id}")
+    independence = record.get("independence")
+    expected_independence = bool(entry.get("independent_support", False))
+    if (
+        not isinstance(independence, dict)
+        or independence.get("independent_support") is not expected_independence
+        or not independence.get("scope")
+    ):
+        raise ValueError(f"atomic promotion audit independence mismatch for {label_id}")
+
+    disposition = record.get("disposition")
+    if disposition == "rejected":
+        return None
+    expanded = expand_compact_package_templates(
+        [entry],
+        [],
+        source_path=source_path,
+        batch_kind="guide_atomic_template_batch:audit",
+    )[0]
+    # Candidate files may carry an explicitly pending producer-side review.  The
+    # independent promotion ledger is the authority that converts that pending
+    # metadata into the complete runtime row expected by the public builder.
+    generation_class = entry.get("canonical_generation_class", "conditional_candidate")
+    expanded["quality_rubric_review"] = {
+        "status": "external_evidence_rubric_reviewed",
+        "version": "1.1",
+        "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46",
+        "source_verification": {
+            "source_file_sha256_match": True,
+            "code_sha256_match": True,
+            "context_read": True,
+        },
+        "hard_fails": [],
+        "applicable_dimensions": [
+            "state_visibility", "input_output_contract", "portability", "readability",
+            "sample_estimand_visibility", "loop_program_abstraction", "reproducibility",
+            "project_specific_coupling", "minimal_adaptation",
+        ],
+        "dimension_scores": {
+            "state_visibility": 5, "input_output_contract": 5, "portability": 4,
+            "readability": 5, "sample_estimand_visibility": 4,
+            "loop_program_abstraction": 5, "reproducibility": 4,
+            "project_specific_coupling": 4, "minimal_adaptation": 5,
+        },
+        "weighted_score": entry.get("weighted_score", 76 if generation_class == "reference_only" else 84),
+        "classification": generation_class,
+        "reviewer_classification": generation_class,
+        "classification_calibration_override": None,
+        "preferred_eligible": generation_class == "preferred_candidate",
+        "reviewer_notes_ko": "독립 감사 ledger가 exact source, candidate, span, profile, state와 safety를 확인한 guide mechanics atom이다.",
+        "uncertainty": "연구 설계 타당성, package availability, runtime과 selector 승격은 별도 검증 대상이다.",
+        "current_vs_recommended_changes": [],
+        "canonical_exception_override": None,
+    }
+    if disposition == "reference_only":
+        runtime = record.get("runtime", {})
+        selector = record.get("selector", {})
+        if not runtime.get("reason") or not selector.get("reason"):
+            raise ValueError(f"reference_only runtime and selector reasons are required for {label_id}")
+        expanded["canonical_generation_class"] = "reference_only"
+        expanded["quality_rubric_review"]["classification"] = "reference_only"
+        expanded["quality_rubric_review"]["reviewer_classification"] = "reference_only"
+        expanded["quality_rubric_review"]["preferred_eligible"] = False
+        expanded["preferred_within_checkpoint"] = False
+        expanded["canonical_default"] = False
+        expanded["adaptation_mode"] = "structural_reference"
+        if expanded.get("reuse_scope") == "negative":
+            expanded["reuse_scope"] = "method_specific"
+        expanded["auto_selectable"] = False
+        expanded["promotion_status"] = "reference_only"
+        # Guide mechanics are returned through the non-competing companion
+        # layer, not the legacy selector relationship graph.  Candidate files
+        # may record human-facing alternative variant IDs, but those are not
+        # label IDs and therefore must not become selector edges.
+        expanded["relationships"] = {"alternatives": [], "duplicates": [], "supersedes": []}
+    elif disposition == "audited_template":
+        runtime = record.get("runtime")
+        selector = record.get("selector")
+        if not isinstance(runtime, dict) or runtime.get("status") != "pass" or not runtime.get("case_id"):
+            raise ValueError(f"audited_template runtime pass is required for {label_id}")
+        if not isinstance(selector, dict):
+            raise ValueError(f"audited_template selector checks are required for {label_id}")
+        for polarity in ("positive", "negative"):
+            check = selector.get(polarity)
+            if not isinstance(check, dict) or check.get("status") != "pass" or not check.get("case_id"):
+                raise ValueError(f"audited_template selector.{polarity} pass is required for {label_id}")
+        generation_class = entry.get("canonical_generation_class")
+        if generation_class not in {"preferred_candidate", "conditional_candidate"}:
+            raise ValueError(
+                f"audited_template must declare conditional/preferred canonical_generation_class for {label_id}"
+            )
+        expanded["auto_selectable"] = True
+        expanded["promotion_status"] = "audited_template"
+    else:
+        raise ValueError(f"invalid atomic promotion disposition for {label_id}: {disposition}")
+    expanded["audit_status"] = "passed"
+    expanded["promotion_audit"] = {
+        "disposition": disposition,
+        "candidate_inventory_sha256": expected_entry_hash,
+        "template_sha256": record["template_sha256"],
+        "reviewer": auditor["reviewer"],
+    }
+    return expanded
+
+
+def load_audited_atomic_template_sets(
+    plugin: Path,
+    hard_fail_rule_ids: list[str],
+    *,
+    legacy_label_count: int,
+) -> list[dict]:
+    """Load atomic sets only after an exact, complete promotion-ledger match."""
+    atomic_template_dir = plugin / "annotations" / "atomic_template_sets"
+    if not atomic_template_dir.exists():
+        return []
+    audit = json.loads((plugin / "annotations" / "template_promotion_audit.json").read_text(encoding="utf-8"))
+    requirements = json.loads((plugin / "annotations" / "command_template_requirements.json").read_text(encoding="utf-8"))
+    validate_promotion_audit(audit, requirements, legacy_label_count)
+    audit_by_id = _audit_record_map(audit)
+    candidates: list[tuple[dict, str, Path]] = []
+    seen: set[str] = set()
+    for template_path in sorted(atomic_template_dir.glob("*.json")):
+        values = json.loads(template_path.read_text(encoding="utf-8"))
+        if not isinstance(values, list):
+            raise ValueError(f"atomic template set must be a JSON array: {template_path}")
+        snapshot_path = plugin / "annotations" / "source_snapshots" / f"{template_path.stem}_guide_templates.do"
+        if not snapshot_path.exists():
+            raise ValueError(f"atomic template source snapshot is missing: {snapshot_path}")
+        source_path = f"plugins/stata-research-guard/annotations/source_snapshots/{snapshot_path.name}"
+        for entry in values:
+            label_id = entry.get("label_id") if isinstance(entry, dict) else None
+            if not isinstance(label_id, str) or not label_id:
+                raise ValueError(f"atomic candidate has no label_id: {template_path}")
+            if label_id in seen:
+                raise ValueError(f"duplicate atomic candidate label_id: {label_id}")
+            seen.add(label_id)
+            candidates.append((entry, source_path, snapshot_path))
+    if set(audit_by_id) != seen:
+        missing = sorted(seen - set(audit_by_id))
+        stale = sorted(set(audit_by_id) - seen)
+        raise ValueError(f"atomic promotion audit label set mismatch: missing={missing}, stale={stale}")
+
+    expanded: list[dict] = []
+    for entry, source_path, snapshot_path in candidates:
+        row = audit_atomic_template_entry(
+            entry,
+            audit_by_id[entry["label_id"]],
+            source_path=source_path,
+            snapshot_path=snapshot_path,
+        )
+        if row is not None:
+            # Recreate the hard-fail roster after the pure per-entry gate.
+            row["quality_rubric_review"]["hard_fails"] = [
+                {
+                    "rule_id": rule_id,
+                    "triggered": False,
+                    "evidence": "Exact audited atomic span; bounded substitutions and state contract are required.",
+                }
+                for rule_id in hard_fail_rule_ids
+            ]
+            expanded.append(row)
+    return expanded
 
 
 def markdown_cell(value: object) -> str:
@@ -418,7 +742,12 @@ def validate_input_signature(label_id: str, signature: dict) -> None:
 
 
 def enforce_event_plot_metadata(label_id: str, checkpoint: str, decision: str, annotation: dict) -> None:
-    if checkpoint != "figures.event_study" or decision == "drop":
+    if (
+        checkpoint != "figures.event_study"
+        or decision == "drop"
+        or annotation.get("canonical_generation_class") == "reference_only"
+        or annotation.get("promotion_status") == "reference_only"
+    ):
         return
     metadata = annotation.get("event_plot_metadata")
     if not isinstance(metadata, dict):
@@ -520,6 +849,7 @@ def main() -> None:
     workspace = (args.workspace or plugin.parents[1]).resolve()
     annotations_path = plugin / "annotations" / "labeled_checkpoints.json"
     compact_templates_path = plugin / "annotations" / "package_first_atomic_templates.json"
+    atomic_template_dir = plugin / "annotations" / "atomic_template_sets"
     contracts_path = plugin / "annotations" / "checkpoint_contracts.json"
     rubric_path = plugin / "annotations" / "generality_rubric.json"
     output_path = plugin / "data" / "labeled_checkpoints.jsonl"
@@ -537,6 +867,15 @@ def main() -> None:
         if not isinstance(compact_templates, list):
             raise ValueError("compact package templates must be a JSON array")
         annotations.extend(expand_compact_package_templates(compact_templates, active_hard_fail_rule_ids))
+    if atomic_template_dir.exists():
+        legacy_label_count = len(annotations)
+        annotations.extend(
+            load_audited_atomic_template_sets(
+                plugin,
+                active_hard_fail_rule_ids,
+                legacy_label_count=legacy_label_count,
+            )
+        )
     display_names = contract_document.get("display_names", {})
     contract_rows = contract_document.get("contracts", [])
     contracts = {row["checkpoint"]: row for row in contract_rows}
@@ -597,9 +936,7 @@ def main() -> None:
         if checkpoint not in contracts:
             raise ValueError(f"missing checkpoint contract for {label_id}: {checkpoint}")
 
-        source = (workspace / annotation["source_path"]).resolve()
-        if not source.is_relative_to(workspace):
-            raise ValueError(f"source leaves workspace: {label_id}")
+        source = resolve_annotation_source(workspace, plugin, annotation["source_path"])
         source_text = read_text(source)
         code = extract_block(source_text, annotation["source_spans"])
         command_anchors = extract_command_anchors(code)
@@ -749,11 +1086,16 @@ def main() -> None:
     }
     for checkpoint in sorted(contracts):
         contract = contracts[checkpoint]
-        variants = [row for row in rows if row["checkpoint"] == checkpoint]
+        checkpoint_rows = [row for row in rows if row["checkpoint"] == checkpoint]
+        guide_variants = [row for row in checkpoint_rows if is_noncompeting_guide_mechanics(row)]
+        # The legacy workflow dictionary remains the usage/template selector.
+        # Guide mechanics have their own always-provided companion index and
+        # therefore cannot enter this dictionary's ranking or command index.
+        variants = [row for row in checkpoint_rows if not is_noncompeting_guide_mechanics(row)]
         reusable_count = sum(row["decision"] != "drop" for row in variants)
         auto_selectable_count = sum(row["quality_rubric_review"]["classification"] in {"preferred_candidate", "conditional_candidate"} for row in variants)
         reference_only_count = sum(row["quality_rubric_review"]["classification"] == "reference_only" for row in variants)
-        maturity = "negative_only" if reusable_count == 0 else ("comparative" if reusable_count >= 2 else "prototype")
+        maturity = "guide_only" if not variants and guide_variants else ("negative_only" if reusable_count == 0 else ("comparative" if reusable_count >= 2 else "prototype"))
         command_rows = [row for row in variants if row["decision"] != "drop"] or variants
         common_commands = [command for command, _count in Counter(command for row in command_rows for command in row["command_anchors"]).most_common()]
         retrieval_features = []
@@ -769,6 +1111,7 @@ def main() -> None:
                 "maturity": maturity,
                 "auto_selectable_count": auto_selectable_count,
                 "reference_only_count": reference_only_count,
+                "guide_mechanics_count": len(guide_variants),
                 "aliases": contract["aliases"],
                 "unit_kind": contract["unit_kind"],
                 "input_contract": contract["input_contract"],

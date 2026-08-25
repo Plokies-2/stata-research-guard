@@ -2,9 +2,9 @@
 
 연구자가 읽을 수 있는 Stata 코드를 만들고, 재현성을 해치는 실수를 작업 전반에서 막아 주는 Codex 플러그인입니다.
 
-단순한 코드 조각 모음이 아닙니다. 사람이 선별하고 검토한 연구 코드를 148개 labeled block으로 정리해 두었고, 현재 데이터 구조와 작업 상태에 맞는지 비교한 뒤 가져옵니다. 가까운 template이 있으면 필요한 부분만 바꾸고, 맞는 template이 없으면 억지로 끼워 맞추지 않고 좁은 범위의 fallback으로 전환합니다.
+단순한 코드 조각 모음이 아닙니다. legacy selector label 148개, 독립 감사를 통과한 신규 가이드 mechanics 262개, 그리고 별도로 생성한 research-usage example 128개를 서로 다른 격으로 관리합니다. 전체 guide card는 기존 공식-manual reference 2개를 포함한 264개이며 자동선택은 0개입니다. 선택한 명령의 공식·maintainer 가이드는 항상 함께 보여 주되 template 점수 경쟁에는 넣지 않고, 연구 코드용례가 현재 데이터 구조와 작업 상태에 정확히 맞을 때만 별도 template으로 고릅니다. 맞는 용례가 없으면 가이드에 근거한 좁은 fallback으로 전환합니다.
 
-현재 배포 버전은 `0.2.0+codex.20260825210135`입니다.
+현재 배포 버전은 `0.2.0+codex.20260825225433`입니다.
 
 ## 무엇이 좋은가
 
@@ -24,6 +24,8 @@
 
 ### template을 쓰되 template에 끌려가지 않습니다
 
+- `resolve_transition_evidence`가 가이드 1개와 연구용례 최대 1개를 서로 독립적으로 돌려줍니다.
+- 가이드 코드는 문법과 상태 전이의 교과서 역할만 하며 표본·estimand·모형·FE·VCE·sheet 같은 연구 결정을 대신하지 않습니다.
 - 입력 자료의 형태, 관측 단위, 시간 구조, key와 변수 특성을 비교한 뒤 후보를 고릅니다.
 - 서로 다른 대안 template을 임의로 이어 붙이지 않습니다.
 - 가장 가까운 후보라도 실제로 맞지 않으면 nonbinding hint로만 참고합니다.
@@ -57,7 +59,8 @@ fallback은 즉흥적으로 코드를 만드는 우회로가 아닙니다. 플�
 ### 회귀 앞뒤의 연구 workflow도 다룹니다
 
 - StataCorp 공식 manual을 페이지 단위로 찾고, 실제 실행으로 확인한 official example과 code hash를 별도 증거로 제공합니다.
-- 공식 명령과 주요 community package를 39개 명령군·97개 canonical command anchor로 관리하며, 개별 estimator 이름을 끝없이 탐지기에 추가하지 않고 상태 호환 원자 template으로 확장합니다.
+- Top 50 명령군의 203개 주요 변형과 추가 user-written 명령군 15개의 48개 변형을 계약으로 관리합니다.
+- 공식 명령과 주요 community package를 43개 명령군·109개 canonical command anchor로 관리하며, 개별 estimator 이름을 끝없이 탐지기에 추가하지 않고 상태 호환 원자 template으로 확장합니다.
 - import, integrity check, cleaning·label, merge·reshape, panel 구성, descriptive statistics, sample flow, estimation·robustness, figure·table export와 master orchestration을 한 흐름으로 점검합니다.
 - summary 작업은 평균·표준편차·관측치 수를 하나의 named dataset에 저장하고, Excel 표와 PDF 그림이 같은 자료를 읽도록 설계할 수 있습니다.
 - 기존 프로젝트에서는 `plan_dictionary_repairs`가 call graph, 산출물과 estimate handoff를 살핀 뒤 요청 범위 밖 단계는 `preserve`로 남깁니다.
@@ -144,12 +147,12 @@ node plugins/stata-research-guard/scripts/verify_plugin_bundle.cjs `
 
 현재 배포본의 검증 상태는 다음과 같습니다.
 
-- bundle manifest: 199개 파일, 통과
-- Node test: 250/250 통과
-- Python test: 19/19 통과
-- plugin validator와 skill validator: 통과
-- private GitHub 원격 clean clone 재검증: 통과
-- 이번 README와 toy example 신규 파일의 개인 절대경로·비밀정보 pattern: 0건
+- bundle manifest: 236개 파일, 통과
+- Node test: 22/22 test file 통과(실제 Stata runtime fixture 포함)
+- Python test: 38/38 통과
+- Top 50 coverage: 50개 명령군·203개 variant 전부 적재(직접 primitive 19, reference-only guide coverage 184)
+- 신규 guide promotion audit: 262/262 reference-only, 자동선택 0
+- generated evidence: guide card 264개, research-usage example 128개(자동선택 가능 46개), AEA/openICPSR support 19개·제외 9개
 
 MCP launcher는 `CODEX_MCP_NODE_PATH`, Codex에 포함된 Node.js, `PATH`의 `node.exe` 순서로 실행 파일을 찾습니다.
 

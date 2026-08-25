@@ -22,10 +22,10 @@
     ]
   },
   "summary": {
-    "families": 39,
-    "indexed_commands": 97,
-    "families_observed_in_corpus": 30,
-    "commands_observed_in_corpus": 70
+    "families": 43,
+    "indexed_commands": 109,
+    "families_observed_in_corpus": 32,
+    "commands_observed_in_corpus": 77
   },
   "families": [
     {
@@ -71,6 +71,13 @@
           "corpus_chunk_count": 10
         },
         {
+          "command": "export_delimited",
+          "stages": [
+            "exports"
+          ],
+          "corpus_chunk_count": 24
+        },
+        {
           "command": "use",
           "stages": [
             "import"
@@ -94,6 +101,7 @@
         "import_excel",
         "import_delimited",
         "export_excel",
+        "export_delimited",
         "use",
         "save"
       ],
@@ -245,11 +253,32 @@
           "corpus_chunk_count": 27
         },
         {
+          "command": "destring",
+          "stages": [
+            "cleaning_labels"
+          ],
+          "corpus_chunk_count": 290
+        },
+        {
+          "command": "tostring",
+          "stages": [
+            "cleaning_labels"
+          ],
+          "corpus_chunk_count": 41
+        },
+        {
           "command": "encode",
           "stages": [
             "cleaning_labels"
           ],
           "corpus_chunk_count": 20
+        },
+        {
+          "command": "decode",
+          "stages": [
+            "cleaning_labels"
+          ],
+          "corpus_chunk_count": 11
         },
         {
           "command": "label",
@@ -267,7 +296,10 @@
         "generate",
         "replace",
         "recode",
+        "destring",
+        "tostring",
         "encode",
+        "decode",
         "label"
       ],
       "corpus_observed": true
@@ -471,6 +503,13 @@
           "corpus_chunk_count": 6
         },
         {
+          "command": "test",
+          "stages": [
+            "postestimation"
+          ],
+          "corpus_chunk_count": 81
+        },
+        {
           "command": "testparm",
           "stages": [
             "postestimation"
@@ -492,6 +531,7 @@
         "margins",
         "marginsplot",
         "lincom",
+        "test",
         "predict"
       ],
       "corpus_observed": true
@@ -610,6 +650,13 @@
             "estimation"
           ],
           "corpus_chunk_count": 3
+        },
+        {
+          "command": "logistic",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 0
         },
         {
           "command": "probit",
@@ -1322,6 +1369,111 @@
       "notes": "Window endpoints and panel-key conditions are required.",
       "corpus_observed_commands": [],
       "corpus_observed": false
+    },
+    {
+      "family_id": "psmatch2",
+      "display_name": "psmatch2 and pstest",
+      "ownership": "Community (Leuven and Sianesi)",
+      "category": "matching",
+      "priority": "P1",
+      "commands": [
+        {
+          "command": "psmatch2",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 0
+        },
+        {
+          "command": "pstest",
+          "stages": [
+            "postestimation",
+            "figures"
+          ],
+          "corpus_chunk_count": 0
+        }
+      ],
+      "evidence": "Author-maintained help and SSC/RePEc package record",
+      "template_policy": "method_specific_atomic_template",
+      "notes": "Treatment, estimand, propensity-score source, overlap, caliper, and generated-state contracts must be declared.",
+      "corpus_observed_commands": [],
+      "corpus_observed": false
+    },
+    {
+      "family_id": "xtabond2",
+      "display_name": "xtabond2",
+      "ownership": "Community (David Roodman)",
+      "category": "dynamic_panel",
+      "priority": "P1",
+      "commands": [
+        {
+          "command": "xtabond2",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 0
+        }
+      ],
+      "evidence": "Author guide and package help",
+      "template_policy": "method_specific_atomic_template",
+      "notes": "Difference versus system GMM, instrument roles, lag limits, collapse, step, and diagnostics must be explicit.",
+      "corpus_observed_commands": [],
+      "corpus_observed": false
+    },
+    {
+      "family_id": "asdoc",
+      "display_name": "asdoc",
+      "ownership": "Community",
+      "category": "exports",
+      "priority": "P2",
+      "commands": [
+        {
+          "command": "asdoc",
+          "stages": [
+            "descriptives_balance_sample_flow",
+            "exports"
+          ],
+          "corpus_chunk_count": 1
+        }
+      ],
+      "evidence": "Author guide",
+      "template_policy": "reference_until_output_policy",
+      "notes": "Word and RTF output remain reference-only under the Excel/PDF/.ster project policy.",
+      "corpus_observed_commands": [
+        "asdoc"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "ftools_commands",
+      "display_name": "fcollapse and fmerge",
+      "ownership": "Community (Sergio Correia)",
+      "category": "data_management",
+      "priority": "P2",
+      "commands": [
+        {
+          "command": "fcollapse",
+          "stages": [
+            "merge_reshape",
+            "descriptives_balance_sample_flow"
+          ],
+          "corpus_chunk_count": 1
+        },
+        {
+          "command": "fmerge",
+          "stages": [
+            "merge_reshape"
+          ],
+          "corpus_chunk_count": 0
+        }
+      ],
+      "evidence": "Maintainer documentation",
+      "template_policy": "atomic_template_candidate",
+      "notes": "ftools itself is a dependency, not a template; only direct data commands are indexed and unsafe fmerge options are excluded.",
+      "corpus_observed_commands": [
+        "fcollapse"
+      ],
+      "corpus_observed": true
     },
     {
       "family_id": "ddml",

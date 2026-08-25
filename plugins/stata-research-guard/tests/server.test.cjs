@@ -172,8 +172,11 @@ test("MCP handshake and tool inventory", async (t) => {
   assert.match(initialized.instructions, /typed named-sample-flow postfile block/i);
   assert.doesNotMatch(initialized.instructions, /femaleboard|\bAEA\b|\bAER\b/i);
   const listed = await client.request("tools/list");
-  assert.deepEqual(listed.tools.map((tool) => tool.name), ["search_stata_manual", "get_verified_stata_examples", "search_approved_patterns", "search_labeled_checkpoints", "inspect_dictionary_coverage", "plan_dictionary_repairs", "template_reuse_check", "workflow_blueprint", "lint_do_file", "audit_stata_project", "workflow_reproduction_check", "research_output_check"]);
+  assert.deepEqual(listed.tools.map((tool) => tool.name), ["resolve_transition_evidence", "search_stata_manual", "get_verified_stata_examples", "search_approved_patterns", "search_labeled_checkpoints", "inspect_dictionary_coverage", "plan_dictionary_repairs", "template_reuse_check", "workflow_blueprint", "lint_do_file", "audit_stata_project", "workflow_reproduction_check", "research_output_check"]);
   assert.ok(listed.tools.every((tool) => tool.outputSchema?.type === "object"));
+  const transitionResolver = listed.tools.find((tool) => tool.name === "resolve_transition_evidence");
+  assert.match(transitionResolver.description, /two non-competing evidence layers/i);
+  assert.match(transitionResolver.description, /guide code is never auto-selectable/i);
   const reuseTool = listed.tools.find((tool) => tool.name === "template_reuse_check");
   assert.equal(reuseTool.inputSchema.properties.min_command_retention.minimum, 0.75);
   assert.equal(reuseTool.inputSchema.properties.enforce_template_reuse.default, false);
