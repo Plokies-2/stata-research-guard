@@ -1,0 +1,86 @@
+******************************************************************************************************************************
+******************************************************************************************************************************
+***
+*** Provides main results figures
+*** 
+******************************************************************************************************************************
+******************************************************************************************************************************
+
+//////////////////////////
+/// I) Run regressions ///
+//////////////////////////
+
+use ${usr_data}\data_sdid_small, clear
+
+gen PRE = 0
+replace PRE = 1 if first_treat_3==0 | year<first_treat_3
+
+** 1) PRE
+local spec "PRE"
+jwdid trade, ivar(id_ci_cj) tvar(year) gvar(first_treat_3) method(ppmlhdfe) fe(idt_ci idt_cj brdr_time) never ifcond(PRE)
+estimates save "${usr_data}\base_`spec'.ster", replace
+gen sample_JWDID_`spec' = e(sample)
+gen __tr__JWDID_`spec' = __tr__
+gen __etr__JWDID_`spec' = __etr__
+gen _ppmlhdfe_d_JWDID_`spec' = _ppmlhdfe_d
+gen __event__JWDID_`spec' = __event__
+
+// save post estimation data set
+save ${usr_data}\data_sdid_test_assumptions_post.dta, replace
+
+
+// use post estimation data set
+use ${usr_data}\data_sdid_test_assumptions_post.dta, clear
+
+//////////////////////////////////////
+/// II) Pre-treatment event effect ///
+//////////////////////////////////////
+
+local suffix = "_PRE"
+local iter = 8
+
+estimates use "${usr_data}\base`suffix'.ster"
+estimates esample: if sample_JWDID`suffix'
+capture drop __tr__ __etr__ _ppmlhdfe_d __event__
+gen __tr__ = __tr__JWDID`suffix'
+gen __etr__ = __etr__JWDID`suffix'
+gen __event__ = __event__JWDID`suffix'
+gen double _ppmlhdfe_d = _ppmlhdfe_d_JWDID`suffix'
+
+replace __event__ = . if __event__>=0
+replace __event__ = -__event__
+replace __event__ = `iter' if __event__>`iter'
+margins , subpop(if __tr__==1) at(__tr__=(0 1)) over(__event__) noestimcheck predict(xb) contrast(atcontrast(r)) post
+
+mat table = r(table)
+mat B = table["b",1...]'
+mat LowerCF = table["ll",1...]'
+mat UpperCF = table["ul",1...]'
+local n=rowsof(B)
+mat index=J(`n',1,.)
+forval i=1(1)`n' {
+	mat index[`i',1] = `i'	
+}
+
+svmat B
+svmat LowerCF
+svmat UpperCF
+svmat index
+replace index = -index
+graph set window fontface "Arial Narrow"
+qui sum index, d
+
+graph twoway (rcap LowerCF UpperCF index, color(black)) ///
+			 (scatter B index, color(black)), ///
+			 legend(off) graphregion(color(white)) bgcolor(white) ///
+			 yline(0, lpattern(dash) lcolor(black)) legend(off) graphregion(color(white)) bgcolor(white) ///
+			 xtitle("Periods from treatment onset",size(large)) ytitle("Treatment effect",size(large)) xlabel(-8 "<=-8" -7[1]-1,labsize(large) nogrid) ylabel(,labsize(large) glpattern(solid))
+graph export "${path_figures}/Figure_2.eps", replace as(eps) fontface("Arial Narrow")
+
+drop B LowerCF UpperCF index	
+
+local test_spec = ""
+forval i=1(1)`iter' {
+	local test_spec = "`test_spec' r2vs1._at@`i'.__event__"
+}
+test `test_spec'

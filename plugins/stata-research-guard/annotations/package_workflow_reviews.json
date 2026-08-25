@@ -1,0 +1,4136 @@
+[
+  {
+    "package_id": "111707",
+    "do_files_expected": 5,
+    "do_files_reviewed": 5,
+    "lines_expected": 4271,
+    "lines_reviewed": 4271,
+    "review_level": "end_to_end_read",
+    "workflow_order": "no_master",
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "Comparing-Estimates-to-Cutler-and-Miller.do:1-283"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "source-specific loads"
+      },
+      "integrity_audit": {
+        "status": "uncertain",
+        "evidence_files": [
+          "Regression-and-Event-Study-Analyses.do:1-825"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "not isolated"
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "Mortality-Trends.do:1-148"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "source-specific transforms"
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "Predicted-Values-Had-No-Cities-Filtered-Water.do:1-2954"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "no checked atomic merge"
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "Regression-and-Event-Study-Analyses.do:1-825"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "event-study schema-specific"
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "Mortality-Trends.do:1-148",
+          "Water--and-Milk-Related-Interventions-Over-Time.do:1-61"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "figures/trends"
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "Regression-and-Event-Study-Analyses.do:1-825"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "manual matrix/result bridge excluded"
+      },
+      "robustness": {
+        "status": "uncertain",
+        "evidence_files": [
+          "Comparing-Estimates-to-Cutler-and-Miller.do:1-283"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "no safe standalone check"
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "Mortality-Trends.do:1-148",
+          "Water--and-Milk-Related-Interventions-Over-Time.do:1-61"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "descriptive figures only"
+      },
+      "exports": {
+        "status": "uncertain",
+        "evidence_files": [
+          "Regression-and-Event-Study-Analyses.do:1-825"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "manual matrix bridge"
+      },
+      "master_orchestration": {
+        "status": "absent",
+        "evidence_files": [],
+        "reusable_disposition": "not_applicable",
+        "notes": "no master"
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "Regression-and-Event-Study-Analyses.do",
+        "span": "1-825",
+        "reason": "manual matrix/result bridge; no positive extraction"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": [
+      "No deposited master determines call order."
+    ]
+  },
+  {
+    "package_id": "115162",
+    "do_files_expected": 9,
+    "do_files_reviewed": 9,
+    "lines_expected": 5475,
+    "lines_reviewed": 5475,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "Master.do",
+      "do/Stata-Setup.do",
+      "do/Cleaning-and-Data-Prep---Mini.do",
+      "do/Cleaning-and-Data-Prep---Panel.do",
+      "do/Summary-Stats.do",
+      "do/Analysis-1.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "Master.do:1-50"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "integrity_audit": {
+        "status": "present",
+        "evidence_files": [
+          "Master.do:1-50"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "Master.do:1-50"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "Master.do:1-50"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "Master.do:1-50"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "Master.do:1-50"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "Master.do:1-50"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "Master.do:1-50"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "Master.do:1-50"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "Master.do:1-50"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "Master.do:1-50"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "do/Cleaning-and-Data-Prep---Panel.do",
+        "span": "1-1379",
+        "reason": "project-specific merge guards"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": []
+  },
+  {
+    "package_id": "120068",
+    "do_files_expected": 4,
+    "do_files_reviewed": 4,
+    "lines_expected": 2408,
+    "lines_reviewed": 2408,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "Democracy and Aid Donorship replication file MAIN.do",
+      "config.do",
+      "Prepare data.do",
+      "Analyse data.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "Prepare data.do:24-40",
+          "Prepare data.do:151-169"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "integrity_audit": {
+        "status": "present",
+        "evidence_files": [
+          "Prepare data.do:1417-1425"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "Prepare data.do:514-545",
+          "Prepare data.do:1236-1324"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "Prepare data.do:911-964"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Force duplicate handling excluded."
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "Prepare data.do:1236-1324"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "Analyse data.do:1-27"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "Analyse data.do:28-58",
+          "Analyse data.do:178-201",
+          "Analyse data.do:378-410"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "Analyse data.do:178-201",
+          "Analyse data.do:378-410"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "Analyse data.do:1-757"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "Output-specific."
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "Analyse data.do:411-757"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Table/TeX excluded."
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "Democracy and Aid Donorship replication file MAIN.do:10-28",
+          "config.do:12-25"
+        ],
+        "reusable_disposition": "labeled",
+        "notes": "Existing label master.sequence.config_prepare_analysis.v1."
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "Prepare data.do",
+        "span": "911-964",
+        "reason": "Force duplicate resolution."
+      },
+      {
+        "path": "Analyse data.do",
+        "span": "411-757",
+        "reason": "TeX/table output."
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": [
+      "External data untested."
+    ]
+  },
+  {
+    "package_id": "124641",
+    "do_files_expected": 5,
+    "do_files_reviewed": 5,
+    "lines_expected": 1672,
+    "lines_reviewed": 1672,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "Master.do",
+      "makeworkingdata_1718.do",
+      "makeworkingdata_1819.do",
+      "combinecohorts.do",
+      "Tables_in_Paper.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "Master.do:1-6"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "integrity_audit": {
+        "status": "present",
+        "evidence_files": [
+          "Master.do:1-6"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "Master.do:1-6"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "Master.do:1-6"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "Master.do:1-6"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "Master.do:1-6"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "Master.do:1-6"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "Master.do:1-6"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "figures": {
+        "status": "absent",
+        "evidence_files": [],
+        "reusable_disposition": "not_applicable",
+        "notes": "no figure do-file"
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "combinecohorts.do:10-11"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "append force"
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "Master.do:1-6"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "combinecohorts.do",
+        "span": "10-11",
+        "reason": "append force"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": []
+  },
+  {
+    "package_id": "148522",
+    "do_files_expected": 15,
+    "do_files_reviewed": 15,
+    "lines_expected": 3261,
+    "lines_reviewed": 3261,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "0.master.do",
+      "2.Table2_balance.do",
+      "3.Table3_Attrition.do",
+      "4a.Table4_ThinkLink.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "0.master.do:1-126"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "integrity_audit": {
+        "status": "present",
+        "evidence_files": [
+          "0.master.do:1-126"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "0.master.do:1-126"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "0.master.do:1-126"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "0.master.do:1-126"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "0.master.do:1-126"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "0.master.do:1-126"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "0.master.do:1-126"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "0.master.do:1-126"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "A.5.TableA5_Read_Thinklink.do:207-230"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "TeX output"
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "0.master.do:1-126"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "A.5.TableA5_Read_Thinklink.do",
+        "span": "207-230",
+        "reason": "TeX output"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": []
+  },
+  {
+    "package_id": "154781",
+    "do_files_expected": 1,
+    "do_files_reviewed": 1,
+    "lines_expected": 2478,
+    "lines_reviewed": 2478,
+    "review_level": "end_to_end_read",
+    "workflow_order": "no_master",
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "run_figures_tables.do:1-2478"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "combined analysis script"
+      },
+      "integrity_audit": {
+        "status": "uncertain",
+        "evidence_files": [
+          "run_figures_tables.do:1-2478"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "not isolated"
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "run_figures_tables.do:1-2478"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "context-specific"
+      },
+      "merge_reshape": {
+        "status": "uncertain",
+        "evidence_files": [
+          "run_figures_tables.do:1-2478"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "not isolated"
+      },
+      "panel_construction": {
+        "status": "uncertain",
+        "evidence_files": [
+          "run_figures_tables.do:1-2478"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "not isolated"
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "run_figures_tables.do:1-2478"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "descriptive time-series plots"
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "run_figures_tables.do:1-2478"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "no atomic state-safe block"
+      },
+      "robustness": {
+        "status": "uncertain",
+        "evidence_files": [
+          "run_figures_tables.do:1-2478"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "not isolated"
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "run_figures_tables.do:64-596"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "annotated graphs; no TeX candidate"
+      },
+      "exports": {
+        "status": "uncertain",
+        "evidence_files": [
+          "run_figures_tables.do:1-2478"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "format not separately auditable"
+      },
+      "master_orchestration": {
+        "status": "absent",
+        "evidence_files": [],
+        "reusable_disposition": "not_applicable",
+        "notes": "single run script only"
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "run_figures_tables.do",
+        "span": "1-2478",
+        "reason": "monolithic source-specific script; no state-isolated positive block"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": [
+      "Input-data provenance/call order is absent."
+    ]
+  },
+  {
+    "package_id": "160101",
+    "do_files_expected": 17,
+    "do_files_reviewed": 17,
+    "lines_expected": 14386,
+    "lines_reviewed": 14386,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "master.do",
+      "1 create unemp_jst.do",
+      "2 create epop and ur_jst.do",
+      "3 create recruiter producer ratio.do",
+      "4 create state-industry-month JOLTS.do",
+      "5 wage_dispersion_OES.do",
+      "13 unemp rates by state_Dec09.do",
+      "14 unemp rates by industry_Dec09.do",
+      "15 extract round 5 from FSvW JOLE.do",
+      "16 main correspondence analysis.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "1 create unemp_jst.do:1-7360",
+          "2 create epop and ur_jst.do:1-1412"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Public-data imports exist, but the package uses a machine-specific root."
+      },
+      "integrity_audit": {
+        "status": "uncertain",
+        "evidence_files": [
+          "4 create state-industry-month JOLTS.do:1-215"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "No compact general-purpose key-audit block isolated."
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "2 create epop and ur_jst.do:1-1412",
+          "6 clean EEOC charge data.do:1-304"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Long source-specific cleaning; restricted EEOC branch is inactive."
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "4 create state-industry-month JOLTS.do:1-215"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Integration is source-schema-specific."
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "4 create state-industry-month JOLTS.do:1-215"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "State-industry-month construction is not portable without its source schema."
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "uncertain",
+        "evidence_files": [
+          "13 unemp rates by state_Dec09.do:1-38",
+          "14 unemp rates by industry_Dec09.do:1-36"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Graphs/tabs do not document a full estimation-sample flow."
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "7 main merit analysis.do:1-838",
+          "8 main volume analysis.do:1-1002"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Both are in the commented restricted-data branch."
+      },
+      "robustness": {
+        "status": "absent",
+        "evidence_files": [],
+        "reusable_disposition": "no_safe_block",
+        "notes": "No safe standalone robustness block identified."
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "9 hiring and firing over time graph.do:1-156",
+          "10 national industry graphs.do:1-416",
+          "11 diff in diff graph.do:1-269",
+          "12 run up and recovery graphs.do:1-1134"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Restricted branch and legacy output workflow."
+      },
+      "exports": {
+        "status": "uncertain",
+        "evidence_files": [
+          "16 main correspondence analysis.do:1-464"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Output code includes legacy/manual reporting patterns; no safe non-TeX atomic exporter retained."
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "master.do:1-77"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Exact public/restricted branch order is documented, but root is absolute and restricted branch is commented."
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "master.do",
+        "span": "4",
+        "reason": "absolute personal BASEDIR path"
+      },
+      {
+        "path": "master.do",
+        "span": "45-77",
+        "reason": "restricted EEOC workflow is commented; cannot support runnable reusable chain"
+      },
+      {
+        "path": "7 main merit analysis.do",
+        "span": "1-838",
+        "reason": "restricted-data branch; no positive extraction"
+      },
+      {
+        "path": "8 main volume analysis.do",
+        "span": "1-1002",
+        "reason": "restricted-data branch; no positive extraction"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": [
+      "Whether the restricted EEOC data can ever be made available is external to the deposited package.",
+      "No safe non-TeX output block was isolated from the legacy reporting code."
+    ]
+  },
+  {
+    "package_id": "173341",
+    "do_files_expected": 6,
+    "do_files_reviewed": 6,
+    "lines_expected": 5412,
+    "lines_reviewed": 5412,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "dofiles/0. Master.do",
+      "dofiles/1. Cleaning.do",
+      "dofiles/2. Variable_Construction.do",
+      "dofiles/3. Voting_Analysis_Cleaning.do",
+      "dofiles/4. Main_Tables.do",
+      "dofiles/5. Appendix_Tables.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "dofiles/1. Cleaning.do:1-465"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "integrity_audit": {
+        "status": "uncertain",
+        "evidence_files": [],
+        "reusable_disposition": "no_safe_block",
+        "notes": "No safe standalone reusable block."
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "dofiles/2. Variable_Construction.do:1-1747"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "dofiles/2. Variable_Construction.do:1589-1652"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "dofiles/2. Variable_Construction.do:1589-1652"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "uncertain",
+        "evidence_files": [],
+        "reusable_disposition": "no_safe_block",
+        "notes": "No safe standalone reusable block."
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "dofiles/4. Main_Tables.do:1-786"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "dofiles/5. Appendix_Tables.do:1-1483"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "dofiles/5. Appendix_Tables.do:1-1483"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "Output-specific."
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "dofiles/4. Main_Tables.do:1-786",
+          "dofiles/5. Appendix_Tables.do:1-1483"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "esttab/TeX excluded."
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "dofiles/0. Master.do:1-94"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "dofiles/4. Main_Tables.do",
+        "span": "1-786",
+        "reason": "TeX/table exporters."
+      },
+      {
+        "path": "dofiles/5. Appendix_Tables.do",
+        "span": "1-1483",
+        "reason": "TeX/table exporters."
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": [
+      "Raw inputs untested."
+    ]
+  },
+  {
+    "package_id": "175582",
+    "do_files_expected": 15,
+    "do_files_reviewed": 15,
+    "lines_expected": 4844,
+    "lines_reviewed": 4844,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "Code/Master_file.do",
+      "Code/Data_Preparation/Master_file_data_prep.do",
+      "Code/Analysis/Master_file_analysis.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "Code/Data_Preparation/Data_Prep_ACHA/Data_Prep_ACHA_1.do:1-366",
+          "Code/Data_Preparation/Data_Prep_IPEDS.do:1-27"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "source-specific imports"
+      },
+      "integrity_audit": {
+        "status": "uncertain",
+        "evidence_files": [
+          "Code/Data_Preparation/Data_Prep_ACHA/Data_Prep_ACHA_2.do:1-179"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "not isolated"
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "Code/Data_Preparation/Data_Prep_TraudEtAl.do:1-28"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "source-specific"
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "Code/Data_Preparation/Data_Prep_ACHA/Data_Prep_ACHA_2.do:1-179"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "no safe nonduplicate block"
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "Code/Analysis/Figures_MainText/Figures_MainText.do:279-285"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "existing labeled placebo/figure evidence not duplicated"
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "Code/Analysis/Tables_MainText/Tables_MainText.do:1-108"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "TeX tables"
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "Code/Analysis/Tables_MainText/Tables_MainText.do:1-108"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "TeX exporters"
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "Code/Analysis/Figures_MainText/Figures_MainText.do:279-285"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "A comparable did_multiplegt placebo is already labeled from another package; this source remains reference-only rather than a duplicate label."
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "Code/Analysis/Figures_Appendix/Figures_Appendix.do:135-156"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "PDF figure, but loop depth one only in span"
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "Code/Analysis/Tables_Appendix/Tables_Appendix.do:103-238"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "TeX output"
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "Code/Master_file.do:1-6",
+          "Code/Analysis/Master_file_analysis.do:1-24"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "explicit pipeline"
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "Code/Analysis/Tables_Appendix/Tables_Appendix.do",
+        "span": "103-2344",
+        "reason": "TeX, shell move, manual matrices"
+      },
+      {
+        "path": "Code/ado/e/five_estimators_example.do",
+        "span": "1-101",
+        "reason": "dependency/example code and manual matrices"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": [
+      "Bundled ado example is not author workflow evidence."
+    ]
+  },
+  {
+    "package_id": "185181",
+    "do_files_expected": 6,
+    "do_files_reviewed": 6,
+    "lines_expected": 1234,
+    "lines_reviewed": 1234,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "dofile - 0 - master.do",
+      "dofile - pulse - 2 - descriptives.do",
+      "dofile - pulse - 3 - estimations - Tables 1 and 2.do",
+      "dofile - Figure 1 - descriptive trends.do",
+      "dofile - Figure 2 - Event Study.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "dofile - pulse - 1 - setup.do:1-211"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "setup-specific"
+      },
+      "integrity_audit": {
+        "status": "uncertain",
+        "evidence_files": [
+          "dofile - pulse - 2 - descriptives.do:1-65"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "not isolated"
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "dofile - pulse - 1 - setup.do:1-211"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "source-specific"
+      },
+      "merge_reshape": {
+        "status": "uncertain",
+        "evidence_files": [
+          "dofile - pulse - 1 - setup.do:1-211"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "not isolated"
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "dofile - Figure 2 - Event Study.do:1-77"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "event study schema-specific"
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "dofile - pulse - 2 - descriptives.do:1-65"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "descriptives"
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "dofile - pulse - 3 - estimations - Tables 1 and 2.do:1-751"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "manual table/result assembly"
+      },
+      "robustness": {
+        "status": "uncertain",
+        "evidence_files": [
+          "dofile - pulse - 3 - estimations - Tables 1 and 2.do:1-751"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "no safe standalone check"
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "dofile - Figure 1 - descriptive trends.do:1-89",
+          "dofile - Figure 2 - Event Study.do:1-77"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "PDF/graph code"
+      },
+      "exports": {
+        "status": "uncertain",
+        "evidence_files": [
+          "dofile - pulse - 3 - estimations - Tables 1 and 2.do:1-751"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "manual assembly"
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "dofile - 0 - master.do:1-41"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "explicit do order"
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "dofile - pulse - 3 - estimations - Tables 1 and 2.do",
+        "span": "1-338",
+        "reason": "manual matrix/table assembly"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": [
+      "Master does not call setup directly; setup precondition needs confirmation."
+    ]
+  },
+  {
+    "package_id": "185943",
+    "do_files_expected": 16,
+    "do_files_reviewed": 16,
+    "lines_expected": 4180,
+    "lines_reviewed": 4180,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "replication code for paper Mar 2023/00_doall.do",
+      "replication code for paper Mar 2023/01_apdx_fig_A1_A2.do",
+      "replication code for paper Mar 2023/02_apdx_fig_A3.do",
+      "replication code for paper Mar 2023/03_apdx_fig_A4.do",
+      "replication code for paper Mar 2023/04_apdx_fig_A5.do",
+      "replication code for paper Mar 2023/05_apdx_fig_A6.do",
+      "replication code for paper Mar 2023/06_apdx_fig_A7.do",
+      "replication code for paper Mar 2023/07_apdx_fig_A8.do",
+      "replication code for paper Mar 2023/08_apdx_fig_A9.do",
+      "replication code for paper Mar 2023/09_apdx_fig_A10.do",
+      "replication code for paper Mar 2023/10_apdx_fig_A11.do",
+      "replication code for paper Mar 2023/11_apdx_fig_A12.do",
+      "replication code for paper Mar 2023/12_apdx_fig_A13.do",
+      "replication code for paper Mar 2023/13_apdx_fig_A14.do",
+      "replication code for paper Mar 2023/14_apdx_fig_A15.do",
+      "replication code for paper Mar 2023/15_apdx_fig_A16.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "replication code for paper Mar 2023/01_apdx_fig_A1_A2.do:1-140"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "figure-specific loads"
+      },
+      "integrity_audit": {
+        "status": "uncertain",
+        "evidence_files": [
+          "replication code for paper Mar 2023/15_apdx_fig_A16.do:1-244"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "not isolated"
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "replication code for paper Mar 2023/01_apdx_fig_A1_A2.do:1-140"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "figure-specific"
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "replication code for paper Mar 2023/15_apdx_fig_A16.do:142"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "merge is not a portable audited atom"
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "replication code for paper Mar 2023/08_apdx_fig_A9.do:1-370"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "nested loops/manual matrices"
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "replication code for paper Mar 2023/01_apdx_fig_A1_A2.do:1-140"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "figure inputs"
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "replication code for paper Mar 2023/09_apdx_fig_A10.do:1-514"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "manual matrix extraction"
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "replication code for paper Mar 2023/10_apdx_fig_A11.do:1-345"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "manual matrices/forced pretrend"
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "replication code for paper Mar 2023/01_apdx_fig_A1_A2.do:1-140",
+          "replication code for paper Mar 2023/15_apdx_fig_A16.do:1-244"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "manual matrix bridge"
+      },
+      "exports": {
+        "status": "uncertain",
+        "evidence_files": [
+          "replication code for paper Mar 2023/00_doall.do:1-18"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "figure target formats not consistently isolated"
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "replication code for paper Mar 2023/00_doall.do:1-18"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "explicit sequential calls"
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "replication code for paper Mar 2023/08_apdx_fig_A9.do",
+        "span": "1-353",
+        "reason": "nested loops and manual matrix bridge"
+      },
+      {
+        "path": "replication code for paper Mar 2023/09_apdx_fig_A10.do",
+        "span": "1-393",
+        "reason": "nested loops and manual matrix bridge"
+      },
+      {
+        "path": "replication code for paper Mar 2023/10_apdx_fig_A11.do",
+        "span": "1-271",
+        "reason": "manual matrices and forced pretrend"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": [
+      "Figure files do not provide a raw-to-analysis master or input provenance."
+    ]
+  },
+  {
+    "package_id": "191751",
+    "do_files_expected": 11,
+    "do_files_reviewed": 11,
+    "lines_expected": 9545,
+    "lines_reviewed": 9545,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "master.do",
+      "script_setup.do",
+      "script_buildatasets.do",
+      "script_vam.do",
+      "script_descriptives.do",
+      "script_whattheydo.do",
+      "script_dataforregressions.do",
+      "script_recruitment_regressions.do",
+      "script_recruitment_figures.do",
+      "script_appendixB.do",
+      "script_appendixC.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "script_buildatasets.do:1-4378"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Large, source-specific dataset construction."
+      },
+      "integrity_audit": {
+        "status": "uncertain",
+        "evidence_files": [
+          "script_buildatasets.do:1-4378",
+          "script_dataforregressions.do:1-513"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "No general atomic audit not already labeled."
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "script_buildatasets.do:1-4378",
+          "script_dataforregressions.do:1-513"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Existing labeled clean.id_normalize and outlier.winsorize spans are not duplicated."
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "script_buildatasets.do:1-4378",
+          "script_dataforregressions.do:1-513"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "No additional safe merge block beyond existing labels."
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "script_dataforregressions.do:1-513"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Treatment timing is analysis-specific."
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "script_descriptives.do:1-291",
+          "script_recruitment_regressions.do:67-95"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Existing labeled estimation-sample mean block is not duplicated."
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "script_vam.do:1-462",
+          "script_recruitment_regressions.do:1-959"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Table exporters/manual transfer make positive extraction unsafe."
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "script_recruitment_regressions.do:562-582"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Existing robustness.dynamic_did_preperiod_placebo label; not a new candidate."
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "script_recruitment_figures.do:1-1603",
+          "script_appendixB.do:1-708"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Existing row-order event-study span is drop; no positive duplicate."
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "script_recruitment_regressions.do:1-959",
+          "script_vam.do:1-462"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "TeX/manual result transfer excluded."
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "master.do:1-101"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Calls external Matlab/R steps and uses an absolute cd path."
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "master.do",
+        "span": "1-46",
+        "reason": "documents external Matlab/R/manual copy-paste dependencies"
+      },
+      {
+        "path": "master.do",
+        "span": "49",
+        "reason": "absolute personal cd path"
+      },
+      {
+        "path": "script_recruitment_figures.do",
+        "span": "15-64",
+        "reason": "existing drop label: row-order parmest event-study construction"
+      },
+      {
+        "path": "script_recruitment_regressions.do",
+        "span": "1-959",
+        "reason": "TeX/manual reporting commands prevent positive exporter extraction"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": [
+      "External Matlab and R scripts are required for stated outputs but are outside the .do accounting.",
+      "Several tables/figures are declared manual, so Stata-only reproducibility is incomplete."
+    ]
+  },
+  {
+    "package_id": "193441",
+    "do_files_expected": 35,
+    "do_files_reviewed": 35,
+    "lines_expected": 5380,
+    "lines_reviewed": 5380,
+    "review_level": "end_to_end_read",
+    "workflow_order": "no_master",
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "replicate_information/1_build/build.do:1-1412"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "integrity_audit": {
+        "status": "present",
+        "evidence_files": [
+          "replicate_information/1_build/build.do:870-879",
+          "replicate_information/1_build/build.do:929-957"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "isid/assert."
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "replicate_information/1_build/build.do:1-1412"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "replicate_information/1_build/build.do:870-879"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Checked merge."
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "replicate_information/1_build/build.do:1-1412"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "uncertain",
+        "evidence_files": [],
+        "reusable_disposition": "no_safe_block",
+        "notes": "No safe standalone reusable block."
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "replicate_information/2_analysis/table2.do:1-228"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "replicate_information/2_analysis/appendix_table2.do:1-51"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "replicate_information/2_analysis/figure3.do:1-69"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "Output-specific."
+      },
+      "exports": {
+        "status": "uncertain",
+        "evidence_files": [],
+        "reusable_disposition": "negative_only",
+        "notes": "Table output excluded."
+      },
+      "master_orchestration": {
+        "status": "absent",
+        "evidence_files": [],
+        "reusable_disposition": "not_applicable",
+        "notes": "No master do-file."
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "replicate_information/2_analysis/table2.do",
+        "span": "1-228",
+        "reason": "Table output not promoted."
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": [
+      "No documented complete execution order."
+    ]
+  },
+  {
+    "package_id": "194561",
+    "do_files_expected": 14,
+    "do_files_reviewed": 14,
+    "lines_expected": 2675,
+    "lines_reviewed": 2675,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "code/0_master.do",
+      "code/0_setup.do",
+      "code/10_data_preparation.do",
+      "code/20_Figure_1.do",
+      "code/30_Table_1.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "code/0_master.do:1-88"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "integrity_audit": {
+        "status": "present",
+        "evidence_files": [
+          "code/0_master.do:1-88"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "code/0_master.do:1-88"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "code/0_master.do:1-88"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "code/0_master.do:1-88"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "code/0_master.do:1-88"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "code/0_master.do:1-88"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "code/0_master.do:1-88"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "code/0_master.do:1-88"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "code/0_master.do:1-88"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "code/0_master.do:1-88"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "code/30_Table_1.do",
+        "span": "171-180",
+        "reason": "manual matrix/Mata"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": []
+  },
+  {
+    "package_id": "195983",
+    "do_files_expected": 15,
+    "do_files_reviewed": 15,
+    "lines_expected": 9956,
+    "lines_reviewed": 9956,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "nafta_politics_replication_submission_PUBLIC/do_files/master.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "nafta_politics_replication_submission_PUBLIC/do_files/1_vulnerability.do:1-1102"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "integrity_audit": {
+        "status": "uncertain",
+        "evidence_files": [],
+        "reusable_disposition": "no_safe_block",
+        "notes": "No safe standalone reusable block."
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "nafta_politics_replication_submission_PUBLIC/do_files/2_anes_individual.do:1-968"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "nafta_politics_replication_submission_PUBLIC/do_files/6_psid.do:1-1256"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Excluded from positive reuse."
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "nafta_politics_replication_submission_PUBLIC/do_files/5_imports_exports.do:1-131"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "uncertain",
+        "evidence_files": [],
+        "reusable_disposition": "no_safe_block",
+        "notes": "No safe standalone reusable block."
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "nafta_politics_replication_submission_PUBLIC/do_files/99_analysis.do:1-2709"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "nafta_politics_replication_submission_PUBLIC/do_files/10_akm_errors.do:1-53"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "nafta_politics_replication_submission_PUBLIC/do_files/99_analysis.do:1-2709"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "Output-specific."
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "nafta_politics_replication_submission_PUBLIC/do_files/99_analysis.do:1-2709"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "esttab/TeX excluded."
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "nafta_politics_replication_submission_PUBLIC/do_files/master.do:1-67"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "nafta_politics_replication_submission_PUBLIC/do_files/99_analysis.do",
+        "span": "1-2709",
+        "reason": "TeX/table exports excluded."
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": [
+      "External data/commands untested."
+    ]
+  },
+  {
+    "package_id": "196012",
+    "do_files_expected": 195,
+    "do_files_reviewed": 195,
+    "lines_expected": 29090,
+    "lines_reviewed": 29090,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "Do/Master.do",
+      "Data_Generation_Program/Data_for_Table1.do",
+      "Data_Moments/Do/Moment1.do",
+      "Do/Table1.do",
+      "Do/Figure1.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "Do/Master.do:1-168"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "integrity_audit": {
+        "status": "present",
+        "evidence_files": [
+          "Do/Master.do:1-168"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "Do/Master.do:1-168"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "Do/Master.do:1-168"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "Do/Master.do:1-168"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "Do/Master.do:1-168"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "Do/Master.do:1-168"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "Do/Master.do:1-168"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "Do/Master.do:1-168"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "Do/Master.do:1-168"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "Do/Master.do:1-168"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "Data_Moments/Do/Moment2.do",
+        "span": "82-99",
+        "reason": "nested forvalues"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": []
+  },
+  {
+    "package_id": "202444",
+    "do_files_expected": 33,
+    "do_files_reviewed": 33,
+    "lines_expected": 8801,
+    "lines_reviewed": 8801,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "code/0. runall.do",
+      "code/pathnames.do",
+      "code/cleaning/master_cleaning.do",
+      "code/main_analysis.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "code/cleaning/financial/import_raw_egs_data.do:1-79",
+          "code/cleaning/gp_elections/clean_gp_elections2015.do:1-372"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific import, but master ordering is explicit."
+      },
+      "integrity_audit": {
+        "status": "uncertain",
+        "evidence_files": [
+          "code/cleaning/lg_directory/determine_nodiscontinuity_districts.do:1-156"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "No general audit block added."
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "code/cleaning/master_cleaning.do:1-87",
+          "code/cleaning/financial/create_egs_analysis_data.do:111-145"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Existing labeled panel.stack_wide_year_suffixes span not duplicated."
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "code/cleaning/lg_directory/create_village_level_analysis.do:1-211",
+          "code/cleaning/gp_elections/create_analysis_file.do:1-191"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "No safe new merge candidate selected."
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "code/cleaning/financial/create_egs_analysis_data.do:111-145"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Existing label only; no duplicate candidate."
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "code/main_analysis.do:1-3289"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Output-oriented analysis with no compact safe new block."
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "code/main_analysis.do:1-3289"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Complex custom analysis; do not promote without a state-isolated block."
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "code/main_analysis.do:626-672",
+          "code/main_analysis.do:2754-2862"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Placebo/heterogeneity reporting is tied to custom output helpers."
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "code/main_analysis.do:1-3289"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "No safe non-TeX figure block selected."
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "code/main_analysis.do:1-3289"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "TeX/custom table commands excluded."
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "code/0. runall.do:1-83",
+          "code/cleaning/master_cleaning.do:1-87"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Runall installs packages at runtime; not reusable under guard."
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "code/0. runall.do",
+        "span": "6-50",
+        "reason": "ssc/net package installation at runtime"
+      },
+      {
+        "path": "code/0. runall.do",
+        "span": "55-56",
+        "reason": "placeholder user-set paths, not a runnable portable root"
+      },
+      {
+        "path": "code/ado/install_packages.do",
+        "span": "1-15",
+        "reason": "runtime package installation"
+      },
+      {
+        "path": "code/main_analysis.do",
+        "span": "1-3289",
+        "reason": "custom/manual/TeX-oriented result assembly prevents safe positive extraction"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": [
+      "Whether custom ado outputs have an Excel/PDF-only replacement cannot be resolved from the .do corpus.",
+      "Runtime dependency versions are not pinned in the runall script."
+    ]
+  },
+  {
+    "package_id": "209030",
+    "do_files_expected": 31,
+    "do_files_reviewed": 31,
+    "lines_expected": 2258,
+    "lines_reviewed": 2258,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "(0) STATA - Build Dataset/Build Dataset.do",
+      "(2) STATA - Collect Model Data/Collect Model Data.do",
+      "(3) STATA - Graphs and Tables/Master_Graphs_Tables.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "(0) STATA - Build Dataset/Build Dataset.do:1-778"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "integrity_audit": {
+        "status": "present",
+        "evidence_files": [
+          "(0) STATA - Build Dataset/Build Dataset.do:1-778"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "(0) STATA - Build Dataset/Build Dataset.do:1-778"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "(0) STATA - Build Dataset/Build Dataset.do:1-778"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "(0) STATA - Build Dataset/Build Dataset.do:1-778"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "(0) STATA - Build Dataset/Build Dataset.do:1-778"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "(0) STATA - Build Dataset/Build Dataset.do:1-778"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "(0) STATA - Build Dataset/Build Dataset.do:1-778"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "(0) STATA - Build Dataset/Build Dataset.do:1-778"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "(0) STATA - Build Dataset/Build Dataset.do:1-778"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "(0) STATA - Build Dataset/Build Dataset.do:1-778"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "(0) STATA - Build Dataset/Build Dataset.do",
+        "span": "91-93",
+        "reason": "unchecked merge marker drop"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": []
+  },
+  {
+    "package_id": "209484",
+    "do_files_expected": 11,
+    "do_files_reviewed": 11,
+    "lines_expected": 1398,
+    "lines_reviewed": 1398,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "MASTER.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "building_database.do:1-164"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "integrity_audit": {
+        "status": "uncertain",
+        "evidence_files": [],
+        "reusable_disposition": "no_safe_block",
+        "notes": "No safe standalone reusable block."
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "building_database.do:1-164"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "building_database.do:1-164"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Excluded from positive reuse."
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "figures_1_to_8.do:1-235"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "uncertain",
+        "evidence_files": [],
+        "reusable_disposition": "no_safe_block",
+        "notes": "No safe standalone reusable block."
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "table_O1.do:1-112",
+          "tables_2_to_6.do:1-148"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "table_O3.do:1-60",
+          "tables_O4_O5_O6.do:1-121"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "figures_1_to_8.do:1-235"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "Output-specific."
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "Tables 1 to 7, O1,O3,O4,O5,O6/KOUNTRY.do:1-272"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Manual table/TeX excluded."
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "MASTER.do:1-32"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "Tables 1 to 7, O1,O3,O4,O5,O6/KOUNTRY.do",
+        "span": "1-272",
+        "reason": "Manual table/TeX output."
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": [
+      "Execution order should be run-tested."
+    ]
+  },
+  {
+    "package_id": "237291",
+    "do_files_expected": 18,
+    "do_files_reviewed": 18,
+    "lines_expected": 8463,
+    "lines_reviewed": 8463,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "master.do",
+      "createdata/CreateCongress.do",
+      "createdata/CreateFinal.do",
+      "createdata/CreateAnalysisDataShort.do",
+      "createdata/CreateSpeeches.do",
+      "tables/Table1_SummaryStats.do",
+      "tables/Table2_Balancing.do",
+      "tables/Table3_Main.do",
+      "tables/Table4_ElectoralStrength.do",
+      "tables/Table5_Heterogeneity.do",
+      "tables/Table6_OtherBills.do",
+      "tables/Table7_BillOutcomes.do",
+      "tables/Table8_Speeches.do",
+      "figures/Figure2_CospGreenMV.do",
+      "figures/Figure3_EventStudy_new.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "createdata/CreateCongress.do:1-1667",
+          "createdata/CreateSpeeches.do:1-1373"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Raw congressional/speech source schema is specific."
+      },
+      "integrity_audit": {
+        "status": "uncertain",
+        "evidence_files": [
+          "createdata/CreateCongress.do:1-1667",
+          "createdata/CreateFinal.do:1-1679"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "No compact key audit selected."
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "createdata/CreateCongress.do:1-1667",
+          "createdata/CreateFinal.do:1-1679",
+          "createdata/CreateSpeeches.do:1-1373"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Long source-specific preparation."
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "createdata/CreateFinal.do:1-1679",
+          "createdata/CreateAnalysisDataShort.do:1-59"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "No force-free atomic merge block verified for promotion."
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "createdata/CreateAnalysisDataShort.do:1-59",
+          "figures/Figure3_EventStudy_new.do:1-267"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Congress/event-time schema-specific."
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "tables/Table1_SummaryStats.do:1-43",
+          "tables/Table2_Balancing.do:1-98"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Table output is TeX-oriented."
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "tables/Table3_Main.do:1-369",
+          "tables/Table4_ElectoralStrength.do:1-257",
+          "tables/Table5_Heterogeneity.do:1-141"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "TeX exporters/manual assembly excluded."
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "tables/Table6_OtherBills.do:1-77",
+          "tables/Table7_BillOutcomes.do:1-379",
+          "tables/Table8_Speeches.do:1-157"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "No safe, standalone non-TeX robustness atom selected."
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "figures/Figure2_CospGreenMV.do:1-78",
+          "figures/Figure3_EventStudy_new.do:1-267"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Figure workflow should not be extracted while report artifact path is coupled."
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "tables/Table1_SummaryStats.do:1-43",
+          "tables/Table3_Main.do:1-369"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "TeX output excluded."
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "master.do:1-167"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Absolute myDir, explicit TeX file warning, and shell PowerShell hardware query are nonportable/unsafe."
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "master.do",
+        "span": "16",
+        "reason": "absolute personal myDir path"
+      },
+      {
+        "path": "master.do",
+        "span": "10-14",
+        "reason": "explicit .tex output-file warning"
+      },
+      {
+        "path": "master.do",
+        "span": "136-158",
+        "reason": "active shell PowerShell process escape"
+      },
+      {
+        "path": "tables/Table3_Main.do",
+        "span": "1-369",
+        "reason": "TeX-oriented exporter excluded"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": [
+      "The supplied master excludes classification scripts even though they are deposited, so their intended preconditions/call order are not explicit.",
+      "Bundled ado dependencies are versioned by path but no non-TeX export contract is isolated."
+    ]
+  },
+  {
+    "package_id": "z10611203",
+    "do_files_expected": 2,
+    "do_files_reviewed": 2,
+    "lines_expected": 2048,
+    "lines_reviewed": 2048,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "MS28862/DoFiles/ACGGH_main.do",
+      "MS28862/DoFiles/ACGGH_appendix.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "MS28862/DoFiles/ACGGH_main.do:1-380"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "integrity_audit": {
+        "status": "present",
+        "evidence_files": [
+          "MS28862/DoFiles/ACGGH_main.do:1-380"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "MS28862/DoFiles/ACGGH_main.do:1-380"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "MS28862/DoFiles/ACGGH_main.do:1-380"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "MS28862/DoFiles/ACGGH_main.do:1-380"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "MS28862/DoFiles/ACGGH_main.do:1-380"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "MS28862/DoFiles/ACGGH_main.do:1-380"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "MS28862/DoFiles/ACGGH_main.do:1-380"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "MS28862/DoFiles/ACGGH_main.do:1-380"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "MS28862/DoFiles/ACGGH_main.do:44-92"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "manual matrix and TeX output"
+      },
+      "master_orchestration": {
+        "status": "absent",
+        "evidence_files": [],
+        "reusable_disposition": "not_applicable",
+        "notes": "no master"
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "MS28862/DoFiles/ACGGH_main.do",
+        "span": "44-92",
+        "reason": "manual matrix and TeX output"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": []
+  },
+  {
+    "package_id": "z14968164",
+    "do_files_expected": 4,
+    "do_files_reviewed": 4,
+    "lines_expected": 1328,
+    "lines_reviewed": 1328,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "GxE_metrics_replication_package/0_code/0_runall.do",
+      "GxE_metrics_replication_package/0_code/1_GxE_dataClean.do",
+      "GxE_metrics_replication_package/0_code/2_GxE_analysis.do",
+      "GxE_metrics_replication_package/0_code/9_GxE_powerCalc.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "GxE_metrics_replication_package/0_code/0_runall.do:1-85"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "integrity_audit": {
+        "status": "present",
+        "evidence_files": [
+          "GxE_metrics_replication_package/0_code/0_runall.do:1-85"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "GxE_metrics_replication_package/0_code/0_runall.do:1-85"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "GxE_metrics_replication_package/0_code/0_runall.do:1-85"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "GxE_metrics_replication_package/0_code/0_runall.do:1-85"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "GxE_metrics_replication_package/0_code/0_runall.do:1-85"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "GxE_metrics_replication_package/0_code/0_runall.do:1-85"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "GxE_metrics_replication_package/0_code/0_runall.do:1-85"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "GxE_metrics_replication_package/0_code/0_runall.do:1-85"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "GxE_metrics_replication_package/0_code/9_GxE_powerCalc.do:76-114"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "nested simulation loops"
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "GxE_metrics_replication_package/0_code/0_runall.do:1-85"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "GxE_metrics_replication_package/0_code/9_GxE_powerCalc.do",
+        "span": "76-114",
+        "reason": "nested simulation loops"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": []
+  },
+  {
+    "package_id": "z15288849",
+    "do_files_expected": 18,
+    "do_files_reviewed": 18,
+    "lines_expected": 20970,
+    "lines_reviewed": 20970,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "master_setup.do",
+      "master_analysis.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "setup.do:1-4264"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "integrity_audit": {
+        "status": "present",
+        "evidence_files": [
+          "distance_prep.do:145-162",
+          "diabetes_prep.do:2203-2210",
+          "prime_ben_setup2.do:580-593"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Checked assertions."
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "setup.do:1-4264"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "distance_prep.do:1-288"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Excluded from positive reuse."
+      },
+      "panel_construction": {
+        "status": "uncertain",
+        "evidence_files": [],
+        "reusable_disposition": "no_safe_block",
+        "notes": "No safe standalone reusable block."
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "uncertain",
+        "evidence_files": [],
+        "reusable_disposition": "no_safe_block",
+        "notes": "No safe standalone reusable block."
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "regression.do:1-1312"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Explicit reghdfe."
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "regression.do:1-1312"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Source-specific reference."
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "figures.do:1-242"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "Output-specific."
+      },
+      "exports": {
+        "status": "uncertain",
+        "evidence_files": [],
+        "reusable_disposition": "no_safe_block",
+        "notes": "No safe standalone reusable block."
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "master_setup.do:1-39",
+          "master_analysis.do:1-20"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Drivers."
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "cancer_screening_setup.do",
+        "span": "777-791",
+        "reason": "Looped schema-specific merge."
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": [
+      "Raw-data access untested."
+    ]
+  },
+  {
+    "package_id": "z17712099",
+    "do_files_expected": 4,
+    "do_files_reviewed": 4,
+    "lines_expected": 365,
+    "lines_reviewed": 365,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "Meng_create_1.do",
+      "Meng_create_2.do",
+      "Table6.do",
+      "jregress/example.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "Meng_create_1.do:1-117"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "integrity_audit": {
+        "status": "present",
+        "evidence_files": [
+          "Meng_create_1.do:1-117"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "Meng_create_1.do:1-117"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "Meng_create_1.do:1-117"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "Meng_create_1.do:1-117"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "Meng_create_1.do:1-117"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "Meng_create_1.do:1-117"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "jregress/example.do:1-46"
+        ],
+        "reusable_disposition": "labeled",
+        "notes": "existing jackknife label"
+      },
+      "figures": {
+        "status": "absent",
+        "evidence_files": [],
+        "reusable_disposition": "not_applicable",
+        "notes": "no figure do-file"
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "Meng_create_1.do:1-117"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "Meng_create_1.do:1-117"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "jregress/example.do",
+        "span": "1-46",
+        "reason": "custom jackknife already labeled"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": []
+  },
+  {
+    "package_id": "z18399359",
+    "do_files_expected": 23,
+    "do_files_reviewed": 23,
+    "lines_expected": 9550,
+    "lines_reviewed": 9550,
+    "review_level": "end_to_end_read",
+    "workflow_order": "no_master",
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "IRZ_replication_package_public/data_bcs70/setup_bcs70_data.do:1-633",
+          "IRZ_replication_package_public/data_usoc/setup_usoc_data.do:1-3040",
+          "IRZ_replication_package_public/data_usr/setup_usr_data.do:1-1169"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Large survey-source setup scripts have no portable atomic import contract."
+      },
+      "integrity_audit": {
+        "status": "uncertain",
+        "evidence_files": [
+          "IRZ_replication_package_public/data_usr/setup_usr_data.do:1-1169"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "Checks are interwoven with source transformation."
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "IRZ_replication_package_public/data_bcs70/setup_bcs70_data.do:1-633",
+          "IRZ_replication_package_public/data_usoc/setup_usoc_data.do:1-3040",
+          "IRZ_replication_package_public/data_usr/setup_usr_data.do:1-1169"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Source-specific and includes cleanup deletion patterns."
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "IRZ_replication_package_public/data_usoc/setup_usoc_data.do:1-3040",
+          "IRZ_replication_package_public/data_usr/setup_usr_data.do:1-1169"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "No compact validated merge block isolated."
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "IRZ_replication_package_public/data_usoc/setup_usoc_data.do:1-3040",
+          "IRZ_replication_package_public/data_usr/setup_usr_data.do:1-1169"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Longitudinal construction is survey-specific."
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "uncertain",
+        "evidence_files": [
+          "IRZ_replication_package_public/section_3/table_1.do:1-143",
+          "IRZ_replication_package_public/section_4/table_2.do:1-194"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Table construction is report-specific and contains TeX-oriented output."
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "IRZ_replication_package_public/section_3/figure_2_table_A3.do:1-388",
+          "IRZ_replication_package_public/section_4/table_3.do:1-53",
+          "IRZ_replication_package_public/section_5/table_5_figure_9.do:1-869"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Analysis files use report-specific extraction/output paths."
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "IRZ_replication_package_public/section_5/table_A7.do:1-218",
+          "IRZ_replication_package_public/section_5/table_A10.do:1-273",
+          "IRZ_replication_package_public/section_5/table_A11.do:1-141"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "No safe standalone, non-TeX robustness block isolated."
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "IRZ_replication_package_public/section_3/figure_A2.do:1-101",
+          "IRZ_replication_package_public/section_4/figure_4.do:1-292",
+          "IRZ_replication_package_public/section_5/figure_A13.do:1-444"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "Figure scripts contain report-specific generated artifacts and TeX-adjacent workflow."
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "IRZ_replication_package_public/section_3/table_1.do:1-143",
+          "IRZ_replication_package_public/section_5/table_5_figure_9.do:1-869"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "TeX output excluded by task contract."
+      },
+      "master_orchestration": {
+        "status": "absent",
+        "evidence_files": [],
+        "reusable_disposition": "not_applicable",
+        "notes": "No top-level Stata master is deposited."
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "IRZ_replication_package_public/data_usoc/setup_usoc_data.do",
+        "span": "1079-1111",
+        "reason": "active erase cleanup commands"
+      },
+      {
+        "path": "IRZ_replication_package_public/data_usr/setup_usr_data.do",
+        "span": "1079-1111",
+        "reason": "active erase cleanup commands"
+      },
+      {
+        "path": "IRZ_replication_package_public/section_3/table_1.do",
+        "span": "1-143",
+        "reason": "TeX/report-table output"
+      },
+      {
+        "path": "IRZ_replication_package_public/section_5/table_5_figure_9.do",
+        "span": "1-869",
+        "reason": "TeX/report-specific exporter"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": [
+      "The intended execution order among section files is not encoded in a master.",
+      "Some data inputs and their access contracts are external to source code."
+    ]
+  },
+  {
+    "package_id": "z21562174",
+    "do_files_expected": 13,
+    "do_files_reviewed": 13,
+    "lines_expected": 4510,
+    "lines_reviewed": 4510,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "Code/_master.do",
+      "Code/config.do",
+      "Code/confidential/01_mgr_estab_spells.do",
+      "Code/confidential/02_birth_sample.do",
+      "Code/confidential/03_create_analysis_data.do",
+      "Code/confidential/04_analysis_part1.do",
+      "Code/confidential/05_analysis_part2.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "Code/_master.do:1-74"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "integrity_audit": {
+        "status": "present",
+        "evidence_files": [
+          "Code/_master.do:1-74"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "Code/_master.do:1-74"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "Code/_master.do:1-74"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "Code/_master.do:1-74"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "Code/_master.do:1-74"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "Code/_master.do:1-74"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "Code/_master.do:1-74"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "Code/_master.do:1-74"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "Code/_master.do:1-74"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "Code/_master.do:1-74"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "Code/confidential/01_mgr_estab_spells.do",
+        "span": "161-163",
+        "reason": "unchecked merge marker drop"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": []
+  },
+  {
+    "package_id": "z4602567",
+    "do_files_expected": 3,
+    "do_files_reviewed": 3,
+    "lines_expected": 842,
+    "lines_reviewed": 842,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "Replication_files/0_masterfile.do",
+      "Replication_files/1_tables_1_through_5.do",
+      "Replication_files/2_structural_get_weighting_matrix.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "Replication_files/0_masterfile.do:1-62"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "integrity_audit": {
+        "status": "present",
+        "evidence_files": [
+          "Replication_files/0_masterfile.do:1-62"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "Replication_files/0_masterfile.do:1-62"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "Replication_files/0_masterfile.do:1-62"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "Replication_files/0_masterfile.do:1-62"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "Replication_files/0_masterfile.do:1-62"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "Replication_files/0_masterfile.do:1-62"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "Replication_files/0_masterfile.do:1-62"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "Replication_files/0_masterfile.do:1-62"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "Replication_files/2_structural_get_weighting_matrix.do:53-407"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "manual matrix and nested loops"
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "Replication_files/0_masterfile.do:1-62"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "Replication_files/2_structural_get_weighting_matrix.do",
+        "span": "53-407",
+        "reason": "manual matrix and nested loops"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": []
+  },
+  {
+    "package_id": "z4665536",
+    "do_files_expected": 26,
+    "do_files_reviewed": 26,
+    "lines_expected": 988,
+    "lines_reviewed": 988,
+    "review_level": "end_to_end_read",
+    "workflow_order": "no_master",
+    "stages": {
+      "import": {
+        "status": "uncertain",
+        "evidence_files": [
+          "Replication files/Stata code/Code tables/Table_1.do:1-21"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "tables-only deposit"
+      },
+      "integrity_audit": {
+        "status": "absent",
+        "evidence_files": [],
+        "reusable_disposition": "not_applicable",
+        "notes": "not observed"
+      },
+      "cleaning_labels": {
+        "status": "absent",
+        "evidence_files": [],
+        "reusable_disposition": "not_applicable",
+        "notes": "not observed"
+      },
+      "merge_reshape": {
+        "status": "uncertain",
+        "evidence_files": [
+          "Replication files/Stata code/Code tables/Table_2.do:1-40"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "not isolated"
+      },
+      "panel_construction": {
+        "status": "absent",
+        "evidence_files": [],
+        "reusable_disposition": "not_applicable",
+        "notes": "not observed"
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "Replication files/Stata code/Code tables/Table_1.do:1-21"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "TeX table output"
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "Replication files/Stata code/Code tables/Table_3.do:1-21"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "TeX exporters"
+      },
+      "robustness": {
+        "status": "uncertain",
+        "evidence_files": [
+          "Replication files/Stata code/Code tables/Table_D1.do:1-10"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "not standalone"
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "Replication files/Stata code/Code figures/Figure_2.do:1-35"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "figure-specific"
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "Replication files/Stata code/Code tables/Table_1.do:1-21"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "TeX excluded"
+      },
+      "master_orchestration": {
+        "status": "absent",
+        "evidence_files": [],
+        "reusable_disposition": "not_applicable",
+        "notes": "no master"
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "Replication files/Stata code/Code tables/Table_1.do",
+        "span": "1-21",
+        "reason": "TeX-oriented table exporter"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": [
+      "No master specifies table/figure order."
+    ]
+  },
+  {
+    "package_id": "z4733035",
+    "do_files_expected": 14,
+    "do_files_reviewed": 14,
+    "lines_expected": 4494,
+    "lines_reviewed": 4494,
+    "review_level": "end_to_end_read",
+    "workflow_order": "no_master",
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "Replication Package_MS25930_2May2021/A_Generate_BANK_dataset.do:1-437"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "source-specific"
+      },
+      "integrity_audit": {
+        "status": "uncertain",
+        "evidence_files": [
+          "Replication Package_MS25930_2May2021/B_WholeCR_fixing.do:1-386"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "not isolated"
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "Replication Package_MS25930_2May2021/B_WholeCR_fixing.do:1-386"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "active erase/manual workflow"
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "Replication Package_MS25930_2May2021/F_datamergeWholeCR_QFXsplit_CYCLE.do:1-147"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "no checked atomic merge"
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "Replication Package_MS25930_2May2021/D_PrepareBANKformergeQ_CYCLE.do:1-204"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "schema-specific"
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "uncertain",
+        "evidence_files": [
+          "Replication Package_MS25930_2May2021/table_1_2_3_4_5_6_7.do:1-578"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "table assembly"
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "Replication Package_MS25930_2May2021/table_8_9_10_11_13_14.do:1-519"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "manual matrices/output"
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "Replication Package_MS25930_2May2021/tableA_1235678.do:1-522"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "manual output"
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "Replication Package_MS25930_2May2021/master_figs_final.do:1-311"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "figure workflow"
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "Replication Package_MS25930_2May2021/table12.do:1-207"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "TeX/manual output"
+      },
+      "master_orchestration": {
+        "status": "absent",
+        "evidence_files": [],
+        "reusable_disposition": "not_applicable",
+        "notes": "no top-level master"
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "Replication Package_MS25930_2May2021/B_WholeCR_fixing.do",
+        "span": "381",
+        "reason": "active erase"
+      },
+      {
+        "path": "Replication Package_MS25930_2May2021/table_1_2_3_4_5_6_7.do",
+        "span": "1-578",
+        "reason": "manual matrix/table output"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": [
+      "No deposited entrypoint orders data preparation and tables."
+    ]
+  },
+  {
+    "package_id": "z5338362",
+    "do_files_expected": 12,
+    "do_files_reviewed": 12,
+    "lines_expected": 1432,
+    "lines_reviewed": 1432,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "ReproductionFiles/MASTER.do",
+      "ReproductionFiles/dofiles/descriptive_figures.do",
+      "ReproductionFiles/dofiles/projections_main_1700.do",
+      "ReproductionFiles/dofiles/projections_placebo_1700.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "ReproductionFiles/dofiles/descriptive_figures.do:1-24"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "data-specific"
+      },
+      "integrity_audit": {
+        "status": "uncertain",
+        "evidence_files": [
+          "ReproductionFiles/dofiles/projections_main_1700.do:1-122"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "not isolated"
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "ReproductionFiles/dofiles/descriptive_additionalfigures.do:1-39"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "figure-specific"
+      },
+      "merge_reshape": {
+        "status": "absent",
+        "evidence_files": [],
+        "reusable_disposition": "not_applicable",
+        "notes": "not observed"
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "ReproductionFiles/dofiles/projections_main_1700.do:1-122"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "time-series specific"
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "ReproductionFiles/dofiles/descriptive_figures.do:1-24"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "descriptive graphs"
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "ReproductionFiles/dofiles/projections_main_1700.do:35-50"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "looped local projections"
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "ReproductionFiles/dofiles/projections_placebo_1700.do:5-102"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "existing placebo is looped and PNG output"
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "ReproductionFiles/dofiles/projections_countries_1700.do:1-126"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "PNG, not PDF"
+      },
+      "exports": {
+        "status": "uncertain",
+        "evidence_files": [
+          "ReproductionFiles/dofiles/projections_placebo_1700.do:84-102"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "PNG only"
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "ReproductionFiles/MASTER.do:1-65"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "explicit calls"
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "ReproductionFiles/dofiles/projections_placebo_1700.do",
+        "span": "11-15",
+        "reason": "two separate loop-driven coefficient construction; no positive atom"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": [
+      "MASTER call order for every projection variant needs execution confirmation."
+    ]
+  },
+  {
+    "package_id": "z5652443",
+    "do_files_expected": 1,
+    "do_files_reviewed": 1,
+    "lines_expected": 142,
+    "lines_reviewed": 142,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "qobsims_reverse_engineer.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "qobsims_reverse_engineer.do:1-142"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "integrity_audit": {
+        "status": "present",
+        "evidence_files": [
+          "qobsims_reverse_engineer.do:1-142"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "qobsims_reverse_engineer.do:1-142"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "qobsims_reverse_engineer.do:1-142"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "qobsims_reverse_engineer.do:1-142"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "qobsims_reverse_engineer.do:1-142"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "qobsims_reverse_engineer.do:1-142"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "qobsims_reverse_engineer.do:1-142"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "figures": {
+        "status": "absent",
+        "evidence_files": [],
+        "reusable_disposition": "not_applicable",
+        "notes": "no figure do-file"
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "qobsims_reverse_engineer.do:1-142"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "qobsims_reverse_engineer.do:1-142"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "qobsims_reverse_engineer.do",
+        "span": "50-80",
+        "reason": "unchecked matched-only merge"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": []
+  },
+  {
+    "package_id": "z5652808",
+    "do_files_expected": 7,
+    "do_files_reviewed": 7,
+    "lines_expected": 1219,
+    "lines_reviewed": 1219,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "ReplicationPackage/EmpiricalAnalysis/master.do",
+      "ReplicationPackage/EmpiricalAnalysis/dofiles/4_1_Allocation_Attention.do",
+      "ReplicationPackage/EmpiricalAnalysis/dofiles/4_1_Passive_Behavior.do",
+      "ReplicationPackage/EmpiricalAnalysis/dofiles/4_2_Cognitive_Spillover.do",
+      "ReplicationPackage/EmpiricalAnalysis/dofiles/4_2_Interventions_targeted_domain.do",
+      "ReplicationPackage/EmpiricalAnalysis/dofiles/4_3_Payoffs_And_Efficiency.do",
+      "ReplicationPackage/EmpiricalAnalysis/dofiles/Supplementary_Material_Randomization_Check_table.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "ReplicationPackage/EmpiricalAnalysis/dofiles/4_1_Allocation_Attention.do:1-147"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "analysis load"
+      },
+      "integrity_audit": {
+        "status": "uncertain",
+        "evidence_files": [
+          "ReplicationPackage/EmpiricalAnalysis/dofiles/Supplementary_Material_Randomization_Check_table.do:1-87"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "not isolated"
+      },
+      "cleaning_labels": {
+        "status": "uncertain",
+        "evidence_files": [
+          "ReplicationPackage/EmpiricalAnalysis/dofiles/4_1_Passive_Behavior.do:1-159"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "not isolated"
+      },
+      "merge_reshape": {
+        "status": "absent",
+        "evidence_files": [],
+        "reusable_disposition": "not_applicable",
+        "notes": "not observed"
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "ReplicationPackage/EmpiricalAnalysis/dofiles/4_2_Cognitive_Spillover.do:1-197"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "experiment-specific"
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "ReplicationPackage/EmpiricalAnalysis/dofiles/Supplementary_Material_Randomization_Check_table.do:1-87"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "table exporter"
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "ReplicationPackage/EmpiricalAnalysis/dofiles/4_3_Payoffs_And_Efficiency.do:1-224"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "manual/report output"
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "ReplicationPackage/EmpiricalAnalysis/dofiles/4_2_Interventions_targeted_domain.do:1-179"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "not standalone"
+      },
+      "figures": {
+        "status": "uncertain",
+        "evidence_files": [
+          "ReplicationPackage/EmpiricalAnalysis/dofiles/4_1_Allocation_Attention.do:1-147"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "no safe PDF atom"
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "ReplicationPackage/EmpiricalAnalysis/dofiles/4_3_Payoffs_And_Efficiency.do:1-224"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "TeX/report output"
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "ReplicationPackage/EmpiricalAnalysis/master.do:1-39"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "explicit calls"
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "ReplicationPackage/EmpiricalAnalysis/dofiles/4_3_Payoffs_And_Efficiency.do",
+        "span": "1-224",
+        "reason": "TeX/manual output"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": [
+      "Dependent data and output contracts are not independently documented."
+    ]
+  },
+  {
+    "package_id": "z6976241",
+    "do_files_expected": 1,
+    "do_files_reviewed": 1,
+    "lines_expected": 139,
+    "lines_reviewed": 139,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "Replication/Table 1 Section 5/Code/CleanData.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "Replication/Table 1 Section 5/Code/CleanData.do:1-139"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "integrity_audit": {
+        "status": "present",
+        "evidence_files": [
+          "Replication/Table 1 Section 5/Code/CleanData.do:1-139"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "Replication/Table 1 Section 5/Code/CleanData.do:1-139"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "Replication/Table 1 Section 5/Code/CleanData.do:1-139"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "Replication/Table 1 Section 5/Code/CleanData.do:1-139"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "Replication/Table 1 Section 5/Code/CleanData.do:1-139"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "Replication/Table 1 Section 5/Code/CleanData.do:1-139"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "Replication/Table 1 Section 5/Code/CleanData.do:1-139"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "figures": {
+        "status": "absent",
+        "evidence_files": [],
+        "reusable_disposition": "not_applicable",
+        "notes": "no figure do-file"
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "Replication/Table 1 Section 5/Code/CleanData.do:1-139"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "Replication/Table 1 Section 5/Code/CleanData.do:1-139"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "Replication/Table 1 Section 5/Code/CleanData.do",
+        "span": "60-139",
+        "reason": "construction-specific integration"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": []
+  },
+  {
+    "package_id": "z7901559",
+    "do_files_expected": 16,
+    "do_files_reviewed": 16,
+    "lines_expected": 4801,
+    "lines_reviewed": 4801,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "Garin_Silverio_replication/0_1_make_recession_shocks.do",
+      "Garin_Silverio_replication/0_2_make_firm_shocks.do",
+      "Garin_Silverio_replication/1_1_prep_firm_data.do",
+      "Garin_Silverio_replication/1_2_prep_worker_data.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "Garin_Silverio_replication/0_1_make_recession_shocks.do:1-163"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "integrity_audit": {
+        "status": "present",
+        "evidence_files": [
+          "Garin_Silverio_replication/0_1_make_recession_shocks.do:1-163"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "Garin_Silverio_replication/0_1_make_recession_shocks.do:1-163"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "Garin_Silverio_replication/0_1_make_recession_shocks.do:1-163"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "Garin_Silverio_replication/0_1_make_recession_shocks.do:1-163"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "Garin_Silverio_replication/0_1_make_recession_shocks.do:1-163"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "Garin_Silverio_replication/0_1_make_recession_shocks.do:1-163"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "Garin_Silverio_replication/0_1_make_recession_shocks.do:1-163"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "Garin_Silverio_replication/0_1_make_recession_shocks.do:1-163"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "exports": {
+        "status": "present",
+        "evidence_files": [
+          "Garin_Silverio_replication/0_1_make_recession_shocks.do:1-163"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "Garin_Silverio_replication/0_1_make_recession_shocks.do:1-163"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "full-file review evidence"
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "Garin_Silverio_replication/1_1_prep_firm_data.do",
+        "span": "1-100",
+        "reason": "restricted inputs"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": []
+  },
+  {
+    "package_id": "z8376886",
+    "do_files_expected": 33,
+    "do_files_reviewed": 33,
+    "lines_expected": 3779,
+    "lines_reviewed": 3779,
+    "review_level": "end_to_end_read",
+    "workflow_order": [
+      "replication package/master_clean.do",
+      "replication package/analysis.do",
+      "replication package/01_restud2_pdf_cdf.do",
+      "replication package/02_restud2_mass_layoffs.do",
+      "replication package/03_restud2_map.do",
+      "replication package/04_restud2_between_gap.do",
+      "replication package/05_restud2_CF.do",
+      "replication package/06_restud2_sum_stat.do",
+      "replication package/07_restud2_distance.do",
+      "replication package/08_restud2_ooi_sum_stats.do",
+      "replication package/09_restud2_ooi_regression.do",
+      "replication package/10_restud2_vacancies.do",
+      "replication package/11_restud2_bartik.do",
+      "replication package/12_restud2_past_occ.do",
+      "replication package/13_restud2_pca.do",
+      "replication package/14_restud2_subsets.do"
+    ],
+    "stages": {
+      "import": {
+        "status": "present",
+        "evidence_files": [
+          "replication package/clean_1_survey_master.do:1-126"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "source-specific"
+      },
+      "integrity_audit": {
+        "status": "uncertain",
+        "evidence_files": [
+          "replication package/clean_6_fill_missing_obs.do:1-29"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "not isolated"
+      },
+      "cleaning_labels": {
+        "status": "present",
+        "evidence_files": [
+          "replication package/clean_1_survey_master.do:1-126",
+          "replication package/clean_2_bibb_impute.do:1-62"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "long preparation"
+      },
+      "merge_reshape": {
+        "status": "present",
+        "evidence_files": [
+          "replication package/clean_3_LIAB_all.do:1-291"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "merge checks not isolated"
+      },
+      "panel_construction": {
+        "status": "present",
+        "evidence_files": [
+          "replication package/est_vars_prep2012.do:1-128"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "cohort-specific"
+      },
+      "descriptives_balance_sample_flow": {
+        "status": "present",
+        "evidence_files": [
+          "replication package/06_restud2_sum_stat.do:1-40",
+          "replication package/08_restud2_ooi_sum_stats.do:1-34"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "summary outputs"
+      },
+      "estimation": {
+        "status": "present",
+        "evidence_files": [
+          "replication package/09_restud2_ooi_regression.do:1-47",
+          "replication package/11_restud2_bartik.do:1-160"
+        ],
+        "reusable_disposition": "negative_only",
+        "notes": "manual output/matrices"
+      },
+      "robustness": {
+        "status": "present",
+        "evidence_files": [
+          "replication package/14_restud2_subsets.do:1-24"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "subsets not standalone"
+      },
+      "figures": {
+        "status": "present",
+        "evidence_files": [
+          "replication package/01_restud2_pdf_cdf.do:1-55",
+          "replication package/03_restud2_map.do:1-34"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "figure-specific"
+      },
+      "exports": {
+        "status": "uncertain",
+        "evidence_files": [
+          "replication package/analysis.do:1-48"
+        ],
+        "reusable_disposition": "no_safe_block",
+        "notes": "output state mixed"
+      },
+      "master_orchestration": {
+        "status": "present",
+        "evidence_files": [
+          "replication package/master_clean.do:1-61",
+          "replication package/analysis.do:1-48"
+        ],
+        "reusable_disposition": "approved_reference_only",
+        "notes": "two masters"
+      }
+    },
+    "excluded_patterns": [
+      {
+        "path": "replication package/09_restud2_ooi_regression.do",
+        "span": "1-47",
+        "reason": "manual matrix/output bridge"
+      }
+    ],
+    "unlabeled_reusable_candidates": [],
+    "unresolved_questions": [
+      "Clean and analysis masters need runtime call-order confirmation."
+    ]
+  }
+]

@@ -1,0 +1,288 @@
+***********************************************************************************
+
+/*
+Objective: This program prepares a table all ZIP codes in the U.S. along with 
+	distances to the nearest Military Treatment Facility. We rely on the OMNICAD
+	directory for the list of eligible MTFs; we identify the MTF zip code from 
+	the DMISID files, and we calculate distances with Stata GeoNear command. We
+	do this separately using the list of hospitals in 2003-2012. 
+*/
+
+***********************************************************************************
+***********************************************************************************
+* 0. Setup
+***********************************************************************************
+
+* Reset memory options
+clear all
+set more off
+set mem 500m
+set matsize 10000
+local today = subinstr("`c(current_date)'"," ","",.)
+
+* Install packages
+ssc install geodist
+ssc install geonear
+
+* Set working directory
+local mypath "/var/mhsjg/"
+local mypath1 "/var/mhsjg/datawork/"
+local mypath2 "/var/mhsjg/data/ORIG/decrypted/stata/"
+local mypath3 "/var/mhsjg/petkunj/"
+
+* Toggle between full sample and small random sample
+local sample = "sample_"
+
+
+* Toggle on/off parts of do-file
+local part1 = 1
+local part2 = 1
+local part3 = 1
+local part4 = 1
+local part5 = 1
+
+***********************************************************************************
+* 1. Identify eligible MTFs
+***********************************************************************************
+gen year = .
+save temp/Distances_to_MTFs_2003_2013_`today'.dta, replace	 
+
+forval year = 3/13 {
+
+
+if `part1' == 1 {
+* Use the January 2013 OMNICAD (this is somewhat arbitrary)
+* 	Using catchment facilities only
+
+use raw_data/omnicad/a01`yr'.dta, clear
+
+* Make a list of unique MTFs that appear as catchment facilities for any of the services
+collapse (firstnm) hsscreg, by(A_WORLD N_WORLD F_WORLD O_WORLD)
+rename A_WORLD CATCH1 
+rename F_WORLD CATCH2
+rename N_WORLD CATCH3
+rename O_WORLD CATCH4
+gen obs = _n          
+reshape long CATCH, i(obs) j(subobs)
+collapse (firstnm) hsscreg, by(CATCH)
+rename CATCH dmisid
+
+* Merge with DMISID files to associate DMIS codes w/ MTF info (including zip code)
+merge 1:1 dmisid using raw_data/dmisid/dmisid_fy`yr'.dta, gen(dmisid_merge) keep(3)
+
+* Drop closed bases
+drop if factype == "INACT"
+
+* Drop overseas and "noncat" facilities (which aren't really facilities, but just regions)
+keep if usflag == "Y" & faczip != "" & faccntry == "US"
+
+* Drop extraneous variables
+collapse (firstnm) dmisnme dmisid instalnm faccity, by(faccntry facstate faczip)
+
+* Clean individual MTF zipcodes
+*	Zip code database is current. For zip codes that have been retired, we'll replace them with adjacent zip code.
+replace faczip = "30310" if faczip == "30330"
+replace faczip = "92106" if faczip == "92133"
+gen ZIP = faczip
+gen joinby = 1
+
+save temp/catchment_dmisids_20`yr'.dta, replace
+export excel using temp/catchment_dmisids_20`yr'.xls", replace  firstrow(var)
+
+* 	Using MTF service areas (this allows for a longer list of eligible MTFs)
+use raw_data/omnicad/a01`yr'.dta, clear
+
+* Make a list of unique MTFs that appear as catchment facilities for any of the services
+collapse (firstnm) hsscreg, by(A_BPA N_BPA F_BPA O_BPA)
+rename A_BPA MTF1 
+rename F_BPA MTF2
+rename N_BPA MTF3
+rename O_BPA MTF4
+gen obs = _n          
+reshape long MTF, i(obs) j(subobs)
+collapse (firstnm) hsscreg, by(MTF)
+rename MTF dmisid
+
+* Merge with DMISID files to associate DMIS codes w/ MTF info (including zip code)
+merge 1:1 dmisid using raw_data/dmisid_fy`yr'.dta, gen(dmisid_merge) keep(3)
+
+* Drop closed bases
+drop if inlist(faczip,"71311","78743","79489","94627","95342") > 0
+
+* Drop overseas and "noncat" facilities (which aren't really facilities, but just regions)
+keep if usflag == "Y" & faczip != ""  & faccntry == "US"
+
+* There are up to 2 different MTFs in a single zip.
+*	Collapse to zip code level
+duplicates report faczip
+forval i = 1/2 {
+	bys faczip (dmisnme): gen dmisnme_`i' = dmisnme if _n == `i'
+	bys faczip (dmisnme): gen dmisid_`i' = dmisid if _n == `i'
+	bys faczip (dmisnme): gen instalnm_`i' = instalnm if _n == `i'
+}
+collapse (firstnm) dmisnme_1 dmisid_1 instalnm_1 dmisnme_2 dmisid_2 instalnm_2 faccity, ///
+	by(faccntry facstate faczip)
+	
+* Clean individual MTF zipcodes
+*	Zip code database is current. For zip codes that have been retired, we'll replace them with adjacent zip code.
+replace faczip = "30310" if faczip == "30330"
+replace faczip = "92106" if faczip == "92133"
+gen ZIP = faczip
+gen joinby = 1
+
+save temp/MTF_dmisids_20`yr'.dta, replace
+export excel using temp/MTF_dmisids_20`yr'.xls, replace  firstrow(var)
+
+}
+
+***********************************************************************************
+* 2. Prepare Zip code data
+***********************************************************************************
+
+if `part2' == 1 {
+
+
+use raw_data/zips_raw.dta
+
+* Merge w/ list of catchment-eligible MTFs from Part 1
+merge 1:1 ZIP using temp/catchment_dmisids_20`yr'.dta, gen(zipmerge)
+assert zipmerge != 2 // Ensuring that all of the MTFs were matched to a zip code
+keep if faczip != ""
+
+* Prepare data for joinby with master zip code list
+keep faccntry facstate faczip dmisnme dmisid instalnm faccity LAT LONG joinby
+rename LAT faclat
+rename LONG faclong
+
+save temp/catchment_dmisids_20`yr'.dta, replace 
+
+* Merge w/ list of service area MTFs from Part 1
+use raw_data/zips_raw.dta, clear
+merge 1:1 ZIP using temp/MTF_dmisids_20`yr'.dta, gen(zipmerge)
+assert zipmerge != 2 // Ensuring that all of the MTFs were matched to a zip code
+keep if faczip != ""
+
+* Prepare data for joinby with master zip code list
+keep faccntry facstate faczip dmisnme* dmisid* instalnm* faccity LAT LONG joinby
+rename LAT faclat
+rename LONG faclong
+
+save temp/MTF_dmisids_20`yr'.dta, replace 
+
+}
+
+***********************************************************************************
+* 3. Calculate distances between all zip codes and nearest MTF zip code
+***********************************************************************************
+if `part3' == 1 {
+
+use raw_data/zips_raw.txt, clear
+
+* Call geonear command to calculate distances 
+* Using catchment area MTFs only
+geonear ZIP LAT LONG using temp/catchment_dmisids_20`yr'.dta, ///
+	neighbors(faczip faclat faclong) wide miles ellipsoid genstub(e_nid)
+lab var e_nid "Zip code of nearest catchment MTF"
+lab var mi_to_e_nid "Miles to nearest zip code w/ catchment MTF"
+
+* Using service area MTFs (a superset of MTFs)
+geonear ZIP LAT LONG using temp/MTF_dmisids_20`yr'.dta, ///
+	neighbors(faczip faclat faclong) wide miles ellipsoid genstub(e_nid_all)
+lab var e_nid_all "Zip code of nearest service area MTF"
+lab var mi_to_e_nid_all "Miles to nearest zip code w/ service area MTF"
+
+
+* Re-merge with MTF details
+rename e_nid faczip
+merge m:1 faczip using temp/catchment_dmisids_20`yr'.dta, gen(facmerge1)
+rename faczip mtf_zipcode_catch
+lab var mtf_zipcode_catch "Zip code of nearest catchment MTF."
+rename e_nid_all faczip
+merge m:1 faczip using temp/MTF_dmisids_20`yr'.dta, gen(facmerge2)
+rename faczip mtf_zipcode_svc
+lab var mtf_zipcode_svc "Zip code of nearest MTF with an MTF service area."
+
+* Save results
+save temp/Distances_to_MTFs_20`yr'_`today'.dta, replace
+}
+
+***********************************************************************************
+* 4. Clean-up
+***********************************************************************************
+if `part4' == 1 {
+use temp/Distances_to_MTFs_20`yr'_`today'.dta, clear
+* Drop extraneous variables and rename/reorder variables
+rename ZIP zipcode
+lab var zipcode "Own 5-digit zipcode"
+rename PO_NAME city
+lab var city "City name"
+rename STATE state
+lab var state "State"
+rename ZIP_TYPE ziptype
+lab var ziptype "Own zip code type"
+rename LONG long_own
+lab var long_own "Longitude of own zip code"
+rename LAT lat_own
+lab var lat_own "Latitude of own zip code"
+rename faclong long_mtf
+lab var long_mtf "Longitude of nearest catchment MTF zip code"
+rename faclat lat_mtf
+lab var lat_mtf "Latitude of nearest catchment MTF zip code"
+rename faccntry mtf_cntry
+lab var mtf_cntry "Country of nearest catchment MTF"
+rename facstate mtf_state
+lab var mtf_state "State of nearest catchment MTF"
+rename faccity mtf_city
+lab var mtf_city "City of nearest catchment MTF"
+rename mi_to_e_nid distance
+lab var distance "Distance to nearest catchment MTF, calculated by Stata geodist package."
+rename mi_to_e_nid_all distance_svc
+lab var distance_svc "Distance to nearest service area MTF (superset of catchment MTFs)"
+* Label catchment area MTFs characteristics
+rename dmisnme mtf_name_catch
+lab var mtf_name_catch "Name of catchment area MTF"
+rename dmisid mtf_dmisid_catch
+lab var mtf_dmisid_catch "DMIS ID code of catchment area MTF."
+rename instalnm mtf_instaln_catch
+lab var mtf_instaln_catch "Name of installation for catchment area MTF."
+* Label service area MTF #1 characteristics (there can be up to 2 service area MTFs in single zip code)
+rename dmisnme_1 mtf_name_svc_1
+lab var mtf_name_svc_1 "Name of service area MTF"
+rename dmisid_1 mtf_dmisid_svc_1
+lab var mtf_dmisid_svc_1 "DMIS ID code of service area MTF."
+rename instalnm_1 mtf_instaln_svc_1
+lab var mtf_instaln_svc_1 "Name of installation for service area MTF."
+* Label service area MTF #2 characteristics
+rename dmisnme_2 mtf_name_svc_2
+lab var mtf_name_svc_2 "Name of service area MTF #2 (if zip code has multiple MTFs)"
+rename dmisid_2 mtf_dmisid_svc_2 
+lab var mtf_dmisid_svc_2 "DMIS ID code of service area MTF #2 (if zip code has multiple MTFs)."
+rename instalnm_2 mtf_instaln_svc_2
+lab var mtf_instaln_svc_2 "Name of installation #2 for service area MTF (if zip code has multiple MTFs)."
+* Drop extraneous vars and reorder
+drop joinby facmerge* 
+order zipcode state city mtf_zipcode_catch mtf_zipcode_svc distance distance_svc  ///
+	 mtf_cntry mtf_state mtf_city mtf_name* mtf_dmisid* mtf_instaln* lat_own long_own ///
+	 lat_mtf long_mtf ziptype
+	 
+* Save results
+save temp/Distances_to_MTFs_20`yr'_`today'.dta, replace	 
+}
+gen year = 2000 + `year'
+append using temp/Distances_to_MTFs_2003_2013_`today'.dta 
+save temp/Distances_to_MTFs_2003_2013_`today'.dta, replace
+erase temp/Distances_to_MTFs_20`yr'_`today'.dta
+}
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 use raw_data/primeVm6benYear.dta
+keep DEID_EDI_PN zipcode year
+sort zipcode year
+merge m:1 zipcode year using temp/Distances_to_MTFs_2003_2013_`today'.dta 
+drop if _merge == 2
+drop _merge
+
+keep DEID_EDI_PN year distance_svc
+sort DEID_EDI_PN year
+save temp/DEID_year_distance
+
+

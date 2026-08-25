@@ -1,0 +1,264 @@
+
+*------------------------------------------------------------------------------------------------------------------------------------
+*	TABLE A.8.  COMBINE THINKLINK AND STATE TESTS 
+
+*-------------------------------------------------------------------------------------------------------------------------------------
+
+
+clear
+use  "$data/analysis.dta", clear 
+drop if math_std<-12
+
+
+** Drop all teachers who were not in both years
+drop if treat_desc_y1 == "Not In Study"
+drop if treat_desc_y2 == "Not In Study"
+
+
+bys teacher_id: egen tseq=seq() if treat_desc_y1~="Not In Study" & year==1
+tab treat_desc_y1 M_value_added  if tseq==1 , chi2
+
+
+label var any "Any Treatment"
+label var gain "Pooled Gain"
+label var loss "Pooled Loss"
+label var treat_il "Individual Loss"
+label var treat_tl "Team Loss"
+label var treat_ig "Individual Gain"
+label var treat_tg "Team Gain"
+
+
+******************First, for Thinklink
+ * Column 1: Year One, Spillovers in Control
+ qui reg math_std loss gain $oldX_vam   if year==1, cluster(teacher_id)
+ qui gen inS = e(sample)
+ 
+ qui cgmreg math_std any $oldX_vam   if year==1, cluster(teacher_id newstudid)
+ eststo c1_any
+ 
+ qui cgmreg math_std gain loss $oldX_vam   if year==1, cluster(teacher_id newstudid)
+ eststo c1_pool
+ 
+ test gain=loss
+ estadd scalar p = r(p): c1_pool
+ qui tab teacher_id if inS==1
+ estadd scalar nteach = r(r): c1_pool
+ qui tab newstudid if inS==1
+ estadd scalar nstud = r(r): c1_pool
+ qui tab h_id if inS==1
+ estadd scalar nclass = r(r): c1_pool
+ su math_std if inS==1 & loss==1
+ estadd scalar mu_loss= r(mean): c1_pool
+ su math_std if inS==1 & gain==1
+ estadd scalar mu_gain= r(mean): c1_pool
+ su math_std if inS==1 & loss==0 & gain == 0
+ estadd scalar mu_lcontrol= r(mean): c1_pool
+ drop inS
+ 
+	* Team v. Individual
+	qui cgmreg math_std treat_il treat_tl treat_ig treat_tg $oldX_vam   if year==1, cluster(teacher_id newstudid)
+	eststo c1_indTeam
+
+ * Column 2: Year Two
+
+ qui reg math_std gain loss  $oldX_vam t_gain_y1 t_loss_y1 t_nis_y1 lottery if InSampleYear2==1, cluster(teacher_id)
+ qui gen inS = e(sample)
+ 
+ qui cgmreg math_std any $oldX_vam  t_gain_y1 t_loss_y1 t_nis_y1 lottery if InSampleYear2==1, cluster(teacher_id newstudid)
+ eststo c2_any
+ 
+ qui cgmreg math_std gain loss $oldX_vam  t_gain_y1 t_loss_y1 t_nis_y1 lottery if InSampleYear2==1, cluster(teacher_id newstudid)
+ eststo c2_pool
+ 
+ test gain=loss
+ estadd scalar p = r(p): c2_pool
+ qui tab teacher_id if inS==1 
+ estadd scalar nteach = r(r): c2_pool
+ qui tab newstudid if inS==1
+ estadd scalar nstud = r(r): c2_pool
+ qui tab h_id if inS==1
+ estadd scalar nclass = r(r): c2_pool
+ su math_std if inS==1 & loss==1
+ estadd scalar mu_loss= r(mean): c2_pool
+ su math_std if inS==1 & gain==1
+ estadd scalar mu_gain= r(mean): c2_pool
+ su math_std if inS==1 & loss==0 & gain == 0
+ estadd scalar mu_lcontrol= r(mean): c2_pool 
+ drop inS
+
+ 	* Team v. Individual
+	qui cgmreg math_std treat_il treat_tl treat_ig  $oldX_vam t_gain_y1 t_loss_y1 t_nis_y1 if InSampleYear2==1, cluster(teacher_id newstudid)
+	eststo c2_indTeam
+	
+
+ * Column 3: Pooled, Spillovers in Control
+ 
+ qui reg math_std gain loss  $oldX_vam_pool t_gain_y1 t_loss_y1 t_nis_y1 i.year lottery , cluster(teacher_id)
+ qui gen inS = e(sample)
+ 
+ qui cgmreg math_std any $oldX_vam_pool  t_gain_y1 t_loss_y1 t_nis_y1 i.year lottery, cluster(teacher_id newstudid)
+ eststo c3_any
+ 
+ qui cgmreg math_std gain loss $oldX_vam_pool  t_gain_y1 t_loss_y1 t_nis_y1 i.year lottery, cluster(teacher_id newstudid)
+ eststo c3_pool
+ 
+ test gain=loss
+ estadd scalar p = r(p): c3_pool
+ qui tab teacher_id if inS==1
+ estadd scalar nteach = r(r): c3_pool
+ qui tab newstudid_cons if inS==1
+ estadd scalar nstud = r(r): c3_pool
+ qui tab h_id if inS==1
+ estadd scalar nclass = r(r): c3_pool
+ su math_std if inS==1 & loss==1
+ estadd scalar mu_loss= r(mean): c3_pool
+ su math_std if inS==1 & gain==1
+ estadd scalar mu_gain= r(mean): c3_pool
+ su math_std if inS==1 & loss==0 & gain == 0
+ estadd scalar mu_lcontrol= r(mean): c3_pool
+ drop inS 
+
+ 	* Team v. Individual
+	qui cgmreg math_std treat_il treat_tl treat_ig treat_tg $oldX_vam_pool t_gain_y1 t_loss_y1 t_nis_y1 i.year , cluster(teacher_id newstudid)
+	eststo c3_indTeam
+ 
+****************************
+*** Now for THinklink
+
+
+* Column 1: Year 1, Spillovers in Control
+
+ qui reg mathI_std gain loss $oldX_vam   if year==1, cluster(teacher_id)
+ qui gen inS = e(sample)
+ 
+ qui cgmreg mathI_std any $oldX_vam   if year==1, cluster(teacher_id newstudid)
+ eststo c1_any_state
+ 
+ qui cgmreg mathI_std gain loss $oldX_vam   if year==1, cluster(teacher_id newstudid)
+ eststo c1_pool_state
+ test gain=loss
+ estadd scalar p = r(p): c1_pool_state
+ qui tab teacher_id if inS==1
+ estadd scalar nteach = r(r): c1_pool_state
+ qui tab newstudid if inS==1
+ estadd scalar nstud = r(r): c1_pool_state
+ qui tab h_id if inS==1
+ estadd scalar nclass = r(r): c1_pool_state
+ su mathI_std if inS==1 & loss==1
+ estadd scalar mu_loss= r(mean): c1_pool_state
+ su mathI_std if inS==1 & gain==1
+ estadd scalar mu_gain= r(mean): c1_pool_state
+ su mathI_std if inS==1 & loss==0 & gain == 0
+ estadd scalar mu_lcontrol= r(mean): c1_pool_state
+ drop inS
+
+	* Team v. Individual
+	qui cgmreg mathI_std treat_il treat_tl treat_ig treat_tg $oldX_vam   if year==1, cluster(teacher_id newstudid)
+	eststo c1_indTeam_state
+	
+* Column 2: Year 2, Spillovers in Control
+
+ qui reg mathI_std gain loss  $oldX_vam t_gain_y1 t_loss_y1 t_nis_y1 lottery if InSampleYear2==1, cluster(teacher_id)
+ qui gen inS = e(sample)
+ 
+ qui cgmreg mathI_std any $oldX_vam  t_gain_y1 t_loss_y1 t_nis_y1 lottery if InSampleYear2==1, cluster(teacher_id newstudid)
+ eststo c2_any_state
+ 
+ qui cgmreg mathI_std gain loss $oldX_vam  t_gain_y1 t_loss_y1 t_nis_y1 lottery if InSampleYear2==1, cluster(teacher_id newstudid)
+ eststo c2_pool_state
+ 
+ test gain=loss
+ estadd scalar p = r(p): c2_pool_state
+ qui tab teacher_id if inS==1 
+ estadd scalar nteach = r(r): c2_pool_state
+ qui tab newstudid if inS==1
+ estadd scalar nstud = r(r): c2_pool_state
+ qui tab h_id if inS==1
+ estadd scalar nclass = r(r): c2_pool_state
+ su mathI_std if inS==1 & loss==1
+ estadd scalar mu_loss= r(mean): c2_pool_state
+ su mathI_std if inS==1 & gain==1
+ estadd scalar mu_gain= r(mean): c2_pool_state
+ su mathI_std if inS==1 & loss==0 & gain == 0
+ estadd scalar mu_lcontrol= r(mean): c2_pool_state
+ drop inS
+
+ 	* Team v. Individual
+	qui cgmreg mathI_std treat_il treat_tl treat_ig  $oldX_vam t_gain_y1 t_loss_y1 t_nis_y1 if InSampleYear2==1, cluster(teacher_id newstudid)
+	eststo c2_indTeam_state
+	
+	
+* Column 3: Pooled, Spillovers in Control
+ qui reg mathI_std gain loss $oldX_vam_pool t_gain_y1 t_loss_y1 t_nis_y1 i.year lottery , cluster(teacher_id)
+ qui gen inS = e(sample)
+ 
+ qui cgmreg mathI_std any $oldX_vam_pool  t_gain_y1 t_loss_y1 t_nis_y1 i.year lottery, cluster(teacher_id newstudid)
+ eststo c3_any_state
+ 
+ qui cgmreg mathI_std gain loss $oldX_vam_pool t_gain_y1 t_loss_y1 t_nis_y1 i.year lottery , cluster(teacher_id newstudid)
+ eststo c3_pool_state
+ test gain=loss
+ estadd scalar p = r(p): c3_pool_state
+ qui tab teacher_id if inS==1
+ estadd scalar nteach = r(r): c3_pool_state
+ qui tab newstudid_cons if inS==1
+ estadd scalar nstud = r(r): c3_pool_state
+ qui tab h_id if inS==1
+ estadd scalar nclass = r(r): c3_pool_state
+ su mathI_std if inS==1 & loss==1
+ estadd scalar mu_loss= r(mean): c3_pool_state
+ su mathI_std if inS==1 & gain==1
+ estadd scalar mu_gain= r(mean): c3_pool_state
+ su mathI_std if inS==1 & loss==0 & gain == 0
+ estadd scalar mu_lcontrol= r(mean): c3_pool_state
+ drop inS
+ 
+ 	* Team v. Individual
+	qui cgmreg mathI_std treat_il treat_tl treat_ig treat_tg $oldX_vam_pool t_gain_y1 t_loss_y1 t_nis_y1 i.year , cluster(teacher_id newstudid)
+	eststo c3_indTeam_state
+
+
+	
+
+* Create estimation table
+
+	esttab c1_any c2_any c3_any c1_any_state c2_any_state c3_any_state ///
+	using "$results/TableA8_TE_combined_raw.tex", replace ///
+	keep(any  ) cells(b(fmt(3))  se(par fmt(3)))  ///
+	collabels(,none) label mtitles("Year 1" "Year 2" "Pooled" "Year 1" "Year 2" "Pooled") tex noobs ///
+	mgroups("ThinkLink" "State Tests", pattern(1 0 0 1 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span erepeat(\cmidrule(lr){@span}))
+
+
+	esttab c1_pool c2_pool c3_pool c1_pool_state c2_pool_state c3_pool_state  ///
+	using "$results/TableA8_TE_combined_raw.tex", append ///
+	keep(loss gain ) cells(b(fmt(3))  se(par fmt(3)))  ///
+	stat(p N nstud nteach mu_loss mu_gain mu_lcontrol, fmt(%12.2f %18.0g %18.0g %18.0g %12.2f %12.2f %12.2f) ///
+	label("p-value (Loss=Gain)" "Observations" "Students" "Teachers" "Mean VA in Loss" "Mean VA in Gain" "Mean VA in Control")) ///
+	nomtitles nonumbers noobs ///
+	collabels(,none) label tex 
+	
+#delimit;	
+	esttab c1_indTeam c2_indTeam c3_indTeam  c1_indTeam_state c2_indTeam_state c3_indTeam_state
+	using "$results/TableA8_TE_combined_raw.tex", append 
+	keep(treat_il treat_tl treat_ig treat_tg  ) cells(b(fmt(3))  se(par fmt(3))) 
+	collabels(,none) label nonumbers nomtitles tex
+	addnotes("The results we report are from regressions with ThinkLink test scores as the outcome variable. 
+	Included on the right-hand side of the regression is the student’s treatment assignment, demographic and socio-economic characteristics of the student 
+	(gender, race, eligibility for free or reduced price lunch, Limited English Proficiency status, eligibility for Special Education services), 
+	school and grade fixed effects, once-lagged test scores (interacted with grade), and once-lagged teacher value added. We impute missing data with zeros, 
+	adding indicator variables for missing values (missing value added measures are replaced with the sample mean). 
+	We present results both estimating years of the experiment separately and pooling across years of data. We obtain our Year 2 estimates controlling for Year 1 treatment status. 
+	When pooling the data across years, the control variables are fully interacted with year dummies.   
+	We show results for each of our treatment arms separately, as well as pooling the team and individual treatments and pooling the gain and loss treatments.  
+	The coefficients we report are Intent-to-Treat estimates, i.e. students are classified based on their initial classroom assignment.");
+	
+
+
+	
+
+	*** END *** 
+	
+
+	
+
+	

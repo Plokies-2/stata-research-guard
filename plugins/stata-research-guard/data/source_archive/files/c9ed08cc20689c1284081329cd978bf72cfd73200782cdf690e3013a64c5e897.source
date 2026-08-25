@@ -1,0 +1,114 @@
+clear * 
+set more off
+adopath ++ "$Rep_information\_packages"
+	
+// !!! Note: Step 3 of this module requires UnionPay transaction data. 
+//     These data are not included in this repository. See README for more details.
+	
+// 1. figure 12a 
+	
+	use "$Rep_information\1_build\gsod\gsod_city_day.dta", clear
+	
+	* miles to km 
+	gen visib_km=visib*1.60934
+	
+	* plot
+	tw 	hist visib_km, col(blue%50) lw(0.1) lcol(white) ///
+		graphregion(col(white)) ///
+		ylab(,nogrid) ///
+		xtitle("Visibility (km)") ///
+		xsize(4.5)
+	gr export "$Rep_information/2_analysis/output_figures/appendix_figure12a.pdf", replace
+	
+	
+// 2. figure 12b
+	use "$Rep_information/1_build/_confidential/regdata/city_week.dta", clear
+	
+	* calculate pollution percentiles by vis bins
+	gegen g_visib=cut(visib), g(20)
+	collapse (p10) p10=aod (p25) p25=aod (p50) p50=aod (p75) p75=aod (p90) p90=aod, by(g_visib) 
+	replace g_visib=g_visib+1
+	
+	* plot
+	tw 	line p10 p90 g_visib, lp(dash dash) col(gs11 gs11) || ///
+		line p25 p75 g_visib, col(blue%50 blue%50) || ///
+		connected p50 g_visib, msize(0.8) col(blue) || ///
+		scatteri 0 -1 0 21, recast(line) col(white) lw(0.002) ///
+		ylab(0(0.5)2, nogrid) xlab(1 5 10 15 20) ///
+		xtitle("Visibility (ventile bins)") ///
+		ytitle("Aerosol pollution (AOD)") ///
+		legend(ring(0) pos(2) col(1) order(1 "10th & 90th pct." 3 "25th & 75th pct." 5 "median")) ///
+		graphregion(col(white)) xsize(4.5)
+	gr export "$Rep_information/2_analysis/output_figures/appendix_figure12b.pdf", replace
+	
+if 0 {
+	
+// 3. figure 12c & 12d
+	use "$Rep_information/1_build/_confidential/regdata/city_week.dta", clear
+	
+	* no pollution ctrls 
+	gegen g5_visib=cut(visib), g(5)
+	reghdfe pck_cnt_all ib4.g5_visib [aw=N_card_cityyr] if d_post==0 , a(nbs6 rfrnc_wkos i.nbs6##c.tlin) vce(cluster nbs6)
+	regsave using "$Rep_information/2_analysis/output_figures/c_wo_ctrl.dta", ci replace 
+	
+	reghdfe pck_cnt_all ib4.g5_visib [aw=N_card_cityyr] if d_post==1 , a(nbs6 rfrnc_wkos i.nbs6##c.tlin) vce(cluster nbs6)
+	regsave using "$Rep_information/2_analysis/output_figures/d_wo_ctrl.dta", ci replace 
+	
+	* with pollution ctrls
+	gegen g5_aod=cut(aod), g(5)
+	reghdfe pck_cnt_all ib4.g5_visib i.g5_aod [aw=N_card_cityyr] if d_post==0 , a(nbs6 rfrnc_wkos i.nbs6##c.tlin) vce(cluster nbs6)
+	regsave using "$Rep_information/2_analysis/output_figures/c_w_ctrl.dta", ci replace 
+	
+	reghdfe pck_cnt_all ib4.g5_visib i.g5_aod [aw=N_card_cityyr] if d_post==1 , a(nbs6 rfrnc_wkos i.nbs6##c.tlin) vce(cluster nbs6)
+	regsave using "$Rep_information/2_analysis/output_figures/d_w_ctrl.dta", ci replace 
+	
+	* plot 
+	use "$Rep_information/2_analysis/output_figures/c_wo_ctrl.dta", clear
+	ren (coef ci_lower ci_upper) (pre l_pre u_pre)
+	gen bin_visib = _n-1
+	merge 1:1 var using "$Rep_information/2_analysis/output_figures/c_w_ctrl.dta", keep(match)
+	drop if var=="_cons"
+	ren coef c_pre
+	
+	label define binlb 0 "20th" 1 "40th" 2 "60th" 3 "80th" 4 "100th", replace
+	label values bin_visib binlb 
+	
+	tw 	line l_pre u_pre bin_visib if !(bin_visib==4), col(gs9 gs9) lp(dash dash) || ///
+		connected pre c_pre bin_visib, col(blue orange) msymbol(circle square_hollow) msize(0.8 1) || ///
+		scatteri 0 -0.5 0 4.5, recast(line) col(white) lw(0.002) ///
+		xtitle("Visibility percentile bins (100 = best visibility)") ///
+		ytitle("Card transactions") ///
+		yline(0,lcol(black) lp(dot) lw(0.6)) ///
+		ylab(-60(20)20, nogrid) xlab(0 1 2 3 4, valuelabel) ///
+		legend(ring(0) pos(5) col(1) order(3 "w/o. pollution ctrls" 4 "w. pollution ctrls")) ///
+		graphregion(col(white)) xsize(4.5)
+	gr export "$Rep_information/2_analysis/output_figures/appendix_figure12c.pdf", replace
+	
+	use "$Rep_information/2_analysis/output_figures/d_wo_ctrl.dta", clear
+	ren (coef ci_lower ci_upper) (post l_post u_post)
+	gen bin_visib = _n-1
+	merge 1:1 var using "$Rep_information/2_analysis/output_figures/d_w_ctrl.dta", keep(match)
+	drop if var=="_cons"
+	ren coef c_post
+	
+	label define binlb 0 "20th" 1 "40th" 2 "60th" 3 "80th" 4 "100th", replace
+	label values bin_visib binlb 
+
+	tw 	line l_post u_post bin_visib if !(bin_visib==4), col(gs9 gs9) lp(dash dash) || ///
+		connected post c_post bin_visib, col(blue orange) msymbol(circle square_hollow) msize(0.8 1) || ///
+		scatteri 0 -0.5 0 4.5, recast(line) col(white) lw(0.002) ///
+		xtitle("Visibility percentile bins (100 = best visibility)") ///
+		ytitle("Card transactions") ///
+		yline(0,lcol(black) lp(dot) lw(0.6)) ///
+		ylab(-60(20)20, nogrid) xlab(0 1 2 3 4, valuelabel) ///
+		legend(ring(0) pos(5) col(1) order(3 "w/o. pollution ctrls" 4 "w. pollution ctrls")) ///
+		graphregion(col(white)) xsize(4.5)
+	gr export "$Rep_information/2_analysis/output_figures/appendix_figure12d.pdf", replace
+	
+	* clean up
+	erase "$Rep_information/2_analysis/output_figures/c_wo_ctrl.dta"
+	erase "$Rep_information/2_analysis/output_figures/d_wo_ctrl.dta"
+	erase "$Rep_information/2_analysis/output_figures/c_w_ctrl.dta"
+	erase "$Rep_information/2_analysis/output_figures/d_w_ctrl.dta"
+	
+}	

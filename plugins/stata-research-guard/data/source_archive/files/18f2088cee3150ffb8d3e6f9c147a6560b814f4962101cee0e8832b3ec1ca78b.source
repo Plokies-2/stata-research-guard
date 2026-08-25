@@ -1,0 +1,786 @@
+********************************************************************************
+/*
+This program creates the main tables for the paper. 
+*/
+********************************************************************************
+**# 0. Setup
+********************************************************************************
+clear all
+clear rngstream 
+
+
+** Program to add observations to tables after regression
+program define estadd_obs
+	
+	local obs: display %9.0fc e(N)
+	estadd local obs = "`obs'"
+	
+end 
+
+
+** Program to add mean of dependent variable to tables
+program define estadd_mean_Y
+
+	syntax, depvar(varname) condition(string) scalar_name(string)
+	
+	summarize `depvar' `condition'
+	local mean_Y: display %12.3fc r(mean)
+	estadd local `scalar_name' = "`mean_Y'"
+
+end
+
+
+** Program to add standard deviation of dependent variable to tables
+program define estadd_std_Y
+
+	syntax, depvar(varname) condition(string) scalar_name(string)
+	
+	summarize `depvar' `condition'
+	local std_Y: display %12.3fc r(sd)
+	estadd local `scalar_name' = "`std_Y'"
+
+end
+
+
+********************************************************************************
+**# 1. Table 1: Interactions with Politicians (Summary Statistics)
+********************************************************************************
+
+use "${final_data_folder}/clientelism_individual_data.dta", clear
+
+local summary_list "frequent_interactor vote_same_party vote_together c_candidate_visit c_declared_dummy declare_body declare_house declare_rally"
+
+* Request/request and receive private goods in 2012 and 2013
+rename c_ask_private_pol_postcoded c_ask_private_pol_post                       // variable name too long
+local summary_list_2 "c_ask_private_pol_post ask_pol_private_2013 c_pol_askrec_priv_post askrec_pol_private_2013"
+
+
+foreach depvar in `summary_list' `summary_list_2' {		
+	
+	*==========================================================================*
+	* Column 1: Mean and standard deviation of variable
+	*==========================================================================*
+
+	summarize `depvar'
+	
+	* (1) Mean of variable
+	local `depvar'_mean: display %10.3fc r(mean)
+	
+	* (2) Standard deviaiton of variable
+	local sd: display %10.3fc r(sd)
+	local `depvar'_sd = "[" + strtrim("`sd'") + "]"
+	
+	
+	*==========================================================================*
+	* Column 2: Relationship between variable and standardized rainfall in relevant year
+	*==========================================================================*
+	
+	* Use relevant year of standardized rainfall for each variable
+	if inlist("`depvar'", "ask_pol_private_2013", "askrec_pol_private_2013") local rainfall_measure = "rainfall_2013_std"
+	else local rainfall_measure = "rainfall_2012_std"
+	
+	reg `depvar' `rainfall_measure', cluster(b_clusters)
+	
+	* (3) Point estimate
+	local beta: display %10.3fc _b[`rainfall_measure']
+	local `depvar'_beta = strtrim("`beta'")
+	
+	
+	* (4) Standard error (clustered at the neighborhood level)
+	local se: display %9.3fc _se[`rainfall_measure']
+	local `depvar'_se = "(" + strtrim("`se'") + ")"
+}	
+
+
+*==============================================================================*
+**## Export table
+*==============================================================================*
+
+texdoc init "${main_tables_folder}/Table_1_Interactions_with_Politicians.tex", replace force
+
+	tex \begin{table}[htbp] \centering \onehalfspacing
+	tex \fontsize{10}{10}\selectfont
+	tex \def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+	tex \begin{threeparttable}
+	tex \caption{\textbf{Interactions with Politicians}}
+	tex \begin{tabularx}{\linewidth}{l*{2}C}
+	tex \toprule
+	
+	
+	tex           					  &        & Relationship       \\
+	tex \multicolumn{1}{c}{Variable}  & Mean   & with Rainfall      \\
+	tex           					  & (1)    & (2)                \\
+
+	
+	tex \midrule
+	
+	tex Request Private Good from Politician, 2012      			& `c_ask_private_pol_post_mean' 	 & `c_ask_private_pol_post_beta' \\
+	tex                                                 			& `c_ask_private_pol_post_sd'   	 & `c_ask_private_pol_post_se'   \\
+	tex [1em]
+	
+	tex Request Private Good from Politician, 2013      			& `ask_pol_private_2013_mean' 		 & `ask_pol_private_2013_beta' \\
+	tex                                                 			& `ask_pol_private_2013_sd'   		 & `ask_pol_private_2013_se'   \\
+	tex [1em]
+	
+	tex Request and Receive Private Good from Politician, 2012      & `c_pol_askrec_priv_post_mean' 	 & `c_pol_askrec_priv_post_beta' \\
+	tex                                                 			& `c_pol_askrec_priv_post_sd'   	 & `c_pol_askrec_priv_post_se'   \\
+	tex [1em]
+	
+	tex Request and Receive Private Good from Politician, 2013      & `askrec_pol_private_2013_mean'     & `askrec_pol_private_2013_beta' \\
+	tex                                                 			& `askrec_pol_private_2013_sd'       & `askrec_pol_private_2013_se'   \\
+	tex [1em]
+
+	
+	tex Frequent Interactions with Local Politician                 & `frequent_interactor_mean' 		 & `frequent_interactor_beta' \\
+	tex (Outside of Campaign)                                       & `frequent_interactor_sd'   		 & `frequent_interactor_se'   \\
+	tex [1em]
+	
+	tex Received Visit from Representatives of Any      			& `c_candidate_visit_mean'   		 & `c_candidate_visit_beta' \\ 
+	tex Mayoral Candidate                               			& `c_candidate_visit_sd'     		 & `c_candidate_visit_se' \\
+	tex [1em]
+
+	tex Voted for Mayor/Councilor of the Same Coalition       		& `vote_same_party_mean'     		 & `vote_same_party_beta' \\
+	tex                                                 			& `vote_same_party_sd'       		 & `vote_same_party_se'   \\
+	tex [1em]
+	
+	tex All Household Members Voting for the Same       			& `vote_together_mean'       		 & `vote_together_beta' \\ 
+	tex Mayoral Candidate                               			& `vote_together_sd'         		 & `vote_together_se' \\
+	tex [1em]
+	
+	
+	tex Any Declared Support                            			& `c_declared_dummy_mean'    		 & `c_declared_dummy_beta' \\
+	tex                                                				& `c_declared_dummy_sd'      		 & `c_declared_dummy_se'   \\
+	tex [1em]
+	
+	tex Declared Support on Body                        			& `declare_body_mean'        		 & `declare_body_beta' \\ 
+	tex (Sticker or Shirt)                              			& `declare_body_sd'          		 & `declare_body_se' \\
+	tex [1em]
+	
+	tex Declared Support on House                       			& `declare_house_mean'       		 & `declare_house_beta' \\ 
+	tex (Flag, Banner, or Painted Wall)                 			& `declare_house_sd'     		 	 & `declare_house_se' \\
+	tex [1em]
+	
+	tex Declared Support at Rally                       			& `declare_rally_mean'       		 & `declare_rally_beta' \\ 
+	tex (Attended and Displayed Paraphernalia)          			& `declare_rally_sd'         		 & `declare_rally_se' \\
+		
+	tex \bottomrule
+	
+	tex \end{tabularx}
+	tex \end{threeparttable}
+	tex \end{table}
+	
+texdoc close
+
+
+
+********************************************************************************
+**# 2. Table 2: Cisterns Treatment and Vulnerability
+********************************************************************************
+
+use "${final_data_folder}/clientelism_household_data.dta", clear
+
+
+*==============================================================================*
+* Panel A: Effect of Treatment on Vulnerability 
+*==============================================================================*
+
+local depvar_list "d_Happiness d_Health d_Child_Food_Security d_Overall_index"
+
+
+foreach var of local depvar_list {
+	
+	eststo: reg `var' treatment i.mun_id, cluster(b_clusters)
+}
+
+
+#delimit ;
+esttab using "${main_tables_folder}/Table_2_Vulnerability.tex", replace 
+keep(treatment) substitute(_ _)
+b("%9.3fc") se("%9.3fc") label nostar noobs nonumber nomtitle wrap varwidth(42)
+
+prehead("\begin{landscape}" "\begin{table}[htbp] \centering \onehalfspacing" "\fontsize{9}{10}\selectfont"
+"\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" "\begin{threeparttable}" 
+"\captionsetup{justification=centering}"
+"\caption{\textbf{Cisterns Treatment, Rainfall Shocks, and Vulnerability}}" 
+"\begin{tabularx}{\linewidth}{l*{5}C}" "\toprule" 
+"& -(CES-D) & SRHS & Child Food & Overall & Total Household \\" 
+"& Scale & Index & Security Index & Index & Expenditure \\" 
+"& (2013) & (2013) & (2013) & (2013) & (2011) \\"
+"& (1) & (2) & (3) & (4) & (5) \\" "\midrule")
+
+posthead("\multicolumn{6}{l}{\textbf{Panel A}} \\")
+prefoot("[1em]" "Municipality Fixed Effects & Yes & Yes & Yes & Yes & \\")
+postfoot("");
+
+#delimit cr 
+eststo clear
+
+
+*==============================================================================*
+* Panel B: Effect of Rainfall on Vulnerability 
+*==============================================================================*
+
+local depvar_list_2013 "d_Happiness d_Health d_Child_Food_Security d_Overall_index"
+local depvar_list_2011 "a_Household_Expenditure"
+
+
+** 2013 regressions
+rename rainfall_2013_std Table1_rain_std 
+label variable Table1_rain_std "Rainfall Shock"
+
+foreach var of local depvar_list_2013 {
+	
+	eststo: reg `var' Table1_rain_std, cluster(b_clusters)
+	estadd_obs
+	estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y")
+	estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control")
+	estadd_std_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0") scalar_name("std_Y_control")
+}
+
+
+** 2011 regressions 
+drop Table1_rain_std
+rename rainfall_2011_std Table1_rain_std							// We do this so esttab does not enter new measure in a new table row
+label variable Table1_rain_std "Rainfall Shock"
+
+foreach var of local depvar_list_2011 {
+	
+	eststo: reg `var' Table1_rain_std, cluster(b_clusters)
+	estadd_obs
+	estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y")
+	estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control")
+	estadd_std_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0") scalar_name("std_Y_control")
+}
+
+
+#delimit ;
+esttab using "${main_tables_folder}/Table_2_Vulnerability.tex", append
+keep(Table1_rain_std) substitute(_ _)
+scalars("obs \midrule Observations" "mean_Y Mean of Y: Treatment Group" "mean_Y_control Mean of Y: Control Group" 
+"std_Y_control Standard Deviation of Y: Control Group")
+b("%9.3fc") se("%9.3fc") label nostar noobs nonumber nomtitle wrap varwidth(42)
+
+prehead("\midrule")
+posthead("\multicolumn{6}{l}{\textbf{Panel B}} \\")
+prefoot("[1em]" "Municipality Fixed Effects & No & No & No & No & No \\")
+
+postfoot("\bottomrule" "\end{tabularx}" "\end{threeparttable}" "\end{table}" "\end{landscape}");		
+
+
+#delimit cr
+eststo clear
+
+
+********************************************************************************
+**# 3. Table 3: Citizen Requests, Cisterns, and Rainfall
+********************************************************************************
+
+use "${final_data_folder}/clientelism_individual_data_stacked.dta", clear
+
+*==============================================================================*
+**## Create and label treatment variables 
+*==============================================================================*
+
+** Create treatment variables 
+gen treat_2012 = treatment * year2012
+gen treat_2013 = treatment * year2013
+
+gen rainfall_std_stacked_2012 = rainfall_std_stacked * year2012 
+gen rainfall_std_stacked_2013 = rainfall_std_stacked * year2013
+
+gen treat_rain_std = treatment * rainfall_std_stacked
+
+
+** Label treatment variables
+label variable treatment "$\beta_1$: Cisterns Treatment"
+label variable rainfall_std_stacked "$\beta_2$: Rainfall Shock"
+label variable treat_rain_std "$\beta_3$: Cisterns Treatment $\times$ Rainfall Shock"
+label variable treat_2012 "$\beta_4$: Cisterns Treatment $\times$ 2012"
+label variable treat_2013 "$\beta_5$: Cisterns Treatment $\times$ 2013"
+label variable rainfall_std_stacked_2012 "$\beta_6$: Rainfall Shock $\times$ 2012"
+label variable rainfall_std_stacked_2013 "$\beta_7$: Rainfall Shock $\times$ 2013"
+
+
+*==============================================================================*
+**## (1) Aggregate Effect of Cisterns, Private Requests
+*==============================================================================*
+local var = "ask_private_stacked"
+
+eststo: reg `var' treatment i.mun_id year2012, cluster(b_clusters)
+estadd_obs
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y")
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control")
+	
+	
+*==============================================================================*
+**## (2) Aggregate Effect of Rainfall, Private Requests
+*==============================================================================*
+local var = "ask_private_stacked"
+
+eststo: reg `var' rainfall_std_stacked i.mun_id year2012, cluster(b_clusters)
+estadd_obs
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y")
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control")
+
+
+*==============================================================================*
+**## (3) Aggregate Effect of Cisterns and Rainfall, Private Requests
+*==============================================================================*
+local var = "ask_private_stacked"
+
+eststo: reg `var' treatment rainfall_std_stacked i.mun_id year2012, cluster(b_clusters)
+estadd_obs
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y")
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control")
+	
+	
+*==============================================================================*
+**## (4) Effect of Cisterns, Rainfall, and Cisterns X Rainfall, Private Requests
+*==============================================================================*
+local var = "ask_private_stacked"
+
+eststo: reg `var' treatment rainfall_std_stacked treat_rain_std i.mun_id year2012, cluster(b_clusters)
+estadd_obs
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y")
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control")
+
+
+*==============================================================================*
+**## (5) Effect of Cisterns by Year, Private Requests
+*==============================================================================*
+local var = "ask_private_stacked"
+
+eststo: reg `var' treat_2012 treat_2013 i.mun_id year2012, cluster(b_clusters)
+estadd_obs
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y")
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control")
+
+
+** Test homogeneity of effects across years for cisterns treatment 
+test treat_2012 = treat_2013
+local test_treat_pval: display %9.3fc r(p)
+
+
+*==============================================================================*
+**## (6) Effect of Rainfall by Year, Private Requests 
+*==============================================================================*
+local var = "ask_private_stacked"
+
+eststo: reg `var' rainfall_std_stacked_2012 rainfall_std_stacked_2013 i.mun_id year2012, cluster(b_clusters)
+estadd_obs
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y")
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control")
+
+
+** Test homogeneity of effects across years for rainfall 
+test rainfall_std_stacked_2012 = rainfall_std_stacked_2013
+local test_rain_pval: display %9.3fc r(p)
+
+
+*==============================================================================*
+**## (7) Aggregate Effect of Cisterns and Rainfall, Private Requests Excluding Water
+*==============================================================================*
+local var = "ask_nowater_private_stacked"
+
+eststo: reg `var' treatment rainfall_std_stacked i.mun_id year2012, cluster(b_clusters)
+estadd_obs
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y")
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control")
+
+
+*==============================================================================*
+**## (8) Aggregate Effect of Cisterns and Rainfall, Public Requests
+*==============================================================================*
+local var = "ask_public_stacked"
+
+eststo: reg `var' treatment rainfall_std_stacked i.mun_id year2012, cluster(b_clusters)
+estadd_obs
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y")
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control")
+
+
+*==============================================================================*
+**## Export to table 
+*==============================================================================*
+
+#delimit ;
+esttab using "${main_tables_folder}/Table_3_Requests_Main.tex", replace 
+keep(treatment rainfall_std_stacked treat_rain_std treat_2012 treat_2013 rainfall_std_stacked_2012 rainfall_std_stacked_2013) 
+order(treatment rainfall_std_stacked treat_rain_std treat_2012 treat_2013 rainfall_std_stacked_2012 rainfall_std_stacked_2013) 
+substitute(_ _)
+
+scalars("obs \midrule Observations" "mean_Y Mean of Y: Treatment Group" "mean_Y_control Mean of Y: Control Group")
+b("%9.3fc") se("%9.3fc") label nostar noobs nonumber nomtitle wrap varwidth(100)
+
+prehead("\begin{landscape}" "\begin{table}[htbp] \centering \onehalfspacing" "\fontsize{7.5}{10}\selectfont"
+"\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" "\begin{threeparttable}" 
+"\captionsetup{justification=centering}"
+"\caption{\textbf{Citizen Requests, Cisterns Treatment, and Rainfall Shocks}}" 
+"\begin{tabularx}{\linewidth}{l*{8}C}" "\toprule" 
+"& \multicolumn{6}{c}{}             & Request Any  &             \\"
+"& \multicolumn{6}{c}{}             & Private Good &             \\" 
+"& \multicolumn{6}{c}{Request Any}  & Excluding    & Request Any \\"
+"& \multicolumn{6}{c}{Private Good} & Water        & Public Good \\"
+"\cmidrule(lr){2-7}" 
+"& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\")
+
+posthead("\midrule")
+
+prefoot("\midrule" 
+
+"\multicolumn{9}{l}{\textit{Test of homogeneous effects in 2012 and 2013 (p-value):}} \\" "[1em]"
+"Cisterns Treatment (\(H_0\): \(\beta_4 = \beta_5\)) & & & & & `test_treat_pval' &                  & & \\" "[1em]"
+"Rainfall Shock (\(H_0\): \(\beta_6 = \beta_7\))     & & & & &                   & `test_rain_pval' & & \\"
+ 
+"\midrule" "Municipality Fixed Effects &Yes &Yes &Yes &Yes &Yes &Yes &Yes &Yes \\" 
+"Year Fixed Effects &Yes &Yes &Yes &Yes &Yes &Yes &Yes &Yes\\")
+
+postfoot("\bottomrule" "\end{tabularx}" "\end{threeparttable}" "\end{table}" "\end{landscape}");		
+
+
+#delimit cr
+eststo clear
+
+
+********************************************************************************
+**# 4. Table 4: Votes for Incumbent and Other Outcomes in 2012 Election
+********************************************************************************
+
+local depvar_list "incumbent_votes_section incumbent_votes_section challenger_votes_section turnout blank_null"
+local spec = 0
+
+
+foreach var of local depvar_list {
+	
+	local spec = `spec' + 1
+	
+	clear
+	clear mata 
+	clear matrix 
+	
+	use "${final_data_folder}/voting_data.dta"
+
+	
+	** Use set of municipalities where the incumbent mayor/vice-mayor/party/coalition ran for re-election for the second column only
+	if `spec' == 2 {
+		keep if (name_match == 1 | vp_match == 1 | pty_match == 1 | coalition_match == 1) & eligible_in_2008 != .
+		local sample = 39
+		
+		rename tot_treat_by_section_2_39 tot_treat_by_section_2
+		rename tot_study_2_39 tot_study_2
+	}
+
+	** Use set of municipalities where the incumbent mayor ran for re-election
+	else {
+		keep if name_match == 1  & eligible_in_2008 != .
+		local sample = 21
+		
+		rename tot_treat_by_section_2_21 tot_treat_by_section_2
+		rename tot_study_2_21 tot_study_2
+	}
+	
+	
+	*==========================================================================*
+	**## Overall effect of treatment (cluster-robust standard errors)
+	*==========================================================================*
+
+	reghdfe `var' tot_treat_by_section_2 tot_study_2 eligible, absorb(location_id) cluster(location_id)
+	
+	
+	** Number of observations 
+	local `var'_`sample'_obs: display %9.0fc e(N_full)
+
+	
+	** Point estimate and standard error (clustered by voting location) for Treated Individuals
+	local beta: display %9.3fc r(table)[1,1]
+	local `var'_`sample'_b1 = strtrim("`beta'")
+	
+	local se: display %9.3fc r(table)[2,1] 
+	local `var'_`sample'_se1 = "(" + strtrim("`se'") + ")"
+	
+	
+	** Point estimate and standard error (clustered by voting location) for Respondents
+	local beta: display %9.3fc r(table)[1,2]
+	local `var'_`sample'_b2 = strtrim("`beta'")
+	
+	local se: display %9.3fc r(table)[2,2] 
+	local `var'_`sample'_se2 = "(" + strtrim("`se'") + ")"
+	
+	
+	*==========================================================================*
+	**## Wild-cluster bootstrap (clustered by municipality)
+	*==========================================================================*
+	
+	reghdfe `var' tot_treat_by_section_2 tot_study_2 eligible, absorb(location_id) cluster(mun_id)
+	
+	boottest {tot_treat_by_section_2}{tot_study_2}, noci nograph seed(1234)
+	
+	local bt1: display %9.3fc r(p_1)
+	local `var'_`sample'_bt1 = "[" + strtrim("`bt1'") + "]"
+	
+	local bt2: display %9.3fc r(p_2)
+	local `var'_`sample'_bt2 = "[" + strtrim("`bt2'") + "]"
+}
+
+
+*==============================================================================*
+**## Export results to table
+*==============================================================================*
+texdoc init "${main_tables_folder}/Table_4_Electoral_Outcomes.tex", replace force
+
+	tex \begin{landscape}
+	tex \begin{table}[htbp] \centering \onehalfspacing
+	tex \fontsize{10}{10}\selectfont
+	tex \def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+	tex \begin{threeparttable}
+	tex \caption{\textbf{Cisterns Treatment and Electoral Outcomes (2012)}}
+	tex \begin{tabularx}{\linewidth}{l*{5}C}
+	tex \toprule
+	
+	
+	tex & Votes for         & Votes for       & Votes for  &         & \\
+	tex & Incumbent 	    & Incumbent       & Challenger &         & Blank and \\
+	tex & Mayor 			& Group           & Candidate  & Turnout & Null Votes \\ 
+	tex & (1) & (2) & (3) & (4) & (5) \\
+	tex \midrule
+		
+	tex Treated Individuals & `incumbent_votes_section_21_b1' & `incumbent_votes_section_39_b1'  
+	tex 					& `challenger_votes_section_21_b1' & `turnout_21_b1' & `blank_null_21_b1' \\
+	tex                     & `incumbent_votes_section_21_se1' & `incumbent_votes_section_39_se1' 
+	tex 					& `challenger_votes_section_21_se1' & `turnout_21_se1' & `blank_null_21_se1' \\
+	tex                     & `incumbent_votes_section_21_bt1' & `incumbent_votes_section_39_bt1' 
+	tex 					& `challenger_votes_section_21_bt1' & `turnout_21_bt1' & `blank_null_21_bt1' \\
+	tex [1em]
+	
+	tex Respondents         & `incumbent_votes_section_21_b2' & `incumbent_votes_section_39_b2' 
+	tex 					& `challenger_votes_section_21_b2' & `turnout_21_b2' & `blank_null_21_b2' \\
+	tex                     & `incumbent_votes_section_21_se2' & `incumbent_votes_section_39_se2'  
+	tex 					& `challenger_votes_section_21_se2' & `turnout_21_se2' & `blank_null_21_se2' \\
+	tex                     & `incumbent_votes_section_21_bt2' & `incumbent_votes_section_39_bt2' 
+	tex 					& `challenger_votes_section_21_bt2' & `turnout_21_bt2' & `blank_null_21_bt2' \\
+	
+	tex \midrule 
+	tex Control for Registered Voters & Yes & Yes & Yes & Yes & Yes \\
+	tex Location Fixed Effects & Yes & Yes & Yes & Yes & Yes \\ 
+	
+	tex \midrule 
+	tex Rescaled Regressors & Yes & Yes & Yes & Yes & Yes \\
+	tex Observations & `incumbent_votes_section_21_obs' & `incumbent_votes_section_39_obs'  
+	tex 			 & `challenger_votes_section_21_obs' & `turnout_21_obs' & `blank_null_21_obs' \\
+
+	tex \bottomrule
+	tex \end{tabularx}
+	tex \end{threeparttable}
+	tex \end{table}
+	tex \end{landscape}
+	
+texdoc close
+
+
+********************************************************************************
+**# 5. Table 5: Citizen Requests and Heterogeneity by Clientelist Relationships 
+********************************************************************************
+
+use "${final_data_folder}/clientelism_individual_data_stacked.dta", clear
+	
+
+*==========================================================================*
+**## Create and label treatment variables
+*==========================================================================*
+
+gen treat_freq = treatment * frequent_interactor
+gen rain_std_freq = rainfall_std_stacked * frequent_interactor
+
+
+** Label treatment variables
+label variable treatment "$\beta_1$: Cisterns Treatment"
+label variable treat_freq "$\beta_2$: Cisterns Treatment $\times$ Clientelist Relationship"
+label variable rainfall_std_stacked "$\beta_3$: Rainfall Shock"
+label variable rain_std_freq "$\beta_4$: Rainfall Shock $\times$ Clientelist Relationship"
+label variable frequent_interactor "$\beta_5$: Clientelist Relationship"
+
+
+*==============================================================================*
+**## (1) Heterogeneous Effects of Cisterns by Clientelist Relationship, Private Requests
+*==============================================================================*
+local var = "ask_private_stacked"
+
+eststo: reg `var' frequent_interactor treatment treat_freq i.mun_id year2012, cluster(b_clusters)
+estadd_obs
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y")
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control")
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0 & frequent_interactor == 1") scalar_name("mean_Y_control_freq")
+
+
+** Effect of Cisterns Treatment for Individuals in Clientelist Relationship
+lincom treatment + treat_freq
+
+local beta: display %9.3fc r(estimate)
+local treat_frequent_b1 = strtrim("`beta'")
+
+local se: display %9.3fc r(se)
+local treat_frequent_se1 = "(" + strtrim("`se'") + ")"
+
+
+*==============================================================================*
+**## (2) Heterogeneous Effects of Rainfall by Clientelist Relationship, Private Requests
+*==============================================================================*
+local var = "ask_private_stacked"
+
+eststo: reg `var' frequent_interactor rainfall_std_stacked rain_std_freq i.mun_id year2012, cluster(b_clusters)
+estadd_obs
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y")
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control")
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0 & frequent_interactor == 1") scalar_name("mean_Y_control_freq")
+
+
+** Effect of Rainfall for Individuals in Clientelist Relationship
+lincom rainfall_std_stacked + rain_std_freq
+
+local beta: display %9.3fc r(estimate)
+local rain_frequent_b1 = strtrim("`beta'")
+
+local se: display %9.3fc r(se)
+local rain_frequent_se1 = "(" + strtrim("`se'") + ")"
+
+
+*==============================================================================*
+**## (3) Heterogeneous Effects of Cisterns and Rainfall by Clientelist Relationship, Private Requests
+*==============================================================================*
+local var = "ask_private_stacked"
+
+eststo: reg `var' frequent_interactor treatment rainfall_std_stacked treat_freq rain_std_freq i.mun_id year2012, cluster(b_clusters)
+estadd_obs
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y")
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control")
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0 & frequent_interactor == 1") scalar_name("mean_Y_control_freq")
+
+
+** Effect of Cisterns Treatment for Individuals in Clientelist Relationship
+lincom treatment + treat_freq
+
+local beta: display %9.3fc r(estimate)
+local treat_frequent_b2 = strtrim("`beta'")
+
+local se: display %9.3fc r(se)
+local treat_frequent_se2 = "(" + strtrim("`se'") + ")"
+
+
+** Effect of Rainfall for Individuals in Clientelist Relationship
+lincom rainfall_std_stacked + rain_std_freq
+
+local beta: display %9.3fc r(estimate)
+local rain_frequent_b2 = strtrim("`beta'")
+
+local se: display %9.3fc r(se)
+local rain_frequent_se2 = "(" + strtrim("`se'") + ")"
+
+
+*==============================================================================*
+**## (4) Heterogeneous Effects of Cisterns and Rainfall by Clientelist Relationship, Private Requests Excluding Water
+*==============================================================================*
+local var = "ask_nowater_private_stacked"
+
+eststo: reg `var' frequent_interactor treatment rainfall_std_stacked treat_freq rain_std_freq i.mun_id year2012, cluster(b_clusters)
+estadd_obs
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y")
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control")
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0 & frequent_interactor == 1") scalar_name("mean_Y_control_freq")
+
+
+** Effect of Cisterns Treatment for Individuals in Clientelist Relationship
+lincom treatment + treat_freq
+
+local beta: display %9.3fc r(estimate)
+local treat_frequent_b3 = strtrim("`beta'")
+
+local se: display %9.3fc r(se)
+local treat_frequent_se3 = "(" + strtrim("`se'") + ")"
+
+
+** Effect of Rainfall for Individuals in Clientelist Relationship
+lincom rainfall_std_stacked + rain_std_freq
+
+local beta: display %9.3fc r(estimate)
+local rain_frequent_b3 = strtrim("`beta'")
+
+local se: display %9.3fc r(se)
+local rain_frequent_se3 = "(" + strtrim("`se'") + ")"
+
+
+*==============================================================================*
+**## (5) Heterogeneous Effects of Cisterns and Rainfall by Clientelist Relationship, Private Requests & Receive
+*==============================================================================*
+local var = "askrec_private_stacked"
+
+eststo: reg `var' frequent_interactor treatment rainfall_std_stacked treat_freq rain_std_freq i.mun_id year2012, cluster(b_clusters)
+estadd_obs
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y")
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control")
+estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0 & frequent_interactor == 1") scalar_name("mean_Y_control_freq")
+
+
+** Effect of Cisterns Treatment for Individuals in Clientelist Relationship
+lincom treatment + treat_freq
+
+local beta: display %9.3fc r(estimate)
+local treat_frequent_b4 = strtrim("`beta'")
+
+local se: display %9.3fc r(se)
+local treat_frequent_se4 = "(" + strtrim("`se'") + ")"
+
+
+** Effect of Rainfall for Individuals in Clientelist Relationship
+lincom rainfall_std_stacked + rain_std_freq
+
+local beta: display %9.3fc r(estimate)
+local rain_frequent_b4 = strtrim("`beta'")
+
+local se: display %9.3fc r(se)
+local rain_frequent_se4 = "(" + strtrim("`se'") + ")"
+
+
+*==============================================================================*
+**## Export to table 
+*==============================================================================*
+
+#delimit ;
+esttab using "${main_tables_folder}/Table_5_Requests_Clientelism.tex", replace 
+keep(treatment treat_freq rainfall_std_stacked rain_std_freq frequent_interactor) 
+order(treatment treat_freq rainfall_std_stacked rain_std_freq frequent_interactor) 
+substitute(_ _)
+
+scalars("obs \midrule Observations" "mean_Y Mean of Y: Treatment Group" "mean_Y_control Mean of Y: Control Group" 
+"mean_Y_control_freq Mean of Y: Clientelist Relationship in Control Group")
+b("%9.3fc") se("%9.3fc") label nostar noobs nonumber nomtitle wrap varwidth(100)
+
+prehead("\begin{landscape}" "\begin{table}[htbp] \centering \onehalfspacing" "\fontsize{10}{10}\selectfont"
+"\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" "\begin{threeparttable}" 
+"\captionsetup{justification=centering}"
+"\caption{\textbf{Citizen Requests and Heterogeneity by Clientelist Relationship}}" 
+"\begin{tabularx}{\linewidth}{l*{5}C}" "\toprule" 
+"& \multicolumn{3}{c}{}             & Request Any  &              \\"
+"& \multicolumn{3}{c}{}             & Private Good & Request and  \\"
+"& \multicolumn{3}{c}{Request Any}  & Excluding    & Receive Any  \\"
+"& \multicolumn{3}{c}{Private Good} & Water        & Private Good \\"
+"\cmidrule(lr){2-4}" "& (1) & (2) & (3) & (4) & (5) \\")
+
+posthead("\midrule")
+
+prefoot("\midrule" "\multicolumn{6}{l}{\textit{Effect of Cisterns Treatment for Individuals in Clientelist Relationship:}} \\" "[1ex]"
+"$\beta_1 + \beta_2$ & `treat_frequent_b1' & & `treat_frequent_b2' & `treat_frequent_b3' & `treat_frequent_b4' \\"
+" & `treat_frequent_se1' & & `treat_frequent_se2' & `treat_frequent_se3' & `treat_frequent_se4' \\"
+
+"\multicolumn{6}{l}{} \\" 
+"\multicolumn{6}{l}{\textit{Effect of Positive 1 SD Rainfall Shock for Individuals in Clientelist Relationship:}} \\" "[1ex]"
+"$\beta_3 + \beta_4$ & & `rain_frequent_b1' & `rain_frequent_b2' & `rain_frequent_b3' & `rain_frequent_b4' \\"
+" & & `rain_frequent_se1' & `rain_frequent_se2' & `rain_frequent_se3' & `rain_frequent_se4' \\"
+ 
+"\midrule" "Municipality Fixed Effects &Yes &Yes &Yes &Yes &Yes \\" 
+"Year Fixed Effects &Yes &Yes &Yes &Yes &Yes \\")
+
+postfoot("\bottomrule" "\end{tabularx}" "\end{threeparttable}" "\end{table}" "\end{landscape}");	
+
+
+#delimit cr
+eststo clear

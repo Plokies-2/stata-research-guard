@@ -1,0 +1,465 @@
+********************************************************************************
+/*
+This program cleans data for subsequent variable construction (2. Variable_Construction.do).
+
+
+Table of Contents
+1. Respondents' Preferences
+2. Other Cleaning
+*/
+********************************************************************************
+
+clear all
+
+********************************************************************************
+**# 1. Respondents' Preferences
+********************************************************************************
+
+use "${source_data_folder}/indiv_loc_baseline1_pe1_baseline2_pe2_V8.dta", clear
+destring num_domicilio_from_loc, replace 
+
+
+*==============================================================================*
+**## 1.1 Reciprocity measures 
+*==============================================================================*
+
+*------------------------------------------------------------------------------*
+** 1.1.1 Hypothetical game (2012)
+*------------------------------------------------------------------------------*
+
+* In this game, the hypothetical first mover was given R$5 and had to decide whether to send nothing, R$2, R$3, or R$4 to the second mover. 
+* Whatever he sent was tripled and the second mover could keep or return as much as she wanted. 
+* The study participant ("second mover") was asked how much she would return if she received R$6; how much if R$9; and how much if R$12.
+
+foreach sent_amt in 2 3 4 {
+	
+	* c_reciprocity_r`sent_amt' is the amount of R$ the respondent would return when stranger sent R$`sent_amt'
+	
+	* Share of R$ the respondent would return when stranger sent R$`sent_amt'. 
+	* Note that this amount is tripled by the researchers, so we multiply `sent_amt' by 3
+	gen rcpt_share_r`sent_amt'_hyp = c_reciprocity_r`sent_amt' / (`sent_amt' * 3)
+
+}
+
+
+* Share of R$ the respondent would return on average when they were treated "well" (as defined by Finan and Schecter)
+gen hi_avg_share = (rcpt_share_r3_hyp + rcpt_share_r4_hyp) / 2
+
+* Share of R$ the respondent would return on average when they were treated "poorly" (as defined by Finan and Schecter)
+gen lo_avg_share = rcpt_share_r2_hyp
+			
+* Continuous measure of reciprocity (as defined by Finan and Schecter)
+* Censor this at 0 because the worst a politican will do is nothing
+gen float rcpt_continuous_hyp_1 = (hi_avg_share - lo_avg_share)
+replace rcpt_continuous_hyp_1 = 0 if rcpt_continuous_hyp_1 < 0
+
+* Dummy variable for whether the respondent is a high-reciprocity type 
+gen int rcpt_high_type_hyp_1 = ceil(rcpt_continuous_hyp_1)
+label var rcpt_high_type_hyp_1 "1/0: High Reciprocity Type [Hyp, R1]"
+
+
+* Drop unneeded variables 
+drop hi_avg_share lo_avg_share c_reciprocity_r* rcpt_continuous_hyp_1
+
+
+*------------------------------------------------------------------------------*
+** 1.1.2 Incentivized game (2013)
+*------------------------------------------------------------------------------*
+
+* In this game, the first mover was given R$10 and had to decide whether to send nothing, R$2, R$4, R$6, R$8, or R$10 to the second mover. 
+* Whatever he sent was tripled and the second mover could keep or return as much as she wanted. 
+* Before finding out how much was sent to her, the second mover was asked how much she would return to the first mover if she received R$6, 
+* how much if R$12; how much if R$18; how much if R$24; and how much if R$30.
+
+foreach sent_amt in 2 4 6 8 10 {
+	
+	* e_rcprty_send_r`sent_amt'_ is the amount of R$ the respondent would return when stranger sent R$`sent_amt'
+				
+	* Share of R$ the respondent would return when stranger sent R$`sent_amt'. 
+	* Note that this amount is tripled by the researchers, so we multiply `sent_amt' by 3
+	gen rcpt_share_r`sent_amt'_incent = e_rcprty_send_r`sent_amt'_ / (`sent_amt' * 3)
+} 
+
+
+* Share of R$ the respondent would return on average when they were treated "well" (as defined by Finan and Schecter)
+gen hi_avg_share = (rcpt_share_r6_incent + rcpt_share_r8_incent + rcpt_share_r10_incent) / 3
+
+* Share of R$ the respondent would return on average when they were treated "poorly" (as defined by Finan and Schecter)
+gen lo_avg_share = (rcpt_share_r2_incent + rcpt_share_r4_incent) / 2
+
+* Continuous measure of reciprocity (as defined by Finan and Schecter)
+* Censor this at 0 because the worst a politican will do is nothing
+gen float rcpt_continuous_incent_1 = (hi_avg_share - lo_avg_share)
+replace rcpt_continuous_incent_1 = 0 if rcpt_continuous_incent_1 < 0
+
+* Dummy variable for whether the respondent is a high-reciprocity type 
+gen int rcpt_high_type_incent_2 = ceil(rcpt_continuous_incent_1)
+label var rcpt_high_type_incent_2 "1/0: High Reciprocity Type [Incent, R2]"
+
+
+* Drop unneeded variables 
+drop hi_avg_share lo_avg_share e_rcprty_send_r* rcpt_continuous_incent_1
+
+
+*==============================================================================*
+**## 1.2 Altruism measures 
+*==============================================================================*
+
+* This uses the same games as the reciprocitiy measures (section 2.1)
+
+*------------------------------------------------------------------------------*
+** 1.2.1 Hypothetical game (2012)
+*------------------------------------------------------------------------------*
+
+* Following Finan and Schecter, we define the share returned when a P2 is treated poorly as a measure of altruism 
+* This is equivalent to the "lo_avg_share" variable under section 2.1.1
+gen alt_continuous_hyp_1 = rcpt_share_r2_hyp
+
+* Find median of continuous altruism measure in control clusters 
+summarize alt_continuous_hyp_1 if b_cl_assignment == 3, detail
+local MEDIAN = r(p50)
+
+* Dummy variable for whether the respondent is a high-altruism type
+gen alt_binary_P2_hyp = 0 if alt_continuous_hyp_1 <= `MEDIAN'
+replace alt_binary_P2_hyp = 1 if alt_continuous_hyp_1 > `MEDIAN'
+replace alt_binary_P2_hyp = . if missing(alt_continuous_hyp_1)
+
+label var alt_binary_P2_hyp "1/0 High Altruism Type [Hyp, R1]"
+
+
+* Drop unneeded variables 
+drop alt_continuous_hyp_1 rcpt_share_*_hyp
+
+
+*------------------------------------------------------------------------------*
+** 1.2.2. Incentivized game (2013)
+*------------------------------------------------------------------------------*
+
+* Following Finan and Schecter, we define the share returned when a P2 is treated poorly as a measure of altruism 
+* This is equivalent to the "lo_avg_share" variable under section 2.1.2
+gen alt_continuous_incent_2 = (rcpt_share_r2_incent + rcpt_share_r4_incent) / 2
+
+* Find median of continuous altruism measure in control clusters 
+summarize alt_continuous_incent_2 if b_cl_assignment == 3, detail
+local MEDIAN = r(p50)
+
+* Dummy variable for whether the respondent is a high-altruism type
+gen alt_binary_P2_incent_2 = 0 if alt_continuous_incent_2 <= `MEDIAN'
+replace alt_binary_P2_incent_2 = 1 if alt_continuous_incent_2 > `MEDIAN'
+replace alt_binary_P2_incent_2 = . if missing(alt_continuous_incent_2)
+
+label var alt_binary_P2_incent_2 "1/0 High Altruism Type [Incent, R2]"
+ 
+
+* Drop unneeded variables 
+drop alt_continuous_incent_2 rcpt_share_*_incent
+
+
+*==============================================================================*
+**## 1.3 Public Goods Contribution (2013)
+*==============================================================================*
+
+* In this game, participants are given an endowment of R$5 and are asked how much they would like to contribute to a public good.  
+* The total pool of funds contributed to the public good will be doubled and each community member will receive an equal share of the pot 
+* (regardless of how much they initially contributed). 
+ 
+gen pub_good_share_contributed = e_rcprty_comm_send_r5_ / 5
+label var pub_good_share_contributed "Share of Endowment Given to Public Good [Incent, R2]"
+
+
+* Drop unneeded variables 
+drop e_rcprty_comm*
+
+
+*==============================================================================*
+**## 1.4 Time Preferences
+*==============================================================================*
+
+*------------------------------------------------------------------------------*
+* 1.4.1 Hypothetical game (2012)
+*------------------------------------------------------------------------------*
+
+* In this game, the respondent is asked to state whether they prefer a R$100 prize tomorrow or a
+* guaranteed prize of (variously) R$110; R$150; R$200; R$300; R$500; R$700; R$1,000 in one month.
+
+gen byte time_pref_110_hyp_1 = .
+replace time_pref_110_hyp_1 = 0 if !missing(c_wait_for_150r_) 
+replace time_pref_110_hyp_1 = 1 if c_wait_for_110r_ == 2
+replace time_pref_110_hyp_1 = 0 if c_wait_for_110r_ == 1
+				       
+gen byte time_pref_150_hyp_1 = .
+replace time_pref_150_hyp_1 = 0 if !missing(c_wait_for_200r_)
+replace time_pref_150_hyp_1 = 1 if c_wait_for_150r_ == 2
+replace time_pref_150_hyp_1 = 1 if time_pref_110_hyp_1 == 1
+replace time_pref_150_hyp_1 = 0 if c_wait_for_150r_ == 1
+				
+gen byte time_pref_200_hyp_1 = . 
+replace time_pref_200_hyp_1 = 0 if !missing(c_wait_for_300r_)
+replace time_pref_200_hyp_1 = 1 if c_wait_for_200r_ == 2
+replace time_pref_200_hyp_1 = 1 if time_pref_150_hyp_1 == 1
+replace time_pref_200_hyp_1 = 0 if c_wait_for_200r_ == 1
+		        
+gen byte time_pref_300_hyp_1 = . 
+replace time_pref_300_hyp_1 = 0 if !missing(c_wait_for_500r_) 
+replace time_pref_300_hyp_1 = 1 if c_wait_for_300r_ == 2
+replace time_pref_300_hyp_1 = 1 if time_pref_200_hyp_1== 1
+replace time_pref_300_hyp_1 = 0 if c_wait_for_300r_ == 1
+		   
+gen byte time_pref_500_hyp_1 = . 
+replace time_pref_500_hyp_1 = 0 if !missing(c_wait_for_700r_)
+replace time_pref_500_hyp_1 = 1 if c_wait_for_500r_ == 2
+replace time_pref_500_hyp_1 = 1 if time_pref_300_hyp_1 == 1
+replace time_pref_500_hyp_1 = 0 if c_wait_for_500r_ == 1
+		
+gen byte time_pref_700_hyp_1 = . 
+replace time_pref_700_hyp_1 = 0 if !missing(c_wait_for_1000r_)
+replace time_pref_700_hyp_1 = 1 if c_wait_for_700r_ == 2
+replace time_pref_700_hyp_1 = 1 if time_pref_500_hyp_1 == 1
+replace time_pref_700_hyp_1 = 0 if c_wait_for_700r_ == 1
+
+gen byte time_pref_1000_hyp_1 = . 
+replace time_pref_1000_hyp_1 = 1 if c_wait_for_1000r_ == 2
+replace time_pref_1000_hyp_1 = 1 if time_pref_700_hyp_1 == 1
+replace time_pref_1000_hyp_1 = 0 if c_wait_for_1000r_ == 1
+
+
+* Drop all the people who didn't complete the sequence
+replace time_pref_110_hyp_1 = . if missing(time_pref_1000_hyp_1)
+replace time_pref_150_hyp_1 = . if missing(time_pref_1000_hyp_1)
+replace time_pref_200_hyp_1 = . if missing(time_pref_1000_hyp_1)
+replace time_pref_300_hyp_1 = . if missing(time_pref_1000_hyp_1)
+replace time_pref_500_hyp_1 = . if missing(time_pref_1000_hyp_1)
+replace time_pref_700_hyp_1 = . if missing(time_pref_1000_hyp_1)  
+
+
+* Construct continuous measure of discount rate 
+gen int time_pref_threshold_hyp_1 = time_pref_1000_hyp_1
+replace time_pref_threshold_hyp_1 = (1000 - 100) / 100 if time_pref_1000_hyp_1 == 1
+replace time_pref_threshold_hyp_1 = (700 - 100) / 100 if time_pref_700_hyp_1 == 1
+replace time_pref_threshold_hyp_1 = (500 - 100) / 100 if time_pref_500_hyp_1 == 1
+replace time_pref_threshold_hyp_1 = (300 - 100) / 100 if time_pref_300_hyp_1 == 1
+replace time_pref_threshold_hyp_1 = (200 - 100) / 100 if time_pref_200_hyp_1 == 1
+replace time_pref_threshold_hyp_1 = (150 - 100) / 100 if time_pref_150_hyp_1 == 1
+replace time_pref_threshold_hyp_1 = (110 - 100) / 100 if time_pref_110_hyp_1 == 1
+replace time_pref_threshold_hyp_1 = (1001 - 100) / 100 if time_pref_1000_hyp_1 == 0 // 1001 is the lower bound for people who won't wait for 1000
+
+label var time_pref_threshold_hyp_1 "Lowest R$ needed to wait a month [Hyp, R1]"
+
+
+* Drop unneeded variables 
+drop c_wait_for* time_pref_110_hyp_1 time_pref_150_hyp_1 time_pref_200_hyp_1 time_pref_300_hyp_1 time_pref_500_hyp_1 time_pref_700_hyp_1 time_pref_1000_hyp_1
+
+
+*------------------------------------------------------------------------------*
+* 1.4.2 Hypothetical game (2013)
+*------------------------------------------------------------------------------*
+
+* In this game, the respondent is asked to state whether they prefer a R$100 prize tomorrow or a
+* guaranteed prize of (variously) R$110; R$150; R$200; R$300; R$500; R$700; R$1,000 in one month.
+
+gen byte time_pref_110_hyp_2 = .
+replace time_pref_110_hyp_2 = 0 if !missing(e_wait_for_150r_1_)  
+replace time_pref_110_hyp_2 = 1 if e_wait_for_110r_1_ == 2
+replace time_pref_110_hyp_2 = 0 if e_wait_for_110r_1_ == 1
+       
+gen byte time_pref_150_hyp_2 = . 
+replace time_pref_150_hyp_2 = 0 if !missing(e_wait_for_200r_1_)
+replace time_pref_150_hyp_2 = 1 if e_wait_for_150r_1_ == 2
+replace time_pref_150_hyp_2 = 1 if time_pref_110_hyp_2 == 1
+replace time_pref_150_hyp_2 = 0 if e_wait_for_150r_1_ == 1
+
+gen byte time_pref_200_hyp_2 = . 
+replace time_pref_200_hyp_2 = 0 if !missing(e_wait_for_300r_1_) 
+replace time_pref_200_hyp_2 = 1 if e_wait_for_200r_1_ == 2
+replace time_pref_200_hyp_2 = 1 if time_pref_150_hyp_2 == 1
+replace time_pref_200_hyp_2 = 0 if e_wait_for_200r_1_ == 1
+		        
+gen byte time_pref_300_hyp_2 = . 
+replace time_pref_300_hyp_2 = 0 if !missing(e_wait_for_500r_1_) 
+replace time_pref_300_hyp_2 = 1 if e_wait_for_300r_1_ == 2
+replace time_pref_300_hyp_2 = 1 if time_pref_200_hyp_2 == 1
+replace time_pref_300_hyp_2 = 0 if e_wait_for_300r_1_ == 1
+
+		   
+gen byte time_pref_500_hyp_2 = . 
+replace time_pref_500_hyp_2 = 0 if !missing(e_wait_for_700r_1_)
+replace time_pref_500_hyp_2 = 1 if e_wait_for_500r_1_ == 2
+replace time_pref_500_hyp_2 = 1 if time_pref_300_hyp_2 == 1
+replace time_pref_500_hyp_2 = 0 if e_wait_for_500r_1_ == 1
+		
+gen byte time_pref_700_hyp_2 = . 
+replace time_pref_700_hyp_2 = 0 if !missing(e_wait_for_1000r_1_)
+replace time_pref_700_hyp_2 = 1 if e_wait_for_700r_1_ == 2
+replace time_pref_700_hyp_2 = 1 if time_pref_500_hyp_2 == 1
+replace time_pref_700_hyp_2 = 0 if e_wait_for_700r_1_ == 1
+
+gen byte time_pref_1000_hyp_2 = . 
+replace time_pref_1000_hyp_2 = 1 if e_wait_for_1000r_1_ == 2
+replace time_pref_1000_hyp_2 = 1 if time_pref_700_hyp_2 == 1
+replace time_pref_1000_hyp_2 = 0 if e_wait_for_1000r_1_ == 1
+
+
+* Drop all the people who didn't complete the sequence
+replace time_pref_110_hyp_2 = . if missing(time_pref_1000_hyp_2)
+replace time_pref_150_hyp_2 = . if missing(time_pref_1000_hyp_2)
+replace time_pref_200_hyp_2 = . if missing(time_pref_1000_hyp_2)
+replace time_pref_300_hyp_2 = . if missing(time_pref_1000_hyp_2)
+replace time_pref_500_hyp_2 = . if missing(time_pref_1000_hyp_2)
+replace time_pref_700_hyp_2 = . if missing(time_pref_1000_hyp_2)   
+
+
+* Construct continuous measure of discount rate 
+gen int time_pref_threshold_hyp_2 = time_pref_1000_hyp_2
+replace time_pref_threshold_hyp_2 = (1000 - 100) / 100 if time_pref_1000_hyp_2 == 1
+replace time_pref_threshold_hyp_2 = (700 - 100) / 100 if time_pref_700_hyp_2 == 1
+replace time_pref_threshold_hyp_2 = (500 - 100) / 100 if time_pref_500_hyp_2 == 1
+replace time_pref_threshold_hyp_2 = (300 - 100) / 100 if time_pref_300_hyp_2 == 1
+replace time_pref_threshold_hyp_2 = (200 - 100) / 100 if time_pref_200_hyp_2 == 1
+replace time_pref_threshold_hyp_2 = (150 - 100) / 100 if time_pref_150_hyp_2 == 1
+replace time_pref_threshold_hyp_2 = (110 - 100) / 100 if time_pref_110_hyp_2 == 1
+replace time_pref_threshold_hyp_2 = (1001 - 100) / 100 if time_pref_1000_hyp_2 == 0 // 1001 is the lower bound for people who won't wait for 1000
+
+label var time_pref_threshold_hyp_2 "Lowest R$ needed to wait a month [Hyp, R2]"
+
+
+* Drop unneeded variables 
+drop e_wait_for* time_pref_110_hyp_2 time_pref_150_hyp_2 time_pref_200_hyp_2 time_pref_300_hyp_2 time_pref_500_hyp_2 time_pref_700_hyp_2 time_pref_1000_hyp_2
+
+
+*==============================================================================*
+**## 1.5 Risk Aversion
+*==============================================================================*
+
+*------------------------------------------------------------------------------*
+** 1.5.1 Hypothetical game (2012)
+*------------------------------------------------------------------------------*
+
+* In this game, respondents are asked to make three choices in sequence:
+
+* (a) Choose between a bag that contains a R$20 bill, and one that contains a R$2 bill and a R$50 bill (expected payoff R$26)
+* (b) Respondents who preferred the first bag in (a) are then asked to choose between a bag that contains a R$20 bill, 
+*     and one that contains a R$5 bill and a R$50 bill (expected payoff R$27.5, rounded R$28)
+* (c) Respondents who preferred the first bag in (b) are then asked to choose between a bag that contains a R$20 bill, 
+*     and one that contains a R$10 bill and a R$50 bill (expected payoff $R30)
+
+* Respondents are least risk averse if they accept the second bag in (a) (expected payoff $26)
+
+gen int accept_riskiest_lot_hyp_1 = c_risk_e26r_
+replace accept_riskiest_lot_hyp_1 = 1 if c_risk_e26r_ == 2
+replace accept_riskiest_lot_hyp_1 = 0 if c_risk_e26r_ == 1
+label var accept_riskiest_lot_hyp_1 "1/0 First accepted the risk with E(R26) [Hyp, R1]"
+
+
+* Drop unneeded variables 
+drop c_risk*
+
+*------------------------------------------------------------------------------*
+** 1.5.2 Incentivized game (2013)
+*------------------------------------------------------------------------------*
+
+* In this game, respondents are asked to make three choices in sequence: 
+
+* (a) Choose between a bag that contains a coin representing R$2, and a bag with two coins representing R$0.20 and R$5 (expected payoff R$2.6)
+* (b) Respondents who preferred the first bag in (a) are then asked to choose between a bag that contains a coin representing R$2, 
+*     and a bag with two coins representing R$0.50 and R$5 (expected payoff R$2.75, rounded R$2.8)
+* (c) Respondents who preferred the first bag in (b) are then asked to choose between a bag that contains a coin representing R$2, 
+*     and a bag with two coins representing R$1 and R$5 (expected payoff R$3)
+
+* Respondents are least risk averse if they accept the second bag in (a) (expected payoff R$2.6)
+
+gen int accept_riskiest_lot_incent_2 = e_bag_2r_or_20c5r_
+replace accept_riskiest_lot_incent_2 = 1 if e_bag_2r_or_20c5r_ == 2
+replace accept_riskiest_lot_incent_2 = 0 if e_bag_2r_or_20c5r_ == 1
+label var accept_riskiest_lot_incent_2 "1/0 First accepted the risk with E(R2.6) [Incent, R2]"
+
+
+* Drop unneeded variables 
+drop e_bag*
+
+	
+********************************************************************************
+**# 2. Other Cleaning 
+********************************************************************************
+		
+*==============================================================================*
+**## 2.1 Cisterns Treatment 
+*==============================================================================*
+		
+gen TREATMENT = .
+replace TREATMENT = 0 if b_cl_assignment == 3 									// no cistern
+replace TREATMENT = 1 if b_cl_assignment == 2 & b_cistern_assignment == 0 		// no cistern, partial treatment
+replace TREATMENT = 2 if b_cl_assignment == 2 & b_cistern_assignment == 1 		// cistern, partial treatment
+replace TREATMENT = 3 if b_cl_assignment == 1  									// cistern, full treatment
+		
+		
+* Define treatment variable as 1 if an individual is in a full-treatment cluster and 0 if an individual is in a control cluster. 
+gen treatment = 1 if TREATMENT == 3
+replace treatment = 0 if TREATMENT == 0
+label var treatment "Cisterns Treatment"
+
+
+* Drop unneeded variables 
+drop TREATMENT b_cl_assignment b_cistern_assignment
+
+
+*==============================================================================*
+**## 2.2 Winsorize Household Expenditure
+*==============================================================================*
+
+/*
+Winsorize household expenditure at the 97.5th percentile
+*/
+winsor2 a_total_exp, cuts(0 97.5) replace	
+label var a_total_exp "Total Expenditure (Winsorized at 97.5th percentile)"
+
+	
+*==============================================================================*
+**## 2.3 Get the Raw Political R1 Household data and reformat
+*==============================================================================*
+
+* Drop if missing household ID
+drop if num_domicilio_from_loc == .
+save "${gen_data_folder}/clean_indiv_V6_V16.dta", replace 
+
+
+* These are all the households selected to participate in political round 1
+use "${source_data_folder}/households_to_interview_in_political_survey_with_extra_sample_2013_May_2.dta", clear 
+
+
+* Adding the b_ prefixes to be consistent with the new data sets
+foreach var of varlist clusters-mun_id {
+	rename `var' b_`var'
+}
+
+
+* Update household identifier
+rename b_num_domicilio_from_loc num_domicilio_from_loc
+destring num_domicilio_from_loc, replace
+
+
+* Merge in the Political Round 1 sample
+merge 1:m b_sbjnum using "${gen_data_folder}/clean_indiv_V6_V16.dta"
+drop if _merge != 3
+drop _merge
+    
+	
+*==============================================================================*
+**## 2.4 Clean sample for final analysis
+*==============================================================================*
+/* 
+IMPORTANT: Keep only full and control treatment households 
+
+There is a large issue with the cistern construction company and compliance in the partial treatment clusters.  
+With that in mind, we are keeping only the full and control clusters. 
+*/
+keep if treatment == 0 | treatment == 1
+
+
+* Remove the blank individuals
+quietly destring, replace
+drop if missing(c_state_id) & missing(e_state_id)	
+drop if num_domicilio_from_loc == .
+
+
+quietly compress
+save "${gen_data_folder}/clean_indiv_V6_V16.dta", replace

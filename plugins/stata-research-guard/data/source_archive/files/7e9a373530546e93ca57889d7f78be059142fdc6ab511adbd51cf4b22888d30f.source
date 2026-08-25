@@ -1,0 +1,566 @@
+******************************************************************************************************************************
+******************************************************************************************************************************
+***
+*** Table 1: Comparison of TWFE and ETWFE estimators for different samples
+*** 
+******************************************************************************************************************************
+******************************************************************************************************************************
+
+/////////////////////////
+/// I) Small data set ///
+/////////////////////////
+
+use ${usr_data}\data_sdid_small, clear
+
+** 2) ETWFE
+local spec "SMALL"
+jwdid trade, ivar(id_ci_cj) tvar(year) gvar(first_treat_3) method(ppmlhdfe) fe(idt_ci idt_cj brdr_time)
+estimates save "${usr_data}\base_`spec'.ster", replace
+local col_B = colsof(e(b))-1
+gen sample_JWDID_`spec' = e(sample)
+gen __tr__JWDID_`spec' = __tr__
+gen __etr__JWDID_`spec' = __etr__
+gen _ppmlhdfe_d_JWDID_`spec' = _ppmlhdfe_d
+estat simple, predict(xb)
+mat B = [r(b)]
+mat V = (r(V))
+matrix colnames B = RTA_3
+matrix colnames V = RTA_3
+matrix rownames V = RTA_3
+ereturn post B V
+eststo JWDID_`spec'
+* store remaining results
+estadd local Sample_name "Baseline"
+estadd local Exporter_Year "Yes"
+estadd local Importer_Year "Yes"
+estadd local Intra_Year "Yes"
+estadd local Exporter_Importer "Yes"
+count if sample_JWDID_`spec'==1
+estadd scalar N_all = `r(N)'
+unique exporter if sample_JWDID_`spec'==1
+estadd scalar N_E = `r(unique)'
+unique importer if sample_JWDID_`spec'==1
+estadd scalar N_I = `r(unique)'
+unique year if sample_JWDID_`spec'==1
+estadd scalar N_T = `r(unique)'
+estadd scalar N_coef = `col_B'
+preserve
+keep idt_ci idt_cj sample_JWDID_`spec'
+keep if sample_JWDID_`spec'==1
+save ${usr_data}\sample_JWDID_`spec', replace
+restore
+
+
+** 1) TWFE with EXP-IMP, EXP-Year, and IMP-Year FE
+eststo TWFE_`spec': ppmlhdfe trade RTA_3 if sample_JWDID_`spec'==1, absorb(idt_ci idt_cj id_ci_cj brdr_time) cluster(id_ci_cj)
+local col_B = colsof(e(b))-1
+* store remaining results
+estadd local Sample_name "Baseline"
+estadd local Exporter_Year "Yes"
+estadd local Importer_Year "Yes"
+estadd local Intra_Year "Yes"
+estadd local Exporter_Importer "Yes"
+count if sample_JWDID_`spec'==1
+estadd scalar N_all = `r(N)'
+unique exporter if sample_JWDID_`spec'==1
+estadd scalar N_E = `r(unique)'
+unique importer if sample_JWDID_`spec'==1
+estadd scalar N_I = `r(unique)'
+unique year if sample_JWDID_`spec'==1
+estadd scalar N_T = `r(unique)'
+estadd scalar N_coef = `col_B'
+	
+// save post estimation data set
+save ${usr_data}\data_sdid_`spec'_post, replace
+
+
+** 1+2) Significance test for equality of coefficients
+
+* generate separate dataset for TWFE
+use ${usr_data}\data_sdid_small, clear
+merge 1:1 idt_ci idt_cj using ${usr_data}\sample_JWDID_`spec'
+keep if sample_JWDID_`spec'==1
+drop sample_JWDID_`spec' _merge
+gen ETWFE=0
+replace first_treat_3=0
+save ${usr_data}\data_sdid_small_ETWFE0, replace
+
+* generate separate dataset for ETWFE
+use ${usr_data}\data_sdid_small, clear
+merge 1:1 idt_ci idt_cj using ${usr_data}\sample_JWDID_`spec'
+keep if sample_JWDID_`spec'==1
+drop sample_JWDID_`spec' _merge
+gen ETWFE=1
+replace RTA_3=0
+save ${usr_data}\data_sdid_small_ETWFE1, replace
+
+* run SUR
+use ${usr_data}\data_sdid_small_ETWFE0, clear
+append using ${usr_data}\data_sdid_small_ETWFE1
+jwdidstacked trade, ivar(id_ci_cj) tvar(year) gvar(first_treat_3) method(ppmlhdfe) fe(idt_ci#ETWFE idt_cj#ETWFE brdr_time#ETWFE year#ETWFE id_ci_cj#ETWFE) exovar(i1.RTA_3#c.__tr__ ETWFE)
+margins  ,  subpop(if __etr__==1) at(__tr__=(0 1)) over(ETWFE) noestimcheck contrast(atcontrast(r)) predict(xb) post
+test _b[r2vs1._at@0.ETWFE]=_b[r2vs1._at@1.ETWFE]
+local p_value: display %4.3f `r(p)'
+estimates restore JWDID_`spec'
+estadd scalar p_test = `p_value'
+estimates store JWDID_`spec'
+
+** run jackknife ETWFE estimation
+do ${path_code}/30_Table_1a_ETWFE_jackknife_small.do
+use ${usr_data}\ETWFE_jackknife_small, clear
+sum B_ETWFE, d
+local B_temp = `r(mean)'
+sum SE_ETWFE, d
+local SE_temp = `r(mean)'
+local B_temp2: display %4.3f `B_temp'
+local SE_temp2: display %4.3f `SE_temp'
+if (`B_temp'-`SE_temp'*2.58 )>0 {
+	local B_jack = "`B_temp2'***"
+}
+else if (`B_temp'-`SE_temp'*1.96 )>0 {
+	local B_jack = "`B_temp2'**"
+}
+else if (`B_temp'-`SE_temp'*1.65 )>0 {
+	local B_jack = "`B_temp2'*"
+}
+else {
+	local B_jack = "`B_temp2'"
+}
+local SE_jack = "(`SE_temp2')"
+estimates restore JWDID_`spec'
+estadd local B_jack = "`B_jack'"
+estadd local SE_jack = "`SE_jack'"
+estimates store JWDID_`spec'
+
+** run jackknife TWFE estimation
+do ${path_code}/30_Table_1b_TWFE_jackknife_small.do
+use ${usr_data}\TWFE_jackknife_small, clear
+sum B_TWFE, d
+local B_temp = `r(mean)'
+sum SE_TWFE, d
+local SE_temp = `r(mean)'
+local B_temp2: display %4.3f `B_temp'
+local SE_temp2: display %4.3f `SE_temp'
+if (`B_temp'-`SE_temp'*2.58 )>0 {
+	local B_jack = "`B_temp2'***"
+}
+else if (`B_temp'-`SE_temp'*1.96 )>0 {
+	local B_jack = "`B_temp2'**"
+}
+else if (`B_temp'-`SE_temp'*1.65 )>0 {
+	local B_jack = "`B_temp2'*"
+}
+else {
+	local B_jack = "`B_temp2'"
+}
+local SE_jack = "(`SE_temp2')"
+estimates restore TWFE_`spec'
+estadd local B_jack = `B_jack'
+estadd local SE_jack = "`SE_jack'"
+estimates store TWFE_`spec'
+
+
+** Z-test equality of coefficients
+use ${usr_data}\ETWFE_jackknife_small.dta, clear
+merge 1:1 index using ${usr_data}\TWFE_jackknife_small.dta
+drop _merge
+
+* 0) read matrices and macros into mata
+mkmat B_jack_ETWFE
+mkmat B_jack_TWFE
+mata: B_jack_ETWFE=st_matrix("B_jack_ETWFE")
+mata: B_jack_TWFE=st_matrix("B_jack_TWFE")
+qui sum B_ETWFE
+local B_ETWFE = r(mean)
+mata: B_ETWFE = strtoreal(st_local("B_ETWFE"))
+qui sum B_TWFE
+local B_TWFE = r(mean)
+mata: B_TWFE = strtoreal(st_local("B_TWFE"))
+
+* compute covariance and implement Z test
+mata: B_jack = (B_jack_ETWFE,B_jack_TWFE)
+mata: VAR = quadvariance(B_jack)
+mata: Z = (B_ETWFE-B_TWFE)/sqrt(VAR[1,1]+VAR[2,2]-2*VAR[1,2])
+mata: p = 2*(normal(-Z))
+mata: Z
+mata: p 
+
+
+///////////////////////////
+/// II) Medium data set ///
+///////////////////////////
+
+use ${usr_data}\data_sdid_medium, clear
+
+** 4) ETWFE
+local spec "MEDIUM"
+jwdid trade, ivar(id_ci_cj) tvar(year) gvar(first_treat_3) method(ppmlhdfe) fe(idt_ci idt_cj brdr_time)
+estimates save "${usr_data}\base_`spec'.ster", replace
+local col_B = colsof(e(b))-1
+gen sample_JWDID_`spec' = e(sample)
+gen __tr__JWDID_`spec' = __tr__
+gen __etr__JWDID_`spec' = __etr__
+gen _ppmlhdfe_d_JWDID_`spec' = _ppmlhdfe_d
+estat simple, predict(xb)
+mat B = [r(b)]
+mat V = (r(V))
+matrix colnames B = RTA_3
+matrix colnames V = RTA_3
+matrix rownames V = RTA_3
+ereturn post B V
+eststo JWDID_`spec'
+* store remaining results
+estadd local Sample_name "Medium"
+estadd local Exporter_Year "Yes"
+estadd local Importer_Year "Yes"
+estadd local Intra_Year "Yes"
+estadd local Exporter_Importer "Yes"
+count if sample_JWDID_`spec'==1
+estadd scalar N_all = `r(N)'
+unique exporter if sample_JWDID_`spec'==1
+estadd scalar N_E = `r(unique)'
+unique importer if sample_JWDID_`spec'==1
+estadd scalar N_I = `r(unique)'
+unique year if sample_JWDID_`spec'==1
+estadd scalar N_T = `r(unique)'
+estadd scalar N_coef = `col_B'
+preserve
+keep idt_ci idt_cj sample_JWDID_`spec'
+keep if sample_JWDID_`spec'==1
+save ${usr_data}\sample_JWDID_`spec', replace
+restore
+
+
+** 3) TWFE
+eststo TWFE_MEDIUM: ppmlhdfe trade RTA_3 if sample_JWDID_`spec'==1, absorb(idt_ci idt_cj id_ci_cj brdr_time) cluster(id_ci_cj)
+local r2_temp = e(r2_p)
+local col_B = colsof(e(b))-1
+* store remaining results
+estadd local Sample_name "Medium"
+estadd local Exporter_Year "Yes"
+estadd local Importer_Year "Yes"
+estadd local Intra_Year "Yes"
+estadd local Exporter_Importer "Yes"
+estadd scalar R2 = round(`r2_temp'*1000)/1000
+count if sample_JWDID_`spec'==1
+estadd scalar N_all = `r(N)'
+unique exporter if sample_JWDID_`spec'==1
+estadd scalar N_E = `r(unique)'
+unique importer if sample_JWDID_`spec'==1
+estadd scalar N_I = `r(unique)'
+unique year if sample_JWDID_`spec'==1
+estadd scalar N_T = `r(unique)'
+estadd scalar N_coef = `col_B'
+
+	
+// save post estimation data set
+save ${usr_data}\data_sdid_`spec'_post, replace
+
+
+** 3+4) Significance test for equality of coefficients
+
+* generate separate dataset for TWFE
+use ${usr_data}\data_sdid_medium, clear
+merge 1:1 idt_ci idt_cj using ${usr_data}\sample_JWDID_`spec'
+keep if sample_JWDID_`spec'==1
+drop sample_JWDID_`spec' _merge
+gen ETWFE=0
+replace first_treat_3=0
+save ${usr_data}\data_sdid_medium_ETWFE0, replace
+
+* generate separate dataset for ETWFE
+use ${usr_data}\data_sdid_medium, clear
+merge 1:1 idt_ci idt_cj using ${usr_data}\sample_JWDID_`spec'
+keep if sample_JWDID_`spec'==1
+drop sample_JWDID_`spec' _merge
+gen ETWFE=1
+replace RTA_3=0
+save ${usr_data}\data_sdid_medium_ETWFE1, replace
+
+* run SUR
+use ${usr_data}\data_sdid_medium_ETWFE0, clear
+append using ${usr_data}\data_sdid_medium_ETWFE1
+jwdidstacked trade, ivar(id_ci_cj) tvar(year) gvar(first_treat_3) method(ppmlhdfe) fe(idt_ci#ETWFE idt_cj#ETWFE brdr_time#ETWFE year#ETWFE id_ci_cj#ETWFE) exovar(i1.RTA_3#c.__tr__ ETWFE)
+margins  ,  subpop(if __etr__==1) at(__tr__=(0 1)) over(ETWFE) noestimcheck contrast(atcontrast(r)) predict(xb) post
+test _b[r2vs1._at@0.ETWFE]=_b[r2vs1._at@1.ETWFE]
+local p_value: display %4.3f `r(p)'
+estimates restore JWDID_`spec'
+estadd scalar p_test = `p_value'
+estimates store JWDID_`spec'
+
+
+** run jackknife ETWFE estimation
+local spec "MEDIUM"
+do ${path_code}/30_Table_1c_ETWFE_jackknife_medium.do
+use ${usr_data}\ETWFE_jackknife_medium, clear
+sum B_ETWFE, d
+local B_temp = `r(mean)'
+sum SE_ETWFE, d
+local SE_temp = `r(mean)'
+local B_temp2: display %4.3f `B_temp'
+local SE_temp2: display %4.3f `SE_temp'
+if (`B_temp'-`SE_temp'*2.58 )>0 {
+	local B_jack = "`B_temp2'***"
+}
+else if (`B_temp'-`SE_temp'*1.96 )>0 {
+	local B_jack = "`B_temp2'**"
+}
+else if (`B_temp'-`SE_temp'*1.65 )>0 {
+	local B_jack = "`B_temp2'*"
+}
+else {
+	local B_jack = "`B_temp2'"
+}
+local SE_jack = "(`SE_temp2')"
+estimates restore JWDID_`spec'
+estadd local B_jack = `B_jack'
+estadd local SE_jack = "`SE_jack'"
+estimates store JWDID_`spec'
+
+** run jackknife TWFE estimation
+do ${path_code}/30_Table_1d_TWFE_jackknife_medium.do
+use ${usr_data}\TWFE_jackknife_medium, clear
+sum B_TWFE, d
+local B_temp = `r(mean)'
+sum SE_TWFE, d
+local SE_temp = `r(mean)'
+local B_temp2: display %4.3f `B_temp'
+local SE_temp2: display %4.3f `SE_temp'
+if (`B_temp'-`SE_temp'*2.58 )>0 {
+	local B_jack = "`B_temp2'***"
+}
+else if (`B_temp'-`SE_temp'*1.96 )>0 {
+	local B_jack = "`B_temp2'**"
+}
+else if (`B_temp'-`SE_temp'*1.65 )>0 {
+	local B_jack = "`B_temp2'*"
+}
+else {
+	local B_jack = "`B_temp2'"
+}
+local SE_jack = "(`SE_temp2')"
+estimates restore TWFE_`spec'
+estadd local B_jack = `B_jack'
+estadd local SE_jack = "`SE_jack'"
+estimates store TWFE_`spec'
+
+
+** Z-test equality of coefficients
+use ${usr_data}\ETWFE_jackknife_medium.dta, clear
+merge 1:1 index using ${usr_data}\TWFE_jackknife_medium.dta
+drop _merge
+
+* 0) read matrices and macros into mata
+mkmat B_jack_ETWFE
+mkmat B_jack_TWFE
+mata: B_jack_ETWFE=st_matrix("B_jack_ETWFE")
+mata: B_jack_TWFE=st_matrix("B_jack_TWFE")
+qui sum B_ETWFE
+local B_ETWFE = r(mean)
+mata: B_ETWFE = strtoreal(st_local("B_ETWFE"))
+qui sum B_TWFE
+local B_TWFE = r(mean)
+mata: B_TWFE = strtoreal(st_local("B_TWFE"))
+
+* compute covariance and implement Z test
+mata: B_jack = (B_jack_ETWFE,B_jack_TWFE)
+mata: VAR = quadvariance(B_jack)
+mata: Z = (B_ETWFE-B_TWFE)/sqrt(VAR[1,1]+VAR[2,2]-2*VAR[1,2])
+mata: p = 2*(normal(-Z))
+mata: Z
+mata: p 
+
+//////////////////////////
+/// III) Large data set ///
+//////////////////////////
+
+use ${usr_data}\data_sdid_large, clear
+
+** 6) ETWFE
+local spec "LARGE"
+jwdid trade, ivar(id_ci_cj) tvar(year) gvar(first_treat_3) method(ppmlhdfe) fe(idt_ci idt_cj brdr_time)
+estimates save "${usr_data}\base_`spec'.ster", replace
+local col_B = colsof(e(b))-1
+gen sample_JWDID_`spec' = e(sample)
+gen __tr__JWDID_`spec' = __tr__
+gen __etr__JWDID_`spec' = __etr__
+gen _ppmlhdfe_d_JWDID_`spec' = _ppmlhdfe_d
+estat simple, predict(xb)
+mat B = [r(b)]
+mat V = (r(V))
+matrix colnames B = RTA_3
+matrix colnames V = RTA_3
+matrix rownames V = RTA_3
+ereturn post B V
+eststo JWDID_`spec'
+* store remaining results
+estadd local Sample_name "Large"
+estadd local Exporter_Year "Yes"
+estadd local Importer_Year "Yes"
+estadd local Intra_Year "Yes"
+estadd local Exporter_Importer "Yes"
+count if sample_JWDID_`spec'==1
+estadd scalar N_all = `r(N)'
+unique exporter if sample_JWDID_`spec'==1
+estadd scalar N_E = `r(unique)'
+unique importer if sample_JWDID_`spec'==1
+estadd scalar N_I = `r(unique)'
+unique year if sample_JWDID_`spec'==1
+estadd scalar N_T = `r(unique)'
+estadd scalar N_coef = `col_B'
+preserve
+keep idt_ci idt_cj sample_JWDID_`spec'
+keep if sample_JWDID_`spec'==1
+save ${usr_data}\sample_JWDID_`spec', replace
+restore
+
+
+** 5) TWFE with EXP-IMP, EXP-Year, and IMP-Year FE
+eststo TWFE_`spec': ppmlhdfe trade RTA_3 if sample_JWDID_`spec'==1, absorb(idt_ci idt_cj id_ci_cj brdr_time) cluster(id_ci_cj)
+local col_B = colsof(e(b))-1
+* store remaining results
+estadd local Sample_name "Large"
+estadd local Exporter_Year "Yes"
+estadd local Importer_Year "Yes"
+estadd local Intra_Year "Yes"
+estadd local Exporter_Importer "Yes"
+count if sample_JWDID_`spec'==1
+estadd scalar N_all = `r(N)'
+unique exporter if sample_JWDID_`spec'==1
+estadd scalar N_E = `r(unique)'
+unique importer if sample_JWDID_`spec'==1
+estadd scalar N_I = `r(unique)'
+unique year if sample_JWDID_`spec'==1
+estadd scalar N_T = `r(unique)'
+estadd scalar N_coef = `col_B'
+
+	
+// save post estimation data set
+save ${usr_data}\data_sdid_`spec'_post, replace
+
+
+** 5+6) Significance test for equality of coefficients
+
+* generate separate dataset for TWFE
+use ${usr_data}\data_sdid_large, clear
+merge 1:1 idt_ci idt_cj using ${usr_data}\sample_JWDID_`spec'
+keep if sample_JWDID_`spec'==1
+drop sample_JWDID_`spec' _merge
+gen ETWFE=0
+replace first_treat_3=0
+save ${usr_data}\data_sdid_large_ETWFE0, replace
+
+* generate separate dataset for ETWFE
+use ${usr_data}\data_sdid_large, clear
+merge 1:1 idt_ci idt_cj using ${usr_data}\sample_JWDID_`spec'
+keep if sample_JWDID_`spec'==1
+drop sample_JWDID_`spec' _merge
+gen ETWFE=1
+replace RTA_3=0
+save ${usr_data}\data_sdid_large_ETWFE1, replace
+
+* run SUR
+use ${usr_data}\data_sdid_large_ETWFE0, clear
+append using ${usr_data}\data_sdid_large_ETWFE1
+jwdidstacked trade, ivar(id_ci_cj) tvar(year) gvar(first_treat_3) method(ppmlhdfe) fe(idt_ci#ETWFE idt_cj#ETWFE brdr_time#ETWFE year#ETWFE id_ci_cj#ETWFE) exovar(i1.RTA_3#c.__tr__ ETWFE)
+margins  ,  subpop(if __etr__==1) at(__tr__=(0 1)) over(ETWFE) noestimcheck contrast(atcontrast(r)) predict(xb) post
+test _b[r2vs1._at@0.ETWFE]=_b[r2vs1._at@1.ETWFE]
+local p_value: display %4.3f `r(p)'
+estimates restore JWDID_`spec'
+estadd scalar p_test = `p_value'
+estimates store JWDID_`spec'
+
+
+** run jackknife ETWFE estimation
+do ${path_code}/30_Table_1e_ETWFE_jackknife_large.do
+use ${usr_data}\ETWFE_jackknife_large, clear
+sum B_ETWFE, d
+local B_temp = `r(mean)'
+sum SE_ETWFE, d
+local SE_temp = `r(mean)'
+local B_temp2: display %4.3f `B_temp'
+local SE_temp2: display %4.3f `SE_temp'
+if (`B_temp'-`SE_temp'*2.58 )>0 {
+	local B_jack = "`B_temp2'***"
+}
+else if (`B_temp'-`SE_temp'*1.96 )>0 {
+	local B_jack = "`B_temp2'**"
+}
+else if (`B_temp'-`SE_temp'*1.65 )>0 {
+	local B_jack = "`B_temp2'*"
+}
+else {
+	local B_jack = "`B_temp2'"
+}
+local SE_jack = "(`SE_temp2')"
+estimates restore JWDID_`spec'
+estadd local B_jack = `B_jack'
+estadd local SE_jack = "`SE_jack'"
+estimates store JWDID_`spec'
+
+** run jackknife TWFE estimation
+do ${path_code}/30_Table_1f_TWFE_jackknife_large.do
+use ${usr_data}\TWFE_jackknife_large, clear
+sum B_TWFE, d
+local B_temp = `r(mean)'
+sum SE_TWFE, d
+local SE_temp = `r(mean)'
+local B_temp2: display %4.3f `B_temp'
+local SE_temp2: display %4.3f `SE_temp'
+if (`B_temp'-`SE_temp'*2.58 )>0 {
+	local B_jack = "`B_temp2'***"
+}
+else if (`B_temp'-`SE_temp'*1.96 )>0 {
+	local B_jack = "`B_temp2'**"
+}
+else if (`B_temp'-`SE_temp'*1.65 )>0 {
+	local B_jack = "`B_temp2'*"
+}
+else {
+	local B_jack = "`B_temp2'"
+}
+local SE_jack = "(`SE_temp2')"
+estimates restore TWFE_`spec'
+estadd local B_jack = `B_jack'
+estadd local SE_jack = "`SE_jack'"
+estimates store TWFE_`spec'
+
+
+** Z-test equality of coefficients
+use ${usr_data}\ETWFE_jackknife_large.dta, clear
+merge 1:1 index using ${usr_data}\TWFE_jackknife_large.dta
+drop _merge
+
+* 0) read matrices and macros into mata
+mkmat B_jack_ETWFE
+mkmat B_jack_TWFE
+mata: B_jack_ETWFE=st_matrix("B_jack_ETWFE")
+mata: B_jack_TWFE=st_matrix("B_jack_TWFE")
+qui sum B_ETWFE
+local B_ETWFE = r(mean)
+mata: B_ETWFE = strtoreal(st_local("B_ETWFE"))
+qui sum B_TWFE
+local B_TWFE = r(mean)
+mata: B_TWFE = strtoreal(st_local("B_TWFE"))
+
+* compute covariance and implement Z test
+mata: B_jack = (B_jack_ETWFE,B_jack_TWFE)
+mata: VAR = quadvariance(B_jack)
+mata: Z = (B_ETWFE-B_TWFE)/sqrt(VAR[1,1]+VAR[2,2]-2*VAR[1,2])
+mata: p = 2*(normal(-Z))
+mata: Z
+mata: p 
+
+
+/////////////////////////
+/// Write LaTeX table ///
+/////////////////////////
+esttab TWFE_SMALL JWDID_SMALL TWFE_MEDIUM JWDID_MEDIUM TWFE_LARGE JWDID_LARGE using "${path_tables}/Table_1.tex", se label ///
+			star(* 0.10 ** 0.05 *** 0.01) drop(_cons) ///
+			replace substitute(\_ _) nonotes noobs b(%9.3f) se(%9.3f) ///
+			mtitle("TWFE" "ETWFE" "TWFE" "ETWFE" "TWFE" "ETWFE") ///
+			scalars("Sample_name Sample" "N_all \hline  Observations" "N_E Exporters" "N_I Importers" "N_T Years" "N_coef Coefficients" "p_test \hline p-value H0:TWFE=ETWFE" "B_jack \hline \$ RTA_{ij,t} \$ (jackknife)" "SE_jack \hspace{0.5cm}" "Exporter_Importer \hline Exporter \$\times\$ importer FE" "Exporter_Year Exporter \$\times\$ year FE" "Importer_Year Importer \$\times\$ year FE" "Intra_Year Cross-border \$\times\$ year FE") ///
+			sfmt(%12.0gc %9.0gc %9.0gc %9.0gc %9.0gc %9.0gc %4.3f) ///
+		coef(RTA_3 "\$ RTA_{ij,t}\$")
+
+

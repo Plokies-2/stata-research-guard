@@ -1,0 +1,1483 @@
+********************************************************************************
+/*
+This program creates the appendix tables and figures for the paper. 
+*/
+********************************************************************************
+**# 0. Setup
+********************************************************************************
+clear all
+clear rngstream 
+
+
+** Program to add observations to tables after regression
+program define estadd_obs
+	
+	local obs: display %9.0fc e(N)
+	estadd local obs = "`obs'"
+	
+end 
+
+
+** Program to add mean of dependent variable to tables
+program define estadd_mean_Y
+
+	syntax, depvar(varname) condition(string) scalar_name(string) [fmt(string)]
+	
+	summarize `depvar' `condition'
+	
+	if "`fmt'" == "" local fmt = "%12.3fc"                                      // default to 3 decimal points if none specified
+
+	local mean_Y: display `fmt' r(mean)
+	estadd local `scalar_name' = "`mean_Y'"
+
+end
+
+
+********************************************************************************
+**# Figure A1. Requests for Private Goods and Rainfall Shocks
+********************************************************************************
+
+use "${final_data_folder}/clientelism_individual_data_stacked.dta", clear
+
+
+** We want one point on the graph for every municipality-year, since that is the level at which the rainfall shock is measured
+collapse ask_private_stacked rainfall_std_stacked rainfall_std_stacked_og, by(mun_id year2012)
+
+
+#delimit ;
+
+** Note: Do not standardize rainfall shock across municipalities;
+scatter ask_private_stacked rainfall_std_stacked_og if year2012 == 1, 
+msize(2) msymbol(O) ylabel(, labsize(small) angle(0)) xlabel(-0.7(0.35)0.7, labsize(small)) ||
+
+scatter ask_private_stacked rainfall_std_stacked_og if year2012 == 0, 
+msize(2) msymbol(T) mfcolor(white) ylabel(, labsize(small) angle(0)) xlabel(-0.7(0.35)0.7, labsize(small))
+
+graphregion(color(white)) legend(label(1 "2012 observations") label(2 "2013 observations") size(small) symys(*.5) symxs(*.5)) 
+ytitle("Proportion of respondents who requested a private good", size(small))
+xtitle("Deviation from long-term average rainfall in municipality", size(small));
+
+graph display, xsize(9.5) ysize(5.5);
+graph export "${figures_folder}/Figure A1.pdf", replace as(pdf) name("Graph");
+
+
+#delimit cr 
+
+
+********************************************************************************
+**# Figure A2. Frequency of Conversations before 2012 Election Campaign, by Treatment Status
+********************************************************************************
+
+use "${final_data_folder}/clientelism_individual_data.dta", clear
+
+gen talk_pol_never_2012_bef = 1 if talk_pol_atleastonce_2012_bef == 0 
+replace talk_pol_never_2012_bef = 0 if talk_pol_atleastonce_2012_bef == 1 
+
+
+local depvar_list talk_pol_atleastdaily_2012_bef talk_pol_atleastweekly_2012_bef talk_pol_atleastmonthly_2012_bef talk_pol_atleastonce_2012_bef talk_pol_never_2012_bef
+
+
+* Create temporary dataset to hold coefficients from regressions 
+tempname memhold
+postfile `memhold' treatment str100(depvar) point_estimate lower_ci upper_ci using "${gen_data_folder}/fig_a2_temp.dta", replace
+
+
+
+foreach var of local depvar_list {
+	
+	reg `var' treatment, cluster(b_clusters)
+	
+	*==========================================================================*
+	**## Control Group 
+	*==========================================================================*
+	
+	* Record treatment status 
+	local treat = 0
+	
+	* Record dependent variable 
+	local depvar = "`var'"
+	
+	* Record point estimate 
+	local beta = _b[_cons]
+	
+	* Record 95% confidence interval
+	local lower_ci = r(table)[5,2]
+	local upper_ci = r(table)[6,2]
+	
+	
+	* Update dataset 
+	post `memhold' (`treat') ("`depvar'") (`beta') (`lower_ci') (`upper_ci')
+
+
+	*==========================================================================*
+	**## Treatment Group 
+	*==========================================================================*
+	
+	* Record treatment status 
+	local treat = 1
+	
+	* Record dependent variable 
+	local depvar = "`var'"
+	
+	* Record point estimate 
+	lincom treatment + _cons                                                    
+	local beta = r(estimate)
+	
+	* Record 95% confidence interval
+	local lower_ci = r(lb)
+	local upper_ci = r(ub)
+	
+	
+	* Update dataset 
+	post `memhold' (`treat') ("`depvar'") (`beta') (`lower_ci') (`upper_ci')
+}
+
+
+postclose `memhold'
+
+*==============================================================================*
+**## Plot graph
+*==============================================================================*
+
+use "${gen_data_folder}/fig_a2_temp.dta", clear
+
+
+* Create a new variable indicating treatment levels that allows for a single graph with spaces between each dependent variable
+gen treat_with_spaces = treatment if depvar == "talk_pol_atleastdaily_2012_bef"
+replace treat_with_spaces = treatment + 5 if depvar ==  "talk_pol_atleastweekly_2012_bef" 
+replace treat_with_spaces = treatment + 10 if depvar == "talk_pol_atleastmonthly_2012_bef" 
+replace treat_with_spaces = treatment + 15 if depvar == "talk_pol_atleastonce_2012_bef" 
+replace treat_with_spaces = treatment + 20 if depvar == "talk_pol_never_2012_bef"
+
+
+* Plot graph
+twoway (bar point_estimate treat_with_spaces if treatment == 1, fcolor(gs5) lcolor(gs5))  ///
+	   (bar point_estimate treat_with_spaces if treatment == 0, fcolor(gs10) lcolor(gs10)) ///
+	   (rcap upper_ci lower_ci treat_with_spaces, lcolor(black)), ///
+       legend(row(1) order(1 "Treatment" 2 "Control") size(small) symys(*.5) symxs(*.5))  ///
+       xlabel(0.5 "At least Daily" 5.5 "At least Weekly" 10.5 "At least Monthly" 15.5 "At least Occasionally" 20.5 "Never", noticks labsize(small)) ///
+	   ylabel(, labsize(small) angle(0)) xtitle("") ytitle("Share of Respondents") graphregion(color(white))
+
+	   
+graph display, xsize(9.5) ysize(5.5)
+graph export "${figures_folder}/Figure A2.pdf", replace as(pdf) name("Graph")
+erase "${gen_data_folder}/fig_a2_temp.dta"
+
+
+********************************************************************************
+**# 1. Compliance and Attrition
+********************************************************************************
+
+*==============================================================================*
+**## 1.1. Compliance 
+*==============================================================================*
+
+use "${final_data_folder}/clientelism_individual_data.dta", clear
+sort num_dom ind_id
+drop if num_dom == num_dom[_n-1]
+
+
+* Total treated households
+count if treatment == 1
+local total_treated: display %5.0fc r(N)
+
+* Total control households 
+count if treatment == 0
+local total_control: display %5.0fc r(N)
+
+* Total households 
+count 
+local total_households: display %5.0fc r(N)
+
+
+* % treated households with cisterns as of Nov 2012
+gen treated_cisterns_2012 = 1 if treatment == 1 & c_cistern_status == 1
+replace treated_cisterns_2012 = 0 if treatment == 1 & (c_cistern_status == 2 | c_cistern_status == 3)
+summarize treated_cisterns_2012
+local treated_cisterns_2012: display %5.2fc r(mean) * 100
+
+* % treated households with cisterns as of Nov 2013
+gen treated_cisterns_2013 = 1 if treatment == 1 & d_cistern_status == 1
+replace treated_cisterns_2013 = 0 if treatment == 1 & (d_cistern_status == 2 | d_cistern_status == 3)
+summarize treated_cisterns_2013
+local treated_cisterns_2013: display %5.2fc r(mean) * 100
+
+
+* % control households with cisterns as of Nov 2012
+gen control_cisterns_2012 = 1 if treatment == 0 & c_cistern_status == 1
+replace control_cisterns_2012 = 0 if treatment == 0 & (c_cistern_status == 2 | c_cistern_status == 3)
+summarize control_cisterns_2012
+local control_cisterns_2012: display %5.2fc r(mean) * 100
+
+* % control households with cisterns as of Nov 2013
+gen control_cisterns_2013 = 1 if treatment == 0 & d_cistern_status == 1
+replace control_cisterns_2013 = 0 if treatment == 0 & (d_cistern_status == 2 | d_cistern_status == 3)
+summarize control_cisterns_2013
+local control_cisterns_2013: display %5.2fc r(mean) * 100
+
+
+*==============================================================================*
+**## 1.2 Attrition
+*==============================================================================*
+
+use "${final_data_folder}/clientelism_individual_data.dta", clear
+
+* Households in wave 0
+unique num_dom
+local a_max = r(unique)
+
+* Households in wave 1
+unique num_dom if ind_id == 1
+local b_max = r(unique)
+
+* Households in wave 2
+unique num_dom if !missing(c_mun_id)
+local c_max = r(unique)
+
+* Households in wave 3
+unique num_dom if !missing(e_mun_id)
+local e_max = r(unique)
+
+
+* Rate of attrition (from wave 0) in each wave
+local attrit_0_1 : display %5.2fc ((`a_max' - `b_max')/ `a_max') * 100
+local attrit_0_2 : display %5.2fc ((`a_max' - `c_max')/ `a_max') * 100
+local attrit_0_3 : display %5.2fc ((`a_max' - `e_max')/ `a_max') * 100
+
+
+* Add commas to household totals 
+local a_max: display %5.0fc `a_max'
+local b_max: display %5.0fc `b_max'
+local c_max: display %5.0fc `c_max'
+local e_max: display %5.0fc `e_max'
+
+
+* Correlation between attrition (pooled across waves) and treatment status
+gen attrit = 0 if ind_id == 1
+replace attrit = 1 if attrit == .
+
+egen ctemp = group(num_dom) if !missing(c_mun_id)
+egen etemp = group(num_dom) if !missing(e_mun_id)
+
+sort num_dom ind_id ctemp etemp
+drop if num_dom == num_dom[_n-1]
+
+expand 3
+gen id_pool = 1 if _n < 1309
+replace id_pool = 2 if _n > 1308 & _n < 2609
+replace id_pool = 3 if _n > 2608
+
+replace attrit = . if id_pool == 2
+replace attrit = . if id_pool == 3
+
+replace attrit = 0 if ctemp != . & id_pool == 2
+replace attrit = 1 if attrit == .  & id_pool == 2
+
+replace attrit = 0 if etemp != . & id_pool == 3
+replace attrit = 1 if attrit == . & id_pool == 3
+
+reg attrit treatment i.mun_id i.id_pool, cluster(b_clusters)
+local b_attrition: display %5.3fc _b[treatment]	
+local se_attrition: display %5.3fc _se[treatment]			
+
+
+*==============================================================================*
+**## Export table
+*==============================================================================*
+
+texdoc init "${appendix_tables_folder}/Table_A1_Compliance_and_Attrition.tex", replace force
+
+	tex \begin{landscape}
+	tex \begin{table}[htbp] \centering \onehalfspacing
+	tex \fontsize{10}{10}\selectfont
+	tex \def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+	tex \begin{threeparttable}
+	tex \caption{\textbf{Compliance and Attrition}}
+	tex \begin{tabularx}{\linewidth}{l*{4}C}
+	tex \toprule
+	
+	tex           & Wave 0           & Wave 1     & Wave 2          & Wave 3 \\
+	tex           & 2011             & 2012       & 2012            & 2013    \\
+	tex           & Localization     & Baseline   & Election Year   & Non-election Year \\
+	tex           & (Households)     &            &                 &                   \\
+	tex           & (1)              & (2)        & (3)             & (4)               \\
+
+	tex \midrule
+	tex \multicolumn{5}{l}{\textbf{Panel A: Compliance}} \\
+	tex [1em]
+	
+	tex Assigned to Cisterns Treatment & `total_treated' & \(-\) & `treated_cisterns_2012'\% & `treated_cisterns_2013'\%  \\
+	tex Assigned to Control            & `total_control' & \(-\) & `control_cisterns_2012'\% & `control_cisterns_2013'\%  \\
+	
+	tex [1em]
+	tex Total                 & `total_households' & & & \\
+	
+	tex \midrule
+	tex \multicolumn{5}{l}{\textbf{Panel B: Attrition}} \\
+	tex [1em]
+	
+	tex Households                    & `a_max' & `b_max'        & `c_max'        & `e_max'        \\
+	tex Rate of Attrition from Wave 0 &         & `attrit_0_1'\% & `attrit_0_2'\% & `attrit_0_3'\% \\
+	
+	tex [1em]
+	tex Correlation with Treatment Status & `b_attrition'    & & & \\
+	tex Standard Error                    & (`se_attrition') & & & \\
+	
+	tex \bottomrule
+	
+	tex \end{tabularx}
+	tex \end{threeparttable}
+	tex \end{table}
+	tex \end{landscape}
+	
+texdoc close
+
+
+********************************************************************************
+**# 2. Baseline Characteristics of Treatment and Control Groups
+********************************************************************************
+
+*==============================================================================*
+**## Balance test for each dependent variable
+*==============================================================================*
+
+local individual_summary_list "b_age_ resp_female b_estudando_ b_curr_grade_"
+
+local household_summary_list "b_total_members tot_neigh neigh_cist b_bolsa_fam b_total_exp b_tot_Wealth b_age_hoh last_grade_hoh b_female_hoh owns_house b_rooms elec_access b_migrou a_terra a_hectares a_me_6ms a_x6ms_5_an a_x5_64_an a_x65_an b_voted"
+
+
+foreach depvar in `individual_summary_list' `household_summary_list' {
+    
+	** Switch to individual-level dataset from this variable onwards
+	if "`depvar'" == "b_age_" use "${final_data_folder}/clientelism_individual_data.dta", clear		
+
+	** Switch to household-level dataset from this variable onwards
+	if "`depvar'" == "b_total_members" use "${final_data_folder}/clientelism_household_data.dta", clear
+		
+
+	* (1) Mean of variable for treated units
+	
+	summarize `depvar' if treatment == 1
+	local `depvar'_meanT: display %10.3fc r(mean)
+	
+	
+	* (2) Mean of variable for control units
+	
+	summarize `depvar' if treatment == 0
+	local `depvar'_meanC: display %10.3fc r(mean)
+	
+	
+	* (3) Mean difference in variable between treated and control units adjusted for municipal fixed effects
+	
+	reg `depvar' treatment i.mun_id, cluster(b_clusters)
+	
+	local diff: display %10.3fc _b[treatment]
+	local `depvar'_diff = strtrim("`diff'")
+	
+	
+	* (4) Standard error of difference (clustered at the neighborhood level)
+	local se: display %9.3fc _se[treatment]
+	local `depvar'_se = "(" + strtrim("`se'") + ")"
+	
+	
+	* (5) Number of non-missing observations for variable
+	local `depvar'_obs: display %9.0fc e(N)
+}	
+
+
+*==============================================================================*
+**## Joint F-test for difference in baseline covariates 
+*==============================================================================*
+
+** Get p-value of joint F-test for individual-level baseline covariates 
+use "${final_data_folder}/clientelism_individual_data.dta", clear
+
+reg treatment `individual_summary_list' i.mun_id, cluster(b_clusters)
+test `individual_summary_list'
+local individual_f_test: display %9.3fc r(p)
+
+
+
+** Get p-value of joint F-test for household-level baseline covariates 
+use "${final_data_folder}/clientelism_household_data.dta", clear
+
+reg treatment `household_summary_list' i.mun_id, cluster(b_clusters)
+test `household_summary_list'
+local household_f_test: display %9.3fc r(p)
+
+
+*==============================================================================*
+**## Export balance table
+*==============================================================================*
+
+texdoc init "${appendix_tables_folder}/Table_A2_Balance_Table.tex", replace force
+
+	tex \begin{landscape}
+	tex \begin{table}[htbp] \centering \onehalfspacing
+	tex \fontsize{9}{10}\selectfont
+	tex \def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+	tex \begin{threeparttable}
+	tex \caption{\textbf{Baseline Characteristics of Treatment and Control Groups}}
+	tex \begin{tabularx}{\linewidth}{l*{5}C}
+	tex \toprule
+	
+	
+	tex           & Treatment Group & Control Group & Difference w/ & Standard Error &  \\
+	tex           & Mean            & Mean          & Municipal FEs & of Difference  & Observations \\
+	tex           & (1)             & (2)           & (3)           & (4)            & (5)          \\
+
+	
+	tex \midrule
+	tex \multicolumn{6}{l}{\textbf{Individual Characteristics}} \\
+	
+	tex Age & `b_age__meanT' & `b_age__meanC' & `b_age__diff' & `b_age__se' & `b_age__obs' \\
+	
+	tex Female & `resp_female_meanT' & `resp_female_meanC' & `resp_female_diff' & `resp_female_se' 
+	tex        & `resp_female_obs' \\
+	
+	tex Current Student & `b_estudando__meanT' & `b_estudando__meanC' & `b_estudando__diff' & `b_estudando__se' & `b_estudando__obs' \\
+	
+	tex Years of Education & `b_curr_grade__meanT' & `b_curr_grade__meanC' & `b_curr_grade__diff' & `b_curr_grade__se' & `b_curr_grade__obs' \\
+	
+	
+	tex \midrule 
+	tex P-value of Joint F-test & & & `individual_f_test' & & \\
+	tex \midrule 
+	
+	
+	tex \multicolumn{6}{l}{\textbf{Household Characteristics}} \\
+		
+	tex Household Size & `b_total_members_meanT' & `b_total_members_meanC' & `b_total_members_diff' & `b_total_members_se' 
+	tex                & `b_total_members_obs' \\
+	
+	tex Number of Total Neighbors & `tot_neigh_meanT' & `tot_neigh_meanC' & `tot_neigh_diff' & `tot_neigh_se' & `tot_neigh_obs' \\
+	
+	tex Neighbor has Cistern & `neigh_cist_meanT' & `neigh_cist_meanC' & `neigh_cist_diff' & `neigh_cist_se' & `neigh_cist_obs' \\
+	
+	tex Bolsa Familia Amount Received & `b_bolsa_fam_meanT' & `b_bolsa_fam_meanC' & `b_bolsa_fam_diff' & `b_bolsa_fam_se' & `b_bolsa_fam_obs' \\
+
+	tex Total Household Expenditure & `b_total_exp_meanT' & `b_total_exp_meanC' & `b_total_exp_diff' & `b_total_exp_se' & `b_total_exp_obs' \\
+	
+	tex Total Household Wealth & `b_tot_Wealth_meanT' & `b_tot_Wealth_meanC' & `b_tot_Wealth_diff' & `b_tot_Wealth_se' & `b_tot_Wealth_obs' \\
+	
+	tex Age of Household Head & `b_age_hoh_meanT' & `b_age_hoh_meanC' & `b_age_hoh_diff' & `b_age_hoh_se' & `b_age_hoh_obs' \\
+	
+	tex Household Head Education & `last_grade_hoh_meanT' & `last_grade_hoh_meanC' & `last_grade_hoh_diff' & `last_grade_hoh_se' 
+	tex                          & `last_grade_hoh_obs' \\
+	
+	tex Household Head is Female & `b_female_hoh_meanT' & `b_female_hoh_meanC' & `b_female_hoh_diff' & `b_female_hoh_se' & `b_female_hoh_obs' \\
+	
+	tex Owns House & `owns_house_meanT' & `owns_house_meanC' & `owns_house_diff' & `owns_house_se' & `owns_house_obs' \\
+	
+	tex Number of Rooms in House & `b_rooms_meanT' & `b_rooms_meanC' & `b_rooms_diff' & `b_rooms_se' & `b_rooms_obs' \\
+	
+	tex Has Access to Electricity & `elec_access_meanT' & `elec_access_meanC' & `elec_access_diff' & `elec_access_se' & `elec_access_obs' \\
+	
+	tex Migrated Recently & `b_migrou_meanT' & `b_migrou_meanC' & `b_migrou_diff' & `b_migrou_se' & `b_migrou_obs' \\
+	
+	tex Owns Land & `a_terra_meanT' & `a_terra_meanC' & `a_terra_diff' & `a_terra_se' & `a_terra_obs' \\
+	
+	tex Land Size & `a_hectares_meanT' & `a_hectares_meanC' & `a_hectares_diff' & `a_hectares_se' & `a_hectares_obs' \\
+	
+	tex Children in Household 0-6 Months & `a_me_6ms_meanT' & `a_me_6ms_meanC' & `a_me_6ms_diff' & `a_me_6ms_se' & `a_me_6ms_obs' \\
+
+	tex Children in Household 6 Months - 5 Years & `a_x6ms_5_an_meanT' & `a_x6ms_5_an_meanC' & `a_x6ms_5_an_diff' & `a_x6ms_5_an_se' 
+	tex                                          & `a_x6ms_5_an_obs' \\
+	
+	tex Household Members 5-64 Years & `a_x5_64_an_meanT' & `a_x5_64_an_meanC' & `a_x5_64_an_diff' & `a_x5_64_an_se' & `a_x5_64_an_obs' \\
+	
+	tex Household Members Older than 64 Years & `a_x65_an_meanT' & `a_x65_an_meanC' & `a_x65_an_diff' & `a_x65_an_se' & `a_x65_an_obs' \\
+	
+	tex Voted in 2008 Municipal Election & `b_voted_meanT' & `b_voted_meanC' & `b_voted_diff' & `b_voted_se' & `b_voted_obs' \\
+	
+
+	tex \midrule 
+	tex P-value of Joint F-test & & & `household_f_test' & & \\
+	tex \bottomrule
+	
+	
+	tex \end{tabularx}
+	tex \end{threeparttable}
+	tex \end{table}
+	tex \end{landscape}
+	
+texdoc close
+
+
+********************************************************************************
+**# 3. Balance Table for Electoral Dataset
+********************************************************************************
+
+local depvar_list "avg_age avg_school avg_gender"
+local spec = 0
+
+
+foreach var of local depvar_list {
+	
+	local spec = `spec' + 1
+	
+	clear
+	clear mata 
+	clear matrix 
+	
+	use "${final_data_folder}/voting_data.dta"
+	
+	
+	** Use set of municipalities where the incumbent mayor ran for re-election
+	keep if name_match == 1 & eligible_in_2008 != .
+	local sample = 21	
+	
+	
+	** Control for missing obs. 
+	if "`var'" == "avg_age" local missing_control = "missing_age"
+	else if "`var'" == "avg_school" local missing_control = "missing_school"
+	else if "`var'" == "avg_gender" local missing_control = "missing_gender"
+	
+	
+	*==========================================================================*
+	**## Overall effect of treatment
+	*==========================================================================*
+	
+	reghdfe `var' tot_treat_by_section_2_`sample' tot_study_2_`sample' eligible `missing_control', absorb(location_id) cluster(location_id)
+
+	
+	** Number of observations 
+	local `var'_obs: display %9.0fc e(N_full)
+	
+	
+	** Point estimate and standard error (clustered by voting location) for Treated Individuals
+	local beta: display %9.3fc r(table)[1,1]
+	local `var'_b1 = strtrim("`beta'")
+	
+	local se: display %9.3fc r(table)[2,1] 
+	local `var'_se1 = "(" + strtrim("`se'") + ")"
+	
+	
+	** Point estimate and standard error (clustered by voting location) for Respondents
+	local beta: display %9.3fc r(table)[1,2]
+	local `var'_b2 = strtrim("`beta'")
+	
+	local se: display %9.3fc r(table)[2,2] 
+	local `var'_se2 = "(" + strtrim("`se'") + ")"
+	
+	
+	** Mean of dependent variable 
+	summarize `var'
+	local `var'_mean: display %9.3fc r(mean)
+}
+
+
+*==============================================================================*
+**## Export results to table
+*==============================================================================*
+texdoc init "${appendix_tables_folder}/Table_A3_Electoral_Balance_Table.tex", replace force
+
+	tex \begin{table}[htbp] \centering
+	tex \onehalfspacing\fontsize{10}{10}\selectfont
+	tex \def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+	tex \begin{threeparttable}
+	tex \caption{\textbf{Voting Outcomes: Balance Across Machines in Voters' Characteristics}}
+	tex \begin{tabularx}{\linewidth}{l*{3}C}
+	tex \toprule
+	
+	tex &        & Schooling   & Female      \\
+	tex & Age    & Years       & Respondents \\
+	tex & (1) & (2) & (3) \\
+	tex \midrule
+		
+	tex Treated Individuals                                   & `avg_age_b1'  & `avg_school_b1'  & `avg_gender_b1' \\	
+	tex           			                                  & `avg_age_se1' & `avg_school_se1' & `avg_gender_se1' \\
+	tex [1em]
+	
+	tex Respondents 		                                  & `avg_age_b2'  & `avg_school_b2'  & `avg_gender_b2' \\	
+	tex           			                                  & `avg_age_se2' & `avg_school_se2' & `avg_gender_se2' \\
+
+	tex \midrule 
+	tex Control for Registered Voters & Yes & Yes & Yes \\
+	tex Location Fixed Effects & Yes & Yes & Yes \\ 
+	tex Missing Outcome Indicator & Yes & Yes & Yes \\
+	
+	tex \midrule 
+	tex Rescaled Regressors & Yes & Yes & Yes \\
+	tex Observations          & `avg_age_obs'  & `avg_school_obs'  & `avg_gender_obs' \\
+	tex Mean of Y: Overall    & `avg_age_mean' & `avg_school_mean' & `avg_gender_mean' \\
+
+	tex \bottomrule
+	tex \end{tabularx}
+	tex \end{threeparttable}
+	tex \end{table}
+	
+texdoc close
+
+
+********************************************************************************
+**# 4. Wealth and Assignment to Treatment
+********************************************************************************
+
+use "${final_data_folder}/clientelism_household_data.dta", clear
+
+* Cleaning
+label variable treatment "Cisterns Treatment"
+
+replace d_total_durables = 0 if d_total_durables == . & d_tot_Wealth != .
+replace d_total_livestock = 0 if d_total_livestock == .  & d_tot_Wealth != .
+replace d_value_tot_property = 0 if d_value_tot_property == .  & d_tot_Wealth != .
+egen d_tot_Wealth_new = rowtotal(d_total_durables d_total_livestock d_value_house d_value_anoth_plot d_net_savings), missing
+
+local depvar_list "d_total_durables d_total_livestock d_value_tot_property d_net_savings d_tot_Wealth_new"
+
+
+* Regressions
+foreach var of local depvar_list {
+	
+	eststo: reg `var' treatment i.mun_id, cluster(b_clusters)
+	
+	estadd_obs
+	estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y") fmt("%12.1fc")
+	estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control") fmt("%12.1fc")
+}
+
+
+* Export table 
+
+#delimit ;
+esttab using "${appendix_tables_folder}/Table_A4_Wealth_and_Treatment_Assignment.tex", replace 
+keep(treatment) substitute(_ _)
+scalars("obs \midrule Observations" "mean_Y Mean of Y: Treatment Group" "mean_Y_control Mean of Y: Control Group")
+b("%12.1fc") se("%12.1fc") label nostar noobs nonumber nomtitle wrap varwidth(42)
+
+prehead("\begin{landscape}" "\begin{table}[htbp] \centering \onehalfspacing" "\fontsize{10}{10}\selectfont"
+"\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" "\begin{threeparttable}" 
+"\captionsetup{justification=centering}"
+"\caption{\textbf{Wealth and Assignment to Treatment (2013)}}" 
+"\begin{tabularx}{\linewidth}{l*{5}C}" "\toprule" 
+"& Value of Durables & Value of Livestock & Value of Property & Net Savings & Total Wealth \\" 
+"& (1) & (2) & (3) & (4) & (5) \\")
+
+posthead("\midrule")
+
+prefoot("\midrule" "Municipality Fixed Effects & Yes & Yes & Yes & Yes & Yes \\")
+
+postfoot("\bottomrule" "\end{tabularx}" "\end{threeparttable}" "\end{table}" "\end{landscape}");		
+
+#delimit cr 
+eststo clear
+
+
+********************************************************************************
+**# 5. Characteristics of Respondents with Marker of Clientelist Relationship (2011 and 2012)
+********************************************************************************
+
+* Individual characteristics
+local individual_list "b_age_ b_curr_grade_ resp_female vote_same_party vote_together c_candidate_visit c_declared_dummy"
+
+* Household characteristics
+local hh_list "b_percap_wealth b_percap_exp last_grade_hoh b_female_hoh owns_house b_total_members b_Health b_happy b_child b_Overall_index b_voted"
+
+
+foreach depvar in `individual_list' `hh_list' {	
+	
+	if "`depvar'" == "b_age_" use "${final_data_folder}/clientelism_individual_data.dta", clear
+	else if "`depvar'" == "b_percap_wealth" {
+		use "${final_data_folder}/clientelism_household_data.dta", clear
+		
+		* Rename some variables for brevity
+		rename b_Happiness b_happy 
+		rename b_Child_Food_Security b_child 
+	}
+	
+	*==========================================================================*
+	* Column 1: Mean of variable for individuals/households with marker of clientelist relationship
+	*==========================================================================*
+
+	summarize `depvar' if frequent_interactor == 1
+	local `depvar'_meanT: display %10.3fc r(mean)	
+	
+	*==========================================================================*
+	* Column 2: Mean of variable for individuals/households without marker of clientelist relationship
+	*==========================================================================*
+
+	summarize `depvar' if frequent_interactor == 0
+	local `depvar'_meanC: display %10.3fc r(mean)
+	
+	*==========================================================================*
+	* Column 3: Difference in means with municipality fixed effects
+	*==========================================================================*
+	
+	reg `depvar' frequent_interactor i.mun_id, cluster(b_clusters)
+	
+	* Point estimate
+	local beta: display %10.3fc _b[frequent_interactor]
+	local `depvar'_beta = strtrim("`beta'")
+	
+	* Standard error (clustered at the neighborhood level)
+	local se: display %9.3fc _se[frequent_interactor]
+	local `depvar'_se = "(" + strtrim("`se'") + ")"
+}	
+
+
+*==============================================================================*
+**## Export table
+*==============================================================================*
+
+texdoc init "${appendix_tables_folder}/Table_A5_Frequent_Interactor_Characteristics.tex", replace force
+
+	tex \begin{table}[htbp] \centering \onehalfspacing
+	tex \fontsize{7.5}{8}\selectfont
+	tex \def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+	tex \begin{threeparttable}
+	tex \caption{\textbf{Characteristics of Respondents with Marker of Clientelist Relationship (2011 and 2012)}}
+	tex \begin{tabularx}{\linewidth}{l*{3}C}
+	tex \toprule
+	
+	
+	tex & Individuals with           & Individuals without        &               \\
+	tex & Marker of  				 & Marker of                  &               \\
+	tex & Clientelist                & Clientelist                & Difference w/ \\
+	tex & Relationship               & Relationship               & Municipal FEs \\
+	tex & (1)                        & (2)                        & (3)           \\
+
+	
+	tex \midrule
+	tex \multicolumn{4}{l}{\textbf{Individual Characteristics}} \\
+	tex [1em]
+	
+	tex Age                       			                         & `b_age__meanT' 		    & `b_age__meanC'           & `b_age__beta' \\
+	tex                                                              &             			    &   		               & `b_age__se'   \\
+	tex [1ex]
+
+	tex Years of Education                                           & `b_curr_grade__meanT'    & `b_curr_grade__meanC'    & `b_curr_grade__beta' \\
+	tex                                                              &             			    &   		               & `b_curr_grade__se'   \\
+	tex [1ex]
+	
+	tex Female                      		                         & `resp_female_meanT' 	    & `resp_female_meanC'      & `resp_female_beta' \\
+	tex                                                              &             			    &   		               & `resp_female_se'   \\
+	tex [1ex]
+	
+	
+	tex \midrule
+	tex \multicolumn{4}{l}{\textbf{Household Characteristics}} \\
+	tex [1ex]
+	
+	tex Household Wealth per Member                                  & `b_percap_wealth_meanT'   & `b_percap_wealth_meanC'   & `b_percap_wealth_beta' \\
+	tex                                                              &             			     &   		                 & `b_percap_wealth_se'   \\
+	tex [1ex]
+	
+	tex Household Expenditure per Member                        	 & `b_percap_exp_meanT'      & `b_percap_exp_meanC'      & `b_percap_exp_beta' \\
+	tex                                                              &             			     &   		                 & `b_percap_exp_se'   \\
+	tex [1ex]
+	
+	tex Household Head Education                       			     & `last_grade_hoh_meanT'    & `last_grade_hoh_meanC'    & `last_grade_hoh_beta' \\
+	tex                                                              &             			     &   		                 & `last_grade_hoh_se'   \\
+	tex [1ex]
+	
+	tex Household Head is Female                       			     & `b_female_hoh_meanT'      & `b_female_hoh_meanC'      & `b_female_hoh_beta' \\
+	tex                                                              &             			     &   		                 & `b_female_hoh_se'   \\
+	tex [1ex]
+	
+	tex Owns House                       			                 & `owns_house_meanT' 	     & `owns_house_meanC'        & `owns_house_beta' \\
+	tex                                                              &             			     &   		                 & `owns_house_se'   \\
+	tex [1ex]
+	
+	tex Household Size                       			             & `b_total_members_meanT'   & `b_total_members_meanC'   & `b_total_members_beta' \\
+	tex                                                              &             			     &   		                 & `b_total_members_se'   \\
+	tex [1ex]
+	
+	
+	tex \midrule
+	tex \multicolumn{4}{l}{\textbf{Household Vulnerability Indicators}} \\
+	tex [1ex]
+	
+	tex -(CES-D) Scale                       			             & `b_happy_meanT' 		     & `b_happy_meanC'           & `b_happy_beta' \\
+	tex                                                              &             			     &   		                 & `b_happy_se'   \\
+	tex [1ex]
+	
+	tex SRHS Index                       			                 & `b_Health_meanT'          & `b_Health_meanC'          & `b_Health_beta' \\
+	tex                                                              &             			     &   		                 & `b_Health_se'   \\
+	tex [1ex]
+	
+	tex Child Food Security Index                       			 & `b_child_meanT' 		     & `b_child_meanC'           & `b_child_beta' \\
+	tex                                                              &             			     &   		                 & `b_child_se'   \\
+	tex [1ex]
+	
+	tex Overall Vulnerability Index                       			 & `b_Overall_index_meanT'   & `b_Overall_index_meanC'   & `b_Overall_index_beta' \\
+	tex                                                              &             			     &   		                 & `b_Overall_index_se'   \\
+	
+	tex \midrule
+	tex \multicolumn{4}{l}{\textbf{Political Activities}} \\
+	tex [1ex]
+	
+	tex Voted in 2008 Municipality Election                      	 & `b_voted_meanT' 		     & `b_voted_meanC'           & `b_voted_beta' \\
+	tex                                                              &             			     &   		                 & `b_voted_se'   \\
+	tex [1ex]
+	
+	tex Voted for Mayor/Councilor of the Same Coalition              & `vote_same_party_meanT'   & `vote_same_party_meanC'   & `vote_same_party_beta' \\
+	tex                                                              &             			     &   		                 & `vote_same_party_se'   \\
+	tex [1ex]
+	
+	tex Entire Household Voted for Same Mayoral Candidate            & `vote_together_meanT'     & `vote_together_meanC'     & `vote_together_beta' \\
+	tex                                                              &             			     &   		                 & `vote_together_se'   \\
+	tex [1ex]
+	
+	tex Received Visit from Any Mayoral Candidate                    & `c_candidate_visit_meanT' & `c_candidate_visit_meanC' & `c_candidate_visit_beta' \\
+	tex                                                              &             			     &   		                 & `c_candidate_visit_se'   \\
+	tex [1ex]
+	
+	tex Any Declared Support                       			         & `c_declared_dummy_meanT'  & `c_declared_dummy_meanC'  & `c_declared_dummy_beta' \\
+	tex                                                              &             			     &   		                 & `c_declared_dummy_se'   \\
+	
+	
+	tex \bottomrule
+	tex \end{tabularx}
+	tex \end{threeparttable}
+	tex \end{table}
+	
+texdoc close
+
+
+********************************************************************************
+**# 6. Clientelism Marker and Assignment to Treatment
+********************************************************************************
+
+use "${final_data_folder}/clientelism_individual_data.dta", clear
+
+
+* Correlation between clientelism marker and assignment to cisterns treatment 
+label variable treatment "$\beta_1$: Cisterns Treatment"
+eststo: reg frequent_interactor treatment i.mun_id, cluster(b_clusters)
+estadd_obs
+estadd_mean_Y, depvar(frequent_interactor) condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y")
+estadd_mean_Y, depvar(frequent_interactor) condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control")
+
+
+* Correlation between clientelism marker and rainfall 
+label variable rainfall_2012_std "$\beta_2$: Rainfall Shock"
+eststo: reg frequent_interactor rainfall_2012_std, cluster(b_clusters)
+estadd_obs
+estadd_mean_Y, depvar(frequent_interactor) condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y")
+estadd_mean_Y, depvar(frequent_interactor) condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control")
+
+
+* Export table 
+
+#delimit ;
+esttab using "${appendix_tables_folder}/Table_A6_Clientelism_and_Treatment_Assignment.tex", replace 
+keep(treatment rainfall_2012_std) substitute(_ _)
+scalars("obs \midrule Observations" "mean_Y Mean of Y: Treatment Group" "mean_Y_control Mean of Y: Control Group")
+b("%9.3fc") se("%9.3fc") label nostar noobs nonumber nomtitle wrap varwidth(42)
+
+prehead("\begin{table}[htbp] \centering \onehalfspacing" "\fontsize{10}{10}\selectfont"
+"\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" "\begin{threeparttable}" 
+"\captionsetup{justification=centering}"
+"\caption{\textbf{Clientelism Marker and Assignment to Treatment}}" 
+"\begin{tabularx}{\linewidth}{l*{2}C}" "\toprule" 
+"& \multicolumn{2}{c}{Clientelist Relationship} \\" "\cmidrule(lr){2-3}" 
+"& (1) & (2) \\")
+
+posthead("\midrule")
+
+prefoot("\midrule" "Municipality Fixed Effects & Yes & No \\")
+
+postfoot("\bottomrule" "\end{tabularx}" "\end{threeparttable}" "\end{table}");		
+
+#delimit cr 
+eststo clear
+
+
+********************************************************************************
+**# 7. Requests for Private Goods, Controlling for Citizen Engagement (2012 and 2013) 
+********************************************************************************
+
+use "${final_data_folder}/clientelism_individual_data_stacked.dta", clear
+
+
+** Generate interactions between treatment variables and controls for citizen engagement 
+gen treat_mem_assoc = treatment * mem_assoc 
+gen treat_pres_assoc = treatment * pres_assoc 
+gen treat_voted = treatment * b_voted 
+
+gen rain_std_mem_assoc = rainfall_std_stacked * mem_assoc 
+gen rain_std_pres_assoc = rainfall_std_stacked * pres_assoc 
+gen rain_std_voted = rainfall_std_stacked * b_voted
+
+
+** Generate interactions between treatment variables and clientelism marker 
+gen treat_freq = treatment * frequent_interactor
+gen rain_std_freq = rainfall_std_stacked * frequent_interactor
+
+
+** Label treatment variables
+label variable treatment "$\beta_1$: Cisterns Treatment"
+label variable treat_freq "$\beta_2$: Cisterns Treatment $\times$ Clientelist Relationship"
+label variable rainfall_std_stacked "$\beta_3$: Rainfall Shock"
+label variable rain_std_freq "$\beta_4$: Rainfall Shock $\times$ Clientelist Relationship"
+label variable frequent_interactor "$\beta_5$: Clientelist Relationship"
+
+
+*==============================================================================*
+**## Regressions
+*==============================================================================*
+
+*--------------------------------------------------------------------------*
+**## (1) Control for whether respondent is a member of a community association
+*--------------------------------------------------------------------------*
+eststo: reg ask_private_stacked treatment treat_freq rainfall_std_stacked rain_std_freq frequent_interactor ///
+mem_assoc treat_mem_assoc rain_std_mem_assoc i.mun_id year2012, cluster(b_clusters)
+	
+estadd_obs
+estadd_mean_Y, depvar(ask_private_stacked) condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y")
+estadd_mean_Y, depvar(ask_private_stacked) condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control")
+estadd_mean_Y, depvar(ask_private_stacked) condition("if e(sample) == 1 & treatment == 0 & frequent_interactor == 1") scalar_name("mean_Y_control_freq")
+
+	
+*--------------------------------------------------------------------------*
+**## (2) Control for whether respondent is a president of a community association
+*--------------------------------------------------------------------------*
+eststo: reg ask_private_stacked treatment treat_freq rainfall_std_stacked rain_std_freq frequent_interactor ///
+pres_assoc treat_pres_assoc rain_std_pres_assoc i.mun_id year2012, cluster(b_clusters)
+	
+estadd_obs
+estadd_mean_Y, depvar(ask_private_stacked) condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y")
+estadd_mean_Y, depvar(ask_private_stacked) condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control")
+estadd_mean_Y, depvar(ask_private_stacked) condition("if e(sample) == 1 & treatment == 0 & frequent_interactor == 1") scalar_name("mean_Y_control_freq")
+	
+
+*--------------------------------------------------------------------------*
+**## (3) Control for whether respondent voted in 2008 municipal election
+*--------------------------------------------------------------------------*
+eststo: reg ask_private_stacked treatment treat_freq rainfall_std_stacked rain_std_freq frequent_interactor ///
+b_voted treat_voted rain_std_voted i.mun_id year2012, cluster(b_clusters)
+	
+estadd_obs
+estadd_mean_Y, depvar(ask_private_stacked) condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y")
+estadd_mean_Y, depvar(ask_private_stacked) condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control")
+estadd_mean_Y, depvar(ask_private_stacked) condition("if e(sample) == 1 & treatment == 0 & frequent_interactor == 1") scalar_name("mean_Y_control_freq")
+
+	
+*--------------------------------------------------------------------------*
+**## (4) Control for all of the above
+*--------------------------------------------------------------------------*
+eststo: reg ask_private_stacked treatment treat_freq rainfall_std_stacked rain_std_freq frequent_interactor ///
+mem_assoc treat_mem_assoc rain_std_mem_assoc pres_assoc treat_pres_assoc rain_std_pres_assoc b_voted treat_voted rain_std_voted ///
+i.mun_id year2012, cluster(b_clusters)
+	
+estadd_obs
+estadd_mean_Y, depvar(ask_private_stacked) condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y")
+estadd_mean_Y, depvar(ask_private_stacked) condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control")
+estadd_mean_Y, depvar(ask_private_stacked) condition("if e(sample) == 1 & treatment == 0 & frequent_interactor == 1") scalar_name("mean_Y_control_freq")
+
+	
+*--------------------------------------------------------------------------*
+**## Export to table 
+*--------------------------------------------------------------------------*
+
+#delimit ;
+esttab using "${appendix_tables_folder}/Table_A7_Requests_with_Controls.tex", replace 
+keep(treatment treat_freq rainfall_std_stacked rain_std_freq frequent_interactor) order(treatment treat_freq rainfall_std_stacked rain_std_freq frequent_interactor) 
+substitute(_ _)
+
+scalars("obs \midrule Observations" "mean_Y Mean of Y: Treatment Group" "mean_Y_control Mean of Y: Control Group" 
+"mean_Y_control_freq Mean of Y: Clientelist Relationship in Control Group")
+b("%9.3fc") se("%9.3fc") label nostar noobs nonumber nomtitle wrap varwidth(100)
+
+prehead("\begin{landscape}" "\begin{table}[htbp] \centering \onehalfspacing" "\fontsize{10}{10}\selectfont"
+"\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" "\begin{threeparttable}" 
+"\captionsetup{justification=centering}"
+"\caption{\textbf{Requests for Private Goods, Controlling for Citizen Engagement (2012 and 2013)}}" 
+"\begin{tabularx}{\linewidth}{l*{4}C}" "\toprule"
+"& \multicolumn{4}{c}{Request Any Private Good} \\" "\cmidrule(lr){2-5}"
+"& (1) & (2) & (3) & (4) \\")
+
+posthead("\midrule")
+
+prefoot(
+"\midrule" 
+"Member of a Community Association                                &Yes &No  &No  &Yes \\"
+"Member of a Community Association $\times$ Cisterns Treatment    &Yes &No  &No  &Yes \\"
+"Member of a Community Association $\times$ Rainfall Shock        &Yes &No  &No  &Yes \\"
+"President of a Community Association                             &No  &Yes &No  &Yes \\"
+"President of a Community Association $\times$ Cisterns Treatment &No  &Yes &No  &Yes \\"
+"President of a Community Association $\times$ Rainfall Shock     &No  &Yes &No  &Yes \\"
+"Voted in 2008 Municipal Election                                 &No  &No  &Yes &Yes \\"
+"Voted in 2008 Municipal Election $\times$ Cisterns Treatment     &No  &No  &Yes &Yes \\"
+"Voted in 2008 Municipal Election $\times$ Rainfall Shock         &No  &No  &Yes &Yes \\"
+	
+"Municipality Fixed Effects &Yes &Yes &Yes &Yes \\" 
+"Year Fixed Effects &Yes &Yes &Yes &Yes \\")
+
+postfoot("\bottomrule" "\end{tabularx}" "\end{threeparttable}" "\end{table}" "\end{landscape}");	
+
+
+#delimit cr
+eststo clear
+
+
+********************************************************************************
+**# 8. Robustness - Other Outcomes in 2012 Election
+********************************************************************************
+
+*==============================================================================*
+**## Overall effect of treatment (col. 2-6 of table)
+*==============================================================================*
+
+local depvar_list "incumbent_votes_section PT_votes pres_coalition_votes gov_coalition_votes right_leaning_votes"
+
+foreach var of local depvar_list {
+		
+	clear
+	clear mata 
+	clear matrix 
+	
+	use "${final_data_folder}/voting_data.dta"
+	
+		
+	** Use set of municipalities where the incumbent mayor ran for re-election
+	keep if name_match == 1 & eligible_in_2008 != .
+	local sample = 21
+	
+	
+	** Use unadjusted regressors for votes for incumbent mayor, and adjusted regressors for all other dependent variables
+	if "`var'" == "incumbent_votes_section" {
+		local section_var = "tot_treat_by_section_1"
+		local study_var = "tot_study_1"
+	}
+	
+	else {
+		local section_var = "tot_treat_by_section_2_`sample'"
+		local study_var = "tot_study_2_`sample'"
+	}
+
+	
+	*--------------------------------------------------------------------------*
+	** Overall effect of treatment
+	*--------------------------------------------------------------------------*
+	
+	reghdfe `var' `section_var' `study_var' eligible, absorb(location_id) cluster(location_id)
+
+	
+	** Number of observations 
+	local `var'_obs: display %9.0fc e(N_full)
+	
+	
+	** Point estimate and standard error (clustered by voting location) for Treated Individuals
+	local beta: display %9.3fc r(table)[1,1]
+	local `var'_b1 = strtrim("`beta'")
+	
+	local se: display %9.3fc r(table)[2,1] 
+	local `var'_se1 = "(" + strtrim("`se'") + ")"
+	
+	
+	** Point estimate and standard error (clustered by voting location) for Respondents
+	local beta: display %9.3fc r(table)[1,2]
+	local `var'_b2 = strtrim("`beta'")
+	
+	local se: display %9.3fc r(table)[2,2] 
+	local `var'_se2 = "(" + strtrim("`se'") + ")"
+		
+	
+	*--------------------------------------------------------------------------*
+	** Wild-cluster bootstrap (clustered by municipality)
+	*--------------------------------------------------------------------------*
+		
+	reghdfe `var' `section_var' `study_var' eligible, absorb(location_id) cluster(mun_id)
+	
+	boottest {`section_var'}{`study_var'}, noci nograph seed(1234)
+	
+	local bt1: display %9.3fc r(p_1)
+	local `var'_bt1 = "[" + strtrim("`bt1'") + "]"
+	
+	local bt2: display %9.3fc r(p_2)
+	local `var'_bt2 = "[" + strtrim("`bt2'") + "]"
+}
+
+
+*==============================================================================*
+**## Heterogeneous effects by clientelist status (col. 1 of table)
+*==============================================================================*
+
+local depvar_list "incumbent_votes_section"
+
+foreach var of local depvar_list {
+			
+	clear
+	clear mata 
+	clear matrix 
+	
+	use "${final_data_folder}/voting_data.dta"
+		
+		
+	** Use set of municipalities where the incumbent mayor ran for re-election
+	keep if name_match == 1  & eligible_in_2008 != .
+	local sample = 21
+	
+	rename tot_treat_by_section_2_freq_`sample' tot_treat_by_section_2_freq
+	rename tot_treat_by_section_2_infreq_`sample' tot_treat_by_section_2_infreq
+	rename tot_study_2_freq_`sample' tot_study_2_freq
+	rename tot_study_2_infreq_`sample' tot_study_2_infreq
+	
+	
+	*--------------------------------------------------------------------------*
+	** Heterogeneous effect of treatment
+	*--------------------------------------------------------------------------*
+	
+	reghdfe `var' tot_treat_by_section_2_freq tot_treat_by_section_2_infreq tot_study_2_freq tot_study_2_infreq ///
+	eligible, absorb(location_id) cluster(location_id)
+
+	
+	** Number of observations 
+	local `var'_obs_het: display %9.0fc e(N_full)
+	
+	
+	** Point estimate and standard error (clustered by voting location) for Treated Individuals X Clientelist Relationship
+	local beta: display %9.3fc r(table)[1,1]
+	local `var'_b3 = strtrim("`beta'")
+	
+	local se: display %9.3fc r(table)[2,1] 
+	local `var'_se3 = "(" + strtrim("`se'") + ")"
+	
+	
+	** Point estimate and standard error (clustered by voting location) for Treated Individuals X No Clientelist Relationship
+	local beta: display %9.3fc r(table)[1,2]
+	local `var'_b4 = strtrim("`beta'")
+	
+	local se: display %9.3fc r(table)[2,2] 
+	local `var'_se4 = "(" + strtrim("`se'") + ")"
+	
+	
+	** Point estimate and standard error (clustered by voting location) for Respondents X Clientelist Relationship
+	local beta: display %9.3fc r(table)[1,3]
+	local `var'_b5 = strtrim("`beta'")
+	
+	local se: display %9.3fc r(table)[2,3] 
+	local `var'_se5 = "(" + strtrim("`se'") + ")"
+	
+	
+	** Point estimate and standard error (clustered by voting location) for Respondents X No Clientelist Relationship
+	local beta: display %9.3fc r(table)[1,4]
+	local `var'_b6 = strtrim("`beta'")
+	
+	local se: display %9.3fc r(table)[2,4] 
+	local `var'_se6 = "(" + strtrim("`se'") + ")"
+		
+	
+	*--------------------------------------------------------------------------*
+	** Wild-cluster bootstrap (clustered by municipality)
+	*--------------------------------------------------------------------------*
+	
+	reghdfe `var' tot_treat_by_section_2_freq tot_treat_by_section_2_infreq tot_study_2_freq tot_study_2_infreq ///
+	eligible, absorb(location_id) cluster(mun_id)
+	
+	boottest {tot_treat_by_section_2_freq}{tot_treat_by_section_2_infreq}{tot_study_2_freq}{tot_study_2_infreq}, noci nograph seed(1234)
+	
+	local bt3: display %9.3fc r(p_1)
+	local `var'_bt3 = "[" + strtrim("`bt3'") + "]"
+	
+	local bt4: display %9.3fc r(p_2)
+	local `var'_bt4 = "[" + strtrim("`bt4'") + "]"
+	
+	local bt5: display %9.3fc r(p_3)
+	local `var'_bt5 = "[" + strtrim("`bt5'") + "]"
+	
+	local bt6: display %9.3fc r(p_4)
+	local `var'_bt6 = "[" + strtrim("`bt6'") + "]"
+}
+
+
+
+*==============================================================================*
+**## Export results to table
+*==============================================================================*
+texdoc init "${appendix_tables_folder}/Table_A8_Other_Electoral_Outcomes.tex", replace force
+
+	tex \begin{landscape}
+	tex \begin{table}[htbp] \centering
+	tex \onehalfspacing\fontsize{7.5}{10}\selectfont
+	tex \def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+	tex \begin{threeparttable}
+	tex \caption{\textbf{Cisterns Treatment and Other Electoral Outcomes (2012)}}
+	tex \begin{tabularx}{\linewidth}{l*{6}C}
+	tex \toprule
+	
+	tex & \multicolumn{2}{c}{Votes for} & Votes for         & Votes for             & Votes for            & Votes for \\
+	tex & \multicolumn{2}{c}{Incumbent} & Candidates From   & Candidates From       & Candidates From      & Right-Leaning \\
+	tex & \multicolumn{2}{c}{Mayor}     & President's Party & President's Coalition & Governor's Coalition & Candidates \\
+	tex \cmidrule(lr){2-3}
+	tex & (1) & (2) & (3) & (4) & (5) & (6) \\
+	tex \midrule
+		
+	tex Treated Individuals                                   & & `incumbent_votes_section_b1' & `PT_votes_b1' & `pres_coalition_votes_b1'
+	tex                                                       & `gov_coalition_votes_b1' & `right_leaning_votes_b1' \\
+	
+	tex           			                                  & & `incumbent_votes_section_se1' & `PT_votes_se1' & `pres_coalition_votes_se1'
+	tex                                                       & `gov_coalition_votes_se1' & `right_leaning_votes_se1' \\
+	
+	tex           			                                  & & `incumbent_votes_section_bt1' & `PT_votes_bt1' & `pres_coalition_votes_bt1'
+	tex                                                       & `gov_coalition_votes_bt1' & `right_leaning_votes_bt1' \\
+	tex [1em]
+	
+	tex Respondents 		                                  & & `incumbent_votes_section_b2' & `PT_votes_b2' & `pres_coalition_votes_b2'
+	tex                                                       & `gov_coalition_votes_b2' & `right_leaning_votes_b2' \\
+	
+	tex           			                                  & & `incumbent_votes_section_se2' & `PT_votes_se2' & `pres_coalition_votes_se2'
+	tex                                                       & `gov_coalition_votes_se2' & `right_leaning_votes_se2' \\
+	
+	tex           			                                  & & `incumbent_votes_section_bt2' & `PT_votes_bt2' & `pres_coalition_votes_bt2'
+	tex                                                       & `gov_coalition_votes_bt2' & `right_leaning_votes_bt2' \\
+	tex [1em]
+	
+	tex Treated Individuals with Clientelist Relationship	  & `incumbent_votes_section_b3' & & & & & \\
+	tex           			                                  & `incumbent_votes_section_se3' & & & & & \\
+	tex           			                                  & `incumbent_votes_section_bt3' & & & & & \\
+	tex [1em]
+	
+	tex Treated Individuals without Clientelist Relationship  & `incumbent_votes_section_b4' & & & & & \\
+	tex           			                                  & `incumbent_votes_section_se4' & & & & & \\
+	tex           			                                  & `incumbent_votes_section_bt4' & & & & & \\
+	tex [1em]
+	
+	tex Respondents with Clientelist Relationship 			  & `incumbent_votes_section_b5' & & & & & \\
+	tex           			                                  & `incumbent_votes_section_se5' & & & & & \\
+	tex           			                                  & `incumbent_votes_section_bt5' & & & & & \\
+	tex [1em]
+	
+	tex Respondents without Clientelist Relationship 		  & `incumbent_votes_section_b6' & & & & & \\
+	tex           			                                  & `incumbent_votes_section_se6' & & & & & \\
+	tex           			                                  & `incumbent_votes_section_bt6' & & & & & \\
+	
+	tex \midrule 
+	tex Control for Registered Voters & Yes & Yes & Yes & Yes & Yes & Yes \\
+	tex Location Fixed Effects & Yes & Yes & Yes & Yes & Yes & Yes \\ 
+	
+	tex \midrule 
+	tex Rescaled Regressors & Yes & No & Yes & Yes & Yes & Yes \\
+	tex Observations & `incumbent_votes_section_obs_het' & `incumbent_votes_section_obs' & `PT_votes_obs'  
+	tex              & `pres_coalition_votes_obs' & `gov_coalition_votes_obs' & `right_leaning_votes_obs' \\
+
+	tex \bottomrule
+	tex \end{tabularx}
+	tex \end{threeparttable}
+	tex \end{table}
+	tex \end{landscape}
+	
+texdoc close
+
+
+********************************************************************************
+**# 9. Politician Responses and Citizens' Beliefs 
+********************************************************************************
+
+use "${final_data_folder}/clientelism_individual_data.dta", clear
+
+
+** Generate dependent variables for citizens' beliefs 
+gen incumbent_honest = c_candidate_a_honesty_ if incumbent_was_cand_a == 1
+replace incumbent_honest = c_candidate_b_honesty_ if incumbent_was_cand_b == 1
+
+gen incumbent_honest_dummy = 1 if incumbent_honest == 1 | incumbent_honest == 2
+replace incumbent_honest_dummy = 0 if incumbent_honest == 3 | incumbent_honest == 4
+
+
+gen incumbent_competent = c_candidate_a_competence_ if incumbent_was_cand_a == 1
+replace incumbent_competent = c_candidate_b_competence_ if incumbent_was_cand_b == 1
+
+gen incumbent_competent_dummy = 1 if incumbent_competent == 1 | incumbent_competent == 2
+replace incumbent_competent_dummy = 0 if incumbent_competent == 3 | incumbent_competent == 4
+
+
+gen incumbent_pty_competent = 0 if !missing(c_candidate_max_competent_)
+replace incumbent_pty_competent = 1 if c_candidate_max_competent_ == 1 & incumbent_was_cand_a == 1
+replace incumbent_pty_competent = 1 if c_candidate_max_competent_ == 2 & incumbent_was_cand_b == 1
+replace incumbent_pty_competent = 1 if c_candidate_max_competent_ == 3 & incumbent_was_cand_c == 1
+
+
+** Label variables 
+local depvar_list_pol "c_candidate_visit c_gift_campaign_visit_2012 e_offered_handout e_rec_gifts_favors_"
+local depvar_list_citizen "incumbent_honest_dummy incumbent_competent_dummy incumbent_pty_competent"
+label variable treatment "Cisterns Treatment" 
+label variable rainfall_2012_std "Rainfall Shock" 
+
+
+** Note: for politician responses, we only use individuals surveyed in 2012 wave
+** For citizen beliefs, we only use individuals with data on interactions with politicians in municipalities where incumbent mayor ran for re-election
+
+*==============================================================================*
+**## Panel A: Effect of Treatment 
+*==============================================================================*
+
+foreach var of local depvar_list_pol {
+	
+	eststo: reg `var' treatment i.mun_id if !missing(c_mun_id), cluster(b_clusters)
+}
+
+foreach var of local depvar_list_citizen {
+	
+	eststo: reg `var' treatment i.mun_id if frequent_interactor != . & incumbent_ran == 1, cluster(b_clusters)
+}
+
+
+
+#delimit ;
+esttab using "${appendix_tables_folder}/Table_A9_Politician_Responses_Citizen_Beliefs.tex", replace 
+keep(treatment) substitute(_ _)
+b("%9.3fc") se("%9.3fc") label nostar noobs nonumber nomtitle wrap varwidth(42)
+
+prehead("\begin{landscape}" "\begin{table}[htbp] \centering \onehalfspacing" "\fontsize{7}{10}\selectfont"
+"\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" "\begin{threeparttable}" 
+"\captionsetup{justification=centering}"
+"\caption{\textbf{Politician Responses and Citizen Beliefs}}" 
+"\begin{tabularx}{\linewidth}{l*{7}C}" "\toprule" 
+"& \multicolumn{4}{c}{Politician Responses} & \multicolumn{3}{c}{Citizen Beliefs about Incumbent} \\"
+"\cmidrule(lr){2-5} \cmidrule(l){6-8}"
+"&                &                &                 & Accepted             &                 &                 &                 \\"
+"&                & Campaign Visit & Politician      & Politician's         & Incumbent Mayor & Incumbent Mayor & Incumbent Group \\" 
+"& Campaign Visit & with Handout   & Offered Handout & Handout              & is Honest       & is Competent    & is Competent \\" 
+"& (1) & (2) & (3) & (4) & (5) & (6) & (7) \\" "\midrule")
+
+posthead("\multicolumn{8}{l}{\textbf{Panel A}} \\")
+prefoot("[1em]" "Municipality Fixed Effects & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\")
+postfoot("");
+
+#delimit cr 
+eststo clear
+
+
+*==============================================================================*
+**## Panel B: Effect of Rainfall
+*==============================================================================*
+
+foreach var of local depvar_list_pol {
+	
+	eststo: reg `var' rainfall_2012_std if !missing(c_mun_id), cluster(b_clusters)
+	estadd_obs
+	estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y")
+	estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control")
+}
+
+foreach var of local depvar_list_citizen {
+	
+	eststo: reg `var' rainfall_2012_std if frequent_interactor != . & incumbent_ran == 1, cluster(b_clusters)
+	estadd_obs
+	estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y")
+	estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control")
+}
+
+
+#delimit ;
+esttab using "${appendix_tables_folder}/Table_A9_Politician_Responses_Citizen_Beliefs.tex", append
+keep(rainfall_2012_std) substitute(_ _)
+scalars("obs \midrule Observations" "mean_Y Mean of Y: Treatment Group" "mean_Y_control Mean of Y: Control Group")
+b("%9.3fc") se("%9.3fc") label nostar noobs nonumber nomtitle wrap varwidth(42)
+
+prehead("\midrule")
+posthead("\multicolumn{7}{l}{\textbf{Panel B}} \\")
+prefoot("[1em]" "Municipality Fixed Effects & No & No & No & No & No & No & No \\")
+
+postfoot("\bottomrule" "\end{tabularx}" "\end{threeparttable}" "\end{table}" "\end{landscape}");		
+
+
+#delimit cr
+eststo clear
+
+
+********************************************************************************
+**# 10. Citizens' Preferences and Assignment to Treatment
+********************************************************************************
+
+use "${final_data_folder}/clientelism_individual_data.dta", clear
+
+label variable treatment "Cisterns Treatment" 
+label variable rainfall_2012_std "Rainfall Shock" 
+
+keep if frequent_interactor != .                                                // keep only individuals with data on interactions with politicians
+
+
+local depvar_list "accept_riskiest_lot_hyp_1 accept_riskiest_lot_incent_2 alt_binary_P2_hyp alt_binary_P2_incent_2"
+local depvar_list_2 "rcpt_high_type_hyp_1 rcpt_high_type_incent_2 time_pref_threshold_hyp_1 time_pref_threshold_hyp_2 pub_good_share_contributed"
+
+
+*==============================================================================*
+**## Panel A: Effect of Treatment 
+*==============================================================================*
+
+foreach var in `depvar_list' `depvar_list_2' {
+	
+	eststo: reg `var' treatment i.mun_id, cluster(b_clusters)
+}
+
+
+#delimit ;
+esttab using "${appendix_tables_folder}/Table_A10_Citizen_Preferences.tex", replace 
+keep(treatment) substitute(_ _)
+b("%9.3fc") se("%9.3fc") label nostar noobs nonumber nomtitle wrap varwidth(42)
+
+prehead("\begin{landscape}" "\begin{table}[htbp] \centering \onehalfspacing" "\fontsize{7}{10}\selectfont"
+"\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" "\begin{threeparttable}" 
+"\captionsetup{justification=centering}"
+"\caption{\textbf{Citizens' Preferences and Assignment to Treatment}}" 
+"\begin{tabularx}{\linewidth}{l*{9}C}" "\toprule" 
+"& \multicolumn{8}{c}{} & Public Goods \\"
+"& \multicolumn{2}{c}{Risk Preference} & \multicolumn{2}{c}{Altruism}" 
+"& \multicolumn{2}{c}{Reciprocity} & \multicolumn{2}{c}{Discount Rate} & Contribution \\ "
+"\cmidrule(lr){2-3} \cmidrule(l){4-5} \cmidrule(l){6-7} \cmidrule(l){8-9}"
+"& 2012 & 2013 & 2012 & 2013 & 2012 & 2013 & 2012 & 2013 & 2013 \\" 
+"& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) & (9) \\" "\midrule")
+
+posthead("\multicolumn{10}{l}{\textbf{Panel A}} \\")
+prefoot("[1em]" "Municipality Fixed Effects & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\"
+"Incentivized Task & No & Yes & No & Yes & No & Yes & No & No & Yes \\")
+
+postfoot("");
+
+#delimit cr 
+eststo clear
+
+
+*==============================================================================*
+**## Panel B: Effect of Rainfall
+*==============================================================================*
+
+* Here, we create a variable called TableA10_rainfall that takes the value of rainfall_2012_std for 2012 variables 
+* and rainfall_2013_std for 2013 variables. We achieve this by creating and dropping this measure for each dependent variable.
+
+foreach var in `depvar_list' `depvar_list_2' {
+	
+	* Use 2012 rainfall measure for 2012 survey variables, 2013 rainfall measure for 2013 survey variables
+	if inlist("`var'", "accept_riskiest_lot_hyp_1", "alt_binary_P2_hyp", "rcpt_high_type_hyp_1", "time_pref_threshold_hyp_1") {
+		gen TableA10_rainfall = rainfall_2012_std
+	}
+	
+	else {
+		gen TableA10_rainfall = rainfall_2013_std
+	}
+	
+	
+	eststo: reg `var' TableA10_rainfall, cluster(b_clusters)
+	estadd_obs
+	estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 1") scalar_name("mean_Y")
+	estadd_mean_Y, depvar(`var') condition("if e(sample) == 1 & treatment == 0") scalar_name("mean_Y_control")
+	
+	drop TableA10_rainfall
+}
+
+
+* Label empty variable for table 
+gen TableA10_rainfall = .
+label variable TableA10_rainfall "Rainfall Shock"
+
+
+#delimit ;
+esttab using "${appendix_tables_folder}/Table_A10_Citizen_Preferences.tex", append
+keep(TableA10_rainfall) substitute(_ _)
+scalars("obs \midrule Observations" "mean_Y Mean of Y: Treatment Group" "mean_Y_control Mean of Y: Control Group")
+b("%9.3fc") se("%9.3fc") label nostar noobs nonumber nomtitle wrap varwidth(42)
+
+prehead("\midrule")
+posthead("\multicolumn{10}{l}{\textbf{Panel B}} \\")
+prefoot("[1em]" "Municipality Fixed Effects & No & No & No & No & No & No & No & No & No \\"
+"Incentivized Task & No & Yes & No & Yes & No & Yes & No & No & Yes \\")
+
+postfoot("\bottomrule" "\end{tabularx}" "\end{threeparttable}" "\end{table}" "\end{landscape}");		
+
+
+#delimit cr
+eststo clear

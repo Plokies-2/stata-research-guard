@@ -1,0 +1,132 @@
+
+
+*-------------------------------------------------------------------------------
+*						TABLE 4.I EFFECTS ON THINKLINK 
+*
+*------------------------------------------------------------------------------- 
+clear
+use  "$data/analysis.dta", clear 
+
+
+drop if math_std<-12
+
+bys teacher_id: egen tseq=seq() if treat_desc_y1~="Not In Study" & year==1
+tab treat_desc_y1 M_value_added  if tseq==1 , chi2
+
+
+
+ * Column 1: Year One, Spillovers in Control
+ qui reg math_std gain loss $oldX_vam   if year==1, cluster(teacher_id)
+ qui gen inS = e(sample)
+ 
+ qui cgmreg math_std any $oldX_vam   if year==1, cluster(teacher_id newstudid)
+ eststo c1_any
+ 
+ qui cgmreg math_std gain loss $oldX_vam   if year==1, cluster(teacher_id newstudid)
+ eststo c1_pool
+ 
+ test gain=loss
+ estadd scalar p = r(p): c1_pool
+ qui tab teacher_id if inS==1
+ estadd scalar nteach = r(r): c1_pool
+ qui table newstudid if inS==1
+ estadd scalar nstud = r(r): c1_pool
+ qui tab h_id if inS==1
+ estadd scalar nclass = r(r): c1_pool
+ drop inS
+ 
+	* Team v. Individual
+	qui cgmreg math_std treat_il treat_tl treat_ig treat_tg $oldX_vam   if year==1, cluster(teacher_id newstudid)
+	eststo c1_indTeam
+
+ * Column 2: Year Two
+
+ qui reg math_std gain loss  $oldX_vam t_gain_y1 t_loss_y1 t_nis_y1 lottery if InSampleYear2==1, cluster(teacher_id)
+ qui gen inS = e(sample)
+ 
+ qui cgmreg math_std any $oldX_vam  t_gain_y1 t_loss_y1 t_nis_y1 lottery if InSampleYear2==1, cluster(teacher_id newstudid)
+ eststo c2_any
+ 
+ qui cgmreg math_std gain loss $oldX_vam  t_gain_y1 t_loss_y1 t_nis_y1 lottery if InSampleYear2==1, cluster(teacher_id newstudid)
+ eststo c2_pool
+ 
+ test gain=loss
+ estadd scalar p = r(p): c2_pool
+ qui tab teacher_id if inS==1 
+ estadd scalar nteach = r(r): c2_pool
+ qui tab newstudid if inS==1
+ estadd scalar nstud = r(r): c2_pool
+ qui tab h_id if inS==1
+ estadd scalar nclass = r(r): c2_pool
+ drop inS
+
+ 	* Team v. Individual
+	qui cgmreg math_std treat_il treat_tl treat_ig  $oldX_vam t_gain_y1 t_loss_y1 t_nis_y1 if InSampleYear2==1, cluster(teacher_id newstudid)
+	eststo c2_indTeam
+	
+
+ * Column 3: Pooled, Spillovers in Control
+ 
+ qui reg math_std gain loss  $oldX_vam_pool t_gain_y1 t_loss_y1 t_nis_y1 i.year lottery , cluster(teacher_id)
+ qui gen inS = e(sample)
+ 
+ qui cgmreg math_std any $oldX_vam_pool  t_gain_y1 t_loss_y1 t_nis_y1 i.year lottery, cluster(teacher_id newstudid)
+ eststo c3_any
+ 
+ qui cgmreg math_std gain loss $oldX_vam_pool  t_gain_y1 t_loss_y1 t_nis_y1 i.year lottery, cluster(teacher_id newstudid)
+ eststo c3_pool
+ 
+ test gain=loss
+ estadd scalar p = r(p): c3_pool
+ qui tab teacher_id if inS==1
+ estadd scalar nteach = r(r): c3_pool
+ qui tab newstudid_cons if inS==1
+ estadd scalar nstud = r(r): c3_pool
+ qui tab h_id if inS==1
+ estadd scalar nclass = r(r): c3_pool
+ drop inS 
+
+ 	* Team v. Individual
+	qui cgmreg math_std treat_il treat_tl treat_ig treat_tg $oldX_vam_pool t_gain_y1 t_loss_y1 t_nis_y1 i.year , cluster(teacher_id newstudid)
+	eststo c3_indTeam
+ 
+* Create estimation table
+
+	esttab c1_any c2_any c3_any ///
+	using "$results/Table4_ThinkLink_raw.tex", replace ///
+	keep(any  ) cells(b(fmt(3))  se(par fmt(3)))  ///
+	rename(any_teacher Any_treatment) ///
+	collabels(,none) tex 
+
+	esttab c1_pool c2_pool c3_pool  ///
+	using "$results/Table4_ThinkLink_raw.tex", append ///
+	keep(loss gain ) cells(b(fmt(3))  se(par fmt(3)))  ///
+	rename(teacher_loss_y1 Pooled_loss teacher_gain_y1 Pooled_gain) ///
+	collabels(,none) stat(p N nstud nclass nteach) tex 
+	
+#delimit;	
+	esttab c1_indTeam c2_indTeam c3_indTeam  
+	using "$results/Table4_ThinkLink_raw.tex", append 
+	keep(treat_il treat_tl treat_ig treat_tg  ) cells(b(fmt(3))  se(par fmt(3))) 
+	rename(teacher_loss_i treat_il teacher_loss_t treat_tl teacher_gain_i treat_ig teacher_gain_t treat_tg)
+	collabels(,none) tex 
+	addnotes("The results we report are from regressions with ThinkLink test scores as the outcome variable. 
+	Included on the right-hand side of the regression is the student’s treatment assignment, demographic and socio-economic characteristics of the student 
+	(gender, race, eligibility for free or reduced price lunch, Limited English Proficiency status, eligibility for Special Education services), 
+	school and grade fixed effects, once-lagged test scores (interacted with grade), and once-lagged teacher value added. We impute missing data with zeros, 
+	adding indicator variables for missing values (missing value added measures are replaced with the sample mean). 
+	We present results both estimating years of the experiment separately and pooling across years of data. We obtain our Year 2 estimates controlling for Year 1 treatment status. 
+	When pooling the data across years, the control variables are fully interacted with year dummies.   
+	We show results for each of our treatment arms separately, as well as pooling the team and individual treatments and pooling the gain and loss treatments.  
+	The coefficients we report are Intent-to-Treat estimates, i.e. students are classified based on their initial classroom assignment.");
+	
+
+
+	*** END *** 
+	
+
+	
+
+	
+
+	

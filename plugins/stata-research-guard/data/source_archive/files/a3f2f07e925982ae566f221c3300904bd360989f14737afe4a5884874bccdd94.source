@@ -1,0 +1,28 @@
+********************************************************************************
+* figA8_parental_leave.do
+* Produces: Figure A8 — Maternity and Paternity Leave Uptake in Denmark
+*
+* Input:  $rawdata/parental_leave/maternity_leave.xlsx
+* Output: $figures/Figure_A8.pdf
+********************************************************************************
+
+import excel "$rawdata/parental_leave/maternity_leave.xlsx", ///
+    sheet("Sheet1") firstrow clear
+
+* Reshape to long format
+reshape long Year_, i(A) j(Year)
+rename Year_ Value
+
+set scheme plotplain
+twoway ///
+    (line Value Year if A == "Mother") ///
+    (line Value Year if A == "Father") ///
+    if Year <= 2020, ///
+    graphregion(color(white)) ///
+    xtitle("") ///
+    ytitle("Average weeks") ///
+    legend(order(1 "Mothers" 2 "Fathers"))
+
+graph export "$figures/Figure_A8.pdf", replace
+
+********************************************************************************

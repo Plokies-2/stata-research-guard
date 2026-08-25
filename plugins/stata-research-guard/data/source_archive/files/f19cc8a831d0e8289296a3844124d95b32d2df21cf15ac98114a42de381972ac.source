@@ -1,0 +1,156 @@
+
+*------------------------------------------------------------------------------------------------------------------------------------
+*	TABLE A.6. TEACHER ATTRITION
+*
+*-------------------------------------------------------------------------------------------------------------------------------------
+
+
+clear
+
+
+use  "$data/analysis.dta", clear 
+
+drop if math_std<-12
+
+local control "teacher_gain_y1 teacher_loss_y1 value_added M_value_added gain_VA loss_VA"
+
+
+
+gen teacher_any_y1 = 0
+replace teacher_any_y1 = 1 if teacher_gain_y1==1 | teacher_loss_y1==1
+ 
+keep if treat_desc_y1 != "Not In Study"
+
+gen tempvar_loss = loss
+gen tempvar_gain = gain
+gen tempvar_any = any
+
+replace teacher_loss_y1 = loss if year == 1
+replace teacher_gain_y1 = gain if year == 1
+replace teacher_any_y1 = any if year == 1
+
+tempfile working
+save `working'
+
+* Generates grade indicators
+gen taught_gr1 = 0
+gen taught_gr2 = 0
+gen taught_gr3 = 0
+gen taught_gr4 = 0
+gen taught_gr5 = 0
+gen taught_gr6 = 0
+gen taught_gr7 = 0
+gen taught_gr8 = 0
+
+replace taught_gr1 = 1 if grade == 1 & sy == 201011
+replace taught_gr2 = 1 if grade == 2 & sy == 201011
+replace taught_gr3 = 1 if grade == 3 & sy == 201011
+replace taught_gr4 = 1 if grade == 4 & sy == 201011
+replace taught_gr5 = 1 if grade == 5 & sy == 201011
+replace taught_gr6 = 1 if grade == 6 & sy == 201011
+replace taught_gr7 = 1 if grade == 7 & sy == 201011
+replace taught_gr8 = 1 if grade == 8 & sy == 201011
+
+* Collapses data to one observation per teacher and year
+collapse (max) teacher_gain_y1 teacher_loss_y1 teacher_any_y1 taught_gr* ///
+(mean) math_std mathI_std value_added M_value_added, by(teacher_id sy)
+
+tempfile working2
+save `working2'
+
+clear	
+use "$data/long_term_testscores.dta"
+
+gen teacher_any_y1 = 0
+replace teacher_any_y1 = 1 if teacher_gain_y1==1 | teacher_loss_y1==1
+
+collapse (max) teacher_gain_y1 teacher_loss_y1 teacher_any_y1 ///
+(mean) mathI_std value_added M_value_added, by(teacher_id sy)
+
+append using `working2'
+
+* Create indicators for teachers showing up in our sample in a given year
+levelsof sy, local(levels) 
+foreach l of local levels {
+ gen I_`l' = 0
+ replace I_`l' = 1 if sy == `l'
+ bys teacher_id: egen in_sample_`l' = max(I_`l')
+ drop I_`l'
+ }
+
+keep if in_sample_201011 == 1
+
+collapse (max) teacher_gain_y1 teacher_loss_y1 teacher_any_y1 taught_gr* ///
+(mean) math_std mathI_std value_added M_value_added in_sample_*, by(teacher_id)
+
+* Creates outcome for pooled data
+gen times_in_sample = in_sample_201112 + in_sample_201213 + in_sample_201314 ///
++ in_sample_201415 + in_sample_201516
+gen frac_in_sample = times_in_sample / 5
+
+* Create interaction terms for probit regression
+gen gain_VA = teacher_gain_y1 * value_added 
+gen loss_VA = teacher_loss_y1 * value_added
+label var gain_VA  "VA $\times$ Gain"
+label var loss_VA "VA $\times$ Loss"
+label var taught_gr1 "Taught 1st Grade in 2010/11"
+label var taught_gr2 "Taught 2nd Grade in 2010/11"
+label var taught_gr3 "Taught 3rd Grade in 2010/11"
+label var taught_gr4 "Taught 4th Grade in 2010/11"
+label var taught_gr5 "Taught 5th Grade in 2010/11"
+label var taught_gr6 "Taught 6th Grade in 2010/11"
+label var taught_gr7 "Taught 7th Grade in 2010/11"
+label var taught_gr8 "Taught 8th Grade in 2010/11"
+ 
+* Runs regression with being in the sample for 2011-2012 as response
+qui reg in_sample_201112 `control', cluster(teacher_id)
+eststo pc1
+predict prob_in_sample_201112
+
+* Runs regression with being in the sample for 2012-2013 as response
+qui reg in_sample_201213 `control', cluster(teacher_id)
+eststo pc2
+predict prob_in_sample_201213
+
+* Runs regression with being in the sample for 2013-2014 as response
+qui reg in_sample_201314 `control', cluster(teacher_id)
+eststo pc3
+predict prob_in_sample_201314
+
+* Runs regression with being in the sample for 2014-2015 as response
+qui reg in_sample_201415 `control', cluster(teacher_id)
+eststo pc4
+predict prob_in_sample_201415
+
+* Runs regression with being in the sample for 2015-2016 as response
+qui reg in_sample_201516 `control', cluster(teacher_id)
+eststo pc5
+predict prob_in_sample_201516
+
+* Runs regression for pooled data
+qui reg frac_in_sample `control', cluster(teacher_id)
+eststo pc6
+predict prob_pooled
+
+* Create regression table
+label var teacher_any_y1 "Any"
+label var teacher_gain_y1 "Gain"
+label var teacher_loss_y1 "Loss"
+label var value_added "VA"
+label var M_value_added "Missing VA"
+label var in_sample_201112 "2011/12"
+label var in_sample_201213 "2012/13"
+label var in_sample_201314 "2013/14"
+label var in_sample_201415 "2014/15"
+label var in_sample_201516 "2015/16"
+label var frac_in_sample "\% Yrs Observed"
+
+esttab pc1 pc2 pc3 pc4 pc5 pc6 using "$results/TableA6_Teacher_Attrition.tex", replace ///
+eqlabels(none) cells(b(fmt(3)) se(par fmt(3))) ///
+noobs collabels(,none) label tex stat(N , fmt(%18.0g) label( "Observations"))
+
+
+
+	*** END *** 
+	
+

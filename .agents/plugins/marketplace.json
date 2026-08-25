@@ -1,0 +1,20 @@
+{
+  "name": "stata-research-guard-team",
+  "interface": {
+    "displayName": "Stata Research Guard Team"
+  },
+  "plugins": [
+    {
+      "name": "stata-research-guard",
+      "source": {
+        "source": "local",
+        "path": "./plugins/stata-research-guard"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

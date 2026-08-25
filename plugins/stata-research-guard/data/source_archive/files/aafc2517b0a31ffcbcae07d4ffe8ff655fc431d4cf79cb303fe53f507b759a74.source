@@ -1,0 +1,736 @@
+*Clean LIAB individual file
+*Sydnee Caldwell 
+*Oren Danieli
+*Last edited - October 2017
+
+clear all
+cap log close
+set more off
+log using ${log}\clean_3_liab_all.log, replace
+********************************************************************************
+// Day of survey is reference date
+local month		6
+local day		30
+
+//relevant years are 2014 (CS) 2004 (Bartik) and 1999, 2012 (trains)
+local relevant "1999 2000 2004 2012 2014"
+
+********************************************************************************
+
+//clean 
+	* first create a dataset that maps individuals to firms they ever work at
+	use ${orig}\liab_lm_9314_v1_pers.dta, clear
+	keep betnr idnum begepi
+	drop if missing(idnum)
+	*in case of duplicates, take last
+	gsort -begepi 
+	collapse (first) idnum, by(betnr)
+	save $data/betnr_idnum, replace
+	
+* Clean firm variables
+	use ${orig}\liab_lm_9314_v1_bhp_basis_v1 , clear 
+	drop if missing(betnr)
+
+* merge in information from the firm survey
+	merge m:1 betnr using $data/betnr_idnum, keep(master match) nogen
+	merge m:1 idnum jahr using $orig\iabbp_9315_v2_bhp_7514_m06_wgen_w08_v1.dta, keep(master match) nogen
+	replace w08_3 = w08_3_gen if missing(w08_3)
+	rename jahr year
+		
+// Keep only the variables we want: region, year, firm
+	keep betnr year w08_3 ao_kreis
+	duplicates drop
+
+// Set panel structure: varies based on firm and year
+	xtset betnr year
+
+* set variables for filling forward and backward
+	gen ao_f = ao_kreis
+	gen year1_f = year if !mi(ao_kreis)
+	gen w08_f = w08_3
+	gen year2_f = year if !mi(w08_3)
+	
+	gen ao_b = ao_kreis
+	gen year1_b = year if !mi(ao_kreis)
+	gen w08_b = w08_3
+	gen year2_b = year if !mi(w08_3)
+	
+* fill in missing years
+	tsfill, full
+	
+*fill forward
+	by betnr (year): replace ao_f = ao_f[_n-1] if mi(ao_f)
+	by betnr (year): replace w08_f = w08_f[_n-1] if mi(w08_f)
+*fill years forward only if missing (shows the last  year not missing)
+	by betnr: replace year1_f = year1_f[_n-1] if mi(year1_f) 
+	by betnr: replace year2_f = year2_f[_n-1] if mi(year2_f)
+	
+*fill backward
+	gsort betnr -year
+	by betnr: replace ao_b = ao_b[_n-1] if mi(ao_b)
+	by betnr: replace w08_b = w08_b[_n-1] if mi(w08_b)
+	by betnr: replace year1_b = year1_b[_n-1] if mi(year1_b) 
+	by betnr: replace year2_b = year2_b[_n-1] if mi(year2_b) 
+	gsort betnr year
+
+*prioritize districts according to what is closest in time
+	replace ao_kreis = ao_f
+	replace w08_3 = w08_f
+	replace ao_kreis = ao_b if abs(year1_b-year)<=abs(year1_f-year)
+	replace w08_3 = w08_b if abs(year2_b-year)<=abs(year2_f-year)
+
+* save data
+	keep betnr year ao_kreis w08_3
+	save ${data}\LIAB_est_allyears.dta, replace
+
+*******************************************************************************/
+//Clean existing variables  
+use ${orig}\liab_lm_9314_v1_pers.dta, clear
+
+//german - 
+* say you're german if you are ever german
+* missing in all years imputed to 1, and german_imp marked as 1
+bys persnr: egen weak_german = max(german)
+replace german = weak_german
+	gen german_imp = missing(german)
+	replace german = 1 if missing(german)
+	drop weak_german
+
+//Assert vatiables are consistent throughout time by comparing min to max	
+* Gender
+bys persnr: egen maxfrau = max(frau)
+bys persnr: egen minfrau = min(frau)
+assert maxfrau ==  minfrau
+drop maxfrau minfrau
+	
+*Year of birth
+bys persnr: egen maxgj = max(gebjahr)
+bys persnr: egen mingj = min(gebjahr)
+assert maxgj ==  mingj
+count if missing(gebjahr)
+drop maxgj mingj
+
+//Education
+* Extrapolate forward the highest education level ever reported
+recode schule (5 = 3) //don't extrapolate 5 forward (because it means unsure if 4 or 6)
+bysort persnr (begepi): replace schule = schule[_n - 1] if _n > 1 & ///
+	!mi(schule[_n - 1]) & (mi(schule) | schule < schule[_n - 1])	
+recode schule (3 = 5) //recode back to 5
+recode schule (9 = 8) 
+
+*extrapolate backward: 
+gsort persnr -begepi
+*complete type of high school (or no high school) backwards
+by persnr: replace schule = schule[_n-1] if _n>1 & mi(schule) & (schule[_n-1]<7)
+*replace 5 with 4 or 6 
+by persnr: replace schule = schule[_n-1] if _n>1 & schule == 5 & (schule[_n-1] == 6 | schule[_n-1] == 4)
+
+*Marital status -- not used in analysis
+bysort persnr (begepi): replace famst_gr = famst_gr[_n - 1] if _n > 1 & ///
+	!mi(famst_gr[_n - 1]) & mi(famst_gr) 
+
+*kids
+bys persnr: egen maxkind = max(kind_gr)
+bys persnr: egen maxkind_5 = max(kind_gr) 
+
+replace kind_gr = 1 if maxkind == 1
+replace kind_gr = 0 if maxkind_5 == 0 & maxkind != 1
+
+***********************************************
+//Add simple variables - year, age
+gen year = year(begepi)
+gen age = year - gebjahr
+
+//unemployed in 2004-2014
+gen unemp = 1 if (erwstat == 11 | erwstat == 12) &  begepi<=mdy(`month', `day', 2014) & begepi>mdy(`month', `day', 2010)
+replace unemp = 0 if missing(unemp)
+bysort persnr: egen any_unemp = max(unemp)
+drop unemp
+	
+********************************************************************************
+// PAST OCCUPATION
+*Defined as trainning occupation id exists, and is not currently in trainning
+*Else - Take intern occupation if exist
+*Else - Take first occupation, mark the number of years past 1st occupation 
+*for different samples, we will define past_occ as missing depending on time pass first occ
+	
+	*Prepare train, first and interm occupations
+	
+	*by person and occupation, for training year define the # of year (first year in trainning in this occupation, second, third etc...)
+	egen uyear = tag(persnr year beruf) if erwstat == 2 //tag training years by occupation
+	bysort persnr beruf (begepi): gen trainoccy = sum(uyear) // cumulative # of years in trainning in this occuption
+	
+	*define maximum years in trainning at same occupation so far
+	*Equals last year unless your occupation now has more years
+	gen tot2 = trainoccy
+	bysort persnr (begepi): replace tot2 = tot2[_n-1] if _n>1 & tot2[_n-1]>trainoccy
+	
+	*gen trainning occupation by dividing into two cases
+	*1: When you have some trainning and your are in an occupation that you have
+	*max trainning in, that's your trainning occ
+	gen train_occ = beruf if tot2==trainoccy & tot2>0
+	*2: keep your last trainning occupation as long as years of trainning haven't increased
+	bysort persnr (begepi): replace train_occ = train_occ[_n-1] if tot2==tot2[_n-1]
+	
+	*first occ - take first non missing (if all are missing it will be missing as well)
+	gen miss_occ = mi(beruf)
+	bysort persnr (miss_occ year): gen first_occ = beruf[1]
+	bysort persnr (miss_occ year): gen first_occ_year = year[1]
+
+	*intern occ - similar to trainning
+	egen uyear5 = tag(persnr year beruf) if erwstat == 5 // for each occupation, tag intern year
+	bysort persnr beruf (begepi): gen trainoccy5 = sum(uyear5) // how many years they did internship for this occ till now
+	*define maximum years in intern in occupation so far (like in trainning)
+	gen tot5 = trainoccy5
+	bysort persnr (begepi): replace tot5 = tot5[_n-1] if _n>1 & tot5[_n-1]>trainoccy5
+
+	*define intern occ in 2 cases like before
+	gen intern_occ = beruf if tot5==trainoccy5 & tot5>0
+	bysort persnr (begepi): replace intern_occ = intern_occ[_n-1] if tot5==tot5[_n-1]
+
+	*if trained take train as long as not currently in trainning (trainning in another occupation is fine)
+	gen past_occ = train_occ if erwstat!=2 | train_occ != beruf
+	gen past_occ_method = 1 if !mi(past_occ)
+	*else, take intern as long as not currently in an internship (at another occ is ok)
+	replace past_occ = intern_occ if past_occ == . & (erwstat != 5 | intern_occ != beruf)
+	replace past_occ_method = 2 if !mi(past_occ) & mi(past_occ_method)
+	*else take first occupation and mark time passed since
+	replace past_occ = first_occ if past_occ == . 
+	replace past_occ_method = 3 if !mi(past_occ) & mi(past_occ_method)
+	gen years_from_first_occ = year - first_occ_year if past_occ_method == 3 
+
+	*clean up
+	drop intern_occ uyear* first_occ* miss_occ tot2 tot5 train*
+
+********************************************************************************
+// PAST LOCATION (district)
+
+*If available, that's where you lived at your previous job
+*Else - the location of your previous job
+*Else - first location + mark time since first time observed for future filtering
+
+*previous versions are in past_dist.do
+
+*Stages 1 -3: define first day of work as separate observation, then fill in past_dist for that observation onlu
+*Stage 4 -  fill forward from fistr day to rest of the spells 
+
+*Stage 1: find last location before job
+*1.1 add new observation of first day, which has end date equal start date
+bysort persnr betnr (begepi): gen firstspell = (_n == 1)
+expand 2 if firstspell == 1, gen(firstday)
+replace endepi = begepi if firstday == 1
+
+*1.2 last observed district (current district, or last one non-missing)
+gen last_seen = wo_kreis
+bysort persnr (endepi): replace last_seen = last_seen[_n-1] if mi(last_seen)
+
+*1.3 Define past location for first days, as last location in previous spell
+bysort persnr (endepi): gen past_dist =  last_seen[_n-1] if firstday == 1
+
+*1.4 mark way of completion
+gen past_dist_method = 1 if !mi(past_dist)
+
+*Stage 2: get firm past location 
+*2.1 load firm location -- this is created above
+merge m:1 betnr year using "$data\LIAB_est_allyears.dta", keep(master match) nogen
+
+*2.2 last observed firm district 
+gen last_firm = ao_kreis
+bysort persnr (endepi): replace last_firm = last_firm[_n-1] if mi(last_firm)
+
+*2.3 Define location for first days if missing
+bysort persnr (endepi): replace past_dist =  last_firm[_n-1] if firstday == 1 & mi(past_dist)
+
+*2.4 mark completion method
+replace past_dist_method = 2 if !mi(past_dist) & mi(past_dist_method)
+
+*stage 3: get first location
+*3.1 define first non missing district
+gen miss_dist = mi(wo_kreis)
+*within person rank first the non missing, then by start date 
+*so first observation is now first non missing district (or still missing)
+gsort persnr miss_dist begepi 
+by persnr: gen first_dist = wo_kreis[1] 
+by persnr: gen first_y = year[1]
+
+*3.2 fill in first days 
+replace past_dist = first_dist if firstday == 1 & mi(past_dist)
+
+*3.3 method
+replace past_dist_method = 3 if !mi(past_dist) & mi(past_dist_method)
+
+
+*Stage 4: Fill forward within person establishment combination
+bysort persnr betnr (endepi): replace past_dist = past_dist[_n-1] if _n > 1
+bysort persnr betnr (endepi): replace past_dist_method = past_dist_method[_n-1] if _n > 1
+*get years since first observation for flexible choice of method
+gen years_from_first_dist = year - first_y if past_dist_method == 3
+
+*Stage 5: clean up 
+drop if firstday == 1
+drop firstspell firstday last_seen last_firm miss_dist first_dist first_y
+
+********************************************************
+*Mothers
+gen non_lump = tentgelt_gr
+replace non_lump = 0 if grund_gr == 8
+
+*build start
+*start = 0 at beginning of maternity leave
+*start = 1 when returning to work
+gen start = 0 if grund_gr == 1051 | grund == 2015
+
+*only below 40
+replace start = . if age > 40
+
+*only females 
+replace start = . if frau == 0 
+
+*create counter
+bysort persnr begepi (spell): gen byte level1 = _n-1
+label var level1  "within spell counter"
+
+
+*bring the maternty protection to the start
+sort persnr level1 start begepi
+gen help_start = begepi if start == 0 & level1 == 0
+label var help_start "start of maternatry protection"
+format %td help_start
+
+*count the number of maternity protection 
+bysort persnr: gen counter = _n if start == 0 & level1 == 0
+label var counter "number of maternity protection"
+table counter
+
+*force the *first* MP to be before 38
+gen help_gr = 1 if age>38 & quelle == 1 & counter == 1
+bysort persnr: egen help_grm = max(help_gr)
+count if help_grm == 1 & persnr!=persnr[_n+1] // print the number of cases
+replace start = . if help_grm == 1
+
+*get rid of several conecutive MPs
+sort persnr level1 start begepi
+replace help_start = . if start ==0 & start[_n+1] == 0 & persnr==persnr[_n+1] & level1 == 0 & begepi[_n+1]-1<= endepi + 7 & quelle[_n+1] == 1
+replace help_start = . if start ==0 & start[_n+1] == 0 & persnr==persnr[_n+1] & level1 == 0 & begepi[_n+1]-1<= endepi + 91 & quelle!=1 & quelle[_n+1] != 1
+replace start = . if help_start == .
+
+*gen first MP
+bysort persnr: egen help_startm = min(help_start)
+format %td help_startm
+
+*redo counter after the corrections
+drop counter
+bysort persnr: gen counter = _n if start == 0 & level1 == 0
+label var counter "number of maternity protection"
+table counter 
+
+*mark return to labor market
+sort persnr level1 begepi
+replace start = 1 if level1 == 0 & begepi>=endepi[_n-1] & start !=0 & quelle == 1 & (non_lump!= 0 & non_lump<=.)
+*turn start to . before the first MP
+replace start = . if endepi < help_startm
+
+*get gap - length of MP
+gen any_start = 1 if start ==0 | start == 1
+*help is supposed to be counter, until a new gap begins
+*weird coding but basically i think it just links the beginning and end of MPs 
+gen help = counter
+bysort persnr quelle any_start level1 (begepi): replace help = help[_n-1] if help ==. & help[_n+1]!=help[_n-1] & level1 == level1[_n-1]
+
+*define gap
+sort persnr quelle help level1 begepi
+gen gap = begepi[_n+1]-endepi if start == 0 & start[_n+1] == 1 & persnr == persnr[_n+1] & help == help[_n+1]
+
+*mark women who are possibly in MP by the end of the sample
+sort quelle persnr begepi 
+gen end_obs = 2 if start == 0 & persnr != persnr[_n+1]
+replace gap = d(31dec2014)-endorig if end_obs == 2
+sum gap if end_obs == 2, d
+
+gen year_end = year(endorig)
+tab year_end if end_obs == 2
+
+*exclude gaps that are less than the offical MP (98 days)
+count if gap < 98
+replace start  = . if gap < 98 & start == 0
+
+*make sure the gap between two kids is at least 32 weeks (not 40 weeks because there's noise in the actual delivery date)
+
+*child birthday is approximately 6 weeks after going on 
+gen child_birth = endorig + 6*7 if start == 0 & level1==0
+format %td child_birth
+
+sort persnr child_birth
+tab counter
+drop counter
+*loop over child number
+foreach n of numlist 2/17 {
+	cap drop counter gap_child 
+	bysort persnr: gen counter = _n if child_birth != .
+	gen gap_child = child_birth - child_birth[_n-1] if child_birth != . & persnr == persnr[_n-1] 
+	summ gap_child if gap_child<7*32
+	replace child_birth = . if gap_child < 7*32 & counter == `n' 
+	}
+tab gap_child if gap_child<7*32
+sum age if child_birth != . 
+*get number of children
+
+bysort persnr (child_birth): gen n_child = _n if child_birth != .
+tab n_child
+
+bysort persnr: egen max_child = max(n_child)
+
+*my code
+sort persnr begepi (child_birth)
+gen last_birth_date = child_birth
+replace last_birth_date = last_birth_date[_n+1] if endepi>=last_birth_date[_n+1] & persnr == persnr[_n+1] & last_birth_date[_n+1] != .
+replace last_birth_date = last_birth_date[_n-1] if persnr == persnr[_n-1] & last_birth_date == .
+format %td last_birth_date
+
+gen young_child_age = (mdy(6,30,year(begepi))-last_birth_date)/365 if mdy(6,30,year(begepi))<=endepi & mdy(6,30,year(begepi))>= begepi
+*can't be too negative. allow to be - 6 weeks
+replace last_birth_date = last_birth_date[_n-1] if persnr == persnr[_n-1] & young_child_age < 6*7
+replace young_child_age = (mdy(6,30,year(begepi))-last_birth_date)/365 if mdy(6,30,year(begepi))<=endepi & mdy(6,30,year(begepi))>= begepi
+
+gen mother = 1 if last_birth_date != .
+replace mother = 0 if mother == .
+replace n_child = n_child[_n-1] if persnr == persnr[_n-1]  & missing(n_child)
+replace n_child = 0 if n_child == .
+
+drop non_lump start level1 help_start help_gr help_grm help_startm any_start help gap end_obs year_end child_birth counter gap_child max_child last_birth_date
+
+********
+//transitions
+gen sampleDay = begepi<=mdy(`month', `day', year) & endepi>=mdy(`month', `day', year)
+gen sample14 = sampleDay & year == 2014
+bysort persnr: egen main_sample = total(sample14)
+*mark jobs people in the main sample move to recently
+gen moveTo = main_sample > 0  & begepi>mdy(`month', `day', 2014) & endepi==mdy(12, 31, 2014)
+*mark jobs people in the main sample moved from, recently
+gen moveFrom = main_sample > 0 & begepi==mdy(1,1, 2014) & endepi<mdy(`month', `day', 2014)
+drop sample14 main_sample
+*********************************************************
+//Delete unused observations
+*Now that we finished induction from past, we can delete every observation that is not actually going to be used
+
+*keep onlz spells from the specific date in the month (defined above)
+keep if sampleDay | moveTo|moveFrom
+
+* Keep only one observation per year - prioritizejobs - full time over part time, higher wage over lower wage
+gsort persnr year sampleDay move* teilzeit befrist -tentgelt_gr
+bysort persnr year sampleDay move*: keep if _n==1 
+
+* Make sure panel structure makes sense
+preserve 
+keep if sampleDay
+xtset persnr year
+drop begepi endepi
+tab year
+
+**********
+*create wage panel
+ 
+keep persnr year tentgelt_gr
+rename tentgelt_gr wage
+reshape wide wage, i(persnr) j(year)
+save "$data/wage_panel.dta",replace
+restore 
+
+*keep only years we care about (for now)
+gen rel = 0
+foreach y in `relevant'{
+	replace rel = 1 if year == `y'
+	}
+keep if rel == 1
+
+********************************************************************************
+* Merge datasets
+*merge basic establishment panel
+merge m:1 betnr year using ${data}\LIAB_est_allyears.dta, keep(master match) nogen
+
+* Merge in geographic variables
+merge m:1 ao_kreis using ${orig}\ao_kreis.dta, keep(master match) nogen
+	rename LON_DEZ ao_lon
+	rename LAT_DEZ ao_lat
+
+	*current location
+merge m:1 wo_kreis using ${orig}\wo_kreis.dta, keep(master match) nogen
+	rename LON_DEZ current_wo_lon
+	rename LAT_DEZ current_wo_lat
+	
+*rename wo_kreis to past_district. current district in separate var
+rename wo_kreis current_wo
+rename past_dist wo_kreis
+merge m:1 wo_kreis using ${orig}\wo_kreis.dta, keep(master match) nogen
+	rename LON_DEZ wo_lon
+	rename LAT_DEZ wo_lat
+
+*merge in BIBB
+*occupation - current
+generate int occupation = beruf2010_4/10
+	merge m:1 occupation using ${data}\bibb_imputed_occupation.dta, keep (master match) keepusing(pca*) nogen
+	drop pca_5_* //employment status and stuff we don't want to use
+		foreach v of varlist pca* {
+			rename `v' occ_`v'
+		}
+	drop  occupation
+
+*occupation - past
+generate int occupation = past_occ/10
+	merge m:1 occupation using ${data}\bibb_imputed_occupation.dta, keep (master match) keepusing(pca*) nogen
+	drop pca_5_*  //employment status and stuff we don't want to use
+	foreach v of varlist pca* {
+		rename `v' past_occ_`v'
+	}
+	drop occupation
+
+*industry
+generate int industry = w08_3/10
+	merge m:1 industry using ${data}\bibb_imputed_industry.dta, keep (master match) keepusing(pca*) nogen
+	drop pca_5_*  //employment status and stuff we don't want to use
+	foreach v of varlist pca* {
+		rename `v' ind_`v'
+	}
+	drop industry
+	
+
+*take only n variables of every PCA
+rename w08_3 ind
+rename beruf2010_4 occ
+	
+*Add yearly weights from raw survey data (this would be needed for imputation)  
+*Weights 
+gen wgt_year = .
+
+foreach y in `relevant' {
+	merge m:1 idnum using "H:\orig\iabbp_`y'.dta", keep (master match) keepusing (hr`y'q) nogen
+	replace wgt_year = hr`y'q if year == `y'
+	drop hr`y'q
+	}
+
+
+*************************************************************************
+//Impute stuff missing
+// predict level of education based on birth year, occupation, gender
+tostring occ, gen(string_occ)
+	replace string_occ = "0" + string_occ if strlen(string_occ)<4
+	gen twodigit = substr(string_occ, 2, 1)
+	destring twodigit, replace
+	drop string_occ
+
+gen temp = 8
+gen maxprob = 0
+
+label define schule_en 1 "No school leaving certificate", modify
+label define schule_en 4 "lower secondary school certificate/ grade school certificate", modify
+label define schule_en 5 "Grade-/lower school certificate, intermediate school or equivalent qualification", modify
+label define schule_en 6 "Intermediate school leaving certificate", modify
+label define schule_en 7 "Completion of education at a specialised upper secondary school/completion of higher education at a specialised college", modify
+label define schule_en 8 "Completion of education at a specialised upper secondary school/completion of higher education at a specialised college or upper secondary school leaving certificate, A-level equivalent, qualification for university; 13 years of schooling", modify
+label define schule_en 9 "Upper secondary school leaving certificate, A-level equivalent, qualification for university; 13 years of schooling", modify
+
+*do this by year
+foreach y in `relevant'{
+	mlogit schule i.twodigit gebjahr i.frau [aw=wgt_year] if year == `y', base(8)
+	local i = 1
+	foreach x in 1 4 5 6 {
+		predict prob, equation(#`i')
+		replace temp = `x' if prob > maxprob & year == `y'
+		replace maxprob = prob if prob > maxprob & year == `y'
+		local i = `i' + 1
+		drop prob
+	}
+}
+	// impute school
+gen imputed_schule = missing(schule) & !missing(temp)
+replace schule = temp if missing(schule)
+drop temp
+
+
+*******************************
+//fix names and labels
+*order: indices Xs Zs match details
+local id "persnr betnr idnum year wgt_year" 
+local Xs "frau german schule age past_occ_pca* wo_l*"
+local child "n_child mother young_child_age"
+local Zs "niveau teilzeit leih befrist occ_pca* ind_pca* ao_l*"
+local svy "size sales s_mng_f bpnp* ini* hrs* cmp_trn* voc_trn* general*" //to be added later in code
+local match "tentgelt_gr"
+local technical "german_imp past_occ_method past_dist_method years_from_first_* sampleDay move*"
+local unused "gebjahr past_occ occ ind current_wo* wo_kreis ao_kreis any_unemp"
+
+keep `id' `Xs' `Zs' `match' `technical' `unused' `child'
+
+*rename variables 
+foreach v of varlist `Xs' {
+	rename `v' X_`v'
+}
+	
+
+foreach v of varlist `Zs' {
+	rename `v' Z_`v'
+}
+
+*add label
+label var past_occ "Occupation during vocational training or internship"
+label values past_occ beruf2010_4_en
+
+label var year "Year of spell"
+label var X_age "Age of worker"
+label var german_imp "value for german was imputed"
+label var years_from_first_dist "Years since first district was observed"
+
+
+label var past_occ_method "Method to fill past occupation"
+label define occ_method 1 "vocational train" 2 "internship" 3 "first observed" 
+label values past_occ_method occ_method
+
+label var past_dist_method "Method to fill past district"
+label define dist_method 1 "last observed before job" 2 "last firm location before job" 3 "first observed" 
+label values past_dist_method dist_method
+
+
+* Double check we're in a good place
+preserve 
+keep if sampleDay
+xtset persnr year
+restore
+
+*Add missing value treatment
+*past occ missing treatment is in the loop down, because it's only after we set a thrshold for first year
+gen Z_occ_missing = missing(occ)
+label var Z_occ_missing "occ missing"
+replace past_occ = 0 if missing(past_occ)
+foreach var of varlist Z_occ_pca* {
+	replace `var' = 0 if missing(`var')
+}
+
+gen Z_ind_missing = missing(ind)
+label var Z_ind_missing "ind missing"
+
+replace ind = 1 if missing(ind)
+foreach var of varlist Z_ind_pca* {
+	replace `var' = 0 if ind==1
+}
+
+compress
+save ${data}\LIAB_allyears_novacancy, replace
+
+********************************************************************************
+* Create the different samples 
+gen cs14 = (year == 2014) 
+gen bartik = (year == 2004 | year == 2014)
+gen train = (year == 2012| year == 1999)
+*seprately for 2000 for train to quickly check if it's working
+gen quick_2000 = (year == 2000)
+gen children = (year == 2014)
+gen transitions = (year == 2014)
+local svy "size sales s_mng_f bpnp* ini* hrs* cmp_trn* voc_trn* general*" //to be added later in code
+
+local samples = "transitions children train cs14 bartik"
+set matsize 1000
+*not using n_child here. maybe can try to reconstruct it below some age, otherwise it doesn't make sense
+local child "mother young_child_age"
+
+foreach s in `samples'{
+	preserve
+	
+	*keep only sample years
+	keep if `s' == 1
+	if ("`s'" != "transitions"){
+		keep if sampleDay
+		}
+	
+	*keep only observations with at least one year in sample
+	bysort persnr: egen insamp = count(idnum)
+	drop if insamp == 0 
+	drop insamp
+	
+	*merge establishment survey
+	if ("`s'" == "children" | "`s'" == "transitions"){
+		merge m:1 idnum year using $data/svy_pca_cs14.dta, nogen keep(master match)
+	}
+	else{
+		merge m:1 idnum year using $data/svy_pca_`s'.dta, nogen keep(master match)
+}
+	*rename variables to Zs
+	foreach v of varlist `svy' {
+		rename `v' Z_`v'
+	}
+
+	*filter those with no weights at any year
+	bysort persnr: egen insamp = count(wgt_year)
+	drop if insamp == 0 
+	drop insamp
+	*drop pca components above threshold
+	local n = 2
+	foreach v of varlist * {
+	if (real(substr("`v'", -1, 1))>`n'  & !mi(real(substr("`v'", -1, 1)))){
+		drop `v'
+		}
+	}
+	*rename its variables 
+	label var Z_size "Firm size v01ges"
+	label var Z_sales "Firm sales"
+	label var Z_s_mng_f "Share of management females"
+	
+	*always drop anything below 5 (that's the minimum you see from 2004)
+	replace past_dist = . if !mi(years_from_first_dist)  & years_from_first_dist<5
+	*for train and cs14 be more strict and require 10
+	replace past_dist = . if !mi(years_from_first_dist)  & years_from_first_dist<10 & "`s'" != "bartik"
+	*occ-  drop below 6 (minimum in 1999)
+	replace past_occ = . if !mi(years_from_first_occ)  & years_from_first_occ<6
+	*for bartik and cs14 require 10
+	replace past_occ = . if !mi(years_from_first_occ)  & years_from_first_occ<10 & "`s'" != "train" & "`s'" != "quick_2000"
+	
+	*missing indicators & pca
+	gen X_past_occ_missing = missing(past_occ)
+	label var X_past_occ_missing "past occ missing"
+	foreach var of varlist X_past_occ_pca*{
+		replace `var' = 0 if (missing(`var') | X_past_occ_missing == 1)
+	}
+	
+	*normalize weights to 1 (were previously normalized to 1 summing FIRMS (not workers)
+	bysort year: egen tmp = total(wgt_year)
+	cap gen wgt_year_norm = .
+	replace wgt_year_norm = wgt_year/tmp
+	drop tmp
+	
+	*weights that fit survey reported establishment size
+	gen wgt_year2 = wgt_year / observed_size * Z_size
+	label var wgt_year2 "weights, fixing establishment size to its survey reported value"
+	bysort year: egen tmp = total(wgt_year2)
+	cap gen wgt_year_norm2 = .
+	replace wgt_year_norm2 = wgt_year2/tmp
+	drop tmp
+
+	drop wgt_worker_year //this multiplies by number of working which we don't need at individual level
+	
+	*predict sales and flag
+	gen imputed_sales = mi(Z_sales)
+	qui reg Z_sales i.ind##i.year c.Z_size##i.year [aw=wgt_year_norm] // use only the original data
+	predict predicted_sales
+	replace Z_sales = predicted_sales if missing(Z_sales)
+	drop predicted_sales
+	
+	*keep consistent set of vars so drop variables missing in some years for all years
+		drop Z_leih Z_befrist Z_s_mng_f
+	if ("`s'" == "bartik" | "`s'" == "cs14"){
+		drop Z_cmp_trn* //not in the 2004 survey
+		
+	}
+	if ("`s'" == "children"){
+		foreach v of varlist `child' {
+		*don't count children above 18
+		replace `v' =0 if missing(`v') | young_child_age > 18
+		
+		rename `v' X_`v'
+		}
+	}
+	order `id' wgt* X_* Z_* `match' `technical' `unused'
+
+	*save
+	save "$data/liab_`s'.dta", replace
+
+	restore
+}	

@@ -1,0 +1,21 @@
+***********************************
+* Table 1 *************************
+* Municipality characteristics and school lunch adoption year
+***********************************
+
+use program_intro
+
+ * Column (1)
+ 
+reg year_lunch log_inc log_real log_pop, r
+outreg2 using table_1, replace keep(log_inc log_real log_pop) stats(coef se) asterisk(coeff) bdec(4) sdec(4) nocons 
+
+* Column (2)
+
+reg year_lunch log_inc log_real log_pop log_agland log_agval, r
+outreg2 using table_1, append keep(log_inc log_real log_pop log_agland log_agval) stats(coef se) asterisk(coeff) bdec(4) sdec(4) nocons 
+
+* Column (3)
+
+reg year_lunch log_inc log_real log_pop log_agland log_agval skane southern, r
+outreg2 using table_1, append keep(log_inc log_pop log_real log_agland log_agval skane southern) stats(coef se) asterisk(coeff) bdec(4) sdec(4) nocons 

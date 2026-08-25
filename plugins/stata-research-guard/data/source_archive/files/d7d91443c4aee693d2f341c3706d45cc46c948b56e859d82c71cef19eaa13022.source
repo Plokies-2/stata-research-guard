@@ -1,0 +1,2709 @@
+
+/**********************************************************************/
+/*  SECTION 1: Figures  			
+    Notes: */
+/**********************************************************************/
+ 
+/*----------------------------------------------------*/
+   /* [>   Figure 1 (a)  <] */ 
+/*----------------------------------------------------*/
+  
+use "$working_data/master_county_year_final", clear 
+keep if year == 1990
+xtile county_quartile=county_vul_own, n(4)
+keep county county_quartile
+merge 1:m county using "$working_data/master_county_year_final", nogen
+collapse (mean) county_vul_own, by(county_quartile year)
+* keeping upto 2005 only 
+keep if inrange(year,1990,2005)
+
+* simple var version 
+raw_plot county_vul_own county_quartile 
+graph export "$results/county_vulnerability_timeseries.pdf", replace 
+
+  
+/*----------------------------------------------------*/
+   /* [>   Figure 1 (b)   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final", clear 
+keep if year == 1990
+format county_vul_own %6.4f
+
+maptile county_vul_own, geo(county1990) stateoutline(thin) legf(%9.3fc)
+graph export "$results/county_vulnerability_1990.pdf", replace
+  
+/*----------------------------------------------------*/
+   /* [>   Figure 2   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+keep if inrange(year,1986,2008)
+ES log_emptot , indvar(county_vul_own_1990) version("baseline") spec("two") scaled("yes") baseyear(1993) pos(7)
+graph export "$results/log_emp_init_vul_interact_baseline_1by1_ext_2spec.pdf", replace
+save "$results/log_emp_init_vul_interact_baseline_1by1_ext_2spec_coef.dta", replace
+
+  
+/*----------------------------------------------------*/
+   /* [>   Figure 3   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+keep if inrange(year,1986,2008)
+ES log_cty_pop , indvar(county_vul_own_1990) version("baseline") spec("two") scaled("yes") baseyear(1993) pos(7)
+graph export "$results/log_cty_pop_init_vul_interact_baseline_1by1_ext_2spec.pdf", replace
+save "$results/log_cty_pop_init_vul_interact_baseline_1by1_ext_2spec_coef.dta", replace
+   
+/*----------------------------------------------------*/
+   /* [>   Figure 4  <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+
+keep if inrange(year,1986,2008)
+ES n_petitions_pc_ctyr , indvar(county_vul_own_1990) version("baseline") spec("two") scaled("yes") baseyear(1993) pos(11)
+graph export "$results/n_petitions_pc_ctyr_init_vul_interact_baseline_1by1_ext_2spec.pdf", replace
+save "$results/n_petitions_pc_ctyr_init_vul_interact_baseline_1by1_ext_2spec_coef.dta", replace
+  
+/*----------------------------------------------------*/
+   /* [>   Figure 5   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+
+keep if inrange(year,1989,2008)
+ES log_n_app_di, indvar(county_vul_own_1990) version("baseline") spec("two") scaled("yes") baseyear(1993) pos(11)
+graph export "$results/log_n_app_di_init_vul_interact_baseline_1by1_ext_2spec.pdf", replace
+save "$results/log_n_app_di_init_vul_interact_baseline_1by1_ext_2spec_coef.dta", replace
+  
+/*----------------------------------------------------*/
+   /* [>   Figure 6  <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+keep if inlist(year, 1980,1984,1988,1992,1996,2000,2004,2008,2012,2016)
+ES tot_pres_rep_share , indvar(county_vul_own_1990) version("pres_both") spec("full") scaled("yes") baseyear(1992) pos(11)
+graph export "$results/tot_pres_rep_share_init_vul_interact_baseline_1by1_ext_combined.pdf", replace
+save "$results/tot_pres_rep_share_init_vul_interact_baseline_1by1_ext_combined_coef.dta", replace
+
+  
+/*----------------------------------------------------*/
+   /* [>   Figure 7   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/anes_cumul_cleaned.dta", clear 
+
+****Gen year var for graphs (v slightly offset so graphs are less cluttered) 
+gen year_graph= (1970 + _n)/4  
+egen tag_year_graph=tag(year_graph) 
+
+**** Set various lists of controls
+local controls_demog "white hisp_yes male hs_top coll_grad ln_fam_inc ln_fam_inc_dummy age " 
+local controls_issues "weekly_attend abortion_clean abortion_dummy mostly_trust_gov mostly_trust_gov_dummy bl_th_cumul bl_th_cumul_dummy welf_th_cumul welf_th_cumul_dummy" 
+local controls_imm "inc_imm"
+
+local counter=0 
+  foreach spec in none demog issues plus_imm { 
+    di "`spec'"
+  if "`spec'"=="none" { 
+    local controls "" 
+  } 
+  else if "`spec'"=="demog" { 
+    local controls  "`controls_demog'" 
+  } 
+  else if "`spec'"=="issues" { 
+    local controls  " `controls_demog' `controls_issues' " 
+  }   
+  else if "`spec'"=="plus_imm" { 
+  local controls  " `controls_demog' `controls_issues' `controls_imm' " 
+} 
+  gen coeff_`spec'=. 
+  gen u_`spec'=. 
+  gen l_`spec'=. 
+
+foreach y in 1986 1988 1992 1996 1998 2000 2004 2008 2012 { 
+  if !(`y'==1998 & inlist("`spec'","issues", "plus_imm") ) & !(`y'<1992 & "`spec'"=="plus_imm")  { 
+  di "year=`y'" 
+  di `"spec="`spec'""' 
+  reg partyid_inc_repub favor_limits `controls' if all==1 & year==`y' 
+  replace coeff_`spec'=_b[favor_limits] if year_graph>`y' + (`counter'/4) - .0001 & year_graph < `y' + (`counter'/4) + .0001  
+  replace u_`spec'=_b[favor_limits] + 2*_se[favor_limits] if year_graph>`y' + (`counter'/4) - .0001 & year_graph < `y' + (`counter'/4) + .0001 
+  replace l_`spec'=_b[favor_limits] - 2*_se[favor_limits] if year_graph>`y' + (`counter'/4) - .0001 & year_graph < `y' + (`counter'/4) + .0001 
+  } 
+} 
+
+  local counter=`counter'+1 
+  } 
+
+  sort year 
+
+  //ES PLOT
+
+twoway (scatter coeff_none coeff_demog coeff_issues coeff_plus_imm year_graph, mc(red midblue navy dkgreen) ///
+  m(circle_hollow triangle_hollow square_hollow diamond_hollow) mlw(medium medium medium medium))  ///
+(rcap u_none l_none year_graph, lc(red) lw(medthick)) (rcap u_demog l_demog year_graph, lc(midblue) lw(medthick)) ///
+(rcap u_issues l_issues year_graph, lc(navy) lw(medthick)) ///
+(rcap u_plus_imm l_plus_imm year_graph, lc(dkgreen) lw(medthick)) ///
+ if tag_year_graph==1 & year_graph>1985 & year_graph<2013 ,  ///
+ legend(on order(1 2 3 4) subtitle("Controls", size(medsmall)) label(1 "None") label(2 "Demographics") ///
+  label(3 "Demographics," "other issues") label(4 "Demog, other" "issues, plus immig.") ///
+  pos(10) ring(0) col(1) region(lstyle(none))) ///
+ xti("") xlabel(1986(2)2012) yline(0, lc(gray)) xline(1994, lc(red) lp(dash)) 
+
+graph export "$results/partyid_inc_repub_lim_imports_e_s.pdf", replace
+ 
+  
+ 
+/*----------------------------------------------------*/
+   /* [>   Figure 8  <] */ 
+/*----------------------------------------------------*/
+use "$working_data/anes_cumul_cleaned", clear 
+
+**** Set various lists of controls
+local controls_demog "white  hisp_yes male hs_top coll_grad ln_fam_inc ln_fam_inc_dummy age " 
+local controls_issues "abortion_clean abortion_dummy mostly_trust_gov bl_th_cumul bl_th_cumul_dummy " 
+ 
+foreach var of varlist favor_limits favor_limits_ex_dk  { 
+  gen `var'_aft=`var'*(year>1992) 
+} 
+
+label var favor_limits_aft "Favor import limits x After 1992" 
+label var favor_limits "Favor import limits" 
+
+reg partyid_inc_repub favor_limits_aft favor_limits `controls_demog' `controls_issues' i.year if year<2016, robust cl(state)  
+****Save this coefficient as the baseline
+local baseline_beta_aft=_b[favor_limits_aft] 
+
+local counter=0 
+local counter2=0 
+gen graph_cat=_n  if _n<30 
+gen coeff=. 
+gen upper=. 
+gen lower=. 
+
+foreach cond in "white" "white==1 & male==1" "white==1 & coll_grad==0" "south==1 " "(abortion_clean==1 | abortion_clean==2 | abortion_clean==3)" "weekly_attend==1"  { 
+
+local counter=`counter' + 1  
+local counter2=21 - 3*`counter' 
+
+reg partyid_inc_repub favor_limits_aft favor_limits `controls_demog' `controls_issues' i.year if year<2016 & (`cond'), robust cl(state) 
+
+replace coeff=_b[favor_limits_aft] if graph_cat>`counter2' - .001 & graph_cat<`counter2' + .0001 
+replace upper=_b[favor_limits_aft] + 2*_se[favor_limits_aft] if graph_cat>`counter2' - .001 & graph_cat<`counter2' + .0001 
+replace lower=_b[favor_limits_aft] - 2*_se[favor_limits_aft] if graph_cat>`counter2' - .001 & graph_cat<`counter2' + .0001 
+
+reg partyid_inc_repub favor_limits_aft favor_limits `controls_demog' `controls_issues' i.year if year<2016 & ~(`cond'), robust cl(state) 
+
+replace coeff=_b[favor_limits_aft] if graph_cat>`counter2' - 1 - .001 & graph_cat<`counter2' - 1 + .0001 
+replace upper=_b[favor_limits_aft] + 2*_se[favor_limits_aft] if graph_cat>`counter2' -1 - .001 & graph_cat<`counter2' -1 + .0001 
+replace lower=_b[favor_limits_aft] - 2*_se[favor_limits_aft] if graph_cat>`counter2' -1  - .001 & graph_cat<`counter2' -1 + .0001 
+
+} 
+
+****Label categories 
+label define graph_cat 18 "Whites" 17 "Non-whites"  15 "White men" 14 "Not white men" 12 "White, no coll deg." 11 "Not white & no coll. deg." ///
+9 "South" 8 "Other regions" 6 "Opposes Abortion" 5 "Not opposed" 3 "Weekly religious attendance" 2 "Less than weekly" 
+label values graph_cat graph_cat 
+
+local baseline_beta_aft_plus_delta = `baseline_beta_aft' + .06 
+
+#d;
+twoway 
+(rcap upper lower graph_cat if graph_cat==18, horizontal color(red) lw(medium)) 
+(scatter  graph_cat coeff  if graph_cat==18,  color(red) m(circle_hollow) mlw(medium))
+(rcap upper lower graph_cat if graph_cat==17, horizontal color(midblue) lw(medium)) 
+(scatter  graph_cat coeff  if graph_cat==17,  color(midblue) m(circle_hollow)mlw(medium) )
+ 
+(rcap upper lower graph_cat if graph_cat==15, horizontal color(red) lw(medium)) 
+(scatter  graph_cat coeff  if graph_cat==15,  color(red) m(circle_hollow) mlw(medium))
+(rcap upper lower graph_cat if graph_cat==14, horizontal color(midblue) lw(medium)) 
+(scatter  graph_cat coeff  if graph_cat==14,  color(midblue) m(circle_hollow)mlw(medium) )
+  
+(rcap upper lower graph_cat if graph_cat==12, horizontal color(red) lw(medium)) 
+(scatter  graph_cat coeff  if graph_cat==12,  color(red) m(circle_hollow) mlw(medium))
+(rcap upper lower graph_cat if graph_cat==11, horizontal color(midblue) lw(medium)) 
+(scatter  graph_cat coeff  if graph_cat==11,  color(midblue) m(circle_hollow) mlw(medium)) 
+ 
+(rcap upper lower graph_cat if graph_cat==9, horizontal color(red) lw(medium)) 
+(scatter  graph_cat coeff  if graph_cat==9,  color(red) m(circle_hollow) mlw(medium))
+(rcap upper lower graph_cat if graph_cat==8, horizontal color(midblue) lw(medium))
+(scatter  graph_cat coeff  if graph_cat==8,  color(midblue) m(circle_hollow) mlw(medium))
+ 
+(rcap upper lower graph_cat if graph_cat==6, horizontal color(red) lw(medium)) 
+(scatter  graph_cat coeff  if graph_cat==6,  color(red) m(circle_hollow) mlw(medium))
+(rcap upper lower graph_cat if graph_cat==5, horizontal color(midblue) lw(medium)) 
+(scatter  graph_cat coeff  if graph_cat==5,  color(midblue) m(circle_hollow) mlw(medium)) 
+
+(rcap upper lower graph_cat if graph_cat==3, horizontal color(red) lw(medium) ) 
+(scatter  graph_cat coeff  if graph_cat==3,  color(red) m(circle_hollow) mlw(medium))
+(rcap upper lower graph_cat if graph_cat==2, horizontal color(midblue) lw(medium)) 
+(scatter  graph_cat coeff  if graph_cat==2,  color(midblue) m(circle_hollow) mlw(medium))
+
+(rcap upper lower graph_cat if graph_cat==0, horizontal color(red) lw(medium) ) 
+(scatter  graph_cat coeff  if graph_cat==0,  color(red) m(circle_hollow) mlw(medium))
+(rcap upper lower graph_cat if graph_cat==-1, horizontal color(midblue) lw(medium)) 
+(scatter  graph_cat coeff  if graph_cat==-1,  color(midblue) m(circle_hollow) mlw(medium))
+ 
+ 
+ , xline(`baseline_beta_aft') xline(0, lc(gray) lp(shortdash)) 
+ 
+ ylabel(18 17 15 14 12 11 9 8 6 5 3 2 , valuelabel angle(0)) xti("95% conf interval, coeff. on {it:Favor import limits} x {it:After 1992}") yti("") xlabel(-.1(.1).7) 
+ legend(off)
+ /***Text***/ 
+ text(5 `baseline_beta_aft_plus_delta'  "Solid, red, vertical line is" "point-estimate from full sample", place(east) justification(left))
+ ;
+ #d cr
+graph export "$results/anes_cumul_hetero.pdf", replace
+  
+/*------------------------------------ End of SECTION 1 ------------------------------------*/
+
+
+/**********************************************************************/
+/*  SECTION 2: Tables        
+    Notes: */
+/**********************************************************************/
+ 
+/*----------------------------------------------------*/
+   /* [>   Table 1   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final", clear 
+keep if year == 1990
+xtile county_quartile=county_vul_own, n(4)
+keep county county_quartile
+merge 1:m county using "$working_data/master_county_year_final", nogen
+tempfile quartiles 
+save `quartiles', replace
+
+*pre-period vote shares
+bysort county: egen pres_rep_share_pre = mean(tot_pres_rep_share / inlist(year, 1980,1984,1988)) 
+bysort county: egen pres_dem_share_pre = mean(tot_pres_dem_share / inlist(year, 1980,1984,1988))
+bysort county: egen tp_house_rep_share_pre = mean(tp_house_rep_share / inlist(year, 1980, 1982, 1984, 1986, 1988, 1990))
+
+keep if year == 1990
+*convert to thousands 
+replace n_petitions_pc_ctyr = n_petitions_pc_ctyr * 1000
+replace n_certified_pc_ctyr = n_certified_pc_ctyr * 1000
+replace n_app_di = n_app_di / workage_pop * 1000
+replace n_fin_di = n_fin_di / workage_pop * 1000
+replace cty_pop = cty_pop / 1000
+replace workage_pop = workage_pop / 1000
+replace emptot = emptot / 1000 
+replace county_income_1989 = county_income_1989 / 1000 
+
+* 1990 population county weights
+
+// Unweighted counts
+preserve
+collapse (mean) cty_pop workage_pop emptot emp_to_pop county_vul_own (count) year , by(county_quartile)
+tempfile unweighted
+save 	`unweighted', replace
+restore 
+
+// Weighted shares
+collapse (mean) county_income_1989 share_white manu_share_1990 ///
+  share_colgrad_1990 pres_rep_share_pre pres_dem_share_pre tp_house_rep_share_pre n_petitions_pc_ctyr ///
+   n_certified_pc_ctyr n_app_di n_fin_di d_tradeotch_pw_lag [fweight=cty_pop_1990], by(county_quartile)
+merge 1:1 county_quartile using `unweighted'
+
+drop if missing(county_quartile)
+
+order cty_pop workage_pop county_income_1989 emptot emp_to_pop share_white manu_share_1990 ///
+  share_colgrad_1990 pres_rep_share_pre pres_dem_share_pre tp_house_rep_share_pre n_petitions_pc_ctyr ///
+   n_certified_pc_ctyr n_app_di n_fin_di county_vul_own d_tradeotch_pw_lag
+   
+forvalues i = 1/4 {
+  foreach v of varlist cty_pop- d_tradeotch_pw_lag {
+    local `v'_`i' = string(`v'[`i'], "%9.3f") 
+  }
+  local year_`i' = year[1]
+}
+
+
+texdoc init "$results/summ_stat_by_cty_quartile_nosd.tex", replace force
+
+tex    & \multicolumn{4}{c}{Quartile (lower quartile : less vulnerable)} \\
+tex        & 1 & 2 & 3 & 4 \\ \hline  \vspace*{3mm}
+tex  \textit{Demographics (1990)} & & & & \\ 
+tex  Population (in thousands) & `cty_pop_1' & `cty_pop_2' & `cty_pop_3' & `cty_pop_4' \\
+tex  Working-age population (in thousands) & `workage_pop_1' & `workage_pop_2' & `workage_pop_3' & `workage_pop_4' \\
+tex  Household income (in thousands) & `county_income_1989_1' & `county_income_1989_2' & `county_income_1989_3' & `county_income_1989_4' \\
+tex  Number of jobs (in thousands) & `emptot_1' & `emptot_2' & `emptot_3' & `emptot_4' \\
+tex  Emp-to-Pop ratio & `emp_to_pop_1' & `emp_to_pop_2' & `emp_to_pop_3' & `emp_to_pop_4' \\
+tex  White share of population & `share_white_1' & `share_white_2' & `share_white_3' & `share_white_4' \\
+tex  Manufacturing share of employment & `manu_share_1990_1' & `manu_share_1990_2' & `manu_share_1990_3' & `manu_share_1990_4' \\
+tex  College-grad share of population & `share_colgrad_1990_1' & `share_colgrad_1990_2' & `share_colgrad_1990_3' & `share_colgrad_1990_4' \\
+tex  &&&& \\ 
+tex  \textit{Political preference (1980-1990) } &&&&\\
+tex  Republican House two-party vote share & `tp_house_rep_share_pre_1' & `tp_house_rep_share_pre_2' & `tp_house_rep_share_pre_3' & `tp_house_rep_share_pre_4' \\ 
+tex  Republican Presidential vote share & `pres_rep_share_pre_1' & `pres_rep_share_pre_2' & `pres_rep_share_pre_3' & `pres_rep_share_pre_4' \\ 
+tex  Democratic Presidential vote share & `pres_dem_share_pre_1' & `pres_dem_share_pre_2' & `pres_dem_share_pre_3' & `pres_dem_share_pre_4' \\ 
+tex  &&&& \\
+tex  \textit{DI and TAA takeup per thousand (1990) } &&&& \\
+tex  TAA petition  & `n_petitions_pc_ctyr_1' & `n_petitions_pc_ctyr_2' & `n_petitions_pc_ctyr_3' & `n_petitions_pc_ctyr_4' \\
+tex  TAA certification  & `n_certified_pc_ctyr_1' & `n_certified_pc_ctyr_2' & `n_certified_pc_ctyr_3' & `n_certified_pc_ctyr_4' \\
+tex  DI application  & `n_app_di_1' & `n_app_di_2' & `n_app_di_3' & `n_app_di_4' \\
+tex  DI awards  & `n_fin_di_1' & `n_fin_di_2' & `n_fin_di_3' & `n_fin_di_4' \\
+tex  &&&& \\
+tex  \textit{NAFTA vulnerability} &&&& \\
+tex  Vulnerability based on tariff in 1990 & `county_vul_own_1' & `county_vul_own_2' & `county_vul_own_3' & `county_vul_own_4'  \\
+tex &&&& \\
+tex  \textit{Exposure to Chinese imports} &&&&\\
+tex  ADH (2013) China shock measure (IV) & `d_tradeotch_pw_lag_1' & `d_tradeotch_pw_lag_2' & `d_tradeotch_pw_lag_3' & `d_tradeotch_pw_lag_4' \\
+tex  &&&& \\
+tex  \hline
+tex  Number of counties & `year_1' & `year_2' & `year_3' & `year_4' \\
+
+texdoc close
+ 
+/*----------------------------------------------------*/
+   /* [>   Table 2   <] */ 
+/*----------------------------------------------------*/
+  
+use "$working_data/nafta_views_state_vul.dta", clear
+//survey FE
+tab data_orig_name, gen(ddd) 
+
+gen nafta_yes=nafta_clean==1 if !missing(nafta_clean)
+gen nafta_yes_01 = nafta_clean==1 if nafta_clean<3 
+ 
+****Add regions dummies 
+
+gen district=1 if inlist(state_fips, 9, 23, 25, 33, 44, 50) 
+replace district=2 if inlist(state_fips, 34, 36, 42) 
+replace district=3 if inlist(state_fips, 18, 17, 26, 39, 55)
+replace district=4 if inlist(state_fips, 19, 20, 27, 29, 31, 38, 46)
+replace district=5 if inlist(state_fips, 10, 11, 12, 13, 24, 37, 45, 51, 54)
+replace district=6 if inlist(state_fips, 1, 21, 28, 47)
+replace district=7 if inlist(state_fips, 5, 22, 40, 48)
+replace district=8 if inlist(state_fips, 4, 8, 16, 35, 30, 49, 32, 56)
+replace district=9 if inlist(state_fips, 2, 6, 15, 41, 53)
+
+label define union_l 1 "Self in union" 2 "Spouse or other HH member in union" ///
+  3 "Self and spouse/HH member in union" 4 "No one in HH in union" ///
+  9 "Don't know/no answer"
+label values union_clean union_l
+
+****Create race dummies 
+gen white=race_clean==1 if inrange(race_clean, 1,4)
+gen black=race_clean==2 if inrange(race_clean, 1,4) 
+gen no_coll=1-coll_grad 
+gen ln_inc_clean = ln(income_clean) 
+
+gen union=union_clean!=4 if union_clean<. & union_clean!=9
+replace union=union_hh if union==. 
+
+eststo clear 
+
+gen nafta_yes_100 = nafta_yes*100
+gen nafta_yes_01_100 = nafta_yes_01*100
+
+*scaling*
+preserve 
+reg nafta_yes state_1990_vul  ddd* if nafta_clean<. & year<2016, cl(state_fips)   
+gen samp = e(sample) 
+keep if samp == 1  
+bys state_fips: keep if _n == 1 
+xtile state_quartile=state_1990_vul, n(4) 
+sum state_1990_vul if state_quartile == 4 
+local high = `r(mean)' 
+sum state_1990_vul if state_quartile == 1 
+local diff = `high' - `r(mean)' 
+di "`diff'" 
+restore 
+
+replace state_1990_vul = state_1990_vul / `diff'
+
+eststo: reg nafta_yes state_1990_vul  ddd* if nafta_clean<. & year<2016, cl(state_fips) 
+qui sum `e(depvar)' if e(sample)==1 
+estadd scalar dmean=`r(mean)' 
+estadd local division "No" 
+estadd local ex_idk "No" 
+estadd local ex_miss_covars "No" 
+
+gen age_clean_100 = age_clean/100 
+
+***Establish fixed sample 
+local controls "white black male no_coll ln_inc_clean union age_clean_100" 
+qui reg nafta_yes state_1990_vul `controls' ddd* if nafta_clean<. & year<2016, cl(state_fips) 
+gen fix_samp=e(sample) 
+
+eststo: reg nafta_yes state_1990_vul ddd* if nafta_clean<. & year<2016 & fix_samp==1, cl(state_fips) 
+qui sum `e(depvar)' if e(sample)==1 
+estadd scalar dmean=`r(mean)' 
+estadd local division "No" 
+estadd local ex_idk "No" 
+estadd local ex_miss_covars "Yes" 
+
+eststo: reg nafta_yes state_1990_vul `controls'  ddd* if nafta_clean<. & year<2016 & fix_samp==1, cl(state_fips) 
+qui sum `e(depvar)' if e(sample)==1 
+estadd scalar dmean=`r(mean)' 
+estadd local division "No" 
+estadd local ex_idk "No" 
+estadd local ex_miss_covars "Yes" 
+
+eststo: reg nafta_yes state_1990_vul `controls' ddd* i.district if nafta_clean<. & year<2016 & fix_samp==1, cl(state_fips) 
+qui sum `e(depvar)' if e(sample)==1 
+estadd scalar dmean=`r(mean)' 
+estadd local division "Yes" 
+estadd local ex_idk "No" 
+estadd local ex_miss_covars "Yes" 
+
+eststo: reg nafta_yes_01 state_1990_vul `controls'  ddd* i.district if nafta_clean<. & year<2016 & fix_samp==1, cl(state_fips) 
+qui sum `e(depvar)' if e(sample)==1 
+estadd scalar dmean=`r(mean)' 
+estadd local division "Yes" 
+estadd local ex_idk "Yes" 
+estadd local ex_miss_covars "Yes" 
+
+***Labels 
+label var white "White" 
+label var no_coll "No college degree" 
+label var male "Male" 
+label var union "Union household" 
+label var state_1990_vul "State-level vulnerability" 
+label var ln_inc_clean "Log family income" 
+label var black "Black" 
+label var age_clean_100 "Age / 100" 
+label var coll_grad "College grad." 
+
+local controls "white black male no_coll ln_inc_clean union age_clean_100" 
+local est_cmd `"order(state_1990_vul  `controls' ) keep(state_1990_vul  `controls' ) se(%8.3f) brackets nostar stats(dmean ex_miss_covars division ex_idk N, label("Dept. var. mean" "Drop if missing covars" "Division FE" "Ex. DK" "Observations")) nomtitles label wrap  "'  
+
+esttab , `est_cmd' 
+esttab est1 est2 est3 est4 est5  using "$results/nafta_views_state_vul.tex", `est_cmd' fragment replace booktabs  varwidth(25) ///
+  mgroups("Dept. var: Supports NAFTA", pattern(1 0 0 0 0 0 0 0) ///
+  prefix(\multicolumn{@span}{c}{ ) suffix(}) span erepeat(\cmidrule(lr){@span}) ) nomtitle nogaps 
+
+  
+
+/*----------------------------------------------------*/
+   /* [>   Table 3   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/anes_cumul_cleaned", clear 
+ 
+**** Set various lists of controls
+local controls_demog "white hisp_yes male hs_top coll_grad ln_fam_inc ln_fam_inc_dummy age"
+local controls_issues "abortion_clean abortion_dummy mostly_trust_gov bl_th_cumul bl_th_cumul_dummy"
+ 
+foreach var of varlist favor_limits favor_limits_ex_dk  { 
+  gen `var'_aft=`var'*(year>1992) 
+} 
+
+***Create after variables for demog & issues controls 
+local controls_demog_aft  "" 
+
+foreach var of varlist `controls_demog'{ 
+gen `var'_aft = `var'*(year>1992) 
+local controls_demog_aft "`controls_demog_aft' `var'_aft" 
+} 
+local controls_issues_aft ""
+foreach var of varlist `controls_issues' { 
+gen `var'_aft = `var'*(year>1992) 
+local controls_issues_aft "`controls_issues_aft' `var'_aft" 
+} 
+
+label var favor_limits_aft "Favor import limits x After 1992" 
+label var favor_limits "Favor import limits" 
+
+qui: reg partyid_inc_repub favor_limits_aft favor_limits `controls_demog' `controls_issues' i.year if year<2016, robust cl(state)  
+gen fsample=e(sample)==1 
+
+eststo clear 
+
+eststo: reg partyid_inc_repub favor_limits_aft favor_limits i.year if year<2016 & fsample==1, robust cl(state) 
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dmean = `r(mean)' 
+estadd local demog = "No" 
+estadd local stFE ="No" 
+estadd local issues ="No" 
+estadd local demog_aft ="No" 
+estadd local issues_aft ="No" 
+estadd local ex_dk ="No" 
+
+eststo: areg partyid_inc_repub favor_limits_aft favor_limits i.year if year<2016  & fsample==1, abs(state) robust cl(state) 
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dmean = `r(mean)' 
+estadd local demog "No" 
+estadd local stFE "Yes" 
+estadd local issues "No" 
+estadd local demog_aft "No" 
+estadd local issues_aft "No" 
+estadd local ex_dk "No" 
+
+eststo: reg partyid_inc_repub favor_limits_aft favor_limits `controls_demog' i.year if year<2016, robust cl(state)  
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dmean = `r(mean)' 
+estadd local demog "Yes" 
+estadd local stFE "No" 
+estadd local issues "No" 
+estadd local demog_aft "No" 
+estadd local issues_aft "No" 
+estadd local ex_dk "No" 
+
+eststo: reg partyid_inc_repub favor_limits_aft favor_limits `controls_demog' `controls_issues' i.year if year<2016, robust cl(state)  
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dmean = `r(mean)' 
+estadd local demog "Yes" 
+estadd local stFE "No" 
+estadd local issues "Yes" 
+estadd local demog_aft "No" 
+estadd local issues_aft "No" 
+estadd local ex_dk "No" 
+
+****Save this coefficient as the baseline, the one that we plot in the heterogeneity graph 
+//local baseline_beta_aft=_b[favor_limits_aft] 
+
+eststo: reg partyid_inc_repub favor_limits_aft favor_limits `controls_demog' `controls_issues' i.year if year<2016 & dk_limits==0, robust cl(state)  
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dmean = `r(mean)' 
+estadd local demog "Yes" 
+estadd local stFE "No" 
+estadd local issues "Yes" 
+estadd local demog_aft "No" 
+estadd local issues_aft "No" 
+estadd local ex_dk "Yes" 
+
+eststo: reg partyid_inc_repub favor_limits_aft favor_limits `controls_demog' `controls_issues' `controls_demog_aft' `controls_issues_aft' i.year if year<2016, robust cl(state)  
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dmean = `r(mean)' 
+estadd local demog "Yes" 
+estadd local stFE "No" 
+estadd local issues "Yes" 
+estadd local demog_aft "Yes" 
+estadd local issues_aft "Yes" 
+estadd local ex_dk "No" 
+
+esttab using "$results/anes_cumul_table.tex", replace fragment booktabs keep(favor_limits_aft favor_limits) /// 
+nostar se brackets nomtitles label  wrap varwidth(23) ///
+mgroups("Dep't var.: Party ID (1-7, increasing in Republican dir)", pattern(1 0 0 0 0)  ///
+prefix(\multicolumn{@span}{c}{) suffix(}) span erepeat(\cmidrule(lr){@span}))  ///
+stats(dmean  blank demog stFE issues  demog_aft issues_aft ex_dk r2 N,  ///
+  fmt(%9.3f 0  0 0 0 0 0 0 %9.3f  %9.0f ) ///
+label("Dept. var. mean"  "Controls" "--Demographic" "--State FE" "--Issues" "--Demogr. x Aft" "--Issues x Aft" "Ex. DK" "R-squared" "Observations"))
+ 
+  
+
+/*----------------------------------------------------*/
+   /* [>   Table 4   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/anes_92_97.dta", clear
+
+replace fipstate = state_1996 if missing(fipstate)
+replace fipstate = state_1994 if missing(fipstate)
+replace fipstate = state_1992 if missing(fipstate)
+
+recode  help_blacks_1992_clean (5 6 7=1) (0 1 2 3 4=0)
+recode  role_gov_1992_clean (5 6 7=1) (0 1 2 3 4=0)
+recode  abortion_1992_clean (4=1) (0 1 2 3=0)
+recode  health_reform_1992_clean (5 6 7=1) (0 1 2 3 4=0)
+
+*****Table 
+eststo clear 
+local controls_demog "white_1992 black_1992 male_1992 yrs_ed age_1992 ln_fam_inc_1992 ln_fam_inc_1992_dummy rural CC " 
+local controls_issues_classic "help_blacks_1992_clean role_gov_1992_clean abortion_1992_clean weekly_relig inc_imm_1992" 
+local controls_issues_recent "oppose_gays_military health_reform_1992_clean favor_term_limit" 
+
+***Label vars for the table 
+label var favor_limits_1992_dk "Favor import limits" 
+label var coll_grad_1992 "College grad" 
+label var union_hh_1992 "Union household (dummy)" 
+
+gen move_right_92_94_100=move_right_92_94*100 
+label var move_right_92_94_100 "Moved right between 1992, 1993 (x 100)" 
+
+eststo clear 
+
+eststo: reg move_right_92_94_100 favor_limits_1992_dk  [pw = V923008] if move_right_92_94<. , robust cluster(fipstate) 
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dmean = `r(mean)' 
+estadd local year "1992-94" 
+estadd local ex_dk "No" 
+estadd local stfe "No" 
+estadd local demog "No" 
+
+eststo: reg move_right_92_94_100 favor_limits_1992_dk  [pw = V923008] if move_right_92_94<. & dk_limits_1992==0 , robust cluster(fipstate) 
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dmean = `r(mean)' 
+estadd local year "1992-94" 
+estadd local ex_dk "Yes" 
+estadd local stfe "No" 
+estadd local demog "No" 
+
+eststo: reg move_right_92_94_100 favor_limits_1992_dk `controls_demog'  [pw = V923008] if move_right_92_94<.  , robust cluster(fipstate) 
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dmean = `r(mean)' 
+estadd local year "1992-94" 
+estadd local ex_dk "No" 
+estadd local stfe "No" 
+estadd local demog "Yes" 
+
+eststo: reg move_right_92_94_100 favor_limits_1992_dk `controls_demog' `controls_issues_classic'  [pw = V923008] if move_right_92_94<.  , robust cluster(fipstate) 
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dmean = `r(mean)' 
+estadd local year "1992-94" 
+estadd local ex_dk "No" 
+estadd local stfe "No" 
+estadd local demog "Yes" 
+
+eststo: reg move_right_92_94_100 favor_limits_1992_dk `controls_demog' `controls_issues_classic' `controls_issues_recent' [pw = V923008]  if move_right_92_94<.  , robust cluster(fipstate) 
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dmean = `r(mean)' 
+estadd local year "1992-94" 
+estadd local ex_dk "No" 
+estadd local stfe "No" 
+estadd local demog "Yes" 
+
+local baseline_beta_limits = _b[favor_limits_1992_dk] 
+
+eststo: areg move_right_92_94_100 favor_limits_1992_dk `controls_demog' `controls_issues_classic' `controls_issues_recent' [pw = V923008]  if move_right_92_94<.  , absorb(fipstate) robust cluster(fipstate) 
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dmean = `r(mean)' 
+estadd local year "1992-94" 
+estadd local ex_dk "No" 
+estadd local stfe "Yes" 
+estadd local demog "Yes" 
+
+esttab , drop(_cons *dummy* white_1992 black_1992 male_1992 yrs_educ age_1992 ln_fam_inc_1992 rural CC*) se brackets star(* .1 ** .05 *** .01) stats(dmean ex_dk demog stfe r2 N, label("Dept. var. mean" "Ex. DK"  "Demog. covars" "State FE" "R-squared" "Observations")) nomtitles label wrap nogaps
+
+esttab using "$results/panel_limits_move_right_92_94_100.tex", ///
+replace fragment booktabs se brackets nostar ///
+drop(_cons *dummy* white_1992 black_1992 male_1992 yrs_educ age_1992 ln_fam_inc_1992 rural CC*) ///
+label wrap varwidth(25) stats(dmean ex_dk demog stfe r2 N, label("Dept. var. mean" "Ex. DK"  "Demog. covars" "State FE" "R-squared" "Observations")) ///
+mgroups( "Move in Repub direction dummy x 100", pattern(1 0 0 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span erepeat(\cmidrule(lr){@span})) nomtitles nogaps 
+
+  
+
+
+/*------------------------------------ End of SECTION 2 ------------------------------------*/
+
+
+/**********************************************************************/
+/*  SECTION 3: Appendix Figures      
+    Notes: */
+/**********************************************************************/
+ 
+   
+ /*----------------------------------------------------*/
+    /* [>   Appendix Figure 1   <] */ 
+ /*----------------------------------------------------*/
+  * Colors
+local c1 "green"
+local c2 "pink" 
+local c3 "midblue"
+
+use "$working_data/fred_exports.dta", clear
+tsline import_china_real  import_mexico_real, lcolor(`c1' `c2' `c3') lpattern(longdash_dot solid) ytitle("In million dollars, 2000 as base year") xtitle("") /// 
+legend(on order(1 "China" 2 "Mexico") col(3)) /// 
+xline(134, lpattern(dash) lwidth(thin) lcolor(gray)) /// 
+xlabel(100(8)191, noticks angle(30) format(%tqCY)) 
+graph export "$results/US_Import_from_China_Mexico.pdf", replace
+  
+
+ 
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 2   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/imports_sic_year.dta", clear 
+collapse (sum) tot_sic4_import_usitc, by(t_category year) 
+preserve 
+import excel "$raw_data/fred_graph_data_anual.xls", sheet("FRED Graph") cellrange(D19:D29) clear
+rename (D) (pce)
+keep pce 
+gen year = _n+1989
+tempfile pce
+save `pce'
+restore
+merge m:1 year using `pce'
+replace tot_sic4_import_usitc = tot_sic4_import_usitc * (78.0905/pce)
+
+  * Colors
+local c1 "green"
+local c2 "pink" 
+local c3 "midblue"
+replace tot_sic4_import_usitc = tot_sic4_import_usitc /1000
+twoway (connected tot_sic4_import_usitc year if t_category == 1, lwidth(medthin) lpattern(dash) lcolor(`c1') msymbol(+) mcolor(`c1') msize(medsmall)) /// 
+(connected tot_sic4_import_usitc year if t_category == 2, lwidth(medthin) lpattern(dash) lcolor(`c2') msymbol(Dh) mcolor(`c2') msize(medsmall)) /// 
+(line tot_sic4_import_usitc year if t_category == 3, msymbol(T) lwidth(medthin) lpattern(dash) lcolor(`c3') mcolor(`c3') msize(medsmall)), /// 
+ytitle("Total import values in millions of 2000 dollars") xtitle("") ylabel(,labsize(small)) xline(1993.5, lstyle(dot)) /// 
+legend(on label(1 "zero tariff") label(2 "below-med. positive tariff") label(3 "above-med. positive tariff")) scheme(aspen)
+
+graph export "$results/import_total_sum_by_tcategory_usitc.pdf", replace
+  
+ 
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 3   <] */ 
+/*----------------------------------------------------*/
+foreach dataname in usitc com { 
+use "$working_data/imports_sic_year.dta", clear
+foreach year of numlist 1990/2000 {
+  gen year_`year' = year==`year'
+  gen init_w_wtariff_`year' = year_`year' * w_wtariff
+}
+drop init_w_wtariff_1993
+replace tot_sic4_import_`dataname' = tot_sic4_import_`dataname' /1000
+replace mex_to_row_tot = mex_to_row_tot /1000
+replace row_to_usa_tot = row_to_usa_tot /1000
+
+reghdfe tot_sic4_import_`dataname' init_w_wtariff_* mex_to_row_tot row_to_usa_tot, absorb(i.sic i.year) vce(cluster sic)
+tempfile row_usa_mex_row
+parmest, saving(`row_usa_mex_row', replace) format(parm estimate min95 max95)
+
+* save and create plot 
+use `row_usa_mex_row', clear
+rename (estimate min95 max95) (estimate_row_usa_mex_row min95_row_usa_mex_row max95_row_usa_mex_row )
+
+drop if parm == "mex_to_row_tot" | parm == "row_to_usa_tot"
+gen year = .
+local year_list 1990 1991 1992 1993 1994 1995 1996 1997 1998 1999 2000
+* sorting results and including reference year  
+foreach year of local year_list {
+  replace year = `year' if strpos(parm, "`year'")>0
+}
+set obs `=_N+1'
+replace year = 1993 if estimate_row_usa_mex_row == .
+replace estimate_row_usa_mex_row  = 0 if year == 1993
+
+sort year
+
+  forval i = 1/4 { 
+  gen year`i' = year+0.15*`i'
+  }
+  set scheme aspen
+
+  * common graph style
+    essty_main
+    
+  ** replace constant as missing for graph
+  foreach v of varlist estimate* min95* max95* {
+    replace `v' = . if parm == "_cons"
+  }
+  * plot 
+
+format estimate* min95* max95* %10.1e
+  * Legend Position 
+local pos 11
+local size vsmall
+set scheme aspen
+
+      * Graph
+  #d ; 
+  twoway  /* Scatter */
+      (scatter estimate_row_usa_mex_row year, `r(es_sct1_sty)')
+
+      /* Confidence intervals */
+      (rcap min95_row_usa_mex_row max95_row_usa_mex_row year if year~=1993, `r(es_ci1_sty)')
+
+  , scheme(aspen) 
+  legend(off)
+    /*legend(label(1 "US Imports from ROW, Mex Exports to ROW")*/
+  /*    cols(1) pos(`pos') ring(0) size(`size') )*/
+
+  /* Axis titles/labels */
+  ylabel(,format(%5.0f) labsize(small)) 
+  ytitle("Coeff. on Weighted 1990 Tariff x Year" "In millions of dollars", size(medsmall)) 
+  xlabel(1990(2)2000, angle(30)) 
+  xtitle("")
+  /* Lines, etc. */
+  yline(0, lstyle(dot)) 
+  xline(1993, lcolor(dot)) 
+  /* ysc(r(`min' `max')) */
+  /* ylabel(`min'(`gap')`max') */
+  xsize(20) ysize(11)
+  ;
+  #d cr
+  graph export "$results/ES_mex_imports_1990_tarrifs_`dataname'.pdf", replace
+}
+
+  
+
+ 
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 4   <] */ 
+/*----------------------------------------------------*/
+foreach dataname in usitc com { 
+use "$working_data/imports_sic_year.dta", clear
+foreach year of numlist 1990/2000 {
+  gen year_`year' = year==`year'
+  gen init_log_w_wtariff_`year' = year_`year' * log_w_wtariff
+}
+drop init_log_w_wtariff_1993
+gen log_tot_sic4_import_`dataname' = log(tot_sic4_import_`dataname') 
+gen log_mex_to_row_tot = log(mex_to_row_tot) 
+gen log_row_to_usa_tot = log(row_to_usa_tot) 
+
+
+reghdfe log_tot_sic4_import_`dataname' init_log_w_wtariff_* log_mex_to_row_tot log_row_to_usa_tot, absorb(i.sic i.year) vce(cluster sic)
+tempfile row_usa_mex_row
+parmest, saving(`row_usa_mex_row', replace) format(parm estimate min95 max95)
+
+* save and create plot 
+use `row_usa_mex_row', clear
+rename (estimate min95 max95) (estimate_row_usa_mex_row min95_row_usa_mex_row max95_row_usa_mex_row )
+
+
+gen year = .
+local year_list 1990 1991 1992 1993 1994 1995 1996 1997 1998 1999 2000
+* sorting results and including reference year  
+foreach year of local year_list {
+  replace year = `year' if strpos(parm, "`year'")>0
+}
+  set obs `=_N+1'
+  replace year = 1993 if estimate_row_usa_mex_row == .
+  replace estimate_row_usa_mex_row  = 0 if year == 1993
+
+    sort year
+
+  forval i = 1/4 { 
+  gen year`i' = year+0.15*`i'
+  }
+  set scheme aspen
+
+  * common graph style
+    essty_main
+    
+  ** replace constant as missing for graph
+  foreach v of varlist estimate* min95* max95* {
+    replace `v' = . if parm == "_cons"
+  }
+  * plot 
+
+format estimate* min95* max95* %10.1e
+  * Legend Position 
+local pos 11
+local size vsmall
+set scheme aspen
+
+      * Graph
+  #d ; 
+  twoway  /* Scatter */
+      (scatter estimate_row_usa_mex_row year, `r(es_sct1_sty)')
+
+      /* Confidence intervals */
+      (rcap min95_row_usa_mex_row max95_row_usa_mex_row year if year~=1993, `r(es_ci1_sty)')
+
+  , scheme(aspen) 
+  legend(off)
+    /*legend(label(1 "US Imports from ROW, Mex Exports to ROW")*/
+  /*    cols(1) pos(`pos') ring(0) size(`size') )*/
+
+  /* Axis titles/labels */
+  ylabel(,format(%5.0f) labsize(small)) 
+  ytitle("Coeff. on Weighted 1990 Tariff x Year" "In millions of dollars", size(medsmall)) 
+  xlabel(1990(2)2000, angle(30)) 
+  xtitle("")
+  /* Lines, etc. */
+  yline(0, lstyle(dot)) 
+  xline(1993, lcolor(dot)) 
+  /* ysc(r(`min' `max')) */
+  /* ylabel(`min'(`gap')`max') */
+  xsize(20) ysize(11)
+  ;
+  #d cr
+  graph export "$results/ES_log_mex_imports_1990_log_tarrifs_`dataname'.pdf", replace
+}
+  
+ 
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 5    <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final", clear 
+keep if year == 1990
+xtile county_quartile=county_vul_own, n(4)
+keep county county_quartile
+merge 1:m county using "$working_data/master_county_year_final", nogen keep(matched)
+keep if inrange(year, 1986,2008)
+collapse (mean) log_emptot, by(county_quartile year)
+
+bysort county_quartile : egen log_emptot_baseyr = max(log_emptot / (year == 1993))
+
+gen normalized_log_emptot = log_emptot - log_emptot_baseyr 
+
+* normalized var version    
+raw_plot normalized_log_emptot county_quartile
+graph export "$results/normalized_log_emp_series_by_cty_quartile_extended.pdf", replace
+ 
+
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 6   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+keep if inrange(year,1986,2008)
+keep if !missing(county_vul_own_imp_1990)
+ES log_emptot , indvar(county_vul_own_1990) version("baseline") spec("two") scaled("no") baseyear(1993) pos(7)
+rename (estimate_styr min95_styr max95_styr) (estimate_styr_orig min95_styr_orig max95_styr_orig)
+tempfile orig 
+save `orig'
+use "$working_data/master_county_year_final.dta", clear
+keep if inrange(year,1986,2008)
+ES log_emptot , indvar(county_vul_own_imp_1990) version("baseline") spec("two") scaled("no") baseyear(1993) pos(7)
+merge 1:1 year using `orig', nogen
+
+gen year1 = year+.15
+#d ;
+  twoway  (connected estimate_styr_orig year1,  mcolor(dkorange) lcolor(dkorange) msize(small) msymbol(circle) lpattern(dash) yline(0, lstyle(dot)) ) 
+    (rcap min95_styr_orig max95_styr_orig year1 if year~=1993, lcolor(dkorange))  
+    (connected estimate_styr year , yaxis(2) mcolor(green) lcolor(green) msymbol(plus) msize(small) lpattern(solid) yline(0, lstyle(dot)) xline(1993, lstyle(dot))) 
+    (rcap min95_styr max95_styr year if year~=1993, yaxis(2) lcolor(green)) 
+  , scheme(aspen)   
+  legend(on order(1 "Vul. measure : Log Employment, State x Yr. FE" 3 "Vul. imputed measure  : Log Employment, State x Yr. FE") cols(1) ring(2) size(small)) 
+  //xlabel(`=`ymin'-1'(2)`=`ymax'+1' ,  labsize(small) angle(30))  ylabel(,labsize(small))
+  xlabel(1986(2)2008 ,  labsize(small) angle(30))  ylabel(,labsize(small)) ylabel(,axis(2) labsize(small))
+  ytitle("Coeff. on Vul. index x Year", axis(1)) ytitle("Coeff. on imputed Vul. index x Year", axis(2))
+  xtitle("")
+    /* Lines, etc. */
+  yline(0, lstyle(dot)) 
+  xline(1993, lstyle(dot)) 
+  ;
+#d cr
+graph export "$results/log_emp_init_vul_imp_interact_baseline_1by1_ext.pdf", replace 
+  
+ 
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 7   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+keep if inrange(year,1986,2008)
+ES log_emptot , indvar(county_vul_own_1990) version("baseline") spec("full") scaled("yes") baseyear(1993) pos(7)
+graph export "$results/log_emp_init_vul_interact_baseline_1by1_ext.pdf", replace 
+save "$results/log_emp_init_vul_interact_baseline_1by1_ext_coef.dta", replace 
+
+   
+
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 8    <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+keep if inrange(year,1986,2008)
+keep if !missing(log_emp_nonmanutot)
+ES log_emp_manuftot , indvar(county_vul_own_1990) version("baseline") spec("two") scaled("no") baseyear(1993) pos(7)
+rename (estimate_styr min95_styr max95_styr) (estimate_styr_manu min95_styr_manu max95_styr_manu)
+tempfile manu 
+save `manu'
+
+use "$working_data/master_county_year_final.dta", clear
+keep if inrange(year,1986,2008)
+keep if !missing(log_emp_manuftot)
+ES log_emp_nonmanutot , indvar(county_vul_own_1990) version("baseline") spec("two") scaled("no") baseyear(1993) pos(7)
+merge 1:1 year using `manu', nogen
+gen year1 = year + 0.15
+
+twoway  (connected estimate_styr_manu year1, mcolor(dkorange) lcolor(dkorange) msize(small) msymbol(circle) lpattern(dash) yline(0, lstyle(dot)) xline(1997.5, lstyle(dot))) /// 
+(connected estimate_styr year, mcolor(green) lcolor(green) msymbol(plus) msize(small) lpattern(solid) yline(0, lstyle(dot)) xline(1993, lstyle(dot))) /// 
+(rcap min95_styr_manu max95_styr_manu year1 if year~=1993, lcolor(dkorange)) (rcap min95_styr max95_styr year if year~=1993, lcolor(green)) /// 
+(pcarrowi 0.9 1998 0.7 1997.6 (3) "Change from SIC to NAICS", mcolor(black) lcolor(black) mlabcolor(black)), /// 
+legend(on order(1 "Dep. var. : Log manufac. employment, with county, year, state x year FEs" 2 "Dep. var. : Log non-manufac. employment, with county, year, state x year FEs") cols(1) ring(2) size(small)) ///
+xlabel(1986(2)2008, labsize(small) angle(30)) ylabel(,labsize(small)) ytitle("Coeff. on Vul. index x Year")
+graph export "$results/log_manu_nonmanu_test_fourdigitsum_stateyrfe.pdf", replace
+
+  
+
+ 
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 9   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+keep if inrange(year,1986,2008)
+ES emp_to_pop , indvar(county_vul_own_1990) version("baseline") spec("two") scaled("yes") baseyear(1993) pos(7)
+graph export "$results/emp_to_pop_init_vul_interact_baseline_1by1_ext_2spec.pdf", replace 
+save "$results/emp_to_pop_init_vul_interact_baseline_1by1_ext_2spec_coef.dta", replace 
+  
+
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 10   <] */ 
+/*----------------------------------------------------*/
+insheet using "$raw_data/CES3231300001.csv", clear 
+
+gen date_stata=date(date, "YMD") 
+format date_stata %tdMon_CCYY 
+sort date_stata 
+
+line ces3231300001 date_stata , xlabel(#10, angle(45)) xti("") ///
+yti("Number employed (in thousands)") lw(medthick) 
+graph export "$results/FRED_textiles.pdf", replace 
+  
+
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 11   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+keep if inrange(year,1986,2008)
+ES log_emptot , indvar(county_vul_own_1990) version("mfa") spec("full") scaled("yes") baseyear(1993) pos(7)
+gr_edit .style.editstyle declared_ysize(3.0) editcopy // Graph size
+gr_edit .gmetric_mult = 1.3 // Graph edits
+graph export "$results/log_emp_init_vul_interact_baseline_1by1_ext_MFAyr.pdf", replace 
+save "$results/log_emp_init_vul_interact_baseline_1by1_ext_MFAyr_coef.dta", replace 
+  
+
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 12   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+keep if inrange(year,1986,2008)
+ES log_emptot , indvar(county_vul_own_1990) version("rca") spec("full") scaled("yes") baseyear(1993) pos(7)
+graph export "$results/log_emp_rca_init_vul_interact_baseline_1by1_ext_2spec.pdf", replace 
+save "$results/log_emp_rca_init_vul_interact_baseline_1by1_ext_2spec_coef.dta", replace
+
+  
+
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 13   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+keep if inrange(year,1986,2008)
+ES log_emptot , indvar(county_vul_own_1990) version("auto_cty") spec("full") scaled("yes") baseyear(1993) pos(7)
+graph export "$results/log_emp_init_vul_interact_baseline_1by1_ext_auto_cty.pdf", replace 
+save "$results/log_emp_init_vul_interact_baseline_1by1_ext_auto_cty_coef.dta", replace 
+ 
+
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 14   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_cz_year.dta", clear
+keep if inrange(year,1986,2008)
+ES log_emptot , indvar(cz_vul_own) version("czone") spec("two") scaled("yes") baseyear(1993) pos(7)
+graph export "$results/log_emp_init_vul_interact_baseline_1by1_ext_czone_2spec.pdf", replace
+save "$results/log_emp_init_vul_interact_baseline_1by1_ext_czone_2spec_coef.dta", replace
+  
+ 
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 15   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+keep if inrange(year,1986,2008)
+ES log_aptot , indvar(county_vul_own_1990) version("baseline") spec("two") scaled("yes") baseyear(1993) pos(7)
+graph export "$results/log_ap_init_vul_interact_baseline_1by1_ext_2spec.pdf", replace
+save "$results/log_ap_init_vul_interact_baseline_1by1_ext_2spec_coef.dta", replace
+
+  
+ 
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 16   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/psid_trade_group_analysis_data.dta", clear
+bysort id (emp_lw): keep if !missing(emp_lw[_N]) & _N ==13
+ES emp_lw , indvar(ind_vul_1990) version("psid") spec("full") scaled("yes") baseyear(1993) pos(7)
+
+graph export "$results/psid_emp_lw_init_vul_interact_baseline.pdf", replace 
+save "$results/psid_emp_lw_init_vul_interact_baseline_coef.dta", replace
+
+ 
+
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 17   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+keep if inrange(year,1986,2008)
+ES log_cty_pop , indvar(county_vul_own_1990) version("baseline") spec("full") scaled("yes") baseyear(1993) pos(11)  
+graph export "$results/log_cty_pop_init_vul_interact_baseline_1by1_ext.pdf", replace 
+save "$results/log_cty_pop_init_vul_interact_baseline_1by1_ext_coef.dta", replace 
+  
+
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 18   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+keep if inrange(year,1986,2008)
+ES log_cty_pop , indvar(county_vul_own_1990) version("longpop70_80") spec("full") scaled("yes") baseyear(1993) pos(11)
+graph export "$results/log_cty_pop_init_vul_interact_baseline_1by1_ext_longpop70_2spec.pdf", replace 
+save "$results/log_cty_pop_init_vul_interact_baseline_1by1_ext_longpop70_2spec_coef.dta", replace 
+
+use "$working_data/master_county_year_final.dta", clear
+keep if inrange(year,1986,2008)
+ES log_cty_pop , indvar(county_vul_own_1990) version("longpop60_80") spec("full") scaled("yes") baseyear(1993) pos(11) 
+graph export "$results/log_cty_pop_init_vul_interact_baseline_1by1_ext_longpop60_2spec.pdf", replace 
+save "$results/log_cty_pop_init_vul_interact_baseline_1by1_ext_longpop60_2spec_coef.dta", replace
+  
+
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 19   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+keep if inrange(year, 1986,2008)
+ES log_cty_pop, indvar(county_vul_own_1990) version("migration") spec("full") scaled("yes") baseyear(1993) pos(7)
+graph export "$results/log_cty_pop_analysis_with_avg_dest_vul.pdf", replace 
+save "$results/log_cty_pop_analysis_with_avg_dest_vul_coef.dta", replace
+  
+ 
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 20   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final", clear 
+
+// Sample sample as Figure 4
+levelsof year, local(year_list)
+foreach year of local year_list {
+	if `year' != 1993 gen init_vul_`year' = (year == `year') * county_vul_own_1990  / vul_scale_factor
+}
+qui: reghdfe n_petitions_pc_ctyr init_vul_* [weight = cty_pop_1990], absorb(county year i.fipstate#year ///
+	 c.d_tradeotch_pw_lag#i.year c.share_colgrad_1990#i.year c.manu_share_1990#i.year) cluster(fipstate) 
+qui: bys county: egen cty_tot = total(e(sample))
+qui: unique year if e(sample) == 1 
+qui: gen samp = 1 if cty_tot == r(unique)
+
+// Quartiles
+keep if year == 1990
+xtile county_quartile=county_vul_own, n(4)
+keep if samp==1
+unique county
+
+keep county county_quartile
+merge 1:m county using "$working_data/master_county_year_final", keep(matched) nogen
+collapse (mean) n_petitions_pc_ctyr, by(county_quartile year)
+keep if inrange(year,1986,2008)
+bysort county_quartile : egen n_petitions_pc_ctyr_baseyr = max(n_petitions_pc_ctyr / (year == 1993))
+gen normalized_n_petitions_pc_ctyr = n_petitions_pc_ctyr - n_petitions_pc_ctyr_baseyr 
+
+* simple var version 
+raw_plot normalized_n_petitions_pc_ctyr county_quartile 
+graph export "$results/normalized_n_petitions_pc_ctyr_match_series_by_cty_quartile.pdf", replace 
+  
+
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 21   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+keep if inrange(year,1986,2008)
+ES n_petitions_pc_ctyr , indvar(county_vul_own_1990) version("baseline") spec("full") scaled("yes") baseyear(1993) pos(11)
+graph export "$results/n_petitions_pc_ctyr_init_vul_interact_baseline_1by1_ext.pdf", replace 
+save "$results/n_petitions_pc_ctyr_init_vul_interact_baseline_1by1_ext_coef.dta", replace 
+  
+
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 22   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+keep if inrange(year,1986,2008)
+ES n_certified_pc_ctyr, indvar(county_vul_own_1990) version("baseline") spec("two") scaled("yes") baseyear(1993) pos(11)
+graph export "$results/n_certified_pc_ctyr_init_vul_interact_baseline_1by1_ext_2spec.pdf", replace
+save "$results/n_certified_pc_ctyr_init_vul_interact_baseline_1by1_ext_2spec_coef.dta", replace 
+  
+
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 23   <] */ 
+/*----------------------------------------------------*/
+
+use "$working_data/master_county_year_final.dta", clear
+keep if inrange(year,1986,2008)
+bysort county: egen total_di = total(!missing(n_app_di) / inrange(year,1989,2008))  
+keep if total_di == 20
+ES log_emptot, indvar(county_vul_own_1990) version("baseline") spec("two") scaled("yes") baseyear(1993) pos(11)
+graph export "$results/log_emp_init_vul_interact_baseline_1by1_ext_matched_2spec.pdf", replace 
+save "$results/log_emp_init_vul_interact_baseline_1by1_ext_matched_2spec_coef.dta", replace 
+  
+
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 24   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final", clear 
+
+keep if year == 1990
+xtile county_quartile=county_vul_own, n(4)
+
+keep county county_quartile
+merge 1:m county using "$working_data/master_county_year_final", nogen
+unique county if !missing(log_n_app_di)
+collapse (mean) log_n_app_di, by(county_quartile year)
+keep if inrange(year,1989,2008)
+bysort county_quartile : egen log_n_app_di_baseyr = max(log_n_app_di / (year == 1993))
+gen normalized_log_n_app_di = log_n_app_di - log_n_app_di_baseyr 
+
+* simple var version 
+raw_plot normalized_log_n_app_di county_quartile 
+graph export "$results/normalized_log_n_app_di_match_series_by_cty_quartile.pdf", replace
+  
+
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 25   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+keep if inrange(year,1989,2008)
+ES log_n_app_di, indvar(county_vul_own_1990) version("baseline") spec("full") scaled("yes") baseyear(1993) pos(11)
+graph export "$results/log_n_app_di_init_vul_interact_baseline_1by1_ext.pdf", replace 
+save "$results/log_n_app_di_init_vul_interact_baseline_1by1_ext_coef.dta", replace
+  
+
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 26   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+keep if inrange(year,1989,2008)
+ES log_n_fin_di, indvar(county_vul_own_1990) version("baseline") spec("two") scaled("yes") baseyear(1993) pos(11)
+graph export "$results/log_n_fin_di_init_vul_interact_baseline_1by1_ext_2spec.pdf", replace 
+save "$results/log_n_fin_di_init_vul_interact_baseline_1by1_ext_2spec_coef.dta", replace 
+  
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 27   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final", clear 
+keep if year == 1990
+xtile county_quartile=county_vul_own, n(4)
+keep county county_quartile
+merge 1:m county using "$working_data/master_county_year_final", nogen
+collapse (mean) log_ui, by(county_quartile year)
+keep if inrange(year,1986,2008)
+bysort county_quartile : egen log_ui_baseyr = max(log_ui / (year == 1993))
+gen normalized_log_ui = log_ui - log_ui_baseyr 
+
+* simple var version 
+raw_plot normalized_log_ui county_quartile  
+graph export "$results/norm_log_ui_series_by_cty_quartile_extended.pdf", replace 
+  
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 28   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+keep if inrange(year,1986,2008)
+ES log_ui, indvar(county_vul_own_1990) version("baseline") spec("two") scaled("yes") baseyear(1993) pos(11)
+graph export "$results/log_ui_init_vul_interact_baseline_1by1_ext_2spec.pdf", replace 
+save "$results/log_ui_init_vul_interact_baseline_1by1_ext_2spec_coef.dta", replace 
+  
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure 29   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final", clear 
+keep if year == 1990
+xtile county_quartile=county_vul_own, n(4)
+keep county county_quartile
+merge 1:m county using "$working_data/master_county_year_final", nogen
+collapse (mean) log_snap_transfer, by(county_quartile year)
+keep if inrange(year,1986,2008)
+bysort county_quartile : egen log_snap_transfer_baseyr = max(log_snap_transfer / (year == 1993))
+gen normalized_log_snap_transfer = log_snap_transfer - log_snap_transfer_baseyr
+
+raw_plot normalized_log_snap_transfer county_quartile 
+graph export "$results/norm_log_snap_transfer_series_by_cty_quartile_extended.pdf", replace 
+  
+/*----------------------------------------------------*/
+  /* [>   Appendix Figure 30   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+keep if inrange(year,1986,2008)
+ES log_snap_transfer, indvar(county_vul_own_1990) version("baseline") spec("two") scaled("yes") baseyear(1993) pos(11)
+graph export "$results/log_snap_transfer_init_vul_interact_baseline_1by1_ext_2spec.pdf", replace 
+save "$results/log_snap_transfer_init_vul_interact_baseline_1by1_ext_2spec_coef.dta", replace 
+  
+/*----------------------------------------------------*/
+  /* [>   Appendix Figure 31   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/tvnews_nafta.dta", clear
+tab station, gen(station_)
+keep if year <2008
+sum year
+local ymin=`r(min)'
+local ymax=`r(max)'
+//NAFTA definitions using Percent of Minutes. 
+
+sepscatter perc_min_nafta year, recast(connect) separate(station)   /// 
+  legend(on rows(1) bmargin(vsmall) size(vsmall) colgap(*2) region(lcolor(white)) colfirst symxsize(*.4)) ///
+   graphregion(color(white) fcolor(white)) title("") xtitle("Year of Reporting", size(vsmall)) ///
+   xlabel(`ymin'(5)`ymax',  angle(45) labsize(vsmall)) xtick(`ymin'(1)`ymax') ylabel(0(.10).7, labsize(vsmall)) ytick(0(.10).7) ///
+    ytitle("Percent of News Report" " ", size(vsmall))   mc(black green orange) lc(black green orange)
+
+graph export "$results/fig_minutes_tvnews_nafta.pdf",  replace 
+  
+
+/*----------------------------------------------------*/
+  /* [>   Appendix Figure 32   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+keep if inlist(year, 1980,1982,1984,1986,1988,1990,1992,1994,1996,1998,2000,2002,2004,2006, ///
+    2008,2010,2012,2014,2016)
+ES tp_house_rep_share , indvar(county_vul_own_1990) version("baseline") spec("two") scaled("yes") baseyear(1992) pos(11)
+graph export "$results/tp_house_rep_share_init_vul_interact_baseline_1by1_ext_2spec.pdf", replace 
+save "$results/tp_house_rep_share_init_vul_interact_baseline_1by1_ext_2spec_coef.dta", replace
+  
+
+/*----------------------------------------------------*/
+  /* [>   Appendix Figure 33   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final", clear 
+keep if year == 1990
+xtile county_quartile=county_vul_own, n(4)
+keep county county_quartile
+merge 1:m county using "$working_data/master_county_year_final", nogen
+keep if inlist(year, 1980,1984,1988,1992,1996,2000,2004,2008,2012,2016)
+collapse (mean) tot_pres_rep_share, by(county_quartile year)
+
+* simple var version 
+raw_plot tot_pres_rep_share county_quartile 
+graph export "$results/avg_tot_pres_rep_share_series_by_cty_quartile_extended.pdf", replace 
+  
+
+/*----------------------------------------------------*/
+  /* [>   Appendix Figure 34   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final", clear 
+keep if year == 1990
+xtile county_quartile=county_vul_own, n(4)
+keep county county_quartile
+merge 1:m county using "$working_data/master_county_year_final", nogen
+keep if inlist(year, 1980,1984,1988,1992,1996,2000,2004,2008,2012,2016)
+collapse (mean) tot_pres_dem_share, by(county_quartile year)
+
+raw_plot tot_pres_dem_share county_quartile 
+graph export "$results/avg_tot_pres_dem_share_series_by_cty_quartile_extended.pdf", replace 
+  
+
+/*----------------------------------------------------*/
+  /* [>   Appendix Figure 35   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+keep if inlist(year, 1980,1984,1988,1992,1996,2000,2004,2008,2012,2016)
+ES tot_pres_rep_share , indvar(county_vul_own_1990) version("pres") spec("full") scaled("yes") baseyear(1992) pos(11)
+gr_edit .style.editstyle declared_ysize(3.5) editcopy // Graph size
+gr_edit .gmetric_mult = 1.2 // Graph edits
+graph export "$results/tot_pres_rep_share_init_vul_interact_baseline_1by1_ext.pdf", replace 
+save "$results/tot_pres_rep_share_init_vul_interact_baseline_1by1_ext_coef.dta", replace 
+
+use "$working_data/master_county_year_final.dta", clear
+keep if inlist(year, 1980,1984,1988,1992,1996,2000,2004,2008,2012,2016)
+ES tot_pres_dem_share , indvar(county_vul_own_1990) version("pres") spec("full") scaled("yes") baseyear(1992) pos(7)
+gr_edit .style.editstyle declared_ysize(3.5) editcopy // Graph size
+gr_edit .gmetric_mult = 1.2 // Graph edits
+graph export "$results/tot_pres_dem_share_init_vul_interact_baseline_1by1_ext.pdf", replace 
+save "$results/tot_pres_dem_share_init_vul_interact_baseline_1by1_ext_coef.dta", replace 
+
+  
+
+/*----------------------------------------------------*/
+  /* [>   Appendix Figure 36   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/master_county_year_final.dta", clear
+keep if inlist(year, 1980,1984,1988,1992,1996,2000,2004,2008,2012,2016)
+gen white_col_1990 = share_colgrad_1990 * share_white_1990
+ES tot_pres_rep_share , indvar(county_vul_own_1990) version("pres_white_coll") spec("full") scaled("yes") baseyear(1992) pos(11)
+gr_edit .style.editstyle declared_ysize(3.5) editcopy // Graph size
+gr_edit .gmetric_mult = 1.2 // Graph edits
+graph export "$results/tot_pres_rep_share_init_vul_interact_baseline_1by1_ext_whitesh.pdf", replace 
+save "$results/tot_pres_rep_share_init_vul_interact_baseline_1by1_ext_whitesh_coef.dta", replace 
+
+use "$working_data/master_county_year_final.dta", clear
+keep if inlist(year, 1980,1984,1988,1992,1996,2000,2004,2008,2012,2016)
+gen white_col_1990 = share_colgrad_1990 * share_white_1990
+ES tot_pres_dem_share , indvar(county_vul_own_1990) version("pres_white_coll") spec("full") scaled("yes") baseyear(1992) pos(7)
+gr_edit .style.editstyle declared_ysize(3.5) editcopy // Graph size
+gr_edit .gmetric_mult = 1.2 // Graph edits
+graph export "$results/tot_pres_dem_share_init_vul_interact_baseline_1by1_ext_whitesh.pdf", replace 
+save "$results/tot_pres_dem_share_init_vul_interact_baseline_1by1_ext_whitesh_coef.dta", replace 
+
+  
+
+
+/*----------------------------------------------------*/
+  /* [>   Appendix Figure 37   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/anes_92_97.dta", clear
+order st*
+//destring state, replace force
+replace fipstate = state_1996 if missing(fipstate)
+replace fipstate = state_1994 if missing(fipstate)
+replace fipstate = state_1992 if missing(fipstate)
+
+*****Table 
+eststo clear 
+local controls_demog "white_1992 black_1992 male_1992 yrs_ed age_1992 ln_fam_inc_1992 ln_fam_inc_1992_dummy rural CC " 
+local controls_issues_classic "help_blacks_1992_clean role_gov_1992_clean abortion_1992_clean weekly_relig inc_imm_1992" 
+local controls_issues_recent "oppose_gays_military health_reform_1992_clean favor_term_limit" 
+
+recode  help_blacks_1992_clean (5 6 7=1) (0 1 2 3 4=0)
+recode  role_gov_1992_clean (5 6 7=1) (0 1 2 3 4=0)
+recode  abortion_1992_clean (4=1) (0 1 2 3=0)
+recode  health_reform_1992_clean (5 6 7=1) (0 1 2 3 4=0)
+
+***Label vars for the table 
+label var favor_limits_1992_dk "Favor import limits" 
+label var coll_grad_1992 "College grad" 
+label var union_hh_1992 "Union household (dummy)" 
+
+gen move_right_92_94_100=move_right_92_94*100 
+label var move_right_92_94_100 "Moved right between 1992, 1993 (x 100)" 
+
+*****Paper version (import-limits for main table, NAFTA for appendix table) ;
+eststo clear 
+eststo: reg move_right_92_94_100 favor_limits_1992_dk `controls_demog' `controls_issues_classic' `controls_issues_recent' [pw = V923008]  if move_right_92_94<.  , robust cluster(fipstate) 
+local baseline_beta_limits = _b[favor_limits_1992_dk] 
+
+***Gen South 
+destring fipstate, replace 
+gen south=inlist(fipstate, 10, 11, 12, 13, 24, 37, 45, 51, 54, 1, 21, 28, 47, 5, 22, 40, 48) 
+
+****Heterogeneity by demographic & other political views ;
+****Take the col. (5) spec and split by various political views ;
+gen graph_cat=_n  if _n<35 
+gen coeff=. 
+gen upper=. 
+gen lower=. 
+local counter=0 
+local counter2=0 
+
+foreach cond in "white==1" "white==1 & male==1" "white==1 & coll_grad_1992==0" "south==1" "weekly_relig_1992==1" "abortion_1992_clean==0" "help_blacks_1992_clean==1" "oppose_gays_military_1992==1"  { 
+  local counter=`counter' + 1  
+  local counter2=30 - 3*`counter' 
+  
+  reg move_right_92_94_100 favor_limits_1992_dk `controls_demog' `controls_issues_classic' `controls_issues_recent' [pw = V923008] if (`cond'==1), robust cl(fipstate) 
+  
+  replace coeff=_b[favor_limits_1992_dk] if graph_cat>`counter2' - .001 & graph_cat<`counter2' + .0001 
+  replace upper=_b[favor_limits_1992_dk] + 2*_se[favor_limits_1992_dk] if graph_cat>`counter2' - .001 & graph_cat<`counter2' + .0001 
+  replace lower=_b[favor_limits_1992_dk] - 2*_se[favor_limits_1992_dk] if graph_cat>`counter2' - .001 & graph_cat<`counter2' + .0001 
+  
+  reg move_right_92_94_100 favor_limits_1992_dk `controls_demog' `controls_issues_classic' `controls_issues_recent' [pw = V923008] if ~(`cond'==1), robust cl(fipstate) 
+  
+  replace coeff=_b[favor_limits_1992_dk] if graph_cat>`counter2' - 1 - .001 & graph_cat<`counter2' - 1 + .0001 
+  replace upper=_b[favor_limits_1992_dk] + 2*_se[favor_limits_1992_dk] if graph_cat>`counter2' -1 - .001 & graph_cat<`counter2' -1 + .0001 
+  replace lower=_b[favor_limits_1992_dk] - 2*_se[favor_limits_1992_dk] if graph_cat>`counter2' -1  - .001 & graph_cat<`counter2' -1 + .0001 
+} 
+
+****Label categories ;
+label define graph_cat 15 "White men" 14 "Others"  12 "Oppose abortion" 11 "Others" 9 "Gov't sd not help blacks" 8 "Others" 6 "Oppose gays in military" 5 "Others"  
+
+label values graph_cat graph_cat 
+
+#d ;
+ twoway 
+
+/**white v others**/
+(rcap upper lower graph_cat if graph_cat==27, horizontal color(red) lw(medium)) 
+(scatter  graph_cat coeff  if graph_cat==27,  color(red) m(circle_hollow) mlw(medium) msize(small))
+(rcap upper lower graph_cat if graph_cat==26, horizontal color(midblue) lw(medium)) 
+(scatter  graph_cat coeff  if graph_cat==26,  color(midblue) m(circle_hollow) mlw(medium) msize(small))
+  
+/**white men v others**/
+(rcap upper lower graph_cat if graph_cat==24, horizontal color(red) lw(medium)) 
+(scatter  graph_cat coeff  if graph_cat==24,  color(red) m(circle_hollow) mlw(medium) msize(small))
+(rcap upper lower graph_cat if graph_cat==23, horizontal color(midblue) lw(medium)) 
+(scatter  graph_cat coeff  if graph_cat==23,  color(midblue) m(circle_hollow) mlw(medium) msize(small))
+
+/**white no coll v others**/
+(rcap upper lower graph_cat if graph_cat==21, horizontal color(red) lw(medium)) 
+(scatter  graph_cat coeff  if graph_cat==21,  color(red) m(circle_hollow) mlw(medium) msize(small))
+(rcap upper lower graph_cat if graph_cat==20, horizontal color(midblue) lw(medium)) 
+(scatter  graph_cat coeff  if graph_cat==20,  color(midblue) m(circle_hollow) mlw(medium) msize(small))
+ 
+/**Southerners v others**/
+(rcap upper lower graph_cat if graph_cat==18, horizontal color(red) lw(medium)) 
+(scatter  graph_cat coeff  if graph_cat==18,  color(red) m(circle_hollow) mlw(medium) msize(small))
+(rcap upper lower graph_cat if graph_cat==17, horizontal color(midblue) lw(medium)) 
+(scatter  graph_cat coeff  if graph_cat==17,  color(midblue) m(circle_hollow) mlw(medium) msize(small))
+ 
+/**Relig attendence v others**/
+(rcap upper lower graph_cat if graph_cat==15, horizontal color(red) lw(medium)) 
+(scatter  graph_cat coeff  if graph_cat==15,  color(red) m(circle_hollow) mlw(medium) msize(small))
+(rcap upper lower graph_cat if graph_cat==14, horizontal color(midblue) lw(medium) ) 
+(scatter  graph_cat coeff  if graph_cat==14,  color(midblue) m(circle_hollow) mlw(medium) msize(small))
+
+/***Oppose abortion v others****/
+(rcap upper lower graph_cat if graph_cat==12, horizontal color(red) lw(medium)) 
+(scatter graph_cat coeff if graph_cat==12, mlw(medium) color(red) m(circle_hollow) msize(small)) 
+(rcap upper lower graph_cat if graph_cat==11, horizontal color(midblue) lw(medium)) 
+(scatter graph_cat coeff if graph_cat==11, mlw(medium) color(midblue) m(circle_hollow) msize(small)) 
+
+/***Oppose govt help to blacks v others ***/   
+(rcap upper lower graph_cat if graph_cat==9, horizontal color(red) lw(medium)) 
+(scatter graph_cat coeff if graph_cat==9, mlw(medium) color(red) m(circle_hollow) msize(small)) 
+(rcap upper lower graph_cat if graph_cat==8, horizontal color(midblue) lw(medium))
+(scatter graph_cat coeff if graph_cat==8, mlw(medium) color(midblue) m(circle_hollow) msize(small)) 
+
+/***Oppose gays in military v others ***/  
+(rcap upper lower graph_cat if graph_cat==6, horizontal color(red) lw(medium)) 
+(scatter graph_cat coeff if graph_cat==6, mlw(medium) color(red) m(circle_hollow)  msize(small)) 
+(rcap upper lower graph_cat if graph_cat==5, horizontal color(midblue) lw(medium)) 
+(scatter graph_cat coeff if graph_cat==5, mlw(medium) color(midblue) m(circle_hollow) lw(medthick) msize(small)) 
+  
+ if graph_cat>3 & graph_cat<28, 
+ xline(`baseline_beta_limits') xline(0, lc(gray) lp(shortdash)) ysize(10) xsize(9)
+
+/* ylabel(15 14 12 11 9 8 6 5, valuelabel angle(35))*/ ylabel(none) yscale(range(4 12.5))  xti("Point-estimate and 95% conf interval for coeff. on {it:Favor Limits}") yti("")  xlabel(-20(5)25)
+
+/***text***/
+
+text(26.6 17 "Whites", place(e) justification(left) size(small))
+text(25.6 10 "Others", place(e) justification(left) size(small))
+
+text(23.6 19 "White men", place(e) justification(left) size(small))
+text(22.6 -6 "Others", place(e) justification(left) size(small))
+
+text(20.6 17 "White, no col. deg.", place(e) justification(left) size(small))
+text(19.6 16 "Others", place(e) justification(left) size(small))
+
+text(17.6 21 "Southerners", place(e) justification(left) size(small))
+text(16.6 10.5 "Others", place(e) justification(left) size(small))
+
+text(14.6 -14 "Weekly rel. attendence", place(e) justification(left) size(small))
+text(13.6 13 "Others", place(e) justification(left) size(small))
+
+text(11.6 17 "Oppose abortion", place(e) justification(left) size(small))
+text(10.6 13 "Others", place(e) justification(left) size(small))
+
+text(8.6  21 "Oppose gov. aid for Blacks", place(c) justification(left) size(small))
+text(7.6  -4 "Others", place(c) justification(left) size(small))
+text(5.6  21 "Oppose gays in military", place(c) justification(left) size(small))
+text(4.6  -3 "Others", place(c) justification(left) size(small))
+
+text(18.6 -11 "Solid, red vertical" "line is point-estimate" "from full sample", place(c) justification(left) size(small))
+ ;
+
+graph export "$results/anes_panel_hetero.pdf", replace ;
+#d cr 
+
+  
+
+/*------------------------------------ End of SECTION 3 ------------------------------------*/
+
+
+/**********************************************************************/
+/*  SECTION 4: Appendix Tables        
+    Notes: */
+/**********************************************************************/
+ 
+/*----------------------------------------------------*/
+   /* [>   Appendix Table A1   <] */ 
+/*----------------------------------------------------*/
+  
+use "$working_data/anes_cumul_cleaned.dta", clear
+
+gen some_coll=hs_top==0 & coll_grad==0 if coll_grad<. 
+
+label var some_coll "Some college, no BA degree" 
+label var coll_grad "Has BA degree" 
+
+**Create a list of demographic control variables that excludes educ vars so that they don't appear twice in the regressions 
+local controls_demog_ex_ed "white hisp_yes male ln_fam_inc ln_fam_inc_dummy age" 
+local controls_issues "abortion_clean abortion_dummy mostly_trust_gov bl_th_cumul bl_th_cumul_dummy" 
+eststo clear 
+
+eststo: reg favor_limits coll_grad if year<2016 , cl(state) robust 
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dv_mean=`r(mean)' 
+estadd local st_fe "No" 
+estadd local drop_dk "No" 
+estadd local demog "No" 
+estadd local polit "No" 
+
+eststo: reg favor_limits coll_grad some_coll if year<2016 , cl(state) robust 
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dv_mean=`r(mean)' 
+estadd local st_fe "No" 
+estadd local drop_dk "No" 
+estadd local demog "No" 
+estadd local polit "No" 
+
+eststo: reg favor_limits coll_grad `controls_demog_ex_ed'  if year<2016 , cl(state) robust 
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dv_mean=`r(mean)' 
+estadd local st_fe "No" 
+estadd local drop_dk "No" 
+estadd local demog "Yes" 
+estadd local polit "No" 
+
+eststo: reg favor_limits coll_grad `controls_demog_ex_ed' `controls_issues' if year<2016 , cl(state) robust 
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dv_mean=`r(mean)' 
+estadd local st_fe "No" 
+estadd local drop_dk "No" 
+estadd local demog "Yes" 
+estadd local polit "Yes" 
+
+eststo: areg favor_limits coll_grad `controls_demog_ex_ed' `controls_issues' if year<2016 , cl(state) robust abs(state)
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dv_mean=`r(mean)' 
+estadd local st_fe "Yes" 
+estadd local drop_dk "No" 
+estadd local demog "Yes" 
+estadd local polit "Yes" 
+
+eststo: areg favor_limits_ex_dk coll_grad `controls_demog_ex_ed' `controls_issues' if year<2016 , cl(state) robust abs(state)
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dv_mean=`r(mean)' 
+estadd local st_fe "No" 
+estadd local drop_dk "Yes" 
+estadd local demog "Yes" 
+estadd local polit "Yes" 
+
+#d ;
+local esttab_cmd `"se brackets nostar stats(dv_mean demog polit st_fe drop_dk N, 
+labels("Dept. var. mean" "Demog. covars" "Issue covars" "State FE" "Ex. DK" "Observations")) keep(coll_grad some_coll) nomtitles label wrap varwidth(22)"' ;
+
+esttab, `esttab_cmd';
+esttab using "$results/educ_protectionism.tex", replace booktabs fragment
+`esttab_cmd'
+mgroups("Dept. var: Favor more limits on trade", pattern(1 0 0 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span erepeat(\cmidrule(lr){@span})) ;
+#d cr
+  
+ 
+/*----------------------------------------------------*/
+   /* [>   Appendix Table A2   <] */ 
+/*----------------------------------------------------*/
+
+use "$working_data/master_county_year_final.dta", clear
+keep if inlist(year, 1980,1984,1988,1992,1996,2000,2004,2008,2012,2016)
+ES tot_pres_rep_share , indvar(county_vul_own_1990) version("pres") spec("full") scaled("no") baseyear(1992) pos(11)
+tempfile coeff_tot_pres_rep_share 
+save `coeff_tot_pres_rep_share', replace 
+
+use "$working_data/master_county_year_final.dta", clear
+keep if inlist(year, 1980,1984,1988,1992,1996,2000,2004,2008,2012,2016)
+ES tot_pres_dem_share , indvar(county_vul_own_1990) version("pres") spec("full") scaled("no") baseyear(1992) pos(7)
+tempfile coeff_tot_pres_dem_share 
+save `coeff_tot_pres_dem_share', replace 
+
+
+append using `coeff_tot_pres_rep_share' 
+gen party = cond(_n < 11, "democrat", "republican")
+drop estimate_dem_styr_manushare-max95_dem_styr_manushare
+
+replace party="D" if party=="democrat" 
+replace party="R" if party=="republican" 
+
+**Reshape wide by party 
+reshape wide estimate_did-max95_styr_colgrad , i(year) j(party) string  
+
+sort year 
+
+keep year estimate_styrD estimate_styrR
+tempfile coeff_file
+save `coeff_file', replace 
+
+use "$working_data/master_county_year_final.dta", clear 
+keep if inlist(year, 1980,1984,1988,1992,1996,2000,2004,2008,2012,2016)
+levelsof year, local(year_list)
+foreach year of local year_list {
+  gen year_`year' = (year == `year')
+  gen init_cty_vul_`year' = year_`year' * county_vul_own_1990 
+}
+*restrict to analysis sample 
+qui: reghdfe tot_pres_rep_share tot_pres_dem_share county_vul_own_1990 [weight = cty_pop_1990], absorb(county year i.fipstate#year ///
+   c.d_tradeotch_pw_lag#i.year c.share_colgrad_1990#i.year c.manu_share_1990#i.year) cluster(fipstate) 
+qui: bys county: egen cty_tot = total(e(sample))
+qui: unique year if e(sample) == 1 
+qui: gen samp = 1 if cty_tot == r(unique)
+keep if samp == 1
+sort year 
+
+merge m:1 year using `coeff_file' 
+
+***Hand-fix Miami-Dade 
+***It had FIPS code 12025 up through 1988 and then switches to 12086 
+***Note that this is hard-coded for the moment!!!! 
+
+**Change county code from 12025 to 12086 
+replace county=12086 if county==12025 
+
+egen dem_st = total(pres_dem_vote), by(fipstate year) 
+egen rep_st = total(pres_rep_vote), by(fipstate year) 
+ 
+gen d_won=dem_st>rep_st if dem_st<. & rep_st<. 
+
+gen dem_margin=dem_st-rep_st 
+
+gen dem_margin_pp=(dem_st-rep_st)/(dem_st + rep_st) 
+
+
+***Merge crosswalk to get the names of each state for the final tables 
+
+drop _merge 
+rename fipstate state_fips
+sort state_fips 
+merge m:1 state_fips using "$working_data/state_cross.dta", keep(matched master) 
+
+
+*********************************************************** 
+****    Merge in electoral votes for relevant elections 
+*********************************************************** 
+cap drop _merge 
+
+preserve 
+
+import excel using "$raw_data/leip/Pres_Election_Data_1996.xls",  sheet("State") first clear cellrange(A2:B53)   
+
+rename ElecVote EV_92_00 
+
+rename A state_name 
+replace state_name="Washington DC" if state_name=="District of Columbia" 
+sort state_name 
+
+tempfile EVs_92_00 
+save `EVs_92_00' 
+
+import excel using "$raw_data/leip/Pres_Election_Data_2000.xls",  sheet("State") first clear cellrange(A2:N53) 
+keep A L N 
+rename (A L N) (state_name dem_st_pres_votes_00 rep_st_pres_votes_00)
+tempfile st_00 
+save `st_00'
+
+import excel using "$raw_data/leip/Pres_Election_Data_2004.xls",  sheet("State") first clear cellrange(A2:N53) 
+keep A Democratic Republican
+rename (A Democratic Republican) (state_name dem_st_pres_votes_04 rep_st_pres_votes_04)
+tempfile st_04 
+save `st_04'
+
+import excel using "$raw_data/leip/Pres_Election_Data_2008.xls",  sheet("State") first clear cellrange(A2:N53)   
+keep A ElecVote Democratic Republican 
+rename (A ElecVote Democratic Republican) (state_name EV_02_10 dem_st_pres_votes_08 rep_st_pres_votes_08)
+replace state_name="Washington DC" if state_name=="District of Columbia" 
+sort state_name 
+tempfile EVs_02_10 
+save `EVs_02_10' 
+
+import excel using "$raw_data/leip/Pres_Election_Data_2012.xlsx",  sheet("State") first clear cellrange(A2:N53)   
+keep A ElecVote Democratic Republican 
+rename (A ElecVote Democratic Republican) (state_name EV_12_20 dem_st_pres_votes_12 rep_st_pres_votes_12)
+replace state_name="Washington DC" if state_name=="District of Columbia" 
+sort state_name 
+tempfile EVs_12_20 
+save `EVs_12_20' 
+
+restore 
+
+sort state_name 
+
+merge m:1 state_name using `EVs_92_00' 
+tab _merge 
+drop _merge 
+
+merge m:1 state_name using `EVs_02_10' 
+tab _merge 
+drop _merge 
+
+merge m:1 state_name using `EVs_12_20' 
+tab _merge 
+drop _merge 
+
+merge m:1 state_name using `st_00' 
+tab _merge 
+drop _merge 
+
+merge m:1 state_name using `st_04' 
+tab _merge 
+drop _merge 
+
+drop if missing(county)
+***Map each EV distribution to the appropriate election and state votes 
+
+gen EVs=EV_92_00 if year>1991 & year<2001 
+replace EVs=EV_02_10 if year>2001 & year<2011 
+replace EVs=EV_12_20 if year>2011 & year<2021 
+
+gen dem_st_pres_votes = dem_st_pres_votes_00 if year == 2000 
+replace dem_st_pres_votes = dem_st_pres_votes_04 if year == 2004
+replace dem_st_pres_votes = dem_st_pres_votes_08 if year == 2008
+replace dem_st_pres_votes = dem_st_pres_votes_12 if year == 2012
+
+gen rep_st_pres_votes = rep_st_pres_votes_00 if year == 2000 
+replace rep_st_pres_votes = rep_st_pres_votes_04 if year == 2004
+replace rep_st_pres_votes = rep_st_pres_votes_08 if year == 2008
+replace rep_st_pres_votes = rep_st_pres_votes_12 if year == 2012
+
+***Create a tag for state-year 
+egen tag_st_yr=tag(state_fips year) 
+
+
+***One thing we could do is examine effect on the entire South 
+
+gen south_census=inlist(state_fips, 10, 12, 13, 24, 37, 45, 51, 54, 1, 21, 28, 47, 5, 22, 40, 48) 
+
+
+********************************************************************************* 
+
+****  Simulate effects if you could `remove' NAFTA effect for post-1992 elections 
+
+********************************************************************************* 
+
+***Simulate the change from year y relative to 1992, removing NAFTA 
+gen sim_sh_cty_styr_d=tot_pres_dem_share - county_vul_own_1990*estimate_styrD 
+gen sim_sh_cty_styr_r=tot_pres_rep_share - county_vul_own_1990*estimate_styrR 
+***Translate to total predicted *votes* 
+gen sim_v_cty_styr_d=sim_sh_cty_styr_d*pres_tot_vote 
+gen sim_v_cty_styr_r=sim_sh_cty_styr_r*pres_tot_vote 
+***Now, take these votes and sum to the state-year level 
+egen sim_st_styr_d=total(sim_v_cty_styr_d), by(state_fips year) 
+egen sim_st_styr_r=total(sim_v_cty_styr_r), by(state_fips year) 
+***Simulate who wins the state ex. NAFTA effect 
+gen d_win_styr_sim=sim_st_styr_d > sim_st_styr_r if sim_st_styr_d<. & sim_st_styr_r<. 
+gen d_margin_styr_sim=sim_st_styr_d - sim_st_styr_r 
+gen d_marg_styr_pp = (sim_st_styr_d - sim_st_styr_r)/(sim_st_styr_d + sim_st_styr_r) 
+gen delta_margin_styr = d_margin_styr_sim - dem_margin 
+
+di "List states that would have been flipped to WIN under styr in `y' " 
+***Recall, hand-drop Virginia (fips 51) bc we are missing counties 
+foreach y in 2000 2004 2008 2012 { 
+tab state_fips if year==`y' & d_win_styr_sim==1 & d_won==0 , matrow(flip_`y')  
+svmat flip_`y', name(flip_list_`y') 
+di "How many EVs would have flipped?" 
+sum EVs if year==`y' & d_win_styr_sim==1 & d_won==0  & tag_st_y==1, d  
+local flip_ev_`y'=`r(sum)' 
+di "List states that woudl have been Less than 2 pt loss under styr in `y' " 
+tab state_fips if year==`y' & dem_margin_pp<-.025 & d_marg_styr_pp>-.025 & d_marg_styr_pp<0  , matrow(closer_`y') 
+svmat closer_`y', name(closer_list_`y') 
+di "How many EVs would have been made closer?" 
+sum EVs if year==`y' & dem_margin_pp<-.025 & d_marg_styr_pp>-.025 & d_marg_styr_pp<0 & tag_st_y==1, d  
+local closer_ev_`y'=`r(sum)' 
+  } 
+
+***Generate a table with these results 
+
+***First, create state name labels so they look nicer instead of FIPS codes 
+
+label define fips_postal_labels ///
+1 "AL" ///
+2 "AK" ///
+4 "AZ" ///
+5 "AR" ///
+6 "CA" ///
+8 "CO" ///
+9 "CT" ///
+10  "DE" ///
+11  "DC" ///
+12  "FL" ///
+13  "GA" ///
+15  "HI" ///
+16  "ID" ///
+17  "IL" ///
+18  "IN" ///
+19  "IA" ///
+20  "KS" ///
+21  "KY" ///
+22  "LA" ///
+23  "ME" ///
+24  "MD" ///
+25  "MA" ///
+26  "MI" ///
+27  "MN" ///
+28  "MS" ///
+29  "MO" ///
+30  "MT" ///
+31  "NE" ///
+32  "NV" ///
+33  "NH" ///
+34  "NJ" ///
+35  "NM" ///
+36  "NY" ///
+37  "NC" ///
+38  "ND" ///
+39  "OH" ///
+40  "OK" ///
+41  "OR" ///
+42  "PA" ///
+72  "PR" ///
+44  "RI" ///
+45  "SC" ///
+46  "SD" ///
+47  "TN" ///
+48  "TX" ///
+49  "UT" ///
+50  "VT" ///
+51  "VA" ///
+78  "VI" ///
+53  "WA" ///
+54  "WV" ///
+55  "WI" ///
+56  "WY" 
+
+***Relabel all the little lists i made 
+***Then turn into string variables 
+***Then tack on at the end the locals I created for the total EVs
+forval y=2000(4)2012 {
+label values flip_list_`y' fips_postal_labels 
+label values closer_list_`y' fips_postal_labels 
+decode flip_list_`y', gen(flip_list_`y'_str) 
+decode closer_list_`y', gen(closer_list_`y'_str) 
+***Tack on at end of this variable/list the EV total calculated above 
+replace flip_list_`y'_str="`flip_ev_`y''" if _n==5 
+replace closer_list_`y'_str="`closer_ev_`y''" if _n==5 
+}  
+
+***Latex table formattng 
+
+gen and="&" 
+gen end="\\" 
+gen start=and 
+replace start="Electoral votes &" if _n==5 
+
+outsheet start flip_list_2000_str and closer_list_2000_str and flip_list_2004_str and closer_list_2004_str ///
+  and flip_list_2008_str and closer_list_2008_str and flip_list_2012_str and closer_list_2012_str ///
+  end if _n<6 using "$results/elex_sim.tex" , replace nonames noquote 
+
+
+  
+/*----------------------------------------------------*/
+   /* [>   Appendix Table A3   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/anes_cumul_cleaned.dta", clear
+
+local controls_demog "white  hisp_yes male hs_top coll_grad ln_fam_inc ln_fam_inc_dummy age " 
+local controls_issues "abortion_clean abortion_dummy mostly_trust_gov bl_th_cumul bl_th_cumul_dummy " 
+
+lab var favor_limits "Favor import limits"
+
+gen like_perot=. 
+forval y=92(4)96 { 
+replace like_perot=like_perot_`y' if year==19`y' 
+} 
+
+eststo clear 
+
+eststo: reg like_perot favor_limits i.year , cl(state) 
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dv_mean=`r(mean)' 
+estadd local yr_fe "No" 
+estadd local samp "None" 
+estadd local dem_controls "Yes" 
+estadd local issue_controls "No" 
+estadd local st_fe "No" 
+
+eststo: reg like_perot favor_limits `controls_demog' i.year , cl(state) 
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dv_mean=`r(mean)' 
+estadd local yr_fe "Yes" 
+estadd local samp "None" 
+estadd local dem_controls "Yes" 
+estadd local issue_controls "No" 
+estadd local st_fe "No" 
+
+eststo: reg like_perot favor_limits `controls_demog' `controls_issues' i.year , cl(state) 
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dv_mean=`r(mean)' 
+estadd local yr_fe "Yes" 
+estadd local samp "None" 
+estadd local dem_controls "Yes" 
+estadd local issue_controls "Yes" 
+estadd local st_fe "No" 
+
+eststo: areg like_perot favor_limits `controls_demog' `controls_issues' i.year , cl(state) abs(state) 
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dv_mean=`r(mean)' 
+estadd local yr_fe "Yes" 
+estadd local samp "None" 
+estadd local dem_controls "Yes" 
+estadd local issue_controls "Yes" 
+estadd local st_fe "Yes" 
+
+eststo: reg like_perot favor_limits `controls_demog' `controls_issues' i.year if year==1992 , cl(state) 
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dv_mean=`r(mean)' 
+estadd local yr_fe "No" 
+estadd local samp "1992 only" 
+estadd local dem_controls "Yes" 
+estadd local issue_controls "Yes" 
+estadd local st_fe "No" 
+
+eststo: reg like_perot favor_limits `controls_demog' `controls_issues' i.year if year==1996 , cl(state)  
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dv_mean=`r(mean)' 
+estadd local yr_fe "No" 
+estadd local samp "1996 only" 
+estadd local dem_controls "Yes" 
+estadd local issue_controls "Yes" 
+estadd local st_fe "No" 
+
+#d ;
+local esttab_cmd "se brackets keep(favor_limits ) nostar nomtitles label wrap varwidth(18)
+stats(dv_mean dem_controls issue_controls st_fe samp N, labels("Dept. var. mean" "Demog. covars" "Issue covars" "State FE" "Sample criteria" "Observations")) " ;
+
+esttab, `esttab_cmd' ;
+
+esttab using "$results/perot_tab.tex", replace fragment booktabs `esttab_cmd'
+mgroups("Dept. variable: Approves of Perot", pattern(1 0 0  0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span erepeat(\cmidrule(lr){@span}))   ;
+#d cr
+  
+ 
+
+/*----------------------------------------------------*/
+   /* [>   Appendix Table A4   <] */ 
+/*----------------------------------------------------*/
+use "$working_data/anes_92_97.dta", clear
+order st*
+//destring state, replace force
+replace fipstate = state_1996 if missing(fipstate)
+replace fipstate = state_1994 if missing(fipstate)
+replace fipstate = state_1992 if missing(fipstate)
+
+*****Table 
+eststo clear 
+local controls_demog "white_1992 black_1992 male_1992 yrs_ed age_1992 ln_fam_inc_1992 ln_fam_inc_1992_dummy rural CC " 
+local controls_issues_classic "help_blacks_1992_clean role_gov_1992_clean abortion_1992_clean weekly_relig inc_imm_1992" 
+local controls_issues_recent "oppose_gays_military health_reform_1992_clean favor_term_limit" 
+
+tab   help_blacks_1992 help_blacks_1992_clean, m
+recode  help_blacks_1992_clean (5 6 7=1) (0 1 2 3 4=0)
+
+tab   role_gov_1992 role_gov_1992_clean, m
+recode  role_gov_1992_clean (5 6 7=1) (0 1 2 3 4=0)
+
+tab   abortion_1992 abortion_1992_clean, m
+recode  abortion_1992_clean (4=1) (0 1 2 3=0)
+
+tab   health_reform_1992 health_reform_1992_clean, m
+recode  health_reform_1992_clean (5 6 7=1) (0 1 2 3 4=0)
+
+***Label vars for the table 
+label var dislike_nafta_dk "Oppose NAFTA" 
+label var coll_grad_1992 "College grad" 
+label var union_hh_1992 "Union household (dummy)" 
+
+gen move_right_92_94_100=move_right_92_94*100 
+label var move_right_92_94_100 "Moved right between 1992, 1993 (x 100)" 
+
+eststo clear 
+
+eststo: reg move_right_92_94_100 dislike_nafta_dk  [pw = V923008] if move_right_92_94<. , robust cluster(fipstate) 
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dmean = `r(mean)' 
+estadd local year "1992-94" 
+estadd local ex_dk "No" 
+estadd local stfe "No" 
+estadd local demog "No" 
+
+eststo: reg move_right_92_94_100 dislike_nafta_dk  [pw = V923008] if move_right_92_94<. & dk_nafta==0 , robust cluster(fipstate) 
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dmean = `r(mean)' 
+estadd local year "1992-94" 
+estadd local ex_dk "Yes" 
+estadd local stfe "No" 
+estadd local demog "No" 
+
+eststo: reg move_right_92_94_100 dislike_nafta_dk `controls_demog'  [pw = V923008] if move_right_92_94<.  , robust cluster(fipstate) 
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dmean = `r(mean)' 
+estadd local year "1992-94" 
+estadd local ex_dk "No" 
+estadd local stfe "No" 
+estadd local demog "Yes" 
+
+eststo: reg move_right_92_94_100 dislike_nafta_dk `controls_demog' `controls_issues_classic'  [pw = V923008] if move_right_92_94<.  , robust cluster(fipstate) 
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dmean = `r(mean)' 
+estadd local year "1992-94" 
+estadd local ex_dk "No" 
+estadd local stfe "No" 
+estadd local demog "Yes" 
+
+eststo: reg move_right_92_94_100 dislike_nafta_dk `controls_demog' `controls_issues_classic' `controls_issues_recent' [pw = V923008]  if move_right_92_94<.  , robust cluster(fipstate) 
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dmean = `r(mean)' 
+estadd local year "1992-94" 
+estadd local ex_dk "No" 
+estadd local stfe "No" 
+estadd local demog "Yes" 
+
+local baseline_beta_nafta = _b[dislike_nafta_dk] 
+
+eststo: areg move_right_92_94_100 dislike_nafta_dk `controls_demog' `controls_issues_classic' `controls_issues_recent' [pw = V923008]  if move_right_92_94<.  , absorb(fipstate) robust cluster(fipstate) 
+sum `e(depvar)' if e(sample)==1 
+estadd scalar dmean = `r(mean)' 
+estadd local year "1992-94" 
+estadd local ex_dk "No" 
+estadd local stfe "Yes" 
+estadd local demog "Yes" 
+
+esttab , drop(_cons *dummy* white_1992 black_1992 male_1992 yrs_educ age_1992 ln_fam_inc_1992 rural CC*) se brackets nostar stats(dmean ex_dk demog stfe r2 N, label("Dept. var. mean" "Ex. DK"  "Demog. covars" "State FE" "R-squared" "Observations")) nomtitles label wrap nogaps
+
+esttab using "$results/panel_nafta_move_right_92_94_100.tex", ///
+replace fragment booktabs nostar se brackets ///
+drop(_cons *dummy* white_1992 black_1992 male_1992 yrs_educ age_1992 ln_fam_inc_1992 rural CC*) ///
+label wrap varwidth(25) stats(dmean ex_dk demog stfe r2 N, label("Dept. var. mean" "Ex. DK"  "Demog. covars" "State FE" "R-squared" "Observations")) ///
+mgroups( "Move in Repub direction dummy x 100", pattern(1 0 0 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span erepeat(\cmidrule(lr){@span})) nomtitles nogaps 
+  
+
+  
+
+/*------------------------------------ End of SECTION 4 ------------------------------------*/
+
+
+/**********************************************************************/
+/*  SECTION 5: Appendix C Randomization Inference and AKM SE Robustness        
+    Notes: */
+/**********************************************************************/
+ 
+/*----------------------------------------------------*/
+   /* [>   Appendix Figures C 1-8   <] */ 
+/*----------------------------------------------------*/
+set seed $myseed 
+use "$working_data/vulnerability_sim.dta", clear
+
+local dep_var_list tp_pres_rsh log_emptot
+local reps 1000
+//local var tp_pres_rep_share
+foreach var in `dep_var_list' {
+  di "`var'"
+if "`var'" == "tp_pres_rsh" {
+  use "$working_data/master_county_year_final.dta", clear 
+  merge m:1 county using "$working_data/vulnerability_sim.dta"
+  rename tp_pres_rep_share tp_pres_rsh
+  keep if inlist(year, 1980,1984,1988,1992,1996,2000,2004,2008,2012,2016)
+  qui: reghdfe tot_pres_rep_share tot_pres_dem_share county_vul_own_1990 [weight = cty_pop_1990], absorb(county year i.fipstate#year ///
+     c.d_tradeotch_pw_lag#i.year c.share_colgrad_1990#i.year c.manu_share_1990#i.year) cluster(fipstate) 
+  qui: bys county: egen cty_tot = total(e(sample))
+  qui: unique year if e(sample) == 1 
+  qui: gen samp = 1 if cty_tot == r(unique)
+  keep if samp == 1
+  keep if inlist(year, 1984,1992,2000)
+  local pre 1992
+  local post 2000
+}
+else {
+  use "$working_data/master_county_year_final.dta", clear 
+  merge m:1 county using "$working_data/vulnerability_sim.dta"
+  rename tp_pres_rep_share tp_pres_rsh
+  keep if inrange(year,1986,2008) 
+  reghdfe log_emptot county_vul_own_1990 [weight = cty_pop_1990], absorb(county year i.fipstate#year ///
+   c.d_tradeotch_pw_lag#i.year c.share_colgrad_1990#i.year c.manu_share_1990#i.year) cluster(fipstate)
+  qui: bys county: egen cty_tot = total(e(sample))
+  qui: unique year if e(sample) == 1 
+  qui: gen samp = 1 if cty_tot == r(unique)
+  keep if samp == 1
+  //bysort county: keep if _N == 23
+  keep if inlist(year, 1986,1993, 2000)
+  local pre 1993
+  local post 2000
+}
+di "hello there"
+
+rename (share_colgrad_1990 manu_share_1990)  (_scol _smnf)
+
+
+keep `dep_var_list' county year cty_pop_1990 county_vul_own* fipstate _scol _smnf
+bysort county (year) : gen `var'_diff = `var' - `var'[_n-1]
+
+local cntrl_list "" "_smnf"
+local year_list `pre' `post' 
+
+foreach cntrl in `cntrl_list' {
+  di "`cntrl'"
+foreach yr in `year_list' {
+    di "`year'"
+
+  *original
+  reghdfe `var'_diff county_vul_own_1990 `cntrl' if year == `yr' [weight=cty_pop_1990], absorb(fipstate) cluster(fipstate)
+  local `var'_orig_coef_`yr'`cntrl' = round(_b[county_vul_own_1990], 0.001)
+  local `var'_orig_se_`yr'`cntrl'   = round(_se[county_vul_own_1990], 0.001)
+  di ``var'_orig_coef_`yr'`cntrl''
+  di ``var'_orig_se_`yr'`cntrl''
+  
+  *matrices
+  matrix coef_vec_ad = J(`reps',1,.)
+  matrix coef_vec_uni = J(`reps',1,.)
+  matrix coef_vec_au = J(`reps',1,.)
+  
+  forvalues r = 1/`reps' {
+    di "`r'"
+    preserve
+    * randomizing sample
+    bsample, cluster(fipstate) idcluster(newclust)  
+    
+    reghdfe `var'_diff county_vul_own_f`r' `cntrl' if year==`yr' [weight=cty_pop_1990],  ///
+      absorb(newclust) cluster(newclust)
+    matrix coef_vec_ad[`r',1] = _b[county_vul_own_f`r']
+  
+    reghdfe `var'_diff county_vul_own_funi`r' `cntrl' if year==`yr' [weight=cty_pop_1990], ///
+      absorb(newclust)   cluster(newclust)
+    matrix coef_vec_uni[`r',1] = _b[county_vul_own_funi`r']
+  
+    reghdfe `var'_diff county_vul_own_fau`r' `cntrl' if year==`yr' [weight=cty_pop_1990], ///
+      absorb(newclust)  cluster(newclust)
+    matrix coef_vec_au[`r',1] = _b[county_vul_own_fau`r']
+    
+  
+  svmat double coef_vec_ad, name(coef_vec_ad)
+  svmat double coef_vec_uni, name(coef_vec_uni)
+  svmat double coef_vec_au, name(coef_vec_au)
+  
+  summarize coef_vec_ad
+  local coef_ad_`var'_`yr'`cntrl' = round(`r(mean)', 0.001)
+  local sd_ad_`var'_`yr'`cntrl' = round(`r(sd)' , 0.001)
+  summarize coef_vec_uni
+  local coef_uni_`var'_`yr'`cntrl' = round(`r(mean)', 0.001)
+  local sd_uni_`var'_`yr'`cntrl' = round(`r(sd)' , 0.001)
+  summarize coef_vec_au 
+  local coef_au_`var'_`yr'`cntrl' = round(`r(mean)', 0.001)
+  local sd_au_`var'_`yr'`cntrl' = round(`r(sd)' , 0.001)
+
+  restore
+  }
+}
+}
+}
+ 
+
+*doesn't format correctly. 
+//local log_emptot_orig_coef_2000_smnf : di %9.3f round(`log_emptot_orig_coef_2000_smnf', 0.001)
+
+texdoc init "$results/bootstrap_results_nonstacked_1993_bsample.tex", replace force
+tex \begin{table}
+tex  \caption{Estimates from the first-difference model: Change in log of employment (1986-1993) and simulated county vulnerability} \label{tab-bootstrap-93}
+tex  \begin{tabular*}{.85\textwidth}{lcccccccc}
+tex  \hline
+tex Vulnerability : & \multicolumn{2}{c}{Actual} & \multicolumn{6}{c}{Simulated} \\ \hline  \vspace*{3mm}
+tex Distribution  : & \multicolumn{2}{c}{N/A}   & \multicolumn{2}{c}{\makecell{poly. \\ approx.}} & \multicolumn{2}{c}{\makecell{uniform \\ \text{[0,0.4]}}} & \multicolumn{2}{c}{\makecell{uniform \\ \text{[0,0.4]}}} \\ \hline
+tex Coefficient   & `log_emptot_orig_coef_1993'  &  & `coef_ad_log_emptot_1993' &  & `coef_uni_log_emptot_1993' &  & `coef_au_log_emptot_1993'   \\
+tex (SE)                   & (`log_emptot_orig_se_1993')  &  & (`sd_ad_log_emptot_1993') &  &  (`sd_uni_log_emptot_1993')&  & (`sd_au_log_emptot_1993')      \\
+tex state FE       & yes & & yes &  & yes &  & yes  \\
+tex tariffs simulated & none && {\makecell{positive tariff \\ industries}} & & {\makecell{positive tariff \\ industries}} & & all \\
+tex \hline
+tex \end{tabular*}
+tex \end{table}
+texdoc close
+
+
+texdoc init "$results/bootstrap_results_nonstacked_1993_bsample_smnf.tex", replace force
+tex \begin{table}
+tex  \caption{Estimates from the first-difference model with manufacturing (1990) control: Change in log of employment (1986-1993) and simulated county vulnerability} \label{tab-bootstrap-93-colgrad}
+
+tex  \begin{tabular*}{.85\textwidth}{lcccccccc}
+tex  \hline
+tex Vulnerability : & \multicolumn{2}{c}{Actual} & \multicolumn{6}{c}{Simulated} \\ \hline  \vspace*{3mm}
+tex Distribution  : & \multicolumn{2}{c}{N/A}   & \multicolumn{2}{c}{\makecell{poly. \\ approx.}} & \multicolumn{2}{c}{\makecell{uniform \\ \text{[0,0.4]}}} & \multicolumn{2}{c}{\makecell{uniform \\ \text{[0,0.4]}}} \\ \hline
+tex Initial vul.   & `log_emptot_orig_coef_1993_smnf'  &  & `coef_ad_log_emptot_1993_smnf' &  & `coef_uni_log_emptot_1993_smnf' &  & `coef_au_log_emptot_1993_smnf'   \\
+tex                    & (`log_emptot_orig_se_1993_smnf')  &  & (`sd_ad_log_emptot_1993_smnf') &  &  (`sd_uni_log_emptot_1993_smnf')&  & (`sd_au_log_emptot_1993_smnf')      \\
+tex state FE       & yes & & yes &  & yes &  & yes  \\
+tex manuf. share (1990)       & yes & & yes &  & yes &  & yes  \\
+tex tariffs simulated & none && {\makecell{positive tariff \\ industries}} & & {\makecell{positive tariff \\ industries}} & & all \\
+tex \hline
+tex \end{tabular*}
+tex \end{table}
+texdoc close
+
+
+texdoc init "$results/bootstrap_results_nonstacked_2000_bsample.tex", replace force
+tex  \begin{table}
+tex  \caption{Estimates from the first-difference model: Change in log of employment (1993-2000) and simulated county vulnerability}  \label{tab-bootstrap-00}
+tex  \begin{tabular*}{.85\textwidth}{lcccccccc}
+tex  \hline
+tex Vulnerability : & \multicolumn{2}{c}{Actual} & \multicolumn{6}{c}{Simulated} \\ \hline  \vspace*{3mm}
+tex Distribution  : & \multicolumn{2}{c}{N/A}   & \multicolumn{2}{c}{\makecell{poly. \\ approx.}} & \multicolumn{2}{c}{\makecell{uniform \\ \text{[0,0.4]}}} & \multicolumn{2}{c}{\makecell{uniform \\ \text{[0,0.4]}}} \\ \hline
+tex Initial vul.   & `log_emptot_orig_coef_2000'  &  & `coef_ad_log_emptot_2000' &  & `coef_uni_log_emptot_2000' &  & `coef_au_log_emptot_2000'   \\
+tex                    & (`log_emptot_orig_se_2000')  &  & (`sd_ad_log_emptot_2000') &  &  (`sd_uni_log_emptot_2000')&  & (`sd_au_log_emptot_2000')      \\
+tex state FE       & yes & & yes &  & yes &  & yes   \\
+tex tariffs simulated & none && {\makecell{positive tariff \\ industries}} & & {\makecell{positive tariff \\ industries}} & & all \\
+tex \hline
+tex \end{tabular*}
+tex \end{table}
+texdoc close
+
+texdoc init "$results/bootstrap_results_nonstacked_2000_bsample_smnf.tex", replace force
+tex \begin{table}
+tex  \caption{Estimates from the first-difference model with manufacturing employment share (1990) control: Change in log of employment (1993-2000) and simulated county vulnerability} \label{tab-bootstrap-00-colgrad}
+tex  \begin{tabular*}{.85\textwidth}{lcccccccc}
+tex  \hline
+tex Vulnerability : & \multicolumn{2}{c}{Actual} & \multicolumn{6}{c}{Simulated} \\ \hline  \vspace*{3mm}
+tex Distribution  : & \multicolumn{2}{c}{N/A}   & \multicolumn{2}{c}{\makecell{poly. \\ approx.}} & \multicolumn{2}{c}{\makecell{uniform \\ \text{[0,0.4]}}} & \multicolumn{2}{c}{\makecell{uniform \\ \text{[0,0.4]}}} \\ \hline
+tex Initial vul.   & `log_emptot_orig_coef_2000_smnf'  &  & `coef_ad_log_emptot_2000_smnf' &  & `coef_uni_log_emptot_2000_smnf' &  & `coef_au_log_emptot_2000_smnf'   \\
+tex                    & (`log_emptot_orig_se_2000_smnf')  &  & (`sd_ad_log_emptot_2000_smnf') &  &  (`sd_uni_log_emptot_2000_smnf')&  & (`sd_au_log_emptot_2000_smnf')      \\
+tex state FE       & yes & & yes &  & yes &  & yes  \\
+tex manuf. share (1990)       & yes & & yes &  & yes &  & yes  \\
+tex tariffs simulated & none && {\makecell{positive tariff \\ industries}} & & {\makecell{positive tariff \\ industries}} & & all \\
+tex \hline
+tex \end{tabular*}
+tex \end{table}
+
+texdoc close
+
+
+texdoc init "$results/bootstrap_pol_pres_results_nonstacked_1992_bsample.tex", replace force
+tex \begin{table}
+tex  \caption{Estimates from the first-difference model: Change in Republican presidential vote share (1984-1992) and simulated county vulnerability}  \label{tab-pol-bootstrap-92}
+tex  \begin{tabular*}{.85\textwidth}{lcccccccc}
+tex  \hline
+tex Vulnerability : & \multicolumn{2}{c}{Actual} & \multicolumn{6}{c}{Simulated} \\ \hline  \vspace*{3mm}
+tex Distribution  : & \multicolumn{2}{c}{N/A}   & \multicolumn{2}{c}{\makecell{poly. \\ approx.}} & \multicolumn{2}{c}{\makecell{uniform \\ \text{[0,0.4]}}} & \multicolumn{2}{c}{\makecell{uniform \\ \text{[0,0.4]}}} \\ \hline
+tex Coefficient   & `tp_pres_rsh_orig_coef_1992'  &  & `coef_ad_tp_pres_rsh_1992' &  & `coef_uni_tp_pres_rsh_1992' &  & `coef_au_tp_pres_rsh_1992'   \\
+tex (SE)                   & (`tp_pres_rsh_orig_se_1992')  &  & (`sd_ad_tp_pres_rsh_1992') &  &  (`sd_uni_tp_pres_rsh_1992')&  & (`sd_au_tp_pres_rsh_1992')      \\
+tex state FE       & yes & & yes &  & yes &  & yes  \\
+tex tariffs simulated & none && {\makecell{positive tariff \\ industries}} & & {\makecell{positive tariff \\ industries}} & & all \\
+tex \hline
+tex \end{tabular*}
+tex \end{table}
+texdoc close
+
+texdoc init "$results/bootstrap_pol_pres_results_nonstacked_1992_bsample_smnf.tex", replace force
+tex \begin{table}
+tex  \caption{Estimates from the first-difference model with manufacturing employment share (1990) control: Change in Republican presidential vote share (1984-1992) and simulated county vulnerability} \label{tab-pol-bootstrap-92-colgrad}
+tex  \begin{tabular*}{.85\textwidth}{lcccccccc}
+tex  \hline
+tex Vulnerability : & \multicolumn{2}{c}{Actual} & \multicolumn{6}{c}{Simulated} \\ \hline  \vspace*{3mm}
+tex Distribution  : & \multicolumn{2}{c}{N/A}   & \multicolumn{2}{c}{\makecell{poly. \\ approx.}} & \multicolumn{2}{c}{\makecell{uniform \\ \text{[0,0.4]}}} & \multicolumn{2}{c}{\makecell{uniform \\ \text{[0,0.4]}}} \\ \hline
+tex Initial vul.   & `tp_pres_rsh_orig_coef_1992_smnf'  &  & `coef_ad_tp_pres_rsh_1992_smnf' &  & `coef_uni_tp_pres_rsh_1992_smnf' &  & `coef_au_tp_pres_rsh_1992_smnf'   \\
+tex                    & (`tp_pres_rsh_orig_se_1992_smnf')  &  & (`sd_ad_tp_pres_rsh_1992_smnf') &  &  (`sd_uni_tp_pres_rsh_1992_smnf')&  & (`sd_au_tp_pres_rsh_1992_smnf')      \\
+tex state FE       & yes & & yes &  & yes &  & yes  \\
+tex manuf. share (1990)       & yes & & yes &  & yes &  & yes  \\
+tex tariffs simulated & none && {\makecell{positive tariff \\ industries}} & & {\makecell{positive tariff \\ industries}} & & all \\
+tex \hline
+tex \end{tabular*}
+tex \end{table}
+texdoc close
+
+
+texdoc init "$results/bootstrap_pol_pres_results_nonstacked_2000_bsample.tex", replace force
+tex  \begin{table}
+tex  \caption{Estimates from the first-difference model: Change in Republican presidential vote share (1992-2000) and simulated county vulnerability}   \label{tab-pol-bootstrap-00}
+tex  \begin{tabular*}{.85\textwidth}{lcccccccc}
+tex  \hline
+tex Vulnerability : & \multicolumn{2}{c}{Actual} & \multicolumn{6}{c}{Simulated} \\ \hline  \vspace*{3mm}
+tex Distribution  : & \multicolumn{2}{c}{N/A}   & \multicolumn{2}{c}{\makecell{poly. \\ approx.}} & \multicolumn{2}{c}{\makecell{uniform \\ \text{[0,0.4]}}} & \multicolumn{2}{c}{\makecell{uniform \\ \text{[0,0.4]}}} \\ \hline
+tex Initial vul.   & `tp_pres_rsh_orig_coef_2000'  &  & `coef_ad_tp_pres_rsh_2000' &  & `coef_uni_tp_pres_rsh_2000' &  & `coef_au_tp_pres_rsh_2000'   \\
+tex                    & (`tp_pres_rsh_orig_se_2000')  &  & (`sd_ad_tp_pres_rsh_2000') &  &  (`sd_uni_tp_pres_rsh_2000')&  & (`sd_au_tp_pres_rsh_2000')      \\
+tex state FE       & yes & & yes &  & yes &  & yes   \\
+tex tariffs simulated & none && {\makecell{positive tariff \\ industries}} & & {\makecell{positive tariff \\ industries}} & & all \\
+tex \hline
+tex \end{tabular*}
+tex \end{table}
+texdoc close
+
+texdoc init "$results/bootstrap_pol_pres_results_nonstacked_2000_bsample_smnf.tex", replace force
+tex \begin{table}
+tex  \caption{Estimates from the first-difference model with manufacturing employment share (1990) control: Change in Republican presidential vote share (1992-2000) and simulated county vulnerability}  \label{tab-pol-bootstrap-00-colgrad}
+tex  \begin{tabular*}{.85\textwidth}{lcccccccc}
+tex  \hline
+tex Vulnerability : & \multicolumn{2}{c}{Actual} & \multicolumn{6}{c}{Simulated} \\ \hline  \vspace*{3mm}
+tex Distribution  : & \multicolumn{2}{c}{N/A}   & \multicolumn{2}{c}{\makecell{poly. \\ approx.}} & \multicolumn{2}{c}{\makecell{uniform \\ \text{[0,0.4]}}} & \multicolumn{2}{c}{\makecell{uniform \\ \text{[0,0.4]}}} \\ \hline
+tex Initial vul.   & `tp_pres_rsh_orig_coef_2000_smnf'  &  & `coef_ad_tp_pres_rsh_2000_smnf' &  & `coef_uni_tp_pres_rsh_2000_smnf' &  & `coef_au_tp_pres_rsh_2000_smnf'   \\
+tex                    & (`tp_pres_rsh_orig_se_2000_smnf')  &  & (`sd_ad_tp_pres_rsh_2000_smnf') &  &  (`sd_uni_tp_pres_rsh_2000_smnf')&  & (`sd_au_tp_pres_rsh_2000_smnf')      \\
+tex state FE       & yes & & yes &  & yes &  & yes  \\
+tex manuf. share (1990)       & yes & & yes &  & yes &  & yes  \\
+tex tariffs simulated & none && {\makecell{positive tariff \\ industries}} & & {\makecell{positive tariff \\ industries}} & & all \\
+tex \hline
+tex \end{tabular*}
+tex \end{table}
+texdoc close
+
+
+  
+
+ 
+/*----------------------------------------------------*/
+   /* [>   Appendix Figures C9   <] */ 
+/*----------------------------------------------------*/
+
+use "$working_data/akm_se.dta", replace
+keep if inrange(year, 1986,2008) 
+reghdfe log_emptot county_vul_own_1990 [weight = cty_pop_1990], absorb(county year i.fipstate#year ///
+ c.d_tradeotch_pw_lag#i.year c.share_colgrad_1990#i.year c.manu_share_1990#i.year) cluster(fipstate)
+qui: bys county: egen cty_tot = total(e(sample))
+qui: unique year if e(sample) == 1 
+qui: gen samp = 1 if cty_tot == r(unique)
+keep if samp == 1
+keep if inlist(year, 1986, 1993)
+bysort county (year): gen log_emptot_diff = log_emptot - log_emptot[_n-1]
+
+ 
+*make sample the same. 
+
+keep if year == 1993 
+reg log_emptot_diff county_vul_own_1990 dstate1-dstate49 manu_share_1990 [weight = cty_pop_1990]
+keep if e(sample) ==1
+local N = `e(N)'
+
+*base
+reg log_emptot_diff county_vul_own_1990 [weight = cty_pop_1990], vce(cluster fipstate)
+local se_clus = round(_se[county_vul_own_1990], .001)
+
+reg_ss log_emptot_diff, shiftshare_var(county_vul_own_1990) share_varlist(emp_sh1041-emp_sh3999) ///
+  weight_var(cty_pop_1990) akmtype(1) ///
+  path_cluster("$working_data/sic_3d.dta") cluster_var(sic_3d)
+
+local coef_regss = round(_b[county_vul_own_1990], .001)
+local se_akm = round(`e(se)', 0.001)
+local se_rob = round(_se[county_vul_own_1990], .001)
+
+*state FE
+reg log_emptot_diff county_vul_own_1990 dstate1-dstate49 [weight = cty_pop_1990], vce(cluster fipstate)
+local se_clus_stfe = round(_se[county_vul_own_1990], .001)
+
+reg_ss log_emptot_diff, shiftshare_var(county_vul_own_1990) share_varlist(emp_sh1041-emp_sh3999) ///
+  weight_var(cty_pop_1990) control_varlist(dstate1-dstate49) akmtype(1) ///
+  path_cluster("$working_data/sic_3d.dta") cluster_var(sic_3d)
+
+local coef_regss_stfe = round(_b[county_vul_own_1990], .001)
+local se_akm_stfe = round(`e(se)', 0.001)
+local se_rob_stfe = round(_se[county_vul_own_1990], .001)
+
+*share colgrad 
+reg log_emptot_diff county_vul_own_1990 dstate1-dstate49 manu_share_1990 [weight = cty_pop_1990], ///
+  vce(cluster fipstate)
+local se_clus_stfe_scol = round(_se[county_vul_own_1990], .001)
+
+reg_ss log_emptot_diff, shiftshare_var(county_vul_own_1990) share_varlist(emp_sh1041-emp_sh3999) ///
+  weight_var(cty_pop_1990) control_varlist(dstate1-dstate49 manu_share_1990) akmtype(1) ///
+  path_cluster("$working_data/sic_3d.dta") cluster_var(sic_3d)
+
+local coef_regss_stfe_scol = round(_b[county_vul_own_1990], .001)
+local se_akm_stfe_scol = round(`e(se)', 0.001)
+local se_rob_stfe_scol = round(_se[county_vul_own_1990], .001)
+
+texdoc init "$results/log_emp_diff_preperiod_AKM_sic3d_cl_manu.tex", replace force
+tex \begin{table}
+tex \caption{First-difference model with the AKM inference procedure: Change in log of county employment over pre-NAFTA control period (1986-1993)} \label{pre-emp-akm-sic3d-cl}
+tex  \setlength{\tabcolsep}{7pt}
+tex  \begin{tabular*}{0.8\textwidth}{lccc}
+tex  \hline
+tex Dep. Var.  : & \multicolumn{3}{c}{First-difference in log employment} \\ \hline 
+tex Initial vul.  & `coef_regss'  & `coef_regss_stfe' & `coef_regss_stfe_scol'  \\
+tex robust SE  & (`se_rob')  &  (`se_rob_stfe') &  (`se_rob_stfe_scol')    \\
+tex AKM SE, three-digit SIC cl. & (`se_akm') &  (`se_akm_stfe')& (`se_akm_stfe_scol') \\ 
+tex state-clustered SE  & (`se_clus')  &  (`se_clus_stfe') &  (`se_clus_stfe_scol')    \\
+tex pop. weighted   & yes & yes & yes \\
+tex state FE       & no   & yes & yes \\
+tex manufacturing share (1990) & no & no & yes \\
+tex Observations & `N' & `N' & `N' \\
+tex \hline
+tex \end{tabular*}
+tex \end{table}
+texdoc close
+
+  
+
+/*----------------------------------------------------*/
+   /* [>   Appendix Figures C10   <] */ 
+/*----------------------------------------------------*/ 
+
+use "$working_data/akm_se.dta", replace
+keep if inrange(year, 1986,2008) 
+reghdfe log_emptot county_vul_own_1990 [weight = cty_pop_1990], absorb(county year i.fipstate#year ///
+ c.d_tradeotch_pw_lag#i.year c.share_colgrad_1990#i.year c.manu_share_1990#i.year) cluster(fipstate)
+qui: bys county: egen cty_tot = total(e(sample))
+qui: unique year if e(sample) == 1 
+qui: gen samp = 1 if cty_tot == r(unique)
+keep if samp == 1
+keep if inlist(year, 1993, 2000)
+bysort county (year): gen log_emptot_diff = log_emptot - log_emptot[_n-1]
+
+keep if year == 2000 
+reg log_emptot_diff county_vul_own_1990 dstate1-dstate49 manu_share_1990 [weight = cty_pop_1990]
+keep if e(sample) ==1
+local N = `e(N)'
+
+*base
+reg log_emptot_diff county_vul_own_1990 [weight = cty_pop_1990], vce(cluster fipstate)
+local se_clus = round(_se[county_vul_own_1990], .001)
+
+reg_ss log_emptot_diff, shiftshare_var(county_vul_own_1990) share_varlist(emp_sh1041-emp_sh3999) ///
+  weight_var(cty_pop_1990) akmtype(1) ///
+  path_cluster("$working_data/sic_3d.dta") cluster_var(sic_3d)
+
+local coef_regss = round(_b[county_vul_own_1990], .001)
+local se_akm = round(`e(se)', 0.001)
+local se_rob = round(_se[county_vul_own_1990], .001)
+
+*state FE
+reg log_emptot_diff county_vul_own_1990 dstate1-dstate49 [weight = cty_pop_1990], vce(cluster fipstate)
+local se_clus_stfe = round(_se[county_vul_own_1990], .001)
+
+reg_ss log_emptot_diff, shiftshare_var(county_vul_own_1990) share_varlist(emp_sh1041-emp_sh3999) ///
+  weight_var(cty_pop_1990) control_varlist(dstate1-dstate49) akmtype(1) ///
+  path_cluster("$working_data/sic_3d.dta") cluster_var(sic_3d)
+
+local coef_regss_stfe = round(_b[county_vul_own_1990], .001)
+local se_akm_stfe = round(`e(se)', 0.001)
+local se_rob_stfe = round(_se[county_vul_own_1990], .001)
+
+*share colgrad 
+reg log_emptot_diff county_vul_own_1990 dstate1-dstate49 manu_share_1990 [weight = cty_pop_1990], ///
+  vce(cluster fipstate)
+local se_clus_stfe_scol = round(_se[county_vul_own_1990], .001)
+
+reg_ss log_emptot_diff, shiftshare_var(county_vul_own_1990) share_varlist(emp_sh1041-emp_sh3999) ///
+  weight_var(cty_pop_1990) control_varlist(dstate1-dstate49 manu_share_1990) akmtype(1) ///
+  path_cluster("$working_data/sic_3d.dta") cluster_var(sic_3d)
+
+local coef_regss_stfe_scol = round(_b[county_vul_own_1990], .001)
+local se_akm_stfe_scol = round(`e(se)', 0.001)
+local se_rob_stfe_scol = round(_se[county_vul_own_1990], .001)
+
+texdoc init "$results/log_emp_diff_postperiod_AKM_sic3d_cl_manu.tex", replace force
+tex \begin{table}
+tex \caption{First-difference model with the AKM inference procedure: Change in log of county employment over treatment period (1993-2000)} \label{post-emp-akm-sic3d-cl}
+tex  \setlength{\tabcolsep}{7pt}
+tex  \begin{tabular*}{0.8\textwidth}{lccc}
+tex  \hline
+tex Dep. Var.  : & \multicolumn{3}{c}{First-difference in log employment} \\ \hline 
+tex Initial vul.  & `coef_regss'  & `coef_regss_stfe' & `coef_regss_stfe_scol'  \\
+tex robust SE  & (`se_rob')  &  (`se_rob_stfe') &  (`se_rob_stfe_scol')    \\
+tex AKM SE, three-digit SIC cl. & (`se_akm') &  (`se_akm_stfe')& (`se_akm_stfe_scol') \\ 
+tex state-clustered SE  & (`se_clus')  &  (`se_clus_stfe') &  (`se_clus_stfe_scol')    \\
+tex pop. weighted   & yes & yes & yes \\
+tex state FE       & no   & yes & yes \\
+tex manufacturing share (1990) & no & no & yes \\
+tex Observations & `N' & `N' & `N' \\
+tex \hline
+tex \end{tabular*}
+tex \end{table}
+texdoc close
+
+  
+
+/*----------------------------------------------------*/
+   /* [>   Appendix Figures C11   <] */ 
+/*----------------------------------------------------*/ 
+use "$working_data/akm_se.dta", replace
+keep if inlist(year, 1980,1984,1988,1992,1996,2000,2004,2008,2012,2016)
+qui: reghdfe tot_pres_rep_share tot_pres_dem_share county_vul_own_1990 [weight = cty_pop_1990], absorb(county year i.fipstate#year ///
+   c.d_tradeotch_pw_lag#i.year c.share_colgrad_1990#i.year c.manu_share_1990#i.year) cluster(fipstate) 
+qui: bys county: egen cty_tot = total(e(sample))
+qui: unique year if e(sample) == 1 
+qui: gen samp = 1 if cty_tot == r(unique)
+keep if samp == 1
+keep if inlist(year, 1984, 1992)
+bysort county (year): gen tp_pres_rep_share_diff = tp_pres_rep_share - tp_pres_rep_share[_n-1]
+
+keep if year == 1992 
+reg tp_pres_rep_share_diff county_vul_own_1990 dstate1-dstate49 manu_share_1990 [weight = cty_pop_1990]
+keep if e(sample) ==1
+local N = `e(N)'
+
+*base
+reg tp_pres_rep_share_diff county_vul_own_1990 [weight = cty_pop_1990], vce(cluster fipstate)
+local se_clus = round(_se[county_vul_own_1990], .001)
+
+reg_ss tp_pres_rep_share_diff, shiftshare_var(county_vul_own_1990) share_varlist(emp_sh1041-emp_sh3999) ///
+  weight_var(cty_pop_1990) akmtype(1) ///
+  path_cluster("$working_data/sic_3d.dta") cluster_var(sic_3d)
+
+local coef_regss = round(_b[county_vul_own_1990], .001)
+local se_akm = round(`e(se)', 0.001)
+local se_rob = round(_se[county_vul_own_1990], .001)
+
+*state FE
+reg tp_pres_rep_share_diff county_vul_own_1990 dstate1-dstate49 [weight = cty_pop_1990], vce(cluster fipstate)
+local se_clus_stfe = round(_se[county_vul_own_1990], .001)
+
+reg_ss tp_pres_rep_share_diff, shiftshare_var(county_vul_own_1990) share_varlist(emp_sh1041-emp_sh3999) ///
+  weight_var(cty_pop_1990) control_varlist(dstate1-dstate49) akmtype(1) ///
+  path_cluster("$working_data/sic_3d.dta") cluster_var(sic_3d)
+
+local coef_regss_stfe = round(_b[county_vul_own_1990], .001)
+local se_akm_stfe = round(`e(se)', 0.001)
+local se_rob_stfe = round(_se[county_vul_own_1990], .001)
+
+*share colgrad 
+reg tp_pres_rep_share_diff county_vul_own_1990 dstate1-dstate49 manu_share_1990 [weight = cty_pop_1990], ///
+  vce(cluster fipstate)
+local se_clus_stfe_scol = round(_se[county_vul_own_1990], .001)
+
+reg_ss tp_pres_rep_share_diff, shiftshare_var(county_vul_own_1990) share_varlist(emp_sh1041-emp_sh3999) ///
+  weight_var(cty_pop_1990) control_varlist(dstate1-dstate49 manu_share_1990) akmtype(1) ///
+  path_cluster("$working_data/sic_3d.dta") cluster_var(sic_3d)
+
+local coef_regss_stfe_scol = round(_b[county_vul_own_1990], .001)
+local se_akm_stfe_scol = round(`e(se)', 0.001)
+local se_rob_stfe_scol = round(_se[county_vul_own_1990], .001)
+
+texdoc init "$results/tp_rep_sh_diff_preperiod_AKM_sic3d_cl_manu.tex", replace force
+tex \begin{table}
+tex \caption{First-difference model with the AKM inference procedure: Change in Republican presidential vote share over pre-NAFTA control period (1984-1992)} \label{pre-pol-akm-sic3d-cl}
+tex  \setlength{\tabcolsep}{7pt}
+tex  \begin{tabular*}{0.9\textwidth}{lccc}
+tex  \hline
+tex Dep. Var.  : & \multicolumn{3}{c}{First-difference in two-party Repub. vote share} \\ \hline  
+tex Initial vul.  & `coef_regss'  & `coef_regss_stfe' & `coef_regss_stfe_scol'  \\
+tex robust SE  & (`se_rob')  &  (`se_rob_stfe') &  (`se_rob_stfe_scol')    \\
+tex AKM SE, three-digit SIC cl. & (`se_akm') &  (`se_akm_stfe')& (`se_akm_stfe_scol') \\ 
+tex state-clustered SE  & (`se_clus')  &  (`se_clus_stfe') &  (`se_clus_stfe_scol')    \\
+tex pop. weighted   & yes & yes & yes \\
+tex state FE       & no   & yes & yes \\
+tex manufacturing share (1990) & no & no & yes \\
+tex Observations & `N' & `N' & `N' \\
+tex \hline
+tex \end{tabular*}
+tex \end{table}
+texdoc close
+
+
+
+  
+
+/*----------------------------------------------------*/
+   /* [>   Appendix Figures C12   <] */ 
+/*----------------------------------------------------*/ 
+use "$working_data/akm_se.dta", replace
+keep if inlist(year, 1980,1984,1988,1992,1996,2000,2004,2008,2012,2016)
+qui: reghdfe tot_pres_rep_share tot_pres_dem_share county_vul_own_1990 [weight = cty_pop_1990], absorb(county year i.fipstate#year ///
+   c.d_tradeotch_pw_lag#i.year c.share_colgrad_1990#i.year c.manu_share_1990#i.year) cluster(fipstate) 
+qui: bys county: egen cty_tot = total(e(sample))
+qui: unique year if e(sample) == 1 
+qui: gen samp = 1 if cty_tot == r(unique)
+keep if samp == 1
+keep if inlist(year, 1992, 2000)
+bysort county (year): gen tp_pres_rep_share_diff = tp_pres_rep_share - tp_pres_rep_share[_n-1]
+
+keep if year == 2000 
+reg tp_pres_rep_share_diff county_vul_own_1990 dstate1-dstate49 manu_share_1990 [weight = cty_pop_1990]
+keep if e(sample) ==1
+local N = `e(N)'
+
+*base
+reg tp_pres_rep_share_diff county_vul_own_1990 [weight = cty_pop_1990], vce(cluster fipstate)
+local se_clus = round(_se[county_vul_own_1990], .001)
+
+reg_ss tp_pres_rep_share_diff, shiftshare_var(county_vul_own_1990) share_varlist(emp_sh1041-emp_sh3999) ///
+  weight_var(cty_pop_1990) akmtype(1) ///
+  path_cluster("$working_data/sic_3d.dta") cluster_var(sic_3d)
+
+local coef_regss = round(_b[county_vul_own_1990], .001)
+local se_akm = round(`e(se)', 0.001)
+local se_rob = round(_se[county_vul_own_1990], .001)
+
+*state FE
+reg tp_pres_rep_share_diff county_vul_own_1990 dstate1-dstate49 [weight = cty_pop_1990], vce(cluster fipstate)
+local se_clus_stfe = round(_se[county_vul_own_1990], .001)
+
+reg_ss tp_pres_rep_share_diff, shiftshare_var(county_vul_own_1990) share_varlist(emp_sh1041-emp_sh3999) ///
+  weight_var(cty_pop_1990) control_varlist(dstate1-dstate49) akmtype(1) ///
+  path_cluster("$working_data/sic_3d.dta") cluster_var(sic_3d)
+
+local coef_regss_stfe = round(_b[county_vul_own_1990], .001)
+local se_akm_stfe = round(`e(se)', 0.001)
+local se_rob_stfe = round(_se[county_vul_own_1990], .001)
+
+*share colgrad 
+reg tp_pres_rep_share_diff county_vul_own_1990 dstate1-dstate49 manu_share_1990 [weight = cty_pop_1990], ///
+  vce(cluster fipstate)
+local se_clus_stfe_scol = round(_se[county_vul_own_1990], .001)
+
+reg_ss tp_pres_rep_share_diff, shiftshare_var(county_vul_own_1990) share_varlist(emp_sh1041-emp_sh3999) ///
+  weight_var(cty_pop_1990) control_varlist(dstate1-dstate49 manu_share_1990) akmtype(1) ///
+  path_cluster("$working_data/sic_3d.dta") cluster_var(sic_3d)
+
+local coef_regss_stfe_scol = round(_b[county_vul_own_1990], .001)
+local se_akm_stfe_scol = round(`e(se)', 0.001)
+local se_rob_stfe_scol = round(_se[county_vul_own_1990], .001)
+
+texdoc init "$results/tp_rep_sh_diff_postperiod_AKM_sic3d_cl_manu.tex", replace force
+tex \begin{table}
+tex \caption{First-difference model with the AKM inference procedure: Change in Republican presidential vote share over treatment period (1992-2000)} \label{post-pol-akm-sic3d-cl}
+tex  \setlength{\tabcolsep}{7pt}
+tex  \begin{tabular*}{0.9\textwidth}{lccc}
+tex  \hline
+tex Dep. Var.  : & \multicolumn{3}{c}{First-difference in two-party Repub. vote share} \\ \hline \\ \hline 
+tex Initial vul.  & `coef_regss'  & `coef_regss_stfe' & `coef_regss_stfe_scol'  \\
+tex robust SE  & (`se_rob')  &  (`se_rob_stfe') &  (`se_rob_stfe_scol')    \\
+tex AKM SE, three-digit SIC cl. & (`se_akm') &  (`se_akm_stfe')& (`se_akm_stfe_scol') \\ 
+tex state-clustered SE  & (`se_clus')  &  (`se_clus_stfe') &  (`se_clus_stfe_scol')    \\
+tex pop. weighted   & yes & yes & yes \\
+tex state FE       & no   & yes & yes \\
+tex manufacturing share (1990) & no & no & yes \\
+tex Observations & `N' & `N' & `N' \\
+tex \hline
+tex \end{tabular*}
+tex \end{table}
+texdoc close
+
+
+  
+
+/*------------------------------------ End of SECTION 5 ------------------------------------*/
+
+
+/**********************************************************************/
+/*  SECTION 6: Appendix D        
+    Notes: */
+/**********************************************************************/
+ 
+/*----------------------------------------------------*/
+   /* [>   Appendix Figure D.1   <] */ 
+/*----------------------------------------------------*/
+
+  
+
+use "$working_data/master_county_year_final.dta", clear
+keep if inrange(year,1986,2008)
+ES log_emptot , indvar(county_vul_own_1990) version("usa_adv") spec("full") scaled("yes") baseyear(1993) pos(7)
+graph export "$results/log_emp_init_vul_control_adv_baseline_1by1_ext.pdf", replace 
+save "$results/log_emp_init_vul_control_adv_baseline_1by1_ext_coef.dta", replace 
+
+
+  
+
+/*------------------------------------ End of SECTION 6 ------------------------------------*/
+

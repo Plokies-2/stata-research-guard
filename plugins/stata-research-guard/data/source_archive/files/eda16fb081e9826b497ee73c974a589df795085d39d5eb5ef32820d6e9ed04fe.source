@@ -1,0 +1,133 @@
+*heterogenuous effect of mass layoff by OOI on wages/search time
+*using various controls
+
+*Oren Danieli
+*October 2020
+*September 2021 - adding fixed effects
+*tables 3, A2. Figures 2, A1
+
+cap log close
+log using ${log}\02_restud2_mass_layoffs.log, replace
+set more off
+set matsize 1000
+est clear
+fdzinstall estout
+
+// load data for the layoff exercise
+use $data/liab_OOI_layoffs.dta, clear
+drop if X_age < 20
+
+* as noted in paper, restrict mass layoff analysis to workers under age 55 (exclusive)
+drop if X_age > 54
+
+* people with missing OOI as we can't use them in the analysis
+drop if missing(OOI)
+
+* drop people who did not have a job before (daily wage <1 euro)
+drop tentgelt_gr
+drop if tentgelt <1
+
+gen income0 = tentgelt
+
+*sum by worker (not worker-month observation)
+preserve 
+	collapse (mean) X_* year income* pre* tenure, by (persnr)
+	summ X_* year income* pre*
+	tab X_schule
+	qui summ tenure, detail
+restore
+
+*change tenure to be 0 at median
+gen demed_ten = tenure - r(p50)
+
+*change age to be 0 at 40 
+gen age40 = X_age-40
+
+* keep the variables we want
+keep persnr  tentgelt demed_ten X_frau X_schule age40 X_german ///
+	year OOI betnr income* X_past_occ* pre_* part_time*
+
+* reshape to long format
+	// note: month is not 1-12.
+reshape long income pre_income part_time, i(persnr year) j(month)
+
+*separate pre trends to separate observations
+expand 2, gen(pre)
+replace month = - month if pre
+replace income = pre_income if pre
+drop pre_income
+
+*bin by month and establishment
+egen emp_month = group(betnr month)
+
+*set month 0 to 100 to avoid negatives
+replace month = month + 100
+
+******
+*Relative Income
+*******
+
+*look at relative income to income before layoff
+gen rel_inc = income/tentgelt
+
+*raw trend (appendix figure)
+areg rel_inc ib(100).month, a(betnr) cluster (persnr)
+
+*look at the coefficient for OOI (figure)
+areg rel_inc ib(100).month##c.OOI, a(emp_month) cluster(persnr)
+
+*employment figure
+gen any_inc = income>0
+replace any_inc = . if missing(income)
+areg any_inc ib(100).month##c.OOI, a(emp_month) cluster(persnr)
+
+*stuff for R1:
+*figures with controls 
+areg rel_inc ib(100).month##c.OOI c.month##c.month##c.month##c.demed_ten##c.demed_ten c.month##c.month##c.month##c.age40##c.age40 c.month##c.month##c.month##i.X_frau c.month##c.month##c.month##ib(6).X_schule c.month##c.month##c.month##c.X_past_occ*, a(emp_month) cluster(persnr)
+
+areg any_inc ib(100).month##c.OOI c.month##c.month##c.month##c.demed_ten##c.demed_ten c.month##c.month##c.month##c.age40##c.age40 c.month##c.month##c.month##i.X_frau c.month##c.month##c.month##ib(6).X_schule c.month##c.month##c.month##c.X_past_occ*, a(emp_month) cluster(persnr)
+
+*figure with part time
+gen emp_or_part = any_inc
+replace emp_or_part = 0.5 if (part_time==1)
+
+gen emp_no_part = any_inc
+replace emp_no_part = 0 if (part_time==1)
+areg emp_no_part ib(100).month##c.OOI, a(emp_month) cluster(persnr)
+
+
+*change back
+replace month = month - 100
+drop if month <0
+
+*additional controls (for table)
+areg rel_inc i.month##c.OOI, a(emp_month) cluster(persnr)
+eststo
+areg rel_inc i.month##c.OOI c.month##c.month##c.month##c.demed_ten##c.demed_ten, a(emp_month) cluster(persnr)
+eststo
+areg rel_inc i.month##c.OOI c.month##c.month##c.month##c.demed_ten##c.demed_ten c.month##c.month##c.month##c.age40##c.age40 c.month##c.month##c.month##i.X_frau c.month##c.month##c.month##ib(6).X_schule, a(emp_month) cluster(persnr)
+eststo
+areg rel_inc i.month##c.OOI c.month##c.month##c.month##c.demed_ten##c.demed_ten c.month##c.month##c.month##c.age40##c.age40 c.month##c.month##c.month##i.X_frau c.month##c.month##c.month##ib(6).X_schule c.month##c.month##c.month##c.X_past_occ*, a(emp_month) cluster(persnr)
+eststo
+
+esttab, se replace star(* 0.10 ** 0.05 *** 0.01) keep(3.month#c.OOI 6.month#c.OOI 12.month#c.OOI 24.month#c.OOI )
+est clear
+
+********
+*Search time
+*******
+
+areg any_inc i.month##c.OOI, a(emp_month) cluster(persnr)
+eststo
+areg any_inc i.month##c.OOI c.month##c.month##c.month##c.demed_ten##c.demed_ten, a(emp_month) cluster(persnr)
+eststo
+areg any_inc i.month##c.OOI c.month##c.month##c.month##c.demed_ten##c.demed_ten c.month##c.month##c.month##c.age40##c.age40 c.month##c.month##c.month##i.X_frau c.month##c.month##c.month##ib(6).X_schule, a(emp_month) cluster(persnr)
+eststo
+areg any_inc i.month##c.OOI c.month##c.month##c.month##c.demed_ten##c.demed_ten c.month##c.month##c.month##c.age40##c.age40 c.month##c.month##c.month##i.X_frau c.month##c.month##c.month##ib(6).X_schule c.month##c.month##c.month##c.X_past_occ*, a(emp_month) cluster(persnr)
+eststo
+
+esttab, se replace star(* 0.10 ** 0.05 *** 0.01) keep(3.month#c.OOI 6.month#c.OOI 12.month#c.OOI 24.month#c.OOI )
+est clear
+
+
+log close

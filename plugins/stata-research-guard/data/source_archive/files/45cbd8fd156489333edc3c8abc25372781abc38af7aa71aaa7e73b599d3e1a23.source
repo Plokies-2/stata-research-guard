@@ -1,0 +1,119 @@
+******************************************************************************************************************************
+******************************************************************************************************************************
+***
+*** Figure 1: 61 Years of RTA Estimates with the Gravity Model of Trade
+*** 
+******************************************************************************************************************************
+******************************************************************************************************************************
+
+
+*********************
+*1. Prepare the data*
+*********************
+use ${usr_data}\data_sdid_small, clear
+*joinby exporter importer year using ${ext_data}\fta_data_main, unmatched(master)
+gen interval=1 if year==1980 | year==1985 | year==1990 | year==1995 | year==2000 | year==2005 | year==2010 | year==2015
+
+**************************
+*2. `jwdid' specification*
+**************************
+jwdid trade, ivar(id_ci_cj) tvar(year) gvar(first_treat_3) method(ppmlhdfe) fe(idt_ci idt_cj brdr_time)
+keep if e(sample)==1
+estat simple, predict(xb)
+mat B = [r(b)]
+mat V = (r(V))
+matrix colnames B = RTA_3
+matrix colnames V = RTA_3
+matrix rownames V = RTA_3
+ereturn post B V
+parmest, saving(${usr_data}\est_11, replace) 
+save ${usr_data}\rta_did, replace
+
+******************************
+*3. Tinbergen's specification*
+******************************
+use ${usr_data}\rta_did, clear
+gen ln_trade=ln(trade)
+gen LN_GDP_EXP=ln(gdp_pwt_cur_o)
+gen LN_GDP_IMP=ln(gdp_pwt_cur_d)
+reg ln_trade RTA_3 DIST LN_GDP_EXP LN_GDP_IMP if exporter!=importer & interval==1, ro
+parmest, saving(${usr_data}\est_1, replace) 
+estimates store est_1
+************************
+*4. Additional controls*
+************************
+reg ln_trade RTA_3 DIST LN_GDP_EXP LN_GDP_IMP CLNY CNTG LANG if exporter!=importer & interval==1, ro
+parmest, saving(${usr_data}\est_2, replace) 
+estimates store est_2
+*****************************
+*5. Multilateral resistances*
+*****************************
+egen exp_time=group(exporter year)
+egen imp_time=group(importer year)
+reghdfe ln_trade RTA_3 DIST CNTG CLNY LANG if exporter!=importer & interval==1, absorb(idt_ci idt_cj) 
+parmest, saving(${usr_data}\est_3, replace) 
+estimates store est_3
+*******************
+*6. PPML estimator*
+*******************
+ppmlhdfe trade RTA_3 DIST CNTG CLNY LANG if exporter!=importer & interval==1, absorb(idt_ci idt_cj) 
+parmest, saving(${usr_data}\est_4, replace) 
+estimates store est_4
+*************************
+*7. A-symmetric pair FEs*
+*************************
+egen pair_id=group(importer exporter)
+reghdfe ln_trade RTA_3 if exporter!=importer & interval==1, absorb(exp_time imp_time pair_id) 
+parmest, saving(${usr_data}\est_5, replace) 
+estimates store est_5
+*******************
+*8. Domestic trade*
+*******************
+ppmlhdfe trade RTA_3 if interval==1, absorb(idt_ci idt_cj id_ci_cj) 
+parmest, saving(${usr_data}\est_6, replace) 
+estimates store est_6
+******************
+*9. Globalization*
+******************
+ppmlhdfe trade RTA_3 if interval==1, absorb(idt_ci idt_cj id_ci_cj brdr_time) 
+parmest, saving(${usr_data}\est_7, replace) 
+estimates store est_7
+*****************
+*10. Cluster SEs*
+*****************
+ppmlhdfe trade RTA_3 if interval==1, absorb(idt_ci idt_cj id_ci_cj brdr_time) cluster(pair_id)
+parmest, saving(${usr_data}\est_8, replace) 
+estimates store est_8
+********************
+*11. Bias correction*
+********************
+ppmlhdfe trade RTA_3 if interval==1, absorb(idt_ci idt_cj id_ci_cj brdr_time) d
+predict lambda
+matrix beta=e(b)
+egen exp=group(exporter)
+egen imp=group(importer)
+ppml_fe_bias trade RTA_3 if interval==1, i(exp) j(imp) t(year) lambda(lambda) beta(beta)
+parmest, saving(${usr_data}\est_9, replace) 
+estimates store est_9
+***************************
+*12. Consecutive-year data*
+***************************
+ppmlhdfe trade RTA_3, absorb(idt_ci idt_cj id_ci_cj brdr_time) cluster(id_ci_cj)
+parmest, saving(${usr_data}\est_10, replace) 
+estimates store est_10
+nlcom (exp(_b[RTA_3])-1)*100
+*********************
+*13. Create a figure*
+*********************
+use ${usr_data}\est_1, clear
+forvalues i=2(1)11{
+	append using ${usr_data}\est_`i'
+}
+keep if parm=="RTA_3"
+keep parm min95 max95 estimate
+egen id=seq()
+twoway (scatter estimate id if id<11, color(gs10)) (rcap min95 max95 id if id<11, color(gs10)) (scatter estimate id if id==11, color(black)) (rcap min95 max95 id if id==11, color(black)), legend(order(1 "RTA Estimate" 2 "95% Confidence Interval") row(1) position(6) region(lstyle(black))) ///
+		ytitle("RTA Estimates") xtitle("Alternative Specifications") graphregion(color(white)) ///
+		xlabel(1 "Tinbergen: 1962" 2 "Additional Controls: 62-02" 3 "Structural MRs: 2003" 4 "PPML Estimator: 2006" 5 "Pair Fixed Effects: 2007" 6 "Domestic Trade: 2012" 7 "Globalization: 2015" 8 "Pair Clustering: 2015" 9 "IPP Bias: 2021" 10 "Consecutive Years: 2022", angle(50) labcolor(gs10)) xlabel(11 "ETWFE: 2023", add custom angle(50) labcolor(black) nogrid) yscale(range(0 0.65)) ylabel(0 0.1 0.2 0.3 0.4 0.5 0.6 0.7, glpattern(solid))
+graph export "${path_figures}/Figure_1.eps", replace
+

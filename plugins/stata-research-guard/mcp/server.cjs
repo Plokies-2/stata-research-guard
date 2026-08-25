@@ -1,0 +1,4585 @@
+#!/usr/bin/env node
+
+"use strict";
+
+const fs = require("fs");
+const path = require("path");
+const readline = require("readline");
+const crypto = require("crypto");
+const {
+  templateReuseCheck,
+  matchingAutoSelectableLabels,
+  collectProjectGlobalEnvironment,
+  canonicalOutreg2HelperMultiplicity,
+} = require("./template_reuse.cjs");
+const {
+  analyzeEventStudyAxisProfile,
+  analyzeOutputFlowProfile,
+  MIXED_AXIS_RENDERING_MODE,
+} = require("./output_flow_contract.cjs");
+
+const ROOT = path.resolve(__dirname, "..");
+const DATA = path.join(ROOT, "data");
+const STAGES = [
+  "import",
+  "integrity_audit",
+  "cleaning_labels",
+  "merge_reshape",
+  "panel_construction",
+  "descriptives_balance_sample_flow",
+  "estimation",
+  "robustness",
+  "figures",
+  "exports",
+  "master_orchestration",
+];
+const NEW_PROJECT_TREE = [
+  "project/README.md",
+  "project/report.md",
+  "project/00_master.do",
+  "project/do/00_config.do",
+  "project/do/10_prep_master.do",
+  "project/do/prep/",
+  "project/do/20_analysis_master.do",
+  "project/do/analysis/",
+  "project/do/main.log",
+  "project/data/raw/ (read-only)",
+  "project/data/generated/",
+  "project/data/final/",
+  "project/ster/",
+  "project/table/",
+  "project/figures/",
+];
+const NEW_PROJECT_TREE_MARKDOWN = [
+  "project/",
+  "├─ README.md",
+  "├─ report.md",
+  "├─ 00_master.do",
+  "├─ do/",
+  "│  ├─ 00_config.do",
+  "│  ├─ 10_prep_master.do",
+  "│  ├─ prep/",
+  "│  ├─ 20_analysis_master.do",
+  "│  ├─ analysis/",
+  "│  └─ main.log",
+  "├─ data/",
+  "│  ├─ raw/",
+  "│  ├─ generated/",
+  "│  └─ final/",
+  "├─ ster/",
+  "├─ table/",
+  "└─ figures/",
+].join("\n");
+const README_OUTLINE = [
+  { section: "개요", required: true, contents: ["연구 질문과 분석 단위", "정본 entrypoint"] },
+  { section: "새로 생성되는 파일 구조", required: true, contents: ["사용자 승인 전 제시한 실제 폴더·파일 tree", "각 폴더와 주요 파일의 역할"] },
+  { section: "분석 변수 안내", required: true, contents: ["영구 저장되거나 분석에 쓰이는 신규 변수의 이름과 사용자용 설명", "분석 역할", "원자료 또는 생성 방식", "단위·관측단위", "기간·지리", "값 코딩과 결측 처리"] },
+  { section: "실행 방법", required: true, contents: ["00_master.do부터의 실행 순서", "사용자가 바꿔야 하는 경로 또는 입력값"] },
+  { section: "산출물과 생성 코드", required: true, contents: ["표·그림·.ster와 생성 do-file의 대응"] },
+];
+const VARIABLE_DICTIONARY_COLUMNS = [
+  "variable_name",
+  "reader_description",
+  "analysis_role",
+  "source_or_formula",
+  "unit_observation_level",
+  "period_geography",
+  "coding_missing",
+  "creation_file",
+  "used_in",
+];
+const PLANNED_VARIABLE_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["name", "reader_description", "source_or_formula", "unit_observation_level"],
+  properties: {
+    name: { type: "string", pattern: "^[A-Za-z_][A-Za-z0-9_]{0,31}$" },
+    reader_description: { type: "string", minLength: 1 },
+    analysis_role: { type: "string" },
+    source_or_formula: { type: "string" },
+    unit_observation_level: { type: "string" },
+    period_geography: { type: "string" },
+    coding_missing: { type: "string" },
+    creation_file: { type: "string" },
+    used_in: { type: "string" },
+  },
+};
+const INSTRUCTIONS = [
+  "Use this server whenever generating or revising Stata research code.",
+  "For every atomic implementation step, write only the statements required by the current concrete input-to-output contract. Do not design for future outcomes, sheets, callers, options, or reuse. Do not add unused syntax options, one-item loops, one-use programs, registries, dispatchers, optional branches, or generic interfaces. Repetition is abstracted only when that repetition exists in the current request and a direct block cannot provide the required interface.",
+  "Reserve globals for intentional cross-do-file contracts. Keep shared directory roots such as project, data, table, figures, and ster in setup when multiple stages consume them. Do not hoist a leaf filename such as summary_excel = $table/file.xlsx into setup when only one child do-file consumes it; declare it as a local in that child near its first use, or write the literal directly when it appears once and is clearer. A leaf file binding may remain global only when two or more do-files intentionally share that exact producer-consumer artifact contract. Put repeated regression-specific controls, sample restrictions, event-study RHS terms, fixed effects, clustering choices, and other single-consumer specification bindings in local macros inside the do-file that consumes them, close to the estimation block; keep a one-use list explicit in the command when clearer. Put same-file event selectors, display order, reference position, and notes in locals as well. Fingerprinted macro names are evidence to classify their scope, not a reason to preserve private or single-consumer globals. Format long variable, outcome, estimate, or option lists as meaningfully grouped multiline blocks: use whitespace to align comparable entries, indent continuation lines, and keep short lists on one line. Never align or reflow quoted labels, paths, or other text where whitespace is data. Use /// only when the command continues on the immediately following physical line, indent continuation lines beyond the command start, and omit /// from the final physical line.",
+  "First decide whether the request needs code. Review, audit, diagnosis, and explanation-only requests load no writable code. If code is needed, classify its state-transition footprint and resolve only that bounded footprint using bilingual aliases, exact command anchors, input/output state, and target input signature. Search the labeled dictionary first for substantive reusable transitions. Preserve the ordinary template-first path: when a genuinely close complete block exists, select one variant and change only permitted bindings. When no suitable block exists or the selected block proves wrong under inspection, lint, runtime, or output evidence, enter general-rule fallback, inject the search-ranked nearest inspected candidate only as a nonbinding hint, write the narrow transition, and lint it immediately. Ask the user only when a substantive research choice remains unresolved.",
+  "For every non-template substantive transition, apply the general-rule fallback reference. Inject the highest-ranked writable candidate, or the highest-ranked reference candidate when none is writable, as a nonbinding hint. State explicitly that nearest-by-ranking may still be absolutely distant or incompatible. Record nearest_template_hint=<label_id|none>, fallback_trigger=<no_suitable_template|wrong_selection>, and hint_used=<borrowed command, ordering, state handling, or output idiom|none>. Do not require a claim that fallback code is better. It implements only an already-declared atomic contract and never supplies an unresolved sample, estimand, merge key, treatment rule, model, event axis, sheet group, or output placement. Keep one readable final path and shallow indentation. Prefer one active loop; permit exactly two active loop levels only when both axes are plain named lists or numeric ranges, the same mechanical body is repeated, the reduction is substantial, and sample, estimand, specification, grouping, and output placement remain visible at the loop site. Loop depth three is always blocked. Do not use a registry, dispatcher, positional job string, one-use program, unused interface, dependency probe, manual event dummy, or coefficient reconstruction.",
+  "Iteration is allowed; judge the final frozen source, not the number of drafts. Revise only from concrete lint, runtime, or output evidence. For a binding-only failure inside declared minimal edits, delete the affected span and cleanly re-render it from the same selected block. If frame, algorithm, control flow, interface, or output contract must change, discard that span and reselect a complete variant. Never stack patches, wrappers, compatibility branches, fallback residue, or dead helpers on already modified generated code. Before freezing, leave exactly one final implementation path per atomic transition.",
+  "Inspect the project structure read-only before planning any write. Preserve a compatible existing layout; use the default-style tree only for an explicitly new first build.",
+  "Before creating or modifying any project file or folder, show the exact folders to create, files to create, modify, move, rename, delete, or overwrite, and the entrypoint and execution command, then wait for explicit user approval.",
+  "For an overhaul, present a display-ready proposed file tree, every new persistent analysis variable with its reader-facing description, and whether the root README.md will be created or amended. Put the approved tree and variable dictionary in that root README. If there are no new persistent variables, say so explicitly. Do not write until the user approves this preview, and show a revised preview if the plan changes.",
+  "For each substantive reusable state transition call search_labeled_checkpoints before broader corpus search. Harmless setup, declared input loading, inspection, assertion, naming, logging, and other direct primitives do not need a checkpoint, ledger row, or template. Compare the target with a candidate's six-field template_input_profile before copying; a known contradiction blocks template-mode reuse but may leave that search-ranked candidate available to fallback only as a nonbinding hint. A variant_group contains alternatives for the same transition, while distinct sequential groups may be composed in order. Treat preparation, validation, estimation, and post-estimation blocks as equal sources of useful patterns rather than mandatory coverage quotas.",
+  "Keep selected label, source hash, target span, declared selection conditions, and edited-field evidence in the session or audit result. Do not create a manifest folder or template-reuse manifest in the research project by default.",
+  "Write reader-facing do-file comments only for project-local state transitions: input meaning, a new variable formula or definition, a retained merge or filter rule, the active sample or specification, and output purpose. Never put journal or repository names, template or source names, internal label/checkpoint/substep IDs, source paths, or provenance markers in generated comments. Keep those details in session or audit evidence, unless a named source is itself part of the project's data-acquisition contract.",
+  "For schema 2.0, decompose broad headwords into atomic substeps only when a persistent template-reuse audit is requested. Merge retained-state handling, panel-key declaration, CPI transformation, dataset finalization, age/entity collapse, e(sample) mean, estimation, ster save, ster load, Excel assembly, and figure assembly remain separately reviewable. Use one genuinely close template with permitted bindings when available; otherwise use general-rule fallback with the rank-relative nearest candidate only as a nonbinding hint. A matching template that was not used is an advisory unless the caller explicitly enables strict template-reuse enforcement. Native audit rows keep project-local target evidence, fallback trigger, and hint used; template availability alone is not a blocker.",
+  "Do not invent a primitive mode or search for templates for harmless direct statements. Contract-declared examples include sysuse of a built-in dataset, use of a declared input with clear and no if/in, version and simple set commands, approved path/name bindings, confirm/describe/codebook/count/assert checks, identifier encoding and variable labels, plain summarize or tabstat, estimates clear, an active .gph save, and approved log open/close. Write these directly without ledger, provenance, report row, or DIRECT FALLBACK markers. If a primitive's returned state is later used to make a substantive sample, estimand, transform, or reporting choice, review that larger transition normally. Merge retained states, sample restrictions, formulas, estimation, e(sample) statistics, estimate handoffs, figure/PDF assembly, axis choices, and final data saves should still be checked against templates first, but no suitable template or a wrong selection leads to general-rule fallback with the rank-relative nearest candidate retained only as a hint rather than a forced stop.",
+  "Use inspect_dictionary_coverage to distinguish full package review from reusable label coverage. A full-read attestation does not make every file or stage a generation source.",
+  "Before editing an existing project, call plan_dictionary_repairs with the user's request. Preserve completed stages, translate only missing or defective work into dictionary headwords, and default to partial repair. Caller arguments cannot turn a narrow natural-language request into an overhaul. Use overhaul only when the user explicitly requests it or when confirmed incompatibility evidence shows the existing workflow cannot satisfy the target.",
+  "When a checkpoint has multiple researcher variants, treat an explicitly requested method or state as a compatibility gate before ranking. Select one whose input contract and selection conditions match. Do not average, splice, or merge variants by default; never copy a drop variant.",
+  "Use the typed named-sample-flow postfile block only when the researcher supplies the checkpoint meanings and order; close it with postclose and never reuse it to reconstruct coefficients. Treat .ster replace seed, append, numbered load, readable store, and restore as distinct estimate-lifecycle transitions, selecting only the transitions the actual handoff requires.",
+  "Before making a reusable label a generation default, require its external-evidence quality_rubric_review. Auto-select only preferred_candidate or conditional_candidate; reference_only is retained for gap diagnosis. Treat isolated variable, key, file, and data-shape bindings as expected adaptation fields rather than project defects. Prefer the cleanest compatible general-purpose transition; hide harmful project-specific assembly unless it is an explicit user-approved canonical exception.",
+  "Final Excel must preserve the complete raw outreg2 coefficient, standard-error, omitted/base, and note rows and may add only adjusted R-squared and the e(sample)-derived dependent-variable mean. Do not filter, relabel, or reconstruct rows. A workbook with one sheet uses direct outreg2 replace/append code with an explicit .xls target and without a program: quietly summarize the dependent variable if e(sample), meanonly, bind r(mean) to a local, and use only adjr2 addstat(Dep. variable mean, that local). Use the canonical outreg2_xlsx formatter with .xlsx only when one workbook requires two or more sheets. Apply the same sheet-cardinality rule to separately grouped 2SLS first-stage results, without extra diagnostic rows.",
+  "Before final Excel assembly, trace outcome meaning, unit, transform, sample, estimand, estimate handoff, and specification order. Define semantic sheet_groups from reader-facing evidence, then give every sheet_plan placement an ordered readable estimate_names list. Do not create a helper for a one-sheet workbook: keep regressions and direct outreg2 replace/append calls visible, compute each mean on e(sample), save the active estimate directly when only one durable result is needed, and avoid unnecessary globals, store/restore cycles, scratch import/export, Mata formatting, and one-use programs. The canonical outreg2_xlsx formatter is reserved for two or more sheets in the same workbook.",
+  "Treat event-study axis_groups independently from Excel sheet_groups. Automatic vertical axes are the default. Use one fixed common vertical range only for a declared group of genuinely close, directly comparable outcomes with the same specification, sample comparison, coefficient unit, and transform. Keep the omitted base out of keep(), retain it as exactly one blank display-order slot, and derive the explicit x labels, zero reference position, and base-to-post policy boundary from that slot. For exactly one outcome use the direct no-loop figure variant; for two or more outcomes use one flat outcome loop. Put the comparison/sample legend below the axis, put the raw outcome variable name alone at the top, and export each PDF immediately after its graph.",
+  "A mixed event-study axis loop is an opt-in exception: rendering_mode single_flat_mixed_axis_loop requires exactly one evidenced fixed_group, one or more automatic groups, complete expected_plots coverage, and one explicit mixed_loop_binding. Select only a label carrying the same event_axis_pattern. Keep one flat outcome loop, clear the bound axis-options local on every iteration, set it only under direct fixed-outcome membership, and use that local in the graph. Never replace this with plot_jobs, a generic dispatcher, or positional research-spec strings.",
+  "When the caller has already approved one master log path and the exact ordered do-file paths, write only log using, flat direct do calls in that exact order, log close, and optionally the exact approved completion display. Immediately above every individual do call, write one Korean comment sentence that states the called do-file's project-local role. This prompt-only shell uses no template, ledger, provenance or fallback marker. Do not infer stages, paths, or order; do not add loops, programs, registries, dispatchers, conditionals, positional strings, dependency probes, captured stage-failure handling, or alternate setup. Every approved do target must already exist. Lint a newly created master with lint_do_file role master. Existing master labels remain reference-only.",
+  "Prefer explicit sequential blocks or one flat loop. Use a two-level loop only for plainly declared repeated axes when it materially removes an otherwise duplicated mechanical block without hiding a research choice. Reject loop depth three, deep structural nesting, and strings that encode outcome, sample, specification, or graph jobs for later positional word parsing; a longer directly readable block is preferable to hidden research-spec dispatch.",
+  "After any Stata code creation or revision, create or update project-root report.md. Record every selected template and every general_rule_fallback as a separate row with mode, project-relative .do target, actual one-based inclusive lines, checkpoint, template label_id or fallback -, and reason. Every fallback reason must contain nearest_template_hint=<label_id|none>, fallback_trigger=<no_suitable_template|wrong_selection>, and hint_used=<borrowed idea|none>. Harmless primitives are not rows. If neither mode was used, state No template or general-rule fallback spans. Call audit_stata_project with require_report true.",
+  "For a new project call workflow_blueprint with project_mode new, then search_labeled_checkpoints and search_approved_patterns for every relevant stage, lint each authored do-file, create report.md, and audit the project with require_report true.",
+  "When execution verification is requested, run the approved entrypoint from a clean generated-results state and call research_output_check with the exact contracted output patterns and counts, the actual main log, mandatory report.md, and the approved README tree and variable documentation when applicable. For every persistent variable preserve its reader description, raw source unit plus exact formula or threshold, output unit and observation level, and a nearby label variable statement; never translate a numeric threshold into another unit unless the conversion is explicit and correct.",
+  "For blind workflow validation, treat the natural-language contract as the only task input. Never expose the source do-file, earlier outputs, or example code as an answer key; use workflow_reproduction_check for semantic stage, lineage, and deliverable checks.",
+  "For a source-isolated blind trial, use only the staged inputs, contract, installed plugin local data/manual/archive, and exposed stataResearchGuard calls. Do not use Browser, web search, external URLs, shell retrieval, external connectors, prior generated code, or evaluator answer assets. Source isolation protects evidence boundaries; it does not require template-only code. After local template and manual checks, harmless primitives and narrow fallback implementations are allowed from the declared contract, with the rank-relative nearest inspected candidate injected only as a nonbinding hint and never presumed compatible. Stop only when a substantive research choice is unresolved, required input or execution capability is unavailable, or a hard safety/output contract would be violated.",
+  "For grouped summary statistics used by both a table and a figure, search descriptives.summary_dataset, exports.descriptive_excel_sheet, and figures.descriptive_bar first. Compose only source-backed deposited-paper atoms whose producer-consumer states connect, build one named canonical summary dataset with the complete declared statistic set, and make both consumers read it. A one-off summarize or tabstat used only for inspection is harmless; a saved summary dataset, paper workbook, or figure is substantive. If mixed statistics, formatting, or target semantics exceed the source spans, use the closest summary atom as a sequencing scaffold and record the narrow fallback comparison.",
+  "Never manually generate treat_y2015, _y2015, or similar treatment-by-year event variables. For a conventional event-study RHS with a declared window, omit the design reference and list every nonreference level as a native level-specific no-base term such as 2015bn.time#1.treatment 2016bn.time#1.treatment; do not use plain i(<levels>), the invalid ibn(<levels>) form, or ## there. This does not prohibit a justified year##c.control heterogeneous slope inside absorb(). Runtime verification must find every declared nonreference level under the exact raw e(b) token Stata returns, including a retained first-term bn marker or an estimator-created o marker. Treat outreg2 output as the raw source of record and preserve native coefficient, standard-error, omitted/base, and note rows; if outreg2 emits 2024o.year#1o.treat2019, keep that exact row. Final Excel may only arrange placement and add adjusted R-squared plus dependent-variable mean. Event-study selectors must target native coefficient names.",
+  "When an existing Dropbox or replication output is the declared baseline, compare every contracted outcome, sample, and specification for coefficient, standard error, and base/omitted status. A representative regression is only a smoke test. Keep the baseline immutable and write comparison evidence separately.",
+  "For an existing project audit first.",
+  "Never claim journal certification: results are aligned with practices observed in a reviewed replication corpus.",
+  "Copy only approved fragments, preserve citations, and use negative references only as anti-patterns.",
+  "Never copy absolute paths, runtime installs, vendored package code, disabled blocks, unsafe merges, or manual coefficient bridges.",
+  "Keep installation commands and installed-command probes out of research do-files. Run the requested analysis directly and let an unavailable command fail plainly instead of adding setup metadata or preflight logic to the project.",
+  "Use at most two active loop levels. Depth two is a conditional readability exception for substantial repetition over plain named lists or numeric ranges; depth three is a blocking error. A depth-two reference may be returned only when it carries that explicit reviewed contract.",
+  "Target Excel tables, PDF figures, and .ster estimates. Never generate or recommend TeX outputs.",
+].join(" ");
+
+function loadJson(name) {
+  return JSON.parse(fs.readFileSync(path.join(DATA, name), "utf8"));
+}
+
+function loadJsonl(name) {
+  return fs.readFileSync(path.join(DATA, name), "utf8")
+    .split(/\r?\n/)
+    .filter(Boolean)
+    .map((line) => JSON.parse(line));
+}
+
+let referencesCache = null;
+
+function references() {
+  if (referencesCache === null) referencesCache = loadJsonl("reference_index.jsonl");
+  return referencesCache;
+}
+
+const MANUALS = loadJsonl("manual_index.jsonl");
+const OFFICIAL_VERIFICATION = loadJson("official_example_verification.json");
+const OFFICIAL_WEB_SOURCES = loadJson("official_web_sources.json");
+const WORKFLOWS = loadJson("workflow_examples.json");
+const PACKAGES = loadJson("reference_packages.json");
+const LABELED_CHECKPOINTS = loadJsonl("labeled_checkpoints.jsonl");
+const WORKFLOW_DICTIONARY = loadJson("workflow_block_dictionary.json");
+const PACKAGE_COVERAGE = fs.existsSync(path.join(DATA, "package_checkpoint_coverage.json"))
+  ? loadJson("package_checkpoint_coverage.json")
+  : null;
+const CHECKPOINTS = unique(LABELED_CHECKPOINTS.map((row) => row.checkpoint)).sort();
+const DICTIONARY_BY_HEADWORD = new Map(WORKFLOW_DICTIONARY.entries.map((row) => [row.headword, row]));
+const PACKAGE_COVERAGE_BY_ID = new Map((PACKAGE_COVERAGE?.packages || []).map((row) => [row.package_id, row]));
+
+function asText(value) {
+  return {
+    content: [{ type: "text", text: JSON.stringify(value) }],
+    structuredContent: value,
+  };
+}
+
+function fail(message, details = {}) {
+  return {
+    content: [{ type: "text", text: JSON.stringify({ error: message, ...details }) }],
+    structuredContent: { error: message, ...details },
+    isError: true,
+  };
+}
+
+function tokenize(value) {
+  return String(value || "").toLowerCase().match(/[a-z0-9_]{2,}|[가-힣]{2,}/g) || [];
+}
+
+function unique(values) {
+  return [...new Set(values)];
+}
+
+function normalizeCommand(value) {
+  return String(value).replace(/^(?:(?:capture|cap|quietly|qui|noisily|noi)\s+)+/i, "");
+}
+
+function stripComments(content) {
+  const lines = String(content).split(/\r?\n/);
+  const active = [];
+  let inBlock = false;
+  for (let i = 0; i < lines.length; i += 1) {
+    let line = lines[i];
+    let work = line;
+    if (inBlock) {
+      const end = work.indexOf("*/");
+      if (end < 0) continue;
+      inBlock = false;
+      work = work.slice(end + 2);
+    }
+    const start = work.indexOf("/*");
+    if (start >= 0) {
+      const end = work.indexOf("*/", start + 2);
+      if (end >= 0) work = work.slice(0, start) + work.slice(end + 2);
+      else {
+        work = work.slice(0, start);
+        inBlock = true;
+      }
+    }
+    const trimmed = work.trimStart();
+    if (!trimmed || trimmed.startsWith("*") || trimmed.startsWith("//")) continue;
+    active.push({ line: i + 1, text: work, trimmed });
+  }
+  return active;
+}
+
+function activeLogicalEntries(content) {
+  const logical = [];
+  let buffer = "";
+  let startLine = null;
+  for (const row of stripComments(content)) {
+    if (startLine === null) startLine = row.line;
+    const continuation = /\/\/\/\s*$/.test(row.text);
+    const piece = row.text.replace(/\/\/\/\s*$/, "").trim();
+    buffer = buffer ? `${buffer} ${piece}` : piece;
+    if (!continuation) {
+      if (buffer) logical.push({ line: startLine, text: buffer });
+      buffer = "";
+      startLine = null;
+    }
+  }
+  if (buffer) logical.push({ line: startLine, text: buffer });
+  return logical;
+}
+
+function activeLogicalLines(content) {
+  return activeLogicalEntries(content).map((entry) => entry.text);
+}
+
+function outreg2HelperMultiplicity(content) {
+  const macros = new Map();
+  const lines = activeLogicalLines(content);
+  for (const line of lines) {
+    const command = normalizeCommand(line.trim());
+    const match = command.match(/^(?:global|local)\s+([A-Za-z_][A-Za-z0-9_]*)\s+(.+)$/i);
+    if (!match) continue;
+    let value = match[2].trim();
+    const quoted = value.match(/^(["'])([\s\S]*)\1$/);
+    if (quoted) value = quoted[2];
+    if (!/[`$]/.test(value)) macros.set(match[1].toLowerCase(), value);
+  }
+  const resolve = (raw) => {
+    let value = String(raw || "").trim().replace(/^(["'])([\s\S]*)\1$/, "$2");
+    const macro = value.match(/^\$\{?([A-Za-z_][A-Za-z0-9_]*)\}?$/);
+    if (macro) value = macros.get(macro[1].toLowerCase()) || value;
+    return /[`$]/.test(value) ? null : value.trim();
+  };
+  const calls = lines.map((line) => normalizeCommand(line.trim())).filter((line) => /^outreg2_xlsx\s*,/i.test(line));
+  const sheets = new Set();
+  const sheetsByWorkbook = new Map();
+  let maximumEstimateCount = 0;
+  let unresolvedEstimates = false;
+  let unresolvedPlacement = false;
+  for (const call of calls) {
+    const estimateMatch = call.match(/\bestimates\s*\(\s*("[^"]*"|'[^']*'|[^)]*?)\s*\)/i);
+    const workbookMatch = call.match(/\bworkbook\s*\(\s*("[^"]*"|'[^']*'|[^)]*?)\s*\)/i);
+    const sheetMatch = call.match(/\bsheet\s*\(\s*("[^"]*"|'[^']*'|[^)]*?)\s*\)/i);
+    const estimates = resolve(estimateMatch?.[1]);
+    const workbook = resolve(workbookMatch?.[1]);
+    const sheet = resolve(sheetMatch?.[1]);
+    if (estimates === null || !estimateMatch) unresolvedEstimates = true;
+    if (workbook === null || sheet === null || !workbookMatch || !sheetMatch) unresolvedPlacement = true;
+    if (estimates) maximumEstimateCount = Math.max(maximumEstimateCount, estimates.split(/\s+/).filter(Boolean).length);
+    if (sheet) sheets.add(sheet.toLowerCase());
+    if (workbook && sheet) {
+      const workbookKey = workbook.toLowerCase();
+      if (!sheetsByWorkbook.has(workbookKey)) sheetsByWorkbook.set(workbookKey, new Set());
+      sheetsByWorkbook.get(workbookKey).add(sheet.toLowerCase());
+    }
+  }
+  const maximumSheetCountPerWorkbook = Math.max(0, ...[...sheetsByWorkbook.values()].map((rows) => rows.size));
+  return {
+    call_count: calls.length,
+    maximum_estimate_count: maximumEstimateCount,
+    distinct_sheet_count: sheets.size,
+    maximum_sheet_count_per_workbook: maximumSheetCountPerWorkbook,
+    unresolved: unresolvedEstimates || unresolvedPlacement,
+    unresolved_estimates: unresolvedEstimates,
+    unresolved_placement: unresolvedPlacement,
+    necessary: !unresolvedPlacement && calls.length > 0 && maximumSheetCountPerWorkbook >= 2,
+  };
+}
+
+function directOutreg2StatisticLines(content) {
+  const entries = activeLogicalEntries(content).map((entry) => ({
+    ...entry,
+    command: normalizeCommand(entry.text.trim()),
+  }));
+  const allowed = new Set();
+  for (let index = 0; index < entries.length; index += 1) {
+    const command = entries[index].command;
+    if (!/^outreg2\b/i.test(command) || !/\badjr2\b/i.test(command)) continue;
+    const addstats = [...command.matchAll(/\baddstat\s*\(/ig)];
+    if (addstats.length !== 1) continue;
+    const meanMatch = command.match(/\baddstat\s*\(\s*Dep\.\s*variable\s*mean\s*,\s*`([A-Za-z_][A-Za-z0-9_]*)'\s*\)/i);
+    if (!meanMatch) continue;
+    const localName = meanMatch[1].toLowerCase();
+    const estimatorPattern = /^(?:reg|regress|areg|xtreg|reghdfe|ivregress|ivreg2|ivreghdfe|ppmlhdfe|poisson|logit|logistic|probit)\b/i;
+    let localIndex = -1;
+    for (let prior = index - 1; prior >= 0; prior -= 1) {
+      if (new RegExp(`^local\\s+${localName}\\s*=\\s*r\\(mean\\)\\s*$`, "i").test(entries[prior].command)) {
+        localIndex = prior;
+        break;
+      }
+      if (estimatorPattern.test(entries[prior].command)) break;
+    }
+    if (localIndex < 0) continue;
+    let sampleMeanIndex = -1;
+    let sampleMean = null;
+    for (let prior = localIndex - 1; prior >= 0; prior -= 1) {
+      sampleMean = entries[prior].command.match(/^(?:sum|summarize)\s+([A-Za-z_][A-Za-z0-9_]*)\s+if\s+e\(sample\)\s*,[\s\S]*\bmeanonly\b/i);
+      if (sampleMean) {
+        sampleMeanIndex = prior;
+        break;
+      }
+      if (estimatorPattern.test(entries[prior].command)) break;
+    }
+    if (sampleMeanIndex < 0 || entries.slice(sampleMeanIndex + 1, index).some((row) => estimatorPattern.test(row.command))) continue;
+    const estimator = entries.slice(0, sampleMeanIndex).reverse().find((row) => estimatorPattern.test(row.command));
+    const dependentVariable = estimator?.command.match(/^(?:reg|regress|areg|xtreg|reghdfe|ivregress(?:\s+\w+)?|ivreg2|ivreghdfe|ppmlhdfe|poisson|logit|logistic|probit)\s+([A-Za-z_][A-Za-z0-9_]*)\b/i)?.[1];
+    if (!dependentVariable || dependentVariable.toLowerCase() !== sampleMean[1].toLowerCase()) continue;
+    allowed.add(entries[index].line);
+  }
+  return allowed;
+}
+
+// `erase' is normally prohibited.  The sole exception is deliberately
+// structural rather than path-based: the canonical Excel formatter creates a
+// named outreg2 scratch text file, imports it, restores the caller's data, and
+// immediately proves that its one disposable file was removed.  A loose
+// `$table/__outreg2_' prefix would otherwise turn an arbitrary deletion into a
+// linter exception.
+function canonicalOutreg2ScratchContract(content) {
+  const entries = activeLogicalEntries(content).map((entry) => ({
+    ...entry,
+    command: normalizeCommand(entry.text.trim()),
+  }));
+  const definitions = entries
+    .map((entry, index) => ({ entry, index }))
+    .filter(({ entry }) => /^program\s+define\s+outreg2_xlsx\b/i.test(entry.command));
+  if (!definitions.length) return { applies: false, valid: false, allowedEraseLines: new Set(), findings: [] };
+
+  const findings = [];
+  if (definitions.length !== 1) findings.push({ contract: "single_outreg2_xlsx_formatter", line: definitions[0].entry.line });
+  const start = definitions[0].index;
+  let end = entries.length;
+  for (let index = start + 1; index < entries.length; index += 1) {
+    if (/^end\s*$/i.test(entries[index].command)) {
+      end = index;
+      break;
+    }
+  }
+  const body = entries.slice(start, end + 1);
+  const localScratch = /^local\s+scratch\s+"\$table\/__outreg2_`sheet'"\s*$/i;
+  const outreg2Scratch = /^outreg2\s+using\s+"`scratch'"/i;
+  const importScratch = /^import\s+delimited\s+using\s+"`scratch'\.txt"/i;
+  const bareEraseScratch = /^erase\s+"`scratch'\.txt"\s*$/i;
+  const confirmScratch = /^(?:(?:capture|cap)\s+)?confirm\s+file\s+"`scratch'\.txt"\s*$/i;
+  const temporaryScratch = /^tempfile\s+scratch\b/i;
+  if (!body.some((entry) => localScratch.test(entry.command))) findings.push({ contract: "named_table_scratch_local", line: definitions[0].entry.line });
+  if (body.some((entry) => temporaryScratch.test(entry.command))) findings.push({ contract: "tempfile_scratch_not_allowed", line: body.find((entry) => temporaryScratch.test(entry.command)).line });
+  if (!body.some((entry) => outreg2Scratch.test(entry.command))) findings.push({ contract: "outreg2_produces_named_scratch", line: definitions[0].entry.line });
+  if (!body.some((entry) => importScratch.test(entry.command))) findings.push({ contract: "imports_named_scratch", line: definitions[0].entry.line });
+
+  const cleanup = body.map((entry, index) => ({ entry, index })).filter(({ entry }) => bareEraseScratch.test(entry.command));
+  if (cleanup.length !== 1) {
+    findings.push({ contract: "one_bare_named_scratch_erase", line: cleanup[0]?.entry.line || definitions[0].entry.line });
+  } else {
+    const eraseIndex = cleanup[0].index;
+    const restore = body[eraseIndex - 1];
+    const confirm = body[eraseIndex + 1];
+    const guard = body[eraseIndex + 2];
+    let closesAt = -1;
+    if (restore?.command !== "restore") findings.push({ contract: "restore_before_scratch_cleanup", line: cleanup[0].entry.line });
+    if (!confirmScratch.test(confirm?.command || "")) findings.push({ contract: "confirm_named_scratch_after_cleanup", line: cleanup[0].entry.line });
+    if (!/^if\s+!_rc\s*\{$/i.test(guard?.command || "")) findings.push({ contract: "cleanup_postcondition_guard", line: cleanup[0].entry.line });
+    if (/^if\s+!_rc\s*\{$/i.test(guard?.command || "")) {
+      for (let index = eraseIndex + 3; index < body.length; index += 1) {
+        if (body[index].command === "}") {
+          closesAt = index;
+          break;
+        }
+      }
+      if (closesAt < 0 || !body.slice(eraseIndex + 3, closesAt).some((entry) => /^exit\s+498\s*$/i.test(entry.command))) {
+        findings.push({ contract: "cleanup_postcondition_exit_498", line: cleanup[0].entry.line });
+      }
+    }
+  }
+  const valid = findings.length === 0;
+  return {
+    applies: true,
+    valid,
+    allowedEraseLines: valid ? new Set(cleanup.map(({ entry }) => entry.line)) : new Set(),
+    findings,
+  };
+}
+
+function invalidEreturnYmeanLines(content) {
+  const invalid = new Set();
+  const programs = [];
+  for (const entry of activeLogicalEntries(content)) {
+    const command = normalizeCommand(entry.text.trim());
+    if (/^program\s+define\b/i.test(command)) {
+      programs.push({ eclass: /,\s*eclass\b/i.test(command) });
+      continue;
+    }
+    if (/^ereturn\s+scalar\s+ymean\s*=\s*r\(mean\)\s*$/i.test(command) && !programs.at(-1)?.eclass) invalid.add(entry.line);
+    if (/^end\s*$/i.test(command) && programs.length) programs.pop();
+  }
+  return invalid;
+}
+
+function buildOutputFlowProfile(observed, availableState = {}) {
+  const declared = availableState.output_flow_profile && typeof availableState.output_flow_profile === "object"
+    ? availableState.output_flow_profile
+    : null;
+  const staticRows = observed.output_flow_evidence?.outcomes || [];
+  const profile = declared || { outcomes: staticRows };
+  const decision = analyzeOutputFlowProfile(profile);
+  const failures = decision.failures;
+  return {
+    ...decision,
+    failures,
+    comparison_label_ids: [
+      "export.regression_excel.single_outcome_direct.v1",
+      "export.regression_excel.coherent_multioutcome_direct.v1",
+    ],
+    source: declared ? "caller_declared_and_static_crosscheck" : "static_code_scan_only",
+    outcomes: decision.outcomes.map((row) => ({
+      ...row,
+      evidence_source: row.evidence_source || (declared ? "caller_declared" : "static_code_scan"),
+    })),
+  };
+}
+
+function structuralSyntax(value) {
+  const input = String(value);
+  let output = "";
+  let inDoubleQuote = false;
+  for (let index = 0; index < input.length; index += 1) {
+    const char = input[index];
+    if (char === '"') {
+      inDoubleQuote = !inDoubleQuote;
+      output += " ";
+      continue;
+    }
+    if (!inDoubleQuote && char === "/" && input[index + 1] === "/") break;
+    output += inDoubleQuote ? " " : char;
+  }
+  return output;
+}
+
+function structuralCloseCount(value) {
+  const match = structuralSyntax(value).trimStart().match(/^(?:}\s*)+/);
+  return match ? (match[0].match(/}/g) || []).length : 0;
+}
+
+function hasStructuralOpen(value) {
+  return structuralSyntax(value).trim().replace(/;\s*$/, "").endsWith("{");
+}
+
+function readableBoundedLoopHeader(value) {
+  const command = normalizeCommand(structuralSyntax(value))
+    .replace(/\{\s*$/, "")
+    .trim();
+  if (/^foreach\s+[A-Za-z_][A-Za-z0-9_]*\s+of\s+(?:local|global|varlist|numlist)\s+\S+(?:\s+\S+)*$/i.test(command)) return true;
+  if (/^foreach\s+[A-Za-z_][A-Za-z0-9_]*\s+in\s+\S+(?:\s+\S+)+$/i.test(command)) return true;
+  return /^forv(?:al(?:ues)?)?\s+[A-Za-z_][A-Za-z0-9_]*\s*=\s*\S+(?:\s+\S+)*$/i.test(command);
+}
+
+function hasTexOutputContent(value) {
+  const active = stripComments(value).map((row) => normalizeCommand(row.trimmed)).join("\n");
+  return /^(?:texdoc|sutex)\b/im.test(active) || /\.tex(?:["'\s,)\]}]|$)/i.test(active) || /\bsty(?:le)?\s*\(\s*tex\s*\)/i.test(active);
+}
+
+function logicalStatements(value) {
+  const statements = [];
+  let text = "";
+  let line = null;
+  for (const row of stripComments(value)) {
+    const continued = /\/\/\/\s*$/.test(row.trimmed);
+    const fragment = row.trimmed.replace(/\/\/\/\s*$/, "").trim();
+    if (line === null) line = row.line;
+    text = `${text} ${fragment}`.trim();
+    if (!continued) {
+      statements.push({ line, text: normalizeCommand(text) });
+      text = "";
+      line = null;
+    }
+  }
+  if (text) statements.push({ line, text: normalizeCommand(text) });
+  return statements;
+}
+
+function graphPolicyFindings(content) {
+  const statements = logicalStatements(content);
+  const findings = [];
+  const graphBuilders = /^(?:coefplot|event_plot|csdid_plot|twoway|graph\s+(?:bar|box|dot|matrix|pie)|marginsplot)\b/i;
+  const nativeInteraction = /(?:\d+|[iboc]\d*|c)\.[A-Za-z_][A-Za-z0-9_]*\s*#\s*(?:\d+|[iboc]\d*|c)\.[A-Za-z_][A-Za-z0-9_]*/i;
+  const hasMalgunGothic = statements.some((row) => /^graph\s+set\s+(?:window|print)\s+fontface\s+["']?(?:Malgun Gothic|맑은\s*고딕)["']?$/i.test(row.text));
+  const eventGraphs = new Set();
+  let lastGraph = null;
+
+  for (const row of statements) {
+    if (graphBuilders.test(row.text)) lastGraph = row;
+    if (/^(?:event_plot|csdid_plot)\b/i.test(row.text)
+      || (/^coefplot\b/i.test(row.text) && (nativeInteraction.test(row.text) || /\b(?:event|pretrend|lead|lag)[_A-Za-z0-9]*/i.test(row.text)))) {
+      eventGraphs.add(row);
+    }
+    if (/^graph\s+(?:save|export)\b/i.test(row.text) && /event[ _-]?study|pretrend/i.test(row.text) && lastGraph) eventGraphs.add(lastGraph);
+  }
+
+  for (const row of statements) {
+    if (/\brename\s*\([^)]*#[^)]*(?:=|\s)_?y(?:19|20)\d{2}\b/i.test(row.text)) {
+      findings.push(finding(
+        "error",
+        "interaction_coefficient_alias",
+        row.line,
+        "factor-variable interaction 계수를 _y2015 같은 합성 별칭으로 바꿉니다.",
+        "Excel에는 Stata의 원래 coefficient name을 그대로 내보내고, event-study keep()/order()도 그 raw name을 직접 사용하세요.",
+      ));
+    }
+    if (!graphBuilders.test(row.text)) continue;
+    const hasKorean = /[가-힣]/.test(row.text);
+    if (eventGraphs.has(row) && hasKorean) {
+      findings.push(finding(
+        "error",
+        "event_study_non_english",
+        row.line,
+        "event-study graph의 표시 문구에 한글이 있습니다.",
+        "event-study title, axis title, legend, note, coefficient display labels를 모두 영어로 작성하세요.",
+      ));
+    } else if (hasKorean && !hasMalgunGothic && !/fontface\s*\(\s*["']?(?:Malgun Gothic|맑은\s*고딕)["']?\s*\)/i.test(row.text)) {
+      findings.push(finding(
+        "error",
+        "korean_graph_without_malgun_gothic",
+        row.line,
+        "한글 표시 문구가 있는 graph에 맑은고딕이 고정되지 않았습니다.",
+        "graph set window/print fontface \"Malgun Gothic\"을 선언하거나 해당 graph text에 fontface(\"Malgun Gothic\")을 지정하세요.",
+      ));
+    }
+  }
+  return findings;
+}
+
+function syntheticEventAliasToken(value) {
+  const match = String(value || "").match(/^(?:(?:[A-Za-z][A-Za-z0-9_]*_)?y((?:19|20)\d{2})|_y((?:19|20)\d{2}))$/i);
+  return match ? { token: match[0], year: match[1] || match[2] } : null;
+}
+
+function syntheticEventAliasFindings(content) {
+  const findings = [];
+  const seen = new Set();
+  const add = (line, message) => {
+    const key = `${line}:synthetic_event_term_alias`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    findings.push(finding(
+      "error",
+      "synthetic_event_term_alias",
+      line,
+      message,
+      "수동 yYYYY 변수를 만들지 말고 factor-variable expression을 회귀식에 직접 쓰세요. Excel과 event-study selector에는 e(b)의 raw coefficient name을 그대로 사용하세요.",
+    ));
+  };
+  const statements = logicalStatements(content);
+  const constructedAliases = new Map();
+  const aliasTokens = (value) => {
+    const knownAliases = [...constructedAliases.keys()];
+    const conventional = String(value || "").match(/(?<![A-Za-z0-9_])(?:(?:treat|event|did|post|policy|quota)[A-Za-z0-9_]*_y(?:19|20)\d{2}|_y(?:19|20)\d{2})(?![A-Za-z0-9_])/gi) || [];
+    const constructed = knownAliases.filter((alias) => new RegExp(`(?<![A-Za-z0-9_])${alias}(?![A-Za-z0-9_])`, "i").test(String(value || "")));
+    return [...new Set([...conventional, ...constructed])];
+  };
+  const estimation = /^(?:(?:quietly|qui|noisily|noi|capture|cap)\s+)*(?:reg|regress|areg|xtreg|reghdfe|ivreg2|ivreghdfe|rdrobust|csdid|did_imputation|eventstudyinteract)\b/i;
+  const interactionSignal = /\b(?:treat(?:ed)?[A-Za-z0-9_]*|event[A-Za-z0-9_]*|did[A-Za-z0-9_]*|post[A-Za-z0-9_]*|policy[A-Za-z0-9_]*|quota[A-Za-z0-9_]*|lead[A-Za-z0-9_]*|lag[A-Za-z0-9_]*|cohort[A-Za-z0-9_]*|shock[A-Za-z0-9_]*|expos(?:ed|ure)?[A-Za-z0-9_]*)\b/i;
+
+  for (const row of statements) {
+    const assignment = row.text.match(/^(?:gen(?:erate)?\s+(?:(?:byte|int|long|float|double|str\d*)\s+)?|replace\s+)([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.+)$/i);
+    if (assignment) {
+      const alias = syntheticEventAliasToken(assignment[1]);
+      if (alias) {
+        const rhs = assignment[2];
+        const yearComparison = new RegExp(`(?:\\b(?:year|yr|time)\\b\\s*==\\s*${alias.year}\\b|\\b${alias.year}\\s*==\\s*\\b(?:year|yr|time)\\b)`, "i");
+        const interactionConstruction = /[*&]/.test(rhs)
+          || /\bcond\s*\(/i.test(rhs)
+          || /\binlist\s*\(\s*(?:year|yr|time)\b/i.test(rhs);
+        if (yearComparison.test(rhs) && interactionConstruction) {
+          constructedAliases.set(alias.token.toLowerCase(), { line: row.line, knownEventTerm: interactionSignal.test(rhs) });
+        }
+        if (yearComparison.test(rhs) && interactionSignal.test(rhs) && interactionConstruction) {
+          add(row.line, `${alias.token}을 factor-variable interaction의 대용 합성 변수로 수동 생성합니다.`);
+        }
+      }
+    }
+
+    const aliases = aliasTokens(row.text);
+    if (!aliases.length) continue;
+    if (estimation.test(row.text)) add(row.line, `회귀식이 synthetic event term ${aliases.join(", ")}을 사용합니다.`);
+    const macroAssignment = row.text.match(/^(?:local|global)\s+([A-Za-z_][A-Za-z0-9_]*)\b/i);
+    if (macroAssignment && /event|lead|lag|pre|post/i.test(macroAssignment[1])) {
+      add(row.line, `event-term macro가 synthetic name ${aliases.join(", ")}을 나열합니다.`);
+    }
+    if (/^(?:coefplot|event_plot|csdid_plot)\b/i.test(row.text) || /\b(?:keep|order|rename)\s*\(/i.test(row.text)) {
+      add(row.line, `event-study selector가 synthetic name ${aliases.join(", ")}을 사용합니다.`);
+    }
+  }
+  for (const [alias, metadata] of constructedAliases) {
+    if (metadata.knownEventTerm) continue;
+    const usedAsCoefficient = statements.some((row) => estimation.test(row.text)
+      && new RegExp(`\\s${alias}(?=\\s|,|$)`, "i").test(` ${row.text}`)
+      && !new RegExp(`^\\s*(?:(?:quietly|qui|noisily|noi|capture|cap)\\s+)*(?:reg|regress|areg|xtreg|reghdfe|ivreg2|ivreghdfe)\\s+${alias}(?=\\s|,|$)`, "i").test(row.text));
+    const usedAsEventSelector = statements.some((row) => (/^(?:coefplot|event_plot|csdid_plot)\b/i.test(row.text) || /\b(?:keep|order|rename)\s*\(/i.test(row.text))
+      && new RegExp(`(?<![A-Za-z0-9_])${alias}(?![A-Za-z0-9_])`, "i").test(row.text));
+    if (usedAsCoefficient || usedAsEventSelector) {
+      add(metadata.line, `${alias}을 factor-variable interaction의 대용 합성 변수로 수동 생성합니다.`);
+    }
+  }
+  return findings;
+}
+
+function encodedResearchDispatcherFindings(content) {
+  const statements = logicalStatements(content);
+  const registries = statements.filter((row) => /^(?:global|local)\s+[A-Za-z_][A-Za-z0-9_]*(?:jobs?|dispatch|registry|spec_jobs)[A-Za-z0-9_]*\b/i.test(row.text));
+  const dispatcherLoops = statements.filter((row) => /^(?:foreach|forv(?:al(?:ues)?)?)\b[^\r\n]*(?:jobs?|dispatch|registry|spec_jobs)/i.test(row.text));
+  const positionalParsers = statements.filter((row) => /^(?:local|global)\s+[A-Za-z_][A-Za-z0-9_]*\s*:\s*word\s+\d+\s+of\b/i.test(row.text));
+  if (!registries.length || !dispatcherLoops.length || positionalParsers.length < 3) return [];
+  const item = finding(
+    "error",
+    "encoded_research_spec_dispatch",
+    registries[0].line,
+    "outcome, sample, specification 또는 graph 선택을 positional word record에 인코딩해 뒤에서 해석하는 dispatcher가 감지되었습니다.",
+    "실제 작업 순서가 바로 읽히도록 직접 순차 block이나 명시적인 한 단계 loop로 펼치세요. 연구 사양을 문자열 record와 word parser에 숨기지 마세요.",
+    "researcher_style_reference",
+  );
+  item.registry_lines = registries.map((row) => row.line);
+  item.dispatcher_loop_lines = dispatcherLoops.map((row) => row.line);
+  item.positional_parser_lines = positionalParsers.map((row) => row.line);
+  return [item];
+}
+
+function eventInteractionScope(row, estimation, estimationMacros) {
+  if (estimation.test(row.text)) return row.text.split(",", 1)[0];
+  const macro = row.text.match(/^(?:local|global)\s+([A-Za-z_][A-Za-z0-9_]*)\s+(?:"([^"]*)"|'([^']*)'|(.+))\s*$/i);
+  if (!macro) return null;
+  if (!estimationMacros.has(macro[1].toLowerCase())) return null;
+  return macro[2] ?? macro[3] ?? macro[4];
+}
+
+function macrosUsedByEstimation(content, estimation) {
+  const names = new Set();
+  for (const row of logicalStatements(content)) {
+    if (!estimation.test(row.text)) continue;
+    const rhs = row.text.split(",", 1)[0];
+    for (const pattern of [/\$\{?([A-Za-z_][A-Za-z0-9_]*)\}?/g, /`([A-Za-z_][A-Za-z0-9_]*)'/g]) {
+      pattern.lastIndex = 0;
+      let match;
+      while ((match = pattern.exec(rhs))) names.add(match[1].toLowerCase());
+    }
+  }
+  return names;
+}
+
+function eventStudyDoubleHashFindings(content) {
+  const findings = [];
+  const estimation = /^(?:(?:quietly|qui|noisily|noi|capture|cap)\s+)*(?:reg|regress|areg|xtreg|xtivreg|xtivreg2|reghdfe|ivreg2|ivreghdfe)\b/i;
+  const estimationMacros = macrosUsedByEstimation(content, estimation);
+  const interaction = /((?:(?:ibn|i)\([^)]*\)|\d+(?:bn|b|o)?|(?:ibn|bn|i|ib|b|o)\d*)\.)([A-Za-z_][A-Za-z0-9_]*)\s*##\s*((?:(?:ibn|i)\([^)]*\)|\d+(?:bn|b|o)?|(?:ibn|bn|i|ib|b|o)\d*)\.)([A-Za-z_][A-Za-z0-9_]*)/gi;
+  const timeLike = /^(?:year|yr|time|period|wave|event(?:_?(?:time|index|year))?)$/i;
+  const treatmentLike = /^(?:treat(?:ed)?[A-Za-z0-9_]*|eligible[A-Za-z0-9_]*|expos(?:ed|ure)[A-Za-z0-9_]*|policy[A-Za-z0-9_]*|post[A-Za-z0-9_]*|did[A-Za-z0-9_]*|quota[A-Za-z0-9_]*|shock[A-Za-z0-9_]*)$/i;
+
+  for (const row of logicalStatements(content)) {
+    const rhs = eventInteractionScope(row, estimation, estimationMacros);
+    if (!rhs) continue;
+    interaction.lastIndex = 0;
+    let match;
+    while ((match = interaction.exec(rhs))) {
+      const left = match[2];
+      const right = match[4];
+      if (!((timeLike.test(left) && treatmentLike.test(right)) || (treatmentLike.test(left) && timeLike.test(right)))) continue;
+      findings.push(finding(
+        "error",
+        "event_study_double_hash_main_effects",
+        row.line,
+        `event-study RHS가 ${match[0]}에 ##를 사용해 불필요한 factor main-effect row를 만듭니다.`,
+        "설계 기준기간을 빼고 2015bn.time#1.treatment 2016bn.time#1.treatment처럼 비기준 수준을 native 단일 # 항으로 나열하세요. absorb() 안의 별도 heterogeneous slope는 이 규칙의 대상이 아닙니다.",
+        "researcher_style_reference",
+      ));
+      break;
+    }
+  }
+  return findings;
+}
+
+function eventStudySingleHashBaseFindings(content) {
+  const findings = [];
+  const estimation = /^(?:(?:quietly|qui|noisily|noi|capture|cap)\s+)*(?:reg|regress|areg|xtreg|xtivreg|xtivreg2|reghdfe|ivreg2|ivreghdfe)\b/i;
+  const estimationMacros = macrosUsedByEstimation(content, estimation);
+  const timeLike = /^(?:year|yr|time|period|wave|event(?:_?(?:time|index|year))?)$/i;
+  const treatmentLike = /^(?:treat(?:ed)?[A-Za-z0-9_]*|eligible[A-Za-z0-9_]*|expos(?:ed|ure)[A-Za-z0-9_]*|policy[A-Za-z0-9_]*|post[A-Za-z0-9_]*|did[A-Za-z0-9_]*|quota[A-Za-z0-9_]*|shock[A-Za-z0-9_]*)$/i;
+  const factor = /((?:(?:ibn|i)\([^)]*\)|\d+(?:bn|b|o)?|(?:ibn|bn|i|ib|b|o)\d*)\.([A-Za-z_][A-Za-z0-9_]*))\s*#\s*((?:(?:ibn|i)\([^)]*\)|\d+(?:bn|b|o)?|(?:ibn|bn|i|ib|b|o)\d*)\.([A-Za-z_][A-Za-z0-9_]*))/gi;
+
+  for (const row of logicalStatements(content)) {
+    const rhs = eventInteractionScope(row, estimation, estimationMacros);
+    if (!rhs) continue;
+    factor.lastIndex = 0;
+    let match;
+    while ((match = factor.exec(rhs))) {
+      const timeName = match[2];
+      const treatmentName = match[4];
+      const leftIsTime = timeLike.test(timeName);
+      const rightIsTime = timeLike.test(treatmentName);
+      const leftIsTreatment = treatmentLike.test(timeName);
+      const rightIsTreatment = treatmentLike.test(treatmentName);
+      if (!((leftIsTime && rightIsTreatment) || (rightIsTime && leftIsTreatment))) continue;
+      const timeFactor = leftIsTime ? match[1] : match[3];
+      const hasLevelSpecificNoBase = /^\d+bn\./i.test(timeFactor);
+      const hasFullSupportExplicitBase = /^ib\d+\./i.test(timeFactor);
+      if (hasLevelSpecificNoBase || hasFullSupportExplicitBase) continue;
+      findings.push(finding(
+        "error",
+        "event_study_single_hash_base_not_explicit",
+        row.line,
+        `event-study RHS가 ${match[0]}에 단일 #를 쓰지만 비기준 수준 전체를 보존하는 기준기간 문법이 없습니다.`,
+        "지정한 창은 2015bn.year#1.treat 2016bn.year#1.treat처럼 설계 기준기간을 뺀 level별 native 항으로 쓰세요. 전체 관측 support가 곧 event window일 때만 ib2019.year#1.treat를 사용할 수 있습니다.",
+        "researcher_style_reference",
+      ));
+      break;
+    }
+  }
+  return findings;
+}
+
+function isSafeBindingStatement(raw) {
+  const command = normalizeCommand(String(raw || "").trim());
+  if (/^sysuse\s+[A-Za-z_][A-Za-z0-9_]*\s*,\s*clear\s*$/i.test(command)) return true;
+  if (/^use\s+(?:"[^"]+"|'[^']+'|[^\s,]+)\s*,\s*clear\s*$/i.test(command) && !/\b(?:if|in)\b/i.test(command)) return true;
+  if (/^version\s+\d+(?:\.\d+)?\s*$/i.test(command)) return true;
+  if (/^set\s+(?:more|varabbrev)\s+(?:on|off)\s*$/i.test(command)) return true;
+  if (/^confirm\s+(?:variable|numeric\s+variable|string\s+variable)\s+[A-Za-z_][A-Za-z0-9_]*\s*$/i.test(command)) return true;
+  if (/^(?:describe|codebook|count)\b[^{}]*$/i.test(command)) return true;
+  if (/^assert\s+[^{}]+$/i.test(command)) return true;
+  if (/^global\s+[A-Za-z_][A-Za-z0-9_]*\s+(?:"(?:[^"\s]+[\\/][^"]+)"|'(?:[^'\s]+[\\/][^']+)')\s*$/i.test(command)) return true;
+  if (/^encode\s+[A-Za-z_][A-Za-z0-9_]*\s*,\s*gen(?:erate)?\s*\(\s*[A-Za-z_][A-Za-z0-9_]*\s*\)\s*$/i.test(command)) return true;
+  if (/^label\s+var(?:iable)?\s+[A-Za-z_][A-Za-z0-9_]*\s+(?:"[^"]*"|'[^']*')\s*$/i.test(command)) return true;
+  if (/^graph\s+save\s+(?:"[^"]+\.gph"|'[^']+\.gph'|[^\s,]+\.gph)\s*,\s*replace\s*$/i.test(command)) return true;
+  if (/^append\s+using\s+(?:"[^"]+"|'[^']+'|[^\s,]+)(?:\s+(?:"[^"]+"|'[^']+'|[^\s,]+))*\s*$/i.test(command)) return true;
+  if (/^(?:sum|summarize)\s+[A-Za-z_][A-Za-z0-9_]*(?:\s+[A-Za-z_][A-Za-z0-9_]*)*\s*$/i.test(command)) return true;
+  if (/^tabstat\s+[A-Za-z_][A-Za-z0-9_]*(?:\s+[A-Za-z_][A-Za-z0-9_]*)*(?:\s*,\s*(?:stat|statistics)\s*\([^)]*\)\s*)?$/i.test(command)) return true;
+  if (/^estimates\s+clear\s*$/i.test(command)) return true;
+  if (/^do\s+(?:"[^"]+"|'[^']+'|[^\s]+)\s*$/i.test(command)) return true;
+  if (/^(?:(?:capture|cap)\s+)?log\s+close(?:\s+_all)?\s*$/i.test(command)) return true;
+  if (/^log\s+using\s+(?:"[^"]+"|'[^']+'|[^\s,]+)\s*,\s*(?:replace|append)\s*$/i.test(command)) return true;
+  return false;
+}
+
+function directFallbackMarkerFindings(content) {
+  const findings = [];
+  for (const [index, raw] of String(content || "").split(/\r?\n/).entries()) {
+    const line = index + 1;
+    if (!/^\s*\*\s+(?:BEGIN DIRECT FALLBACK(?::.*?)?|END DIRECT FALLBACK)\s*$/i.test(raw)) continue;
+    findings.push(finding(
+      "error",
+      "direct_fallback_markers_forbidden",
+      line,
+      "fallback provenance marker를 연구 .do 코드에 넣을 수 없습니다.",
+      "marker를 제거하고 프로젝트 루트 report.md의 general_rule_fallback 행에 정확한 target과 line span을 기록하세요.",
+      "researcher_style_reference",
+    ));
+  }
+  return findings;
+}
+
+function danglingLineContinuationFindings(content) {
+  const lines = String(content || "").split(/\r?\n/);
+  const findings = [];
+  const commandStart = /^(?:(?:capture|cap|quietly|qui|noisily|noi)\s+)*(?:version|set|use|sysuse|import|append|merge|reshape|generate|gen|replace|recode|egen|clonevar|encode|decode|destring|tostring|rename|label|format|keep|drop|sort|order|collapse|contract|statsby|confirm|assert|describe|codebook|count|summarize|sum|tabstat|isid|xtset|regress|reg|areg|xtreg|reghdfe|ivreg2|ivreghdfe|rdrobust|csdid|did_imputation|eventstudyinteract|estadd|estimates|outreg2|putexcel|collect|coefplot|event_plot|csdid_plot|graph|twoway|save|log|local|global|matrix|scalar|postfile|post|postclose|foreach|forvalues|while|if|else|program|syntax|preserve|restore|erase|display|exit|do|run|include)\b/i;
+  const qualifierCommand = /^(?:(?:capture|cap|quietly|qui|noisily|noi)\s+)*(?:append|merge|reshape|generate|gen|replace|recode|egen|keep|drop|sort|collapse|contract|statsby|assert|count|summarize|sum|tabstat|regress|reg|areg|xtreg|reghdfe|ivreg2|ivreghdfe|rdrobust|csdid|did_imputation|eventstudyinteract|outreg2|coefplot|twoway)\b/i;
+  for (let index = 0; index < lines.length; index += 1) {
+    if (!/\/\/\/\s*$/.test(lines[index])) continue;
+    let contextStart = index;
+    while (contextStart > 0 && /\/\/\/\s*$/.test(lines[contextStart - 1])) contextStart -= 1;
+    const commandContext = lines.slice(contextStart, index + 1)
+      .map((line) => line.replace(/\/\/\/\s*$/, "").trim())
+      .join(" ")
+      .trim();
+    const next = index + 1 < lines.length ? lines[index + 1].trim() : "";
+    const rootIndent = (lines[contextStart].match(/^\s*/) || [""])[0].length;
+    const nextIndent = index + 1 < lines.length
+      ? (lines[index + 1].match(/^\s*/) || [""])[0].length
+      : 0;
+    if (/^(?:\*|\/\/[^/]|\/\*)/.test(next)) {
+      findings.push(finding(
+        "error",
+        "dangling_line_continuation",
+        index + 1,
+        "/// 바로 다음 물리행이 같은 명령의 연속행이 아니라 주석입니다.",
+        "주석은 명령 밖으로 옮기고, /// 다음 물리행에는 이어지는 옵션 또는 식을 두세요.",
+        "stata_manual",
+        "https://www.stata.com/manuals/u.pdf",
+      ));
+      continue;
+    }
+    const qualifierContinues = qualifierCommand.test(commandContext)
+      && /^(?:if|in)\b/i.test(next)
+      && !/\{\s*$/.test(next);
+    const outreg2OptionContinues = /^(?:(?:capture|cap|quietly|qui|noisily|noi)\s+)*outreg2\b/i.test(commandContext)
+      && /^(?:replace|append)\b/i.test(next)
+      && !/=/.test(next);
+    const coefplotOptionContinues = /^(?:(?:capture|cap|quietly|qui|noisily|noi)\s+)*coefplot\b/i.test(commandContext)
+      && /^(?:keep|order)\s*\(/i.test(next);
+    const alignedUnknownCommand = !commandStart.test(next)
+      && /^[A-Za-z_][A-Za-z0-9_]*(?:\s|,|\()/i.test(next)
+      && nextIndent <= rootIndent;
+    if (next && next !== "}" && !/^end\b/i.test(next)
+      && !alignedUnknownCommand
+      && (qualifierContinues || outreg2OptionContinues || coefplotOptionContinues || !commandStart.test(next))) continue;
+    findings.push(finding(
+      "error",
+      "dangling_line_continuation",
+      index + 1,
+      "/// 뒤에 같은 명령을 이어 갈 물리행이 없습니다.",
+      "///는 바로 다음 물리행에 같은 명령이 계속될 때만 두고, 마지막 옵션 또는 마지막 물리행에서는 제거하세요.",
+      "stata_manual",
+      "https://www.stata.com/manuals/u.pdf",
+    ));
+  }
+  return findings;
+}
+
+function eventStudyPresentationFindings(content) {
+  const statements = logicalStatements(content);
+  const findings = [];
+  const rawTitle = /\btitle\s*\(\s*"?(`?[A-Za-z_][A-Za-z0-9_]*'?)"?\s*(?:,\s*[^)]*(?:\([^)]*\)[^)]*)*)?\)/i;
+  const bottomLegend = /\blegend\s*\([\s\S]*\bposition\s*\(\s*6\s*\)/i;
+  const eventSignal = /\b(?:event|event_time|eventtime|rel_time|relative_time|pretrend|lead|lag|pre|post)[_A-Za-z0-9]*/i;
+  const eventSelector = /(?:\*\.(?:year|yr|time|period|wave|event(?:_?(?:time|index|year))?)#(?:[01]|i)\.(?:treat(?:ed)?|eligible|exposed|policy|post|did|quota|shock)[A-Za-z0-9_]*|(?:event|lead|lag|pretrend|rel_time|event_time)[A-Za-z0-9_]*\s*#)/i;
+
+  for (let index = 0; index < statements.length; index += 1) {
+    const row = statements[index];
+    const isEventGraph = /^(?:event_plot|csdid_plot)\b/i.test(row.text)
+      || (/^coefplot\b/i.test(row.text) && (eventSignal.test(row.text) || eventSelector.test(row.text)));
+    if (!isEventGraph) continue;
+    const title = row.text.match(rawTitle);
+    if (!title || !/^(?:`[A-Za-z_][A-Za-z0-9_]*'|[A-Za-z_][A-Za-z0-9_]*)$/.test(title[1])) {
+      findings.push(finding("error", "event_study_raw_outcome_title", row.line, "event-study 상단 제목이 raw outcome variable name 하나로 고정되지 않았습니다.", "title(\"`outcome'\")처럼 raw 변수명만 두고 설명 문구는 축 또는 문서에 남기세요.", "researcher_style_reference"));
+    }
+    if (!bottomLegend.test(row.text) || /\blegend\s*\(\s*off\s*\)/i.test(row.text)) {
+      findings.push(finding("error", "event_study_bottom_legend", row.line, "event-study comparison/sample legend가 축 하단에 있지 않습니다.", "legend(position(6) rows(1))을 사용하고 비교 대상을 읽을 수 있는 label을 유지하세요.", "researcher_style_reference"));
+    }
+    const next = statements[index + 1];
+    if (!next || !/^graph\s+export\b/i.test(next.text) || !/\.pdf(?:["']|\s|,|$)/i.test(next.text)) {
+      findings.push(finding("error", "event_study_pdf_not_immediate", row.line, "event-study graph 직후 PDF export가 없습니다.", "graph 다음 문장으로 graph export ...pdf, replace를 실행하세요. outcome이 하나면 loop 없이, 둘 이상이면 하나의 flat loop 안에서 처리합니다.", "researcher_style_reference"));
+    }
+  }
+  return findings;
+}
+
+function namedSampleFlowPostfileLines(content) {
+  const statements = logicalStatements(content).map((row) => ({
+    line: row.line,
+    command: normalizeCommand(row.text),
+  }));
+  const approved = new Set();
+  for (let declarationIndex = 0; declarationIndex < statements.length; declarationIndex += 1) {
+    const row = statements[declarationIndex];
+    if (!/^postfile\b/i.test(row.command)) continue;
+    const match = row.command.match(/^postfile\s+(\S+)\s+([\s\S]+?)\s+using\s+([^,]+)\s*,\s*([\s\S]+)$/i);
+    if (!match) continue;
+    const [, handle, schema, outputPath, options] = match;
+    const hasCheckpoint = /\bstr\d*\s+(?:checkpoint|sample_step|stage)\b/i.test(schema);
+    const hasCount = /\b(?:byte|int|long|float|double)\s+(?:n|count|observations)\b/i.test(schema);
+    const namedOutput = /sample[_ -]?flow/i.test(outputPath);
+    const replacesDeclaredOutput = /\breplace\b/i.test(options);
+    const coefficientSchema = /\b(?:estimate|coefficient|coef|beta|std(?:_?err(?:or)?)?|se|ci_(?:lo|hi)|p_?value)\b/i.test(schema);
+    if (!hasCheckpoint || !hasCount || !namedOutput || !replacesDeclaredOutput || coefficientSchema) continue;
+
+    const escapedHandle = handle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const postPattern = new RegExp(`^post\\s+${escapedHandle}\\s+\\(\"[^\"]+\"\\)\\s+\\((?:_N|r\\(N\\))\\)\\s*$`, "i");
+    const closePattern = new RegExp(`^postclose\\s+${escapedHandle}\\s*$`, "i");
+    const posts = statements
+      .map((item, index) => ({ item, index }))
+      .filter(({ item, index }) => index > declarationIndex && new RegExp(`^post\\s+${escapedHandle}(?:\\s|$)`, "i").test(item.command));
+    if (posts.length < 2 || posts.some(({ item }) => !postPattern.test(item.command))) continue;
+    const closes = statements
+      .map((item, index) => ({ item, index }))
+      .filter(({ item, index }) => index > declarationIndex && closePattern.test(item.command));
+    if (closes.length !== 1 || closes[0].index <= posts.at(-1).index) continue;
+    approved.add(row.line);
+  }
+  return approved;
+}
+
+function finding(severity, rule, line, message, suggestion, basis = "replication_safety", source = null) {
+  return { severity, rule, line, message, suggestion, basis, source };
+}
+
+function masterCallRoleCommentAudit(content, role) {
+  if (!/^(?:master|entrypoint|new_master)$/i.test(String(role || ""))) return { findings: [], valid_lines: new Set() };
+  const physicalLines = String(content || "").split(/\r?\n/);
+  const findings = [];
+  const validLines = new Set();
+  for (const entry of activeLogicalEntries(content)) {
+    const command = normalizeCommand(entry.text.trim());
+    if (!/^do\s+/i.test(command)) continue;
+    const previous = String(physicalLines[entry.line - 2] || "").trim();
+    const comment = previous.match(/^(?:\*|\/\/)\s*(.+)$/) || previous.match(/^\/\*\s*(.+?)\s*\*\/$/);
+    const body = String(comment?.[1] || "").trim();
+    const pathOnly = /^(?:do\s+)?["']?[^"']+\.do["']?\.?$/i.test(body);
+    if (!body || pathOnly) {
+      findings.push(finding(
+        "error",
+        "master_call_role_comment_missing",
+        entry.line,
+        "새 master do-file의 개별 do 호출 바로 위에 호출 파일의 역할을 설명하는 한 문장 주석이 없습니다.",
+        "do 호출의 바로 앞 물리적 줄에 `* 원자료를 정리해 분석용 자료를 만든다.`처럼 프로젝트 안에서의 역할을 한 문장으로 쓰세요.",
+      ));
+    } else validLines.add(entry.line);
+  }
+  return { findings, valid_lines: validLines };
+}
+
+function lintContent(content, role = "auto", source = "inline") {
+  const active = stripComments(content);
+  const logicalByStartLine = new Map(activeLogicalEntries(content).map((entry) => [entry.line, entry.text]));
+  const activeText = active.map((row) => normalizeCommand(row.trimmed)).join("\n");
+  const outreg2Multiplicity = outreg2HelperMultiplicity(content);
+  const directOutreg2Stats = directOutreg2StatisticLines(content);
+  const scratchContract = canonicalOutreg2ScratchContract(content);
+  const invalidYmeanEreturn = invalidEreturnYmeanLines(content);
+  const namedSampleFlowLines = namedSampleFlowPostfileLines(content);
+  const canonicalOutreg2Syntax = activeLogicalEntries(content).some((entry) => {
+    const command = normalizeCommand(entry.text.trim());
+    return /^syntax\s*,/i.test(command)
+      && /\bestimates\(string\)/i.test(command)
+      && /\bworkbook\(string\)/i.test(command)
+      && /\bsheet\(string\)/i.test(command)
+      && /\badjdec\(integer\)/i.test(command)
+      && /\bmeandec\(integer\)/i.test(command)
+      && /\[replace\]/i.test(command);
+  });
+  const canonicalOutreg2SheetHelperShape = /^program\s+define\s+outreg2_xlsx\b/im.test(activeText)
+    && canonicalOutreg2Syntax
+    && /^outreg2\b/im.test(activeText)
+    && /^import\s+delimited\b/im.test(activeText)
+    && /^export\s+excel\b.*\bsheet\s*\(/im.test(activeText)
+    && scratchContract.valid;
+  const canonicalOutreg2SheetHelper = canonicalOutreg2SheetHelperShape && outreg2Multiplicity.necessary;
+  const pendingOutreg2SheetHelperContext = canonicalOutreg2SheetHelperShape
+    && (outreg2Multiplicity.call_count === 0 || outreg2Multiplicity.unresolved);
+  const findings = [];
+  const strengths = [];
+  const masterCallComments = masterCallRoleCommentAudit(content, role);
+  findings.push(...masterCallComments.findings);
+  const mergeLines = [];
+  const programStack = [];
+  const blockStack = [];
+  let maxLoopDepth = 0;
+  let maxStructuralDepth = 0;
+  let programDefinitions = 0;
+  let approvedProgramExceptions = 0;
+  const estimationPattern = /^(?:quietly\s+|capture\s+|cap\s+)*(?:reg|regress|areg|xtreg|reghdfe|ivreg2|ivreghdfe|rdrobust|csdid|did_imputation|eventstudyinteract)\b/i;
+  const hasCompleteGroupSummary = active.some((row) => {
+    const command = normalizeCommand(row.trimmed);
+    return /^collapse\b/i.test(command) && /\(mean\)/i.test(command) && /\(sd\)/i.test(command) && /\(count\)/i.test(command) && /\bby\s*\(/i.test(command);
+  });
+  findings.push(...graphPolicyFindings(content));
+  findings.push(...syntheticEventAliasFindings(content));
+  findings.push(...encodedResearchDispatcherFindings(content));
+  findings.push(...eventStudyDoubleHashFindings(content));
+  findings.push(...eventStudySingleHashBaseFindings(content));
+  findings.push(...directFallbackMarkerFindings(content));
+  findings.push(...danglingLineContinuationFindings(content));
+  findings.push(...eventStudyPresentationFindings(content));
+  if (scratchContract.applies && !scratchContract.valid) {
+    findings.push(finding(
+      "error",
+      "canonical_outreg2_scratch_contract",
+      scratchContract.findings[0].line,
+      "canonical outreg2_xlsx formatter의 named scratch 생성·정리 계약이 완전하지 않습니다.",
+      "local scratch \"$table/__outreg2_`sheet'\"로 raw table을 만들고 import한 뒤, restore -> erase -> capture confirm file -> if !_rc { exit 498 } 순서를 그대로 유지하세요.",
+      "researcher_style_reference",
+      scratchContract.findings,
+    ));
+  }
+
+  for (let index = 0; index < active.length; index += 1) {
+    const entry = active[index];
+    const text = entry.trimmed;
+    const command = normalizeCommand(text);
+    const logicalCommand = normalizeCommand(logicalByStartLine.get(entry.line) ?? text);
+    const approvedScratchErase = scratchContract.allowedEraseLines.has(entry.line);
+    const approvedDirectOutreg2Stats = directOutreg2Stats.has(entry.line);
+
+    if (/^(?:ssc|net|github)\s+install\b/i.test(command)) {
+      findings.push(finding("error", "runtime_install", entry.line, "연구 do-file 실행 중 설치 명령을 호출합니다.", "설치 코드는 연구 workflow에서 제거하고 분석 명령만 남기세요."));
+    }
+    if (/^(?:(?:capture|cap|quietly|qui|noisily|noi)\s+)*(?:which|findfile|ado\s+dir|confirm\s+(?:command|ado))\b/i.test(text)) {
+      findings.push(finding("error", "installed_command_probe", entry.line, "분석 do-file에서 명령 설치 여부를 검사합니다.", "사전 탐색 분기를 제거하고 분석 명령을 직접 실행해 오류가 그대로 드러나게 하세요."));
+    }
+    if (/^merge\s+m:m\b/i.test(command)) {
+      findings.push(finding("error", "merge_m_m", entry.line, "Stata 공식 manual은 m:m merge를 나쁜 생각이라고 명시하며 정렬 순서에 결과가 의존한다고 설명합니다.", "키의 유일성을 isid로 검증한 뒤 1:1, 1:m 또는 m:1을 명시하세요.", "stata_manual", "https://www.stata.com/manuals/dmerge.pdf"));
+    }
+    if (/^duplicates\s+drop\b.*\bforce\b/i.test(command)) {
+      findings.push(finding("error", "duplicates_drop_force", entry.line, "Stata 공식 manual도 force가 varlist 밖의 정보 손실을 일으킬 수 있다고 경고합니다. 선별 연구자 reference에서는 원인 확인 없는 강제 삭제를 생성하지 않습니다.", "duplicates report/tag와 키 검증 후 명시적 보존 규칙을 사용하세요.", "replication_safety", "https://www.stata.com/manuals/dduplicates.pdf"));
+    }
+    if (/^if\s+0\s*\{/i.test(command)) {
+      findings.push(finding("error", "disabled_if_zero", entry.line, "분석 코드가 if 0 블록으로 비활성화되어 있습니다.", "실행 가능한 master 흐름으로 옮기거나 설명된 선택 옵션으로 바꾸세요."));
+    }
+    if (/^(?:shell|winexec|unix|python|rscript|java|!)\b/i.test(command)) {
+      findings.push(finding("error", "process_escape", entry.line, "외부 프로세스를 직접 호출해 이식성과 재현성이 낮아집니다.", "필수 외부 단계는 별도 스크립트와 README 계약으로 분리하세요."));
+    }
+    if (/^(?:erase|rm|del)\b/i.test(command) && !approvedScratchErase) {
+      findings.push(finding("error", "destructive_delete", entry.line, "do-file이 파일을 직접 삭제합니다.", "선언된 scratch 산출물만 정리하고 원본과 중간 산출물은 보존하세요."));
+    }
+    if (approvedScratchErase) strengths.push({ rule: "named_outreg2_scratch_cleanup", line: entry.line });
+    if (invalidYmeanEreturn.has(entry.line)) {
+      findings.push(finding(
+        "error",
+        "invalid_ereturn_ymean_outside_eclass",
+        entry.line,
+        "e-class program 밖에서 ereturn scalar ymean을 설정할 수 없습니다.",
+        "estimation 직후 estadd ysumm, mean을 estimates store/save 전에 두어 e(ymean)을 함께 보존하세요.",
+        "stata_runtime",
+      ));
+    }
+    if (/^(?:pause|sleep)\b/i.test(command)) {
+      findings.push(finding("warning", "manual_pause_or_sleep", entry.line, "수동 개입이나 고정 대기가 필요합니다.", "완료 조건을 확인하는 결정론적 단계로 바꾸세요."));
+    }
+    if (/(?:[A-Z]:[\\/]|\/Users\/|\/home\/|~[\\/]|\\\\[^\\]+\\|Dropbox)/i.test(text)) {
+      findings.push(finding("warning", "machine_path", entry.line, "개인 PC에 종속된 경로가 있습니다.", "master에서 프로젝트 root 하나만 설정하고 하위 경로를 파생하세요."));
+    }
+    if (!approvedScratchErase && /^(?:capture|cap)\s+(?:erase|merge|reg|regress|reghdfe|use|do)\b/i.test(text)) {
+      findings.push(finding("warning", "broad_capture", entry.line, "핵심 단계의 오류를 capture가 숨길 수 있습니다.", "예상 가능한 비핵심 오류에만 capture를 좁게 사용하세요."));
+    }
+    if (/^postfile\b/i.test(command)) {
+      if (namedSampleFlowLines.has(entry.line)) {
+        strengths.push({ rule: "named_sample_flow_dataset", line: entry.line });
+      } else {
+        findings.push(finding("warning", "manual_result_bridge", entry.line, "postfile 기반 결과 조립은 문법상 가능하지만 선별 연구 관행 코드와 같은 결과 계보인지 별도 검토해야 합니다.", "저장된 estimates 또는 명명된 결과 데이터와 연결되는지 확인하세요.", "researcher_style_reference"));
+      }
+    }
+    if (/^(?:texdoc|sutex)\b/i.test(command) || /\.tex(?:["'\s,)\]}]|$)/i.test(text) || /\bsty(?:le)?\s*\(\s*tex\s*\)/i.test(text)) {
+      findings.push(finding("error", "tex_output_not_supported", entry.line, "이 연구 workflow의 산출물 계약은 TeX 출력을 사용하지 않습니다.", "표는 Excel, 그림은 PDF, 추정치는 .ster로 저장하세요."));
+    }
+    if (/^outreg2\b/i.test(logicalCommand)) {
+      const outreg2UsingMatch = logicalCommand.match(/^outreg2\s+using\s+(?:"([^"]+)"|([^\s,]+))/i);
+      const outreg2Target = outreg2UsingMatch ? (outreg2UsingMatch[1] || outreg2UsingMatch[2] || "") : "";
+      const canonicalScratchTarget = scratchContract.applies && /^`scratch'$/i.test(outreg2Target);
+      const directExcelTarget = /\bexcel\b/i.test(logicalCommand) || /\.(?:xml|xlsx?)$/i.test(outreg2Target);
+      if (directExcelTarget && !canonicalScratchTarget && !/\.xls$/i.test(outreg2Target)) {
+        findings.push(finding(
+          "error",
+          "direct_outreg2_requires_xls",
+          entry.line,
+          "program을 쓰지 않는 direct outreg2 Excel 산출물은 명시적 .xls 경로여야 합니다.",
+          "outreg2 using 경로를 .xls로 끝내세요. 같은 workbook에 두 개 이상 sheet가 필요한 경우에만 canonical outreg2_xlsx formatter와 .xlsx를 사용하세요.",
+          "researcher_style_reference",
+        ));
+      }
+      const mutatingOptions = [];
+      for (const [name, pattern] of [
+        ["keep()", /\bkeep\s*\(/i],
+        ["drop()", /\bdrop\s*\(/i],
+        ["label", /(?:^|\s)label(?:\s|,|$)/i],
+        ["addstat()", /\baddstat\s*\(/i],
+        ["addtext()", /\baddtext\s*\(/i],
+        ["e()", /(?:^|\s)e\s*\(/i],
+      ]) if (pattern.test(logicalCommand) && !(name === "addstat()" && approvedDirectOutreg2Stats)) mutatingOptions.push(name);
+      if (mutatingOptions.length) {
+        findings.push(finding(
+          "error",
+          "outreg2_raw_rows_modified",
+          entry.line,
+          `outreg2가 raw 결과를 바꾸는 ${mutatingOptions.join(", ")} option을 사용합니다.`,
+          "canonical raw outreg2 호출에는 coefficient row filter나 addstat/addtext를 두지 마세요. Adjusted R-squared와 e(sample) dependent-variable mean만 formatter가 별도로 삽입합니다.",
+          "researcher_style_reference",
+        ));
+      }
+      if (!/\bnor2\b/i.test(logicalCommand) && !approvedDirectOutreg2Stats) {
+        findings.push(finding(
+          "error",
+          "outreg2_missing_nor2",
+          entry.line,
+          "outreg2 자체의 statistic row가 남아 canonical 두-row contract와 겹칩니다.",
+          "raw outreg2 호출에 nor2를 사용하고 Adjusted R-squared와 dependent-variable mean은 formatter에서 별도로 추가하세요.",
+          "researcher_style_reference",
+        ));
+      } else if (approvedDirectOutreg2Stats) strengths.push({ rule: "direct_single_sheet_outreg2_statistics", line: entry.line });
+      else strengths.push({ rule: "canonical_raw_outreg2_source", line: entry.line });
+    }
+    if (/^rdrobust\b/i.test(command) && /\s&\s*\(/.test(command) && !/\bif\b/i.test(command)) {
+      findings.push(finding("error", "malformed_rdrobust_sample", entry.line, "rdrobust 표본 조건 앞의 if가 누락된 것으로 보입니다.", "조건식 앞에 if를 명시하고 실행 로그로 확인하세요."));
+    }
+    if (/^collapse\b/i.test(command) && /\(mean\)/i.test(command)) {
+      const complete = /\(sd\)/i.test(command) && /\(count\)/i.test(command) && /\bby\s*\(/i.test(command);
+      if (complete) {
+        strengths.push({ rule: "complete_group_summary", line: entry.line, source: "https://www.stata.com/manuals/dcollapse.pdf" });
+      } else {
+        findings.push(finding("warning", "incomplete_group_summary", entry.line, "보고용 group summary에 평균만 있고 표준편차, 관측치 수, 또는 명시적 group key가 빠져 있습니다.", "(mean), (sd), (count)를 같은 collapse에 명시하고 by()로 group-period 단위를 고정하세요.", "stata_manual", "https://www.stata.com/manuals/dcollapse.pdf"));
+      }
+    }
+
+    for (let close = 0; close < structuralCloseCount(text); close += 1) {
+      if (blockStack.length) blockStack.pop();
+    }
+    if (/^(?:adopath\s+\+\+|net\s+from)\b/i.test(command)) {
+      findings.push(finding("warning", "external_runtime_change", entry.line, "연구 실행 중 외부 명령 경로나 네트워크 설정을 바꿉니다.", "환경 설정 문장을 연구 do-file에서 제거하세요."));
+    }
+    const structuralCommand = normalizeCommand(structuralSyntax(text).trim());
+    const loopMatch = structuralCommand.match(/^(foreach|forv(?:al(?:ues)?)?|while)\b/i);
+    const opensBlock = hasStructuralOpen(text);
+    if (opensBlock) {
+      const structuralDepth = blockStack.length + 1;
+      maxStructuralDepth = Math.max(maxStructuralDepth, structuralDepth);
+      if (structuralDepth === 4) {
+        const deepFinding = finding(
+          "error",
+          "deep_structural_nesting",
+          entry.line,
+          "block 중첩 깊이 4가 감지되어 연구 사양과 실행 순서를 읽기 어렵습니다.",
+          "조건과 반복을 직접 읽히는 순차 단계로 펼치고, 한 시점의 구조적 중첩을 3단계 이하로 줄이세요.",
+          "researcher_style_reference",
+        );
+        deepFinding.structural_depth = structuralDepth;
+        deepFinding.allowed_structural_depth = 3;
+        findings.push(deepFinding);
+      }
+    }
+    if (loopMatch && opensBlock) {
+      const loopDepth = blockStack.filter((block) => block.kind === "loop").length + 1;
+      maxLoopDepth = Math.max(maxLoopDepth, loopDepth);
+      const outerLoop = [...blockStack].reverse().find((block) => block.kind === "loop");
+      const readableTwoLevel = loopDepth === 2
+        && readableBoundedLoopHeader(structuralCommand)
+        && readableBoundedLoopHeader(outerLoop?.command || "");
+      if (loopDepth >= 3 || (loopDepth === 2 && !readableTwoLevel)) {
+        const nestedFinding = finding("error", "nested_loop", entry.line, `loop 깊이 ${loopDepth}가 감지되었지만 허용 계약을 충족하지 않습니다.`, "깊이 3 이상은 직접 읽히는 순차 단계로 펼치세요. 깊이 2는 두 반복축이 plain named list 또는 numeric range이고 같은 기계적 본문을 크게 줄일 때만 사용하세요.");
+        nestedFinding.loop_depth = loopDepth;
+        nestedFinding.allowed_loop_depth = 2;
+        findings.push(nestedFinding);
+      } else if (readableTwoLevel) {
+        strengths.push({
+          rule: "readable_two_level_loop",
+          line: entry.line,
+          loop_depth: loopDepth,
+          review_contract: "same mechanical body, substantial reduction, visible research and output choices",
+        });
+      }
+      blockStack.push({ kind: "loop", line: entry.line, command: structuralCommand });
+    } else if (opensBlock) blockStack.push({ kind: "block", line: entry.line });
+    if (/^program\s+define\b/i.test(command)) {
+      programDefinitions += 1;
+      const outreg2Formatter = /^program\s+define\s+outreg2_xlsx\b/i.test(command);
+      const approvedException = canonicalOutreg2SheetHelper && outreg2Formatter;
+      const contextPending = pendingOutreg2SheetHelperContext && outreg2Formatter;
+      if (approvedException) approvedProgramExceptions += 1;
+      programStack.push({ line: entry.line, researchLogic: false, approvedException: approvedException || contextPending });
+      if (approvedException) strengths.push({ rule: "necessary_outreg2_sheet_program", line: entry.line, multiplicity: outreg2Multiplicity });
+      else if (contextPending) strengths.push({ rule: "outreg2_sheet_program_project_context_pending", line: entry.line, multiplicity: outreg2Multiplicity });
+      else if (outreg2Formatter) findings.push(finding("error", "unnecessary_outreg2_program", entry.line, "canonical outreg2_xlsx가 caller-declared estimate list를 받는 단일 formatter 계약을 충족하지 않습니다.", "syntax estimates(string)과 한 단계 estimate loop를 사용하고, outcome·sample·specification·model role 추론을 넣지 마세요."));
+      else findings.push(finding("warning", "program_define", entry.line, "program define은 금지되지 않지만 직접 모듈로 표현할 수 없는 필요한 helper인지 입증해야 합니다.", "명령 자체가 필요한 인터페이스를 제공하지 않는 좁은 helper가 아니라면 직접 읽히는 do-file 단계로 펼치세요.", "researcher_style_reference"));
+    }
+    if (programStack.length && (estimationPattern.test(command) || /^(?:merge|keep|drop)\b/i.test(command))) {
+      programStack[programStack.length - 1].researchLogic = true;
+    }
+    if (/^end\s*$/i.test(command) && programStack.length) {
+      const program = programStack.pop();
+      if (program.researchLogic && !program.approvedException) findings.push(finding("warning", "program_wrapped_research_logic", program.line, "program 안의 연구 로직은 선별 research-practice reference에도 존재하므로 자동 block할 수 없습니다. 동일 목적의 reference와 비교가 필요합니다.", "반복되는 명확한 연구 작업인지 확인하고, 과도한 추상화일 때만 직접 코드로 펼치세요.", "researcher_style_reference", ["corpus/packages/173341/dofiles/4. Main_Tables.do", "corpus/packages/173341/dofiles/5. Appendix_Tables.do"]));
+    }
+    const mergeMatch = command.match(/^merge\s+(1:1|1:m|m:1|m:m)\b/i);
+    if (mergeMatch) {
+      const declaredStatePolicy = /,.*\bkeep\s*\(\s*(?:master|match|matched|using|[123])(?:\s+(?:master|match|matched|using|[123]))*\s*\)/i.test(command);
+      mergeLines.push({ index, line: entry.line, cardinality: mergeMatch[1].toLowerCase(), declaredStatePolicy });
+      if (declaredStatePolicy) strengths.push({ rule: "merge_state_policy", line: entry.line, source: "https://www.stata.com/manuals/dmerge.pdf" });
+    }
+
+    if (/^version\s+\d/i.test(command)) strengths.push({ rule: "stata_version", line: entry.line });
+    if (/^(?:global|local)\s+(?:root|project_root|project|replication)\b/i.test(command)) strengths.push({ rule: "single_project_root", line: entry.line });
+    if (/^isid\b/i.test(command)) strengths.push({ rule: "key_assertion", line: entry.line });
+    if (/^(?:duplicates\s+(?:report|tag)|assert)\b/i.test(command)) strengths.push({ rule: "integrity_check", line: entry.line });
+    if (/^label\s+var(?:iable)?\b/i.test(command)) strengths.push({ rule: "variable_labels", line: entry.line });
+    if (/^set\s+seed\b/i.test(command)) strengths.push({ rule: "explicit_seed", line: entry.line });
+    if (estimationPattern.test(command) && /(?:vce\s*\(cluster|cluster\s*\(|,\s*cluster\s*\()/i.test(command)) strengths.push({ rule: "explicit_cluster", line: entry.line });
+    if (/^(?:sum|summarize|tab|tabulate|tabstat|ttest)\b/i.test(command)) strengths.push({ rule: "descriptive_or_balance_check", line: entry.line });
+    if (hasCompleteGroupSummary && /^save\b.*\.dta(?:[\"']|\s|,|$)/i.test(command)) strengths.push({ rule: "canonical_summary_dataset", line: entry.line, source: "https://www.stata.com/manuals/dsave.pdf" });
+    if (/^(?:do|run|include)\s+/i.test(command)) {
+      strengths.push({ rule: "master_call", line: entry.line });
+      if (masterCallComments.valid_lines.has(entry.line)) strengths.push({ rule: "master_call_role_comment", line: entry.line });
+    }
+    if (/^putexcel\b/i.test(command)) strengths.push({ rule: "official_putexcel", line: entry.line, source: "https://www.stata.com/manuals/rptputexcel.pdf" });
+    if (/^graph\s+bar\b/i.test(command)) strengths.push({ rule: "official_graph_bar", line: entry.line, source: "https://www.stata.com/manuals/g-2graphbar.pdf" });
+    if (/^twoway\b/i.test(command)) strengths.push({ rule: "official_twoway", line: entry.line, source: "https://www.stata.com/manuals/g-2graphtwoway.pdf" });
+    if (/^marginsplot\b/i.test(command)) strengths.push({ rule: "official_marginsplot", line: entry.line, source: "https://www.stata.com/manuals/rmarginsplot.pdf" });
+    if (/^collect\s+get\b/i.test(command)) strengths.push({ rule: "official_collect_get", line: entry.line, source: "https://www.stata.com/manuals/tablescollectget.pdf" });
+    if (/^collect\s+export\b/i.test(command)) strengths.push({ rule: "official_collect_export", line: entry.line, source: "https://www.stata.com/manuals/tablescollectexport.pdf" });
+    if (/(?:\b_b\s*\[|\b_se\s*\[|\be\(b\))/i.test(command)) strengths.push({ rule: "stored_result_access", line: entry.line });
+  }
+
+  if (blockStack.length) {
+    findings.push(finding(
+      "error",
+      "unclosed_structural_block",
+      blockStack[0].line,
+      `${blockStack.length}개의 여는 block에 대응하는 닫는 중괄호가 없습니다.`,
+      "선택한 template span에 필요한 닫는 중괄호를 포함하고 block 경계를 다시 확인하세요.",
+    ));
+  }
+
+  for (const merge of mergeLines) {
+    const nearby = active.slice(merge.index + 1, merge.index + 13).map((row) => normalizeCommand(row.trimmed)).join("\n");
+    const validated = merge.declaredStatePolicy || /(?:assert|tab(?:ulate)?|count|keep)\b[^\n]*(?:_merge|\bmatched\b)|_merge\s*==|assert\s+inlist\s*\(\s*_merge/i.test(nearby);
+    const dropsEarly = /^(?:drop|keep)\s+_merge\b/im.test(nearby) && !validated;
+    if (!validated) findings.push(finding("warning", "merge_without_state_check", merge.line, "merge 직후 매칭 상태를 검증하지 않습니다.", "_merge 분포와 예상 상태를 assert한 뒤 정리하세요."));
+    if (dropsEarly) findings.push(finding("error", "merge_marker_dropped_early", merge.line, "검증 전에 _merge를 삭제합니다.", "매칭 상태를 검증한 다음 _merge를 삭제하세요."));
+  }
+
+  const errors = findings.filter((row) => row.severity === "error").length;
+  const warnings = findings.filter((row) => row.severity === "warning").length;
+  const styleFindings = findings.filter((row) => row.basis === "researcher_style_reference");
+  const replicationFindings = findings.filter((row) => row.basis !== "researcher_style_reference");
+  return {
+    source,
+    role,
+    status: errors ? "blocked" : warnings ? "needs_review" : "static_clean",
+    summary: { errors, warnings, strengths: unique(strengths.map((row) => row.rule)).length, active_lines: active.length, max_loop_depth: maxLoopDepth, max_structural_depth: maxStructuralDepth, program_definitions: programDefinitions, approved_program_exceptions: approvedProgramExceptions },
+    syntax_status: "not_validated",
+    researcher_style_status: styleFindings.length ? "context_review" : "no_static_conflict",
+    replication_status: replicationFindings.some((row) => row.severity === "error") ? "blocked" : replicationFindings.some((row) => row.severity === "warning") ? "needs_review" : "static_clean",
+    findings,
+    strengths: strengths.filter((row, i, values) => values.findIndex((other) => other.rule === row.rule && other.line === row.line) === i),
+    manual_validation: { verdict: "not_run", pass: false, note: "정적 lint만으로 Stata 문법 통과를 선언하지 않습니다." },
+    claim_boundary: "연구 관행 코드에 맞춘 검사 결과이며 저널의 공식 인증이 아닙니다.",
+  };
+}
+
+function readDoInput(args) {
+  if (typeof args.content === "string") return { content: args.content, source: "inline" };
+  if (!args.path) throw new Error("content 또는 path 중 하나가 필요합니다.");
+  const target = path.resolve(String(args.path));
+  if (path.extname(target).toLowerCase() !== ".do") throw new Error("path는 .do 파일이어야 합니다.");
+  const stat = fs.statSync(target);
+  if (stat.size > 2 * 1024 * 1024) throw new Error("2 MiB를 넘는 do-file은 분할해서 검사하세요.");
+  return { content: fs.readFileSync(target, "utf8"), source: target };
+}
+
+function canonicalReferenceCommand(value) {
+  const command = String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
+  if (/^import\s+(?:excel|delimited)\b/.test(command)) return "import";
+  if (/^reshape\s+(?:long|wide)\b/.test(command)) return "reshape";
+  if (/^merge(?:\s|$)/.test(command)) return "merge";
+  if (/^graph\s+(?:export|save|use|combine|bar|twoway)\b/.test(command)) return "graph";
+  return command;
+}
+
+function scoreReference(row, args) {
+  let score = 0;
+  if (args.stage && row.stages.includes(args.stage)) score += 30;
+  const requestedCommands = unique((args.commands || []).map(canonicalReferenceCommand).filter(Boolean));
+  const rowCommands = unique((row.commands || []).map(canonicalReferenceCommand).filter(Boolean));
+  const wantedCommands = unique([...requestedCommands, ...tokenize(args.task), ...tokenize(args.subtask)]);
+  const haystack = `${row.title} ${row.method} ${row.path} ${row.commands.join(" ")} ${row.content}`.toLowerCase();
+  for (const token of wantedCommands) if (haystack.includes(token.toLowerCase())) score += 4;
+  for (const command of requestedCommands) if (rowCommands.includes(command)) score += 12;
+  if (requestedCommands.length) {
+    const unexpectedCommands = rowCommands.filter((command) => !requestedCommands.includes(command));
+    const spanLines = Math.max(1, Number(row.line_end || 0) - Number(row.line_start || 0) + 1);
+    // Prefer exact atomic scope before compactness. Archived references are fixed-width chunks,
+    // so keep both adjustments bounded and subordinate to stage and requested-command matches.
+    score -= Math.min(24, unexpectedCommands.length * 8);
+    score += Math.max(0, 12 - Math.floor((spanLines - 1) / 8));
+  }
+  if (row.evidence_level === "gold") score += 8;
+  if (row.role === "entrypoint" && args.stage === "master_orchestration") score += 12;
+  const shapeTerms = {
+    panel: ["panel", "fixed effects", "event study", "did", "cohort"],
+    repeated_cross_section: ["repeated cross", "survey", "year"],
+    cross_section: ["cross section", "rd", "regression discontinuity"],
+    time_series: ["time series", "tsset"],
+  };
+  for (const term of shapeTerms[String(args.data_shape || "").toLowerCase()] || []) {
+    if (haystack.includes(term)) score += 5;
+  }
+  if (!row.cautions.length) score += 3;
+  return score;
+}
+
+function manualExcerpt(content, terms, width = 1400) {
+  const lower = content.toLowerCase();
+  const positions = terms.map((term) => lower.indexOf(term.toLowerCase())).filter((value) => value >= 0);
+  const center = positions.length ? Math.min(...positions) : 0;
+  const start = Math.max(0, center - 250);
+  return content.slice(start, start + width).trim();
+}
+
+function searchManual(args) {
+  const authority = args.authority || "official";
+  if (!["official", "community", "any"].includes(authority)) throw new Error("authority는 official, community, any 중 하나여야 합니다.");
+  const commands = unique((args.commands || []).map((value) => String(value).toLowerCase()));
+  const terms = unique([...commands, ...tokenize(args.query || "")]);
+  if (!terms.length) throw new Error("query 또는 commands가 필요합니다.");
+  const limit = Math.min(Math.max(Number(args.limit) || 6, 1), 10);
+  const results = MANUALS.filter((row) => {
+    if (authority !== "any" && row.authority !== authority) return false;
+    if (commands.length && !commands.some((command) => row.commands.includes(command))) return false;
+    return true;
+  })
+    .map((row) => {
+      const haystack = `${row.commands.join(" ")} ${row.content}`.toLowerCase();
+      let score = 0;
+      for (const command of commands) {
+        if (row.commands.includes(command)) score += 40;
+        if (haystack.includes(command)) score += 12;
+      }
+      for (const term of terms) if (haystack.includes(term)) score += 3;
+      if (row.authority === "official") score += 5;
+      return { row, score };
+    })
+    .filter((item) => item.score > 5)
+    .sort((a, b) => b.score - a.score || a.row.source_file.localeCompare(b.row.source_file) || a.row.page - b.row.page)
+    .slice(0, limit)
+    .map(({ row, score }) => ({
+      manual_id: row.manual_id,
+      score,
+      authority: row.authority,
+      commands: row.commands,
+      source_file: row.source_file,
+      source_url: row.source_url,
+      page: row.page,
+      file_sha256: row.file_sha256,
+      text_sha256: row.text_sha256,
+      excerpt: manualExcerpt(row.content, terms),
+    }));
+  const coveredCommands = commands.filter((command) => results.some((row) => row.commands.includes(command)));
+  const missingCommands = commands.filter((command) => !coveredCommands.includes(command));
+  const suggestedSources = OFFICIAL_WEB_SOURCES.filter((row) => missingCommands.some((command) => {
+    const documented = String(row.command || "").toLowerCase();
+    return documented === command || documented.includes(command) || command.includes(documented);
+  }));
+  return {
+    query: args.query || "",
+    commands,
+    authority,
+    results,
+    covered_commands: coveredCommands,
+    missing_commands: missingCommands,
+    official_web_search_required: authority === "official" && missingCommands.length > 0,
+    suggested_official_web_sources: authority === "official" && missingCommands.length > 0 ? suggestedSources : [],
+    web_fallback_rule: "로컬 official 결과가 없으면 stata.com과 stata-press.com의 공식 manual 또는 help만 검색하세요. community 문서로 공식 문법을 대체하지 마세요.",
+    verdict_rule: "manual 검색 결과는 근거이며 pass 판정이 아닙니다. pass는 공식 쉬운 예제를 Stata에서 실제 실행한 경우에만 허용합니다.",
+  };
+}
+
+function getVerifiedExamples(args) {
+  const command = String(args.command || "").toLowerCase();
+  if (!command) throw new Error("command가 필요합니다.");
+  const examples = OFFICIAL_VERIFICATION.examples.filter((row) =>
+    row.passed && row.authority === "official" && row.return_code === 0 && row.error_codes.length === 0 && row.command.toLowerCase() === command
+  );
+  return {
+    command,
+    pass_definition: "StataCorp 공식 문서에 근거한 쉬운 예제를 Stata에서 실제 실행했고 오류 코드 없이 pass marker까지 도달했습니다.",
+    examples: examples.map((row) => ({
+      example_id: row.example_id,
+      command: row.command,
+      authority: row.authority,
+      source_file: row.source_file,
+      source_url: row.source_url,
+      page: row.page,
+      derivation: row.derivation,
+      code: row.code,
+      code_sha256: row.code_sha256,
+      stata_version: row.stata_version,
+      log_file: row.log_file,
+      log_sha256: row.log_sha256,
+      passed: true,
+    })),
+    unavailable: examples.length === 0,
+    unavailable_rule: "검증된 쉬운 예제가 없으면 pass를 추론하지 말고 search_stata_manual과 Stata 실제 실행 검증이 필요하다고 보고하세요.",
+    verified_at: OFFICIAL_VERIFICATION.verified_at,
+  };
+}
+
+function searchApproved(args) {
+  if (!STAGES.includes(args.stage)) throw new Error(`stage는 다음 중 하나여야 합니다: ${STAGES.join(", ")}`);
+  const includeReference = Boolean(args.include_reference);
+  const includeNegative = Boolean(args.include_negative);
+  const includeContextual = Boolean(args.include_contextual);
+  const contextualCautions = new Set(["program_define", "program_wrapped_research_logic"]);
+  const requestedCommands = unique((args.commands || []).map(canonicalReferenceCommand).filter(Boolean));
+  const limit = Math.min(Math.max(Number(args.limit) || 6, 1), 10);
+  const exhaustive = args._exhaustive === true;
+  const ranked = references().filter((row) => {
+    if ((row.max_loop_depth || 0) >= 3 || row.cautions.includes("nested_loop_depth_three")) return false;
+    if (row.tex_output === true || row.hard_flags.includes("tex_output_not_supported") || hasTexOutputContent(row.content)) return false;
+    if (!row.stages.includes(args.stage)) return false;
+    const rowCommands = unique((row.commands || []).map(canonicalReferenceCommand).filter(Boolean));
+    if (requestedCommands.length && !requestedCommands.some((command) => rowCommands.includes(command))) return false;
+    if (row.approved_for_generation) return true;
+    if (includeContextual && row.source_allowed_for_generation && !row.hard_flags.length && row.cautions.length && row.cautions.every((item) => contextualCautions.has(item))) return true;
+    if (includeReference && row.evidence_level === "reference" && !row.hard_flags.length) return true;
+    if (includeNegative && ["negative", "excluded"].includes(row.evidence_level)) return true;
+    return false;
+  }).map((row) => {
+    const rowCommands = unique((row.commands || []).map(canonicalReferenceCommand).filter(Boolean));
+    const matchedCommandAnchors = requestedCommands.filter((command) => rowCommands.includes(command));
+    const unexpectedCommandAnchors = rowCommands.filter((command) => !requestedCommands.includes(command));
+    return {
+    row,
+    matchedCommandAnchors,
+    unmatchedCommandAnchors: requestedCommands.filter((command) => !matchedCommandAnchors.includes(command)),
+    unexpectedCommandAnchors,
+    score: scoreReference(row, { ...args, commands: requestedCommands }) + (
+      includeContextual && row.source_allowed_for_generation && !row.hard_flags.length && row.cautions.length && row.cautions.every((item) => contextualCautions.has(item))
+        ? 100
+        : 0
+    ),
+  }})
+    .sort((a, b) => b.score - a.score || a.row.path.localeCompare(b.row.path));
+  const candidates = exhaustive ? ranked : ranked.slice(0, limit);
+  const atomicQuerySplitRequired = requestedCommands.length > 1
+    && !ranked.some((item) => item.unmatchedCommandAnchors.length === 0);
+
+  return {
+    query: { stage: args.stage, task: args.task || "", subtask: args.subtask || "", commands: args.commands || [], canonical_command_anchors: requestedCommands },
+    result_accounting: { returned: candidates.length, total_eligible: ranked.length, exhaustive },
+    atomic_query_split_required: atomicQuerySplitRequired,
+    atomic_query_rule: "Call this fallback only after one atomic checkpoint has no compatible labeled block. Do not mix commands from separate state transitions in one query; split the query when atomic_query_split_required is true.",
+    usage_rule: "Use only after search_labeled_checkpoints found no compatible block for this one atomic transition. Copy only approved_for_generation=true rows with the required matched command anchors. Prefer loop depth one; accept depth two only when the row carries an explicit reviewed readability contract for two plain repeated axes. Never return depth three. Treat unmatched anchors as evidence that the query must be narrowed or split, and unexpected anchors as broader source scope that must not displace an equally compatible atomic span. Contextual, reference, and negative rows are explanation-only.",
+    results: candidates.map(({ row, score, matchedCommandAnchors, unmatchedCommandAnchors, unexpectedCommandAnchors }) => ({
+      chunk_id: row.chunk_id,
+      score,
+      evidence_level: row.evidence_level,
+      approved_for_generation: row.approved_for_generation,
+      usage_class: row.approved_for_generation ? "generation_reference" : row.source_allowed_for_generation && row.cautions.every((item) => contextualCautions.has(item)) ? "contextual_style_reference" : "explanation_only",
+      package_id: row.package_id,
+      title: row.title,
+      article_doi: row.article_doi,
+      repository_doi: row.repository_doi,
+      source: `${row.path}:${row.line_start}-${row.line_end}`,
+      stages: row.stages,
+      commands: row.commands,
+      matched_command_anchors: matchedCommandAnchors,
+      unmatched_command_anchors: unmatchedCommandAnchors,
+      unexpected_command_anchors: unexpectedCommandAnchors,
+      command_coverage_complete: unmatchedCommandAnchors.length === 0,
+      cautions: row.cautions,
+      hard_flags: row.hard_flags,
+      max_loop_depth: row.max_loop_depth || 0,
+      code: row.content,
+    })),
+    claim_boundary: "검토한 연구 관행 코드 재현 패키지의 선별 구간이며 저널의 줄 단위 승인 목록이 아닙니다.",
+  };
+}
+
+function packageIdFromSourcePath(sourcePath) {
+  const match = String(sourcePath || "").replaceAll("\\", "/").match(/^corpus\/packages\/([^/]+)\//);
+  return match ? match[1] : null;
+}
+
+function dictionaryEvidence(checkpoint) {
+  const entry = DICTIONARY_BY_HEADWORD.get(checkpoint);
+  if (!entry) return null;
+  return {
+    headword: entry.headword,
+    name_ko: entry.name_ko,
+    name_en: entry.name_en,
+    maturity: entry.maturity,
+    variant_count: entry.variants.length,
+    auto_selectable_count: entry.auto_selectable_count || 0,
+    reference_only_count: entry.reference_only_count || 0,
+    common_commands: entry.common_commands,
+    retrieval_features: entry.retrieval_features,
+  };
+}
+
+function rubricClassification(row) {
+  return row.quality_rubric_review?.classification || (row.decision === "drop" ? "exclude" : "conditional_candidate");
+}
+
+function rubricAutoSelectable(row) {
+  return row.transition_role !== "guidance_only"
+    && ["preferred_candidate", "conditional_candidate"].includes(rubricClassification(row));
+}
+
+const CONTRACT_MATCH_STOPWORDS = new Set([
+  "stata", "code", "block", "using", "use", "add", "make", "create", "please", "existing",
+  "project", "data", "analysis", "with", "from", "into", "for", "and", "the", "코드", "추가",
+  "만들어", "만들", "프로젝트", "데이터", "분석", "기존", "작업", "기능", "해줘",
+]);
+
+function contractSearchText(row) {
+  return JSON.stringify({
+    variant_id: row.variant_id,
+    aliases: row.aliases,
+    selection_conditions: row.selection_conditions,
+    state_signature: row.state_signature,
+    required_signals: row.required_signals,
+    command_anchors: row.command_anchors,
+  }).toLowerCase();
+}
+
+function explicitMethodContractText(row) {
+  return JSON.stringify({
+    method_family: row.method_family || "",
+    specification_facet: row.specification_facet || "",
+  }).toLowerCase();
+}
+
+function publicSpecificityGate(gate) {
+  const { rows, ...summary } = gate;
+  return summary;
+}
+
+function gateByExplicitMethodContract(rows, queryText) {
+  const queryTokens = unique(tokenize(queryText).filter((token) => !CONTRACT_MATCH_STOPWORDS.has(token)));
+  const methodRows = rows.filter((row) => row.decision !== "drop"
+    && row.reuse_scope === "method_specific"
+    && (row.method_family || row.specification_facet));
+  if (!queryTokens.length || !methodRows.length) return { rows, active: false, distinguishing_tokens: [], excluded_label_ids: [] };
+
+  const methodText = methodRows.map(explicitMethodContractText).join(" ");
+  const generalText = rows.filter((row) => row.decision !== "drop" && row.reuse_scope === "general").map(contractSearchText).join(" ");
+  const distinguishingTokens = queryTokens.filter((token) => methodText.includes(token) && !generalText.includes(token));
+  if (!distinguishingTokens.length) return { rows, active: false, distinguishing_tokens: [], excluded_label_ids: [] };
+
+  const scored = rows.map((row) => {
+    const text = explicitMethodContractText(row);
+    return { row, matches: distinguishingTokens.filter((token) => text.includes(token)) };
+  });
+  const maxMatches = Math.max(...scored.filter((item) => item.row.decision !== "drop").map((item) => item.matches.length), 0);
+  if (maxMatches === 0) return { rows, active: false, distinguishing_tokens: [], excluded_label_ids: [] };
+  const kept = scored.filter((item) => item.matches.length === maxMatches).map((item) => item.row);
+  const keptIds = new Set(kept.map((row) => row.label_id));
+  return {
+    rows: kept,
+    active: true,
+    distinguishing_tokens: distinguishingTokens,
+    matched_tokens: distinguishingTokens.filter((token) => kept.some((row) => contractSearchText(row).includes(token))),
+    excluded_label_ids: rows.filter((row) => !keptIds.has(row.label_id)).map((row) => row.label_id),
+    rule: "An explicit request token that appears in a method-specific contract but in no general contract is a compatibility condition, not a soft ranking bonus.",
+  };
+}
+
+function requestedEventOutcomeCardinality(args) {
+  if (args.checkpoint !== "figures.event_study") return "not_applicable";
+  return eventOutcomeCardinalityFromText(`${args.task || ""} ${args.current_state || ""} ${args.target_state || ""}`);
+}
+
+function eventOutcomeCardinalityFromText(value) {
+  const text = String(value || "").toLowerCase();
+  if (/\b(?:exactly\s+one|one|single|1)[ -]?outcomes?\b|\bone-outcome\b|단일\s*outcome|outcomes?\s*(?:하나|한\s*개|1\s*개)/i.test(text)) return "single";
+  if (/\b(?:several|multiple|two\s+or\s+more|at\s+least\s+two)[ -]?outcomes?\b|\b(?:[2-9]|[1-9]\d+)\+?\s*outcomes?\b|\boutcome\s+list\b|여러\s*outcome|outcomes?\s*(?:(?:[2-9]|[1-9]\d+)\s*개|(?:두|둘)\s*개)/i.test(text)) return "multiple";
+  return "unspecified";
+}
+
+function eventOutcomeCardinalityCompatible(row, cardinality) {
+  if (cardinality === "single") return !/flat.*loop|loop.*outcome/i.test(`${row.variant_id} ${JSON.stringify(row.research_situations || [])}`);
+  if (cardinality === "multiple") return !/single[_ -]outcome|exactly one outcome/i.test(`${row.variant_id} ${JSON.stringify(row.research_situations || [])}`);
+  return true;
+}
+
+const EVENT_AXIS_PATTERNS = Object.freeze({
+  single_automatic: "single_automatic_axis",
+  flat_automatic: "flat_loop_automatic_axis",
+  flat_fixed: "flat_loop_fixed_group_axis",
+  flat_mixed: MIXED_AXIS_RENDERING_MODE,
+});
+
+function eventStudyAxisPatternSelection(axisDecision, cardinality = "unspecified") {
+  if (axisDecision) {
+    if (!axisDecision.selection_ready) return { status: "invalid_profile", required_patterns: [] };
+    if (axisDecision.rendering_mode === MIXED_AXIS_RENDERING_MODE) {
+      return { status: "explicit_mixed", required_patterns: [EVENT_AXIS_PATTERNS.flat_mixed] };
+    }
+    const modes = new Set(axisDecision.axis_groups.map((group) => group.axis_mode));
+    if (modes.has("fixed_group") && modes.has("automatic")) {
+      return { status: "mixed_profile_requires_explicit_rendering_mode", required_patterns: [] };
+    }
+    if (modes.size === 1 && modes.has("fixed_group")) {
+      return { status: "all_fixed", required_patterns: [EVENT_AXIS_PATTERNS.flat_fixed] };
+    }
+    if (modes.size === 1 && modes.has("automatic")) {
+      const outcomeCount = axisDecision.expected_plots.length
+        || axisDecision.axis_groups.reduce((count, group) => count + group.outcomes.length, 0);
+      return {
+        status: "all_automatic",
+        required_patterns: [outcomeCount === 1 ? EVENT_AXIS_PATTERNS.single_automatic : EVENT_AXIS_PATTERNS.flat_automatic],
+      };
+    }
+    return { status: "axis_profile_has_no_supported_pattern", required_patterns: [] };
+  }
+  if (cardinality === "single") return { status: "default_automatic_single", required_patterns: [EVENT_AXIS_PATTERNS.single_automatic] };
+  if (cardinality === "multiple") return { status: "default_automatic_multiple", required_patterns: [EVENT_AXIS_PATTERNS.flat_automatic] };
+  return { status: "metadata_inspection_no_axis_profile", required_patterns: [] };
+}
+
+function eventStudyAxisPatternCompatible(row, axisDecision, cardinality = "unspecified") {
+  if (row.checkpoint !== "figures.event_study") return true;
+  if (!axisDecision && !["single", "multiple"].includes(cardinality)) return true;
+  return eventStudyAxisPatternSelection(axisDecision, cardinality).required_patterns.includes(row.event_axis_pattern);
+}
+
+function eventStudyAxisAutoSelectReady(row, axisDecision, cardinality = "unspecified") {
+  if (row.checkpoint !== "figures.event_study") return true;
+  return Boolean(axisDecision) || ["single", "multiple"].includes(cardinality);
+}
+
+const GENERAL_RULE_FALLBACK_RULES = Object.freeze([
+  "Implement only the already-declared atomic input-to-output transition; do not invent a sample, estimand, merge key, treatment rule, axis group, sheet group, model, or output placement.",
+  "Write the shortest readable fallback Stata sequence with one final implementation path and shallow indentation. Prefer one active loop; use depth two only for substantial repetition over two plain named lists or numeric ranges when the same mechanical body and all research choices remain visible. Never use depth three.",
+  "Do not create a program, wrapper, registry, dispatcher, positional job string, hidden branch, unused option, future-facing interface, or unnecessary intermediate variable. The only standing program exception remains the canonical formatter for two or more sheets in one workbook.",
+  "Do not probe or install dependencies, hide a core error with capture, use merge m:m, force-drop duplicates, write to raw data, or emit TeX.",
+  "Keep native factor-variable expressions and raw e(b) coefficient names; do not generate manual event dummies, rename event coefficients, or reconstruct coefficient tables.",
+  "Preserve the active output contract: direct one-sheet outreg2 uses an explicit .xls target, multi-sheet output uses the canonical .xlsx formatter, figures use PDF, and durable estimates use .ster only when needed.",
+  "Lint the completed target immediately, then verify runtime state and exact declared outputs. Remove superseded attempts before freezing.",
+  "Before fallback code, inject the highest-ranked inspected writable candidate, or the highest-ranked reference candidate when none is writable, as a nonbinding hint. Nearest is rank-relative and may still be absolutely distant or incompatible. Record nearest_template_hint=<label_id|none>, fallback_trigger=<no_suitable_template|wrong_selection>, and hint_used=<borrowed idea|none>. Do not require a claim that fallback code is better.",
+  "Record every fallback span in root report.md as general_rule_fallback with the actual .do path, one-based inclusive lines, checkpoint or unmapped, fallback trigger, and hint used.",
+]);
+
+function generalRuleFallbackPolicy(args, context = {}) {
+  const hardStopReasons = [];
+  if (args.checkpoint === "figures.event_study") {
+    const status = context.axisPatternSelection?.status;
+    if (["invalid_profile", "mixed_profile_requires_explicit_rendering_mode", "axis_profile_has_no_supported_pattern"].includes(status)) {
+      hardStopReasons.push(`event-study axis contract is unresolved: ${status}`);
+    } else if (status === "metadata_inspection_no_axis_profile") {
+      hardStopReasons.push("event-study outcome cardinality or a complete axis profile must be declared before writing");
+    }
+  }
+  if (args.checkpoint === "final_excel_assembly") {
+    if (!context.requestedFlow?.selection_ready) {
+      hardStopReasons.push("final Excel output_flow_profile is incomplete; workbook, sheet, ordered estimates, and required lineage must be fixed before writing");
+    } else if (context.requestedFlow.formatter_required && !context.writableCandidateCount) {
+      hardStopReasons.push("two or more sheets in one workbook require the compatible canonical formatter; repair or reselect its declared interface rather than bypassing it");
+    }
+  }
+  return {
+    mode: "general_rule_fallback",
+    eligible: hardStopReasons.length === 0,
+    preferred_mode: context.writableCandidateCount
+      ? "use one genuinely close writable template with permitted bindings when it fits; otherwise enter general_rule_fallback with the rank-relative nearest candidate injected only as a nonbinding hint"
+      : (hardStopReasons.length ? "stop_and_complete_contract_or_reselect" : "general_rule_fallback"),
+    activation_conditions: [
+      "the search covers exactly one substantive atomic transition",
+      "no auto-selectable candidate is genuinely close after checking input archetype, state, method, output contract, and cardinality",
+      "or inspection, lint, runtime, or output evidence shows that the selected template is wrong for the target frame, algorithm, control flow, interface, input profile, or output contract",
+    ],
+    closest_template_evidence: context.closestCandidate ? {
+      label_id: context.closestCandidate.row.label_id,
+      variant_id: context.closestCandidate.row.variant_id,
+      checkpoint: context.closestCandidate.row.checkpoint,
+      code: context.closestCandidate.row.code,
+      source_path: context.closestCandidate.row.source_path,
+      source_spans: context.closestCandidate.row.source_spans,
+      source_package_id: packageIdFromSourcePath(context.closestCandidate.row.source_path),
+      source_review: sourcePackageReview(context.closestCandidate.row),
+      input_contract: context.closestCandidate.row.input_contract,
+      output_contract: context.closestCandidate.row.output_contract,
+      template_input_profile: context.closestCandidate.row.template_input_profile,
+      template_input_profile_comparison: context.closestCandidate.templateInputProfileComparison,
+      rubric_classification: rubricClassification(context.closestCandidate.row),
+      auto_select_allowed: context.closestCandidateWritable,
+      hint_role: "nonbinding_rank_relative_hint",
+      absolute_compatibility: "not_established",
+      rank_basis: "highest-ranked inspected candidate within the requested checkpoint and specificity, cardinality, axis, and output-flow gates",
+      comparison_rule: "This is only the highest-ranked inspected candidate and may still be absolutely distant or incompatible. If no suitable template exists or this selection is wrong, enter general_rule_fallback and borrow only useful commands, ordering, state handling, or output idioms, if any.",
+    } : {
+      label_id: null,
+      variant_id: null,
+      rubric_classification: null,
+      auto_select_allowed: false,
+      hint_role: "none",
+      absolute_compatibility: "not_available",
+      comparison_rule: "No ranked candidate was returned. Record nearest_template_hint=none, fallback_trigger=no_suitable_template, hint_used=none, and the exact searched checkpoint plus command/state anchors before fallback.",
+    },
+    hard_stop_reasons: hardStopReasons,
+    hard_stop_rule: "Fallback never supplies a missing substantive research choice and never bypasses event-axis, raw-table, sheet-cardinality, merge-key, sample, estimator, or output contracts.",
+    rules: GENERAL_RULE_FALLBACK_RULES,
+    report_required: true,
+    report_path: "report.md",
+  };
+}
+
+function sourcePackageReview(row) {
+  const packageId = packageIdFromSourcePath(row.source_path);
+  if (!packageId) {
+    const derived = row.derivation_provenance && typeof row.derivation_provenance === "object";
+    return {
+      review_level: "not_applicable_source_snapshot",
+      source_kind: row.source_kind || "unclassified_non_corpus_source",
+      source_path: row.source_path,
+      source_file_sha256: row.source_file_sha256,
+      derivation_provenance: derived ? row.derivation_provenance : null,
+      provenance_rule: derived
+        ? "This is a declared derived canonical implementation, not raw source bytes. Verify its live hash, derivation record, referenced raw-source provenance, and runtime_verification separately."
+        : "This source is a declared non-corpus snapshot rather than a corpus package, so package coverage maturity does not apply. Verify the named snapshot hash and any runtime_verification separately.",
+    };
+  }
+  const coverage = PACKAGE_COVERAGE_BY_ID.get(packageId);
+  const packageMetadata = PACKAGES.find((item) => String(item.project_id) === packageId) || {};
+  if (!coverage) return { package_id: packageId, repository_doi: packageMetadata.repository_doi || null, article_doi: packageMetadata.article_doi || null, review_level: "coverage_not_built" };
+  return {
+    package_id: packageId,
+    title: packageMetadata.title || null,
+    journal: packageMetadata.journal || null,
+    repository_doi: packageMetadata.repository_doi || null,
+    article_doi: packageMetadata.article_doi || null,
+    review_level: coverage.review_level,
+    review_accounting: coverage.review_accounting,
+    stage_review: coverage.stages[row.stage] || null,
+    unresolved_questions: coverage.unresolved_questions,
+  };
+}
+
+function scoreLabeledCheckpoint(row, args) {
+  let score = 0;
+  if (args.checkpoint && row.checkpoint === args.checkpoint) score += 100;
+  if (args.stage && row.stage === args.stage) score += 40;
+  if (args.unit_kind && row.unit_kind === args.unit_kind) score += 35;
+  if (args.variant_id && row.variant_id === args.variant_id) score += 120;
+  if (args.decision && row.decision === args.decision) score += 25;
+  const requestedCommands = unique((args.commands || []).map((value) => String(value).trim().toLowerCase()).filter(Boolean));
+  const anchors = new Set((row.command_anchors || []).map((value) => String(value).toLowerCase()));
+  for (const command of requestedCommands) if (anchors.has(command)) score += 70;
+  const terms = unique([
+    ...tokenize(args.task || ""),
+    ...tokenize(args.method || ""),
+    ...tokenize(args.current_state || ""),
+    ...tokenize(args.target_state || ""),
+  ]);
+  const haystack = JSON.stringify({
+    checkpoint: row.checkpoint,
+    variant_id: row.variant_id,
+    stage: row.stage,
+    unit_kind: row.unit_kind,
+    purpose_ko: row.purpose_ko,
+    aliases: row.aliases,
+    research_situations: row.research_situations,
+    selection_conditions: row.selection_conditions,
+    input_contract: row.input_contract,
+    output_contract: row.output_contract,
+    required_signals: row.required_signals,
+  }).toLowerCase();
+  for (const term of terms) if (haystack.includes(term)) score += 5;
+  if (row.decision === "keep") score += 8;
+  if (row.decision === "conditional_keep") score += 4;
+  if (row.reuse_scope === "general") score += 24;
+  if (row.reuse_scope === "method_specific") score += 12;
+  if (row.reuse_scope === "project_specific") score -= 30;
+  score += Number(row.readability_score || 0) * 2;
+  score += Number(row.portability_score || 0) * 2;
+  if (row.preferred_within_checkpoint) score += 18;
+  if (row.canonical_default) score += 8;
+  if (row.explicit_canonical_exception) score += 40;
+  if (rubricClassification(row) === "preferred_candidate") score += 20;
+  if (rubricClassification(row) === "conditional_candidate") score += 10;
+  if (rubricClassification(row) === "reference_only") score -= 20;
+  return score;
+}
+
+function searchLabeledCheckpoints(args) {
+  if (args.checkpoint && !CHECKPOINTS.includes(args.checkpoint)) {
+    throw new Error(`checkpoint는 다음 중 하나여야 합니다: ${CHECKPOINTS.join(", ")}`);
+  }
+  if (args.stage && !STAGES.includes(args.stage)) {
+    throw new Error(`stage는 다음 중 하나여야 합니다: ${STAGES.join(", ")}`);
+  }
+  const includeDropped = Boolean(args.include_dropped);
+  const limit = Math.min(Math.max(Number(args.limit) || 8, 1), 20);
+  const eligibleRows = LABELED_CHECKPOINTS.filter((row) => {
+    if (!includeDropped && row.decision === "drop") return false;
+    if (!args.include_project_specific && row.reuse_scope === "project_specific" && !row.explicit_canonical_exception) return false;
+    if (args.checkpoint && row.checkpoint !== args.checkpoint) return false;
+    // A checkpoint is the atomic state-transition contract.  A caller may also
+    // pass a broader workflow stage from its project plan, but that coarse
+    // stage must not hide a checkpoint-compatible label whose internal stage
+    // is more precise (for example post_estimation inside an exports plan).
+    // Keep stage as a ranking signal when checkpoint is exact.
+    if (args.stage && !args.checkpoint && row.stage !== args.stage) return false;
+    if (args.unit_kind && row.unit_kind !== args.unit_kind) return false;
+    if (args.variant_id && row.variant_id !== args.variant_id) return false;
+    if (args.decision && row.decision !== args.decision) return false;
+    if (args.commands?.length) {
+      const anchors = new Set((row.command_anchors || []).map((value) => String(value).toLowerCase()));
+      if (!args.commands.some((value) => anchors.has(String(value).trim().toLowerCase()))) return false;
+    }
+    return true;
+  });
+  const specificityGate = args.variant_id
+    ? { rows: eligibleRows, active: false, distinguishing_tokens: [], excluded_label_ids: [] }
+    : gateByExplicitMethodContract(eligibleRows, `${args.method || ""} ${args.current_state || ""} ${args.target_state || ""}`);
+  const requestedFlow = args.output_flow_profile
+    ? buildOutputFlowProfile({ output_flow_evidence: { outcomes: [] } }, { output_flow_profile: args.output_flow_profile })
+    : null;
+  const requestedAxisProfile = args.event_study_axis_profile
+    ? analyzeEventStudyAxisProfile(args.event_study_axis_profile)
+    : null;
+  const textEventOutcomeCardinality = requestedEventOutcomeCardinality(args);
+  const profileOutcomeCount = requestedAxisProfile?.selection_ready
+    ? requestedAxisProfile.expected_plots.length
+      || requestedAxisProfile.axis_groups.reduce((count, group) => count + group.outcomes.length, 0)
+    : 0;
+  const eventOutcomeCardinality = profileOutcomeCount
+    ? (profileOutcomeCount === 1 ? "single" : "multiple")
+    : textEventOutcomeCardinality;
+  const axisPatternSelection = eventStudyAxisPatternSelection(requestedAxisProfile, eventOutcomeCardinality);
+  const cardinalityRows = specificityGate.rows.filter((row) => eventOutcomeCardinalityCompatible(row, eventOutcomeCardinality));
+  const axisRows = cardinalityRows.filter((row) => eventStudyAxisPatternCompatible(row, requestedAxisProfile, eventOutcomeCardinality));
+  const flowRows = axisRows.filter((row) => {
+    if (row.checkpoint !== "final_excel_assembly") return true;
+    if (row.label_id !== "export.regression_excel.from_ster_default_style.v1") return false;
+    if (!requestedFlow) return true;
+    return requestedFlow.selection_ready && requestedFlow.formatter_required;
+  });
+  const comparisonVariants = args.checkpoint === "final_excel_assembly"
+    ? specificityGate.rows.filter((row) => row.checkpoint === "final_excel_assembly" && row.label_id !== "export.regression_excel.from_ster_default_style.v1").map((row) => ({
+      label_id: row.label_id,
+      variant_id: row.variant_id,
+      use: "comparison_reference_only",
+      rule: "A workbook with one sheet uses concise direct outreg2 replace/append code with an explicit .xls target and no program. The canonical .xlsx formatter is auto-selected only when one workbook requires two or more sheets.",
+    }))
+    : [];
+  const targetInputProfile = args.target_input_profile || args.target_input_signature;
+  const profileComparisons = flowRows.map((row) => ({ row, comparison: compareTemplateInputProfile(row.template_input_profile, targetInputProfile) }));
+  const profileGate = {
+    active: Boolean(targetInputProfile),
+    excluded_label_ids: profileComparisons.filter((item) => item.comparison.status === "incompatible").map((item) => item.row.label_id),
+    contradictions: profileComparisons.filter((item) => item.comparison.status === "incompatible").map((item) => ({ label_id: item.row.label_id, contradictions: item.comparison.contradictions })),
+    rule: "Only a declared incompatible topology, time topology, or required-versus-absent variable characteristic excludes a template. Unknown and ordinary binding differences remain eligible.",
+  };
+  const inspectedCandidates = profileComparisons.map(({ row, comparison: templateInputProfileComparison }) => {
+    const inputSignatureComparison = compareInputSignatures(row.input_signature, args.target_input_signature);
+    const topologyScore = inputSignatureComparison.status === "aligned" ? 12
+      : inputSignatureComparison.status === "semantic_review_required" ? -12 : 0;
+    const profileScore = templateInputProfileComparison.status === "aligned" ? 12 : 0;
+    return { row, score: scoreLabeledCheckpoint(row, args) + topologyScore + profileScore, inputSignatureComparison, templateInputProfileComparison };
+  })
+    .sort((a, b) => b.score - a.score || a.row.annotation_order - b.row.annotation_order);
+  const candidates = inspectedCandidates
+    .filter((item) => item.templateInputProfileComparison.status !== "incompatible")
+    .filter((item) => item.score > 0 || (!args.task && !args.method && !args.current_state && !args.target_state))
+    .slice(0, limit);
+
+  const groups = {};
+  for (const { row } of candidates) {
+    if (!groups[row.variant_group]) groups[row.variant_group] = [];
+    groups[row.variant_group].push({
+      label_id: row.label_id,
+      variant_id: row.variant_id,
+      decision: row.decision,
+      selection_conditions: row.selection_conditions,
+    });
+  }
+
+  const writableCandidates = candidates.filter(({ row, inputSignatureComparison }) => rubricAutoSelectable(row)
+    && inputSignatureComparison.status !== "semantic_review_required"
+    && eventStudyAxisPatternCompatible(row, requestedAxisProfile, eventOutcomeCardinality)
+    && eventStudyAxisAutoSelectReady(row, requestedAxisProfile, eventOutcomeCardinality));
+  const closestCandidate = writableCandidates[0] || candidates[0] || inspectedCandidates[0] || null;
+  const closestCandidateWritable = Boolean(closestCandidate
+    && writableCandidates.some((item) => item.row.label_id === closestCandidate.row.label_id));
+  const fallbackPolicy = generalRuleFallbackPolicy(args, {
+    axisPatternSelection,
+    requestedFlow,
+    writableCandidateCount: writableCandidates.length,
+    closestCandidate,
+    closestCandidateWritable,
+  });
+
+  return {
+    query: {
+      checkpoint: args.checkpoint || "",
+      stage: args.stage || "",
+      unit_kind: args.unit_kind || "",
+      task: args.task || "",
+      method: args.method || "",
+      current_state: args.current_state || "",
+      target_state: args.target_state || "",
+      commands: args.commands || [],
+      include_project_specific: Boolean(args.include_project_specific),
+      target_input_signature: args.target_input_signature || null,
+      target_input_profile: args.target_input_profile || null,
+    },
+    usage_rule: "Each result is one external-evidence-rubric-reviewed atomic state-transition block. Auto-select only preferred_candidate or conditional_candidate rows. Prefer general, then matching method_specific variants. Compare the target project with input_signature and template_input_profile as well as input_contract and selection_conditions. Preserve the ordinary template-first path: choose one genuinely close complete block and keep it nearly verbatim with permitted bindings. If no suitable template exists or the selection is wrong, discard it as an implementation, reselect once with the observed mismatch, then follow general_rule_fallback_policy with the rank-relative nearest inspected candidate injected only as a nonbinding hint. Ranking does not establish absolute similarity. Do not splice variants or fragments within a group. drop is comparison-only.",
+    general_rule_fallback_policy: fallbackPolicy,
+    variant_group_rule: "Choose at most one alternative within a variant_group. Distinct groups may represent sequential transitions and may be composed only in the actual producer-to-consumer order.",
+    final_excel_rule: "Final Excel preserves the complete native raw outreg2 coefficient, standard-error, omitted/base, and note rows and adds exactly adjusted R-squared and the dependent-variable mean. A workbook with one sheet uses direct outreg2 replace/append code with an explicit .xls target and no program, regardless of model-column count; use the canonical .xlsx formatter only for a workbook with two or more sheets. First-stage results follow the same sheet-cardinality rule while remaining a separate model-role group.",
+    output_flow_selection: requestedFlow || {
+      selection_ready: false,
+      rule: "Final Excel references may be inspected, but none may be auto-selected until output_flow_profile records complete outcome lineage, evidence-backed semantic sheet_groups defined once, and a reason for every workbook/sheet/sample placement in sheet_plan.",
+    },
+    event_study_axis_selection: requestedAxisProfile || {
+      status: "not_declared",
+      rule: "Automatic axes are the default. Declare a fixed_group only when closely related outcomes are directly comparable and share a specification, sample comparison, coefficient unit, and transform.",
+    },
+    stage_gate: {
+      mode: args.stage
+        ? (args.checkpoint ? "ranking_only_with_exact_checkpoint" : "hard_filter")
+        : "not_requested",
+      requested_stage: args.stage || "",
+      rule: "An exact checkpoint defines the atomic transition. A simultaneous broad stage may rank matching labels but cannot exclude checkpoint-compatible labels.",
+    },
+    specificity_gate: publicSpecificityGate(specificityGate),
+    event_outcome_cardinality_selection: {
+      requested: eventOutcomeCardinality,
+      request_text_inference: textEventOutcomeCardinality,
+      profile_outcome_count: profileOutcomeCount,
+      decision_source: profileOutcomeCount ? "event_study_axis_profile" : (["single", "multiple"].includes(textEventOutcomeCardinality) ? "task_text" : "not_declared"),
+      excluded_label_ids: specificityGate.rows.filter((row) => !eventOutcomeCardinalityCompatible(row, eventOutcomeCardinality)).map((row) => row.label_id),
+      rule: "Exactly one event-study outcome uses the direct no-loop variant; two or more outcomes use one flat loop. A ready explicit event_study_axis_profile overrides conflicting task-text cardinality.",
+    },
+    event_study_axis_pattern_gate: {
+      active: args.checkpoint === "figures.event_study",
+      status: axisPatternSelection.status,
+      selection_ready_for_auto_select: requestedAxisProfile?.selection_ready === true || ["single", "multiple"].includes(eventOutcomeCardinality),
+      requested: requestedAxisProfile?.rendering_mode || null,
+      required_patterns: axisPatternSelection.required_patterns,
+      excluded_label_ids: cardinalityRows.filter((row) => !eventStudyAxisPatternCompatible(row, requestedAxisProfile, eventOutcomeCardinality)).map((row) => row.label_id),
+      rule: "One automatic outcome uses single_automatic_axis, multiple automatic outcomes use flat_loop_automatic_axis, an all-fixed profile uses flat_loop_fixed_group_axis, and only an explicit ready single_flat_mixed_axis_loop profile uses that mixed pattern. A mixed fixed-plus-automatic profile without the explicit rendering mode has no writable label. With neither an axis profile nor outcome cardinality, retain candidates for metadata inspection but set auto_select_allowed=false.",
+    },
+    template_input_profile_gate: profileGate,
+    comparison_variants: comparisonVariants,
+    variant_groups: groups,
+    results: candidates.map(({ row, score, inputSignatureComparison, templateInputProfileComparison }) => ({
+      score,
+      label_id: row.label_id,
+      checkpoint: row.checkpoint,
+      variant_group: row.variant_group,
+      variant_id: row.variant_id,
+      stage: row.stage,
+      unit_kind: row.unit_kind,
+      name_ko: row.name_ko,
+      name_en: row.name_en,
+      purpose_ko: row.purpose_ko,
+      aliases: row.aliases,
+      decision: row.decision,
+      transition_role: row.transition_role || "alternative",
+      adaptation_mode: row.adaptation_mode,
+      scope: row.scope || "atomic_checkpoint_block",
+      does_not_specify: row.does_not_specify || [],
+      research_situations: row.research_situations,
+      selection_conditions: row.selection_conditions,
+      input_contract: row.input_contract,
+      input_signature: row.input_signature || null,
+      template_input_profile: row.template_input_profile || null,
+      template_input_profile_comparison: templateInputProfileComparison,
+      input_signature_comparison: inputSignatureComparison,
+      output_contract: row.output_contract,
+      required_changes: row.required_changes,
+      minimal_edit_fields: row.minimal_edit_fields,
+      tradeoffs: row.tradeoffs,
+      state_signature: row.state_signature || { requires: row.input_contract, observable_signals: [], produces: row.output_contract },
+      event_axis_pattern: row.event_axis_pattern || null,
+      selector_taxonomy: row.selector_taxonomy || null,
+      command_anchors: row.command_anchors || [],
+      required_signals: row.required_signals || [],
+      forbidden_signals: row.forbidden_signals || [],
+      canonical_default: Boolean(row.canonical_default),
+      reuse_scope: row.reuse_scope,
+      readability_score: row.readability_score,
+      portability_score: row.portability_score,
+      source_specific_elements: row.source_specific_elements,
+      reusable_core: row.reusable_core,
+      preferred_within_checkpoint: Boolean(row.preferred_within_checkpoint),
+      explicit_canonical_exception: Boolean(row.explicit_canonical_exception),
+      generality_rationale_ko: row.generality_rationale_ko,
+      generality_review: row.generality_review,
+      quality_rubric_review: row.quality_rubric_review,
+      rubric_classification: rubricClassification(row),
+      auto_select_allowed: rubricAutoSelectable(row)
+        && inputSignatureComparison.status !== "semantic_review_required"
+        && eventStudyAxisPatternCompatible(row, requestedAxisProfile, eventOutcomeCardinality)
+        && eventStudyAxisAutoSelectReady(row, requestedAxisProfile, eventOutcomeCardinality),
+      state_confidence: row.state_confidence || "weak",
+      dictionary_evidence: dictionaryEvidence(row.checkpoint),
+      source_package_review: sourcePackageReview(row),
+      composition: row.composition,
+      relationships: row.relationships,
+      source: `${row.source_path}:${row.source_spans.map(([start, end]) => `${start}-${end}`).join(",")}`,
+      source_kind: row.source_kind,
+      source_file_sha256: row.source_file_sha256,
+      code_sha256: row.code_sha256,
+      max_loop_depth: row.max_loop_depth,
+      runtime_verification: row.runtime_verification || { status: "not_run" },
+      code: row.code,
+      review_notes: row.review_notes,
+    })),
+    claim_boundary: "Human-labeled blocks preserve reviewed researcher variants and provenance; they are reusable parts, not journal certification or a guarantee that a target dataset satisfies the block's assumptions.",
+  };
+}
+
+function inspectDictionaryCoverage(args) {
+  if (!PACKAGE_COVERAGE) {
+    throw new Error("package_checkpoint_coverage.json이 아직 생성되지 않았습니다. 패키지 전수 검토를 먼저 완료하세요.");
+  }
+  if (args.stage && !STAGES.includes(args.stage)) {
+    throw new Error(`stage는 다음 중 하나여야 합니다: ${STAGES.join(", ")}`);
+  }
+  if (args.checkpoint && !CHECKPOINTS.includes(args.checkpoint)) {
+    throw new Error(`checkpoint는 다음 중 하나여야 합니다: ${CHECKPOINTS.join(", ")}`);
+  }
+  if (args.package_id && !PACKAGE_COVERAGE_BY_ID.has(args.package_id)) {
+    throw new Error(`알 수 없는 package_id: ${args.package_id}`);
+  }
+  const limit = Math.min(Math.max(Number(args.limit) || 35, 1), 35);
+  const reusableCheckpointLabelIds = new Set(
+    LABELED_CHECKPOINTS.filter((row) => row.decision !== "drop" && (!args.checkpoint || row.checkpoint === args.checkpoint)).map((row) => row.label_id),
+  );
+  const droppedCheckpointLabelIds = new Set(
+    LABELED_CHECKPOINTS.filter((row) => row.decision === "drop" && (!args.checkpoint || row.checkpoint === args.checkpoint)).map((row) => row.label_id),
+  );
+  const results = PACKAGE_COVERAGE.packages.filter((row) => {
+    if (args.package_id && row.package_id !== args.package_id) return false;
+    if (args.review_level && row.review_level !== args.review_level) return false;
+    if (args.checkpoint) {
+      const reusableMatch = row.files.some((file) => file.label_ids.some((labelId) => reusableCheckpointLabelIds.has(labelId)));
+      const droppedMatch = row.files.some((file) => file.label_ids.some((labelId) => droppedCheckpointLabelIds.has(labelId)));
+      const candidateMatch = row.unlabeled_reusable_candidates.some((item) => item.checkpoint === args.checkpoint);
+      if (!reusableMatch && !candidateMatch && !(args.include_dropped && droppedMatch)) return false;
+    }
+    if (args.stage && row.stages[args.stage].status === "absent") return false;
+    if (args.only_gaps) {
+      const reusableMatch = args.checkpoint && row.files.some((file) => file.label_ids.some((labelId) => reusableCheckpointLabelIds.has(labelId)));
+      const droppedMatch = args.checkpoint && row.files.some((file) => file.label_ids.some((labelId) => droppedCheckpointLabelIds.has(labelId)));
+      const candidateMatch = args.checkpoint && row.unlabeled_reusable_candidates.some((item) => item.checkpoint === args.checkpoint);
+      const isStageGap = (stage) => (
+        stage.status === "uncertain"
+        || ["negative_only", "no_safe_block"].includes(stage.reusable_disposition)
+      ) && stage.reusable_label_count === 0;
+      const stageGap = args.stage ? isStageGap(row.stages[args.stage]) : Object.values(row.stages).some(isStageGap);
+      const checkpointGap = Boolean(args.checkpoint && !reusableMatch && !candidateMatch && args.include_dropped && droppedMatch);
+      if (row.review_level === "end_to_end_read" && !checkpointGap && !stageGap && row.unlabeled_reusable_candidates.length === 0 && row.unresolved_questions.length === 0) return false;
+    }
+    return true;
+  }).slice(0, limit).map((row) => {
+    const reusableMatch = args.checkpoint && row.files.some((file) => file.label_ids.some((labelId) => reusableCheckpointLabelIds.has(labelId)));
+    const droppedMatch = args.checkpoint && row.files.some((file) => file.label_ids.some((labelId) => droppedCheckpointLabelIds.has(labelId)));
+    const candidateMatch = args.checkpoint && row.unlabeled_reusable_candidates.some((item) => item.checkpoint === args.checkpoint);
+    const stages = args.stage ? { [args.stage]: row.stages[args.stage] } : row.stages;
+    const files = args.include_files
+      ? row.files.filter((file) => !args.stage || file.stages.includes(args.stage)).map((file) => ({
+        path: file.path,
+        lines: file.lines,
+        stages: file.stages,
+        commands: file.commands,
+        max_loop_depth: file.max_loop_depth,
+        tex_output: file.tex_output,
+        label_ids: file.label_ids,
+      }))
+      : undefined;
+    return {
+      package_id: row.package_id,
+      title: row.title,
+      journal: row.journal,
+      review_level: row.review_level,
+      review_accounting: row.review_accounting,
+      workflow_order: row.workflow_order,
+      stages,
+      label_count: row.label_count,
+      reusable_label_count: row.reusable_label_count,
+      labeled_checkpoints: row.labeled_checkpoints,
+      unlabeled_reusable_candidates: row.unlabeled_reusable_candidates,
+      unresolved_questions: row.unresolved_questions,
+      match_kind: !args.checkpoint
+        ? "package_or_stage"
+        : reusableMatch
+          ? "reusable_label"
+          : candidateMatch
+            ? "unlabeled_candidate"
+            : droppedMatch
+              ? "drop_only"
+              : "stage_only",
+      ...(files ? { files } : {}),
+    };
+  });
+  return {
+    query: {
+      package_id: args.package_id || "",
+      stage: args.stage || "",
+      checkpoint: args.checkpoint || "",
+      review_level: args.review_level || "",
+      only_gaps: Boolean(args.only_gaps),
+      include_dropped: Boolean(args.include_dropped),
+    },
+    corpus_summary: PACKAGE_COVERAGE.summary,
+    dictionary_summary: {
+      headwords: WORKFLOW_DICTIONARY.entries.length,
+      variants: WORKFLOW_DICTIONARY.entries.reduce((total, entry) => total + entry.variants.length, 0),
+      maturity_counts: WORKFLOW_DICTIONARY.entries.reduce((counts, entry) => {
+        counts[entry.maturity] = (counts[entry.maturity] || 0) + 1;
+        return counts;
+      }, {}),
+    },
+    results,
+    interpretation_rule: "Label count and package coverage are separate. end_to_end_read proves full .do accounting; it does not make every block reusable. Prefer labeled variants, and treat negative_only/no_safe_block as anti-pattern evidence.",
+    fallback_rule: "If the fine-grained dictionary and every approved corpus example lack a compatible transition, consult the official Stata manual for mechanics. Ask the user when the remaining choice is substantive rather than syntactic.",
+  };
+}
+
+function compareInputSignatures(templateSignature, targetSignature) {
+  const template = templateSignature && typeof templateSignature === "object" ? templateSignature : {};
+  const target = targetSignature && typeof targetSignature === "object" ? targetSignature : {};
+  const known = (value) => value !== null && value !== undefined && String(value).trim() !== "" && !/^(?:unknown|not[_ ]stated|n\/a)$/i.test(String(value).trim());
+  const verifiedMatches = [];
+  const semanticMismatches = [];
+  const bindingChanges = [];
+  if (known(template.data_structure) && known(target.data_structure)) {
+    if (String(template.data_structure).toLowerCase() === String(target.data_structure).toLowerCase()) verifiedMatches.push("data_structure");
+    else semanticMismatches.push({ field: "data_structure", template: template.data_structure, target: target.data_structure });
+  }
+  for (const field of ["observation_unit", "time_structure"]) {
+    if (known(template[field]) && known(target[field])) {
+      if (String(template[field]).toLowerCase() === String(target[field]).toLowerCase()) verifiedMatches.push(field);
+      else bindingChanges.push({ field, template: template[field], target: target[field], action: `replace the template ${field} binding with the verified target binding` });
+    }
+  }
+  const templateKeys = rowsForSignature(template.required_keys);
+  const targetKeys = rowsForSignature(target.required_keys);
+  if (templateKeys.length && targetKeys.length) {
+    const sameKeys = templateKeys.length === targetKeys.length && templateKeys.every((value) => targetKeys.map((item) => item.toLowerCase()).includes(value.toLowerCase()));
+    if (sameKeys) verifiedMatches.push("required_keys");
+    else bindingChanges.push({ field: "required_keys", template: templateKeys, target: targetKeys, action: "bind the template key roles to the target project's verified keys" });
+  }
+  const templateKnown = [template.data_structure, template.observation_unit, template.time_structure].some(known) || templateKeys.length > 0;
+  const targetKnown = [target.data_structure, target.observation_unit, target.time_structure].some(known) || targetKeys.length > 0;
+  let status = "insufficient_evidence";
+  if (semanticMismatches.length) status = "semantic_review_required";
+  else if (bindingChanges.length) status = "minimal_binding_changes_required";
+  else if (templateKnown && targetKnown && verifiedMatches.length) status = "aligned";
+  return {
+    status,
+    verified_matches: verifiedMatches,
+    semantic_mismatches: semanticMismatches,
+    binding_changes: bindingChanges,
+    template_unknown: !templateKnown,
+    target_unknown: !targetKnown,
+    rule: "input_signature describes evidenced source topology for matching and edit planning. A mismatch triggers review or minimal binding changes; it never licenses invented keys, units, or time variables.",
+  };
+}
+
+function rowsForSignature(value) {
+  return Array.isArray(value) ? value.map((item) => String(item || "").trim()).filter(Boolean) : [];
+}
+
+function normalizeTemplateInputProfile(value) {
+  const source = value && typeof value === "object" ? value : {};
+  return {
+    data_structure: source.data_structure || source.topology || "",
+    observation_unit: source.observation_unit || source.record_unit || "",
+    required_keys: rowsForSignature(source.required_keys),
+    source_basis: source.source_basis || "",
+    time_structure: source.time_structure || "",
+    variable_characteristics: rowsForSignature(source.variable_characteristics),
+  };
+}
+
+function knownProfileValue(value) {
+  return value !== null && value !== undefined && String(value).trim() !== "" && !/^(?:unknown|not[_ ]stated|n\/a)$/i.test(String(value).trim());
+}
+
+function meaningfulProfileRows(values) {
+  return rowsForSignature(values).filter(knownProfileValue);
+}
+
+function scalarProfileComparison(templateValue, targetValue, gating = false) {
+  const templateKnown = knownProfileValue(templateValue);
+  const targetKnown = knownProfileValue(targetValue);
+  if (!templateKnown || !targetKnown) {
+    return { status: "neutral", template: templateValue || "", target: targetValue || "", gating };
+  }
+  const aligned = String(templateValue).trim().toLowerCase() === String(targetValue).trim().toLowerCase();
+  return { status: aligned ? "aligned" : "different", template: templateValue, target: targetValue, gating };
+}
+
+function compareProfileSourceBasis(templateValue, targetValue) {
+  const templateKnown = knownProfileValue(templateValue);
+  const targetKnown = knownProfileValue(targetValue);
+  if (!targetKnown) {
+    return { status: "neutral", template: templateValue || "", target: targetValue || "", gating: false };
+  }
+  if (!templateKnown) {
+    return { status: "review_required", template: templateValue || "", target: targetValue, gating: false };
+  }
+  const normalize = (value) => String(value).trim().toLowerCase().replaceAll("\\", "/").replace(/\s+/g, " ");
+  const template = normalize(templateValue);
+  const target = normalize(targetValue);
+  const status = template === target
+    ? "aligned"
+    : ((template.length >= 8 && target.includes(template)) || (target.length >= 8 && template.includes(target)))
+      ? "review_required"
+      : "different";
+  return { status, template: templateValue, target: targetValue, gating: false };
+}
+
+function topologyTags(value) {
+  const text = String(value || "").toLowerCase();
+  const tags = new Set();
+  if (/topology[ _-]?neutral|any data structure/.test(text)) return tags;
+  if (/stored|e-class|eclass|estimate/.test(text)) tags.add("stored_estimates");
+  if (/wide|worksheet/.test(text)) tags.add("wide");
+  if (/panel/.test(text)) tags.add("panel");
+  if (/cross[ _-]?section/.test(text)) tags.add("cross_section");
+  if (/\blong\b/.test(text)) tags.add("long");
+  return tags;
+}
+
+function hasContradictoryTopology(templateValue, targetValue) {
+  const template = topologyTags(templateValue);
+  const target = topologyTags(targetValue);
+  if (!template.size || !target.size) return false;
+  const exclusive = ["stored_estimates", "wide", "cross_section"];
+  if (exclusive.some((tag) => template.has(tag) && !target.has(tag))) return true;
+  if (exclusive.some((tag) => target.has(tag) && !template.has(tag))) return true;
+  return (template.has("panel") && target.has("cross_section")) || (target.has("panel") && template.has("cross_section"));
+}
+
+function profileNegativeTraits(values) {
+  return new Set(rowsForSignature(values)
+    .map((value) => String(value).toLowerCase())
+    .flatMap((value) => {
+      const matches = [];
+      for (const [trait, pattern] of Object.entries({
+        endogenous: /endogenous/, instrument: /instrument/, event: /event|lead|lag|pretrend/, time: /time|year|period|wave/,
+      })) if (/(?:^|\s)(?:no|without|none|absent)(?:\s|$)/.test(value) && pattern.test(value)) matches.push(trait);
+      return matches;
+    }));
+}
+
+function profileRequiredTraits(values) {
+  const traits = new Set();
+  for (const value of rowsForSignature(values)) {
+    const text = String(value).toLowerCase();
+    if (/endogenous/.test(text)) traits.add("endogenous");
+    if (/excluded instrument|instrument/.test(text)) traits.add("instrument");
+    if (/native factor-variable event|event coefficient|event-time/.test(text)) traits.add("event");
+    if (/year|time|period|wave/.test(text)) traits.add("time");
+  }
+  return traits;
+}
+
+function compareTemplateInputProfile(templateProfile, targetProfile) {
+  const template = normalizeTemplateInputProfile(templateProfile);
+  const target = normalizeTemplateInputProfile(targetProfile);
+  const templateKnown = [template.data_structure, template.observation_unit, template.time_structure].some(knownProfileValue)
+    || template.required_keys.length > 0 || template.variable_characteristics.length > 0;
+  const targetKnown = [target.data_structure, target.observation_unit, target.time_structure].some(knownProfileValue)
+    || target.required_keys.length > 0 || target.variable_characteristics.length > 0;
+  const verifiedMatches = [];
+  const contradictions = [];
+  const fieldComparisons = {
+    data_structure: scalarProfileComparison(template.data_structure, target.data_structure, true),
+    record_unit: scalarProfileComparison(template.observation_unit, target.observation_unit, false),
+    required_keys: { status: "neutral", template: template.required_keys, target: target.required_keys, gating: false },
+    source_basis: compareProfileSourceBasis(template.source_basis, target.source_basis),
+    time_structure: scalarProfileComparison(template.time_structure, target.time_structure, true),
+    variable_characteristics: { status: "neutral", template: template.variable_characteristics, target: target.variable_characteristics, gating: true },
+  };
+  if (knownProfileValue(template.data_structure) && knownProfileValue(target.data_structure)) {
+    if (hasContradictoryTopology(template.data_structure, target.data_structure)) {
+      contradictions.push({ field: "data_structure", template: template.data_structure, target: target.data_structure });
+      fieldComparisons.data_structure.status = "incompatible";
+    } else if ([...topologyTags(template.data_structure)].some((tag) => topologyTags(target.data_structure).has(tag))) {
+      verifiedMatches.push("data_structure");
+      fieldComparisons.data_structure.status = "aligned";
+    }
+  }
+  if (knownProfileValue(template.time_structure) && knownProfileValue(target.time_structure)) {
+    if (hasContradictoryTopology(template.time_structure, target.time_structure)) {
+      contradictions.push({ field: "time_structure", template: template.time_structure, target: target.time_structure });
+      fieldComparisons.time_structure.status = "incompatible";
+    } else if (String(template.time_structure).toLowerCase() === String(target.time_structure).toLowerCase()) {
+      verifiedMatches.push("time_structure");
+      fieldComparisons.time_structure.status = "aligned";
+    }
+  }
+  const requiredTraits = profileRequiredTraits(template.variable_characteristics);
+  const absentTraits = profileNegativeTraits(target.variable_characteristics);
+  for (const trait of requiredTraits) if (absentTraits.has(trait)) contradictions.push({ field: "variable_characteristics", template: trait, target: `no ${trait}` });
+  const templateKeys = rowsForSignature(template.required_keys);
+  const targetKeys = rowsForSignature(target.required_keys);
+  if (templateKeys.length && targetKeys.length) {
+    const keysAligned = templateKeys.map((value) => value.toLowerCase()).every((value) => targetKeys.map((item) => item.toLowerCase()).includes(value));
+    fieldComparisons.required_keys.status = keysAligned ? "aligned" : "different";
+    if (keysAligned) verifiedMatches.push("required_keys");
+  }
+  const templateVariables = meaningfulProfileRows(template.variable_characteristics);
+  const targetVariables = meaningfulProfileRows(target.variable_characteristics);
+  if (contradictions.some((item) => item.field === "variable_characteristics")) {
+    fieldComparisons.variable_characteristics.status = "incompatible";
+  } else if (templateVariables.length && targetVariables.length) {
+    const targetSet = new Set(targetVariables.map((value) => value.toLowerCase()));
+    fieldComparisons.variable_characteristics.status = templateVariables.every((value) => targetSet.has(value.toLowerCase())) ? "aligned" : "different";
+  }
+  return {
+    status: contradictions.length ? "incompatible" : verifiedMatches.length ? "aligned" : "neutral",
+    verified_matches: verifiedMatches,
+    contradictions,
+    field_comparisons: fieldComparisons,
+    non_gating_evidence: {
+      record_unit: fieldComparisons.record_unit,
+      source_basis: fieldComparisons.source_basis,
+    },
+    template_unknown: !templateKnown,
+    target_unknown: !targetKnown,
+    rule: "template_input_profile reports all six fields. Only declared contradictory topology, time topology, or required-versus-absent variable characteristics block a label; record-unit and source-basis differences are explicit non-gating evidence.",
+  };
+}
+
+function scanProjectForDictionary(root) {
+  const projectFiles = listProjectFiles(root);
+  const discovered = listDoFiles(root);
+  const records = discovered.files.map((file) => {
+    const content = fs.readFileSync(file, "utf8");
+    const active = stripComments(content).map((row) => normalizeCommand(row.trimmed)).join("\n");
+    return {
+      path: path.relative(root, file).replaceAll("\\", "/"),
+      content,
+      active,
+      stages: detectStagesFromContent(file, content),
+    };
+  });
+  const activeText = records.map((row) => row.active).join("\n");
+  const extensionCounts = {};
+  for (const file of projectFiles) {
+    const extension = path.posix.extname(file).toLowerCase() || "[no extension]";
+    extensionCounts[extension] = (extensionCounts[extension] || 0) + 1;
+  }
+  const signalPatterns = {
+    data_load: /^\s*(?:use|import\s+delimited|import\s+excel|infile|infix)\b/im,
+    append_data: /^\s*append\s+using\b/im,
+    regression_commands: /^\s*(?:reg|regress|areg|xtreg|reghdfe|ppmlhdfe|jwdid|csdid|did_imputation)\b/im,
+    staggered_regression: /^\s*(?:jwdid|csdid|did_imputation|eventstudyinteract)\b/im,
+    panel_declaration: /^\s*(?:xtset|tsset)\b/im,
+    cohort_construction: /\b(?:cohort|gvar|first[_ ]?treat|event[_ ]?time)\b/i,
+    turnover_timing: /\b(?:turnover|first[_ ]?event|relative[_ ]?time)\b/i,
+    identifier_normalize: /^\s*(?:destring|encode|decode)\b/im,
+    winsorize: /^\s*(?:winsor2?|winsorize)\b/im,
+    standardize: /^\s*(?:egen\b[^\n]*std\(|summarize\b[^\n]*if\b[^\n]*e\(sample\))/im,
+    treatment_mapping: /\b(?:treatment|treated|treat_arm|assignment)\b/i,
+    household_aggregate: /^\s*(?:by|bysort)\b[^\n]*household[^\n]*:\s*egen\b/im,
+    section_aggregate: /^\s*(?:by|bysort)\b[^\n]*(?:section|precinct)[^\n]*:\s*egen\b/im,
+    dataset_finalize: /^\s*keep\b[\s\S]*?^\s*save\b/im,
+    estimates_save: /^\s*estimates\s+save\b/im,
+    estimates_use: /^\s*estimates\s+use\b/im,
+    estimates_store: /^\s*(?:estimates\s+store|eststo\b)/im,
+    esample_reference: /\be\(sample\)\b/i,
+    ymean_metadata: /\be\(ymean\)\b|estadd\s+scalar\s+ymean\b/i,
+    outreg2: /^\s*outreg2\b/im,
+    export_excel: /^\s*export\s+excel\b/im,
+    export_pdf: /^\s*graph\s+export\b[^\n]*\.pdf\b/im,
+    event_figure: /(?:event.?study|pretrend|event[_ ]?time)[\s\S]*?^\s*graph\s+export\b[^\n]*\.pdf\b/im,
+    coefplot_named_estimates: /^\s*coefplot\b/im,
+    stage_log_open: /^\s*log\s+using\b/im,
+    stage_log_close: /^\s*log\s+close\b/im,
+    program_define: /^\s*program\s+define\b/im,
+    uses_globals: /^\s*global\s+/im,
+    uses_locals: /^\s*local\s+/im,
+  };
+  const signals = Object.fromEntries(Object.entries(signalPatterns).map(([name, pattern]) => [name, pattern.test(activeText)]));
+  signals.ster_files = extensionCounts[".ster"] || 0;
+  signals.dta_files = extensionCounts[".dta"] || 0;
+  signals.xlsx_files = extensionCounts[".xlsx"] || 0;
+  signals.pdf_files = extensionCounts[".pdf"] || 0;
+  const policySignals = {
+    nested_loop: records.some((row) => lintContent(row.content, "auto", row.path).findings.some((finding) => finding.rule === "nested_loop")),
+    tex_output: records.some((row) => hasTexOutputContent(row.content)),
+  };
+  const stageFiles = {};
+  for (const stage of STAGES) stageFiles[stage] = records.filter((row) => row.stages.includes(stage)).map((row) => row.path);
+  const matchingFiles = (pattern) => records.filter((row) => pattern.test(row.active)).map((row) => row.path);
+  const callSites = [];
+  const inputBindings = [];
+  const outputBindings = [];
+  const macroDefinitions = [];
+  const programInterfaces = [];
+  const variableLabels = new Map();
+  const variableTransforms = new Map();
+  const outcomeRecords = [];
+  const panelDeclarations = [];
+  const targetRequiredKeys = new Set();
+  const targetVariableCharacteristics = new Set();
+  const targetSignatureEvidence = [];
+  for (const record of records) {
+    let lastOutcome = null;
+    for (const row of stripComments(record.content)) {
+      const command = normalizeCommand(row.trimmed);
+      const panel = command.match(/^(xtset|tsset)\s+([A-Za-z_][A-Za-z0-9_]*)(?:\s+([A-Za-z_][A-Za-z0-9_]*))?/i);
+      if (panel) {
+        panelDeclarations.push({ command: panel[1].toLowerCase(), id: panel[2], time: panel[3] || null, file: record.path, line: row.line });
+        targetRequiredKeys.add(panel[2]);
+        if (panel[3]) targetRequiredKeys.add(panel[3]);
+        targetSignatureEvidence.push({ file: record.path, line: row.line, signal: "xtset_or_tsset", command });
+      }
+      const uniqueKey = command.match(/^isid\s+(.+?)(?:\s*,|$)/i);
+      if (uniqueKey) {
+        for (const key of uniqueKey[1].split(/\s+/).filter((value) => /^[A-Za-z_][A-Za-z0-9_]*$/.test(value))) targetRequiredKeys.add(key);
+        targetSignatureEvidence.push({ file: record.path, line: row.line, signal: "isid", command });
+      }
+      const reshape = command.match(/^reshape\s+(long|wide)\b/i);
+      if (reshape) {
+        targetVariableCharacteristics.add(`${reshape[1].toLowerCase()}-form reshape state`);
+        targetSignatureEvidence.push({ file: record.path, line: row.line, signal: `reshape_${reshape[1].toLowerCase()}`, command });
+      }
+      const merge = command.match(/^merge\s+(?:1:1|1:m|m:1)\s+(.+?)\s+using\b/i);
+      if (merge) {
+        for (const key of merge[1].split(/\s+/).filter((value) => /^[A-Za-z_][A-Za-z0-9_]*$/.test(value))) targetRequiredKeys.add(key);
+        targetVariableCharacteristics.add("additional dataset join");
+        targetSignatureEvidence.push({ file: record.path, line: row.line, signal: "merge", command });
+      }
+      const treatmentTiming = command.match(/\bcsgvar\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)/i);
+      if (treatmentTiming) {
+        targetVariableCharacteristics.add(`treatment timing variable: ${treatmentTiming[1]}`);
+        targetSignatureEvidence.push({ file: record.path, line: row.line, signal: "csgvar_treatment_timing", command });
+      }
+      if (/^(?:use\b|import\s+(?:delimited|excel)\b)/i.test(command)) targetVariableCharacteristics.add("dataset input");
+      const call = command.match(/^(?:do|run|include)\s+(?:"([^"]+)"|([^\s,]+))/i);
+      if (call) callSites.push({ file: record.path, line: row.line, target: call[1] || call[2], command });
+      if (/^(?:use\b|import\s+(?:delimited|excel)\b|merge\b|append\s+using\b)/i.test(command)) inputBindings.push({ file: record.path, line: row.line, command });
+      if (/^(?:save\b|estimates\s+save\b|export\s+excel\b|graph\s+export\b|outreg2\b|putexcel\b)/i.test(command)) outputBindings.push({ file: record.path, line: row.line, command });
+      const macro = command.match(/^(global|local)\s+([A-Za-z_][A-Za-z0-9_]*)/i);
+      if (macro) macroDefinitions.push({ file: record.path, line: row.line, scope: macro[1].toLowerCase(), name: macro[2] });
+      const program = command.match(/^program\s+define\s+([A-Za-z_][A-Za-z0-9_]*)/i);
+      if (program) programInterfaces.push({ file: record.path, line: row.line, program: program[1] });
+      if (/^syntax\b/i.test(command) && programInterfaces.length) programInterfaces[programInterfaces.length - 1].syntax = command;
+      const label = command.match(/^label\s+variable\s+([A-Za-z_][A-Za-z0-9_]*)\s+["']([^"']+)["']/i);
+      if (label) variableLabels.set(label[1], label[2]);
+      const transform = command.match(/^(?:gen(?:erate)?|egen|replace)\s+(?:\w+\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.+)$/i);
+      if (transform) variableTransforms.set(transform[1], transform[2].trim());
+      const estimate = command.match(/^(?:reg|regress|areg|xtreg|reghdfe|ppmlhdfe|jwdid|csdid|did_imputation|eventstudyinteract)\s+([^\s,]+)/i);
+      if (estimate) {
+        lastOutcome = {
+          name: estimate[1], file: record.path, line: row.line,
+          sample: /\sif\s+([^,]+)/i.exec(command)?.[1]?.trim() || null,
+          estimand: command.split(",")[0].trim(),
+          estimate_handoff: null,
+          specification_order: null,
+          evidence_source: "static_code_scan",
+        };
+        outcomeRecords.push(lastOutcome);
+      }
+      const handoff = command.match(/^estimates\s+save\s+(.+)$/i);
+      if (handoff && lastOutcome) lastOutcome.estimate_handoff = handoff[1].trim();
+    }
+  }
+  const outputFlowOutcomes = [...new Map(outcomeRecords.map((row) => [row.name, row])).values()].map((row) => ({
+    ...row,
+    variable_label: variableLabels.get(row.name) || null,
+    transform: variableTransforms.get(row.name) || null,
+    family: null,
+    unit: null,
+  }));
+  const panelIds = unique(panelDeclarations.map((row) => row.id));
+  const timeIds = unique(panelDeclarations.map((row) => row.time).filter(Boolean));
+  const hasXtset = panelDeclarations.some((row) => row.command === "xtset");
+  const targetInputSignature = {
+    data_structure: panelDeclarations.length ? (hasXtset || panelDeclarations.some((row) => row.time) ? "panel" : "time_series") : "unknown",
+    observation_unit: panelIds.length === 1 ? panelIds[0] : panelIds.length > 1 ? "multiple declared panel units" : "not_stated",
+    time_structure: panelDeclarations.length
+      ? timeIds.length === 1 ? `declared time index ${timeIds[0]}` : timeIds.length > 1 ? "multiple declared time indexes" : "time index not stated"
+      : "not_stated",
+    required_keys: [...targetRequiredKeys],
+    variable_characteristics: [...targetVariableCharacteristics],
+    evidence: targetSignatureEvidence,
+  };
+  return {
+    files: projectFiles,
+    do_files: records.map((row) => row.path),
+    extension_counts: extensionCounts,
+    signals,
+    policy_signals: policySignals,
+    stage_files: stageFiles,
+    intervention_candidates: {
+      estimation_files: matchingFiles(signalPatterns.regression_commands),
+      estimate_handoff_files: matchingFiles(/^(?:\s*estimates\s+(?:save|use|store)|\s*eststo\b)/im),
+      excel_files: matchingFiles(/^\s*(?:outreg2|export\s+excel|putexcel)\b/im),
+      figure_files: matchingFiles(/^\s*(?:graph\s+export|twoway|coefplot|marginsplot)\b/im),
+      master_files: records.filter((row) => row.stages.includes("master_orchestration")).map((row) => row.path),
+    },
+    style_profile: {
+      macro_style: signals.uses_globals && signals.uses_locals ? "globals_and_locals" : signals.uses_globals ? "globals" : signals.uses_locals ? "locals" : "no_clear_macro_convention",
+      helper_programs: signals.program_define,
+      path_separator: activeText.includes("\\") && activeText.includes("/") ? "mixed" : activeText.includes("\\") ? "backslash" : "forward_slash_or_unknown",
+      persisted_estimate_style: signals.estimates_save || signals.estimates_use,
+      in_memory_estimate_style: signals.estimates_store,
+      existing_excel_style: signals.outreg2 ? "outreg2" : signals.export_excel ? "export_excel" : "not_detected",
+    },
+    interface_fingerprint: {
+      call_sites: callSites,
+      input_bindings: inputBindings,
+      output_bindings: outputBindings,
+      macro_definitions: macroDefinitions,
+      program_interfaces: programInterfaces,
+    },
+    input_signature: targetInputSignature,
+    output_flow_evidence: {
+      outcomes: outputFlowOutcomes,
+      variable_labels: Object.fromEntries(variableLabels),
+      variable_transforms: Object.fromEntries(variableTransforms),
+      boundary: "Static code can recover variable labels, transforms, samples, estimands, and some estimate handoffs; it does not infer conceptual families, units, or valuable sheet boundaries from names.",
+    },
+  };
+}
+
+const HEADWORD_SEQUENCE = [
+  "project_setup.paths",
+  "workflow_orchestration.master",
+  "input_load.single_source",
+  "input_load.combine",
+  "clean.id_normalize",
+  "clean.derive_variables",
+  "treatment.arm_mapping",
+  "outlier.winsorize",
+  "integrity.audit",
+  "merge_reshape.integration",
+  "sample.trade_share_threshold",
+  "sample.arm_response_eligibility",
+  "feature.aggregate_household",
+  "feature.aggregate_section_exposure",
+  "dataset.finalize_keep_label_save",
+  "integrity.adjacency_dedup",
+  "panel.stack_waves",
+  "panel.treatment_cohort",
+  "panel.turnover_event_time",
+  "estimation.conventional",
+  "estimation.staggered_did",
+  "postest.sample_flag",
+  "scale.standardize_esample",
+  "descriptives.sample_mean",
+  "postest.persist_estimate",
+  "postest.export_sample_keys",
+  "postest.estimator_comparison_unsafe",
+  "robustness.placebo",
+  "robustness.heterogeneity",
+  "robustness.jackknife",
+  "descriptives.entity_collapse",
+  "figures.descriptive_scatter",
+  "figures.event_study",
+  "figures.coefplot_named_estimates",
+  "figures.export_pdf",
+  "final_excel_assembly",
+  "cleanup",
+];
+
+function inferCompletedHeadwords(observed) {
+  const completed = new Set();
+  if (observed.intervention_candidates.master_files.length) completed.add("workflow_orchestration.master");
+  if (observed.signals.uses_globals || observed.signals.uses_locals) completed.add("project_setup.paths");
+  if (observed.signals.data_load) completed.add("input_load.single_source");
+  if (observed.signals.append_data) completed.add("input_load.combine");
+  if ((observed.stage_files.merge_reshape || []).length) completed.add("merge_reshape.integration");
+  if ((observed.stage_files.integrity_audit || []).length) completed.add("integrity.audit");
+  if ((observed.stage_files.cleaning_labels || []).length) completed.add("clean.derive_variables");
+  if (observed.signals.identifier_normalize) completed.add("clean.id_normalize");
+  if (observed.signals.treatment_mapping) completed.add("treatment.arm_mapping");
+  if (observed.signals.winsorize) completed.add("outlier.winsorize");
+  if (observed.signals.standardize) completed.add("scale.standardize_esample");
+  if (observed.signals.household_aggregate) completed.add("feature.aggregate_household");
+  if (observed.signals.section_aggregate) completed.add("feature.aggregate_section_exposure");
+  if (observed.signals.dataset_finalize) completed.add("dataset.finalize_keep_label_save");
+  if (observed.signals.panel_declaration && observed.signals.cohort_construction) completed.add("panel.treatment_cohort");
+  if (observed.signals.turnover_timing) completed.add("panel.turnover_event_time");
+  if (observed.signals.regression_commands && !observed.signals.staggered_regression) completed.add("estimation.conventional");
+  if (observed.signals.staggered_regression) completed.add("estimation.staggered_did");
+  if (observed.signals.esample_reference) completed.add("postest.sample_flag");
+  if (observed.signals.estimates_save || observed.signals.estimates_store || observed.signals.ster_files > 0) completed.add("postest.persist_estimate");
+  if (observed.signals.outreg2) completed.add("final_excel_assembly");
+  if (observed.signals.event_figure) completed.add("figures.event_study");
+  if (observed.signals.coefplot_named_estimates) completed.add("figures.coefplot_named_estimates");
+  if (observed.signals.export_pdf) completed.add("figures.export_pdf");
+  return HEADWORD_SEQUENCE.filter((item) => completed.has(item));
+}
+
+function requestInferenceContext(request) {
+  const full = String(request || "");
+  const segmented = full
+    .replace(/\b(?:but|instead)\b/gi, ";")
+    .replace(/((?:수정|변경|편집|고치|건드리|손대|바꾸|재작성|재실행)(?:하지|지)\s*말고|(?:보존|유지)하(?:되|면서|고))\s*/g, "$1;");
+  const clauses = segmented.split(/[\r\n!?;。！？]+|\.(?![A-Za-z0-9])/i).map((value) => value.trim()).filter(Boolean);
+  const preservationPattern = /(?:수정|변경|편집|고치|건드리|손대|바꾸|재작성|재실행)[^.!?;\n]{0,24}(?:마세요|말아|말고|않습니다|않는다|않게|금지)|(?:그대로|보존|유지|동결)[^.!?;\n]{0,24}(?:하세요|해\s*주세요|해줘|합니다|한다|두세요|둬|하고|하되|하면서)|\b(?:do\s+not|don't|dont|must\s+not|should\s+not|never)\s+(?:modify|edit|change|touch|rewrite|refactor|rerun)\b|\b(?:keep|leave)\b[^.!?;\n]{0,60}\b(?:unchanged|as[- ]is|intact)\b|\b(?:preserve|freeze|frozen|already\s+completed|already\s+complete)\b/i;
+  const rawOutputContractPattern = /\bpreserve\b[^.!?;\n]{0,40}\braw\b[^.!?;\n]{0,40}\b(?:outreg2|coefficient|row)/i;
+  const isPreservationClause = (clause) => preservationPattern.test(clause) && !rawOutputContractPattern.test(clause);
+  const preserved = clauses.filter(isPreservationClause);
+  const actionable = clauses.filter((clause) => !isPreservationClause(clause));
+  return { full, actionable: actionable.join(" "), preserved: preserved.join(" ") };
+}
+
+function explicitlyRequestsEstimateConsumer(value) {
+  return /\bestimates?\s+(?:use|store)\b|\bconsume\b[^.!?;\n]{0,60}\b(?:numbered\s+)?\.ster\b|\b(?:numbered\s+)?\.ster\b[^.!?;\n]{0,60}\bconsume\b|(?:기존|저장된|numbered)?\s*\.ster[^.!?;\n]{0,60}(?:소비|불러오|사용)|(?:소비|불러오|사용)[^.!?;\n]{0,60}\.ster/i.test(String(value || ""));
+}
+
+function inferDictionaryHeadwords(request, explicit, mode) {
+  const selected = new Set(explicit || []);
+  const value = String(request || "").toLowerCase();
+  const add = (...items) => items.forEach((item) => selected.add(item));
+  if (/excel|xlsx|회귀표|표.*내보|outreg2/.test(value)) add("final_excel_assembly");
+  if (/\bster\b|\.ster\b|estimates?\s+(?:save|use|store)|추정결과.*(?:저장|불러오|소비)/.test(value)) add("postest.persist_estimate");
+  const inputLoadValue = value.replace(/\bestimates?\s+use\b/g, "");
+  if (/\bsysuse\b|\buse\b|\bimport\s+(?:delimited|excel)\b|불러오|원자료.*(?:읽|로드)/.test(inputLoadValue)) add("input_load.single_source");
+  if (/\bappend\b|원자료.*결합/.test(value)) add("input_load.combine");
+  if (/event.?study|이벤트.?스터디|pretrend|사전추세/.test(value)) add("figures.event_study");
+  if (/\bcoefplot\b|\bcoefficient\s*(?:plot|figure|graph|pdf|gph)\b|\bnamed\s+estimates?\b[^.!?;\n]{0,40}\b(?:plot|figure|graph)\b|(?:회귀\s*)?계수[^.!?;\n]{0,40}(?:그림|그래프|plot|pdf|gph)/.test(value)) add("figures.coefplot_named_estimates");
+  if (/pdf|graph\s+export|figure\s+export|그림.*내보|figure.*내보/.test(value)) add("figures.export_pdf");
+  else if (/figure|graph|plot|그림|그래프/.test(value)) add("figures.descriptive_scatter");
+  const estimationValue = value.replace(/regression\s+(?:excel|workbook|table)|회귀표/g, "");
+  if (/staggered|시차.?도입|jwdid|csdid/.test(value)) add("panel.treatment_cohort", "estimation.staggered_did");
+  else if (/regression|regress|회귀|추정/.test(estimationValue)) add("estimation.conventional");
+  if (/e\(sample\)|dependent.?variable mean|종속변수.*평균|estadd\s+ysumm|\bymean\b/.test(value)) add("descriptives.sample_mean");
+  if (/merge|병합|결합/.test(value)) add("integrity.audit", "merge_reshape.integration");
+  if (/clean|recode|\bprep(?:aration)?\b|전처리|변수.*가공/.test(value)) add("clean.derive_variables");
+  if (/식별자|identifier|destring/.test(value)) add("clean.id_normalize");
+  if (/처치군|treatment.?arm|assignment/.test(value)) add("treatment.arm_mapping");
+  if (/winsor|윈저|이상치/.test(value)) add("outlier.winsorize");
+  if (/표준화|standardiz|z.?score/.test(value)) add("scale.standardize_esample");
+  const sampleSelectionValue = value.replace(/e\(sample\)|estimation\s+sample|추정표본/g, "");
+  if (/무역.*표본|trade.?share.*sample/.test(sampleSelectionValue)) add("sample.trade_share_threshold");
+  else if (/sample|표본/.test(sampleSelectionValue)) add("sample.arm_response_eligibility");
+  if (/가구.*집계|household.*aggregat/.test(value)) add("feature.aggregate_household");
+  if (/(?:구역|투표구|section|precinct).*집계|exposure.*aggregat/.test(value)) add("feature.aggregate_section_exposure");
+  if (/wave.*stack|조사시점.*쌓|패널.*쌓/.test(value)) add("panel.stack_waves");
+  if (/turnover|교체.*시점/.test(value)) add("panel.turnover_event_time");
+  if (/e\(sample\).*키|추정표본.*키|sample.*key.*dta/.test(value)) add("postest.export_sample_keys");
+  if (/jackknife|잭나이프/.test(value)) add("robustness.jackknife");
+  if (/cleanup|임시파일.*정리/.test(value)) add("cleanup");
+  if (/summary|descriptive|기초통계/.test(value)) add("descriptives.entity_collapse");
+  if (/master|runall|전체.*실행/.test(value)) add("workflow_orchestration.master");
+  if (mode === "overhaul" && selected.size === 0) {
+    [
+      "project_setup.paths", "workflow_orchestration.master", "input_load.single_source", "integrity.audit",
+      "clean.id_normalize", "clean.derive_variables", "integrity.audit", "merge_reshape.integration",
+      "sample.arm_response_eligibility", "dataset.finalize_keep_label_save", "panel.treatment_cohort",
+      "estimation.conventional", "descriptives.sample_mean", "postest.persist_estimate",
+      "final_excel_assembly",
+    ].forEach((item) => selected.add(item));
+  }
+  return [...selected].filter((item) => CHECKPOINTS.includes(item));
+}
+
+function looksLikeStataCommand(value) {
+  return /^(?:(?:quietly|qui|noisily|noi|capture|cap)\s+)*(?:sysuse|use|import|append|merge|reshape|gen|generate|replace|recode|egen|collapse|confirm|assert|describe|codebook|count|sum|summarize|tabstat|isid|xtset|poisson|reg|regress|areg|xtreg|reghdfe|ivreg2|ivreghdfe|rdrobust|csdid|did_imputation|eventstudyinteract|estadd|estimates|outreg2|putexcel|collect|coefplot|event_plot|csdid_plot|graph|twoway|marginsplot|save|log)\b/i.test(String(value || "").trim());
+}
+
+function looksLikeSingleStataCommand(request) {
+  const lines = String(request || "").split(/[\r\n;]+/).map((value) => value.trim()).filter(Boolean);
+  return lines.length === 1 && looksLikeStataCommand(lines[0]);
+}
+
+function looksLikeStataCommandSequence(request) {
+  const lines = String(request || "").split(/[\r\n;]+/).map((value) => value.trim()).filter(Boolean);
+  return lines.length > 1 && lines.filter(looksLikeStataCommand).length >= 2;
+}
+
+const REQUEST_COMMAND_HINTS = [
+  { anchor: "sysuse", pattern: /\bsysuse\b/i },
+  { anchor: "use", pattern: /\buse\b/i },
+  { anchor: "import delimited", pattern: /\bimport\s+delimited\b/i },
+  { anchor: "append", pattern: /\bappend\b/i },
+  { anchor: "merge", pattern: /\bmerge\b/i },
+  { anchor: "reshape", pattern: /\breshape\b/i },
+  { anchor: "generate", pattern: /\b(?:gen|generate)\b/i },
+  { anchor: "replace", pattern: /\breplace\b/i },
+  { anchor: "egen", pattern: /\begen\b/i },
+  { anchor: "collapse", pattern: /\bcollapse\b/i },
+  { anchor: "poisson", pattern: /\bpoisson\b/i },
+  { anchor: "regress", pattern: /\b(?:reg|regress)\b/i },
+  { anchor: "estadd", pattern: /\bestadd\b/i },
+  { anchor: "reghdfe", pattern: /\breghdfe\b/i },
+  { anchor: "jwdid", pattern: /\bjwdid\b/i },
+  { anchor: "csdid", pattern: /\bcsdid\b/i },
+  { anchor: "did_imputation", pattern: /\bdid_imputation\b/i },
+  { anchor: "eventstudyinteract", pattern: /\beventstudyinteract\b/i },
+  { anchor: "estimates save", pattern: /\bestimates?\s+save\b/i },
+  { anchor: "estimates use", pattern: /\bestimates?\s+use\b/i },
+  { anchor: "estimates store", pattern: /\bestimates?\s+store\b/i },
+  { anchor: "outreg2", pattern: /\boutreg2\b/i },
+  { anchor: "collect export", pattern: /\bcollect\s+export\b/i },
+  { anchor: "putexcel", pattern: /\bputexcel\b/i },
+  { anchor: "coefplot", pattern: /\bcoefplot\b/i },
+  { anchor: "event_plot", pattern: /\bevent_plot\b/i },
+  { anchor: "csdid_plot", pattern: /\bcsdid_plot\b/i },
+  { anchor: "graph export", pattern: /\bgraph\s+export\b/i },
+  { anchor: "graph save", pattern: /\bgraph\s+save\b/i },
+];
+
+function requestCommandAnchors(request) {
+  const value = String(request || "");
+  return unique(REQUEST_COMMAND_HINTS.filter((row) => row.pattern.test(value)).map((row) => row.anchor));
+}
+
+function requestStateAnchors(request) {
+  const value = String(request || "");
+  const anchors = [];
+  if (/\bster\b|\.ster\b/i.test(value)) anchors.push("persisted_ster");
+  if (/\be\(sample\)\b|estimation sample|추정표본/i.test(value)) anchors.push("esample_state");
+  if (/raw\s+name|raw\s+coefficient|coefficient\s+name|계수명|e\(b\)|factor-?variable/i.test(value)) anchors.push("raw_factor_coefficient_identity");
+  if (/preserve|freeze|unchanged|do\s+not\s+modify|don't\s+modify|dont\s+modify|보존|유지|동결/i.test(value)) anchors.push("preserve_existing_prefix");
+  if (/single\s+(?:outcome|sheet)|one\s+(?:outcome|sheet)|한\s*(?:개|시트|outcome)/i.test(value)) anchors.push("direct_single_sheet_flow");
+  return unique(anchors);
+}
+
+function requestPolicyAnchors(request, inferredHeadwords) {
+  const value = String(request || "");
+  const anchors = [];
+  const figureHeadwordSelected = inferredHeadwords.some((item) => item.startsWith("figures."));
+  if (/raw\s+name|raw\s+coefficient|coefficient\s+name|계수명|e\(b\)|factor-?variable|합성|synthetic|treat_y|_y(?:19|20)\d{2}|event.?study|이벤트.?스터디/i.test(value)
+    || inferredHeadwords.some((item) => ["estimation.staggered_did", "figures.event_study", "figures.coefplot_named_estimates", "final_excel_assembly"].includes(item))) {
+    anchors.push("preserve_raw_factor_coefficients");
+  }
+  if (/event.?study|이벤트.?스터디|pretrend/i.test(value) || inferredHeadwords.includes("figures.event_study")) {
+    anchors.push("english_only_event_study_text", "single_hash_event_rhs", "raw_title_bottom_legend_immediate_pdf");
+  }
+  if (/한글|한국어|맑은고딕|맑은\s*고딕|malgun\s+gothic/i.test(value) || figureHeadwordSelected) {
+    anchors.push("malgun_gothic_for_non_event_korean_graphs");
+  }
+  if (/excel|xlsx|outreg2/i.test(value) || inferredHeadwords.includes("final_excel_assembly")) {
+    anchors.push("canonical_outreg2_final_excel");
+  }
+  if (/2sls|ivreg|first.?stage|1st.?stage|1단계|도구변수/i.test(value)) anchors.push("first_stage_same_raw_outreg2_formatter");
+  if (/fallback|template|템플릿|reselect|다시.*선택|직접.*작성/i.test(value)) anchors.push("reselect_before_bounded_direct_fallback");
+  return unique(anchors);
+}
+
+function buildScaleKeywordBundle(request, inferredHeadwords, requestedSubsteps, scale) {
+  const scaleKeywords = {
+    no_write: ["read_only", "no_writable_dictionary_code"],
+    atomic_substep: ["single_substep", "single_headword", looksLikeSingleStataCommand(request) ? "exact_stata_command" : "requested_substep"].filter(Boolean),
+    checkpoint: ["single_checkpoint", "single_headword", "bounded_transition"],
+    multi_checkpoint: ["multi_checkpoint", "preserve_nonselected_headwords", "bounded_multi_stage"],
+    overhaul: ["explicit_overhaul", "multi_stage_rebuild", "compatible_variants_only"],
+  }[scale] || [];
+  const headwordQueries = inferredHeadwords.map((headword) => {
+    const entry = DICTIONARY_BY_HEADWORD.get(headword);
+    return {
+      headword,
+      commands: (entry?.common_commands || []).slice(0, 8),
+      aliases: (entry?.aliases || []).slice(0, 8),
+    };
+  });
+  const atomicSubstepQueries = requestedSubsteps.map((row) => ({
+    checkpoint: row.checkpoint,
+    substep_id: row.substep_id,
+    commands: [...new Set(row.match?.commands || [])].slice(0, 8),
+    tokens: [...new Set(row.match?.tokens || [])].slice(0, 8),
+    label_ids: [...new Set(row.match?.label_ids || [])].slice(0, 8),
+  }));
+  return {
+    scale_keywords: scaleKeywords,
+    command_anchors: requestCommandAnchors(request),
+    state_anchors: requestStateAnchors(request),
+    policy_anchors: requestPolicyAnchors(request, inferredHeadwords),
+    headword_queries: headwordQueries,
+    atomic_substep_queries: atomicSubstepQueries,
+  };
+}
+
+function inferImplementationFootprint(request, mode, explicitHeadwords, requestedSubsteps, inferredHeadwords) {
+  const value = String(request || "");
+  const exactCommand = looksLikeSingleStataCommand(value);
+  const commandSequence = looksLikeStataCommandSequence(value);
+  const explicitReadOnly = /(?:검토|감사|설명|진단)(?:만|해\s*주세요|해줘|하세요)|\b(?:audit|review|inspect|explain|diagnose)(?:\s+only)?\b/i.test(value);
+  const writeSignal = /(?:추가|수정|고쳐|고치|작성|만들|짜|구축|실행|돌려|내보|생성)|\b(?:add|fix|edit|modify|change|write|create|build|implement|run|export)\b/i.test(value);
+  const userOverride = explicitHeadwords.length > 0 || requestedSubsteps.length > 0;
+  const codeRequired = mode === "overhaul" || userOverride || exactCommand || commandSequence || (writeSignal && !explicitReadOnly);
+  let scale = "no_write";
+  if (codeRequired) {
+    if (mode === "overhaul") scale = "overhaul";
+    else if ((requestedSubsteps.length === 1 && inferredHeadwords.length === 1) || (exactCommand && inferredHeadwords.length === 1)) scale = "atomic_substep";
+    else if (inferredHeadwords.length === 1) scale = "checkpoint";
+    else scale = "multi_checkpoint";
+  }
+  const scaleKeywordBundle = buildScaleKeywordBundle(request, inferredHeadwords, requestedSubsteps, scale);
+  return {
+    code_required: codeRequired,
+    scale,
+    scale_basis: "requested state-transition footprint, not projected line count or hypothetical extensibility",
+    classification_order: ["code-change decision", "implementation scale", "dictionary headwords", "state-compatible variant"],
+    exact_stata_command_detected: exactCommand,
+    stata_command_sequence_detected: commandSequence,
+    explicit_read_only_detected: explicitReadOnly,
+    user_scope_override: userOverride,
+    headword_budget: codeRequired ? inferredHeadwords.length : 0,
+    selected_headwords: codeRequired ? inferredHeadwords : [],
+    scale_keywords: codeRequired ? scaleKeywordBundle : { ...scaleKeywordBundle, headword_queries: [], atomic_substep_queries: [] },
+    keyword_queries: codeRequired ? scaleKeywordBundle.headword_queries : [],
+    writable_code_budget_per_headword: 1,
+    alternative_metadata_limit_per_headword: 3,
+    corpus_fallback_context_limit_per_headword: 3,
+    loading_rule: codeRequired
+      ? "Convert the approved request scale into retrieval keywords, then evaluate dictionary metadata deterministically and load code for only one chosen compatible variant inside each selected headword. Do not retrieve code from unselected headwords."
+      : "This is a read-only request. Do not load writable dictionary code or create an intervention.",
+  };
+}
+
+function variantViolatesRawFactorPolicy(row) {
+  const syntheticAlias = syntheticEventAliasFindings(row.code).some((finding) => finding.rule === "synthetic_event_term_alias");
+  const graphContractViolation = graphPolicyFindings(row.code).some((finding) => ["interaction_coefficient_alias", "event_study_non_english"].includes(finding.rule));
+  return syntheticAlias || graphContractViolation;
+}
+
+function checkVariantCompatibility(row, observed, availableState, request = "") {
+  const failures = [];
+  const state = availableState || {};
+  const persistedEstimate = observed.signals.ster_files > 0
+    || observed.signals.estimates_save
+    || observed.signals.estimates_use
+    || state.estimate_state === "ster";
+  const activeEstimate = observed.signals.regression_commands
+    || ["stored_in_memory", "active_eclass"].includes(state.estimate_state);
+  const fromSter = /persisted_ster|estimates use|one ster file/i.test(`${row.variant_id} ${row.code} ${JSON.stringify(row.state_signature || {})}`);
+  const inputSignatureComparison = compareInputSignatures(row.input_signature, state.input_signature || observed.input_signature);
+  const profileTarget = state.input_profile || state.target_input_profile || state.input_signature
+    || (persistedEstimate ? { ...observed.input_signature, data_structure: "stored e-class estimates" } : observed.input_signature);
+  const templateInputProfileComparison = compareTemplateInputProfile(row.template_input_profile, profileTarget);
+  if (inputSignatureComparison.status === "semantic_review_required") {
+    failures.push("source and target input data structures conflict; select another template or resolve the topology evidence before automatic reuse");
+  }
+  if (templateInputProfileComparison.status === "incompatible") {
+    failures.push("template input profile conflicts with the target's declared topology or required variable characteristics; select another template");
+  }
+
+  for (const signal of row.forbidden_signals || []) {
+    if (observed.policy_signals?.[signal]) failures.push(`target project has forbidden signal: ${signal}`);
+  }
+  if (variantViolatesRawFactorPolicy(row)) {
+    failures.push("candidate code violates the raw factor-coefficient or event-study language contract");
+  }
+  if (row.checkpoint === "figures.event_study") {
+    const axisDecision = availableState?.event_study_axis_profile
+      ? analyzeEventStudyAxisProfile(availableState.event_study_axis_profile)
+      : null;
+    const cardinality = eventOutcomeCardinalityFromText(request);
+    const axisPatternSelection = eventStudyAxisPatternSelection(axisDecision, cardinality);
+    if (!eventStudyAxisPatternCompatible(row, axisDecision, cardinality)) {
+      failures.push(axisPatternSelection.required_patterns.length
+        ? `event-study axis selection requires event_axis_pattern ${axisPatternSelection.required_patterns.join(" or ")}`
+        : `event-study axis selection has no writable pattern: ${axisPatternSelection.status}`);
+    }
+  }
+  if (row.checkpoint === "final_excel_assembly") {
+    if (fromSter && !persistedEstimate) failures.push("persisted-estimate variant requires observed .ster or estimates save/use state");
+    if (!fromSter && !activeEstimate) failures.push("immediate outreg2 variant requires observed regression or caller-declared active e-class state");
+    const flow = buildOutputFlowProfile(observed, availableState);
+    if (!flow.selection_ready) failures.push(...flow.failures.map((failure) => `output-flow selection is unresolved: ${failure}`));
+    else if (flow.direct_implementation_allowed) failures.push("output-flow profile requires concise direct single-sheet outreg2 code without a formatter template");
+    else if (flow.recommended_label_id !== row.label_id) failures.push(`output-flow profile selects ${flow.recommended_label_id}, not ${row.label_id}`);
+  }
+  if (row.checkpoint === "descriptives.sample_mean" && !activeEstimate) {
+    failures.push("estimation-sample mean requires observed regression or caller-declared active e-class state");
+  }
+  if (row.checkpoint === "project_setup.paths" && row.canonical_default) {
+    const hasExistingDoFiles = Number(observed.extension_counts?.[".do"] || 0) > 0;
+    const hasExistingPathInterface = (observed.interface_fingerprint?.macro_definitions || []).length > 0;
+    if (hasExistingDoFiles || hasExistingPathInterface) failures.push("default style path roles are a first-build-only canonical and cannot replace an existing project interface");
+  }
+  if (row.label_id === "master.sequence.config_prepare_analysis.v1") {
+    const masterFiles = new Set(observed.intervention_candidates?.master_files || []);
+    const masterCalls = (observed.interface_fingerprint?.call_sites || []).filter((call) => masterFiles.has(call.file));
+    if (masterCalls.length !== 3) failures.push(`config-prepare-analysis variant requires exactly three direct master calls; observed ${masterCalls.length}`);
+  }
+  if (row.label_id === "master.sequence.stage_logs.v1") {
+    const observedStageLog = observed.signals.stage_log_open && observed.signals.stage_log_close;
+    const requestedStageLog = /\b(?:stage[- ]?specific|per[- ]?stage)\s+logs?\b|단계별\s*로그|각\s*(?:단계|do-?file)[^\r\n]{0,30}로그/i.test(String(request || ""));
+    if (!observedStageLog && !requestedStageLog) {
+      failures.push("stage-log atom requires an observed log/do/log interface or an explicit request for stage-specific logs");
+    }
+  }
+  return {
+    compatible: failures.length === 0,
+    failures,
+    input_signature_comparison: inputSignatureComparison,
+    template_input_profile_comparison: templateInputProfileComparison,
+    observed_state: { persisted_estimate: persistedEstimate, active_estimate: activeEstimate },
+  };
+}
+
+function rankVariantForObservedState(row, observed, request, availableState) {
+  let score = row.decision === "keep" ? 20 : row.decision === "conditional_keep" ? 10 : -100;
+  const reasons = [];
+  const inputSignatureComparison = compareInputSignatures(row.input_signature, availableState?.input_signature || observed.input_signature);
+  const hasPersistedEstimate = observed.signals.ster_files > 0 || observed.signals.estimates_save || observed.signals.estimates_use || availableState?.estimate_state === "ster";
+  const profileTarget = availableState?.input_profile || availableState?.target_input_profile || availableState?.input_signature
+    || (hasPersistedEstimate ? { ...observed.input_signature, data_structure: "stored e-class estimates" } : observed.input_signature);
+  const templateInputProfileComparison = compareTemplateInputProfile(row.template_input_profile, profileTarget);
+  if (inputSignatureComparison.status === "aligned") {
+    score += 12;
+    reasons.push("source and target input signatures align on evidenced topology");
+  } else if (inputSignatureComparison.status === "semantic_review_required") {
+    score -= 12;
+    reasons.push("source and target data structures differ and require semantic review");
+  } else if (inputSignatureComparison.status === "minimal_binding_changes_required") {
+    reasons.push("template keys or time/unit bindings require explicit target substitutions");
+  }
+  if (templateInputProfileComparison.status === "aligned") {
+    score += 12;
+    reasons.push("template input profile aligns with the declared target topology");
+  } else if (templateInputProfileComparison.status === "incompatible") {
+    score -= 100;
+    reasons.push("template input profile conflicts with declared target topology or required variables");
+  }
+  if (row.reuse_scope === "general") score += 24;
+  if (row.reuse_scope === "method_specific") score += 12;
+  score += Number(row.readability_score || 0) * 2 + Number(row.portability_score || 0) * 2;
+  if (row.preferred_within_checkpoint) score += 18;
+  if (row.explicit_canonical_exception) score += 40;
+  if (rubricClassification(row) === "preferred_candidate") score += 20;
+  if (rubricClassification(row) === "conditional_candidate") score += 10;
+  if (rubricClassification(row) === "reference_only") score -= 20;
+  const haystack = `${row.variant_id} ${row.research_situations.join(" ")} ${row.selection_conditions.join(" ")} ${JSON.stringify(row.state_signature || {})} ${row.code}`.toLowerCase();
+  for (const term of tokenize(request || "")) if (haystack.includes(term)) score += 2;
+  const stateText = JSON.stringify(availableState || {}).toLowerCase();
+  for (const term of tokenize(stateText)) if (haystack.includes(term)) score += 3;
+  if (row.checkpoint === "final_excel_assembly") {
+    const flow = buildOutputFlowProfile(observed, availableState);
+    if (flow.recommended_label_id === row.label_id) {
+      score += 180;
+      reasons.push(`whole-flow contract selects ${flow.selection_class}`);
+    }
+    const persisted = observed.signals.ster_files > 0 || observed.signals.estimates_save || observed.signals.estimates_use || availableState?.estimate_state === "ster";
+    const fromSter = /persisted_ster|estimates use|one ster file/i.test(haystack);
+    if (persisted && fromSter) {
+      score += 20;
+      reasons.push("existing ster or estimates-save/use state matches the persisted-estimate variant");
+    } else if (persisted && !fromSter) score -= 20;
+    if (!persisted && observed.signals.regression_commands && /immediately_after|explicit_control_specs|active e-class/i.test(haystack)) {
+      score += 70;
+      reasons.push("regression code exists but no persisted estimate state was detected");
+    }
+    if (observed.style_profile.existing_excel_style === "outreg2") {
+      score += 20;
+      reasons.push("project already uses outreg2");
+    }
+  }
+  if (row.checkpoint === "postest.persist_estimate" || row.checkpoint === "postest.export_sample_keys") {
+    if (observed.style_profile.persisted_estimate_style && /ster/i.test(haystack)) score += 50;
+    if (observed.signals.esample_reference && /sample.*dta|keyed/i.test(haystack)) score += 40;
+  }
+  if (row.checkpoint === "project_setup.paths" && row.canonical_default) {
+    const hasExistingDoFiles = Number(observed.extension_counts?.[".do"] || 0) > 0;
+    const hasExistingPathInterface = (observed.interface_fingerprint?.macro_definitions || []).length > 0;
+    if (!hasExistingDoFiles && !hasExistingPathInterface) {
+      score += 80;
+      reasons.push("new project has no existing path interface, so the default style role layout is the canonical first-build default");
+    } else {
+      score -= 40;
+      reasons.push("an existing project path interface was detected and must be preserved");
+    }
+  } else if (row.canonical_default) {
+    score += 3;
+    reasons.push("compatible canonical default used only as a final tie-break");
+  }
+  if (observed.style_profile.helper_programs && /^\s*program\s+define\b/im.test(row.code)) score += 12;
+  if (!observed.style_profile.helper_programs && /^\s*program\s+define\b/im.test(row.code)) score -= 6;
+  if (reasons.length === 0) reasons.push("matched by checkpoint, task terms, and the variant's declared state contract");
+  return { score, reasons, template_input_profile_comparison: templateInputProfileComparison };
+}
+
+function normalizePlannedVariables(values) {
+  if (!Array.isArray(values)) return [];
+  const seen = new Set();
+  return values.map((row, index) => {
+    const name = String(row?.name || "").trim();
+    if (!/^[A-Za-z_][A-Za-z0-9_]{0,31}$/.test(name)) throw new Error(`planned_variables ${index + 1}행 name은 32자 이하의 유효한 Stata 변수명이어야 합니다.`);
+    if (seen.has(name.toLowerCase())) throw new Error(`planned_variables에 중복 변수명이 있습니다: ${name}`);
+    seen.add(name.toLowerCase());
+    const readerDescription = String(row?.reader_description || "").trim();
+    if (!readerDescription) throw new Error(`planned_variables ${name}에는 사용자용 설명이 필요합니다.`);
+    const sourceOrFormula = String(row?.source_or_formula || "").trim();
+    if (!sourceOrFormula) throw new Error(`planned_variables ${name}에는 원자료 단위와 정확한 생성식 또는 threshold를 적은 source_or_formula가 필요합니다.`);
+    const unitObservationLevel = String(row?.unit_observation_level || "").trim();
+    if (!unitObservationLevel) throw new Error(`planned_variables ${name}에는 output 단위와 관측단위를 적은 unit_observation_level이 필요합니다.`);
+    return {
+      name,
+      reader_description: readerDescription,
+      analysis_role: String(row?.analysis_role || "").trim() || null,
+      source_or_formula: sourceOrFormula,
+      unit_observation_level: unitObservationLevel,
+      period_geography: String(row?.period_geography || "").trim() || null,
+      coding_missing: String(row?.coding_missing || "").trim() || null,
+      creation_file: row?.creation_file ? normalizeRelativePath(row.creation_file, `planned_variables ${name} creation_file`) : null,
+      used_in: String(row?.used_in || "").trim() || null,
+    };
+  });
+}
+
+function renderProposedPathTree(folders, files) {
+  const root = { children: new Map(), directory: true };
+  const addPath = (relative, directory) => {
+    const parts = String(relative || "").split("/").filter(Boolean);
+    let node = root;
+    for (let index = 0; index < parts.length; index += 1) {
+      const part = parts[index];
+      if (!node.children.has(part)) node.children.set(part, { children: new Map(), directory: false });
+      node = node.children.get(part);
+      if (index < parts.length - 1 || directory) node.directory = true;
+    }
+  };
+  folders.forEach((relative) => addPath(relative, true));
+  files.forEach((relative) => addPath(relative, false));
+  if (!root.children.size) return null;
+  const lines = ["project/"];
+  const draw = (node, prefix) => {
+    const entries = [...node.children.entries()].sort(([nameA, valueA], [nameB, valueB]) => {
+      if (valueA.directory !== valueB.directory) return valueA.directory ? -1 : 1;
+      return nameA.localeCompare(nameB, "en");
+    });
+    entries.forEach(([name, child], index) => {
+      const last = index === entries.length - 1;
+      lines.push(`${prefix}${last ? "└─" : "├─"} ${name}${child.directory ? "/" : ""}`);
+      if (child.children.size) draw(child, `${prefix}${last ? "   " : "│  "}`);
+    });
+  };
+  draw(root, "");
+  return lines.join("\n");
+}
+
+function overhaulPrewriteProposal(args, observed, mode) {
+  if (mode !== "overhaul") return null;
+  const projectIsEmpty = observed.files.length === 0;
+  const targetLayout = args.target_layout || (projectIsEmpty ? "new_first_build" : "preserve_existing");
+  if (targetLayout === "new_first_build" && !projectIsEmpty) throw new Error("new_first_build 기본 트리는 비어 있는 최초 구축 대상에만 사용할 수 있습니다. 기존 프로젝트에는 preserve_existing 또는 rebuild_existing과 정확한 변경 경로를 사용하세요.");
+  const proposedFolders = unique((args.proposed_folders || []).map((value) => normalizeRelativePath(value, "proposed_folders")));
+  const proposedFiles = unique((args.proposed_files || []).map((value) => normalizeRelativePath(value, "proposed_files")));
+  const plannedVariables = normalizePlannedVariables(args.planned_variables || []);
+  const noNewPersistentVariables = args.no_new_persistent_variables === true;
+  if (plannedVariables.length && noNewPersistentVariables) throw new Error("planned_variables와 no_new_persistent_variables: true를 함께 지정할 수 없습니다.");
+  const useDefaultTree = targetLayout === "new_first_build";
+  const structureReady = useDefaultTree || proposedFolders.length > 0 || proposedFiles.length > 0;
+  const variablesReady = plannedVariables.length > 0 || noNewPersistentVariables;
+  return {
+    status: structureReady && variablesReady ? "ready_for_user_confirmation" : "needs_plan_details",
+    target_layout: targetLayout,
+    existing_project_rule: targetLayout === "new_first_build"
+      ? "Use this compact tree only because the target is an approved new first build."
+      : "Preserve existing compatible paths. The tree below must contain only approved additions, replacements, moves, and deletions; do not import the new-project tree automatically.",
+    proposed_file_tree: useDefaultTree ? NEW_PROJECT_TREE : [...proposedFolders.map((pathValue) => `${pathValue}/`), ...proposedFiles],
+    tree_markdown: useDefaultTree ? NEW_PROJECT_TREE_MARKDOWN : renderProposedPathTree(proposedFolders, proposedFiles),
+    proposed_folders: proposedFolders,
+    proposed_files: proposedFiles,
+    planned_variables: plannedVariables,
+    variables_pending_user_definition: !variablesReady,
+    no_new_persistent_variables: noNewPersistentVariables,
+    readme_path: "README.md",
+    readme_outline: README_OUTLINE,
+    variable_dictionary_columns: VARIABLE_DICTIONARY_COLUMNS,
+    approval_rule: "Show the tree and planned-variable table to the user and obtain explicit approval before any project write. If the plan changes, show the revised tree and table again.",
+  };
+}
+
+function planDictionaryRepairs(args) {
+  if (!args.path) throw new Error("프로젝트 path가 필요합니다.");
+  const root = path.resolve(String(args.path));
+  if (!fs.existsSync(root) || !fs.statSync(root).isDirectory()) throw new Error("path는 디렉터리여야 합니다.");
+  const requestText = String(args.request || "");
+  const requestedMode = args.repair_mode || "auto";
+  const overhaulSignal = /(?:전면(?:적인)?\s*(?:개편|재작성|재구축)|처음부터\s*(?:다시|새로)|(?:전체|전면|완전한?)\s*오버홀|오버홀(?:을)?\s*(?:해|하|진행|요청|부탁|합시다)|full\s+rebuild|complete\s+rewrite|\boverhaul\s+(?:(?:this|the|my)\s+)?(?:project|workflow|codebase|analysis)\b)/i.test(requestText.trim());
+  const negatedOverhaul = /(?:오버홀|전면(?:적인)?\s*(?:개편|재작성|재구축)|처음부터\s*(?:다시|새로)|full\s+rebuild|complete\s+rewrite)[^.!?\n]{0,24}(?:말고|하지\s*말|아니|불필요|제외)/i.test(requestText);
+  const inferredOverhaul = overhaulSignal && !negatedOverhaul;
+  const incompatibility = args.available_state?.workflow_incompatibility;
+  const evidencedIncompatibility = incompatibility?.confirmed === true
+    && Array.isArray(incompatibility.evidence)
+    && incompatibility.evidence.some((value) => String(value || "").trim());
+  const mode = inferredOverhaul || evidencedIncompatibility ? "overhaul" : "partial";
+  const scopeWarnings = [];
+  if ((requestedMode === "overhaul" || args.intent_mode === "overhaul") && mode !== "overhaul") {
+    scopeWarnings.push("caller arguments requested overhaul, but the natural-language request and evidence do not authorize it; partial repair was retained");
+  }
+  const requestContext = requestInferenceContext(args.request);
+  const inferredIntent = mode === "overhaul"
+    ? "overhaul"
+    : /수정|고쳐|고치|fix|edit|modify|refactor|change/i.test(requestContext.actionable)
+      ? "modify_existing"
+      : "add_feature";
+  const requestedIntent = args.intent_mode && args.intent_mode !== "auto" ? args.intent_mode : inferredIntent;
+  const intent = requestedIntent === "overhaul" && mode !== "overhaul" ? inferredIntent : requestedIntent;
+  const observed = scanProjectForDictionary(root);
+  const overhaulProposal = overhaulPrewriteProposal(args, observed, mode);
+  const outputFlowProfile = buildOutputFlowProfile(observed, args.available_state || {});
+  const eventStudyAxisProfile = analyzeEventStudyAxisProfile(args.available_state?.event_study_axis_profile || {});
+  const completedHeadwords = inferCompletedHeadwords(observed);
+  const requestedSubsteps = Array.isArray(args.requested_substeps) ? args.requested_substeps : [];
+  const explicitHeadwords = unique([...(args.requested_checkpoints || []), ...requestedSubsteps.map((row) => row.checkpoint).filter(Boolean)]);
+  let headwords = inferDictionaryHeadwords(args.request, explicitHeadwords, mode);
+  const explicitSet = new Set(explicitHeadwords);
+  const actionableSet = new Set(inferDictionaryHeadwords(requestContext.actionable, [], mode));
+  const preservedSet = new Set(inferDictionaryHeadwords(requestContext.preserved, [], mode));
+  const estimateConsumerRequested = explicitlyRequestsEstimateConsumer(requestContext.actionable || requestContext.full);
+  headwords = headwords.filter((item) => explicitSet.has(item)
+    || item === "postest.persist_estimate" && estimateConsumerRequested
+    || !preservedSet.has(item)
+    || actionableSet.has(item));
+  if (intent === "add_feature") {
+    const completedSet = new Set(completedHeadwords);
+    headwords = headwords.filter((item) => {
+      if (explicitSet.has(item)) return true;
+      if (item === "postest.persist_estimate" && estimateConsumerRequested) return true;
+      if (completedSet.has(item) && !actionableSet.has(item)) return false;
+      return true;
+    });
+  }
+  const existingPrefixContext = /(?:기존|이미|완료|되어).*(?:전처리|회귀|추정).*(?:뒤|후|이후).*?(?:excel|xlsx|표)/i.test(String(args.request || ""));
+  if (intent === "add_feature" && existingPrefixContext && headwords.includes("final_excel_assembly")) {
+    const explicitlyRequested = new Set(args.requested_checkpoints || []);
+    const contextualUpstream = new Set(["clean.id_normalize", "clean.derive_variables", "treatment.arm_mapping", "outlier.winsorize", "scale.standardize_esample", "sample.trade_share_threshold", "sample.arm_response_eligibility", "panel.treatment_cohort", "panel.turnover_event_time", "estimation.conventional", "estimation.staggered_did"]);
+    headwords = headwords.filter((item) => !contextualUpstream.has(item) || explicitlyRequested.has(item));
+  }
+  const retrievalPlan = inferImplementationFootprint(args.request, mode, explicitHeadwords, requestedSubsteps, headwords);
+  if (!retrievalPlan.code_required) headwords = [];
+  const dictionaryUnmapped = retrievalPlan.code_required && !headwords.length;
+
+  const interventions = headwords.map((checkpoint) => {
+    const checkpointLabels = LABELED_CHECKPOINTS.filter((row) => row.checkpoint === checkpoint);
+    const finalExcelFlow = checkpoint === "final_excel_assembly"
+      ? buildOutputFlowProfile(observed, args.available_state || {})
+      : null;
+    const evaluatedCandidates = checkpointLabels.filter((row) => row.decision !== "drop" && (row.reuse_scope !== "project_specific" || row.explicit_canonical_exception))
+      .map((row) => ({
+        row,
+        compatibility: checkVariantCompatibility(row, observed, args.available_state || {}, args.request || ""),
+        ...rankVariantForObservedState(row, observed, args.request, args.available_state || {}),
+      }));
+    const referenceOnlyCandidates = evaluatedCandidates.filter((item) => !rubricAutoSelectable(item.row));
+    const axisDecision = args.available_state?.event_study_axis_profile
+      ? analyzeEventStudyAxisProfile(args.available_state.event_study_axis_profile)
+      : null;
+    const eventCardinality = eventOutcomeCardinalityFromText(args.request || "");
+    const autoSelectableCandidates = evaluatedCandidates.filter((item) => rubricAutoSelectable(item.row)
+      && eventStudyAxisPatternCompatible(item.row, axisDecision, eventCardinality)
+      && (checkpoint !== "final_excel_assembly" || item.row.label_id === "export.regression_excel.from_ster_default_style.v1"));
+    const compatibleBeforeSpecificity = autoSelectableCandidates.filter((item) => item.compatibility.compatible);
+    const specificityGate = gateByExplicitMethodContract(
+      compatibleBeforeSpecificity.map((item) => item.row),
+      `${args.request || ""} ${JSON.stringify(args.available_state || {})}`,
+    );
+    const specificityIds = new Set(specificityGate.rows.map((row) => row.label_id));
+    const candidates = compatibleBeforeSpecificity.filter((item) => specificityIds.has(item.row.label_id))
+      .map((item) => specificityGate.active
+        ? { ...item, reasons: [...item.reasons, `explicit method/state contract matched: ${specificityGate.matched_tokens.join(", ")}`] }
+        : item)
+      .sort((a, b) => b.score - a.score || a.row.annotation_order - b.row.annotation_order);
+    const incompatibleCandidates = autoSelectableCandidates.filter((item) => !item.compatibility.compatible);
+    const specificityExcludedCandidates = compatibleBeforeSpecificity.filter((item) => !specificityIds.has(item.row.label_id));
+    const stage = candidates[0]?.row.stage || checkpointLabels[0]?.stage || null;
+    const existingFiles = stage ? observed.stage_files[stage] || [] : [];
+    const existingSpecific = checkpoint === "final_excel_assembly"
+      ? observed.intervention_candidates.excel_files
+      : checkpoint.startsWith("estimation.")
+        ? observed.intervention_candidates.estimation_files
+        : existingFiles;
+    const approvedFallback = !candidates.length && stage
+      ? searchApproved({ stage, task: `${checkpoint} ${args.request}`, _exhaustive: true })
+      : null;
+    const dictionaryEntry = DICTIONARY_BY_HEADWORD.get(checkpoint);
+    const manualFallback = !candidates.length
+      ? searchManual({
+        query: `${checkpoint} ${args.request}`,
+        commands: (dictionaryEntry?.common_commands || []).slice(0, 10),
+        authority: "official",
+        limit: 5,
+      })
+      : null;
+    const atomicSubsteps = requestedSubsteps.filter((row) => row.checkpoint === checkpoint).map((substep) => {
+      const matchedLabels = matchingAutoSelectableLabels(
+        LABELED_CHECKPOINTS,
+        checkpoint,
+        substep.match || {},
+        substep.description || "",
+      ).filter((row) => eventStudyAxisPatternCompatible(row, axisDecision, eventCardinality)
+        && (checkpoint !== "final_excel_assembly" || row.label_id === "export.regression_excel.from_ster_default_style.v1"));
+      const matchedCandidates = matchedLabels.map((row) => ({
+        row,
+        compatibility: checkVariantCompatibility(row, observed, args.available_state || {}, `${args.request || ""} ${substep.description || ""}`),
+        ...rankVariantForObservedState(row, observed, `${args.request || ""} ${substep.description || ""}`, args.available_state || {}),
+      })).map((item) => ({
+        ...item,
+        score: item.score + ((substep.match?.label_ids || []).map((value) => String(value).toLowerCase()).includes(String(item.row.label_id).toLowerCase()) ? 1000 : 0),
+      })).filter((item) => item.compatibility.compatible)
+        .sort((a, b) => b.score - a.score || a.row.annotation_order - b.row.annotation_order);
+      const recommendedMode = matchedCandidates.length ? "template" : "native_substep";
+      return {
+        substep_id: substep.substep_id,
+        description: substep.description || null,
+        match: substep.match || {},
+        recommended_mode: recommendedMode,
+        chosen_label_id: matchedCandidates[0]?.row.label_id || null,
+        matched_candidate_ids: matchedCandidates.map((item) => item.row.label_id),
+        incompatible_candidate_ids: matchedLabels.filter((row) => !matchedCandidates.some((item) => item.row.label_id === row.label_id)).map((row) => row.label_id),
+        native_rule: matchedCandidates.length
+          ? "Use the compatible template when it is genuinely close. If later evidence shows that selection is wrong, enter general-rule fallback and retain the rank-relative nearest candidate only as a nonbinding hint."
+          : "No suitable template matched. Enter general-rule fallback, inject the rank-relative nearest inspected candidate only as a nonbinding hint if available, write the shortest declared transition, then lint and runtime-test it.",
+      };
+    });
+    return {
+      headword: checkpoint,
+      action: existingSpecific.length ? "repair_or_extend_existing" : "insert_new_block",
+      existing_evidence_files: existingSpecific,
+      chosen_variant: candidates.length ? {
+        label_id: candidates[0].row.label_id,
+        variant_id: candidates[0].row.variant_id,
+        state_match_score: candidates[0].score,
+        state_match_reasons: candidates[0].reasons,
+        decision: candidates[0].row.decision,
+        reuse_scope: candidates[0].row.reuse_scope,
+        rubric_classification: rubricClassification(candidates[0].row),
+        quality_rubric_review: candidates[0].row.quality_rubric_review,
+        readability_score: candidates[0].row.readability_score,
+        portability_score: candidates[0].row.portability_score,
+        preferred_within_checkpoint: Boolean(candidates[0].row.preferred_within_checkpoint),
+        explicit_canonical_exception: Boolean(candidates[0].row.explicit_canonical_exception),
+        reusable_core: candidates[0].row.reusable_core,
+        source_specific_elements: candidates[0].row.source_specific_elements,
+        compatibility: candidates[0].compatibility,
+        state_signature: candidates[0].row.state_signature || { requires: candidates[0].row.input_contract, observable_signals: [], produces: candidates[0].row.output_contract },
+        event_axis_pattern: candidates[0].row.event_axis_pattern || null,
+        selection_conditions: candidates[0].row.selection_conditions,
+        dictionary_evidence: dictionaryEvidence(candidates[0].row.checkpoint),
+        source_package_review: sourcePackageReview(candidates[0].row),
+        minimal_edit_contract: {
+          required_changes: candidates[0].row.required_changes,
+          editable_fields: candidates[0].row.minimal_edit_fields,
+          forbidden_change: "Do not change the block's control flow or combine it with another variant. If the frame must change, return to dictionary selection.",
+        },
+        source: `${candidates[0].row.source_path}:${candidates[0].row.source_spans.map(([start, end]) => `${start}-${end}`).join(",")}`,
+        code: candidates[0].row.code,
+      } : null,
+      status: candidates.length ? "compatible_variant_selected" : "no_compatible_labeled_variant",
+      general_rule_fallback_policy: generalRuleFallbackPolicy({ checkpoint }, {
+        axisPatternSelection: eventStudyAxisPatternSelection(axisDecision, eventCardinality),
+        requestedFlow: finalExcelFlow,
+        writableCandidateCount: candidates.length,
+      }),
+      evidence_progress: {
+        labeled_checked: true,
+        labeled_result_count: candidates.length,
+        labeled_non_drop_count: evaluatedCandidates.length,
+        labeled_auto_selectable_count: autoSelectableCandidates.length,
+        rubric_reference_only_variants: referenceOnlyCandidates.map((item) => ({
+          label_id: item.row.label_id,
+          variant_id: item.row.variant_id,
+          reuse_scope: item.row.reuse_scope,
+          weighted_score: item.row.quality_rubric_review?.weighted_score ?? null,
+          reason: "reference_only is preserved as evidence but cannot be auto-selected",
+        })),
+        incompatible_labeled_variants: incompatibleCandidates.map((item) => ({
+          label_id: item.row.label_id,
+          variant_id: item.row.variant_id,
+          reuse_scope: item.row.reuse_scope,
+          readability_score: item.row.readability_score,
+          portability_score: item.row.portability_score,
+          preferred_within_checkpoint: Boolean(item.row.preferred_within_checkpoint),
+          failures: item.compatibility.failures,
+        })),
+        specificity_gate: publicSpecificityGate(specificityGate),
+        method_mismatch_labeled_variants: specificityExcludedCandidates.map((item) => ({
+          label_id: item.row.label_id,
+          variant_id: item.row.variant_id,
+          reuse_scope: item.row.reuse_scope,
+          reason: `did not match the explicit distinguishing contract token(s): ${specificityGate.distinguishing_tokens.join(", ")}`,
+        })),
+        dictionary_maturity: dictionaryEntry?.maturity || "missing_headword",
+        approved_patterns_checked: approvedFallback !== null,
+        approved_pattern_query: approvedFallback?.query || null,
+        approved_pattern_result_count: approvedFallback?.results.length || 0,
+        approved_pattern_total_eligible: approvedFallback?.result_accounting?.total_eligible || 0,
+        approved_pattern_exhaustive: Boolean(approvedFallback?.result_accounting?.exhaustive),
+        approved_pattern_sources: (approvedFallback?.results || []).slice(0, retrievalPlan.corpus_fallback_context_limit_per_headword).map((row) => ({ chunk_id: row.chunk_id, source: row.source })),
+        approved_pattern_context_limit: retrievalPlan.corpus_fallback_context_limit_per_headword,
+        manual_checked: manualFallback !== null,
+        manual_query: manualFallback ? { query: manualFallback.query, commands: manualFallback.commands, authority: manualFallback.authority } : null,
+        manual_result_count: manualFallback?.results.length || 0,
+        manual_sources: (manualFallback?.results || []).map((row) => ({ manual_id: row.manual_id, source_url: row.source_url, page: row.page })),
+        user_decision_required: false,
+        direct_implementation_allowed: checkpoint !== "final_excel_assembly"
+          || Boolean(finalExcelFlow?.direct_implementation_allowed),
+        boundary: checkpoint === "final_excel_assembly"
+          ? (finalExcelFlow?.direct_implementation_allowed
+            ? "A workbook with one sheet must use concise direct outreg2 replace/append code with an explicit .xls target and no program, regardless of model-column count. Preserve raw outreg2 rows, compute each dependent-variable mean on e(sample), add only adjusted R-squared and those means, and avoid generic formatting machinery."
+            : "A workbook with two or more sheets uses the canonical formatter to preserve raw outreg2 rows and align exactly the two approved added statistics. Upstream estimation and every other compatible transition remain flexible.")
+          : "Templates remain the preferred nearly-verbatim minimal-binding path when genuinely close. If no suitable template exists or the selected template is wrong, use general-rule fallback and retain the rank-relative nearest inspected candidate only as a nonbinding hint; ranking does not establish compatibility. Manual evidence is mechanics-only; ask the user only if a substantive choice is not fixed by the request or observed project.",
+      },
+      fallback_chain: candidates.length ? [] : [
+        approvedFallback?.results.length
+          ? "approved collected examples were returned as evidence; reuse a genuinely close one or implement the declared transition directly"
+          : "all approved collected examples were searched and no compatible labeled transition was found",
+        "the official Stata manual was searched after the approved-example audit for syntax, return values, and command state only",
+        "write the narrow direct transition and ask the user only if a substantive choice remains unresolved",
+      ],
+      alternative_variants: candidates.slice(1, 1 + retrievalPlan.alternative_metadata_limit_per_headword).map((item) => ({
+        label_id: item.row.label_id,
+        variant_id: item.row.variant_id,
+        state_match_score: item.score,
+        state_match_reasons: item.reasons,
+        selection_conditions: item.row.selection_conditions,
+        tradeoffs: item.row.tradeoffs,
+        dictionary_evidence: dictionaryEvidence(item.row.checkpoint),
+        source_package_review: sourcePackageReview(item.row),
+      })),
+      atomic_substeps: atomicSubsteps,
+    };
+  });
+
+  const missingState = [];
+  if (headwords.includes("final_excel_assembly") && !observed.signals.regression_commands && observed.signals.ster_files === 0 && !args.available_state?.estimate_state) {
+    missingState.push({
+      required_for: "final_excel_assembly",
+      missing: "no regression code, ster file, or caller-declared active estimate state was detected",
+      rule: "Report the missing prerequisite; do not expand a partial Excel request into a regression overhaul automatically.",
+    });
+  }
+  const requestedStages = new Set(interventions.map((row) => LABELED_CHECKPOINTS.find((item) => item.checkpoint === row.headword)?.stage).filter(Boolean));
+  const preservedStages = Object.entries(observed.stage_files)
+    .filter(([stage, files]) => files.length && !requestedStages.has(stage))
+    .map(([stage, files]) => ({ stage, files, action: "preserve" }));
+  const requestedPositions = headwords.map((item) => HEADWORD_SEQUENCE.indexOf(item)).filter((index) => index >= 0);
+  const firstRequestedPosition = requestedPositions.length ? Math.min(...requestedPositions) : HEADWORD_SEQUENCE.length;
+  const frozenPrefix = completedHeadwords.filter((item) => {
+    const position = HEADWORD_SEQUENCE.indexOf(item);
+    return intent === "add_feature" ? position >= 0 && position < firstRequestedPosition : !headwords.includes(item);
+  });
+  const targetFiles = (args.target_files || []).map((value) => normalizeRelativePath(value, "target_files"));
+  const mutableExistingFiles = intent === "modify_existing" ? targetFiles : [];
+  const callSites = observed.interface_fingerprint.call_sites;
+  const producerCandidates = unique([
+    ...observed.intervention_candidates.estimation_files,
+    ...observed.intervention_candidates.estimate_handoff_files,
+  ]);
+  const safeCallBoundaries = callSites.filter((site) => producerCandidates.some((file) => site.target.replaceAll("\\", "/").endsWith(path.posix.basename(file))));
+
+  return {
+    root,
+    mode,
+    intent,
+    scope_decision: {
+      requested_repair_mode: requestedMode,
+      requested_intent_mode: args.intent_mode || "auto",
+      explicit_overhaul_in_request: inferredOverhaul,
+      evidenced_workflow_incompatibility: evidencedIncompatibility,
+      accepted_mode: mode,
+      warnings: scopeWarnings,
+    },
+    request: args.request,
+    dictionary_headwords: headwords,
+    dictionary_unmapped_request: dictionaryUnmapped,
+    dictionary_unmapped_policy: dictionaryUnmapped
+      ? {
+        direct_implementation_allowed: true,
+        user_decision_required: false,
+        rule: "No dictionary headword maps this code request. Use general-rule fallback, inject the rank-relative nearest inspected candidate if one exists only as a nonbinding hint, implement the declared transition with the shortest readable Stata statements, then lint and verify it. Ranking does not establish compatibility. Ask the user only if a substantive research choice remains unresolved.",
+      }
+      : null,
+    retrieval_plan: { ...retrievalPlan, selected_headwords: headwords, headword_budget: headwords.length },
+    observed_state: {
+      extension_counts: observed.extension_counts,
+      signals: observed.signals,
+      policy_signals: observed.policy_signals,
+      style_profile: observed.style_profile,
+      intervention_candidates: observed.intervention_candidates,
+      interface_fingerprint: observed.interface_fingerprint,
+      input_signature: observed.input_signature,
+      output_flow_evidence: observed.output_flow_evidence,
+      output_flow_profile: outputFlowProfile,
+      event_study_axis_profile: eventStudyAxisProfile,
+    },
+    completion_map: {
+      completed_headwords: completedHeadwords,
+      frozen_prefix: frozenPrefix,
+      requested_headwords: headwords,
+      rule: intent === "add_feature"
+        ? "Freeze completed dictionary headwords before the first requested headword; read them for interfaces but do not rewrite their computational content."
+        : "Freeze every nonrequested headword and every existing file outside the explicit modification targets.",
+    },
+    preserved_scope: preservedStages,
+    interventions,
+    overhaul_prewrite_proposal: overhaulProposal,
+    required_interface_changes: missingState,
+    compatibility_contract: {
+      immutable_interfaces: {
+        existing_input_bindings: observed.interface_fingerprint.input_bindings,
+        existing_output_bindings: observed.interface_fingerprint.output_bindings,
+        existing_call_sites: observed.interface_fingerprint.call_sites,
+        existing_macro_names: observed.interface_fingerprint.macro_definitions,
+        existing_program_signatures: observed.interface_fingerprint.program_interfaces,
+      },
+      macro_scope_rule: "Macro fingerprints are classification evidence, not automatic public interfaces. Preserve globals only when they intentionally cross do-file boundaries. Setup may hold shared directory roots, but a leaf input or output filename with only one consuming do-file belongs as a local near that consumer's first use, or as a literal when used once. A private local or a regression/figure specification global with one consumer may likewise be moved into that consuming do-file and localized when the approved repair improves visibility without changing the research contract.",
+      mutable_existing_files: mutableExistingFiles,
+      safe_call_boundaries: safeCallBoundaries,
+      allowed_integration_edits: [
+        "bind the selected block to an existing producer output without renaming that output",
+        "add a new output owned by the requested feature",
+        "insert one explicit direct call at a verified producer boundary when project approval permits",
+      ],
+      forbidden_integration_edits: [
+        "rename or overwrite an existing input or output",
+        "change an existing program syntax or caller arguments",
+        "reorder existing master calls",
+        "replace the project's estimate handoff merely to fit a preferred dictionary example",
+        "generate a custom adapter with new control flow when no labeled compatible interface exists",
+      ],
+      fallback: "If no selected variant consumes the frozen interface, preserve that interface and enter general-rule fallback. Inject the rank-relative nearest inspected candidate only as a hint, without presuming compatibility; write the smallest readable binding or transition and do not invent a generic adapter, dispatcher, or framework.",
+    },
+    dictionary_fallback_chain: [
+      "fine-grained labeled checkpoint",
+      "all approved collected examples",
+      "official Stata manual for mechanics only",
+      "general-rule fallback from the declared contract with the rank-relative nearest candidate only as a nonbinding hint",
+      "user question only for an unresolved substantive choice",
+    ],
+    template_reuse_contract: {
+      schema_version: "2.0",
+      granularity: "broad headword with atomic substeps",
+      template_rule: "A genuinely close template is preferred and each selected template substep binds one label with substep_id.",
+      native_rule: "native_substep remains valid for a project-specific formula, dictionary gap, or template-mismatch fallback. A persistent audit binds its target span; mismatch fallback records nearest_template_hint, fallback_trigger, and hint_used, while stating that nearest-by-ranking does not establish compatibility. Template availability is advisory unless strict enforcement is explicitly requested.",
+      required_atomic_boundaries: [
+        "merge retained-state handling",
+        "panel-key declaration",
+        "CPI transformation",
+        "dataset finalization",
+        "age or entity collapse",
+        "e(sample) dependent-variable mean",
+        "estimation",
+        "ster save",
+        "ster load",
+        "Excel assembly",
+        "figure assembly",
+      ],
+      requested_substeps: requestedSubsteps,
+      output_flow_rule: "For final Excel assembly, define semantic variable groups once and map them separately to physical workbook/sheet/sample placements. When formatter_required is true, bind production to output_flow_profile.recommended_label_id. When direct_implementation_allowed is true, use visible direct outreg2 with an explicit .xls target and no program. If selection_ready is false, do not write or improvise a helper.",
+      event_study_axis_rule: "Axis grouping is independent of sheet grouping. Use a fixed common range only for declared close, directly comparable outcomes in the same specification and sample comparison; otherwise keep automatic axes.",
+    },
+    work_report_contract: {
+      required_after_code_write: true,
+      path: "report.md",
+      table_header: "| mode | target | lines | checkpoint | label_id | reason |",
+      modes: ["template", "general_rule_fallback"],
+      rule: "After creating or revising Stata code, record each selected template and each general-rule fallback as a separate row with the actual project-relative .do path and one-based inclusive line range. Use - as the fallback label_id and record nearest_template_hint=<label_id|none>; fallback_trigger=<no_suitable_template|wrong_selection>; hint_used=<borrowed idea|none>. Keep provenance out of the .do source.",
+    },
+    user_summary: {
+      decision: mode,
+      requested_changes: headwords.slice(0, 8),
+      preserved_stage_count: preservedStages.length,
+      confirmations_required: [
+        ...(overhaulProposal?.status === "needs_plan_details" ? [
+          ...(overhaulProposal.tree_markdown ? [] : ["오버홀 전에 새로 만들 폴더와 파일의 정확한 tree가 필요합니다." ]),
+          ...(overhaulProposal.variables_pending_user_definition ? ["오버홀에서 새로 만들 영구 분석변수의 이름과 사용자용 설명이 필요합니다. 새 변수가 없다면 no_new_persistent_variables: true를 명시하세요."] : []),
+        ] : []),
+        ...missingState.map((row) => row.missing),
+        ...(headwords.includes("final_excel_assembly") && !outputFlowProfile.selection_ready ? outputFlowProfile.failures.slice(0, 2) : []),
+        ...(headwords.includes("figures.event_study") && eventStudyAxisProfile.status === "needs_revision" ? eventStudyAxisProfile.failures.slice(0, 2) : []),
+      ].slice(0, 3),
+    },
+    scope_rule: !retrievalPlan.code_required
+      ? "Read-only request: preserve every stage and do not create a code intervention."
+      : mode === "partial"
+        ? "Preserve every nonrequested stage. Change only chosen dictionary blocks and directly required interface transitions. Never convert a partial repair into an overhaul automatically."
+        : "Overhaul may replace multiple dictionary blocks, but each replacement still requires an explicit headword, compatible state contract, and minimal-edit variant selection.",
+    write_rule: retrievalPlan.code_required
+      ? mode === "overhaul"
+        ? "This is a read-only overhaul plan. Show overhaul_prewrite_proposal.tree_markdown and its planned_variables table to the user, record whether README.md is created or amended, and wait for explicit approval before writing. A material plan change requires a revised preview and renewed approval."
+        : "This is a read-only intervention plan. Before writing, bind each intervention to exact existing files or proposed new files and apply the project's approval rule."
+      : "No code write is authorized or needed by this plan.",
+    claim_boundary: "Static scanning observes files and code signals, not live Stata memory or semantic truth. Caller-declared available_state overrides only when explicitly supplied and remains subject to runtime verification.",
+  };
+}
+
+function stageContract(stage) {
+  const contracts = {
+    import: ["원자료는 읽기 전용으로 취급", "출처와 버전 또는 수집일 기록", "가져온 즉시 관측치 수와 키 후보 확인"],
+    integrity_audit: ["isid 또는 duplicates report/tag로 키 검증", "결측, 범위, 코드값을 assert 또는 표로 확인", "제외 건수와 이유 기록"],
+    cleaning_labels: ["새 변수 생성 직후 정의와 목적 주석", "저장 전 새 변수에 변수 라벨 부여", "원변수 라벨은 변경하지 않음"],
+    merge_reshape: ["각 입력의 키 유일성 사전 검증", "merge cardinality 명시", "_merge 상태를 확인하고 assert한 뒤 정리"],
+    panel_construction: ["분석 단위와 시간 단위 명시", "unit-time isid 검증", "처치시점과 event time의 범위 확인"],
+    descriptives_balance_sample_flow: ["원표본부터 최종표본까지 단계별 N 기록", "핵심 변수 기초통계와 결측률", "처치군 비교 또는 balance를 동일 표본 정의로 산출"],
+    estimation: ["outcome, treatment, controls, sample, FE, cluster를 코드 가까이에 명시", "각 사양의 N 보존", "검증된 공식 명령 사용"],
+    robustness: ["본문 사양과 위협의 대응관계 명시", "placebo, 대안 결과, 이질성은 사전 지정", "재표집은 seed와 반복 수 기록"],
+    figures: ["그림 생성 입력과 표본을 명시", "축, 단위, 기준기간을 라벨링", "수동 편집 없이 재생성 가능"],
+    exports: ["표는 Excel, 그림은 PDF, 추정치는 .ster 경로로 저장", "모든 결과가 생성 코드로 연결", "TeX 출력은 생성하거나 제안하지 않음"],
+    master_orchestration: ["version과 프로젝트 root 하나 설정", "입력, 중간, 분석용, ster, table, figures, do/log 역할의 경로를 기존 구조에 맞게 파생", "유효한 기존 호출 순서를 보존하고 새 프로젝트에서만 config, prep, analysis 표준 분리를 적용"],
+  };
+  return contracts[stage];
+}
+
+function workflowBlueprint(args) {
+  const requested = args.expected_stages && args.expected_stages.length ? args.expected_stages : STAGES;
+  if (requested.some((stage) => !STAGES.includes(stage))) throw new Error("expected_stages에 알 수 없는 단계가 있습니다.");
+  const projectMode = args.project_mode || "existing";
+  if (!["new", "existing"].includes(projectMode)) throw new Error("project_mode는 new 또는 existing이어야 합니다.");
+  if (projectMode === "new" && args.new_project_confirmed !== true) throw new Error("new 표준 트리는 읽기 전용 조사 후 new_project_confirmed: true로 최초 구축임을 명시해야 합니다.");
+  const plannedVariables = normalizePlannedVariables(args.planned_variables || []);
+  const noNewPersistentVariables = args.no_new_persistent_variables === true;
+  if (plannedVariables.length && noNewPersistentVariables) throw new Error("planned_variables와 no_new_persistent_variables: true를 함께 지정할 수 없습니다.");
+  const stages = STAGES.filter((stage) => requested.includes(stage));
+  const structures = WORKFLOWS.packages
+    .filter((pkg) => ["gold_candidate", "partial_gold", "conditional_priority"].includes(pkg.corpus_role))
+    .map((pkg) => ({
+      package_id: pkg.package_id,
+      title: pkg.title,
+      corpus_role: pkg.corpus_role,
+      entrypoint: pkg.entrypoint,
+      directories: pkg.directories.filter((value) => /^(?:code|data|output|raw|generated|final|dofiles|replicate)/i.test(value)).slice(0, 20),
+      master_files: pkg.files.filter((file) => file.stages.includes("master_orchestration")).map((file) => file.path),
+    }));
+  return {
+    profile: { analysis_type: args.analysis_type || "applied_micro", data_shape: args.data_shape || "unspecified", project_size: args.project_size || "medium", outputs: args.outputs || ["tables", "figures"], project_mode: projectMode },
+    recommended_tree: projectMode === "new" ? NEW_PROJECT_TREE : [],
+    proposed_file_tree: projectMode === "new" ? { paths: NEW_PROJECT_TREE, tree_markdown: NEW_PROJECT_TREE_MARKDOWN } : { paths: [], tree_markdown: null },
+    planned_variables: plannedVariables,
+    variables_pending_user_definition: projectMode === "new" && !plannedVariables.length && !noNewPersistentVariables,
+    no_new_persistent_variables: noNewPersistentVariables,
+    readme_contract: {
+      path: "README.md",
+      outline: README_OUTLINE,
+      variable_dictionary_columns: VARIABLE_DICTIONARY_COLUMNS,
+      scope: "Document every newly created persistent variable saved to an analysis dataset or used in a reported analysis. Exclude temporary loop, scratch, and Stata returned-state names.",
+    },
+    master_sequence: projectMode === "new" ? ["do/00_config.do", "do/10_prep_master.do", "do/20_analysis_master.do"] : ["preserve the detected existing entrypoint and call order"],
+    structure_policy: {
+      standard_tree_applies: projectMode === "new",
+      new_project: "Use the recommended tree only for the first build and only after explicit approval.",
+      existing_project: "Inventory first and preserve compatible folder names, file names, entrypoint, and orchestration. Do not rename, move, or add standard folders merely to match the template.",
+    },
+    write_approval_contract: {
+      required_before_any_project_write: true,
+      read_only_inventory_allowed_before_approval: true,
+      proposal_must_list: ["folder and file tree to create", "files to modify", "files to move or rename", "files to delete", "existing outputs to overwrite", "entrypoint and execution command", "new persistent variable names and reader-facing descriptions", "whether root README.md is created or amended"],
+      material_plan_change_requires_new_approval: true,
+    },
+    stage_contracts: stages.map((stage) => ({ stage, requirements: stageContract(stage) })),
+    sample_flow_contract: ["원자료 N", "키 또는 범위 오류 제외 N", "merge 성공 N", "변수 결측 제외 N", "분석 표본 N", "각 표와 그림의 실제 N"],
+    research_output_contract: {
+      entrypoint: projectMode === "new" ? ["root 00_master.do or main.do", "dynamic project root", "config then prep master then analysis master", "substantive errors stop the run"] : ["preserve the detected existing entrypoint", "dynamic project root", "preserve a valid existing call order", "substantive errors stop the run"],
+      readme_sections: ["approved actual file tree", "new persistent-variable names and reader-facing descriptions, or an explicit none statement", "how to run the research entrypoint"],
+      execution_evidence: ["actual main log when execution is requested", "no r(#) errors", "optional agreed completion marker"],
+      deliverable_evidence: ["user-specified names and counts", "direct SHA-256 evidence for generated artifacts", "all outputs regenerated without manual coefficient transfer"],
+      verdicts: ["verified only after the requested static, log, README, and output checks pass", "needs_revision with explicit blockers otherwise"],
+    },
+    observed_structure_references: structures,
+    next_actions: ["현재 폴더와 파일 구조를 읽기 전용으로 조사", "생성할 폴더, 생성 및 수정할 파일, 이동, 이름변경, 삭제, 덮어쓰기 대상을 정확히 제시", "사용자의 명시적 승인을 기다림", "승인 후 각 단계에 대해 search_labeled_checkpoints 호출", "승인된 범위에서 연구 workflow 생성 또는 수정", "작성한 각 do-file을 lint_do_file로 검사", "root report.md에 template과 fallback의 실제 line range를 기록", "프로젝트 전체를 audit_stata_project(require_report=true)로 검사", "요청 시 entrypoint clean run", "research_output_check에 계약된 산출물 이름과 정확한 개수를 전달해 직접 hash 증거와 함께 검증"],
+    claim_boundary: "이 계획은 연구자가 읽고 실행할 Stata workflow를 정리한다. 배포, dependency 관리, 제출 패키지 또는 저널 인증을 판정하지 않는다.",
+  };
+}
+
+function normalizeRelativePath(value, label) {
+  const normalized = String(value || "").replaceAll("\\", "/").replace(/^\.\//, "");
+  if (!normalized || path.posix.isAbsolute(normalized) || /^[A-Za-z]:\//.test(normalized) || normalized.split("/").includes("..")) {
+    throw new Error(`${label}은 프로젝트 내부의 상대 경로여야 합니다.`);
+  }
+  return normalized;
+}
+
+function resolveInside(root, value, label) {
+  const relative = normalizeRelativePath(value, label);
+  const target = path.resolve(root, ...relative.split("/"));
+  const prefix = `${root}${path.sep}`.toLowerCase();
+  if (target.toLowerCase() !== root.toLowerCase() && !target.toLowerCase().startsWith(prefix)) throw new Error(`${label}이 프로젝트 밖을 가리킵니다.`);
+  return { relative, target };
+}
+
+const WORK_REPORT_MODES = new Set(["template", "general_rule_fallback"]);
+
+function validateWorkReport(root, options = {}) {
+  const required = options.required === true;
+  const reportPath = path.join(root, "report.md");
+  const formatContract = {
+    path: "report.md",
+    columns: ["mode", "target", "lines", "checkpoint", "label_id", "reason"],
+    modes: [...WORK_REPORT_MODES],
+    line_rule: "Use one row per contiguous one-based inclusive target range, written as start-end.",
+    fallback_reason_rule: "For general_rule_fallback, reason must contain nearest_template_hint=<label_id|none>; fallback_trigger=<no_suitable_template|wrong_selection>; hint_used=<borrowed idea|none>.",
+  };
+  if (!fs.existsSync(reportPath)) {
+    return {
+      required,
+      status: required ? "missing" : "not_present",
+      path: "report.md",
+      entries: [],
+      errors: required ? ["report.md is required after a workflow creates or revises Stata code"] : [],
+      format_contract: formatContract,
+    };
+  }
+
+  const content = fs.readFileSync(reportPath, "utf8");
+  const errors = [];
+  const entries = [];
+  const expectedHeader = ["mode", "target", "lines", "checkpoint", "label_id", "reason"];
+  const lines = content.split(/\r?\n/);
+  const headerPresent = lines.some((line) => {
+    if (!/^\s*\|/.test(line)) return false;
+    const cells = line.split("|").slice(1, -1).map((cell) => cell.trim().replace(/^`|`$/g, "").toLowerCase());
+    return cells.length === expectedHeader.length && cells.every((cell, index) => cell === expectedHeader[index]);
+  });
+  if (!headerPresent) errors.push("report.md must contain the exact table header: | mode | target | lines | checkpoint | label_id | reason |");
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    if (!/^\s*\|/.test(line)) continue;
+    const cells = line.split("|").slice(1, -1).map((cell) => cell.trim().replace(/^`|`$/g, ""));
+    if (cells.length !== expectedHeader.length || !WORK_REPORT_MODES.has(cells[0])) continue;
+    const [mode, targetValue, rangeValue, checkpoint, labelId, reason] = cells;
+    const entry = { mode, target: targetValue, lines: rangeValue, checkpoint, label_id: labelId, reason, report_line: index + 1 };
+    const rangeMatch = rangeValue.match(/^(\d+)-(\d+)$/);
+    if (!rangeMatch) {
+      errors.push(`report.md line ${index + 1}: lines must be one contiguous start-end range`);
+      entries.push(entry);
+      continue;
+    }
+    const start = Number(rangeMatch[1]);
+    const end = Number(rangeMatch[2]);
+    entry.target_span = [start, end];
+    if (start < 1 || end < start) errors.push(`report.md line ${index + 1}: invalid target range ${rangeValue}`);
+
+    let resolved = null;
+    try {
+      resolved = resolveInside(root, targetValue, `report.md line ${index + 1} target`);
+    } catch (error) {
+      errors.push(error.message);
+    }
+    if (resolved) {
+      entry.target = resolved.relative;
+      if (!/\.do$/i.test(resolved.relative)) errors.push(`report.md line ${index + 1}: target must be a .do file`);
+      else if (!fs.existsSync(resolved.target) || !fs.statSync(resolved.target).isFile()) errors.push(`report.md line ${index + 1}: target ${resolved.relative} does not exist`);
+      else {
+        const targetLines = fs.readFileSync(resolved.target, "utf8").split(/\r?\n/);
+        const targetLineCount = targetLines.length;
+        entry.target_line_count = targetLineCount;
+        if (end > targetLineCount) errors.push(`report.md line ${index + 1}: range ${rangeValue} exceeds ${resolved.relative} line count ${targetLineCount}`);
+        else if (start >= 1 && end >= start) {
+          const spanStatements = activeLogicalLines(targetLines.slice(start - 1, end).join("\n"));
+          if (!spanStatements.length || spanStatements.every(isSafeBindingStatement)) {
+            errors.push(`report.md line ${index + 1}: harmless primitive-only ranges must not be recorded`);
+          }
+        }
+      }
+    }
+
+    if (!reason || reason === "-") errors.push(`report.md line ${index + 1}: reason is required`);
+    if (mode === "template") {
+      const label = LABELED_CHECKPOINTS.find((row) => row.label_id === labelId);
+      if (!label) errors.push(`report.md line ${index + 1}: unknown template label_id ${labelId || "<missing>"}`);
+      else if (checkpoint !== label.checkpoint) errors.push(`report.md line ${index + 1}: checkpoint ${checkpoint} does not match ${labelId}`);
+    } else {
+      if (labelId !== "-") errors.push(`report.md line ${index + 1}: ${mode} must use - for label_id`);
+      if (checkpoint !== "unmapped" && !CHECKPOINTS.includes(checkpoint)) {
+        errors.push(`report.md line ${index + 1}: unknown fallback checkpoint ${checkpoint || "<missing>"}`);
+      }
+      const fallbackEvidence = {};
+      for (const segment of String(reason || "").split(";")) {
+        const field = segment.trim().match(/^([a-z_]+)\s*=\s*(.+)$/i);
+        if (field) fallbackEvidence[field[1].toLowerCase()] = field[2].trim();
+      }
+      entry.fallback_evidence = fallbackEvidence;
+      for (const field of ["nearest_template_hint", "fallback_trigger", "hint_used"]) {
+        if (!fallbackEvidence[field]) errors.push(`report.md line ${index + 1}: fallback reason is missing ${field}=...`);
+      }
+      if (fallbackEvidence.fallback_trigger && !["no_suitable_template", "wrong_selection"].includes(fallbackEvidence.fallback_trigger)) {
+        errors.push(`report.md line ${index + 1}: fallback_trigger must be no_suitable_template or wrong_selection`);
+      }
+      const nearestHint = fallbackEvidence.nearest_template_hint;
+      if (nearestHint && nearestHint !== "none") {
+        const hintedLabel = LABELED_CHECKPOINTS.find((row) => row.label_id === nearestHint);
+        if (!hintedLabel) errors.push(`report.md line ${index + 1}: unknown nearest_template_hint ${nearestHint}`);
+        else if (checkpoint === "unmapped" || hintedLabel.checkpoint !== checkpoint) {
+          errors.push(`report.md line ${index + 1}: nearest_template_hint ${nearestHint} does not match fallback checkpoint ${checkpoint}`);
+        }
+      }
+    }
+    entries.push(entry);
+  }
+
+  if (!entries.length && !/^No template or general-rule fallback spans\.$/im.test(content)) {
+    errors.push("report.md has no implementation rows and no explicit no-template-or-fallback declaration");
+  }
+  const byTarget = new Map();
+  for (const entry of entries.filter((row) => Array.isArray(row.target_span))) {
+    if (!byTarget.has(entry.target)) byTarget.set(entry.target, []);
+    byTarget.get(entry.target).push(entry);
+  }
+  for (const [target, targetEntries] of byTarget.entries()) {
+    const ordered = targetEntries.slice().sort((a, b) => a.target_span[0] - b.target_span[0] || a.target_span[1] - b.target_span[1]);
+    for (let index = 1; index < ordered.length; index += 1) {
+      if (ordered[index].target_span[0] <= ordered[index - 1].target_span[1]) {
+        errors.push(`report.md has overlapping implementation ranges in ${target}: ${ordered[index - 1].lines} and ${ordered[index].lines}`);
+      }
+    }
+  }
+  return {
+    required,
+    status: errors.length ? "invalid" : "valid",
+    path: "report.md",
+    sha256: sha256File(reportPath),
+    entries,
+    errors,
+    format_contract: formatContract,
+  };
+}
+
+function listProjectFiles(root) {
+  const results = [];
+  const ignored = new Set([".git", "node_modules"]);
+  function walk(dir) {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (entry.isDirectory() && ignored.has(entry.name.toLowerCase())) continue;
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (entry.isFile()) results.push(path.relative(root, full).replaceAll("\\", "/"));
+      if (results.length > 50000) throw new Error("프로젝트 파일이 50,000개를 넘어 제출준비 검사 범위를 초과했습니다.");
+    }
+  }
+  walk(root);
+  return results.sort();
+}
+
+function globRegex(pattern) {
+  const value = normalizeRelativePath(pattern, "deliverable pattern");
+  let expression = "^";
+  for (let index = 0; index < value.length; index += 1) {
+    const character = value[index];
+    if (character === "*") {
+      if (value[index + 1] === "*") {
+        expression += ".*";
+        index += 1;
+      } else expression += "[^/]*";
+    } else if (character === "?") expression += "[^/]";
+    else expression += character.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+  return new RegExp(`${expression}$`, "i");
+}
+
+function sha256File(file) {
+  return crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex").toUpperCase();
+}
+
+function researchOutputCheck(args) {
+  if (!args.path) throw new Error("프로젝트 path가 필요합니다.");
+  const root = path.resolve(String(args.path));
+  if (!fs.statSync(root).isDirectory()) throw new Error("path는 디렉터리여야 합니다.");
+  const expectedStages = args.expected_stages?.length ? unique(args.expected_stages) : STAGES;
+  const strictStructure = args.strict_structure === true;
+  const audit = auditProject({ path: root, expected_stages: expectedStages, strict_structure: strictStructure, require_report: true });
+  const checks = [];
+  const blockers = [];
+  const evidence = [];
+  const addCheck = (name, pass, detail, blocker = detail) => {
+    checks.push({ name, status: pass ? "pass" : "fail", detail });
+    if (!pass) blockers.push({ check: name, message: blocker });
+  };
+
+  addCheck("static_project_audit", audit.status === "static_clean", `audit_stata_project status: ${audit.status}`, "정적 lint와 workflow 오류를 먼저 해결하세요.");
+  addCheck("entrypoint", Boolean(audit.summary.top_master), audit.summary.top_master || "entrypoint 없음", "연구 workflow의 실행 entrypoint가 필요합니다.");
+  addCheck(
+    "work_report",
+    audit.work_report?.status === "valid",
+    audit.work_report?.status === "valid" ? `${audit.work_report.path}: ${audit.work_report.entries.length} implementation rows` : (audit.work_report?.errors || ["report.md validation failed"]).join("; "),
+    "작성·수정한 workflow의 root report.md에 template과 general_rule_fallback 구간을 실제 .do 파일의 1-based line range로 기록하세요. 둘 다 없으면 그 사실을 명시하세요.",
+  );
+
+  const plannedVariables = normalizePlannedVariables(args.planned_variables || []);
+  const labelSourceFiles = listDoFiles(root).files;
+  const expectedTreePaths = unique((args.expected_tree_paths || []).map((value) => normalizeRelativePath(value, "expected_tree_paths")));
+  const readmeRequired = strictStructure || plannedVariables.length > 0 || expectedTreePaths.length > 0;
+  const readmeCandidates = ["README.md", "README.txt"]
+    .map((relative) => ({ relative, target: path.join(root, relative) }))
+    .filter((row) => fs.existsSync(row.target));
+  if (readmeRequired) addCheck("researcher_readme", readmeCandidates.length > 0, readmeCandidates.length ? readmeCandidates[0].relative : "README 없음", "승인된 folder tree와 persistent-variable 설명을 남길 root README가 필요합니다.");
+  if (readmeCandidates.length) {
+    const readme = fs.readFileSync(readmeCandidates[0].target, "utf8");
+    for (const relative of expectedTreePaths) {
+      const present = readme.replaceAll("\\", "/").includes(relative);
+      addCheck(`readme_tree:${relative}`, present, relative, `README에 승인된 경로 ${relative}이 없습니다.`);
+    }
+    for (const variable of plannedVariables) {
+      const hasName = new RegExp(`\\b${variable.name}\\b`).test(readme);
+      const hasDescription = readme.includes(variable.reader_description);
+      addCheck(`readme_variable:${variable.name}`, hasName && hasDescription, `${variable.name}: ${hasName && hasDescription ? "documented" : "missing name or reader description"}`, `${variable.name}과 승인된 reader_description을 README에 함께 기록하세요.`);
+      const hasSourceOrFormula = readme.includes(variable.source_or_formula);
+      const hasUnitObservationLevel = readme.includes(variable.unit_observation_level);
+      addCheck(
+        `readme_variable_lineage:${variable.name}`,
+        hasSourceOrFormula && hasUnitObservationLevel,
+        `${variable.name}: ${hasSourceOrFormula && hasUnitObservationLevel ? "source/formula and unit documented" : "missing source/formula or unit/observation level"}`,
+        `${variable.name}의 raw source unit과 정확한 생성식·threshold, output unit과 관측단위를 README에 기록하세요.`,
+      );
+      if (variable.creation_file) {
+        const normalizedCreationFile = variable.creation_file.replaceAll("\\", "/");
+        addCheck(
+          `readme_variable_creation_file:${variable.name}`,
+          readme.replaceAll("\\", "/").includes(normalizedCreationFile),
+          normalizedCreationFile,
+          `${variable.name}의 생성 파일 ${normalizedCreationFile}을 README에 기록하세요.`,
+        );
+      }
+    }
+  }
+
+  for (const variable of plannedVariables) {
+    const candidates = variable.creation_file
+      ? [resolveInside(root, variable.creation_file, `planned_variables ${variable.name} creation_file`).target]
+      : labelSourceFiles;
+    const escapedName = variable.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const labelPattern = new RegExp(`^\\s*label\\s+var(?:iable)?\\s+${escapedName}(?:\\s|$)`, "im");
+    const labeledIn = candidates.filter((file) => fs.existsSync(file) && fs.statSync(file).isFile() && labelPattern.test(fs.readFileSync(file, "utf8")));
+    addCheck(
+      `creation_label:${variable.name}`,
+      labeledIn.length > 0,
+      labeledIn.length ? labeledIn.map((file) => path.relative(root, file).replaceAll("\\", "/")).join(", ") : "label variable evidence missing",
+      `${variable.name}을 만드는 do-file에서 저장 전에 label variable을 붙이세요.`,
+    );
+  }
+
+  const projectFiles = listProjectFiles(root);
+  const deliverables = Array.isArray(args.deliverables) ? args.deliverables : [];
+  addCheck("deliverable_contract", deliverables.length > 0, `${deliverables.length} deliverable patterns`, "검증할 산출물 pattern과 expected_count가 필요합니다.");
+  for (const item of deliverables) {
+    const pattern = normalizeRelativePath(item.pattern, "deliverable pattern");
+    if (!Number.isInteger(item.expected_count) || item.expected_count < 0) throw new Error("deliverable expected_count는 0 이상의 정수여야 합니다.");
+    const matches = projectFiles.filter((file) => globRegex(pattern).test(file));
+    addCheck(`deliverable_count:${pattern}`, matches.length === item.expected_count, `expected ${item.expected_count}, observed ${matches.length}`, `${pattern}: 기대 ${item.expected_count}개, 실제 ${matches.length}개입니다.`);
+    const files = [];
+    for (const relative of matches) {
+      const target = resolveInside(root, relative, "deliverable").target;
+      let validJson = null;
+      let jsonError = null;
+      if (/\.json$/i.test(relative)) {
+        try { JSON.parse(fs.readFileSync(target, "utf8")); validJson = true; }
+        catch (error) { validJson = false; jsonError = error.message; }
+        addCheck(`deliverable_json_valid:${relative}`, validJson, validJson ? relative : `${relative}: ${jsonError}`, `${relative}은 유효한 JSON이어야 합니다.`);
+      }
+      files.push({ relative_path: relative, bytes: fs.statSync(target).size, sha256: sha256File(target), json_valid: validJson });
+    }
+    evidence.push({ type: "deliverable", pattern, expected_count: item.expected_count, observed_count: matches.length, files });
+  }
+
+  if (args.main_log) {
+    const logRelative = normalizeRelativePath(args.main_log, "main_log");
+    const logTarget = resolveInside(root, logRelative, "main_log").target;
+    const exists = fs.existsSync(logTarget) && fs.statSync(logTarget).isFile();
+    addCheck("main_log", exists, logRelative, `${logRelative} 실행 log가 필요합니다.`);
+    if (exists) {
+      const log = fs.readFileSync(logTarget, "utf8");
+      const stataErrors = unique(Array.from(log.matchAll(/^\s*(r\(\d+\));?\s*$/gm), (match) => match[1]));
+      addCheck("main_log_no_stata_error", stataErrors.length === 0, stataErrors.length ? stataErrors.join(", ") : "no r(#) error", "실행 log의 Stata 오류를 해결하세요.");
+      if (args.completion_marker) addCheck("completion_marker", log.includes(String(args.completion_marker)), String(args.completion_marker), "합의한 completion marker가 log에 없습니다.");
+      evidence.push({ type: "log", relative_path: logRelative, bytes: fs.statSync(logTarget).size, sha256: sha256File(logTarget), stata_errors: stataErrors });
+    }
+  }
+
+  return {
+    root,
+    status: blockers.length ? "needs_revision" : "verified",
+    verification_level: "research_workflow_output_check",
+    checks,
+    blockers,
+    evidence,
+    static_audit: audit,
+    claim_boundary: "This verifies the approved researcher-facing structure, variable documentation, static workflow, log, and exact local outputs. It is not deployment, dependency, submission, or journal certification.",
+  };
+}
+function listDoFiles(root) {
+  const files = [];
+  const excludedDirectories = [];
+  const ignored = new Set([".git", "node_modules", "vendor", "ado", "_packages", "raw"]);
+  function walk(dir) {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (entry.isDirectory() && ignored.has(entry.name.toLowerCase())) {
+        excludedDirectories.push(path.relative(root, path.join(dir, entry.name)).replaceAll("\\", "/"));
+        continue;
+      }
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (entry.isFile() && path.extname(entry.name).toLowerCase() === ".do") files.push(full);
+      if (files.length > 1000) throw new Error("do-file이 1000개를 넘어 audit 범위를 초과했습니다.");
+    }
+  }
+  walk(root);
+  return { files: files.sort(), excludedDirectories: excludedDirectories.sort() };
+}
+
+function detectExternalOrchestrators(root, records) {
+  const candidatePaths = ["Makefile", "makefile", "GNUmakefile"]
+    .map((name) => path.join(root, name))
+    .filter((file) => fs.existsSync(file) && fs.statSync(file).isFile());
+  const candidates = candidatePaths.filter((file, index, values) =>
+    values.findIndex((other) => other.toLowerCase() === file.toLowerCase()) === index);
+  const byExact = new Map(records.map((record) => [record.path.toLowerCase(), record]));
+  const byBase = new Map();
+  for (const record of records) {
+    const base = path.posix.basename(record.path).toLowerCase();
+    byBase.set(base, [...(byBase.get(base) || []), record]);
+  }
+  const orchestrators = [];
+  for (const file of candidates) {
+    const relative = path.relative(root, file).replaceAll("\\", "/");
+    const calls = [];
+    const lines = fs.readFileSync(file, "utf8").split(/\r?\n/);
+    for (let index = 0; index < lines.length; index += 1) {
+      const active = lines[index].replace(/#.*$/, "");
+      const matches = active.matchAll(/(?:"([^"]+\.do)"|'([^']+\.do)'|([A-Za-z0-9_./\\-]+\.do))\b/gi);
+      for (const match of matches) {
+        const target = match[1] || match[2] || match[3];
+        let normalized = target.replaceAll("\\", "/").replace(/^\.\//, "");
+        const exact = byExact.get(normalized.toLowerCase());
+        const suffix = records.filter((candidate) => candidate.path.toLowerCase().endsWith(`/${normalized.toLowerCase()}`));
+        const baseMatches = byBase.get(path.posix.basename(normalized).toLowerCase()) || [];
+        const resolvedMatches = exact ? [exact] : suffix.length ? suffix : baseMatches;
+        const resolved = resolvedMatches.length === 1 ? resolvedMatches[0].path : null;
+        calls.push({
+          from: relative,
+          line: index + 1,
+          target,
+          resolved,
+          status: resolved ? "resolved" : resolvedMatches.length > 1 ? "ambiguous" : "unresolved",
+          candidates: resolvedMatches.map((row) => row.path),
+        });
+      }
+    }
+    const resolvedDoFiles = unique(calls.filter((call) => call.resolved).map((call) => call.resolved));
+    if (resolvedDoFiles.length >= 2) orchestrators.push({ path: relative, kind: "make", resolved_do_files: resolvedDoFiles, calls });
+  }
+  return orchestrators;
+}
+
+function detectStagesFromContent(file, content) {
+  const active = stripComments(content).map((row) => normalizeCommand(row.trimmed)).join("\n");
+  const stages = [];
+  const estimationCommands = active.split("\n").filter((line) => /^\s*(?:reg|regress|areg|xtreg|reghdfe|ivreg|rdrobust|csdid|did_imputation)\b/i.test(line));
+  if (/^\s*(?:sysuse|use|import|input|infile|infix|odbc)\b/im.test(active)) stages.push("import");
+  if (/^\s*(?:isid|duplicates|assert|codebook|misstable)\b/im.test(active)) stages.push("integrity_audit");
+  if (/^\s*(?:gen|generate|replace|recode|egen|label)\b/im.test(active)) stages.push("cleaning_labels");
+  if (/^\s*(?:merge|append|reshape)\b/im.test(active)) stages.push("merge_reshape");
+  if (/^\s*(?:xtset|tsset|jwdid|csdid|did_imputation|eventstudyinteract)\b/im.test(active)) stages.push("panel_construction");
+  if (/^\s*(?:sum|summarize|tab|tabulate|tabstat|ttest|collapse)\b/im.test(active)) stages.push("descriptives_balance_sample_flow");
+  if (estimationCommands.length) stages.push("estimation");
+  if (/^\s*(?:bootstrap|boottest|ritest)\b/im.test(active) || /\b(?:robustness|robust|placebo|heterogeneity|heterogeneous|sensitivity)(?:\b|_)/i.test(active)) stages.push("robustness");
+  if (/^\s*(?:graph|twoway|coefplot|marginsplot)\b/im.test(active)) stages.push("figures");
+  if (/^\s*(?:esttab|estout|outreg2|putexcel|export|collect\s+export|estimates\s+save|graph\s+export)\b/im.test(active)) stages.push("exports");
+  if (/master|runall|run_all|run-all/.test(path.basename(file).toLowerCase())) stages.push("master_orchestration");
+  return unique(stages);
+}
+
+function scopedGlobalFindings(records) {
+  const definitions = [];
+  const specificationName = /(?:^|_)(?:controls?|covariates?|sample|event|selector|keep|order|positions?|reference|notes?|cluster|fixed_effects?|rhs|absorb|vce)(?:_|$)/i;
+  const leafFileBinding = /\.(?:dta|ster|xlsx?|csv|pdf|gph|png|svg|json|log|smcl|txt)(?:["']?\s*)$/i;
+  for (const record of records) {
+    for (const row of stripComments(record.content)) {
+      const match = row.trimmed.match(/^global\s+([A-Za-z_][A-Za-z0-9_]*)\b(?:\s+(.+))?$/i);
+      if (!match) continue;
+      const kind = specificationName.test(match[1])
+        ? "specification"
+        : leafFileBinding.test(match[2] || "")
+          ? "file_binding"
+          : null;
+      if (kind) definitions.push({ file: record.path, line: row.line, name: match[1], kind });
+    }
+  }
+  const activeByFile = new Map(records.map((record) => [
+    record.path,
+    stripComments(record.content).map((row) => row.trimmed).join("\n"),
+  ]));
+  return definitions.flatMap((definition) => {
+    const escaped = definition.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const reference = new RegExp(`\\$(?:\\{${escaped}\\}|${escaped}\\b)`);
+    const consumers = [...activeByFile.entries()].filter(([, content]) => reference.test(content)).map(([file]) => file);
+    if (consumers.length > 1) return [];
+    const isFileBinding = definition.kind === "file_binding";
+    const message = consumers.length
+      ? isFileBinding
+        ? `${definition.name} leaf 파일 global은 ${consumers[0]} 한 파일에서만 소비됩니다.`
+        : `${definition.name} global은 ${consumers[0]} 한 파일에서만 소비됩니다.`
+      : `${definition.name} global의 소비 지점이 프로젝트에서 확인되지 않습니다.`;
+    return [{
+      severity: "warning",
+      rule: isFileBinding ? "single_consumer_file_binding_global" : "single_consumer_specification_global",
+      file: definition.file,
+      line: definition.line,
+      message,
+      suggestion: consumers.length
+        ? isFileBinding
+          ? `둘 이상의 do-file이 공유하는 정확한 파일 계약이 아니라면 ${consumers[0]}의 첫 사용 직전에 local ${definition.name}으로 두고 setup에는 공유 디렉터리 root만 남기세요.`
+          : `정말 cross-do-file 공개 계약이 아니라면 ${consumers[0]}의 첫 사용 직전에 local ${definition.name}으로 두세요.`
+        : "사용하지 않는 global은 제거하고, 향후 확장용 전역 인터페이스를 남기지 마세요.",
+    }];
+  });
+}
+
+function auditProject(args) {
+  if (!args.path) throw new Error("프로젝트 path가 필요합니다.");
+  const root = path.resolve(String(args.path));
+  if (!fs.statSync(root).isDirectory()) throw new Error("path는 디렉터리여야 합니다.");
+  const strictStructure = args.strict_structure === true;
+  const requireReport = args.require_report === true;
+  const requestedStages = args.expected_stages?.length ? unique(args.expected_stages) : STAGES;
+  if (requestedStages.some((stage) => !STAGES.includes(stage))) throw new Error("expected_stages에 알 수 없는 단계가 있습니다.");
+  const discovered = listDoFiles(root);
+  const files = discovered.files;
+  const records = files.map((file) => {
+    const content = fs.readFileSync(file, "utf8");
+    const lint = lintContent(content, "auto", file);
+    const calls = stripComments(content).flatMap((row) => {
+      const match = row.trimmed.match(/^(?:do|run|include)\s+(?:"([^"]+)"|([^\s,]+))/i);
+      return match ? [{ line: row.line, target: match[1] || match[2] }] : [];
+    });
+    return { path: path.relative(root, file).replaceAll("\\", "/"), absolute_path: file, content, stages: detectStagesFromContent(file, content), calls, lint };
+  });
+  const projectContents = new Map(records.map((record) => [record.absolute_path, record.content]));
+  const projectGlobals = collectProjectGlobalEnvironment(projectContents, root);
+  const outreg2HelperMultiplicity = canonicalOutreg2HelperMultiplicity(projectContents, projectGlobals);
+  for (const record of records) {
+    const formatterLine = activeLogicalEntries(record.content)
+      .find((entry) => /^program\s+define\s+outreg2_xlsx\b/i.test(normalizeCommand(entry.text.trim())))?.line;
+    if (!formatterLine) continue;
+    record.lint.strengths = record.lint.strengths.filter((row) => row.rule !== "outreg2_sheet_program_project_context_pending");
+    if (outreg2HelperMultiplicity.necessary) {
+      record.lint.findings = record.lint.findings.filter((row) => row.rule !== "unnecessary_outreg2_program");
+      if (!record.lint.strengths.some((row) => row.rule === "necessary_outreg2_sheet_program_project_context")) record.lint.strengths.push({
+        rule: "necessary_outreg2_sheet_program_project_context",
+        line: formatterLine,
+        multiplicity: outreg2HelperMultiplicity,
+      });
+      record.lint.summary.approved_program_exceptions = Math.max(1, record.lint.summary.approved_program_exceptions);
+    } else if (outreg2HelperMultiplicity.unresolved_placement) {
+      record.lint.findings = record.lint.findings.filter((row) => row.rule !== "unnecessary_outreg2_program");
+      record.lint.strengths.push({
+        rule: "outreg2_sheet_program_project_context_pending",
+        line: formatterLine,
+        multiplicity: outreg2HelperMultiplicity,
+      });
+      record.lint.summary.approved_program_exceptions = 0;
+    } else if (!record.lint.findings.some((row) => row.rule === "unnecessary_outreg2_program")) {
+      record.lint.findings.push(finding(
+        "error",
+        "unnecessary_outreg2_program",
+        formatterLine,
+        "canonical outreg2_xlsx는 project-wide 확인에서 같은 workbook의 두 개 이상 resolved sheet() 배치를 충족하지 않습니다.",
+        "한 sheet workbook은 직접 outreg2 replace/append를 사용하고, 여러 sheet가 필요하면 literal 또는 project global binding으로 workbook과 sheet 배치를 확인 가능하게 하세요.",
+      ));
+      record.lint.summary.approved_program_exceptions = 0;
+    }
+      const errors = record.lint.findings.filter((row) => row.severity === "error").length;
+      const warnings = record.lint.findings.filter((row) => row.severity === "warning").length;
+      record.lint.summary.errors = errors;
+      record.lint.summary.warnings = warnings;
+      record.lint.summary.strengths = record.lint.strengths.length;
+      record.lint.status = errors ? "blocked" : warnings ? "needs_review" : "static_clean";
+      record.lint.replication_status = record.lint.findings.some((row) => row.basis !== "researcher_style_reference" && row.severity === "error")
+        ? "blocked"
+        : record.lint.findings.some((row) => row.basis !== "researcher_style_reference" && row.severity === "warning") ? "needs_review" : "static_clean";
+  }
+  let allFindings = records.flatMap((record) => record.lint.findings.map((row) => ({ file: record.path, ...row })));
+  const structural = [];
+  structural.push(...scopedGlobalFindings(records));
+  const masters = records.filter((record) => {
+    const named = /master|runall|run_all|run-all/i.test(path.basename(record.path));
+    const rootDispatcher = !record.path.includes("/") && record.calls.length >= 2;
+    return named || rootDispatcher;
+  });
+
+  const byExact = new Map(records.map((record) => [record.path.toLowerCase(), record]));
+  const byBase = new Map();
+  for (const record of records) {
+    const base = path.posix.basename(record.path).toLowerCase();
+    byBase.set(base, [...(byBase.get(base) || []), record]);
+  }
+  const externalOrchestrators = detectExternalOrchestrators(root, records);
+  if (files.length > 1 && !masters.length && !externalOrchestrators.length) structural.push({ severity: "error", rule: "missing_master", message: "여러 do-file을 순서대로 호출하는 master 또는 외부 orchestrator가 없습니다." });
+  const callGraph = externalOrchestrators.flatMap((orchestrator) => orchestrator.calls);
+  for (const record of records) {
+    const seen = new Set();
+    for (const call of record.calls) {
+      let normalized = call.target.replaceAll("\\", "/").replace(/^\.\//, "");
+      normalized = normalized.replace(/^(?:(?:\$\{?[A-Za-z_][A-Za-z0-9_]*\}?|`[A-Za-z_][A-Za-z0-9_]*')\/)+/, "");
+      const exact = byExact.get(normalized.toLowerCase());
+      const suffix = records.filter((candidate) => candidate.path.toLowerCase().endsWith(`/${normalized.toLowerCase()}`));
+      const baseMatches = byBase.get(path.posix.basename(normalized).toLowerCase()) || [];
+      const matches = exact ? [exact] : suffix.length ? suffix : baseMatches;
+      const resolved = matches.length === 1 ? matches[0].path : null;
+      const status = resolved ? "resolved" : matches.length > 1 ? "ambiguous" : "unresolved";
+      callGraph.push({ from: record.path, line: call.line, target: call.target, resolved, status, candidates: matches.map((row) => row.path) });
+      if (status === "unresolved") structural.push({ severity: "error", rule: "unresolved_call", file: record.path, line: call.line, message: `호출 대상 ${call.target}을 찾을 수 없습니다.` });
+      if (status === "ambiguous") structural.push({ severity: "warning", rule: "ambiguous_call", file: record.path, line: call.line, message: `호출 대상 ${call.target}이 여러 파일과 일치합니다.` });
+      if (resolved && seen.has(resolved)) structural.push({ severity: "warning", rule: "duplicate_call", file: record.path, line: call.line, message: `${resolved}을 같은 파일에서 중복 호출합니다.` });
+      if (resolved) seen.add(resolved);
+    }
+  }
+
+  const namedTopMaster = masters.slice().sort((a, b) => {
+    const rootA = a.path.includes("/") ? 1 : 0;
+    const rootB = b.path.includes("/") ? 1 : 0;
+    return rootA - rootB || b.calls.length - a.calls.length || a.path.localeCompare(b.path);
+  })[0] || null;
+  const standaloneEntrypoint = records.length === 1 && !namedTopMaster && !externalOrchestrators.length ? records[0] : null;
+  const topMaster = namedTopMaster || standaloneEntrypoint;
+  if (masters.length && !topMaster) structural.push({ severity: "error", rule: "missing_top_master", message: "정본 top-level master를 결정할 수 없습니다." });
+  if (namedTopMaster) {
+    const topEdges = callGraph.filter((edge) => edge.from === topMaster.path && edge.resolved);
+    const prepIndex = topEdges.findIndex((edge) => /prep|clean|build/i.test(edge.resolved));
+    const analysisIndex = topEdges.findIndex((edge) => /analysis|table|figure|result/i.test(edge.resolved));
+    if (strictStructure && (prepIndex < 0 || analysisIndex < 0)) structural.push({ severity: "warning", rule: "prep_analysis_split", file: topMaster.path, message: "새 프로젝트 표준 구조의 top master에서 전처리 master와 분석 master 호출이 모두 확인되지 않습니다." });
+    else if (prepIndex >= 0 && analysisIndex >= 0 && prepIndex > analysisIndex) structural.push({ severity: "error", rule: "master_order", file: topMaster.path, message: "분석 master가 전처리 master보다 먼저 호출됩니다." });
+    const strengthNames = new Set(topMaster.lint.strengths.map((row) => row.rule));
+    if (!strengthNames.has("stata_version")) structural.push({ severity: "warning", rule: "missing_version", file: topMaster.path, message: "top master에 Stata version 선언이 없습니다." });
+    if (!strengthNames.has("single_project_root")) structural.push({ severity: "warning", rule: "missing_project_root", file: topMaster.path, message: "top master에 단일 프로젝트 root 설정이 없습니다." });
+    if (strictStructure) {
+      const pathContractRecords = [topMaster];
+      for (const edge of topEdges) {
+        if (!/(?:config|paths?|setup)/i.test(path.posix.basename(edge.resolved))) continue;
+        const called = byExact.get(edge.resolved.toLowerCase());
+        if (called) pathContractRecords.push(called);
+      }
+      const lower = pathContractRecords.map((record) => record.content).join("\n").toLowerCase();
+      for (const tier of ["raw", "generated", "final", "ster", "table", "figures", "log"]) {
+        if (!lower.includes(tier)) structural.push({ severity: "warning", rule: `missing_path_${tier}`, file: topMaster.path, message: `새 프로젝트 표준 구조의 ${tier} 경로 계약이 top master 또는 직접 호출된 config에서 확인되지 않습니다.` });
+      }
+    }
+  }
+
+  const adjacency = new Map([
+    ...records.map((record) => [record.path, []]),
+    ...externalOrchestrators.map((orchestrator) => [orchestrator.path, []]),
+  ]);
+  for (const edge of callGraph) if (edge.resolved) adjacency.get(edge.from).push(edge.resolved);
+  const reachable = new Set();
+  function visit(node, trail = new Set()) {
+    if (trail.has(node)) {
+      structural.push({ severity: "error", rule: "call_cycle", file: node, message: "do-file 호출 graph에 순환이 있습니다." });
+      return;
+    }
+    if (reachable.has(node)) return;
+    reachable.add(node);
+    const nextTrail = new Set(trail);
+    nextTrail.add(node);
+    for (const target of adjacency.get(node) || []) visit(target, nextTrail);
+  }
+  if (topMaster) visit(topMaster.path);
+  for (const record of records) {
+    if (topMaster && !reachable.has(record.path)) structural.push({ severity: "warning", rule: "unreachable_do_file", file: record.path, message: "top master에서 이 do-file로 이어지는 호출 경로가 없습니다." });
+    const active = stripComments(record.content).map((row) => ({ line: row.line, command: normalizeCommand(row.trimmed) }));
+    for (const row of active) {
+      if (/^(?:save|export\s+delimited|export\s+excel)\b/i.test(row.command) && /(?:\$\{?[^}]*raw|\/raw\/|\\raw\\)/i.test(row.command)) {
+        structural.push({ severity: "error", rule: "write_to_raw", file: record.path, line: row.line, message: "raw 계층에 쓰는 명령이 있습니다." });
+      }
+    }
+  }
+
+  const stageCoverage = STAGES.map((stage) => {
+    const stageFiles = records.filter((record) => record.stages.includes(stage)).map((record) => record.path);
+    if (stage === "master_orchestration") stageFiles.push(...externalOrchestrators.map((row) => row.path));
+    const expected = requestedStages.includes(stage);
+    return { stage, expected, status: stageFiles.length ? "present" : expected ? "missing" : "not_expected", files: stageFiles };
+  });
+  for (const row of stageCoverage) {
+    if (row.status === "missing") structural.push({ severity: row.stage === "master_orchestration" && files.length > 1 ? "error" : "warning", rule: `missing_${row.stage}`, message: `${row.stage} 단계의 증거가 없습니다.` });
+  }
+  const sampleFlowEvidence = records.flatMap((record) => stripComments(record.content).flatMap((row) => {
+    const command = normalizeCommand(row.trimmed);
+    return /^(?:count|sum|summarize|tab|tabulate|tabstat|isid|assert|merge|keep|drop)\b/i.test(command) ? [{ file: record.path, line: row.line, command }] : [];
+  }));
+  const workReport = validateWorkReport(root, { required: requireReport });
+  if (requireReport && workReport.status !== "valid") {
+    for (const message of workReport.errors) structural.push({ severity: "error", rule: "work_report_invalid", file: "report.md", message });
+  }
+  const errors = allFindings.filter((row) => row.severity === "error").length + structural.filter((row) => row.severity === "error").length;
+  const warnings = allFindings.filter((row) => row.severity === "warning").length + structural.filter((row) => row.severity === "warning").length;
+  return {
+    root,
+    status: errors ? "blocked" : warnings ? "needs_review" : "static_clean",
+    verification_level: "static_workflow_audit",
+    structure_mode: strictStructure ? "standard_new_project" : "preserve_existing_project",
+    summary: { do_files: files.length, top_master: topMaster?.path || externalOrchestrators[0]?.path || null, master_candidates: [...masters.map((row) => row.path), ...externalOrchestrators.map((row) => row.path)], errors, warnings },
+    stage_coverage: stageCoverage,
+    call_graph: callGraph,
+    sample_flow: { observed_counts: null, static_evidence: sampleFlowEvidence },
+    work_report: workReport,
+    program_policy: {
+      outreg2_helper_multiplicity: outreg2HelperMultiplicity,
+      project_globals: projectGlobals.evidence,
+    },
+    orchestration: { stata_masters: masters.map((row) => row.path), external: externalOrchestrators.map(({ calls, ...row }) => row) },
+    excluded_directories: discovered.excludedDirectories,
+    structural_findings: structural,
+    file_findings: allFindings,
+    files: records.map((record) => ({ path: record.path, stages: record.stages, calls: record.calls, status: record.lint.status })),
+    claim_boundary: "프로젝트 구조와 정적 패턴 검사이며 실제 데이터로 모든 결과를 재실행한 인증은 아닙니다.",
+  };
+}
+
+function workflowReproductionCheck(args) {
+  if (!args.path) throw new Error("프로젝트 path가 필요합니다.");
+  if (!args.contract || typeof args.contract !== "object" || Array.isArray(args.contract)) throw new Error("contract object가 필요합니다.");
+  const root = path.resolve(String(args.path));
+  if (!fs.existsSync(root) || !fs.statSync(root).isDirectory()) throw new Error("path는 디렉터리여야 합니다.");
+  const contract = args.contract;
+  const requiredStages = Array.isArray(contract.required_stages) ? unique(contract.required_stages) : [];
+  if (requiredStages.some((stage) => !STAGES.includes(stage))) throw new Error("required_stages에 알 수 없는 단계가 있습니다.");
+  const audit = auditProject({ path: root, expected_stages: requiredStages.length ? requiredStages : STAGES, strict_structure: false });
+  const projectFiles = listProjectFiles(root);
+  const doFiles = audit.files.map((row) => row.path);
+  const doContent = new Map(doFiles.map((relative) => [relative.toLowerCase(), fs.readFileSync(resolveInside(root, relative, "do-file").target, "utf8")]));
+  const checks = [];
+  const blockers = [];
+  const addCheck = (name, pass, detail, message = detail) => {
+    checks.push({ name, status: pass ? "pass" : "fail", detail });
+    if (!pass) blockers.push({ check: name, message });
+  };
+
+  if (contract.entrypoint) {
+    const entrypoint = normalizeRelativePath(contract.entrypoint, "entrypoint");
+    addCheck("entrypoint", audit.summary.top_master?.toLowerCase() === entrypoint.toLowerCase(), `expected ${entrypoint}; observed ${audit.summary.top_master || "없음"}`, "정본 entrypoint가 계약과 일치해야 합니다.");
+  }
+  for (const stage of requiredStages) {
+    const coverage = audit.stage_coverage.find((row) => row.stage === stage);
+    addCheck(`stage:${stage}`, coverage?.status === "present", coverage?.files?.join(", ") || "증거 없음", `${stage} 단계의 정적 workflow 증거가 필요합니다.`);
+  }
+  for (const item of contract.required_files || []) {
+    const relative = normalizeRelativePath(item, "required file");
+    const target = resolveInside(root, relative, "required file").target;
+    addCheck(`required_file:${relative}`, fs.existsSync(target) && fs.statSync(target).isFile(), relative, `${relative} 파일이 필요합니다.`);
+  }
+  for (const item of contract.required_calls || []) {
+    const relative = normalizeRelativePath(item, "required call");
+    const present = audit.call_graph.some((edge) => edge.resolved?.toLowerCase() === relative.toLowerCase());
+    addCheck(`required_call:${relative}`, present, present ? relative : "호출 graph에 없음", `${relative}이 정본 orchestration에서 호출되어야 합니다.`);
+  }
+  for (const item of contract.deliverables || []) {
+    const pattern = normalizeRelativePath(item.pattern, "deliverable pattern");
+    if (!Number.isInteger(item.expected_count) || item.expected_count < 0) throw new Error("deliverable expected_count는 0 이상의 정수여야 합니다.");
+    const matches = projectFiles.filter((file) => globRegex(pattern).test(file));
+    addCheck(`deliverable_count:${pattern}`, matches.length === item.expected_count, `expected ${item.expected_count}; observed ${matches.length}: ${matches.join(", ")}`, `${pattern} 산출물 개수가 계약과 일치해야 합니다.`);
+  }
+
+  const summaryContract = [];
+  for (let index = 0; index < (contract.summary_datasets || []).length; index += 1) {
+    const item = contract.summary_datasets[index];
+    const dataset = normalizeRelativePath(item.path, "summary dataset");
+    const basename = path.posix.basename(dataset).toLowerCase();
+    const target = resolveInside(root, dataset, "summary dataset").target;
+    addCheck(`summary_dataset:${index + 1}`, fs.existsSync(target) && fs.statSync(target).isFile(), dataset, `${dataset} 정본 summary dataset이 필요합니다.`);
+    const requiredStatistics = unique((item.required_statistics || []).map((value) => String(value).toLowerCase()));
+    const requiredVariables = unique((item.required_variables || []).map((value) => String(value)));
+    const commandHasStatistic = (command, statistic) => {
+      const normalized = statistic === "n" ? "count" : statistic;
+      const collapseAliases = {
+        mean: ["mean"],
+        sd: ["sd"],
+        count: ["count", "n"],
+        sum: ["sum", "rawsum"],
+        rawsum: ["rawsum"],
+        se: ["semean", "sebinomial", "sepoisson"],
+        median: ["median", "p50"],
+      };
+      const aliases = collapseAliases[normalized] || (/^p\d{1,2}$/i.test(normalized) ? [normalized] : []);
+      if (!aliases.length) return false;
+      return aliases.some((alias) => new RegExp(`\\(${alias}\\)`, "i").test(command))
+        || (/^tabstat\b/i.test(command) && aliases.some((alias) => new RegExp(`\\b${alias}\\b`, "i").test(command.replace(/^.*?\bstat(?:istics)?\s*\(/i, ""))));
+    };
+    const producers = [];
+    for (const [relative, content] of doContent) {
+      const active = stripComments(content).map((row) => normalizeCommand(row.trimmed));
+      const summaryCommands = active.filter((command) => /^(?:collapse|tabstat)\b/i.test(command));
+      const savesDataset = active.some((command) => /^save\b/i.test(command) && command.toLowerCase().includes(basename));
+      if (summaryCommands.length && savesDataset) producers.push({
+        file: relative,
+        summaryCommands,
+        statistics: requiredStatistics.filter((statistic) => summaryCommands.some((command) => commandHasStatistic(command, statistic))),
+      });
+    }
+    const producer = producers.find((row) => requiredStatistics.every((statistic) => row.statistics.includes(statistic)));
+    addCheck(`summary_statistics:${index + 1}`, Boolean(producer), producer ? `${producer.file}: ${producer.statistics.join(", ")}` : `${basename}: ${requiredStatistics.join(", ")} 생성 증거 없음`, "정본 summary dataset은 계약된 통계를 같은 명명된 build 단계에서 생성해야 합니다.");
+    if (requiredVariables.length) {
+      const producerText = producer
+        ? stripComments(doContent.get(producer.file.toLowerCase()) || "").map((row) => normalizeCommand(row.trimmed)).join("\n")
+        : "";
+      const missingVariables = requiredVariables.filter((variable) => {
+        const escaped = variable.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        return !new RegExp(`\\b${escaped}\\b`, "i").test(producerText);
+      });
+      addCheck(`summary_variables:${index + 1}`, missingVariables.length === 0, missingVariables.length ? `missing: ${missingVariables.join(", ")}` : requiredVariables.join(", "), "정본 summary dataset producer에 계약된 변수 이름이 모두 있어야 합니다.");
+    }
+
+    const consumerChecks = {};
+    for (const [kind, field] of [["table", "table_consumer"], ["figure", "figure_consumer"]]) {
+      if (!item[field]) continue;
+      const consumer = normalizeRelativePath(item[field], field);
+      const content = doContent.get(consumer.toLowerCase());
+      const usesDataset = Boolean(content && stripComments(content).some((row) => /^use\b/i.test(normalizeCommand(row.trimmed)) && row.trimmed.toLowerCase().includes(basename)));
+      consumerChecks[kind] = { file: consumer, uses_dataset: usesDataset };
+      addCheck(`summary_${kind}_consumer:${index + 1}`, usesDataset, `${consumer} -> ${basename}`, `${consumer}이 정본 ${basename}을 직접 읽어야 합니다.`);
+    }
+    summaryContract.push({
+      path: dataset,
+      required_statistics: requiredStatistics,
+      required_variables: requiredVariables,
+      producer: producer?.file || null,
+      consumers: consumerChecks,
+      shared_consumer_dataset: Boolean(consumerChecks.table?.uses_dataset && consumerChecks.figure?.uses_dataset),
+    });
+  }
+
+  if (contract.estimation && typeof contract.estimation === "object") {
+    const activeText = [...doContent.values()].map((content) => stripComments(content).map((row) => normalizeCommand(row.trimmed)).join("\n")).join("\n").toLowerCase();
+    for (const token of contract.estimation.required_tokens || []) {
+      const value = String(token).toLowerCase();
+      addCheck(`estimation_token:${value}`, activeText.includes(value), value, `추정 계약 토큰 ${value}의 정적 증거가 필요합니다.`);
+    }
+    if (Number.isInteger(contract.estimation.expected_ster_count)) {
+      const sterFiles = projectFiles.filter((file) => /\.ster$/i.test(file));
+      addCheck("estimation_ster_count", sterFiles.length === contract.estimation.expected_ster_count, `expected ${contract.estimation.expected_ster_count}; observed ${sterFiles.length}`, "저장된 estimation container 개수가 계약과 일치해야 합니다.");
+    }
+  }
+
+  return {
+    root,
+    status: blockers.length ? "needs_revision" : "reproduced",
+    verification_level: "semantic_workflow_contract_static_check",
+    checks,
+    blockers,
+    summary_contract: summaryContract,
+    static_audit: audit,
+    leakage_rule: "원본 do-file 또는 예시 코드와의 code similarity는 부정 유출을 찾는 보조 검사일 뿐 성공 기준이 아닙니다.",
+    claim_boundary: "reproduced는 계약된 stage role, call graph, summary lineage, 추정 토큰, 산출물 개수의 정적 증거가 있다는 뜻입니다. Code similarity는 성공 기준이 아니며 실제 수치 동일성과 fresh runtime은 별도 검증해야 합니다.",
+  };
+}
+
+const TOOLS = [
+  {
+    name: "search_stata_manual",
+    description: "Search page-level StataCorp official manuals first, or explicitly requested community maintainer references. Returns authority, URL, page, hashes, and excerpts; it never declares code passed.",
+    inputSchema: { type: "object", additionalProperties: false, properties: {
+      query: { type: "string" }, commands: { type: "array", items: { type: "string" }, maxItems: 10 }, authority: { type: "string", enum: ["official", "community", "any"] }, limit: { type: "integer", minimum: 1, maximum: 10 },
+    }, anyOf: [{ required: ["query"] }, { required: ["commands"] }] },
+    outputSchema: { type: "object", additionalProperties: true },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  {
+    name: "get_verified_stata_examples",
+    description: "Return only simple StataCorp-manual examples that were actually executed successfully in Stata, with source, page, code hash, runtime version, and log hash.",
+    inputSchema: { type: "object", additionalProperties: false, required: ["command"], properties: { command: { type: "string" } } },
+    outputSchema: { type: "object", additionalProperties: true },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  {
+    name: "search_approved_patterns",
+    description: "Fallback search for one atomic transition only after search_labeled_checkpoints has no compatible block. It canonicalizes detailed commands such as import excel, reshape long, and graph export to the corpus span index, reports matched and unmatched anchors, and flags mixed-transition queries. Default results are safe generation references; optional reference and negative tiers are explanation-only.",
+    inputSchema: { type: "object", additionalProperties: false, required: ["stage"], properties: {
+      stage: { type: "string", enum: STAGES }, task: { type: "string" }, subtask: { type: "string" }, commands: { type: "array", items: { type: "string" }, maxItems: 10 }, data_shape: { type: "string" }, limit: { type: "integer", minimum: 1, maximum: 10 }, include_contextual: { type: "boolean" }, include_reference: { type: "boolean" }, include_negative: { type: "boolean" },
+    } },
+    outputSchema: { type: "object", additionalProperties: true },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  {
+    name: "search_labeled_checkpoints",
+    description: "Search human-labeled atomic Stata workflow blocks from loading and preparation through estimation and post-estimation. Returns compatible researcher variants together, with input/output contracts, selection conditions, tradeoffs, provenance, and minimal-edit fields. Dropped variants are excluded by default.",
+    inputSchema: { type: "object", additionalProperties: false, properties: {
+      checkpoint: { type: "string", enum: CHECKPOINTS },
+      stage: { type: "string", enum: STAGES },
+      unit_kind: { type: "string", enum: ["setup", "orchestration", "preparation", "validation", "estimation", "post_estimation", "post_estimation_export", "cleanup"] },
+      variant_id: { type: "string" },
+      decision: { type: "string", enum: ["keep", "conditional_keep", "drop"] },
+      task: { type: "string" },
+      method: { type: "string" },
+      commands: { type: "array", items: { type: "string" }, maxItems: 10 },
+      current_state: { type: "string" },
+      target_state: { type: "string" },
+      include_dropped: { type: "boolean" },
+      include_project_specific: { type: "boolean" },
+      output_flow_profile: { type: "object", additionalProperties: true, description: "Outcome lineage, semantic sheet_groups, and physical sheet_plan. Each sheet_group decision_source is user, existing_project, model_from_metadata, or caller_declared; common aliases user_contract, explicit_user_request, and semantic_definition are normalized. A documented object may put the value in source, type, or kind." },
+      event_study_axis_profile: { type: "object", additionalProperties: true, description: "Independent automatic or selective fixed_group axis plan. Opt-in rendering_mode single_flat_mixed_axis_loop additionally requires exactly one fixed_group, one or more automatic groups, complete expected_plots, and mixed_loop_binding {target_path,target_spans,outcome_loop_local,fixed_outcomes_local,axis_options_local}." },
+      target_input_signature: { type: "object", additionalProperties: true },
+      target_input_profile: { type: "object", additionalProperties: true },
+      limit: { type: "integer", minimum: 1, maximum: 20 },
+    }, anyOf: [{ required: ["checkpoint"] }, { required: ["stage"] }, { required: ["unit_kind"] }, { required: ["variant_id"] }, { required: ["task"] }] },
+    outputSchema: { type: "object", additionalProperties: true },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  {
+    name: "inspect_dictionary_coverage",
+    description: "Inspect package-by-checkpoint review coverage separately from label count. Reports full-read accounting, stage dispositions, unresolved questions, unlabeled reusable candidates, and optional file-level command/loop/TeX signals.",
+    inputSchema: { type: "object", additionalProperties: false, properties: {
+      package_id: { type: "string" },
+      stage: { type: "string", enum: STAGES },
+      checkpoint: { type: "string", enum: CHECKPOINTS },
+      review_level: { type: "string", enum: ["end_to_end_read", "targeted_search_only", "inventory_only"] },
+      only_gaps: { type: "boolean" },
+      include_dropped: { type: "boolean" },
+      include_files: { type: "boolean" },
+      limit: { type: "integer", minimum: 1, maximum: 35 },
+    } },
+    outputSchema: { type: "object", additionalProperties: true },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  {
+    name: "plan_dictionary_repairs",
+    description: "Read-only scan of a Stata codebase and artifacts. First decides whether code is required and classifies the requested state-transition footprint as no-write, atomic substep, checkpoint, multi-checkpoint, or explicit overhaul. It then converts only that footprint into workflow-dictionary headwords, preserves every other stage, and ranks matching researcher variants. Overhaul results include a user-facing pre-write file tree, root-README outline, and planned persistent-variable dictionary; existing projects keep compatible paths.",
+    inputSchema: { type: "object", additionalProperties: false, required: ["path", "request"], properties: {
+      path: { type: "string" },
+      request: { type: "string", minLength: 1 },
+      repair_mode: { type: "string", enum: ["auto", "partial", "overhaul"] },
+      intent_mode: { type: "string", enum: ["auto", "add_feature", "modify_existing", "overhaul"] },
+      target_layout: { type: "string", enum: ["new_first_build", "preserve_existing", "rebuild_existing"] },
+      proposed_folders: { type: "array", items: { type: "string" }, uniqueItems: true, maxItems: 100 },
+      proposed_files: { type: "array", items: { type: "string" }, uniqueItems: true, maxItems: 200 },
+      planned_variables: { type: "array", items: PLANNED_VARIABLE_SCHEMA, uniqueItems: true, maxItems: 500 },
+      no_new_persistent_variables: { type: "boolean" },
+      target_files: { type: "array", items: { type: "string" }, uniqueItems: true, maxItems: 30 },
+      requested_checkpoints: { type: "array", items: { type: "string", enum: CHECKPOINTS }, uniqueItems: true, maxItems: 30 },
+      requested_substeps: { type: "array", maxItems: 100, items: { type: "object", additionalProperties: false, required: ["checkpoint", "substep_id", "match"], properties: {
+        checkpoint: { type: "string", enum: CHECKPOINTS },
+        substep_id: { type: "string", minLength: 1 },
+        description: { type: "string" },
+        match: { type: "object", additionalProperties: false, properties: {
+          checkpoints: { type: "array", items: { type: "string", enum: CHECKPOINTS }, uniqueItems: true },
+          searched_checkpoints: { type: "array", items: { type: "string", enum: CHECKPOINTS }, uniqueItems: true },
+          commands: { type: "array", items: { type: "string" }, uniqueItems: true },
+          tokens: { type: "array", items: { type: "string" }, uniqueItems: true },
+          label_ids: { type: "array", items: { type: "string" }, uniqueItems: true },
+          query: { type: "string" },
+        } },
+      } } },
+      available_state: { type: "object", additionalProperties: true, properties: {
+        estimate_state: { type: "string", enum: ["ster", "stored_in_memory", "active_eclass", "keyed_sample_dta", "unknown"] },
+        output_path: { type: "string" },
+        output_flow_profile: { type: "object", additionalProperties: true, description: "Outcome lineage, semantic sheet_groups, and physical sheet_plan. Each sheet_group decision_source is user, existing_project, model_from_metadata, or caller_declared; common aliases user_contract, explicit_user_request, and semantic_definition are normalized. A documented object may put the value in source, type, or kind." },
+        event_study_axis_profile: { type: "object", additionalProperties: true, description: "Independent axis plan. The opt-in single_flat_mixed_axis_loop mode requires exactly one fixed_group plus automatic complement groups and an explicit mixed_loop_binding to one flat outcome loop." },
+        input_signature: { type: "object", additionalProperties: true },
+        workflow_incompatibility: { type: "object", additionalProperties: false, properties: {
+          confirmed: { type: "boolean" },
+          evidence: { type: "array", items: { type: "string" }, minItems: 1, maxItems: 10 },
+        } },
+        notes: { type: "string" },
+      } },
+    } },
+    outputSchema: { type: "object", additionalProperties: true },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  {
+    name: "template_reuse_check",
+    description: "Verify a project-declared template provenance manifest against the current labeled dictionary. By default, a matching template that was not selected is reported as an advisory; a template-mismatch fallback records the rank-relative nearest hint, no_suitable_template or wrong_selection trigger, and hint used without asserting compatibility. Set enforce_template_reuse only for an explicit strict benchmark. Schema 2.0 still verifies live source hashes, target-bound native code, full-project lint/loop/TeX policy, structural retention, and approved program bodies. This is a static provenance check, not runtime or substantive certification.",
+    inputSchema: { type: "object", additionalProperties: false, required: ["path", "manifest_path"], properties: {
+      path: { type: "string" },
+      manifest_path: { type: "string" },
+      required_headwords: { type: "array", items: { type: "string", enum: CHECKPOINTS }, uniqueItems: true, maxItems: 35 },
+      allow_native_headwords: { type: "array", items: { type: "string", enum: CHECKPOINTS }, uniqueItems: true, maxItems: 35 },
+      enforce_template_reuse: { type: "boolean", default: false },
+      min_command_retention: { type: "number", minimum: 0.75, maximum: 1 },
+    } },
+    outputSchema: { type: "object", additionalProperties: true },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  {
+    name: "workflow_blueprint",
+    description: "Build a read-only Stata workflow plan. The default-style tree applies only to a new first build; existing projects preserve compatible structure. Returns a display-ready file tree, root-README outline, planned persistent-variable dictionary, and mandatory pre-write approval contract.",
+    inputSchema: { type: "object", additionalProperties: false, properties: {
+      analysis_type: { type: "string" }, data_shape: { type: "string" }, project_size: { type: "string", enum: ["small", "medium", "large"] }, project_mode: { type: "string", enum: ["new", "existing"] }, new_project_confirmed: { type: "boolean" }, outputs: { type: "array", items: { type: "string" } }, expected_stages: { type: "array", items: { type: "string", enum: STAGES }, uniqueItems: true }, planned_variables: { type: "array", items: PLANNED_VARIABLE_SCHEMA, uniqueItems: true, maxItems: 500 }, no_new_persistent_variables: { type: "boolean" },
+    } },
+    outputSchema: { type: "object", additionalProperties: true },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  {
+    name: "lint_do_file",
+    description: "Statically lint one Stata do-file or inline code for unsafe replication patterns and positive research-workflow evidence.",
+    inputSchema: { type: "object", additionalProperties: false, properties: { path: { type: "string" }, content: { type: "string" }, role: { type: "string" } }, anyOf: [{ required: ["path"] }, { required: ["content"] }] },
+    outputSchema: { type: "object", additionalProperties: true },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  {
+    name: "audit_stata_project",
+    description: "Audit a local Stata project across do-files for master structure, stage coverage, call graph evidence, and unsafe code patterns. Existing structure is preserved by default; strict standard-tree checks are opt-in for new projects. After this plugin creates or revises code, call with require_report=true so root report.md is validated against actual one-based .do-file ranges.",
+    inputSchema: { type: "object", additionalProperties: false, required: ["path"], properties: { path: { type: "string" }, strict_structure: { type: "boolean" }, require_report: { type: "boolean" }, expected_stages: { type: "array", items: { type: "string", enum: STAGES }, uniqueItems: true } } },
+    outputSchema: { type: "object", additionalProperties: true },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  {
+    name: "workflow_reproduction_check",
+    description: "Check whether an independently authored Stata project reproduces a declared semantic workflow contract: entrypoint, stages, call graph, required files, deliverable counts, canonical summary datasets shared by tables and figures, and optional estimation tokens. It does not use source-code similarity as a success criterion and does not replace runtime or numerical validation.",
+    inputSchema: { type: "object", additionalProperties: false, required: ["path", "contract"], properties: {
+      path: { type: "string" },
+      contract: { type: "object", additionalProperties: true },
+    } },
+    outputSchema: { type: "object", additionalProperties: true },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  {
+    name: "research_output_check",
+    description: "Verify an approved Stata research workflow's mandatory root report.md, static audit, entrypoint, optional researcher-facing README tree and variable descriptions, actual log, exact deliverable counts, JSON validity, and direct SHA-256 evidence. report.md must map each template and general-rule fallback to actual one-based .do-file ranges, or explicitly state that neither was used. It does not manage dependencies or assess deployment or submission packaging.",
+    inputSchema: { type: "object", additionalProperties: false, required: ["path", "deliverables"], properties: {
+      path: { type: "string" },
+      deliverables: { type: "array", minItems: 1, maxItems: 100, items: { type: "object", additionalProperties: false, required: ["pattern", "expected_count"], properties: { pattern: { type: "string" }, expected_count: { type: "integer", minimum: 0 }, description: { type: "string" } } } },
+      main_log: { type: "string" }, completion_marker: { type: "string" }, strict_structure: { type: "boolean" },
+      expected_stages: { type: "array", items: { type: "string", enum: STAGES }, uniqueItems: true },
+      planned_variables: { type: "array", items: PLANNED_VARIABLE_SCHEMA, uniqueItems: true, maxItems: 500 },
+      expected_tree_paths: { type: "array", items: { type: "string" }, uniqueItems: true, maxItems: 300 },
+    } },
+    outputSchema: { type: "object", additionalProperties: true },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+];
+
+async function dispatch(method, params) {
+  if (method === "initialize") return { protocolVersion: "2025-06-18", capabilities: { tools: { listChanged: false } }, serverInfo: { name: "stata-research-guard", version: "0.2.0" }, instructions: INSTRUCTIONS };
+  if (method === "ping") return {};
+  if (method === "tools/list") return { tools: TOOLS };
+  if (method === "tools/call") {
+    const name = params?.name;
+    const args = params?.arguments || {};
+    try {
+      if (name === "search_stata_manual") return searchManual(args);
+      if (name === "get_verified_stata_examples") return getVerifiedExamples(args);
+      if (name === "search_approved_patterns") return searchApproved(args);
+      if (name === "search_labeled_checkpoints") return searchLabeledCheckpoints(args);
+      if (name === "inspect_dictionary_coverage") return inspectDictionaryCoverage(args);
+      if (name === "plan_dictionary_repairs") return planDictionaryRepairs(args);
+      if (name === "template_reuse_check") return templateReuseCheck(args, {
+        labels: LABELED_CHECKPOINTS,
+        packages: PACKAGES,
+        dictionaryPath: path.join(DATA, "workflow_block_dictionary.json"),
+        lintContent,
+      });
+      if (name === "workflow_blueprint") return workflowBlueprint(args);
+      if (name === "lint_do_file") {
+        const input = readDoInput(args);
+        return lintContent(input.content, args.role || "auto", input.source);
+      }
+      if (name === "audit_stata_project") return auditProject(args);
+      if (name === "workflow_reproduction_check") return workflowReproductionCheck(args);
+      if (name === "research_output_check") return researchOutputCheck(args);
+      throw new Error(`알 수 없는 도구: ${name}`);
+    } catch (error) {
+      return { __toolError: true, message: error.message };
+    }
+  }
+  throw new Error(`Method not found: ${method}`);
+}
+
+function send(value) {
+  process.stdout.write(`${JSON.stringify(value)}\n`);
+}
+
+const input = readline.createInterface({ input: process.stdin, crlfDelay: Infinity });
+input.on("line", async (line) => {
+  if (!line.trim()) return;
+  let request;
+  try {
+    request = JSON.parse(line);
+  } catch (error) {
+    send({ jsonrpc: "2.0", id: null, error: { code: -32700, message: "Parse error" } });
+    return;
+  }
+  if (request.id === undefined) return;
+  try {
+    const result = await dispatch(request.method, request.params || {});
+    if (result?.__toolError) send({ jsonrpc: "2.0", id: request.id, result: fail(result.message) });
+    else if (request.method === "tools/call") send({ jsonrpc: "2.0", id: request.id, result: asText(result) });
+    else send({ jsonrpc: "2.0", id: request.id, result });
+  } catch (error) {
+    send({ jsonrpc: "2.0", id: request.id, error: { code: -32601, message: error.message } });
+  }
+});

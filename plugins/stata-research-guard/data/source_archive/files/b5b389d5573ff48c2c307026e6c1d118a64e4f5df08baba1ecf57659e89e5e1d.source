@@ -1,0 +1,1603 @@
+
+// Controls	
+	global Xs "ShPoor_11 matricula_total_11 prom_lect4b_rbd_11 prom_mate4b_rbd_11"
+	global Xm "hm_extpoor_rate_11 h_ypchtot_11 unempl_rate_11 esc_11 literacy_rate_11"
+	
+// Scheme for figures	
+	set scheme modern
+	
+*******************
+** Figure 4: Principal Selection and Principal Effectiveness 
+*******************	
+{
+	use "Data/clean/DataForRegressionsADP.dta", clear
+	
+	g d_4_t = EverADP * t == -4
+	g d_3_t = EverADP * t == -3
+	g d_2_t = EverADP * t == -2
+	g d_1_t = EverADP * t == -1
+	g d0_t = EverADP * t == 0
+	g d1_t = EverADP * t == 1
+	g d2_t = EverADP * t == 2
+	g d3_t = EverADP * t == 3
+
+	global T "d_4_t d_3_t d_2_t d0_t d1_t d2_t d3_t"
+	
+	* Panel A: No controls
+		reghdfe SDall_fe_prin_2wayfe $T if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 , a(year rbd t) vce(cluster rbd)
+		test d_4_t = d_3_t = d_2_t = 0
+		preserve
+				estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 7		
+				rename t tstat
+
+			* Time variable from and since event
+	
+				g       t = _n - 5 if _n <= 3
+				replace t = _n - 4 if _n > 3								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel(-0.05(0.05)0.15, format(%9.2f)) /// 
+					xlabel(-4(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+
+			* Export 			
+			graph export "Figures/Figure_4_A.pdf", replace
+		restore
+		
+	* Panel B: Controls	
+		reghdfe SDall_fe_prin_2wayfe $T if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 /*[aw=weight]*/, a(c.($Xs $Xm)#year year rbd t) vce(cluster rbd)
+		test d_4_t = d_3_t = d_2_t = 0
+			preserve
+				estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 7	
+				rename t tstat
+
+			* Time variable from and since event
+
+				g       t = _n - 5 if _n <= 3
+				replace t = _n - 4 if _n > 3								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel(-0.05(0.05)0.15, format(%9.2f)) /// 
+					xlabel(-4(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+					
+			* Export 			
+			graph export "Figures/Figure_4_B.pdf", replace
+			restore	
+	
+	* Panel C: Pre-Reform
+	****** DATASET: Keep public
+	use "Data/clean/Base_ADPAnalysis.dta", clear
+
+	global contS "ShPoor matricula_total prom_lect4b_rbd prom_mate4b_rbd liquido_pago_student"
+	global contM "hm_extpoor_rate h_ypchtot unempl_rate esc literacy_rate"	
+		
+	* Placebo treatment	
+	rename PostChangePpal PostChangePpal_pre
+	rename t_pla t_pla_pre
+	rename MinYearPpalChange MinYearPpalChange_pre
+	
+	keep cod_com_rbd rbd year id_prin SDall_fe_prin_2wayfe fe_prin_2wayfe adp EverADP t Dmun $contS $contM ///
+		PostChangePpal_pre t_pla_pre ///
+		MinYearPpalChange_pre 
+	
+	rename adp PostChangePpal
+	
+	tempfile temp0
+	save `temp0'.dta, replace
+	
+	
+	****** DATASET: Keep private	
+	use "Data/clean/ADPREG_TEMP.dta", clear	
+	
+	keep if Dmun == 0
+
+	xtset rbd year
+	g change_ppal = 1 if id_prin != l.id_prin
+	g YearPpalChange = year if change_ppal == 1 & year >= 2010 & year <= 2011
+	bys rbd: egen MinYearPpalChange = min(YearPpalChange)
+	spread MinYearPpalChange, by(rbd)
+	g t_pla_pre = year - MinYearPpalChange
+	
+	g EverChange = (MinYearPpalChange != .)
+ 
+	g PostChangePpal_pre = 1 if (year >= MinYearPpalChange) 
+	replace PostChangePpal_pre = 0 if PostChangePpal_pre == .
+	cap drop t
+	g t = year - MinYearPpalChange
+	replace t = 0 if EverChange == 0
+		
+	keep cod_com_rbd rbd year id_prin SDall_fe_prin_2wayfe fe_prin_2wayfe PostChangePpal_pre t EverADP Dmun $contS $contM  ///
+	 t_pla_pre 
+	
+// Append public and private
+	append using `temp0'.dta
+	
+// Main treatment	
+	g PostChangePpal_ADP = PostChangePpal * EverADP
+	
+	* Only Public: PLACEBO
+	rename PostChangePpal aux
+	rename PostChangePpal_pre PostChangePpal
+	
+	g PostChangePpal_Mun = PostChangePpal * Dmun
+	
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_Mun PostChangePpal if t_pla_pre>=-4 & t_pla_pre <= 3 & year >= 2009 & year <= 2012 , a(year rbd)  vce(cluster rbd)
+	g sample = 1 if e(sample) == 1
+	
+	g t_4 = (t_pla_pre == -4) * Dmun
+	g t_3 = (t_pla_pre == -3) * Dmun
+	g t_2 = (t_pla_pre == -2) * Dmun
+	g t0 = (t_pla_pre == 0) * Dmun
+	g t1 = (t_pla_pre == 1) * Dmun
+	g t2 = (t_pla_pre == 2) * Dmun
+	g t3 = (t_pla_pre == 3) * Dmun
+		
+	global T "t_2 t0 t1"	
+		
+	reghdfe SDall_fe_prin_2wayfe $T if sample == 1 , abs(year rbd t_pla_pre)
+	preserve
+				estimate store coef 
+						
+				//Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+				//Keep parameters of interest
+				drop if _n > 3
+				rename t tstat
+				
+				g t = _n - (2+ 1) if _n <= (2 - 1)
+				replace t = _n - 2 if _n > (2 - 1)
+				
+							
+				//Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+				
+				//Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel(-0.05(0.05)0.15, format(%9.2f)) /// 
+					xlabel(-2(1)1) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+	
+		graph export "Figures/Figure_4_C.pdf", replace
+	restore
+	
+	
+	* Panel D: Controls		
+	use "Data/clean/Base_ADPAnalysis.dta", clear
+	
+	global contS "ShPoor matricula_total prom_lect4b_rbd prom_mate4b_rbd liquido_pago_student"
+	global contM "hm_extpoor_rate h_ypchtot unempl_rate esc literacy_rate"	
+		
+	* Placebo treatment	
+	rename PostChangePpal PostChangePpal_pre
+	rename t_pla t_pla_pre
+	rename MinYearPpalChange MinYearPpalChange_pre
+	
+	keep cod_com_rbd rbd year id_prin SDall_fe_prin_2wayfe fe_prin_2wayfe adp EverADP t Dmun $contS $contM ///
+		ShareAttend prom_lect4b_rbd prom_mate4b_rbd churn_teach churn_teach_young denuncias_total ///
+		EverTeacher EverSupportWorker EverAdministrative EverPrincipal ///
+		EverPrivate mat_prekinder mat_kinder mat_basica_1 rural_rbd PostChangePpal_pre t_pla_pre ///
+		MinYearPpalChange_pre matricula_total liquido_pago_student rural_rbd  porc_conc_DatosAbiertos ///
+		hm_extpoor_rate h_ypchtot unempl_rate ///
+		esc EverTeacher EverSupportWorker EverAdministrative EverPrivate CollegeDegree Edad Female	
+		
+	keep if year >= 2009 & year <= 2016	
+	
+	g t_4 = (t == -4)
+	g t_3 = (t == -3)
+	g t_2 = (t == -2)
+	g t0 = (t == 0)
+	g t1 = (t == 1)
+	g t2 = (t == 2)
+	g t3 = (t == 3)
+	replace t0 = 0 if EverADP == 0	
+	
+	
+	global T "t_4 t_3 t_2 t0 t1 t2 t3" 
+	reghdfe SDall_fe_prin_2wayfe $T if t >=-4 & t <=3, abs(year rbd)
+	test t_4 = t_3 = t_2 = 0 
+	preserve
+				estimate store coef 
+						
+				//Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+				//Keep parameters of interest
+				drop if _n > 7
+				rename t tstat
+				
+				g t = _n - (4+ 1) if _n <= (4 - 1)
+				replace t = _n - 4 if _n > (4 - 1)
+				
+							
+				//Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+				
+				//Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+				yline(0, lc(black) ) xline(-0.7, lc(navy) lw(medium) ) ///
+				graphregion(color(white)) /// 
+				scale(1.3) ///
+				ylabel(-0.05(0.05)0.15, format(%9.2f)) /// 
+				xlabel(-4(2)3) xtitle("Year since event") ///
+				graphregion(color(white)) /// 
+				legend(off) 
+	
+		graph export "Figures/Figure_4_D.pdf", replace
+	restore		
+}			
+	
+************
+** Figure 5: Principal Selection and Principal Effectiveness: Other Measures 
+************
+{	
+	use "Data/clean/DataForRegressionsADP.dta", clear
+	
+	g d_4_t = EverADP * t == -4
+	g d_3_t = EverADP * t == -3
+	g d_2_t = EverADP * t == -2
+	g d_1_t = EverADP * t == -1
+	g d0_t = EverADP * t == 0
+	g d1_t = EverADP * t == 1
+	g d2_t = EverADP * t == 2
+	g d3_t = EverADP * t == 3
+
+	global T "d_4_t d_3_t d_2_t d0_t d1_t d2_t d3_t"		
+	
+	*** PANEL A: Attendance
+	reghdfe SDall_fe_prin_attendance $T if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 , a(year rbd t) vce(cluster rbd)
+		test d_4_t = d_3_t = d_2_t = 0
+			preserve
+				estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 7	
+				rename t tstat
+
+			* Time variable from and since event
+
+				g       t = _n - 5 if _n <= 3
+				replace t = _n - 4 if _n > 3								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel(, format(%9.2f)) /// 
+					xlabel(-4(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+
+			* Export 			
+			graph export "Figures/Figure_5_A.pdf", replace
+			restore	
+				
+
+	*** PANEL B: Test score 
+	reghdfe SDall_fe_prin_testcre $T if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 , a(year rbd t) vce(cluster rbd)
+		test d_4_t = d_3_t = d_2_t = 0
+			preserve
+				estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 7	
+				rename t tstat
+
+			* Time variable from and since event
+
+				g       t = _n - 5 if _n <= 3
+				replace t = _n - 4 if _n > 3								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel(, format(%9.2f)) /// 
+					xlabel(-4(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+
+			* Export 			
+			graph export "Figures/Figure_5_B.pdf", replace
+			restore	
+			
+			
+	*** PANEL C: GPA: Contemporaneous 
+	reghdfe SDall_fe_prin_adj_contGPA $T if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 , a(year rbd t) vce(cluster rbd)
+		test d_4_t = d_3_t = d_2_t = 0
+			preserve
+				estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 7	
+				rename t tstat
+
+			* Time variable from and since event
+
+				g       t = _n - 5 if _n <= 3
+				replace t = _n - 4 if _n > 3								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel(, format(%9.2f)) /// 
+					xlabel(-4(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+					
+			* Export 			
+			graph export "Figures/Figure_5_C.pdf", replace
+			restore	
+			
+			
+	*** PANEL D: GPA: No teacher FE 
+	reghdfe SDall_fe_prin_adj_contGPA_noTFE $T if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 , a(year rbd t) vce(cluster rbd)
+		test d_4_t = d_3_t = d_2_t = 0
+			preserve
+				estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 7	
+				rename t tstat
+
+			* Time variable from and since event
+
+				g       t = _n - 5 if _n <= 3
+				replace t = _n - 4 if _n > 3								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel(, format(%9.2f)) /// 
+					xlabel(-4(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+					
+			* Export 			
+			graph export "Figures/Figure_5_D.pdf", replace
+			restore	
+}
+		
+			
+**************************************************************************************
+**************************************************************************************
+** APPENDIX
+**************************************************************************************
+**************************************************************************************
+
+*************
+** Figure A.4: Number of Newly Elected Principals by ADP, per Year
+************
+{
+	use "Data/clean/Base_ADPAnalysis.dta", clear
+
+	keep rbd min_adp
+	duplicates drop
+	g n = 1 
+	collapse (sum) n, by(min_adp)
+	drop if min_adp == .
+	graph bar n, over(min_adp, gap(15)) graphregion(color(white)) ///
+		 ytitle("") bar(1, color(black)) bargap(-10) intensity(*0.1) 		
+	graph export "Figures/Figure_A_4.pdf", replace	
+}	
+		
+*************
+** Figure A.5: Principal Selection and Principal Effectiveness: Parallel trends violations 
+************
+
+{
+	*** PANEL A: 80% Slope		
+	insheet using "Data/clean/pretest_FE_80.csv", clear
+		
+	rename v1 n
+	rename v2 t
+	rename v3 beta
+	rename v4 deltatrue
+	rename v5 se
+	rename v6 meanAfterPretesting
+	rename v7 BayesFactor
+	rename v8 Likelyhood
+	
+	g lb = beta - 1.96*se
+	g ub = beta + 1.96*se
+
+	g year = -5 + n
+	
+	sum deltatrue meanAfterPretesting if t > -1
+	sum BayesFactor Likelyhood slope80 if t > -1	
+	
+	tsset year
+	g change = beta-l.beta
+	sum change if t < 0 
+	replace deltatrue = -deltatrue
+	replace meanAfterPretesting = -meanAfterPretesting
+	
+	twoway (scatter beta year , lc(gs0) mc(navy) ) ///
+		(rcap ub lb year , lc(gs12) fc(gs12)) ///
+		(connect deltatrue year, lc(gs5) mc(gs6) m(triangle) msize(small) lp(dash)) ///
+		(connect meanAfterPretesting year, lc(gs9) mc(gs9) m(triangle) msize(small) lp(dash_dot)), ///
+		xlabel(-4(1)3) xtitle("Year since ADP") ///
+		ytitle("Coefficient") yline(0, lc(gs4) ) ///
+		ylabel(, format(%9.2f) ) scale(1.3) ///					
+		graphregion(color(white)) /// 
+		legend(label(1 "Baseline") label(2 "95%	 CI") label(3 "Hypotesized trend") label(4 "Exp. after pre-testing") ///
+		ring(1) pos(6) col(2))
+	
+	graph export "Figures/Figure_A_5_A.pdf", replace		
+	
+
+	** PANEL B: Violations to parallel trends **
+	insheet using "Data/clean/FE_honestDiD_t0_CI90.csv", clear
+	
+	rename v2 lb
+	rename v3 ub
+	rename v4 M
+		
+	replace M = -0.002 if _n == 1
+	two (rcap lb ub M if _n == 1, lc(black))  ///
+		(rcap lb ub M if _n > 1, lc(gray)), ///
+		scale(1.3) yline(0, lc(gs14)) ///
+		xlabel(-0.002 "Original" 0 "0" 0.001 "0.002" 0.004 "0.004" 0.006 "0.006" 0.008 "0.008" 0.01 "0.01" 0.012 "0.012") ///
+		ylabel(, format(%9.2f)) yline(0, lc(gs4) ) ///
+		ytitle("90% confidence interval") xtitle("M") ///
+		legend(off)
+		
+	graph export "Figures/Figure_A_5_B.pdf", replace	
+}		
+	
+
+	
+*************
+** Figure A.6: Principal Selection and Principal Effectiveness: Weighted least squares			
+*************
+{
+	use "Data/clean/DataForRegressionsADP.dta", clear
+	g se_fe_prin = sqrt(se2_fe_prin)
+	g wt = 1/se_fe_prin
+
+	g d_4_t = EverADP * t == -4
+	g d_3_t = EverADP * t == -3
+	g d_2_t = EverADP * t == -2
+	g d_1_t = EverADP * t == -1
+	g d0_t = EverADP * t == 0
+	g d1_t = EverADP * t == 1
+	g d2_t = EverADP * t == 2
+	g d3_t = EverADP * t == 3
+
+	global T "d_4_t d_3_t d_2_t d0_t d1_t d2_t d3_t"
+	
+	reghdfe SDall_fe_prin_2wayfe_nonadj $T if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 [aw=wt], a(year rbd t)  vce(cluster rbd)
+		test d_4_t = d_3_t = d_2_t = 0
+		preserve
+				estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 7		
+				rename t tstat
+
+			* Time variable from and since event
+	
+				g       t = _n - 5 if _n <= 3
+				replace t = _n - 4 if _n > 3								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel(-0.05(0.05)0.10, format(%9.2f)) /// 
+					xlabel(-4(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+
+			* Export 			
+			graph export "Figures/Figure_A_6_A.pdf", replace
+		restore
+
+	* Add School controls
+	reghdfe SDall_fe_prin_2wayfe_nonadj $T if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 [aw=wt], a(c.($Xs)#year year rbd t)  vce(cluster rbd)
+		test d_4_t = d_3_t = d_2_t = 0
+		preserve
+				estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 7		
+				rename t tstat
+
+			* Time variable from and since event
+	
+				g       t = _n - 5 if _n <= 3
+				replace t = _n - 4 if _n > 3								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel(-0.05(0.05)0.10, format(%9.2f)) /// 
+					xlabel(-4(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+
+			* Export 			
+			graph export "Figures/Figure_A_6_B.pdf", replace
+		restore
+	
+	* Add Municipality controls 
+	reghdfe SDall_fe_prin_2wayfe_nonadj $T if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 [aw=wt], a(c.($Xm)#year year rbd t)  vce(cluster rbd)
+		test d_4_t = d_3_t = d_2_t = 0
+		preserve
+				estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 7		
+				rename t tstat
+
+			* Time variable from and since event
+	
+				g       t = _n - 5 if _n <= 3
+				replace t = _n - 4 if _n > 3								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel(-0.05(0.05)0.10, format(%9.2f)) /// 
+					xlabel(-4(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+
+			* Export 			
+			graph export "Figures/Figure_A_6_C.pdf", replace
+		restore
+		
+	* Add Municipality and School controls 
+	reghdfe SDall_fe_prin_2wayfe_nonadj $T  if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 [aw=wt], a(c.($Xm $Xs)#year year rbd t)  vce(cluster rbd)
+		test d_4_t = d_3_t = d_2_t = 0
+		preserve
+				estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 7		
+				rename t tstat
+
+			* Time variable from and since event
+	
+				g       t = _n - 5 if _n <= 3
+				replace t = _n - 4 if _n > 3								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel(-0.05(0.05)0.10, format(%9.2f)) /// 
+					xlabel(-4(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+					
+			* Export 			
+			graph export "Figures/Figure_A_6_D.pdf", replace
+		restore
+		
+}
+		
+*************
+** Figure A.7: Goodman-Bacon (2021) Decomposition	
+*************
+{	
+	* Load dataset
+	use "Data/clean/Base_ADPAnalysis.dta", clear
+		
+	* Placebo treatment	
+	rename PostChangePpal PostChangePpal_pre
+	rename t_pla t_pla_pre
+	rename MinYearPpalChange MinYearPpalChange_pre
+	
+	keep cod_com_rbd rbd year id_prin SDall_fe_prin_2wayfe fe_prin_2wayfe adp EverADP t Dmun $contS $contM ///
+		ShareAttend prom_lect4b_rbd prom_mate4b_rbd churn_teach churn_teach_young denuncias_total ///
+		EverTeacher EverSupportWorker EverAdministrative EverPrincipal ///
+		EverPrivate mat_prekinder mat_kinder mat_basica_1 rural_rbd PostChangePpal_pre t_pla_pre ///
+		MinYearPpalChange_pre min_adp
+		
+	keep if year >= 2009 & year <= 2016	
+	
+	xtset rbd year
+	
+	keep SDall_fe_prin_2wayfe adp rbd year min_adp
+	
+	ddtiming SDall_fe_prin_2wayfe adp, i(rbd) t(year) ddline(lwidth(thick)) legend(order(3 4 1 2) ///
+		ring(1) pos(6) col(1))
+	graph export "Figures/Figure_A_7.pdf", replace
+}	
+	
+*************
+** Figure A.8: Principal Selection and Principal Effectiveness within Public Schools	
+*************
+{
+	** Panel A
+	****** DATASET: Keep public
+	use "Data/clean/Base_ADPAnalysis.dta", clear
+	
+	keep cod_com_rbd rbd year SDall_fe_prin_2wayfe rbd year adp
+		
+	keep if year >= 2009 & year <= 2016	
+			
+	local w = 3
+	local w1 = 3	
+	did_multiplegt SDall_fe_prin_2wayfe rbd year adp, placebo(`w1') breps(20) robust_dynamic dynamic(`w') cluster(rbd)	jointtestplacebo covariances seed(1111001)
+				forval i = 0/`w'{
+					g b_`i' = `e(effect_`i')'
+					g cil_`i' = b_`i' - 1.96*`e(se_effect_`i')'
+					g ciu_`i' = b_`i' + 1.96*`e(se_effect_`i')'
+				}
+				
+				//Lags
+				forval i = 1/`w1'{
+					g pb_`i' = `e(placebo_`i')'
+					g pcil_`i' = pb_`i' - 1.96*`e(se_placebo_`i')'
+					g pciu_`i' = pb_`i' + 1.96*`e(se_placebo_`i')'
+				}
+				
+				//Keep variables of interest
+				keep b_* pb_* cil_* ciu_* pcil_* pciu_*
+				duplicates drop
+				gen id = 1
+				
+				//Reshape the data
+				reshape long b_ pb_ cil_ ciu_ pcil_ pciu_, i(id) j(relative_year)
+				
+				//Append lags
+				preserve
+				keep relative_year pb_ pcil_ pciu_
+				drop if pb_ == .
+				rename pb_ b_
+				rename pcil_ cil_
+				rename pciu_ ciu_
+				
+				replace relative_year = (relative_year)*(-1)
+				
+				tempfile forappend
+				save `forappend', replace
+				restore
+					
+				append using `forappend'
+				
+				drop id pb_ pcil_ pciu_
+				sort relative_year
+				
+				//Figure
+				local w = 3
+				local w1 = 3	
+				twoway (scatter b_ relative_year, mc(navy)) (rcap cil_ ciu_ relative_year, lc(gs12) fc(gs12)), ///
+				yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+				graphregion(color(white)) /// 
+				xlabel(-`w1'(1)`w') xtitle("Year since event") ///
+				ylabel(-0.08(0.04)0.12, format(%9.2f)) ///
+				scale(1.3) ///
+				graphregion(color(white)) /// 
+				legend(off) 
+				
+		graph export "Figures/Figure_A_8_A.pdf", replace
+
+
+	*** PANEL B: Callaway and Santa Ana JoE See R code CallawayAndSantAna.R
+		clear all
+		set obs 7
+		
+		g relative_year = 4-_n
+		g b = 0.0223 if relative_year == -3
+		g cil_ = -0.0080 if relative_year == -3
+		g ciu_ = 0.0526 if relative_year == -3
+
+		replace b = -0.0068 if relative_year == -2
+		replace cil_ = -0.0328 if relative_year == -2
+		replace ciu_ = 0.0192 if relative_year == -2
+		
+		replace b = 0.0139 if relative_year == -1
+		replace cil_ = -0.0163 if relative_year == -1
+		replace ciu_ = 0.0441  if relative_year == -1
+
+		replace b = 0.0134 if relative_year == 0
+		replace cil_ = -0.0338 if relative_year == 0
+		replace ciu_ = 0.0605  if relative_year == 0
+
+		replace b = 0.0262 if relative_year == 1
+		replace cil_ = -0.0331 if relative_year == 1
+		replace ciu_ = 0.0856 if relative_year == 1
+
+		replace b = 0.0426 if relative_year == 2
+		replace cil_ = -0.0318 if relative_year == 2
+		replace ciu_ = 0.1170  if relative_year == 2
+
+		replace b = 0.0775 if relative_year == 3
+		replace cil_ = -0.0121 if relative_year == 3
+		replace ciu_ = 0.1670 if relative_year == 3
+
+		//Figure
+		twoway (scatter b relative_year, mc(navy)) (rcap cil_ ciu_ relative_year, lc(gs12) fc(gs12)), ///
+			yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+			graphregion(color(white)) /// 
+			xlabel(-3(1)3) xtitle("Year since event") ///
+			ylabel(-0.04(0.04)0.16, format(%9.2f)) ///
+			scale(1.3) ///
+			graphregion(color(white)) /// 
+			legend(off) 
+				
+		graph export "Figures/Figure_A_8_B.pdf", replace
+		
+}
+		
+*************
+** Figure A.9: Principal Selection and Test Scores		
+*************
+{
+	use "Data/clean/DataForRegressionsADP.dta", clear
+	
+	g d_4_t = EverADP * t == -4
+	g d_3_t = EverADP * t == -3
+	g d_2_t = EverADP * t == -2
+	g d_1_t = EverADP * t == -1
+	g d0_t = EverADP * t == 0
+	g d1_t = EverADP * t == 1
+	g d2_t = EverADP * t == 2
+	g d3_t = EverADP * t == 3
+
+	global T "d_4_t d_3_t d_2_t d0_t d1_t d2_t d3_t"
+	
+	*** PANEL A: Corr GPA-Test scores
+	reghdfe beta_corr_gpa_test $T if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 [aw=weight], a(c.($Xs $Xm)#year year rbd t) vce(cluster rbd)
+		test d_4_t = d_3_t = d_2_t = 0
+			preserve
+				estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 7	
+				rename t tstat
+
+			* Time variable from and since event
+
+				g       t = _n - 5 if _n <= 3
+				replace t = _n - 4 if _n > 3								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel(-0.05(0.025)0.05, format(%9.2f)) /// 
+					xlabel(-4(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+					
+			* Export 			
+				graph export "Figures/Figure_A_9_A.pdf", replace
+			restore	
+			
+			
+	reghdfe SimceIndex $T if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 , a(c.($Xm )#year year rbd t) vce(cluster rbd)
+		test d_4_t = d_3_t = d_2_t = 0
+			preserve
+				estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 7	
+				rename t tstat
+
+			* Time variable from and since event
+
+				g       t = _n - 5 if _n <= 3
+				replace t = _n - 4 if _n > 3								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel(-0.10(0.1)0.20, format(%9.2f)) /// 
+					xlabel(-4(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+					
+			* Export 			
+				graph export "Figures/Figure_A_9_B.pdf", replace
+			restore	
+			
+			
+	reghdfe sd_mate_actual $T if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 , a(c.($Xm)#year year rbd t) vce(cluster rbd)
+		test d_4_t = d_3_t = d_2_t = 0
+			preserve
+				estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 7	
+				rename t tstat
+
+			* Time variable from and since event
+
+				g       t = _n - 5 if _n <= 3
+				replace t = _n - 4 if _n > 3								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel(-0.10(0.1)0.20, format(%9.2f)) /// 
+					xlabel(-4(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+					
+			* Export 			
+				graph export "Figures/Figure_A_9_C.pdf", replace
+			restore	
+			
+			
+	reghdfe sd_lyc_actual $T if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 , a(c.($Xm )#year year rbd t) vce(cluster rbd)
+		test d_4_t = d_3_t = d_2_t = 0
+			preserve
+				estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 7	
+				rename t tstat
+
+			* Time variable from and since event
+
+				g       t = _n - 5 if _n <= 3
+				replace t = _n - 4 if _n > 3								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel(-0.10(0.1)0.20, format(%9.2f)) /// 
+					xlabel(-4(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+					
+			* Export 			
+				graph export "Figures/Figure_A_9_D.pdf", replace
+			restore	
+			
+			
+	reghdfe AvgPSU $T if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 , a(c.($Xm)#year year rbd t) vce(cluster rbd)
+		test d_4_t = d_3_t = d_2_t = 0
+			preserve
+				estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 7	
+				rename t tstat
+
+			* Time variable from and since event
+
+				g       t = _n - 5 if _n <= 3
+				replace t = _n - 4 if _n > 3								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel(-0.10(0.1)0.20, format(%9.2f)) /// 
+					xlabel(-4(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+					
+			* Export 			
+				graph export "Figures/Figure_A_9_E.pdf", replace
+			restore	
+			
+	reghdfe sd_puntaje $T if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 , a(c.($Xm)#year year rbd t) vce(cluster rbd)
+		test d_4_t = d_3_t = d_2_t = 0
+			preserve
+				estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 7	
+				rename t tstat
+
+			* Time variable from and since event
+
+				g       t = _n - 5 if _n <= 3
+				replace t = _n - 4 if _n > 3								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel(-0.20(0.2)0.40, format(%9.2f)) /// 
+					xlabel(-4(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+					
+			* Export 			
+				graph export "Figures/Figure_A_9_F.pdf", replace
+			restore				
+			
+			
+
+			
+}		
+
+*************
+** Figure A.10: Principal Selection, GPA, and School Attendance		
+*************
+{
+	use "Data/clean/DataForRegressionsADP.dta", clear
+	
+	g d_4_t = EverADP * t == -4
+	g d_3_t = EverADP * t == -3
+	g d_2_t = EverADP * t == -2
+	g d_1_t = EverADP * t == -1
+	g d0_t = EverADP * t == 0
+	g d1_t = EverADP * t == 1
+	g d2_t = EverADP * t == 2
+	g d3_t = EverADP * t == 3
+
+	global T "d_4_t d_3_t d_2_t d0_t d1_t d2_t d3_t"
+	
+	reghdfe gpa_grado1_8 d_2_t d0_t d1_t d2_t d3_t if t>=-2 & t <= 3 & year >= 2011 & year <= 2016 & sample == 1, a(year rbd t) vce(cluster rbd)
+		test d_2_t = 0
+		preserve
+			estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 5		
+				rename t tstat
+
+			* Time variable from and since event
+	
+				g       t = _n - 3 if _n <= 1
+				replace t = _n - 2 if _n > 1								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel( , format(%9.2f)) /// 
+					xlabel(-2(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+
+			* Export 			
+				graph export "Figures/Figure_A_10_A.pdf", replace
+		restore
+			
+	reghdfe gpa_grado9_12 d_2_t d0_t d1_t d2_t d3_t if t>=-2 & t <= 3 & year >= 2011 & year <= 2016 & sample == 1, a(year rbd t) vce(cluster rbd)
+		test d_2_t = 0
+		preserve
+			estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 5		
+				rename t tstat
+
+			* Time variable from and since event
+	
+				g       t = _n - 3 if _n <= 1
+				replace t = _n - 2 if _n > 1								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel( , format(%9.2f)) /// 
+					xlabel(-2(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+
+			* Export 			
+				graph export "Figures/Figure_A_10_B.pdf", replace
+		restore
+		
+	reghdfe attendance_grado1_8 d_2_t d0_t d1_t d2_t d3_t if t>=-2 & t <= 3 & year >= 2011 & year <= 2016 & sample == 1, a(year rbd t) vce(cluster rbd)
+		test d_2_t = 0
+		preserve
+			estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 5		
+				rename t tstat
+
+			* Time variable from and since event
+	
+				g       t = _n - 3 if _n <= 1
+				replace t = _n - 2 if _n > 1								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel( , format(%9.2f)) /// 
+					xlabel(-2(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+
+			* Export 			
+				graph export "Figures/Figure_A_10_C.pdf", replace
+		restore		
+		
+	reghdfe attendance_grado9_12 d_2_t d0_t d1_t d2_t d3_t if t>=-2 & t <= 3 & year >= 2011 & year <= 2016 & sample == 1, a(year rbd t) vce(cluster rbd)
+		test d_2_t = 0
+		preserve
+			estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 5		
+				rename t tstat
+
+			* Time variable from and since event
+	
+				g       t = _n - 3 if _n <= 1
+				replace t = _n - 2 if _n > 1								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel( , format(%9.2f)) /// 
+					xlabel(-2(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+
+			* Export 			
+				graph export "Figures/Figure_A_10_D.pdf", replace
+		restore		
+		
+		
+		
+}
+
+*************
+** Figure A.11: Principal Selection and School Staff
+*************
+{
+	use "Data/clean/DataForRegressionsADP.dta", clear
+	
+	g d_4_t = EverADP * t == -4
+	g d_3_t = EverADP * t == -3
+	g d_2_t = EverADP * t == -2
+	g d_1_t = EverADP * t == -1
+	g d0_t = EverADP * t == 0
+	g d1_t = EverADP * t == 1
+	g d2_t = EverADP * t == 2
+	g d3_t = EverADP * t == 3
+
+	global T "d_4_t d_3_t d_2_t d0_t d1_t d2_t d3_t"
+	
+	reghdfe Dfired_sup_20501 $T if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 , a(year rbd t c.($Xm $Xs)#year) vce(cluster rbd)
+		test d_4_t = d_3_t = d_2_t = 0
+		preserve
+				estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 7		
+				rename t tstat
+
+			* Time variable from and since event
+	
+				g       t = _n - 5 if _n <= 3
+				replace t = _n - 4 if _n > 3								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel(-0.1(0.1)0.2, format(%9.2f)) /// 
+					xlabel(-4(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+
+			* Export 			
+			graph export "Figures/Figure_A_11_A.pdf", replace
+		restore
+		
+	reghdfe Dhired_sup_20501 $T if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 , a(year rbd t c.($Xm $Xs)#year) vce(cluster rbd)
+		test d_4_t = d_3_t = d_2_t = 0
+		preserve
+				estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 7		
+				rename t tstat
+
+			* Time variable from and since event
+	
+				g       t = _n - 5 if _n <= 3
+				replace t = _n - 4 if _n > 3								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel(-0.1(0.1)0.2, format(%9.2f)) /// 
+					xlabel(-4(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+
+			* Export 			
+			graph export "Figures/Figure_A_11_B.pdf", replace
+		restore		
+		
+	reghdfe Dfired_teach $T if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 , a(year rbd t c.($Xm $Xs)#year) vce(cluster rbd)
+		test d_4_t = d_3_t = d_2_t = 0
+		preserve
+				estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 7		
+				rename t tstat
+
+			* Time variable from and since event
+	
+				g       t = _n - 5 if _n <= 3
+				replace t = _n - 4 if _n > 3								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel(-0.1(0.1)0.2, format(%9.2f)) /// 
+					xlabel(-4(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+
+			* Export 			
+			graph export "Figures/Figure_A_11_C.pdf", replace
+		restore	
+		
+	reghdfe DFhired_teach $T if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 , a(year rbd t c.($Xm $Xs)#year) vce(cluster rbd)
+		test d_4_t = d_3_t = d_2_t = 0
+		preserve
+				estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 7		
+				rename t tstat
+
+			* Time variable from and since event
+	
+				g       t = _n - 5 if _n <= 3
+				replace t = _n - 4 if _n > 3								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel(-0.1(0.1)0.2, format(%9.2f)) /// 
+					xlabel(-4(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+
+			* Export 			
+			graph export "Figures/Figure_A_11_D.pdf", replace
+		restore			
+	 	
+	reghdfe Dfired_teach_bad $T if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 , a(year rbd t c.($Xm $Xs)#year) vce(cluster rbd)
+		test d_4_t = d_3_t = d_2_t = 0
+		preserve
+				estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 7		
+				rename t tstat
+
+			* Time variable from and since event
+	
+				g       t = _n - 5 if _n <= 3
+				replace t = _n - 4 if _n > 3								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel(-0.1(0.1)0.2, format(%9.2f)) /// 
+					xlabel(-4(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+
+			* Export 			
+			graph export "Figures/Figure_A_11_E.pdf", replace
+		restore	
+		
+	reghdfe DFhired_teach_bad $T if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 , a(year rbd t c.($Xm $Xs)#year) vce(cluster rbd)
+		test d_4_t = d_3_t = d_2_t = 0
+		preserve
+				estimate store coef 
+							
+			* Create data set of reg coefficients and confidence intervals 
+				parmest, norestore
+
+			* Keep parameters of interest
+				drop if _n > 7		
+				rename t tstat
+
+			* Time variable from and since event
+	
+				g       t = _n - 5 if _n <= 3
+				replace t = _n - 4 if _n > 3								
+								
+			* Add coefficient in t == -1
+				local tot = 1 + _N
+				set obs `tot'
+				replace t = -1 if _n == `tot'
+				replace estimate = 0 if estimate == .
+				replace min95 = 0 if min95 == .
+				replace max95 = 0 if max95 == .
+				sort t
+							
+			* Figure
+				twoway (scatter estimate t, mc(navy)) (rcap min95 max95 t, lc(gs12) fc(gs12)), ///
+					yline(0, lc(black) ) xline(-0.5, lc(navy) lw(medium) ) ///
+					graphregion(color(white)) ///
+					ylabel(-0.1(0.1)0.2, format(%9.2f)) /// 
+					xlabel(-4(2)3) xtitle("Years since ADP") ///					
+					graphregion(color(white)) /// 
+					scale(1.3) ///
+					legend(off)
+
+			* Export 			
+			graph export "Figures/Figure_A_11_F.pdf", replace
+		restore		
+	
+}		
+
+
+
+
+			
+			
+			

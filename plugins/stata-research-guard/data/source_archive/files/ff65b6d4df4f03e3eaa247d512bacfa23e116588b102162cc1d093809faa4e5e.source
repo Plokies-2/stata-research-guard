@@ -1,0 +1,4378 @@
+
+** BUILD panel_performance_student_2008_2017.dta
+*************************************************
+{
+	
+insheet using "Data/raw/students/Rendimiento por estudiante 2008.csv", clear delim(;)
+keep agno rbd cod_ense cod_grado let_cur mrun fec_nac_alu prom_gral asistencia sit_fin sit_fin_r
+destring mrun, replace
+replace prom_gral= subinstr(prom_gral,",",".",.)
+destring prom_gral, replace
+save "Data/clean/panel_performance_student_2008_2017.dta", replace
+
+forvalues i=2009/2017{
+clear all
+if `i'==2014 {
+insheet using "Data/raw/students/Rendimiento por estudiante `i'.csv", clear delim(;)
+rename sit_final_r sit_fin_r
+keep agno rbd cod_ense cod_grado let_cur mrun fec_nac_alu prom_gral asistencia sit_fin sit_fin_r
+destring mrun, replace
+replace prom_gral= subinstr(prom_gral,",",".",.)
+destring prom_gral, replace
+compress
+keep agno rbd cod_ense cod_grado let_cur mrun fec_nac_alu prom_gral asistencia sit_fin sit_fin_r
+append using "Data/clean/panel_performance_student_2008_2017.dta", force
+save "Data/clean/panel_performance_student_2008_2017.dta", replace
+}
+else {
+insheet using "Data/raw/students/Rendimiento por estudiante `i'.csv", clear delim(;)
+keep agno rbd cod_ense cod_grado let_cur mrun fec_nac_alu prom_gral asistencia sit_fin sit_fin_r
+destring mrun, replace
+replace prom_gral= subinstr(prom_gral,",",".",.)
+destring prom_gral, replace
+compress
+keep agno rbd cod_ense cod_grado let_cur mrun fec_nac_alu prom_gral asistencia sit_fin sit_fin_r
+append using "Data/clean/panel_performance_student_2008_2017.dta", force
+save "Data/clean/panel_performance_student_2008_2017.dta", replace
+}
+}
+
+drop if mrun==.
+keep if cod_ense==110 | cod_ense==310 | cod_ense==410 | cod_ense==510 | cod_ense==610 | cod_ense==710 | cod_ense==810 | cod_ense==910 
+gen grado=cod_grado
+replace grado=9 if cod_grado==1 & (cod_ense==310 | cod_ense==410 | cod_ense==510 | cod_ense==610 | cod_ense==710 | cod_ense==810 | cod_ense==910)
+replace grado=10 if cod_grado==2 & (cod_ense==310 | cod_ense==410 | cod_ense==510 | cod_ense==610 | cod_ense==710 | cod_ense==810 | cod_ense==910)
+replace grado=11 if cod_grado==3 & (cod_ense==310 | cod_ense==410 | cod_ense==510 | cod_ense==610 | cod_ense==710 | cod_ense==810 | cod_ense==910)
+replace grado=12 if cod_grado==4 & (cod_ense==310 | cod_ense==410 | cod_ense==510 | cod_ense==610 | cod_ense==710 | cod_ense==810 | cod_ense==910)
+
+tabulate sit_fin_r, gen(temp_sit)
+bys mrun agno grado: egen promovido=total(temp_sit1)
+bys mrun agno grado: egen reprobado=total(temp_sit2)
+bys mrun agno grado: egen transladado=total(temp_sit3)
+bys mrun agno grado: egen retirado=total(temp_sit4)
+drop temp_*
+
+sort mrun agno grado sit_fin_r rbd
+replace prom_gral=. if sit_fin_r=="T" | sit_fin_r=="Y"
+replace asistencia=. if sit_fin_r=="T" | sit_fin_r=="Y"
+bys mrun agno grado: egen GPA=max(prom_gral)
+bys mrun agno grado: egen attendance=max(asistencia)
+	
+bys mrun: egen fec_nac_stud=max(fec_nac_alu)
+tostring fec_nac_stud, replace
+gen f_nac=substr(fec_nac_stud,1,4)
+destring f_nac, replace
+gen age_stud=agno-f_nac
+
+bys mrun agno grado: gen n=_n
+keep if n==1
+rename mrun mrun_student
+drop prom_gral asistencia fec_nac_alu fec_nac_stud sit_fin_r sit_fin cod_ense cod_grado n
+compress
+save "Data/clean/panel_performance_student_2008_2017.dta", replace
+
+	
+}
+
+** BUILD panel_GPA_student_2011_2017.dta
+*****************************************
+{
+	
+import delimited "Data/raw/students/Notas_por_estudiante_y_subsector_2011.csv", clear delim(";")
+keep agno rbd cod_ense cod_grado let_cur cod_subsector nom_subsector nota_num mrun 
+compress
+save "Data/clean/panel_GPA_student_2011_2017.dta", replace
+
+
+forvalues i=2012/2017{
+clear all
+import delimited "Data/raw/students/Notas_por_estudiante_y_subsector_`i'.csv", clear delim(";")
+keep agno rbd cod_ense cod_grado let_cur cod_subsector nom_subsector nota_num mrun 
+compress
+append using "Data/clean/panel_GPA_student_2011_2017.dta", force
+save "Data/clean/panel_GPA_student_2011_2017.dta", replace
+}
+
+gen      math = 0
+foreach cod in 5 15 2198 2687 2972 2802 85 10326 234 10157 6349 5813 9737 10060 9737 5533 4448 479 6349 4249 584 124 6899 6901 ///
+			   5892 3886 5596 9047 3120 6615 8023 863 3712 4631 1796 5725{
+replace  math = 1 if cod_subsector==`cod'
+}
+
+gen      lang = 0
+foreach cod in 14 27 2265 2197 11224 2281 3072 1363 274 9736 6526 6662 10059 2756 5402 9890 9736 6757 9890 2823 6662 719 6758 ///
+			   6452 141 662 5368 4489 5533 4681 4878 6587 6796 6000 6544 1934 867 866{
+
+replace  lang = 1 if cod_subsector==`cod'
+}
+ 
+
+keep if math==1|lang==1
+drop cod_ense cod_grado let_cur rbd
+
+gen     subject=""
+replace subject="Math" if math==1
+replace subject="Language" if lang==1
+
+sort mrun agno subject
+
+gen gpa= subinstr(nota_num,",",".",.)
+destring gpa, replace
+replace gpa=gpa*10
+drop if gpa==.
+keep mrun agno subject gpa
+ 
+save "Data/clean/panel_GPA_student_2011_2017_clean.dta", replace
+
+}
+
+** BUILD panel_docentes_curso.dta
+**********************************
+{
+
+insheet using "Data/raw/teachers/Docentes_por_curso_y_subsector_2008.csv", clear delim (;)
+keep clave agno rbd cod_ense cod_grado let_cur cod_subsector nom_subsector
+order clave agno rbd cod_ense cod_grado let_cur cod_subsector nom_subsector
+sort clave agno 
+save "Data/clean/panel_docentes_curso.dta", replace
+
+forval y=2009/2016{
+	clear all
+	insheet using "Data/raw/teachers/Docentes_por_curso_y_subsector_`y'.csv", clear delim (;)
+	keep clave agno rbd cod_ense cod_grado let_cur cod_subsector nom_subsector
+	order clave agno rbd cod_ense cod_grado let_cur cod_subsector nom_subsector
+	sort clave agno 
+	append using "Data/clean/panel_docentes_curso.dta", force
+	save "Data/clean/panel_docentes_curso.dta", replace
+	}
+
+preserve
+
+	use "Data/clean/panel_docentes_curso.dta", clear
+	bys nom_subsector: gen n=_n
+	bys nom_subsector: gen N=_N
+	keep if n==1
+	replace N=-N
+	sort N
+	
+restore
+
+gen      math = 0
+
+foreach cod in 5 15 2198 2687 2972 2802 85 10326 234 10157 6349 5813 9737 10060 9737 5533 4448 479 6349 4249 584 124 6899 6901 ///
+			   5892 3886 5596 9047 3120 6615 8023 863 3712 4631 1796 5725{
+replace  math = 1 if cod_subsector==`cod'
+}
+
+gen      lang = 0
+
+foreach cod in 14 27 2265 2197 11224 2281 3072 1363 274 9736 6526 6662 10059 2756 5402 9890 9736 6757 9890 2823 6662 719 6758 ///
+			   6452 141 662 5368 4489 5533 4681 4878 6587 6796 6000 6544 1934 867 866{
+
+replace  lang = 1 if cod_subsector==`cod'
+}
+
+gen grado=.
+
+forvalues i=1(1)8{
+replace grado=`i' if (cod_grado==`i' & cod_ense==110) 
+}
+
+forvalues i=1(1)4{
+replace grado=`i'+8 if cod_grado==`i' & (cod_ense==310|cod_ense==410|cod_ense==510|cod_ense==610|cod_ense==710|cod_ense==810|cod_ense==910) 
+}
+ 
+keep if math==1|lang==1
+
+gen     subject=""
+replace subject="Math" if math==1
+replace subject="Language" if lang==1
+
+drop math lang
+sort clave agno
+ 
+save "Data/clean/panel_docentes_curso.dta", replace
+
+}
+
+** BUILD panel_docentes.dta
+****************************
+{
+
+insheet using "Data/raw/teachers/Docentes_Cargos_2008_PUB.csv", clear delim (;)
+sort mrun
+destring ano_servicio_sistema id_ifp, replace
+save "Data/clean/panel_docentes.dta", replace
+
+forval y=2009/2017{
+	clear all
+	insheet using "Data/raw/teachers/Docentes_Cargos_`y'_PUB.csv", clear delim (;)
+	sort mrun
+	if agno>2010 {
+		destring ano_servicio_sistema ano_servicio_ee id_ifp, replace
+	}
+	else {
+		destring ano_servicio_sistema id_ifp, replace
+	}
+	append using "Data/clean/panel_docentes.dta", force
+	save "Data/clean/panel_docentes.dta", replace
+	}
+
+use "Data/clean/panel_docentes.dta", clear
+sort rbd dgv_rbd agno
+
+tostring doc_fec_nac, replace
+gen f_nac=substr(doc_fec_nac,1,4)
+destring f_nac, replace
+gen Edad=agno-f_nac
+compress
+
+save "Data/clean/panel_docentes.dta",replace
+}
+
+** BUILD panel_employeremployee.dta
+************************************
+{
+use "Data/clean/panel_docentes.dta", clear
+
+	drop if id_itc_corr == 103 | id_itc_corr == 108 | id_itc_corr == 112 | id_itc_corr == 304 | id_itc_corr == 309 | id_itc_corr == 310 | id_itc_corr == 404
+
+	g Teacher = (id_ifp == 1)
+	g SupportWorker_Law20501 = (id_ifp == 15 | id_ifp == 8 | id_ifp == 7)
+	
+	g SupportWorker = (id_ifp == 2 | id_ifp == 7 | id_ifp == 8 | id_ifp == 9 | id_ifp == 11 | id_ifp == 12)
+	g Administrative = (id_ifp == 3 | id_ifp == 4 | id_ifp == 10 | id_ifp == 15 | id_ifp == 16)
+	g Principal = (id_ifp == 4 | id_ifp == 16)
+		
+	drop if cod_depe==5 
+	gen Public  = (cod_depe==1|cod_depe==2)
+	gen Voucher = (cod_depe==3)
+	gen Private = (cod_depe==4)
+	gen Rural  = (rural_rbd==1)
+	
+	gen Perm = .
+	replace Perm = (id_itc==1) if agno<2011 & Public==1
+	replace Perm = (id_itc==3) if agno<2011 & Public==0
+	
+	replace Perm = (id_itc==1|id_itc==9|id_itc==13) if agno>=2011 & Public==1
+	replace Perm = (id_itc==4|id_itc==16|id_itc==22) if agno>=2011 & Public==0
+		
+	gen Female = (doc_genero==2)
+	rename horas_contrato Hours
+	rename horas_direct   Hours_Admin
+	rename horas_aula 	  Hours_Teach
+	
+	rename ano_servicio_sistema SenioritySystem
+	rename ano_servicio_ee      SenioritySchool
+	
+	destring tit_id_2, replace
+	destring tip_insti_id_1, replace
+	destring tip_insti_id_2, replace
+	gen aux_EducDegree    = (tit_id_1==1|tit_id_2==1) 
+	gen aux_CollegeDegree = (tip_insti_id_1==1|tip_insti_id_2==1) 
+	
+	bys mrun: egen EducDegree=max(aux_EducDegree)
+	bys mrun: egen CollegeDegree=max(aux_CollegeDegree)
+	
+keep agno rbd Public Voucher Private Rural clave mrun Edad Female Perm Hours Hours_Admin Hours_Teach SenioritySystem SenioritySchool /// 
+EducDegree CollegeDegree Teacher SupportWorker_Law20501 SupportWorker Administrative Principal cod_com_rbd
+order clave mrun agno rbd Public Rural Edad Female Hours Teacher SupportWorker SupportWorker_Law20501 Administrative Principal Hours_Admin Hours_Teach SenioritySystem SenioritySchool EducDegree CollegeDegree 
+sort mrun agno rbd cod_com_rbd
+
+compress
+save "Data/clean/panel_employeremployee.dta", replace	
+
+}
+
+** BUILD panel_ADP.dta
+***********************
+{
+
+import excel "Data/raw/adp/directores - ADP.xlsx", sheet("ESTADO") firstrow clear
+rename ESTADO17042018 estado
+rename COD_DEPE depe
+rename RBD rbd
+tempfile estado
+save `estado', replace
+
+import excel "Data/raw/adp/caracteristicas directores.xlsx", sheet("Resultados (2)") firstrow clear
+rename NConcurso IDportal
+keep IDportal Profesiónnombrado Sexonombrado Trabajoanteriornombrado Añosexperiencianombrado esprimeravezqueocupacargod Directorreelecto
+rename Profesiónnombrado profesion
+rename Sexonombrado sexo
+rename Trabajoanteriornombrado trabpre
+rename Añosexperiencianombrado exp
+rename esprimeravezqueocupacargod primeravez
+rename Directorreelecto reelecto
+tempfile directores
+save `directores', replace
+
+import excel "Data/raw/adp/directores - ADP.xlsx", sheet("HISTORIA") firstrow clear
+keep RBD IDportal FECHA_PUBLICACION FECHANOMBRAMIENTO
+sort RBD IDportal
+duplicates tag RBD IDportal, gen(tag)
+drop if tag>0 
+drop tag
+
+merge 1:1 IDportal using `directores'
+drop if _merge==2
+drop _merge
+
+rename FECHA_PUBLICACION date_cont
+format date_cont  %d
+
+gen date_elec=date(FECHANOMBRAMIENTO, "MDY") 
+format date_elec %d
+drop FECHANOMBRAMIENTO
+
+rename RBD rbd
+bys rbd (IDportal): gen n=_n
+keep rbd n date_cont date_elec exp sexo profesion trabpre primeravez reelecto
+reshape wide date_cont date_elec exp sexo profesion trabpre primeravez reelecto, i(rbd) j(n)
+
+merge 1:1 rbd using `estado', keepusing(rbd depe estado)
+drop _merge
+
+save "Data/temp/base_concursos.dta", replace
+
+forval	i=1(1)8{
+local j=`i'+1
+if `j'<=8{
+replace date_elec`i'=date_cont`i'+31 if date_elec`i'==-21915  
+replace date_elec`i'=date_cont`i'+31 if date_elec`i'<date_cont`i'  
+replace date_cont`j'=. if (date_elec`i'>date_cont`j') & date_elec`i'!=. 
+}
+}
+
+egen primer_adp_inicio=rowmin(date_elec*)
+gen  primer_adp_termino=.          
+
+	forval i=2(1)8{
+	local j = `i'-1
+	replace primer_adp_termino=date_cont`i' if date_elec`j'!=. & missing(primer_adp_termino)
+	}	
+
+format primer_adp_termino primer_adp_inicio %d
+
+preserve 
+	keep if primer_adp_inicio==.
+	keep rbd 
+	gen t=ym(2012,1) 
+	format t %tm 
+	gen Ndir=0
+	tempfile data0
+	save `data0', replace
+restore
+
+keep if primer_adp_inicio!=. 
+	
+preserve
+keep if primer_adp_termino==. & primer_adp_inicio!=.
+	forval	i=1(1)8{
+	  if primer_adp_inicio==date_elec`i'{
+		g profesion=profesion`i'  
+		g sexo=sexo`i'            
+		g trabpre=trabpre`i'     
+		g exp=exp`i' 		    
+		g reelecto=reelecto`i'    
+		g primeravez=primeravez`i' 
+		}
+	}
+			
+replace primer_adp_inicio=mofd(primer_adp_inicio)
+replace primer_adp_termino=mofd(primer_adp_termino)
+format primer_adp_inicio primer_adp_termino %tm
+	
+rename primer_adp_inicio t0
+rename primer_adp_termino t1
+replace t1=ym(2018,4)
+
+keep rbd t0 t1 profesion sexo trabpre exp reelecto primeravez
+			
+ reshape long t, i(rbd) j(aux)
+ drop aux
+ xtset rbd t
+ tsfill
+ 
+foreach var in profesion sexo trabpre reelecto primeravez{
+	bys rbd: replace `var'=`var'[_n-1] if `var'==""
+	}
+	bys rbd: egen experiencia=min(exp)
+	drop exp
+	
+gen Ndir=1
+tempfile data1
+save `data1', replace
+restore	
+			
+keep if primer_adp_termino!=. & primer_adp_inicio!=. 
+
+forval	i=1(1)8{
+gen aux_date_cont`i'=date_cont`i'
+gen aux_date_elec`i'=date_elec`i'
+
+replace aux_date_elec`i'=. if primer_adp_inicio==aux_date_elec`i'
+replace aux_date_cont`i'=. if primer_adp_termino==aux_date_cont`i'
+}
+
+egen segundo_adp_inicio=rowmin(aux_date_elec*)
+gen segundo_adp_termino=.
+
+forval i=2(1)8{
+	local j = `i'-1
+	replace segundo_adp_termino=aux_date_cont`i' if aux_date_elec`j'!=. & missing(segundo_adp_termino)
+	}	
+
+format segundo_adp_inicio segundo_adp_termino  %d
+
+preserve 
+keep if segundo_adp_termino==. & segundo_adp_inicio!=.	
+	forval	i=1(1)8{
+	  if primer_adp_inicio==date_elec`i'{
+		g profesion=profesion`i'  
+		g sexo=sexo`i'            
+		g trabpre=trabpre`i'     
+		g exp=exp`i' 		    
+		g reelecto=reelecto`i'    
+		g primeravez=primeravez`i' 
+		}
+	}
+	
+	
+replace primer_adp_inicio=mofd(primer_adp_inicio)
+replace primer_adp_termino=mofd(primer_adp_termino)
+format primer_adp_inicio primer_adp_termino %tm
+
+	rename primer_adp_inicio t0
+	replace t0=ym(2012,1) if t0==ym(1899,12)
+	rename primer_adp_termino t1
+
+	
+	keep rbd t0 t1 profesion sexo trabpre exp reelecto primeravez
+			
+	reshape long t, i(rbd) j(aux)
+	drop aux
+	xtset rbd t	
+	tsfill
+	foreach var in profesion sexo trabpre reelecto primeravez{
+		bys rbd: replace `var'=`var'[_n-1] if `var'==""
+		}
+		bys rbd: egen experiencia=min(exp)
+		drop exp
+	gen Ndir=1
+	tempfile data2_dir1
+	save `data2_dir1', replace
+restore	
+
+
+preserve 
+keep if segundo_adp_termino==. & segundo_adp_inicio!=.
+
+	forval	i=1(1)8{
+	  if segundo_adp_inicio==aux_date_elec`i'{
+		g profesion=profesion`i'  
+		g sexo=sexo`i'            
+		g trabpre=trabpre`i'     
+		g exp=exp`i' 		    
+		g reelecto=reelecto`i'    
+		g primeravez=primeravez`i' 
+		}
+	}
+	
+	
+replace segundo_adp_inicio=mofd(segundo_adp_inicio)
+replace segundo_adp_termino=mofd(segundo_adp_termino)
+format segundo_adp_inicio segundo_adp_termino %tm
+
+
+	rename segundo_adp_inicio t0
+	rename segundo_adp_termino t1
+	replace t1=ym(2018,4)
+
+	keep rbd t0 t1 profesion sexo trabpre exp reelecto primeravez
+			
+	reshape long t, i(rbd) j(aux)
+	drop aux
+	xtset rbd t
+	tsfill
+	
+	foreach var in profesion sexo trabpre reelecto primeravez{
+		bys rbd: replace `var'=`var'[_n-1] if `var'==""
+		}
+		bys rbd: egen experiencia=min(exp)
+		drop exp
+	gen Ndir=2
+	tempfile data2_dir2
+	save `data2_dir2', replace
+restore	
+
+preserve
+use `data2_dir1', clear
+append using `data2_dir2'
+tempfile data2
+save `data2', replace
+restore
+
+preserve
+keep if segundo_adp_termino==. & segundo_adp_inicio==.
+	forval	i=1(1)8{
+	  if primer_adp_inicio==date_elec`i'{
+		g profesion=profesion`i'  
+		g sexo=sexo`i'            
+		g trabpre=trabpre`i'     
+		g exp=exp`i' 		    
+		g reelecto=reelecto`i'    
+		g primeravez=primeravez`i' 
+		}
+	}
+	
+	
+replace primer_adp_inicio=mofd(primer_adp_inicio)
+replace primer_adp_termino=mofd(primer_adp_termino)
+format  primer_adp_inicio primer_adp_termino %tm
+	
+	rename primer_adp_inicio t0
+	rename primer_adp_termino t1
+		
+	keep rbd t0 t1 profesion sexo trabpre exp reelecto primeravez
+			
+	reshape long t, i(rbd) j(aux)
+	drop aux
+	xtset rbd t
+	tsfill	
+	
+	foreach var in profesion sexo trabpre reelecto primeravez{
+		bys rbd: replace `var'=`var'[_n-1] if `var'==""
+		}
+		bys rbd: egen experiencia=min(exp)
+		drop exp
+		
+	gen Ndir=1
+	tempfile data2P
+	save `data2P', replace
+restore	
+
+keep if segundo_adp_inicio!=. & segundo_adp_termino!=. 
+forval	i=1(1)8{
+gen aux2_date_elec`i'=aux_date_elec`i'
+gen aux2_date_cont`i'=aux_date_cont`i'
+replace aux2_date_elec`i'=. if segundo_adp_inicio==aux2_date_elec`i'
+replace aux2_date_cont`i'=. if segundo_adp_termino==aux2_date_cont`i'
+}
+
+egen tercer_adp_inicio=rowmin(aux2_date_elec*)
+gen tercer_adp_termino=.
+
+forval i=2(1)8{
+	local j = `i'-1
+	replace tercer_adp_termino=aux2_date_cont`i' if aux2_date_elec`j'!=. & missing(tercer_adp_termino)
+	}	
+
+format tercer_adp_inicio tercer_adp_termino  %d
+
+preserve 
+keep if tercer_adp_termino==. & tercer_adp_inicio!=.
+	forval	i=1(1)8{
+		if primer_adp_inicio==date_elec`i'{
+		g profesion=profesion`i'  
+		g sexo=sexo`i'            
+		g trabpre=trabpre`i'     
+		g exp=exp`i' 		    
+		g reelecto=reelecto`i'    
+		g primeravez=primeravez`i' 
+		}
+	}
+	
+replace primer_adp_inicio=mofd(primer_adp_inicio)
+replace primer_adp_termino=mofd(primer_adp_termino)
+format primer_adp_inicio primer_adp_termino %tm
+	
+	rename primer_adp_inicio t0
+	rename primer_adp_termino t1
+
+	keep rbd t0 t1 profesion sexo trabpre exp reelecto primeravez
+			
+	reshape long t, i(rbd) j(aux)
+	drop aux
+	xtset rbd t
+	tsfill	
+	
+	foreach var in profesion sexo trabpre reelecto primeravez{
+		bys rbd: replace `var'=`var'[_n-1] if `var'==""
+		}
+		bys rbd: egen experiencia=min(exp)
+		drop exp
+	gen Ndir=1
+	tempfile data3_dir1
+	save `data3_dir1', replace
+restore	
+
+preserve	
+keep if tercer_adp_termino==. & tercer_adp_inicio!=.
+
+	forval	i=1(1)8{
+		if segundo_adp_inicio==aux_date_elec`i'{
+		g profesion=profesion`i'  
+		g sexo=sexo`i'            
+		g trabpre=trabpre`i'     
+		g exp=exp`i' 		    
+		g reelecto=reelecto`i'    
+		g primeravez=primeravez`i' 
+		}
+	}
+	
+replace segundo_adp_inicio=mofd(segundo_adp_inicio)
+replace segundo_adp_termino=mofd(segundo_adp_termino)
+format segundo_adp_inicio segundo_adp_termino %tm
+	
+	rename segundo_adp_inicio t0
+	rename segundo_adp_termino t1
+
+	keep rbd t0 t1 profesion sexo trabpre exp reelecto primeravez
+			
+	reshape long t, i(rbd) j(aux)
+	drop aux
+	xtset rbd t
+	tsfill	
+	
+	foreach var in profesion sexo trabpre reelecto primeravez{
+		bys rbd: replace `var'=`var'[_n-1] if `var'==""
+		}
+		bys rbd: egen experiencia=min(exp)
+		drop exp
+	gen Ndir=2
+	tempfile data3_dir2
+	save `data3_dir2', replace
+restore	
+
+preserve 
+keep if tercer_adp_termino==. & tercer_adp_inicio!=.
+
+	forval	i=1(1)8{
+		if tercer_adp_inicio==aux2_date_elec`i'{
+		g profesion=profesion`i'  
+		g sexo=sexo`i'            
+		g trabpre=trabpre`i'     
+		g exp=exp`i' 		    
+		g reelecto=reelecto`i'    
+		g primeravez=primeravez`i' 
+		}
+	}
+	
+replace tercer_adp_inicio=mofd(tercer_adp_inicio)
+replace tercer_adp_termino=mofd(tercer_adp_termino)
+format tercer_adp_inicio tercer_adp_termino %tm
+	
+	rename tercer_adp_inicio t0
+	rename tercer_adp_termino t1
+	replace t1=ym(2018,4)
+
+	keep rbd t0 t1 profesion sexo trabpre exp reelecto primeravez
+			
+	reshape long t, i(rbd) j(aux)
+	drop aux
+	xtset rbd t
+	tsfill	
+	
+	foreach var in profesion sexo trabpre reelecto primeravez{
+		bys rbd: replace `var'=`var'[_n-1] if `var'==""
+		}
+		bys rbd: egen experiencia=min(exp)
+		drop exp
+	gen Ndir=3
+	tempfile data3_dir3
+	save `data3_dir3', replace
+restore	
+
+preserve
+use `data3_dir1', clear
+append using `data3_dir2'
+append using `data3_dir3'
+tempfile data3
+save `data3', replace 
+restore
+
+preserve
+keep if tercer_adp_termino==. & tercer_adp_inicio==.
+
+	forval	i=1(1)8{
+		if primer_adp_inicio==date_elec`i'{
+		g profesion=profesion`i'  
+		g sexo=sexo`i'            
+		g trabpre=trabpre`i'     
+		g exp=exp`i' 		    
+		g reelecto=reelecto`i'    
+		g primeravez=primeravez`i' 
+		}
+	}
+	
+replace primer_adp_inicio=mofd(primer_adp_inicio)
+replace primer_adp_termino=mofd(primer_adp_termino)
+format primer_adp_inicio primer_adp_termino %tm
+	
+	rename primer_adp_inicio t0
+	rename primer_adp_termino t1
+
+	keep rbd t0 t1 profesion sexo trabpre exp reelecto primeravez
+			
+	reshape long t, i(rbd) j(aux)
+	drop aux
+	xtset rbd t
+	tsfill	
+	
+	foreach var in profesion sexo trabpre reelecto primeravez{
+		bys rbd: replace `var'=`var'[_n-1] if `var'==""
+		}
+		bys rbd: egen experiencia=min(exp)
+		drop exp
+	
+	gen Ndir=1
+	tempfile data3P_dir1
+	save `data3P_dir1', replace
+restore	
+
+preserve 
+keep if tercer_adp_termino==. & tercer_adp_inicio==.
+
+	forval	i=1(1)8{
+		if segundo_adp_inicio==aux_date_elec`i'{
+		g profesion=profesion`i'  
+		g sexo=sexo`i'            
+		g trabpre=trabpre`i'     
+		g exp=exp`i' 		    
+		g reelecto=reelecto`i'    
+		g primeravez=primeravez`i' 
+		}
+	}
+	
+replace segundo_adp_inicio=mofd(segundo_adp_inicio)
+replace segundo_adp_termino=mofd(segundo_adp_termino)
+format segundo_adp_inicio segundo_adp_termino %tm
+	
+	rename segundo_adp_inicio t0
+	rename segundo_adp_termino t1
+
+	keep rbd t0 t1 profesion sexo trabpre exp reelecto primeravez
+			
+	reshape long t, i(rbd) j(aux)
+	drop aux
+	xtset rbd t
+	tsfill	
+	
+	foreach var in profesion sexo trabpre reelecto primeravez{
+		bys rbd: replace `var'=`var'[_n-1] if `var'==""
+		}
+		bys rbd: egen experiencia=min(exp)
+		drop exp
+	
+	gen Ndir=2
+	tempfile data3P_dir2
+	save `data3P_dir2', replace
+restore	
+
+preserve
+use `data3P_dir1', clear
+append using `data3P_dir2'
+tempfile data3P
+save `data3P', replace 
+restore
+
+keep if tercer_adp_inicio!=. & tercer_adp_termino!=. 
+
+forval	i=1(1)8{
+gen aux3_date_elec`i'=aux2_date_elec`i'
+gen aux3_date_cont`i'=aux2_date_cont`i'
+replace aux3_date_elec`i'=. if tercer_adp_inicio==aux3_date_elec`i'
+replace aux3_date_cont`i'=. if tercer_adp_termino==aux3_date_cont`i'
+}
+
+egen cuarto_adp_inicio=rowmin(aux3_date_elec*)
+gen cuarto_adp_termino=.
+
+forval i=2(1)8{
+	local j = `i'-1
+	replace cuarto_adp_termino=aux3_date_cont`i' if aux3_date_elec`j'!=. & missing(cuarto_adp_termino)
+	}	
+
+format cuarto_adp_inicio cuarto_adp_termino %d
+
+preserve	
+keep if cuarto_adp_termino==. & cuarto_adp_inicio!=.
+
+	forval	i=1(1)8{
+		if primer_adp_inicio==date_elec`i'{
+		g profesion=profesion`i'  
+		g sexo=sexo`i'            
+		g trabpre=trabpre`i'     
+		g exp=exp`i' 		    
+		g reelecto=reelecto`i'    
+		g primeravez=primeravez`i' 
+		}
+	}
+	
+replace primer_adp_inicio=mofd(primer_adp_inicio)
+replace primer_adp_termino=mofd(primer_adp_termino)
+format primer_adp_inicio primer_adp_termino %tm
+	
+	rename primer_adp_inicio t0
+	rename primer_adp_termino t1
+			
+	keep rbd t0 t1 profesion sexo trabpre exp reelecto primeravez
+			
+	reshape long t, i(rbd) j(aux)
+	drop aux
+	xtset rbd t
+	tsfill	
+	
+	foreach var in profesion sexo trabpre reelecto primeravez{
+		bys rbd: replace `var'=`var'[_n-1] if `var'==""
+		}
+		bys rbd: egen experiencia=min(exp)
+		drop exp
+	
+	gen Ndir=1
+	tempfile data4_dir1
+	save `data4_dir1', replace
+restore
+
+preserve 
+keep if cuarto_adp_termino==. & cuarto_adp_inicio!=.
+
+	forval	i=1(1)8{
+		if segundo_adp_inicio==aux_date_elec`i'{
+		g profesion=profesion`i'  
+		g sexo=sexo`i'            
+		g trabpre=trabpre`i'     
+		g exp=exp`i' 		    
+		g reelecto=reelecto`i'    
+		g primeravez=primeravez`i' 
+		}
+	}
+	
+replace segundo_adp_inicio=mofd(segundo_adp_inicio)
+replace segundo_adp_termino=mofd(segundo_adp_termino)
+format segundo_adp_inicio segundo_adp_termino %tm
+	
+	rename segundo_adp_inicio t0
+	rename segundo_adp_termino t1
+
+	keep rbd t0 t1 profesion sexo trabpre exp reelecto primeravez
+			
+	reshape long t, i(rbd) j(aux)
+	drop aux
+	xtset rbd t
+	tsfill	
+	
+	foreach var in profesion sexo trabpre reelecto primeravez{
+		bys rbd: replace `var'=`var'[_n-1] if `var'==""
+		}
+		bys rbd: egen experiencia=min(exp)
+		drop exp
+	
+	gen Ndir=2
+	tempfile data4_dir2
+	save `data4_dir2', replace
+restore
+
+preserve 
+keep if cuarto_adp_termino==. & cuarto_adp_inicio!=.
+
+	forval	i=1(1)8{
+		if tercer_adp_inicio==aux2_date_elec`i'{
+		g profesion=profesion`i'  
+		g sexo=sexo`i'            
+		g trabpre=trabpre`i'     
+		g exp=exp`i' 		    
+		g reelecto=reelecto`i'    
+		g primeravez=primeravez`i' 
+		}
+	}
+	
+replace tercer_adp_inicio=mofd(tercer_adp_inicio)
+replace tercer_adp_termino=mofd(tercer_adp_termino)
+format tercer_adp_inicio tercer_adp_termino %tm
+	
+	rename tercer_adp_inicio t0
+	rename tercer_adp_termino t1
+
+	keep rbd t0 t1 profesion sexo trabpre exp reelecto primeravez
+			
+	reshape long t, i(rbd) j(aux)
+	drop aux
+	xtset rbd t
+	tsfill	
+	
+	foreach var in profesion sexo trabpre reelecto primeravez{
+		bys rbd: replace `var'=`var'[_n-1] if `var'==""
+		}
+		bys rbd: egen experiencia=min(exp)
+		drop exp
+	
+	gen Ndir=3
+	tempfile data4_dir3
+	save `data4_dir3', replace
+restore
+
+preserve	
+keep if cuarto_adp_termino==. & cuarto_adp_inicio!=.
+
+	forval	i=1(1)8{
+		if cuarto_adp_inicio==aux3_date_elec`i'{
+		g profesion=profesion`i'  
+		g sexo=sexo`i'            
+		g trabpre=trabpre`i'     
+		g exp=exp`i' 		    
+		g reelecto=reelecto`i'    
+		g primeravez=primeravez`i' 
+		}
+	}
+	
+replace cuarto_adp_inicio=mofd(cuarto_adp_inicio)
+replace cuarto_adp_termino=mofd(cuarto_adp_termino)
+format cuarto_adp_inicio cuarto_adp_termino %tm
+	
+	rename cuarto_adp_inicio t0
+	rename cuarto_adp_termino t1
+	replace t1=ym(2018,4)
+	
+	keep rbd t0 t1 profesion sexo trabpre exp reelecto primeravez
+			
+	reshape long t, i(rbd) j(aux)
+	drop aux
+	xtset rbd t
+	tsfill	
+	
+	foreach var in profesion sexo trabpre reelecto primeravez{
+		bys rbd: replace `var'=`var'[_n-1] if `var'==""
+		}
+		bys rbd: egen experiencia=min(exp)
+		drop exp
+	
+	gen Ndir=4
+	tempfile data4_dir4
+	save `data4_dir4', replace
+restore
+
+preserve
+use `data4_dir1', clear
+append using `data4_dir2'
+append using `data4_dir3'
+append using `data4_dir4'
+tempfile data4
+save `data4', replace 
+restore
+	
+preserve 
+keep if cuarto_adp_termino==. & cuarto_adp_inicio==.
+
+	forval	i=1(1)8{
+		if primer_adp_inicio==date_elec`i'{
+		g profesion=profesion`i'  
+		g sexo=sexo`i'            
+		g trabpre=trabpre`i'     
+		g exp=exp`i' 		    
+		g reelecto=reelecto`i'    
+		g primeravez=primeravez`i' 
+		}
+	}
+	
+replace primer_adp_inicio=mofd(primer_adp_inicio)
+replace primer_adp_termino=mofd(primer_adp_termino)
+format primer_adp_inicio primer_adp_termino %tm
+	
+	rename primer_adp_inicio t0
+	rename primer_adp_termino t1
+	
+	keep rbd t0 t1 profesion sexo trabpre exp reelecto primeravez
+			
+	reshape long t, i(rbd) j(aux)
+	drop aux
+	xtset rbd t
+	tsfill	
+	
+	foreach var in profesion sexo trabpre reelecto primeravez{
+		bys rbd: replace `var'=`var'[_n-1] if `var'==""
+		}
+		bys rbd: egen experiencia=min(exp)
+		drop exp
+	
+	gen Ndir=1
+	tempfile data4P_dir1
+	save `data4P_dir1', replace
+restore
+
+preserve 
+keep if cuarto_adp_termino==. & cuarto_adp_inicio==.
+
+	forval	i=1(1)8{
+		if segundo_adp_inicio==aux_date_elec`i'{
+		g profesion=profesion`i'  
+		g sexo=sexo`i'            
+		g trabpre=trabpre`i'     
+		g exp=exp`i' 		    
+		g reelecto=reelecto`i'    
+		g primeravez=primeravez`i' 
+		}
+	}
+	
+replace segundo_adp_inicio=mofd(segundo_adp_inicio)
+replace segundo_adp_termino=mofd(segundo_adp_termino)
+format segundo_adp_inicio segundo_adp_termino %tm
+	
+	rename segundo_adp_inicio t0
+	rename segundo_adp_termino t1
+	
+	keep rbd t0 t1 profesion sexo trabpre exp reelecto primeravez
+			
+	reshape long t, i(rbd) j(aux)
+	drop aux
+	xtset rbd t
+	tsfill	
+	
+	foreach var in profesion sexo trabpre reelecto primeravez{
+		bys rbd: replace `var'=`var'[_n-1] if `var'==""
+		}
+		bys rbd: egen experiencia=min(exp)
+		drop exp
+	
+	gen Ndir=2
+	tempfile data4P_dir2
+	save `data4P_dir2', replace
+restore
+
+preserve 
+keep if cuarto_adp_termino==. & cuarto_adp_inicio==.
+
+	forval	i=1(1)8{
+		if tercer_adp_inicio==aux2_date_elec`i'{
+		g profesion=profesion`i'  
+		g sexo=sexo`i'            
+		g trabpre=trabpre`i'     
+		g exp=exp`i' 		    
+		g reelecto=reelecto`i'    
+		g primeravez=primeravez`i' 
+		}
+	}
+	
+replace tercer_adp_inicio=mofd(tercer_adp_inicio)
+replace tercer_adp_termino=mofd(tercer_adp_termino)
+format tercer_adp_inicio tercer_adp_termino %tm
+	
+	rename tercer_adp_inicio t0
+	rename tercer_adp_termino t1
+	
+	keep rbd t0 t1 profesion sexo trabpre exp reelecto primeravez
+			
+	reshape long t, i(rbd) j(aux)
+	drop aux
+	xtset rbd t
+	tsfill	
+	
+	foreach var in profesion sexo trabpre reelecto primeravez{
+		bys rbd: replace `var'=`var'[_n-1] if `var'==""
+		}
+		bys rbd: egen experiencia=min(exp)
+		drop exp
+	
+	gen Ndir=3
+	tempfile data4P_dir3
+	save `data4P_dir3', replace
+restore
+
+preserve
+use `data4P_dir1', clear
+append using `data4P_dir2'
+append using `data4P_dir3'
+tempfile data4P
+save `data4P', replace 
+restore
+
+* Final dataset
+
+preserve
+use `data1', clear
+append using `data2'
+append using `data3'
+append using `data4'
+gen ADP=1
+xtset rbd t
+tsfill, full
+replace ADP=0 if ADP==.
+save "Data/temp/schools_ADP_1", replace
+restore	
+
+preserve
+use `data2P', clear
+append using `data3P'
+append using `data4P'
+gen ADP=1
+append using `data0'
+xtset rbd t
+tsfill, full
+replace ADP=0 if ADP==.
+
+save "Data/temp/schools_ADP_2", replace
+restore
+
+use "Data/temp/schools_ADP_1", clear
+append using "Data/temp/schools_ADP_2"
+
+	
+preserve	
+use "Data/temp/base_concursos", clear
+
+forval i=1(1)8{
+gen n`i'=(date_cont`i'!=.)
+gen fill_n`i'=(date_elec`i'!=.)
+}
+
+gen total_cont=n1+n2+n3+n4+n5+n6+n7+n8
+gen total_cont_fill=fill_n1+fill_n2+fill_n3+fill_n4+fill_n5+fill_n6+fill_n7+fill_n8
+gen success=total_cont_fill/total_cont
+keep rbd success
+tempfile success
+save `success', replace
+restore
+
+merge m:1 rbd using `success'
+drop _merge
+
+gen date=t
+gen date2=dofm(date)
+format date2 %d
+
+gen agno=year(date2)
+gen mes=month(date2)
+drop date date2
+
+bysort rbd agno:egen monthsADP=total(ADP)
+
+keep if mes==12
+keep rbd agno ADP monthsADP success
+gen  ADP2=(monthsADP>=1)
+
+save "Data/clean/panel_ADP.dta", replace
+
+}
+
+** BUILD panel_principals.dta
+******************************
+{
+
+use "Data/clean/panel_employeremployee.dta", clear	
+	
+preserve
+	keep if Principal==1 
+	
+	bys rbd agno: egen maxHours=max(Hours)
+	keep if Hours==maxHours
+
+	bys rbd agno: egen maxTenure=max(SenioritySystem)
+	keep if SenioritySystem==maxTenure
+
+	bys rbd agno: egen maxEdad=max(Edad)
+	keep if Edad==maxEdad
+	
+	sort mrun
+	duplicates drop rbd agno, force
+	
+	gen id_prin=mrun
+	
+	keep rbd agno id_prin Public Edad Female Hours SenioritySystem Voucher Perm cod_com_rbd CollegeDegree EducDegree
+
+	tempfile id1
+	save `id1', replace
+restore
+
+preserve
+	keep if Principal==1|Administrative==1
+	merge m:1 rbd agno using `id1'
+	keep if _merge==1
+
+	bys rbd agno: egen maxHours=max(Hours)
+	keep if Hours==maxHours
+
+	bys rbd agno: egen maxTenure=max(SenioritySystem)
+	keep if SenioritySystem==maxTenure
+
+	bys rbd agno: egen maxEdad=max(Edad)
+	keep if Edad==maxEdad
+
+	sort mrun
+	duplicates drop rbd agno, force
+	
+	drop id_prin
+	gen id_prin=mrun
+	keep rbd agno id_prin Public Edad Female Hours SenioritySystem Voucher Perm cod_com_rbd CollegeDegree EducDegree
+
+	append using `id1'
+    sort rbd agno
+	
+	tempfile id2
+	save `id2', replace
+restore
+
+	
+	keep if Principal==1|Administrative==1|Teacher==1
+	merge m:1 rbd agno using `id2'
+	keep if _merge==1
+
+	bys rbd agno: egen maxHours=max(Hours)
+	keep if Hours==maxHours
+
+	bys rbd agno: egen maxTenure=max(SenioritySystem)
+	keep if SenioritySystem==maxTenure
+
+	bys rbd agno: egen maxEdad=max(Edad)
+	keep if Edad==maxEdad
+	
+	drop if rbd==406 & (agno==2014|agno==2015) & mrun==6634423
+	drop if rbd==4639 & agno==2013 & mrun==1060254
+	drop if rbd==22635 & agno==2014 & mrun==8140242
+	
+	sort mrun
+	duplicates drop rbd agno, force
+	
+	drop id_prin
+	gen id_prin=mrun
+	keep rbd agno id_prin Public Edad Female Hours SenioritySystem Voucher Perm cod_com_rbd CollegeDegree EducDegree
+	
+	append using `id2'
+    sort rbd agno
+			
+merge 1:1 rbd agno using "Data/clean/panel_ADP.dta"
+drop _merge
+
+drop if id_prin==.
+save "Data/clean/panel_principals.dta", replace
+
+}
+
+** BUILD SocioEcon_surveySimce and SocioEcon_surveySimce_Students.dta
+**********************************************************************
+{
+
+use "Data/raw/simce/simce4b2011_cpad_publica_final", clear
+
+label define educ 1 "Basica Incompleta" 2 "Basica Completa" 3 "Media Incompleta" 4 "Media Completa" 5 "Superior Incompleta" 6 "Superior Completa" 
+
+gen simce_educpadre=.
+replace simce_educpadre=1 if (cpad_p08_01==1 | cpad_p08_02==1 | cpad_p08_03==1 | cpad_p08_04==1 | cpad_p08_05==1 | cpad_p08_06==1 | cpad_p08_07==1 | cpad_p08_08==1) 
+replace simce_educpadre=2 if cpad_p08_09==1
+replace simce_educpadre=3 if (cpad_p08_10==1 | cpad_p08_11==1 | cpad_p08_12==1) 
+replace simce_educpadre=4 if (cpad_p08_13==1 | cpad_p08_14==1) 
+replace simce_educpadre=5 if (cpad_p08_15==1 | cpad_p08_17==1) 
+replace simce_educpadre=6 if (cpad_p08_16==1 | cpad_p08_18==1 | cpad_p08_19==1 | cpad_p08_20==1) 
+label values simce_educpadre educ
+
+gen simce_educmadre=.
+replace simce_educmadre=1 if (cpad_p09_01==1 | cpad_p09_02==1 | cpad_p09_03==1 | cpad_p09_04==1 | cpad_p09_05==1 | cpad_p09_06==1 | cpad_p09_07==1 | cpad_p09_08==1) 
+replace simce_educmadre=2 if cpad_p09_09==1
+replace simce_educmadre=3 if (cpad_p09_10==1 | cpad_p09_11==1 | cpad_p09_12==1) 
+replace simce_educmadre=4 if (cpad_p09_13==1 | cpad_p09_14==1) 
+replace simce_educmadre=5 if (cpad_p09_15==1 | cpad_p09_17==1) 
+replace simce_educmadre=6 if (cpad_p09_16==1 | cpad_p09_18==1 | cpad_p09_19==1 | cpad_p09_20==1) 
+label values simce_educmadre educ
+
+gen simce_poriginario_pad=.
+replace simce_poriginario_pad=1 if cpad_p12_01==1
+replace simce_poriginario_pad=0 if cpad_p12_01==2
+
+gen simce_poriginario_mad=.
+replace simce_poriginario_mad=1 if cpad_p12_02==1
+replace simce_poriginario_mad=0 if cpad_p12_02==2
+
+label define ing 1 "< $100.000" 2 "$100.001 - $200.000" 3 "$200.001 - $300.000" 4 "$300.001 - $400.000" 5 "$400.001 - $500.000" 6 "$500.001 - $600.000" 7 "$600.001 - $800.000" 8 "$800.001 - $1.000.000" 9 "$1.000.001 - $1.200.000" 10 "$1.200.001 - $1.400.000" 11 "$1.400.001 - $1.600.000" 12 "$1.600.001 - $1.800.000" 13 "$1.800.001 - $2.000.000" 14 "$2.000.001 - $2.200.000" 15 "> $2.200.000"
+gen simce_ingresos=.
+forval i=1(1)9{
+replace simce_ingresos=`i' if cpad_p10_0`i'==1
+}
+forval i=10(1)15{
+replace simce_ingresos=`i' if cpad_p10_`i'==1
+}
+label values simce_ingresos ing
+keep agno rbd simce_educpadre simce_educmadre simce_poriginario_pad simce_poriginario_mad simce_ingresos idalumno
+save "Data/clean/SocioEcon_surveySimce", replace
+
+
+use "Data/raw/simce/simce4b2012_cpad_publica_final", clear
+
+gen simce_educpadre=.
+replace simce_educpadre=1 if (cpad_p08==1 | cpad_p08==2 | cpad_p08==3 | cpad_p08==4 | cpad_p08==5 | cpad_p08==6 | cpad_p08==7 | cpad_p08==8) 
+replace simce_educpadre=2 if cpad_p08==9
+replace simce_educpadre=3 if (cpad_p08==10 | cpad_p08==11 | cpad_p08==12) 
+replace simce_educpadre=4 if (cpad_p08==13 | cpad_p08==14) 
+replace simce_educpadre=5 if (cpad_p08==15 | cpad_p08==17) 
+replace simce_educpadre=6 if (cpad_p08==16 | cpad_p08==18 | cpad_p08==19 | cpad_p08==20) 
+
+gen simce_educmadre=.
+replace simce_educmadre=1 if (cpad_p09==1 | cpad_p09==2 | cpad_p09==3 | cpad_p09==4 | cpad_p09==5 | cpad_p09==6 | cpad_p09==7 | cpad_p09==8) 
+replace simce_educmadre=2 if cpad_p09==9
+replace simce_educmadre=3 if (cpad_p09==10 | cpad_p09==11 | cpad_p09==12) 
+replace simce_educmadre=4 if (cpad_p09==13 | cpad_p09==14) 
+replace simce_educmadre=5 if (cpad_p09==15 | cpad_p09==17) 
+replace simce_educmadre=6 if (cpad_p09==16 | cpad_p09==18 | cpad_p09==19 | cpad_p09==20) 
+
+gen simce_poriginario_pad=.
+replace simce_poriginario_pad=1 if cpad_p12_01==1
+replace simce_poriginario_pad=0 if cpad_p12_01==2
+
+gen simce_poriginario_mad=.
+replace simce_poriginario_mad=1 if cpad_p12_02==1
+replace simce_poriginario_mad=0 if cpad_p12_02==2
+
+rename cpad_p10 simce_ingresos
+replace simce_ingresos=. if (simce_ingresos==99 | simce_ingresos==0)
+
+keep agno rbd simce_educpadre simce_educmadre simce_poriginario_pad simce_poriginario_mad simce_ingresos idalumno
+append using "Data/clean/SocioEcon_surveySimce", force
+save "Data/clean/SocioEcon_surveySimce", replace
+
+
+use "Data/raw/simce/simce4b2013_cpad_publica_final", clear
+
+gen simce_educpadre=.
+replace simce_educpadre=1 if (cpad_p07==1 | cpad_p07==2 | cpad_p07==3 | cpad_p07==4 | cpad_p07==5 | cpad_p07==6 | cpad_p07==7 | cpad_p07==8) 
+replace simce_educpadre=2 if cpad_p07==9
+replace simce_educpadre=3 if (cpad_p07==10 | cpad_p07==11 | cpad_p07==12) 
+replace simce_educpadre=4 if (cpad_p07==13 | cpad_p07==14) 
+replace simce_educpadre=5 if (cpad_p07==15 | cpad_p07==17) 
+replace simce_educpadre=6 if (cpad_p07==16 | cpad_p07==18 | cpad_p07==19 | cpad_p07==20) 
+
+gen simce_educmadre=.
+replace simce_educmadre=1 if (cpad_p08==1 | cpad_p08==2 | cpad_p08==3 | cpad_p08==4 | cpad_p08==5 | cpad_p08==6 | cpad_p08==7 | cpad_p08==8) 
+replace simce_educmadre=2 if cpad_p08==9
+replace simce_educmadre=3 if (cpad_p08==10 | cpad_p08==11 | cpad_p08==12) 
+replace simce_educmadre=4 if (cpad_p08==13 | cpad_p08==14) 
+replace simce_educmadre=5 if (cpad_p08==15 | cpad_p08==17) 
+replace simce_educmadre=6 if (cpad_p08==16 | cpad_p08==18 | cpad_p08==19 | cpad_p08==20) 
+
+rename cpad_p09 simce_ingresos
+replace simce_ingresos=. if (simce_ingresos==99 | simce_ingresos==0 | simce_ingresos==16 | simce_ingresos==17 | simce_ingresos==18 | simce_ingresos==19 | simce_ingresos==20 | simce_ingresos==21)
+
+keep agno rbd simce_educpadre simce_educmadre simce_ingresos idalumno
+append using "Data/clean/SocioEcon_surveySimce", force
+save "Data/clean/SocioEcon_surveySimce", replace
+
+
+use "Data/raw/simce/simce4b2014_cpad_publica_final", clear
+
+gen simce_educpadre=.
+replace simce_educpadre=1 if (cpad_p04==1 | cpad_p04==2 | cpad_p04==3 | cpad_p04==4 | cpad_p04==5 | cpad_p04==6 | cpad_p04==7 | cpad_p04==8) 
+replace simce_educpadre=2 if cpad_p04==9
+replace simce_educpadre=3 if (cpad_p04==10 | cpad_p04==11 | cpad_p04==12) 
+replace simce_educpadre=4 if (cpad_p04==13 | cpad_p04==14) 
+replace simce_educpadre=5 if (cpad_p04==15 | cpad_p04==17) 
+replace simce_educpadre=6 if (cpad_p04==16 | cpad_p04==18 | cpad_p04==19 | cpad_p04==20) 
+
+gen simce_educmadre=.
+replace simce_educmadre=1 if (cpad_p05==1 | cpad_p05==2 | cpad_p05==3 | cpad_p05==4 | cpad_p05==5 | cpad_p05==6 | cpad_p05==7 | cpad_p05==8) 
+replace simce_educmadre=2 if cpad_p05==9
+replace simce_educmadre=3 if (cpad_p05==10 | cpad_p05==11 | cpad_p05==12) 
+replace simce_educmadre=4 if (cpad_p05==13 | cpad_p05==14) 
+replace simce_educmadre=5 if (cpad_p05==15 | cpad_p05==17) 
+replace simce_educmadre=6 if (cpad_p05==16 | cpad_p05==18 | cpad_p05==19 | cpad_p05==20) 
+
+gen simce_poriginario_pad=.
+replace simce_poriginario_pad=1 if cpad_p07_01==1
+replace simce_poriginario_pad=0 if cpad_p07_01==2
+
+gen simce_poriginario_mad=.
+replace simce_poriginario_mad=1 if cpad_p07_02==1
+replace simce_poriginario_mad=0 if cpad_p07_02==2
+
+rename cpad_p06 simce_ingresos
+replace simce_ingresos=. if (simce_ingresos==99 | simce_ingresos==0)
+
+keep agno rbd simce_educpadre simce_educmadre simce_poriginario_pad simce_poriginario_mad simce_ingresos idalumno
+append using "Data/clean/SocioEcon_surveySimce", force
+save "Data/clean/SocioEcon_surveySimce", replace
+
+
+use "Data/raw/simce/simce4b2015_cpad_publica_final", clear
+
+gen simce_educpadre=.
+replace simce_educpadre=1 if (cpad_p07==1 | cpad_p07==2 | cpad_p07==3 | cpad_p07==4 | cpad_p07==5 | cpad_p07==6 | cpad_p07==7 | cpad_p07==8) 
+replace simce_educpadre=2 if cpad_p07==9
+replace simce_educpadre=3 if (cpad_p07==10 | cpad_p07==11 | cpad_p07==12) 
+replace simce_educpadre=4 if (cpad_p07==13 | cpad_p07==14) 
+replace simce_educpadre=5 if (cpad_p07==15 | cpad_p07==17) 
+replace simce_educpadre=6 if (cpad_p07==16 | cpad_p07==18 | cpad_p07==19 | cpad_p07==20) 
+
+gen simce_educmadre=.
+replace simce_educmadre=1 if (cpad_p08==1 | cpad_p08==2 | cpad_p08==3 | cpad_p08==4 | cpad_p08==5 | cpad_p08==6 | cpad_p08==7 | cpad_p08==8) 
+replace simce_educmadre=2 if cpad_p08==9
+replace simce_educmadre=3 if (cpad_p08==10 | cpad_p08==11 | cpad_p08==12) 
+replace simce_educmadre=4 if (cpad_p08==13 | cpad_p08==14) 
+replace simce_educmadre=5 if (cpad_p08==15 | cpad_p08==17) 
+replace simce_educmadre=6 if (cpad_p08==16 | cpad_p08==18 | cpad_p08==19 | cpad_p08==20) 
+
+gen simce_poriginario_pad=.
+replace simce_poriginario_pad=1 if cpad_p09_01==1
+replace simce_poriginario_pad=0 if cpad_p09_01==2
+
+gen simce_poriginario_mad=.
+replace simce_poriginario_mad=1 if cpad_p09_02==1
+replace simce_poriginario_mad=0 if cpad_p09_02==2
+
+rename cpad_p10 simce_ingresos
+replace simce_ingresos=. if (simce_ingresos==99 | simce_ingresos==0)
+
+keep agno rbd simce_educpadre simce_educmadre simce_poriginario_pad simce_poriginario_mad simce_ingresos idalumno
+append using "Data/clean/SocioEcon_surveySimce", force
+save "Data/clean/SocioEcon_surveySimce", replace
+
+
+use "Data/raw/simce/simce4b2016_cpad_publica_final", clear
+
+gen simce_educpadre=.
+replace simce_educpadre=1 if (cpad_p07==1 | cpad_p07==2 | cpad_p07==3 | cpad_p07==4 | cpad_p07==5 | cpad_p07==6 | cpad_p07==7 | cpad_p07==8) 
+replace simce_educpadre=2 if cpad_p07==9
+replace simce_educpadre=3 if (cpad_p07==10 | cpad_p07==11 | cpad_p07==12) 
+replace simce_educpadre=4 if (cpad_p07==13 | cpad_p07==14) 
+replace simce_educpadre=5 if (cpad_p07==15 | cpad_p07==17) 
+replace simce_educpadre=6 if (cpad_p07==16 | cpad_p07==18 | cpad_p07==19 | cpad_p07==20) 
+
+gen simce_educmadre=.
+replace simce_educmadre=1 if (cpad_p08==1 | cpad_p08==2 | cpad_p08==3 | cpad_p08==4 | cpad_p08==5 | cpad_p08==6 | cpad_p08==7 | cpad_p08==8) 
+replace simce_educmadre=2 if cpad_p08==9
+replace simce_educmadre=3 if (cpad_p08==10 | cpad_p08==11 | cpad_p08==12) 
+replace simce_educmadre=4 if (cpad_p08==13 | cpad_p08==14) 
+replace simce_educmadre=5 if (cpad_p08==15 | cpad_p08==17) 
+replace simce_educmadre=6 if (cpad_p08==16 | cpad_p08==18 | cpad_p08==19 | cpad_p08==20) 
+
+gen simce_poriginario_pad=.
+replace simce_poriginario_pad=1 if cpad_p09_01==1
+replace simce_poriginario_pad=0 if cpad_p09_01==2
+
+gen simce_poriginario_mad=.
+replace simce_poriginario_mad=1 if cpad_p09_02==1
+replace simce_poriginario_mad=0 if cpad_p09_02==2
+
+rename cpad_p10 simce_ingresos
+replace simce_ingresos=. if (simce_ingresos==99 | simce_ingresos==0)
+
+keep agno rbd simce_educpadre simce_educmadre simce_poriginario_pad simce_poriginario_mad simce_ingresos idalumno
+append using "Data/clean/SocioEcon_surveySimce", force
+
+save "Data/clean/SocioEcon_surveySimce_Students", replace
+
+
+* Create school level data
+
+tab simce_ingresos if simce_ingresos!=., gen(simce_ingresos_) 
+tab simce_educpadre if simce_educpadre!=., gen(simce_educpadre_) 
+tab simce_educmadre if simce_educmadre!=., gen(simce_educmadre_)
+
+gen simce_poriginario_algunpad =.
+replace simce_poriginario_algunpad=1 if (simce_poriginario_mad==1 | simce_poriginario_pad==1)
+replace simce_poriginario_algunpad=0 if (simce_poriginario_mad==0 & simce_poriginario_pad==0)
+
+collapse (mean) simce_ingresos_* simce_educpadre_* simce_educmadre_* ///
+	simce_poriginario_pad simce_poriginario_mad simce_poriginario_algunpad, by (rbd agno)
+
+label var simce_ingresos_1 "ing_<100.000" 
+label var simce_ingresos_2 "ing_100.001-200.000" 
+label var simce_ingresos_3 "ing_200.001-300.000" 
+label var simce_ingresos_4 "ing_300.001-400.000" 
+label var simce_ingresos_5 "ing_400.001-500.000" 
+label var simce_ingresos_6 "ing_500.001-600.000" 
+label var simce_ingresos_7 "ing_600.001-800.000" 
+label var simce_ingresos_8 "ing_800.001-1.000.000" 
+label var simce_ingresos_9 "ing_1.000.001-1.200.000" 
+label var simce_ingresos_10 "ing_1.200.001-1.400.000" 
+label var simce_ingresos_11 "ing_1.400.001-1.600.000" 
+label var simce_ingresos_12 "ing_1.600.001-1.800.000" 
+label var simce_ingresos_13 "ing_1.800.001-2.000.000" 
+label var simce_ingresos_14 "ing_2.000.001-2.200.000" 
+label var simce_ingresos_15 "ing_>2.200.000"
+
+label var simce_educmadre_1 "Madre_Basica Incompleta"
+label var simce_educmadre_2 " Madre_Basica Completa"
+label var simce_educmadre_3 " Madre_Media Incompleta"
+label var simce_educmadre_4 " Madre_Media Completa"
+label var simce_educmadre_5 " Madre_Superior Incompleta"
+label var simce_educmadre_6 " Madre_Superior Completa"
+
+label var simce_educpadre_1 "Padre_Basica Incompleta"
+label var simce_educpadre_2 "Padre_Basica Completa"
+label var simce_educpadre_3 "Padre_Media Incompleta"
+label var simce_educpadre_4 "Padre_Media Completa"
+label var simce_educpadre_5 "Padre_Superior Incompleta"
+label var simce_educpadre_6 "Padre_Superior Completa"
+
+label var simce_poriginario_pad "Padre de pueblo originario"
+label var simce_poriginario_mad "Madre de pueblo originario"
+label var simce_poriginario_algunpad "Padre o Madre de pueblo originario"
+
+compress
+save "Data/clean/SocioEcon_surveySimce", replace
+	
+}
+
+** BUILD surveySchool_aboutprincipals.dta
+******************************************
+{
+  
+use "Data/raw/simce/simce4b2009_cprof_publica_final", clear
+sort rbd dvrbd
+rename cprof_p19_01 prof_language
+rename cprof_p19_02 prof_math
+rename cprof_p19_03 prof_compr
+
+foreach i of numlist 1/9 {
+rename cprof_p34_0`i' about_dir_0`i'
+}
+
+foreach i of numlist 0/5 {
+rename cprof_p34_1`i' about_dir_1`i'
+}
+
+foreach var of varlist about_* {
+	replace `var'=. if `var'==3
+	replace `var'=3 if `var'==4
+	replace `var'=4 if `var'==5
+}
+
+foreach i of varlist about_* {
+		gen `i'_temp=.
+		replace `i'_temp=1 if `i'==4
+		replace `i'_temp=2 if `i'==3
+		replace `i'_temp=3 if `i'==2
+		replace `i'_temp=4 if `i'==1
+		drop `i'
+		rename `i'_temp `i'
+}
+keep agno rbd grado curso letra_curso prof* about_*
+save "Data/temp/survey.dta", replace
+
+use "Data/raw/simce/simce4b2010_cprof_publica_final", clear
+rename cprof_p19_01 prof_language
+rename cprof_p19_02 prof_math
+rename cprof_p19_03 prof_compr
+
+foreach i of numlist 1/9 {
+rename cprof_p34_0`i' about_dir_0`i'
+}
+
+foreach i of numlist 0/5 {
+rename cprof_p34_1`i' about_dir_1`i'
+}
+
+foreach var of varlist about_* {
+	replace `var'=. if `var'==3
+	replace `var'=3 if `var'==4
+	replace `var'=4 if `var'==5
+}
+
+foreach i of varlist about_* {
+		gen `i'_temp=.
+		replace `i'_temp=1 if `i'==4
+		replace `i'_temp=2 if `i'==3
+		replace `i'_temp=3 if `i'==2
+		replace `i'_temp=4 if `i'==1
+		drop `i'
+		rename `i'_temp `i'
+}
+keep agno rbd grado curso letra_curso prof* about_*
+append using "Data/temp/survey.dta", force
+save "Data/temp/survey.dta", replace
+
+
+use "Data/raw/simce/simce4b2011_cprof_publica_final", clear
+rename cprof_p11_01 prof_language
+rename cprof_p11_02 prof_math
+rename cprof_p11_03 prof_nat
+rename cprof_p11_04 prof_soc
+
+foreach i of numlist 1/9 {
+rename cprof_p29_0`i' about_dir_0`i'
+}
+
+foreach i of numlist 0/5 {
+rename cprof_p29_1`i' about_dir_1`i'
+}
+
+foreach i of varlist about_* {
+		gen `i'_temp=.
+		replace `i'_temp=1 if `i'==4
+		replace `i'_temp=2 if `i'==3
+		replace `i'_temp=3 if `i'==2
+		replace `i'_temp=4 if `i'==1
+		drop `i'
+		rename `i'_temp `i'
+}
+keep agno rbd grado curso letra_curso prof* about_*
+append using "Data/temp/survey.dta", force
+save "Data/temp/survey.dta", replace
+
+
+use "Data/raw/simce/simce4b2012_cprof_publica_final", clear
+rename cprof_p11_01 prof_language
+rename cprof_p11_03 prof_math
+gen prof_soc=(cprof_p11_02==1 | cprof_p11_04==1) 
+
+
+foreach i of numlist 1/9 {
+rename cprof_p29_0`i' about_dir_0`i'
+}
+
+foreach i of numlist 0/5 {
+rename cprof_p29_1`i' about_dir_1`i'
+}
+
+foreach i of varlist about_* {
+		gen `i'_temp=.
+		replace `i'_temp=1 if `i'==4
+		replace `i'_temp=2 if `i'==3
+		replace `i'_temp=3 if `i'==2
+		replace `i'_temp=4 if `i'==1
+		drop `i'
+		rename `i'_temp `i'
+}
+keep agno rbd grado curso letra_curso prof* about_*
+append using "Data/temp/survey.dta", force
+save "Data/temp/survey.dta", replace
+
+
+use "Data/raw/simce/simce4b2013_cprof_publica_final", clear
+rename cprof_p05_01 prof_language
+rename cprof_p05_02 prof_math
+rename cprof_p05_03 prof_nat
+rename cprof_p05_04 prof_soc
+
+rename cprof_p21_01 about_dir_03
+rename cprof_p21_02 about_dir_04
+rename cprof_p21_03 about_dir_06
+rename cprof_p21_04 about_dir_07
+rename cprof_p21_06 about_dir_09
+rename cprof_p21_07 about_dir_10
+rename cprof_p21_08 about_dir_12
+
+
+foreach i of varlist about_* {
+		gen `i'_temp=.
+		replace `i'_temp=1 if `i'==4
+		replace `i'_temp=2 if `i'==3
+		replace `i'_temp=3 if `i'==2
+		replace `i'_temp=4 if `i'==1
+		drop `i'
+		rename `i'_temp `i'
+}
+keep agno rbd grado curso letra_curso prof* about_*
+append using "Data/temp/survey.dta", force
+save "Data/temp/survey.dta", replace
+
+
+use "Data/raw/simce/simce4b2014_cprof_publica_final", clear
+rename cprof_p05_01 prof_language
+rename cprof_p05_02 prof_math
+rename cprof_p05_03 prof_nat
+rename cprof_p05_04 prof_soc
+
+rename cprof_p10_03 about_dir_12
+
+keep agno rbd grado curso letra_curso prof* about_*
+append using "Data/temp/survey.dta", force
+save "Data/temp/survey.dta", replace
+
+
+foreach base in lect mate {
+use "Data/raw/simce/simce2m2010_cprof_`base'_publica_final", clear
+rename cprof_p19_01 prof_language
+rename cprof_p19_02 prof_math
+
+foreach i of numlist 1/9 {
+rename cprof_p34_0`i' about_dir_0`i'
+}
+
+foreach i of numlist 0/5 {
+rename cprof_p34_1`i' about_dir_1`i'
+}
+
+foreach var of varlist about_* {
+	replace `var'=. if `var'==3
+	replace `var'=3 if `var'==4
+	replace `var'=4 if `var'==5
+}
+
+foreach i of varlist about_* {
+		gen `i'_temp=.
+		replace `i'_temp=1 if `i'==4
+		replace `i'_temp=2 if `i'==3
+		replace `i'_temp=3 if `i'==2
+		replace `i'_temp=4 if `i'==1
+		drop `i'
+		rename `i'_temp `i'
+}
+keep agno rbd grado curso letra_curso prof* about_*
+append using "Data/temp/survey.dta", force
+save "Data/temp/survey.dta", replace
+}
+
+foreach base in lect mate {
+use "Data/raw/simce/simce2m2012_cprof_`base'_publica_final", clear
+rename cprof_p11_01 prof_language
+rename cprof_p11_03 prof_math
+rename cprof_p11_02 prof_nat
+rename cprof_p11_04 prof_soc
+
+foreach i of numlist 1/9 {
+rename cprof_p29_0`i' about_dir_0`i'
+}
+
+foreach i of numlist 0/5 {
+rename cprof_p29_1`i' about_dir_1`i'
+}
+
+foreach i of varlist about_* {
+		gen `i'_temp=.
+		replace `i'_temp=1 if `i'==4
+		replace `i'_temp=2 if `i'==3
+		replace `i'_temp=3 if `i'==2
+		replace `i'_temp=4 if `i'==1
+		drop `i'
+		rename `i'_temp `i'
+}
+keep agno rbd grado curso letra_curso prof* about_*
+append using "Data/temp/survey.dta", force
+save "Data/temp/survey.dta", replace
+}
+
+
+use "Data/raw/simce/simce2m2013_cprof_publica_final", clear
+rename cprof_p05_01 prof_language
+rename cprof_p05_02 prof_math
+rename cprof_p05_03 prof_nat
+rename cprof_p05_04 prof_soc
+
+rename cprof_p21_01 about_dir_03
+rename cprof_p21_02 about_dir_04
+rename cprof_p21_03 about_dir_06
+rename cprof_p21_04 about_dir_07
+rename cprof_p21_06 about_dir_09
+rename cprof_p21_07 about_dir_10
+rename cprof_p21_08 about_dir_12
+
+foreach i of varlist about_* {
+		gen `i'_temp=.
+		replace `i'_temp=1 if `i'==4
+		replace `i'_temp=2 if `i'==3
+		replace `i'_temp=3 if `i'==2
+		replace `i'_temp=4 if `i'==1
+		drop `i'
+		rename `i'_temp `i'
+}
+keep agno rbd grado curso letra_curso prof* about_*
+append using "Data/temp/survey.dta", force
+save "Data/temp/survey.dta", replace
+
+foreach base in mate nat lect {
+use "Data/raw/simce/simce2m2014_cprof_`base'_publica_final", clear
+rename cprof_p05_01 prof_language
+rename cprof_p05_02 prof_math
+gen prof_nat=(cprof_p05_03==1 | cprof_p05_04==1 | cprof_p05_05==1) 
+rename cprof_p05_06 prof_soc
+
+rename cprof_p10_03 about_dir_12
+
+keep agno rbd grado curso letra_curso prof* about_*
+append using "Data/temp/survey.dta", force
+save "Data/temp/survey.dta", replace
+}
+
+
+foreach base in lect mate nat soc {
+use "Data/raw/simce/simce8b2009_cprof_lect_publica_final", clear
+sort rbd dvrbd
+rename cprof_p19_01 prof_language
+rename cprof_p19_02 prof_math
+rename cprof_p19_03 prof_nat
+
+foreach i of numlist 1/9 {
+rename cprof_p34_0`i' about_dir_0`i'
+}
+
+foreach i of numlist 0/5 {
+rename cprof_p34_1`i' about_dir_1`i'
+}
+
+foreach var of varlist about_* {
+	replace `var'=. if `var'==3
+	replace `var'=3 if `var'==4
+	replace `var'=4 if `var'==5
+}
+
+foreach i of varlist about_* {
+		gen `i'_temp=.
+		replace `i'_temp=1 if `i'==4
+		replace `i'_temp=2 if `i'==3
+		replace `i'_temp=3 if `i'==2
+		replace `i'_temp=4 if `i'==1
+		drop `i'
+		rename `i'_temp `i'
+}
+keep agno rbd grado letra_curso prof* about_*
+append using "Data/temp/survey.dta", force
+save "Data/temp/survey.dta", replace
+}
+
+foreach base in lect mate nat soc {
+use "Data/raw/simce/simce8b2011_cprof_`base'_publica_final", clear
+rename cprof_p11_01 prof_language
+rename cprof_p11_02 prof_math
+rename cprof_p11_03 prof_nat
+rename cprof_p11_04 prof_soc
+
+foreach i of numlist 1/9 {
+rename cprof_p29_0`i' about_dir_0`i'
+}
+
+foreach i of numlist 0/5 {
+rename cprof_p29_1`i' about_dir_1`i'
+}
+
+foreach i of varlist about_* {
+		gen `i'_temp=.
+		replace `i'_temp=1 if `i'==4
+		replace `i'_temp=2 if `i'==3
+		replace `i'_temp=3 if `i'==2
+		replace `i'_temp=4 if `i'==1
+		drop `i'
+		rename `i'_temp `i'
+}
+keep agno rbd grado letra_curso prof* about_*
+append using "Data/temp/survey.dta", force
+save "Data/temp/survey.dta", replace
+}
+
+use "Data/raw/simce/simce8b2013_cprof_publica_final", clear
+rename cprof_p05_01 prof_language
+rename cprof_p05_02 prof_math
+rename cprof_p05_03 prof_nat
+rename cprof_p05_04 prof_soc
+
+rename cprof_p21_01 about_dir_03
+rename cprof_p21_02 about_dir_04
+rename cprof_p21_03 about_dir_06
+rename cprof_p21_04 about_dir_07
+rename cprof_p21_06 about_dir_09
+rename cprof_p21_07 about_dir_10
+rename cprof_p21_08 about_dir_12
+
+foreach i of varlist about_* {
+		gen `i'_temp=.
+		replace `i'_temp=1 if `i'==4
+		replace `i'_temp=2 if `i'==3
+		replace `i'_temp=3 if `i'==2
+		replace `i'_temp=4 if `i'==1
+		drop `i'
+		rename `i'_temp `i'
+}
+keep agno rbd grado curso letra_curso prof* about_*
+append using "Data/temp/survey.dta", force
+save "Data/temp/survey.dta", replace
+
+foreach base in lect mate soc {
+use "Data/raw/simce/simce8b2014_cprof_`base'_publica_final", clear
+rename cprof_p05_01 prof_language
+rename cprof_p05_02 prof_math
+rename cprof_p05_03 prof_nat
+rename cprof_p05_04 prof_soc
+
+rename cprof_p10_03 about_dir_12
+
+keep agno rbd grado curso letra_curso prof* about_*
+append using "Data/temp/survey.dta", force
+save "Data/temp/survey.dta", replace
+}
+
+foreach i of varlist about_* {
+	replace `i' = . if `i' == 99		
+	replace `i' = . if `i' == 0
+}
+
+compress
+save "Data/temp/survey.dta", replace
+
+use "Data/temp/survey.dta", clear
+
+ds agno rbd grado curso letra_curso prof*, not
+order `r(varlist)', last alphabetic
+foreach var of varlist `r(varlist)' {
+gen d_`var'=1 if `var'==4
+replace d_`var'=0 if (`var'==1 | `var'==2 | `var'==3)
+
+gen Cd_`var'=1 if `var'==1 
+replace Cd_`var'=0 if (`var'==2 | `var'==3 | `var'==4)
+}
+
+* agreement by teachers
+egen NHagree=rowtotal(d_about_dir_01 d_about_dir_02 d_about_dir_03 d_about_dir_04 d_about_dir_05 d_about_dir_06 d_about_dir_07 d_about_dir_09 d_about_dir_10 d_about_dir_11 d_about_dir_12 d_about_dir_15), missing
+egen NHDisagree=rowtotal(Cd_about_dir_01 Cd_about_dir_02 Cd_about_dir_03 Cd_about_dir_04 Cd_about_dir_05 Cd_about_dir_06 Cd_about_dir_07 Cd_about_dir_09 Cd_about_dir_10 Cd_about_dir_11 Cd_about_dir_12 Cd_about_dir_15), missing
+tab NHagree, gen (D_Agree_)
+tab NHDisagree, gen (D_Disagree_)
+
+sort rbd agno
+collapse (mean) NHagree NHDisagree D_* d_about_*, by(agno rbd)
+compress
+
+label var NHagree        "Total highly agree"
+label var d_about_dir_01 "Creo que el director o directora de este establecimiento hace bien su trabajo"
+label var d_about_dir_02 "Siento que puedo confiar en el director o directora de este establecimiento"
+label var d_about_dir_03 "Creo que las decisiones que el dir toma estan bien orientadas para enfrentar los desafios del esta"
+label var d_about_dir_04 "Es efectivo y oportuno en resolver los problemas del establecimiento"
+label var d_about_dir_05 "Comunica de manera clara las metas del establecimiento para el anio"
+label var d_about_dir_06 "Gestiona los recursos economicos y humanos de manera adecuada"
+label var d_about_dir_07 "Es capaz de generar que todos o la mayoria de los prof se comprometan con las metas del esta"
+label var d_about_dir_09 "Involucra a los apoderados en las actividades del establecimiento"
+label var d_about_dir_10 "Esta atento a las necesidades de los profesores"
+label var d_about_dir_11 "Esta atento a las necesidades de los estudiantes"
+label var d_about_dir_12 "Genera instancias de toma de decisiones donde se involucra la opinion de los prof"
+label var d_about_dir_15 "Promueve una buena convivencia y clima en el establecimiento"
+
+save "Data/clean/surveySchool_aboutprincipals.dta", replace
+
+}
+
+** BUILD rbd_panel_enrollment_student_2008_2017.dta
+****************************************************
+{
+ 
+insheet using "Data/raw/students/2008.csv", clear delim(;)
+destring mrun, replace
+save "Data/temp/enrollment_student_2008.dta", replace
+save "Data/clean/panel_enrollment_student_2008_2017.dta", replace
+
+forvalues i=2009/2017{
+clear all
+insheet using "Data/raw/students/`i'.csv", clear delim(;)
+destring mrun, replace
+compress
+save "Data/temp/enrollment_student_`i'.dta", replace
+append using "Data/clean/panel_enrollment_student_2008_2017.dta", force
+save "Data/clean/panel_enrollment_student_2008_2017.dta", replace
+}
+
+drop nom_rbd let_rbd num_rbd cod_jor cod_tip_cur fec_nac_alu repite_alu ///
+	 gd_alu cod_reg_alu cod_com_alu nom_com_alu cod_sec cod_espe cod_rama ens ///
+	 nom_deprov_rbd cod_des_cur cod_men cod_etnia_alu int_alu cod_int_alu ///
+	 cod_nac_alu pais_origen_alu nom_com_rbd
+
+replace estado_estab=1 if agno<2015
+
+gen parv       			= (cod_ense3==1) 
+gen basica     			= (cod_ense3==2) 
+gen basica_adulto     	= (cod_ense3==3)
+gen media_hc   			= (cod_ense3==4) 
+gen media_hc_adulto   	= (cod_ense3==5) 
+gen media_tp   			= (cod_ense3==6) 
+gen media_tp_adulto   	= (cod_ense3==7) 
+
+gen prekinder = (cod_ense2==1 & cod_grado==4) | (cod_ense==214 & cod_grado==3)
+gen kinder    = (cod_ense2==1 & cod_grado==5) | (cod_ense==214 & cod_grado==4)
+
+forval i=1(1)8{
+gen basica_`i' 		  = (cod_ense2==2 & cod_grado==`i')
+}
+replace basica_1 = 1 if (cod_ense==211 & cod_grado==7) ///
+					   |(cod_ense==213 & cod_grado==7) ///
+					   |(cod_ense==215 & cod_grado==8) ///
+					   |(cod_ense==299 & cod_grado==6)
+						
+replace basica_2 = 1 if (cod_ense==211 & cod_grado==8) ///
+					   |(cod_ense==213 & cod_grado==8) ///
+					   |(cod_ense==215 & cod_grado==9) ///
+					   |(cod_ense==299 & cod_grado==7)
+					   
+					   
+replace basica_3 = 1 if (cod_ense==211 & cod_grado==10) ///
+					   |(cod_ense==213 & cod_grado==9) ///
+					   |(cod_ense==215 & cod_grado==10) ///
+					   |(cod_ense==299 & cod_grado==8)
+					   					
+replace basica_4 = 1 if (cod_ense==211 & cod_grado==10) ///
+					   |(cod_ense==213 & cod_grado==10) ///
+					   |(cod_ense==215 & cod_grado==11) ///
+					   |(cod_ense==299 & cod_grado==9)
+
+replace basica_5 = 1 if (cod_ense==211 & cod_grado==11) ///
+					   |(cod_ense==212 & cod_grado==5) ///
+					   |(cod_ense==213 & cod_grado==11) ///
+					   |(cod_ense==215 & cod_grado==12) ///
+					   |(cod_ense==216 & cod_grado==5) ///
+					   |(cod_ense==217 & cod_grado==5) ///
+					   |(cod_ense==299 & cod_grado==10)
+
+replace basica_6 = 1 if (cod_ense==211 & cod_grado==12) ///
+					   |(cod_ense==212 & cod_grado==6) ///
+					   |(cod_ense==213 & cod_grado==12) ///
+					   |(cod_ense==215 & cod_grado==13) ///
+					   |(cod_ense==216 & cod_grado==6) ///
+					   |(cod_ense==217 & cod_grado==6) ///
+					   |(cod_ense==299 & cod_grado==11)
+					   
+replace basica_7 = 1 if (cod_ense==211 & cod_grado==13) ///
+					   |(cod_ense==212 & cod_grado==7) ///
+					   |(cod_ense==213 & cod_grado==13) ///
+					   |(cod_ense==215 & cod_grado==14) ///
+					   |(cod_ense==216 & cod_grado==7) ///
+					   |(cod_ense==217 & cod_grado==7) ///
+					   |(cod_ense==299 & cod_grado==12)
+					   
+replace basica_8 = 1 if (cod_ense==211 & cod_grado==14) ///
+					   |(cod_ense==212 & (cod_grado==8 | cod_grado==9 | cod_grado==10)) ///
+					   |(cod_ense==213 & cod_grado==14) ///
+					   |(cod_ense==215 & cod_grado==15) ///
+					   |(cod_ense==216 & (cod_grado==8 | cod_grado==9 | cod_grado==10)) ///
+					   |(cod_ense==217 & (cod_grado==8 | cod_grado==9 | cod_grado==10)) ///
+					   |(cod_ense==299 & (cod_grado==13 | cod_grado==14 | cod_grado==15))
+
+forval i=4(2)8{
+gen basica_`i'_adulto	= ((cod_grado2==`i') & ///
+						  (cod_ense==160 | cod_ense==163 | ///
+						   cod_ense==165 | cod_ense==167))
+}
+
+
+forval i=1(1)4{
+gen media_`i'         = ((cod_ense2==5 & cod_grado2==`i') | (cod_ense2==7 & cod_grado2==`i'))
+gen media_`i'_adulto  = ((cod_ense2==6 & cod_grado2==`i') | (cod_ense2==8 & cod_grado2==`i'))
+}
+
+compress
+save "Data/clean/panel_enrollment_student_2008_2017.dta", replace
+
+* At school-level
+bysort rbd agno: egen mat_prekinder=sum(prekinder)
+bysort rbd agno: egen mat_kinder=sum(kinder)
+drop prekinder kinder
+
+forval i=1(1)8{
+bysort rbd agno: egen mat_basica_`i'=sum(basica_`i')
+drop basica_`i'
+}
+
+forval i=4(2)8{
+bysort rbd agno: egen mat_basica_`i'_adulto=sum(basica_`i'_adulto)
+drop basica_`i'_adulto
+}
+
+forval i=1(1)4{
+bysort rbd agno: egen mat_media_`i'=sum(media_`i')
+bysort rbd agno: egen mat_media_`i'_adulto=sum(media_`i'_adulto)
+drop media_`i' media_`i'_adulto
+}
+
+bysort rbd agno: egen mat_parv=sum(parv)
+
+bysort rbd agno: egen mat_basica=sum(basica)
+bysort rbd agno: egen mat_basica_adulto=sum(basica_adulto)
+
+bysort rbd agno: egen mat_mediaHC=sum(media_hc)
+bysort rbd agno: egen mat_mediaHC_adulto=sum(media_hc_adulto)
+
+bysort rbd agno: egen mat_mediaTP=sum(media_tp)
+bysort rbd agno: egen mat_mediaTP_adulto=sum(media_tp_adulto)
+bysort rbd agno: egen mat_total=count(agno)
+
+gen estSIMCE_2b=(cod_ense==110 & cod_grado==2)
+gen estSIMCE_4b=(cod_ense==110 & cod_grado==4)
+gen estSIMCE_8b=(cod_ense==110 & cod_grado==8)
+gen estSIMCE_2m=((cod_ense==310 | cod_ense==410 | cod_ense==510 | cod_ense==610 | cod_ense==710 | cod_ense==810 | cod_ense==910) & cod_grado==2)
+
+bysort rbd agno: egen estudiantesSIMCE_2b2=sum(estSIMCE_2b)
+bysort rbd agno: egen estudiantesSIMCE_4b2=sum(estSIMCE_4b)
+bysort rbd agno: egen estudiantesSIMCE_8b2=sum(estSIMCE_8b)
+bysort rbd agno: egen estudiantesSIMCE_2m2=sum(estSIMCE_2m)
+compress
+
+destring dgv_rbd, replace
+destring estado_estab, replace
+destring cod_reg_rbd, replace
+destring cod_com_rbd, replace
+destring cod_depe, replace
+destring cod_depe2, replace
+destring rural_rbd, replace
+destring gen_alu, replace
+destring edad_alu, replace
+destring cod_pro_rbd, replace
+destring cod_deprov_rbd, replace
+compress
+
+save "Data/clean/panel_enrollment_student_2008_2017.dta", replace
+	
+}
+
+** BUILD rbd_panel_enrollment_student_2008_2017.dta
+*****************************************************
+{
+use "Data/clean/panel_enrollment_student_2008_2017.dta", clear
+
+collapse (mean) dgv_rbd estado_estab mat_* estudiantesSIMCE_* cod_reg_rbd cod_com_rbd ///
+				cod_depe cod_depe2 rural_rbd gen_alu edad_alu ///
+				cod_pro_rbd cod_deprov_rbd, by(rbd agno)
+sort rbd agno 
+
+save "Data/clean/rbd_panel_enrollment_student_2008_2017.dta", replace
+}
+
+** BUILD panel_enrollment_school_2008_2017.dta
+***********************************************
+{
+
+insheet using "Data/raw/school/2017_school.csv", clear delim(;)
+sort rbd
+rename AGNO agno
+save "Data/clean/panel_enrollment_school_2008_2017.dta", replace
+
+forvalues i=2008/2016{
+insheet using "Data/raw/school/`i'_school.csv", clear delim(;)
+sort rbd
+append using "Data/clean/panel_enrollment_school_2008_2017.dta", force
+save "Data/clean/panel_enrollment_school_2008_2017.dta", replace
+}
+
+egen matricula_com=sum(mat_total), by(cod_com_rbd agno)
+
+rename mat_total matricula_total
+rename mat_ens_1 matricula_parv
+rename mat_ens_2 matricula_bas
+rename mat_ens_3 matricula_bas_adultos
+rename mat_ens_4 matricula_especial
+rename mat_ens_5 matricula_mediahc
+rename mat_ens_6 matricula_mediahc_adultos
+rename mat_ens_7 matricula_mediatp
+rename mat_ens_8 matricula_mediatp_adultos
+
+sort rbd agno cod_com_rbd
+
+order agno rbd matricula_total matricula_parv matricula_bas matricula_mediahc matricula_mediatp matricula_especial matricula_bas_adultos matricula_mediahc_adultos matricula_mediatp_adultos matricula_com dgv_rbd cod_com_rbd cod_depe
+
+replace estado_estab=1 if agno<2015
+
+save "Data/clean/panel_enrollment_school_2008_2017.dta", replace
+
+}
+
+** BUILD rbd_panel_SEPStudent_2008_2017.dta
+********************************************
+{
+
+insheet using "Data/raw/students/2008_sep.csv", clear delim(;)
+destring rbd, replace
+compress
+sort rbd agno
+save "Data/clean/panel_SEPStudent_2008_2017.dta", replace
+
+forvalues i=2009/2017{
+clear all
+insheet using "Data/raw/students/`i'_sep.csv", clear delim(;)
+destring rbd, replace
+compress
+append using "Data/clean/panel_SEPStudent_2008_2017.dta", force
+save "Data/clean/panel_SEPStudent_2008_2017.dta", replace
+}
+
+replace agno=AGNO if agno==.
+drop AGNO
+sort rbd agno
+
+save "Data/clean/panel_SEPStudent_2008_2017.dta", replace
+
+use "Data/clean/panel_enrollment_student_2008_2017.dta", clear
+
+keep agno rbd cod_ense cod_ense2 cod_ense3 cod_grado cod_grado2 mrun  edad_alu
+
+rename cod_ense cod_ense_mat
+rename cod_ense2 cod_ense2_mat
+rename cod_ense3 cod_ense3_mat
+rename cod_grado cod_grado_mat
+rename cod_grado2 cod_grado2_mat
+rename rbd rbd_mat
+rename edad_alu edad_alu_mat
+
+drop if mrun==.
+
+duplicates drop agno mrun, force
+
+save "Data/temp/enrollment_for_merge_SEP.dta", replace
+
+use "Data/temp/enrollment_for_merge_SEP.dta", clear
+
+merge 1:1 agno mrun using "Data/clean/panel_SEPStudent_2008_2017.dta"
+
+keep if _merge==2 | _merge==3
+
+drop _merge rbd_mat edad_alu_mat nom_rbd cod_reg_rbd cod_pro_rbd ///
+	 cod_com_rbd nom_com_rbd cod_deprov_rbd nom_deprov_rbd cod_depe cod_depe2 ///
+	 rural_rbd let_cur cod_jor let_rbd num_rbd
+
+save "Data/clean/panel_SEPStudent_2008_2017.dta", replace
+
+gen prekinder = (cod_ense2_mat==1 & cod_grado_mat==4) | (cod_ense_mat==214 & cod_grado_mat==3)
+gen kinder    = (cod_ense2_mat==1 & cod_grado_mat==5) | (cod_ense_mat==214 & cod_grado_mat==4)
+
+forval i=1(1)8{
+gen basica_`i' 		  = (cod_ense2_mat==2 & cod_grado_mat==`i')
+}
+replace basica_1 = 1 if (cod_ense_mat==211 & cod_grado_mat==7) ///
+					   |(cod_ense_mat==213 & cod_grado_mat==7) ///
+					   |(cod_ense_mat==215 & cod_grado_mat==8) ///
+					   |(cod_ense_mat==299 & cod_grado_mat==6)
+						
+replace basica_2 = 1 if (cod_ense_mat==211 & cod_grado_mat==8) ///
+					   |(cod_ense_mat==213 & cod_grado_mat==8) ///
+					   |(cod_ense_mat==215 & cod_grado_mat==9) ///
+					   |(cod_ense_mat==299 & cod_grado_mat==7)
+					   
+					   
+replace basica_3 = 1 if (cod_ense_mat==211 & cod_grado_mat==10) ///
+					   |(cod_ense_mat==213 & cod_grado_mat==9) ///
+					   |(cod_ense_mat==215 & cod_grado_mat==10) ///
+					   |(cod_ense_mat==299 & cod_grado_mat==8)
+					   					
+replace basica_4 = 1 if (cod_ense_mat==211 & cod_grado_mat==10) ///
+					   |(cod_ense_mat==213 & cod_grado_mat==10) ///
+					   |(cod_ense_mat==215 & cod_grado_mat==11) ///
+					   |(cod_ense_mat==299 & cod_grado_mat==9)
+
+replace basica_5 = 1 if (cod_ense_mat==211 & cod_grado_mat==11) ///
+					   |(cod_ense_mat==212 & cod_grado_mat==5) ///
+					   |(cod_ense_mat==213 & cod_grado_mat==11) ///
+					   |(cod_ense_mat==215 & cod_grado_mat==12) ///
+					   |(cod_ense_mat==216 & cod_grado_mat==5) ///
+					   |(cod_ense_mat==217 & cod_grado_mat==5) ///
+					   |(cod_ense_mat==299 & cod_grado_mat==10)
+
+replace basica_6 = 1 if (cod_ense_mat==211 & cod_grado_mat==12) ///
+					   |(cod_ense_mat==212 & cod_grado_mat==6) ///
+					   |(cod_ense_mat==213 & cod_grado_mat==12) ///
+					   |(cod_ense_mat==215 & cod_grado_mat==13) ///
+					   |(cod_ense_mat==216 & cod_grado_mat==6) ///
+					   |(cod_ense_mat==217 & cod_grado_mat==6) ///
+					   |(cod_ense_mat==299 & cod_grado_mat==11)
+					   
+replace basica_7 = 1 if (cod_ense_mat==211 & cod_grado_mat==13) ///
+					   |(cod_ense_mat==212 & cod_grado_mat==7) ///
+					   |(cod_ense_mat==213 & cod_grado_mat==13) ///
+					   |(cod_ense_mat==215 & cod_grado_mat==14) ///
+					   |(cod_ense_mat==216 & cod_grado_mat==7) ///
+					   |(cod_ense_mat==217 & cod_grado_mat==7) ///
+					   |(cod_ense_mat==299 & cod_grado_mat==12)
+					   
+replace basica_8 = 1 if (cod_ense_mat==211 & cod_grado_mat==14) ///
+					   |(cod_ense_mat==212 & (cod_grado_mat==8 | cod_grado_mat==9 | cod_grado_mat==10)) ///
+					   |(cod_ense_mat==213 & cod_grado_mat==14) ///
+					   |(cod_ense_mat==215 & cod_grado_mat==15) ///
+					   |(cod_ense_mat==216 & (cod_grado_mat==8 | cod_grado_mat==9 | cod_grado_mat==10)) ///
+					   |(cod_ense_mat==217 & (cod_grado_mat==8 | cod_grado_mat==9 | cod_grado_mat==10)) ///
+					   |(cod_ense_mat==299 & (cod_grado_mat==13 | cod_grado_mat==14 | cod_grado_mat==15))
+
+forval i=4(2)8{
+gen basica_`i'_adulto	= ((cod_grado2_mat==`i') & ///
+						  (cod_ense_mat==160 | cod_ense_mat==163 | ///
+						   cod_ense_mat==165 | cod_ense_mat==167))
+}
+
+forval i=1(1)4{
+gen media_`i'         = ((cod_ense2_mat==5 & cod_grado2_mat==`i') | (cod_ense2_mat==7 & cod_grado2_mat==`i'))
+gen media_`i'_adulto  = ((cod_ense2_mat==6 & cod_grado2_mat==`i') | (cod_ense2_mat==8 & cod_grado2_mat==`i'))
+}
+
+save "Data/clean/panel_SEPStudent_2008_2017.dta", replace
+
+replace prioritario_alu = 1 if agno<2016
+
+foreach n in ben_sep prioritario_alu { 
+bysort rbd agno: egen `n'_prekinder=sum(`n')            if prekinder==1
+bysort rbd agno: egen `n'_kinder=sum(`n')               if kinder==1
+
+forval i=1(1)8{
+bysort rbd agno: egen `n'_basica_`i'=sum(`n')   if basica_`i'==1
+}
+
+forval i=4(2)8{
+bysort rbd agno: egen `n'_basica_`i'_adulto=sum(`n') if basica_`i'_adulto==1
+}
+
+forval i=1(1)4{
+bysort rbd agno: egen `n'_media_`i'=sum(`n')            if media_`i'==1
+bysort rbd agno: egen `n'_media_`i'_adulto=sum(`n') if media_`i'_adulto==1
+}
+
+bysort rbd agno: egen `n'_total=sum(`n') 
+}
+
+save "Data/clean/panel_SEPStudent_2008_2017.dta", replace
+
+destring dgv_rbd, replace
+destring estado_estab, replace
+
+global variables prekinder kinder basica_1 basica_2 basica_3 basica_4 basica_5 basica_6 basica_7 basica_8 basica_4_adulto basica_6_adulto basica_8_adulto media_1 media_1_adulto media_2 media_2_adulto media_3 media_3_adulto media_4 media_4_adulto
+
+foreach x in $variables {
+  tab `x' agno if prioritario_alu==1
+}
+
+collapse (mean) convenio_sep_seps=convenio_sep ee_gratuito_seps=ee_gratuito ///
+				dgv_rbd ben_sep_* prioritario_alu_*, by(rbd agno)
+sort rbd agno 
+
+save "Data/clean/rbd_panel_SEPStudent_2008_2017.dta", replace
+
+}
+
+** BUILD rbd_panel_SEPEstab_2008_2017.dta
+******************************************
+{
+   
+insheet using "Data/raw/school/2008 SEP.csv", clear delim(;)
+gen agno=2008
+sort rbd agno
+save "Data/clean/panel_SEPEstab_2008_2017.dta", replace
+
+forvalues i=2009/2017{
+insheet using "Data/raw/school/`i' SEP.csv", clear delim(;)
+if `i'<2014 {
+gen agno=`i'
+}
+append using "Data/clean/panel_SEPEstab_2008_2017.dta", force
+sort rbd agno
+save "Data/clean/panel_SEPEstab_2008_2017.dta", replace
+}
+
+replace agno=AGNO if agno==.
+drop AGNO
+sort rbd agno
+
+collapse (sum) n_prio n_ben (mean) dgv_rbd cod_com_rbd cod_depe, by(rbd agno)
+egen prio_com=sum(n_prio), by(cod_com_rbd agno)
+
+label variable n_prio "Numero de alumnos prioritarios"
+label variable n_ben "Nro beneficiarios SEP (prioritarios en niveles SEP)"
+
+sort rbd agno cod_com_rbd
+save "Data/clean/rbd_panel_SEPEstab_2008_2017.dta", replace
+
+}
+
+** BUILD EvaluacionDocente_2007_2016.dta
+*****************************************
+{
+ 
+insheet using "Data/raw/teachers/EVALUACION_DOCENTE_2012_PUBL.csv", clear delimit(";")
+destring rbd, replace
+replace m2d5_pje="" if m2d5_pje=="#NULL!"
+replace m2d6_pje="" if m2d6_pje=="#NULL!"
+replace m2d7_pje="" if m2d7_pje=="#NULL!"
+destring *_pje, replace dpcomma
+
+save "Data/clean/EvaluacionDocente_2007_2016.dta", replace
+
+forval y=2007/2011 {
+	if `y'==2011 {
+	import excel "Data/raw/teachers/EVALUACION_DOCENTE_`y'_PUBL.xlsx", sheet("Datos") firstrow case(lower) clear
+	replace dim_f="" if dim_f=="#NULL!"
+	replace dim_g="" if dim_g=="#NULL!"
+	replace dim_h="" if dim_h=="#NULL!"
+	destring dim_*, replace
+	}
+	else {
+	import excel "Data/raw/teachers/EVALUACION_DOCENTE_`y'_PUBL.xls", sheet("Dimensiones `y'") firstrow case(lower) clear
+	rename subsector subsect
+	} 
+	rename periodo AÑO_EVAL
+	rename esc_r cce_esc
+	rename dim_a m1d1_pje
+	rename dim_b m1d2_pje
+	rename dim_c m1d3_pje
+	rename dim_d m1d4_pje
+	rename dim_e m2d8_pje
+	rename dim_f m2d5_pje
+	rename dim_g m2d6_pje
+	rename dim_h m2d7_pje
+	
+	replace cce_esc="C" if cce_esc=="Competente"
+	replace cce_esc="B" if cce_esc=="Básico"
+	replace cce_esc="I" if cce_esc=="Insatisfactorio"
+	replace cce_esc="D" if cce_esc=="Destacado"
+	
+	append using "Data/clean/EvaluacionDocente_2007_2016.dta", force
+	save "Data/clean/EvaluacionDocente_2007_2016.dta", replace
+	compress
+	}
+
+forval y=2013/2016 {
+	insheet using "Data/raw/teachers/EVALUACION_DOCENTE_`y'_PUBL.csv", clear delim (;)
+	destring rbd, replace
+	destring *_pje, replace dpcomma
+	append using "Data/clean/EvaluacionDocente_2007_2016.dta", force
+	save "Data/clean/EvaluacionDocente_2007_2016.dta", replace
+	compress
+	}
+	
+rename ao_eval agno
+replace agno=AÑO_EVAL if agno==.
+drop AÑO_EVAL
+
+foreach var in subsect pf_esc cce_esc m1d1_esc m1d2_esc m1d3_esc m1d4_esc m2d5_esc m2d6_esc m2d7_esc {
+	egen `var'2=group(`var'), label
+	drop `var'
+	rename `var'2 `var'
+}
+keep agno rbd mrun clave nivel subsect ae_pje ep_pje irt_pje pf_pje pf_esc instr_pje cce_esc m1d1_pje m1d1_esc m1d2_pje m1d2_esc m1d3_pje m1d3_esc m1d4_pje m1d4_esc m2d5_pje m2d5_esc m2d6_pje m2d6_esc m2d7_pje m2d7_esc
+order agno rbd mrun clave nivel subsect ae_pje ep_pje irt_pje pf_pje pf_esc instr_pje cce_esc m1d1_pje m1d1_esc m1d2_pje m1d2_esc m1d3_pje m1d3_esc m1d4_pje m1d4_esc m2d5_pje m2d5_esc m2d6_pje m2d6_esc m2d7_pje m2d7_esc
+
+preserve
+	use "Data/clean/panel_docentes.dta", clear
+	sort agno mrun clave
+	duplicates drop clave, force
+	rename mrun mrun_CargosDocentes
+	tempfile temp
+	save `temp', replace
+restore
+
+merge m:1 clave using `temp', gen(merge_clave_mrun) keepusing(mrun_CargosDocentes)
+drop if merge_clave_mrun==2
+replace mrun=mrun_CargosDocentes if (mrun==.)
+drop mrun_CargosDocentes merge_clave_mrun
+sort mrun agno
+
+compress
+duplicates drop mrun agno rbd, force
+save "Data/clean/EvaluacionDocente_2007_2016.dta", replace
+
+}
+
+** BUILD panel_school_docentes
+*******************************
+{
+use "Data/clean/panel_employeremployee.dta", clear 
+
+merge 1:1 mrun agno rbd using "Data/clean/EvaluacionDocente_2007_2016.dta", keepusing(instr_pje cce_esc)
+rename instr_pje EvalDocente_Score 
+rename cce_esc EvalDocente_Class 
+decode EvalDocente_Class, gen(EvalDocente_Class_str)
+gen EvalDocente=(_merge==3)
+drop _merge
+
+
+egen teachers=concat(rbd mrun), format(%13.0g)
+egen id=group(teachers)
+drop teachers
+
+xtset id agno
+tsfill, full 
+
+sort id agno
+gen emp=(rbd!=.)
+
+bys id (agno): gen fired =(emp==1 & emp[_n+1]==0)
+bys id (agno): gen hired =(emp==1 & emp[_n-1]==0)
+	
+gen aux_New = (SenioritySystem<=8 & agno==2015)
+gen aux_Young = (Edad<30 & agno==2015)
+gen aux_Bad  = (EvalDocente_Class_str=="I" |EvalDocente_Class_str=="B")
+gen aux_Good = (EvalDocente_Class_str=="D" |EvalDocente_Class_str=="C")
+
+bysort clave: egen Young=max(aux_Young)	
+bysort clave: egen New=max(aux_New)	
+bysort clave: egen Bad=max(aux_Bad)	
+bysort clave: egen Good=max(aux_Good)	
+
+bys rbd agno: gen  N_all=_N
+bys rbd agno: egen N_sup=total(SupportWorker)
+bys rbd agno: egen N_sup_20501=total(SupportWorker_Law20501)
+bys rbd agno: egen N_adm=total(Administrative)
+bys rbd agno: egen N_teach=total(Teacher)
+bys rbd agno: egen N_teach_new=total(Teacher*New)
+bys rbd agno: egen N_teach_young=total(Teacher*Young)
+bys rbd agno: egen N_teach_bad=total(Teacher*Bad)
+bys rbd agno: egen N_teach_good=total(Teacher*Good)
+
+bys rbd agno: egen fired_all=total(fired)
+bys rbd agno: egen hired_all=total(hired)
+
+bys rbd agno: egen fired_sup=total(fired*SupportWorker)
+bys rbd agno: egen hired_sup=total(hired*SupportWorker)
+
+bys rbd agno: egen fired_sup_20501=total(fired*SupportWorker_Law20501)
+bys rbd agno: egen hired_sup_20501=total(hired*SupportWorker_Law20501)
+
+bys rbd agno: egen fired_adm=total(fired*Administrative)
+bys rbd agno: egen hired_adm=total(hired*Administrative)
+
+bys rbd agno: egen fired_teach=total(fired*Teacher)
+bys rbd agno: egen hired_teach=total(hired*Teacher)
+
+bys rbd agno: egen fired_teach_new=total(fired*Teacher*New)
+bys rbd agno: egen hired_teach_new=total(hired*Teacher*New)
+
+bys rbd agno: egen fired_teach_young=total(fired*Teacher*Young)
+bys rbd agno: egen hired_teach_young=total(hired*Teacher*Young)	
+
+bys rbd agno: egen fired_teach_bad=total(fired*Teacher*Bad)
+bys rbd agno: egen hired_teach_bad=total(hired*Teacher*Bad)	
+
+bys rbd agno: egen fired_teach_good=total(fired*Teacher*Good)
+bys rbd agno: egen hired_teach_good=total(hired*Teacher*Good)	
+
+bys rbd agno: egen Seniority=mean(SenioritySystem)
+rename SenioritySchool aux
+bys rbd agno: egen SenioritySchool=mean(aux)
+
+
+foreach i in all sup sup_20501 adm teach teach_new teach_young teach_bad teach_good{
+	g churn_`i' = (fired_`i' + hired_`i')/N_`i'
+}
+
+bys rbd agno: gen n=_n
+keep if n==1
+
+keep N_* fired_* hired_* churn_* Seniority SenioritySchool rbd agno
+
+save "Data/clean/panel_school_docentes", replace
+
+}
+
+** BUILD panelSIMCE2b_2012_2015.dta, panelSIMCE4b_2008_2016.dta, panelSIMCE8b.dta, panelSIMCE2m.dta
+*****************************************************************************************************
+{
+
+use "Data/raw/simce/simce2b2012_rbd_publica_final.dta", clear
+sort rbd dvrbd
+rename marca_prom_rbd marca_lect2b_rbd
+save "Data/clean/panelSIMCE2b_2012_2015.dta", replace
+
+forvalues i=2013/2015{
+use "Data/raw/simce/simce2b`i'_rbd_publica_final.dta", clear
+append using "Data/clean/panelSIMCE2b_2012_2015.dta", force
+sort rbd dvrbd agno
+save "Data/clean/panelSIMCE2b_2012_2015.dta", replace
+}
+
+keep rbd agno prom_lect2b_rbd marca_lect2b_rbd
+save "Data/clean/panelSIMCE2b_2012_2015.dta", replace
+
+
+use "Data/raw/simce/simce4b2008_rbd_publica_final.dta", clear
+sort rbd dvrbd
+save "Data/clean/panelSIMCE4b_2008_2016.dta", replace
+
+forvalues i=2009/2016{
+use "Data/raw/simce/simce4b`i'_rbd_publica_final.dta", clear
+append using "Data/clean/panelSIMCE4b_2008_2016.dta", force
+sort rbd dvrbd
+save "Data/clean/panelSIMCE4b_2008_2016.dta", replace
+}
+
+keep rbd agno prom_lect4b_rbd marca_lect4b_rbd prom_mate4b_rbd marca_mate4b_rbd ///
+	prom_soc4b_rbd marca_soc4b_rbd prom_nat4b_rbd marca_nat4b_rbd
+
+order rbd agno prom_lect4b_rbd marca_lect4b_rbd prom_mate4b_rbd marca_mate4b_rbd ///
+	prom_soc4b_rbd marca_soc4b_rbd prom_nat4b_rbd marca_nat4b_rbd 
+save "Data/clean/panelSIMCE4b_2008_2016.dta", replace
+
+
+use "Data/raw/simce/simce8b2009_rbd_publica_final.dta", clear
+sort rbd dvrbd
+save "Data/clean/panelSIMCE8b.dta", replace
+
+foreach i in "2011" "2013" "2014" "2015"{
+use "Data/raw/simce/simce8b`i'_rbd_publica_final.dta", clear
+append using "Data/clean/panelSIMCE8b.dta", force
+sort rbd dvrbd agno
+save "Data/clean/panelSIMCE8b.dta", replace
+}
+
+keep rbd agno prom_lect8b_rbd marca_lect8b_rbd prom_mate8b_rbd marca_mate8b_rbd ///
+	prom_nat8b_rbd marca_nat8b_rbd prom_soc8b_rbd marca_soc8b_rbd
+	
+order rbd agno prom_lect8b_rbd marca_lect8b_rbd prom_mate8b_rbd marca_mate8b_rbd ///
+	prom_nat8b_rbd marca_nat8b_rbd prom_soc8b_rbd marca_soc8b_rbd
+	
+save "Data/clean/panelSIMCE8b.dta", replace
+
+
+use "Data/raw/simce/simce2m2008_rbd_publica_final.dta", clear
+sort rbd dvrbd
+save "Data/clean/panelSIMCE2m.dta", replace
+
+foreach i in "2010" "2012" "2013" "2014" "2015" "2016"{
+use "Data/raw/simce/simce2m`i'_rbd_publica_final.dta", clear
+append using "Data/clean/panelSIMCE2m.dta", force
+sort rbd dvrbd agno
+save "Data/clean/panelSIMCE2m.dta", replace
+}
+
+keep rbd agno prom_lect2m_rbd marca_lect2m_rbd prom_mate2m_rbd marca_mate2m_rbd ///
+	prom_nat2m_rbd marca_nat2m_rbd prom_soc2m_rbd marca_soc2m_rbd
+	
+order rbd agno prom_lect2m_rbd marca_lect2m_rbd prom_mate2m_rbd marca_mate2m_rbd ///
+	prom_nat2m_rbd marca_nat2m_rbd prom_soc2m_rbd marca_soc2m_rbd
+
+save "Data/clean/panelSIMCE2m.dta", replace
+
+}
+
+** BUILD Avg_CollegeAdmission_rbd_year.dta
+*******************************************
+{
+    
+use "Data/raw/psu/PSU_weights_2010_2021.dta", clear 
+
+rename demre codigo_carrera
+keep if codigo_carrera > 0 
+
+gen anio_proceso = .
+forval y=2010(1)2021 {
+  replace anio_proceso = `y' if año == "OFE_`y'"
+}
+
+keep codigo_carrera anio_proceso codigounico oecdarea ponderacionlenguaje ponderacionmatematicas ///
+ponderacionhistoria ponderacionciencias ponderacionrankingnotas ponderacionnotas ponderacionotros nombrecarrera
+
+duplicates tag anio_proceso codigo_carrera, gen(tag_)
+drop if (tag_>0) & (ponderacionlenguaje == 0 & ponderacionmatematicas == 0) 
+
+drop tag_
+duplicates tag anio_proceso codigo_carrera, gen(tag_)
+
+duplicates drop anio_proceso codigo_carrera ponderacion*, force 
+drop tag_
+
+duplicates tag anio_proceso codigo_carrera, gen(tag_)
+drop if tag_ > 0 
+drop tag_
+
+save "Data/temp/cod_carrera.dta", replace
+
+use "Data/raw/psu/psu_formC.dta", clear
+keep if anio_proceso>=2010
+keep if estado_preferencia==24 | estado_preferencia==25 | estado_preferencia==26 
+merge m:1 anio_proceso codigo_carrera using "Data/temp/cod_carrera.dta"
+drop if _merge==2
+drop _merge
+
+foreach var in ponderacionnotas ponderacionrankingnotas ponderacionlenguaje ponderacionmatematicas ponderacionhistoria ponderacionciencias ponderacionotros {
+  replace `var' = 0 if `var' == .
+}
+
+save "Data/temp/psu_formC_weights.dta", replace
+
+
+use "Data/raw/psu/psu_formA.dta", clear 
+rename anio_proceso_psu anio_proceso
+drop if anio_proceso < 2010 | anio_proceso > 2017
+
+gen public_hs = (dependencia_psu == 2)
+gen private_hs = (dependencia_psu == 4)
+gen voucher_hs = (dependencia_psu != 2 & dependencia_psu != 4)
+
+drop bea region_psu comuna_psu 
+
+merge 1:m anio_proceso run_falso using "Data/temp/psu_formC_weights.dta"
+drop if _merge == 1
+drop _merge
+
+foreach var in hycs_actual ciencias_actual hycs_anterior ciencias_anterior ptje_ranking{
+  replace `var' = 0 if `var' == .
+}
+
+foreach var in lyc mate ciencias hycs {
+  replace `var'_actual = `var'_anterior if pond_anio_acad == 2
+}
+
+drop if ponderacionnotas == 0 
+
+gen science_history_program = (ponderacionciencias > 0 & ponderacionhistoria > 0)
+egen max_hist_science = rowmax(ciencias_actual hycs_actual)
+
+tab ponderacionciencias ponderacionhistoria if science_history_program == 1 
+
+gen score_w = ponderacionnotas*ptje_nem + ponderacionrankingnotas*ptje_ranking + ///
+			  ponderacionlenguaje*lyc_actual + ponderacionmatematicas*mate_actual + ///
+			  ponderacionhistoria*hycs_actual + ponderacionciencias*ciencias_actual if science_history_program == 0
+
+replace score_w = ponderacionnotas*ptje_nem + ponderacionrankingnotas*ptje_ranking + ///
+				  ponderacionlenguaje*lyc_actual + ponderacionmatematicas*mate_actual + ///
+				  ponderacionhistoria*max_hist_science if science_history_program == 1
+
+gen dif_score = score_w - puntaje
+summ dif_score if estado_preferencia == 24, d
+drop dif_score puntaje
+
+order run_falso anio_proceso preferencia codigo_carrera estado_preferencia lugar situacion_postulante score_w codigounico oecdarea
+sort run_falso anio_proceso preferencia 
+
+save "Data/temp/psu_formC_weights.dta", replace
+
+use "Data/temp/psu_formC_weights.dta", clear
+
+rename anio_proceso year
+rename score_w puntaje
+
+keep if preferencia==1 
+
+foreach var in puntaje ptje_nem mate_actual lyc_actual ciencias_actual hycs_actual ptje_ranking{
+replace `var'=. if `var'==0
+gen sd_`var'=.
+}
+
+
+forval t=2010(1)2017{
+foreach var in puntaje ptje_nem mate_actual lyc_actual ciencias_actual hycs_actual{
+sum `var' if year==`t'
+replace sd_`var'=(`var'-`r(mean)')/`r(sd)' if year==`t'
+}
+}
+
+forval t=2013(1)2017{
+foreach var in ptje_ranking{
+sum `var' if year==`t'
+replace sd_`var'=(`var'-`r(mean)')/`r(sd)' if year==`t'
+}
+}
+ 
+gen accepted_mostpreferred=(estado_preferencia == 24)
+	
+gen Ncruch=1
+collapse (mean) puntaje ptje_nem mate_actual lyc_actual ciencias_actual hycs_actual ptje_ranking ///
+				sd_puntaje sd_ptje_nem sd_mate_actual sd_lyc_actual sd_ciencias_actual sd_hycs_actual sd_ptje_ranking accepted_mostpreferred* (sum) Ncruch, by(rbd_psu year)
+
+rename rbd_psu rbd
+keep rbd year puntaje mate_actual lyc_actual sd_puntaje sd_mate_actual sd_lyc_actual accepted_mostpreferred* Ncruch 
+
+save "Data/clean/Avg_CollegeAdmission_rbd_year.dta", replace
+
+}
+
+** BUILD PSUrbd_2010_2017.dta
+******************************
+{
+
+insheet using "Data/raw/psu/20170523_ADM2017.csv", clear delimit(";")
+sort p012
+
+rename p012 rbd
+rename p015 agno_egreso
+rename p004 agno_proceso
+
+destring p000, replace
+destring agno_proceso, replace
+destring rbd, replace
+destring agno_egreso, replace
+
+keep if agno_proceso-agno_egreso==1 
+gen c=1
+bysort rbd: egen n_PSUimmediatetakers_rbd=total(c)
+
+save "Data/clean/PSU_2010_2017.dta", replace
+
+forval y=2010/2016 {
+insheet using "Data/raw/psu/20170328_ADM`y'.csv", clear delim (;)
+sort p012
+
+rename p012 rbd
+rename p015 agno_egreso
+rename p004 agno_proceso
+
+destring p000, replace
+destring agno_proceso, replace
+destring rbd, replace
+destring agno_egreso, replace
+
+keep if agno_proceso-agno_egreso==1 
+gen c=1
+bysort rbd: egen n_PSUimmediatetakers_rbd=total(c)
+
+append using "Data/clean/PSU_2010_2017.dta", force
+save "Data/clean/PSU_2010_2017.dta", replace
+}
+
+label var n_PSUimmediatetakers_rbd "Number of students took the PSU just after they graduated"
+label var agno_egreso "Year of the student's graduation from HS"
+
+rename p083 NEM
+rename p085 PSU_leng
+rename p086 PSU_mat
+rename p087 PSU_hist
+rename p088 PSU_cien
+
+destring NEM, replace
+destring PSU_leng, replace
+destring PSU_mat, replace
+destring PSU_hist, replace
+destring PSU_cien, replace
+
+label var PSU_leng "Scores for Language tests"
+label var PSU_mat "Scores for Math tests"
+label var PSU_hist "Scores for history, geography and ss tests"
+label var PSU_cien "Scores from sciences tests"
+label var NEM "Scores NEM"
+
+replace PSU_leng=. if PSU_leng==0
+replace PSU_mat=.  if PSU_mat==0
+replace PSU_hist=. if PSU_hist==0
+replace PSU_cien=. if PSU_cien==0
+
+drop if agno_proceso==.
+
+save "Data/clean/PSU_2010_2017.dta", replace
+
+use "Data/clean/PSU_2010_2017.dta", clear
+rename agno_egreso agno
+
+collapse (mean) PSU_leng PSU_mat PSU_hist PSU_cien NEM n_PSUimmediatetakers_rbd, by(rbd agno)
+
+save "Data/clean/PSUrbd_2010_2017.dta", replace
+
+}
+
+** BUILD panel_rbd_Ingresos_Gastos.dta
+***************************************
+{
+    
+use "Data/raw/school/Cuenta Padre RC 2016", clear
+
+gen gastos_agrupados=1 if DESCRIPCION_CUENTA_PADRE=="GASTOS REMUNERACIONALES" ///
+	|| DESCRIPCION_CUENTA_PADRE=="GASTOS POR BONOS Y AGUINALDOS LEY DE REAJUSTE SECTOR PÚBLICO" ///
+	|| DESCRIPCION_CUENTA_PADRE=="OTROS GASTOS EN PERSONAL" || DESCRIPCION_CUENTA_PADRE=="APORTES PREVISIONALES"
+	
+replace gastos_agrupados=2 if DESCRIPCION_CUENTA_PADRE=="ADQUISICIÓN DE BIENES MUEBLES E INMUEBLES" ///
+	|| DESCRIPCION_CUENTA_PADRE=="ARRIENDOS DE BIENES MUEBLES" || DESCRIPCION_CUENTA_PADRE=="ARRIENDOS DE INMUEBLES" ///
+	|| DESCRIPCION_CUENTA_PADRE=="GASTOS EN CONSTRUCCIÓN Y MANTENCIÓN DE INFRAESTRUCTURA" ///
+	|| DESCRIPCION_CUENTA_PADRE=="GASTOS MANTENCIÓN Y REPARACIÓN DE BIENES MUEBLES"
+	
+replace gastos_agrupados=3 if DESCRIPCION_CUENTA_PADRE=="ASESORÍA TÉCNICA Y CAPACITACIÓN" ///
+	|| DESCRIPCION_CUENTA_PADRE=="GASTOS BIENESTAR ALUMNOS" || DESCRIPCION_CUENTA_PADRE=="GASTOS EN EQUIPAMIENTO DE APOYO PEDAGÓGICO" ///
+	|| DESCRIPCION_CUENTA_PADRE=="GASTOS EN RECURSOS DE APRENDIZAJE"
+	
+replace gastos_agrupados=4 if DESCRIPCION_CUENTA_PADRE=="SERVICIOS BÁSICOS" ///
+	|| DESCRIPCION_CUENTA_PADRE=="SERVICIOS GENERALES" || DESCRIPCION_CUENTA_PADRE=="GASTOS DE OPERACIÓN"
+
+replace gastos_agrupados=5 if DESCRIPCION_CUENTA_PADRE=="MULTAS E INTERESES"
+
+replace gastos_agrupados=6 if DESCRIPCION_CUENTA_PADRE=="EGRESOS POR RECURSOS CENTRALIZADOS"
+
+replace gastos_agrupados=7 if DESCRIPCION_CUENTA_PADRE=="RETIROS"
+
+label define gastos 1 "Personal" 2 "Bienes muebles e inmuebles" 3 "Recursos de aprendizaje y bienestar de estudiantes" ///
+					4 "Servicios básicos y generales y gastos de operación" 5 "Multas NoSuper e intereses" ///
+					6 "Egresos para Admon Central Subvención" 7 "Retiros/ganancias"
+
+label values gastos_agrupados gastos
+
+bysort RBD: egen ga_personal=sum(MONTO_DECLARADO)if gastos_agrupados==1
+bysort RBD: egen ga_bienes=sum(MONTO_DECLARADO) if gastos_agrupados==2
+bysort RBD: egen ga_aprend_bienest=sum(MONTO_DECLARADO) if gastos_agrupados==3
+bysort RBD: egen ga_servicios_operat=sum(MONTO_DECLARADO) if gastos_agrupados==4
+bysort RBD: egen ga_multasNS_int=sum(MONTO_DECLARADO) if gastos_agrupados==5
+bysort RBD: egen ga_adm_subve=sum(MONTO_DECLARADO) if gastos_agrupados==6
+bysort RBD: egen ga_ganancias=sum(MONTO_DECLARADO) if gastos_agrupados==7
+bysort RBD: egen ga_total=sum(MONTO_DECLARADO) if gastos_agrupados!=.
+
+label var ga_personal "Personal"
+label var ga_bienes "Bienes muebles e inmuebles"
+label var ga_aprend_bienest "Recursos de aprendizaje y bienestar de estudiantes"
+label var ga_servicios_operat "Servicios básicos y generales y gastos de operación"
+label var ga_multasNS_int "Multas NoSuper e intereses"
+label var ga_adm_subve "Egresos para Admon Central Subvención"
+label var ga_ganancias "Retiros/ganancias"
+label var ga_total "Gasto total"
+
+gen ingresos_agrupados=1 if DESCRIPCION_CUENTA_PADRE=="INGRESOS POR SUBVENCIONES" || DESCRIPCION_CUENTA_PADRE=="SUBVENCIONES ESPECIALES" ///
+	|| DESCRIPCION_CUENTA_PADRE=="RELIQUIDACIONES, DEVOLUCIONES Y PAGOS MANUALES"
+
+
+replace ingresos_agrupados=2 if DESCRIPCION_CUENTA_PADRE=="BONIFICACIONES E INCREMENTOS REMUNERACIONALES" ///
+	|| DESCRIPCION_CUENTA_PADRE=="BONOS Y AGUINALDOS LEY DE REAJUSTE SECTOR PÚBLICO"
+
+replace ingresos_agrupados=3 if DESCRIPCION_CUENTA_PADRE=="INGRESOS PROPIOS ESTABLECIMIENTO" ///
+	|| DESCRIPCION_CUENTA_PADRE=="OTROS INGRESOS" || DESCRIPCION_CUENTA_PADRE=="VENTAS UNIDAD DE GESTIÓN" ///
+	|| DESCRIPCION_CUENTA_PADRE=="DONACIONES" || DESCRIPCION_CUENTA_PADRE=="OTROS INGRESOS FISCALES"
+
+replace ingresos_agrupados=4 if DESCRIPCION_CUENTA_PADRE=="DESCUENTOS Y MULTAS"
+
+replace ingresos_agrupados=5 if DESCRIPCION_CUENTA_PADRE=="SALDO INICIAL"
+
+replace ingresos_agrupados=6 if DESCRIPCION_CUENTA_PADRE=="INGRESOS POR RECURSOS CENTRALIZADOS"
+
+replace ingresos_agrupados=7 if DESCRIPCION_CUENTA_PADRE=="INGRESOS POR GASTOS NO ACEPTADOS"
+
+label define ingresos 1 "Subvenciones" 2 "Bonificaciones y aguinaldos personal" 3 "Ingresos propios, donaciones y otros" ///
+						4 "Multas Super y descuentos" 5 "Saldo inicial" ///
+						6 "Ingresos para Admon Central Subvención" 7 "Ingresos por gastos no aceptados"
+
+label values ingresos_agrupados ingresos
+
+bysort RBD: egen in_subv=sum(MONTO_DECLARADO)if ingresos_agrupados==1
+bysort RBD: egen in_bon=sum(MONTO_DECLARADO) if ingresos_agrupados==2
+bysort RBD: egen in_own_income=sum(MONTO_DECLARADO) if ingresos_agrupados==3
+bysort RBD: egen in_multasS_desc=sum(MONTO_DECLARADO) if ingresos_agrupados==4
+bysort RBD: egen in_saldo_ini=sum(MONTO_DECLARADO) if ingresos_agrupados==5
+bysort RBD: egen in_adm_subve=sum(MONTO_DECLARADO) if ingresos_agrupados==6
+bysort RBD: egen in_ga_noacept=sum(MONTO_DECLARADO) if ingresos_agrupados==7
+bysort RBD: egen in_total=sum(MONTO_DECLARADO) if ingresos_agrupados!=.
+
+label var in_subv "Subvenciones"
+label var in_bon "Bonificaciones y aguinaldos personal"
+label var in_own_income "Ingresos propios, donaciones y otros"
+label var in_multasS_desc "Multas Super y descuentos"
+label var in_saldo_ini "Saldo inicial"
+label var in_adm_subve "Ingresos para Admin Central Subvención"
+label var in_ga_noacept "Ingresos por gastos no aceptados"
+label var in_total "Ingreso total"
+
+compress
+
+rename RBD rbd
+replace rbd="0" if rbd=="AC" 
+destring rbd, replace
+gen agno=2016
+
+collapse (mean) RUT_SOSTENEDOR_SIN_dv ga_* in_*, by(rbd agno)
+format ga_* in_* %15.0g
+
+replace in_total=0 if in_total<0 
+foreach var in ga_personal ga_bienes ga_aprend_bienest ga_servicios_operat{
+gen S`var'= `var'/in_total
+}
+
+gen deficit  = ga_total/in_total
+
+
+save "Data/clean/panel_rbd_Ingresos_Gastos.dta", replace
+	
+}
+
+** BUILD panel_rbd_Denuncias.dta
+*********************************
+{
+    
+import excel "Data/raw/other/denuncias_solicitud_publica_20180930.xlsx", sheet("Denuncias con 7 grupos") firstrow clear
+keep if DEN_PRIMARIA==1
+
+rename AGNO agno
+rename EE_RBD_RSIE rbd
+
+tab Jose_AgrupacionDenuncias, gen(denuncia_)
+
+bys rbd agno: egen denuncias_total=count(rbd)
+
+collapse (mean) denuncias_total (sum) denuncia_*, by(agno rbd)
+label var denuncias_total "Numero total denuncias"
+label var denuncia_1 "Accidentes escolares y otros"
+label var denuncia_2 "Exigencia de materiales, cobros indebidos o irregularidades en admisión"
+label var denuncia_3 "Falta de infraestructura o mobiliario"
+label var denuncia_4 "Falta o ausencia de docentes"
+label var denuncia_5 "Irregularidades en subvención, declaración de asistencia o constitución de consejos"
+label var denuncia_6 "Maltrato, discriminación o comportamientos de connotación sexual hacia estudiantes o profesores"
+label var denuncia_7 "Medidas disciplinarias, no renovación o cancelación de matrícula"
+
+save "Data/clean/panel_rbd_Denuncias.dta", replace
+
+}
+
+** BUILD SchoolLocation.dta
+****************************
+{    
+	
+import excel "Data/raw/school/VistaDirectoriodeEstablecimientos2014.xlsx", sheet("Sheet0") firstrow clear case(lower)
+destring rbd latitud longitud cod_reg_rbd cod_com_rbd, replace
+rename latitud latitud_2014
+rename longitud longitud_2014
+rename cod_reg_rbd cod_reg_rbd_2014 
+rename cod_com_rbd cod_com_rbd_2014
+rename nom_rbd nom_rbd_2014
+keep rbd latitud_2014 longitud_2014 cod_reg_rbd_2014 cod_com_rbd_2014 nom_rbd_2014
+save "Data/clean/SchoolLocation.dta", replace
+
+foreach year of numlist 2015/2018 {
+import excel "Data/raw/school/VistaDirectoriodeEstablecimientos`year'.xlsx", sheet("Sheet0") firstrow clear case(lower)
+destring rbd latitud longitud cod_reg_rbd cod_com_rbd, replace
+rename latitud latitud_`year'
+rename longitud longitud_`year'
+rename cod_reg_rbd cod_reg_rbd_`year' 
+rename cod_com_rbd cod_com_rbd_`year'
+rename nom_rbd nom_rbd_`year'
+keep rbd latitud_`year' longitud_`year' cod_reg_rbd_`year' cod_com_rbd_`year' nom_rbd_`year'
+merge 1:1 rbd using "Data/clean/SchoolLocation.dta", nogenerate
+save "Data/clean/SchoolLocation.dta", replace
+}
+
+foreach var of varlist cod_* latitud_* longitud_*{
+destring `var', replace dpcomma
+replace `var'=. if `var'==0
+}
+
+foreach var in latitud longitud cod_reg_rbd cod_com_rbd {
+gen long `var'=1 if (abs(`var'_2014-`var'_2015)<0.000001 & abs(`var'_2015-`var'_2016)<0.000001 & abs(`var'_2016-`var'_2017)<0.000001 & abs(`var'_2017-`var'_2018)<0.000001 & `var'_2014!=. & `var'_2015!=. & `var'_2016!=. & `var'_2017!=. & `var'_2018!=.)
+replace `var'=18 if (abs(`var'_2014-`var'_2015)<0.000001 & abs(`var'_2015-`var'_2016)<0.000001 & abs(`var'_2016-`var'_2017)<0.000001 & `var'_2014!=. & `var'_2015!=. & `var'_2016!=. & `var'_2017!=. & `var'_2018==.) 
+replace `var'=17 if (abs(`var'_2014-`var'_2015)<0.000001 & abs(`var'_2015-`var'_2016)<0.000001 & abs(`var'_2016-`var'_2018)<0.000001 & `var'_2014!=. & `var'_2015!=. & `var'_2016!=. & `var'_2017==. & `var'_2018!=.)
+replace `var'=16 if (abs(`var'_2014-`var'_2015)<0.000001 & abs(`var'_2015-`var'_2017)<0.000001 & abs(`var'_2017-`var'_2018)<0.000001 & `var'_2014!=. & `var'_2015!=. & `var'_2016==. & `var'_2017!=. & `var'_2018!=.)
+replace `var'=15 if (abs(`var'_2014-`var'_2016)<0.000001 & abs(`var'_2016-`var'_2017)<0.000001 & abs(`var'_2017-`var'_2018)<0.000001 & `var'_2014!=. & `var'_2015==. & `var'_2016!=. & `var'_2017!=. & `var'_2018!=.)
+replace `var'=14 if (abs(`var'_2015-`var'_2016)<0.000001 & abs(`var'_2016-`var'_2017)<0.000001 & abs(`var'_2017-`var'_2018)<0.000001 & `var'_2014==. & `var'_2015!=. & `var'_2016!=. & `var'_2017!=. & `var'_2018!=.)
+
+replace `var'=1415 if (abs(`var'_2016-`var'_2017)<0.000001 & abs(`var'_2017-`var'_2018)<0.000001 & `var'_2014==. & `var'_2015==. & `var'_2016!=. & `var'_2017!=. & `var'_2018!=.)
+replace `var'=1416 if (abs(`var'_2015-`var'_2017)<0.000001 & abs(`var'_2017-`var'_2018)<0.000001 & `var'_2014==. & `var'_2015!=. & `var'_2016==. & `var'_2017!=. & `var'_2018!=.)
+replace `var'=1417 if (abs(`var'_2015-`var'_2016)<0.000001 & abs(`var'_2016-`var'_2018)<0.000001 & `var'_2014==. & `var'_2015!=. & `var'_2016!=. & `var'_2017==. & `var'_2018!=.)
+replace `var'=1418 if (abs(`var'_2015-`var'_2016)<0.000001 & abs(`var'_2016-`var'_2017)<0.000001 & `var'_2014==. & `var'_2015!=. & `var'_2016!=. & `var'_2017!=. & `var'_2018==.)
+replace `var'=1516 if (abs(`var'_2014-`var'_2017)<0.000001 & abs(`var'_2017-`var'_2018)<0.000001 & `var'_2014!=. & `var'_2015==. & `var'_2016==. & `var'_2017!=. & `var'_2018!=.)
+replace `var'=1517 if (abs(`var'_2014-`var'_2016)<0.000001 & abs(`var'_2016-`var'_2018)<0.000001 & `var'_2014!=. & `var'_2015==. & `var'_2016!=. & `var'_2017==. & `var'_2018!=.)
+replace `var'=1518 if (abs(`var'_2014-`var'_2016)<0.000001 & abs(`var'_2016-`var'_2017)<0.000001 & `var'_2014!=. & `var'_2015==. & `var'_2016!=. & `var'_2017!=. & `var'_2018==.)
+replace `var'=1617 if (abs(`var'_2014-`var'_2015)<0.000001 & abs(`var'_2015-`var'_2018)<0.000001 & `var'_2014!=. & `var'_2015!=. & `var'_2016==. & `var'_2017==. & `var'_2018!=.)
+replace `var'=1618 if (abs(`var'_2014-`var'_2015)<0.000001 & abs(`var'_2015-`var'_2017)<0.000001 & `var'_2014!=. & `var'_2015!=. & `var'_2016==. & `var'_2017!=. & `var'_2018==.)
+replace `var'=1718 if (abs(`var'_2014-`var'_2015)<0.000001 & abs(`var'_2015-`var'_2016)<0.000001 & `var'_2014!=. & `var'_2015!=. & `var'_2016!=. & `var'_2017==. & `var'_2018==.)
+
+replace `var'=141516 if (abs(`var'_2017-`var'_2018)<0.000001 & `var'_2014==. & `var'_2015==. & `var'_2016==. & `var'_2017!=. & `var'_2018!=.)
+replace `var'=141517 if (abs(`var'_2016-`var'_2018)<0.000001 & `var'_2014==. & `var'_2015==. & `var'_2016!=. & `var'_2017==. & `var'_2018!=.)
+replace `var'=141518 if (abs(`var'_2016-`var'_2017)<0.000001 & `var'_2014==. & `var'_2015==. & `var'_2016!=. & `var'_2017!=. & `var'_2018==.)
+replace `var'=141617 if (abs(`var'_2015-`var'_2018)<0.000001 & `var'_2014==. & `var'_2015!=. & `var'_2016==. & `var'_2017==. & `var'_2018!=.)
+replace `var'=141618 if (abs(`var'_2015-`var'_2015)<0.000001 & `var'_2014==. & `var'_2015!=. & `var'_2016==. & `var'_2017!=. & `var'_2018==.)
+replace `var'=151617 if (abs(`var'_2014-`var'_2018)<0.000001 & `var'_2014!=. & `var'_2015==. & `var'_2016==. & `var'_2017==. & `var'_2018!=.)
+replace `var'=151618 if (abs(`var'_2014-`var'_2017)<0.000001 & `var'_2014!=. & `var'_2015==. & `var'_2016==. & `var'_2017!=. & `var'_2018==.)
+replace `var'=151718 if (abs(`var'_2014-`var'_2016)<0.000001 & `var'_2014!=. & `var'_2015==. & `var'_2016!=. & `var'_2017==. & `var'_2018==.)
+replace `var'=161718 if (abs(`var'_2014-`var'_2015)<0.000001 & `var'_2014!=. & `var'_2015!=. & `var'_2016==. & `var'_2017==. & `var'_2018==.)
+
+replace `var'=14151617 if (`var'_2014==. & `var'_2015==. & `var'_2016==. & `var'_2017==. & `var'_2018!=.)
+replace `var'=14151618 if (`var'_2014==. & `var'_2015==. & `var'_2016==. & `var'_2017!=. & `var'_2018==.)
+replace `var'=14151718 if (`var'_2014==. & `var'_2015==. & `var'_2016!=. & `var'_2017==. & `var'_2018==.)
+replace `var'=14161718 if (`var'_2014==. & `var'_2015!=. & `var'_2016==. & `var'_2017==. & `var'_2018==.)
+replace `var'=15161718 if (`var'_2014!=. & `var'_2015==. & `var'_2016==. & `var'_2017==. & `var'_2018==.)
+
+replace `var'=2 if (`var'_2014==. & `var'_2015==. & `var'_2016==. & `var'_2017==. & `var'_2018==.)
+
+}
+
+gen equal=(latitud==1 & longitud==1 & cod_reg_rbd==1 & cod_com_rbd)
+foreach var in latitud longitud cod_reg_rbd cod_com_rbd {
+
+gen `var'_def=`var'_2018 if equal==1
+replace `var'_def=`var'_2016 if equal==0
+
+replace `var'_def=`var'_2018 if `var'_def==.
+
+}
+
+keep latitud_def longitud_def cod_reg_rbd_def cod_com_rbd_def rbd
+rename latitud_def latitud
+rename longitud_def longitud
+rename cod_reg_rbd_def cod_reg_rbd
+rename cod_com_rbd_def cod_com_rbd
+save "Data/clean/SchoolLocation.dta", replace
+
+}
+
+** BUILD ComunaControls.dta
+****************************
+{
+
+use "Data/raw/other/Casen 2015", clear
+
+gen n_people=1
+gen n_employed=1 if activ==1
+gen n_unemployed=1 if activ==2
+gen n_inactive=1 if activ==3
+gen n_under15=1 if edad<15  
+
+gen n_mon_extpoor=1 if pobreza==1
+gen n_mon_poor=1 if pobreza==2
+gen n_mon_notpoor=1 if pobreza==3 
+
+gen literate=1 if e1==1
+gen onlyreads=1 if e1==2
+gen onlywrites=1 if e1==3
+gen illiterate=1 if e1==4
+
+gen educ2=7 if (educ==7 | educ==9)
+replace educ2=8 if (educ==8 | educ==10 | educ==11 | educ==12)
+replace educ2=educ if educ2==.
+drop educ
+rename educ2 educ
+tabulate educ, generate(educ_level)
+drop educ_level10 
+
+collapse (mean) ytotcor ypchtot pobreza_multi_4d pobreza_multi_5d esc educ_level* (sum) n_people n_employed n_unemployed n_inactive ///
+		n_under15 n_mon_extpoor n_mon_poor n_mon_notpoor literate onlyreads onlywrites illiterate [pw=expc], by(comuna)
+
+gen unempl_rate=n_unemployed/(n_employed+n_unemployed) 
+gen empl_pop_rate=n_employed/(n_employed+n_unemployed+n_inactive) 
+
+gen m_extpoor_rate=n_mon_extpoor/(n_mon_extpoor+n_mon_poor+n_mon_notpoor) 
+gen m_poor_rate=n_mon_poor/(n_mon_extpoor+n_mon_poor+n_mon_notpoor) 
+
+gen literacy_rate=literate/(literate+onlyreads+onlywrites+illiterate) 
+
+keep comuna ytotcor ypchtot pobreza_multi_4d pobreza_multi_5d esc educ_level* unempl_rate empl_pop_rate m_extpoor_rate m_poor_rate literacy_rate
+
+save "Data/temp/ComunaControls2015.dta", replace
+
+
+use "Data/raw/other/Casen 2015", clear
+
+keep if o==1
+
+gen n_household=1
+
+gen n_mon_extpoor=1 if pobreza==1
+gen n_mon_poor=1 if pobreza==2
+gen n_mon_notpoor=1 if pobreza==3 
+
+collapse (mean) h_ytotcorh=ytotcorh h_ypchtot=ypchtot h_pobreza_multi_4d=pobreza_multi_4d h_pobreza_multi_5d=pobreza_multi_5d n_peoplexhouse=numper (sum) n_household n_mon_extpoor n_mon_poor n_mon_notpoor [pw=expc], by(comuna)
+
+gen hm_extpoor_rate=n_mon_extpoor/(n_mon_extpoor+n_mon_poor+n_mon_notpoor) 
+gen hm_poor_rate=n_mon_poor/(n_mon_extpoor+n_mon_poor+n_mon_notpoor) 
+
+keep comuna h_ytotcorh h_ypchtot h_pobreza_multi_4d h_pobreza_multi_5d n_household n_peoplexhouse hm_extpoor_rate hm_poor_rate
+
+merge 1:1 comuna using "Data/temp/ComunaControls2015.dta", nogenerate
+
+gen agno=2015
+rename comuna cod_com_rbd
+
+save "Data/temp/ComunaControls2015.dta", replace
+
+use "Data/raw/other/ingresos_mn_2011", clear
+
+keep folio o pobreza_mn pobreza_multi ytotcor ypchtotcor
+rename ypchtotcor ypchtot
+rename pobreza_mn pobreza
+rename pobreza_multi pobreza_multi_4d
+
+merge 1:1 folio o using "Data/raw/other/casen2011stata_03122013stata.dta", nogenerate
+
+gen n_people=1
+gen n_employed=1 if activ==1
+gen n_unemployed=1 if activ==2
+gen n_inactive=1 if activ==3
+gen n_under15=1 if edad<15 
+
+gen n_mon_extpoor=1 if pobreza==1
+gen n_mon_poor=1 if pobreza==2
+gen n_mon_notpoor=1 if pobreza==3 
+
+gen literate=1 if e1==1
+gen onlyreads=1 if e1==2
+gen onlywrites=1 if e1==3
+gen illiterate=1 if e1==4
+
+tabulate educ, generate(educ_level)
+
+collapse (mean) ytotcor ypchtot pobreza_multi_4d esc educ_level* (sum) n_people n_employed n_unemployed n_inactive ///
+		n_under15 n_mon_extpoor n_mon_poor n_mon_notpoor literate onlyreads onlywrites illiterate [pw=expc_r2], by(comuna)
+
+gen unempl_rate=n_unemployed/(n_employed+n_unemployed) 
+gen empl_pop_rate=n_employed/(n_employed+n_unemployed+n_inactive) 
+
+gen m_extpoor_rate=n_mon_extpoor/(n_mon_extpoor+n_mon_poor+n_mon_notpoor) 
+gen m_poor_rate=n_mon_poor/(n_mon_extpoor+n_mon_poor+n_mon_notpoor) 
+
+gen literacy_rate=literate/(literate+onlyreads+onlywrites+illiterate) 
+
+keep comuna ytotcor ypchtot pobreza_multi_4d esc educ_level* unempl_rate empl_pop_rate m_extpoor_rate m_poor_rate literacy_rate
+
+save "Data/temp/ComunaControls2011.dta", replace
+
+
+use "Data/raw/other/ingresos_mn_2011", clear
+
+keep folio o pobreza_mn pobreza_multi ytotcorh ypchtotcor
+rename ypchtotcor ypchtot
+rename pobreza_mn pobreza
+rename pobreza_multi pobreza_multi_4d
+
+merge 1:1 folio o using "Data/raw/other/casen2011stata_03122013stata.dta", nogenerate
+
+keep if o==1
+
+gen n_household=1
+gen n_mon_extpoor=1 if pobreza==1
+gen n_mon_poor=1 if pobreza==2
+gen n_mon_notpoor=1 if pobreza==3 
+
+collapse (mean) h_ytotcorh=ytotcorh h_ypchtot=ypchtot h_pobreza_multi_4d=pobreza_multi_4d n_peoplexhouse=numper (sum) n_household n_mon_extpoor n_mon_poor n_mon_notpoor [pw=expc_r2], by(comuna)
+
+gen hm_extpoor_rate=n_mon_extpoor/(n_mon_extpoor+n_mon_poor+n_mon_notpoor) 
+gen hm_poor_rate=n_mon_poor/(n_mon_extpoor+n_mon_poor+n_mon_notpoor) 
+
+keep comuna h_ytotcorh h_ypchtot h_pobreza_multi_4d n_household n_peoplexhouse hm_extpoor_rate hm_poor_rate
+
+merge 1:1 comuna using "Data/temp/ComunaControls2011.dta", nogenerate
+
+gen agno=2011
+rename comuna cod_com_rbd
+
+append using "Data/temp/ComunaControls2015.dta"
+
+save "Data/clean/ComunaControls.dta", replace
+
+
+import excel "Data/raw/other/Tasa_CASOS_POLICIALES_ANUAL_2001_2016w.xlsx", sheet("import_Stata") firstrow clear
+destring cod_com_rbd, replace
+
+reshape long crime_rate, i(region nom_com_rbd cod_com_rbd) j(agno)
+
+merge 1:1 cod_com_rbd agno using "Data/clean/ComunaControls.dta", nogenerate
+
+label var crime_rate		 "Number of crimes of greater social relevance per 100.000 inhabitants"
+      
+label var h_ytotcorh		 "Average household total corrected income"
+label var h_ypchtot			 "Average HH per capita income"
+label var h_pobreza_multi_4d "Share of HH in 4-multidimensional poverty"
+label var h_pobreza_multi_5d "Share of HH in 5-multidimensional poverty"
+label var hm_extpoor_rate	 "Share of HH in extreme monetary poverty"
+label var hm_poor_rate		 "Share of HH in monetary poverty"
+label var n_peoplexhouse	 "Average number of people per HH"
+label var n_household		 "Number of HH in each comuna"
+
+label var ytotcor			 "Average total corrected income per capita"
+label var ypchtot			 "Average per capita income"
+label var pobreza_multi_4d 	"Share of people in 4-multidimensional poverty"
+label var pobreza_multi_5d 	"Share of people in 5-multidimensional poverty"
+label var m_extpoor_rate	 "Share of people in extreme monetary poverty"
+label var m_poor_rate		 "Share of people in monetary poverty"
+label var unempl_rate		 "Unemployment rate"
+label var empl_pop_rate		 "Employment-to-population ratio"
+label var esc				 "Average years of schooling (>15 years old)"
+label var literacy_rate		 "Share of people that can read and write"
+
+label var educ_level1		 "Share of >15 y without formal ed."
+label var educ_level2		 "Share of >15 y w/ incomplete basic ed."
+label var educ_level3		 "Share of >15 y w/ complete basic ed."
+label var educ_level4		 "Share of >15 y w/ incomplete middle hum. ed."
+label var educ_level5		 "Share of >15 y w/ incomplete middle tec. ed."
+label var educ_level6		 "Share of >15 y w/ complete middle hum. ed."
+label var educ_level7		 "Share of >15 y w/ complete middle tec. ed."
+label var educ_level8		 "Share of >15 y w/ incomplete superior tec. or undergrad ed."
+label var educ_level9		 "Share of >15 y w/ complete superior tec. or undergrad ed."
+
+save "Data/clean/ComunaControls.dta", replace
+
+}
+
+** BUILD wages_func_school.dta & Panel_Wages
+*********************************************
+{
+    
+use "Data/raw/teachers/remuneraciones_2017_clean.dta", clear
+append using "Data/raw/teachers/remuneraciones_2016_clean.dta"
+append using "Data/raw/teachers/remuneraciones_2015_clean.dta"
+sort mrun anio mes
+rename anio agno 
+
+preserve
+	use "Data/clean/panel_employeremployee.dta", clear	
+	keep if agno==2015|agno==2016|agno==2017
+	tempfile teacher
+	save `teacher', replace
+restore
+
+merge m:1 mrun rbd agno using `teacher'
+drop if _merge==1
+drop _merge
+
+save "Data/clean/wages_func_school.dta", replace
+
+use "Data/clean/wages_func_school.dta", clear 
+
+gen SueldoBase   = general_410101 + sep_410101 + pie_410101 + proretencion_410101 + internado_410101 + refuerzo_410101
+gen HorasExtra   = general_410102 + sep_410102 + pie_410102 + proretencion_410102 + internado_410102 + refuerzo_410101
+gen Zona         = general_410104 + sep_410104 + pie_410104 + proretencion_410104 + internado_410104 + refuerzo_410104
+gen DFL1996      = general_410116 + sep_410116 + pie_410116 + proretencion_410116 + internado_410116 + refuerzo_410116
+gen PagosLegales = general_410103 + general_410125 + general_410107 + general_410123 + general_410105 + general_410108 ///
+				  + general_410111 + general_410112 + general_410113
+
+label var SueldoBase   "Sueldo Base"				  
+label var HorasExtra   "Horas Extra"
+label var Zona         "Zona Rural"				  
+label var DFL1996      "Estatuto Docente"				  
+label var PagosLegales "Incluye Mejoramiento, Cond. Dificiles, Profesor Encargado, Excelencia Pedagogica, UMP, Titulo y Mencion, Planilla Comp"
+
+gen BonoSost     = general_410121 +              pie_410121 + proretencion_410121 + internado_410121 + refuerzo_410121
+gen BonoDesemp   = general_410114 + sep_410124 + general_410109 + general_410110 + general_410115
+gen ColacionMov  = general_410119 + sep_410119 + pie_410119 + proretencion_410119 + internado_410119 + refuerzo_410119
+gen BonosOtros   = general_410117 + general_410118 + general_410122 + general_410126 + general_410201 + general_410202 /// 
+				  + general_410203 + general_410204 + general_410205 + general_410206 + general_410207
+gen BonosAll     =  BonoSost + BonoDesemp + ColacionMov + BonosOtros 
+gen OtrosNoRend  = habernorend
+
+label var BonoSost     "Bono Sostenedores" 
+label var BonoDesemp   "Bono Performance (individual & colectiva)" 
+label var ColacionMov  "Colacion y Movilizacion"
+label var BonosOtros   "Gratificaciones, Navidad, etc."
+label var BonosAll     "Todos los Bonos+ColacMov"
+label var OtrosNoRend  "Haberes No Rendidos"
+
+gen All = SueldoBase + HorasExtra + Zona + DFL1996 + PagosLegales + BonosAll
+
+collapse (mean) All SueldoBase HorasExtra Zona DFL1996 PagosLegales BonosAll OtrosNoRend, by(mrun rbd agno)
+
+save "Data/clean/Panel_Wages.dta", replace
+	
+}
+
+** BUILD EverPrin_Panel.dta
+****************************
+{
+preserve
+	use "Data/clean/panel_principals.dta", clear
+	rename id_prin mrun
+	keep rbd agno mrun 
+	gen DPrin = 1
+	tempfile prin
+	save `prin', replace
+restore
+
+use "Data/clean/panel_employeremployee.dta", clear
+
+merge 1:1 mrun rbd agno using `prin'
+
+gen EverPrin = 1 if DPrin == 1 
+spread EverPrin, by(mrun) 
+
+keep if EverPrin == 1
+
+collapse (max) EverTeacher=Teacher EverSupportWorker=SupportWorker EverAdministrative=Administrative EverPrincipal=Principal EverPrivate=Private, by(mrun)
+rename mrun id_prin
+
+save "Data/clean/EverPrin_Panel.dta", replace
+}
+
+** BUILD alu_SIMCE.dta 
+***********************
+{
+
+use "Data/raw/simce/simce2b2012_alu_publica_final.dta", clear
+sort rbd dvrbd
+save "Data/temp/alu_SIMCE2b.dta", replace
+
+forvalues i=2013/2015{
+use "Data/raw/simce/simce2b`i'_alu_publica_final.dta", clear
+append using "Data/temp/alu_SIMCE2b.dta", force
+sort rbd dvrbd agno
+save "Data/temp/alu_SIMCE2b.dta", replace
+}
+
+use "Data/raw/simce/simce4b2008_alu_publica_final.dta", clear
+sort rbd dvrbd
+save "Data/temp/alu_SIMCE4b.dta", replace
+
+forvalues i=2009/2016{
+use "Data/raw/simce/simce4b`i'_alu_publica_final.dta", clear
+append using "Data/temp/alu_SIMCE4b.dta", force
+sort rbd dvrbd
+save "Data/temp/alu_SIMCE4b.dta", replace
+}
+
+use "Data/raw/simce/simce8b2009_alu_publica_final.dta", clear
+sort rbd dvrbd
+save "Data/temp/alu_SIMCE8b.dta", replace
+
+foreach i in "2011" "2013" "2014" "2015"{
+use "Data/raw/simce/simce8b`i'_alu_publica_final.dta", clear
+append using "Data/temp/alu_SIMCE8b.dta", force
+sort rbd dvrbd agno
+save "Data/temp/alu_SIMCE8b.dta", replace
+}
+
+use "Data/raw/simce/simce2m2008_alu_publica_final.dta", clear
+sort rbd dvrbd
+save "Data/temp/alu_SIMCE2m.dta", replace
+
+foreach i in "2010" "2012" "2013" "2014" "2015" "2016"{
+use "Data/raw/simce/simce2m`i'_alu_publica_final.dta", clear
+append using "Data/temp/alu_SIMCE2m.dta", force
+sort rbd dvrbd agno
+save "Data/temp/alu_SIMCE2m.dta", replace
+}
+
+use "Data/temp/alu_SIMCE2b.dta", clear
+
+drop if ptje_lect2b_alu==. 
+
+bys mrun (agno): gen n=_n
+bys mrun: gen N=_N
+keep if n==N 
+drop n N
+
+keep agno mrun idalumno gen_alu rbd grado letra_curso cod_curso ptje_lect2b_alu dvrbd 
+rename ptje_lect2b_alu Language
+save "Data/temp/alu_SIMCE2b.dta", replace
+
+use "Data/temp/alu_SIMCE4b.dta", clear
+drop if ptje_lect4b_alu==. & ptje_mate4b_alu==. & ptje_soc4b_alu==. & ptje_nat4b_alu==. 
+
+bys mrun (agno): gen n=_n
+bys mrun: gen N=_N
+keep if n==N 
+drop n N
+
+keep agno mrun idalumno grado rbd dvrbd cod_curso gen_alu ptje_mate4b_alu ptje_lect4b_alu letra_curso ptje_soc4b_alu ptje_nat4b_alu 
+rename ptje_lect4b_alu Language
+rename ptje_mate4b_alu Math
+rename ptje_soc4b_alu  History
+rename ptje_nat4b_alu  Science
+
+save "Data/temp/alu_SIMCE4b.dta", replace
+
+use "Data/temp/alu_SIMCE8b.dta", clear
+drop if ptje_lect8b_alu==. & ptje_mate8b_alu==. & ptje_nat8b_alu==. & ptje_soc8b_alu==. 
+bys mrun (agno): gen n=_n
+bys mrun: gen N=_N
+keep if n==N 
+drop n N
+
+keep agno mrun idalumno grado rbd dvrbd cod_curso gen_alu ptje_mate8b_alu ptje_lect8b_alu letra_curso ptje_soc8b_alu ptje_nat8b_alu 
+rename ptje_lect8b_alu Language
+rename ptje_mate8b_alu Math
+rename ptje_soc8b_alu  History
+rename ptje_nat8b_alu  Science
+
+save "Data/temp/alu_SIMCE8b.dta", replace
+
+use "Data/temp/alu_SIMCE2m.dta", clear
+drop if ptje_lect2m_alu==. & ptje_mate2m_alu==. & ptje_nat2m_alu==. & ptje_soc2m_alu==. 
+bys mrun (agno): gen n=_n
+bys mrun: gen N=_N
+keep if n==N 
+drop n N
+
+keep agno mrun idalumno grado rbd dvrbd cod_curso gen_alu ptje_mate2m_alu ptje_lect2m_alu letra_curso ptje_soc2m_alu ptje_nat2m_alu 
+rename ptje_lect2m_alu Language
+rename ptje_mate2m_alu Math
+rename ptje_soc2m_alu  History
+rename ptje_nat2m_alu  Science
+
+save "Data/temp/alu_SIMCE2m.dta", replace
+
+
+use "Data/temp/alu_SIMCE2b.dta", clear
+
+append using "Data/temp/alu_SIMCE4b.dta"
+append using "Data/temp/alu_SIMCE8b.dta"
+append using "Data/temp/alu_SIMCE2m.dta"
+
+order mrun gen_alu agno rbd dvrbd grado cod_curso letra_curso Math Language History Science
+sort mrun agno
+
+save "Data/clean/alu_SIMCE.dta", replace
+
+* Dataset in VAM format
+use "Data/clean/alu_SIMCE.dta", clear
+
+expand 2, generate(new)
+
+gen subject="Math" if new==0
+gen test_score=Math if new==0
+replace subject="Language" if new==1
+replace test_score=Language if new==1
+
+order mrun idalumno subject agno grado test_score cod_curso letra_curso rbd dvrbd gen_alu
+keep  mrun idalumno subject agno grado test_score cod_curso letra_curso rbd dvrbd gen_alu
+sort  mrun agno subject
+rename mrun mrun_student
+
+rename grado aux_grado
+gen grado=.
+replace grado=2 if aux_grado=="2b"
+replace grado=4 if aux_grado=="4b"
+replace grado=8 if aux_grado=="8b"
+replace grado=10 if aux_grado=="2m"
+drop aux_grado
+replace letra_curso= subinstr(letra_curso," ","",.)
+
+sort mrun_student agno subject grado
+duplicates drop mrun_student agno subject, force
+
+compress
+save "Data/clean/alu_SIMCE.dta", replace
+
+}
+
+** BUILD panel_simce_rbd_grado_subject.dta
+*******************************************
+{
+
+use "Data/clean/alu_SIMCE.dta", clear
+
+collapse (mean) test_score, by(rbd agno subject grado)
+reshape wide test_score, i(rbd agno subject) j(grado)
+egen id=group(rbd subject)
+xtset id agno
+sort id agno
+foreach var in test_score2 test_score4 test_score8 test_score10{
+gen L1`var' = L1.`var'
+}
+
+save "Data/clean/panel_simce_rbd_grado_subject.dta", replace
+
+}
+
+** BUILD key_clave_mrun.dta 
+****************************
+{
+use "Data/clean/panel_employeremployee.dta",clear
+drop if agno==2017 // year not available in panel_docente_curso
+duplicates drop clave, force
+keep clave mrun 
+save "Data/clean/key_clave_mrun.dta", replace
+}
+
+** BUILD RBD_Markets.dta
+*************************
+{
+    
+insheet using "Data/temp/rbd_mkt2014.csv", delimiter(;) clear
+	
+foreach i in rbd_lat rbd_lon {
+	replace `i' = subinstr(`i', ".", "", .)
+	g l = length(`i')
+	replace `i' = `i' + "0" if l == 8
+	replace `i' = `i' + "00" if l == 7
+	replace `i' = `i' + "000" if l == 6
+	replace `i' = `i' + "0000" if l == 5
+	replace `i' = `i' + "00000" if l == 4
+	replace `i' = `i' + "000000" if l == 3	
+	drop l 
+}
+
+destring rbd_lat rbd_lon, replace force
+
+replace rbd_lat = rbd_lat / 1000000
+replace rbd_lon = rbd_lon / 1000000
+replace rbd_lat = . if rbd_lat == 0
+replace rbd_lon = . if rbd_lon == 0
+
+rename rbd_lat rbd_lat_14 
+rename rbd_lon rbd_lon_14
+tempfile m14
+save `m14'.dta, replace
+
+insheet using "Data/temp/rbd_mkt2015.csv", delimiter(;) clear
+rename latitud rbd_lat
+rename longitud rbd_lon
+foreach i in rbd_lat rbd_lon {
+	replace `i' = subinstr(`i', ".", "", .)
+	g l = length(`i')
+	replace `i' = `i' + "0" if l == 8
+	replace `i' = `i' + "00" if l == 7
+	replace `i' = `i' + "000" if l == 6
+	replace `i' = `i' + "0000" if l == 5
+	replace `i' = `i' + "00000" if l == 4
+	replace `i' = `i' + "000000" if l == 3	
+	drop l 
+}
+
+destring rbd_lat rbd_lon, replace force
+
+replace rbd_lat = rbd_lat / 1000000
+replace rbd_lon = rbd_lon / 1000000
+replace rbd_lat = . if rbd_lat == 0
+replace rbd_lon = . if rbd_lon == 0
+
+rename rbd_lat rbd_lat_15 
+rename rbd_lon rbd_lon_15
+merge 1:1 rbd using `m14'.dta
+
+g rbd_lat = rbd_lat_14
+replace rbd_lat = rbd_lat_15 if rbd_lat == .
+
+g rbd_lon = rbd_lon_14
+replace rbd_lon = rbd_lon_15 if rbd_lon == .
+
+drop if rbd_lat == . | rbd_lon == .
+
+keep rbd rbd_lat rbd_lon
+drop if rbd == .
+outsheet rbd rbd_lat rbd_lon using "Data/temp/rbd_mkt_new.csv", replace delimiter(",")
+
+
+**** Get data from matlab
+
+foreach i in 3 4 5 6 7 {
+	insheet using "Data/temp/rbd_market_component_id_`i'.csv", clear
+	rename v1 rbd 
+	rename v2 mkt_`i'km
+	
+	tempfile m`i' 
+	save `m`i''.dta, replace
+}
+
+xmerge rbd using `m3'.dta `m4'.dta `m5'.dta `m6'.dta `m7'.dta
+
+compress
+save "Data/clean/RBD_Markets.dta", replace
+
+}
+
+** BUILD ShRural 
+*****************
+{
+
+use "Data/raw/other/census_2017_full.dta", replace
+	
+g share_ruralidad = area == 2
+collapse share_ruralidad, by(comuna)
+replace comuna = 8401 if comuna == 16101 
+replace comuna = 8402 if comuna == 16102 
+replace comuna = 8403 if comuna == 16202 
+replace comuna = 8404 if comuna == 16203 
+replace comuna = 8405 if comuna == 16302 
+replace comuna = 8406 if comuna == 16103 
+replace comuna = 8407 if comuna == 16104 
+replace comuna = 8408 if comuna == 16204 
+replace comuna = 8409 if comuna == 16303 
+replace comuna = 8410 if comuna == 16105 
+replace comuna = 8411 if comuna == 16106 
+replace comuna = 8412 if comuna == 16205 
+replace comuna = 8413 if comuna == 16107 
+replace comuna = 8414 if comuna == 16201 
+replace comuna = 8415 if comuna == 16206 
+replace comuna = 8416 if comuna == 16301 
+replace comuna = 8417 if comuna == 16304 
+replace comuna = 8418 if comuna == 16108 
+replace comuna = 8419 if comuna == 16305 
+replace comuna = 8420 if comuna == 16207 
+replace comuna = 8421 if comuna == 16109 
+
+sum share_ruralidad, d
+g Rural_p50 = share_ruralidad >= `r(p50)'
+	
+rename comuna cod_com_rbd	
+compress	
+save "Data/clean/ShRural.dta", replace
+
+}
+
+** BUILD SubvencionesAnual_2008_2017.dta
+*****************************************
+{
+    
+import excel "Data\raw\school\Subvenciones_2008.xlsx", sheet("Grid Results") firstrow case(lower) clear
+drop reg_cod com_cod establecimiento dependencia area
+rename año agno
+save "Data\clean\SubvencionesMensual_2008_2017.dta", replace
+
+forvalues year=2009/2017 {
+import excel "Data\raw\school\Subvenciones_`year'.xlsx", sheet("Grid Results") firstrow case(lower) clear
+drop reg_cod com_cod establecimiento dependencia area
+rename año agno
+append using "Data\clean\SubvencionesMensual_2008_2017.dta", force
+save "Data\clean\SubvencionesMensual_2008_2017.dta", replace
+}
+
+ds agno mes rbd matricula porc_zona, not
+foreach var of var `r(varlist)' { 
+	replace `var'=. if `var'==0
+} 
+compress
+
+replace porc_zona=_zona if porc_zona==.
+drop _zona
+
+rename desempeño_dificil desempeno_dificil
+rename desempeño_dificil_nodoc desempeno_dificil_nodoc
+
+label var matricula "Matricula informada"
+label var escolaridad "Monto Subvencion Escolar"
+label var escolaridad_pie "Monto Subvencion Escolar PIE"
+label var internado "Monto Internado"
+label var porc_zona "% asignacion de Zona"
+label var zona "Monto Incremento de Zona"
+label var descuento_ficom "Descuento por Financiamiento Compartido"
+label var aporte_estado_ficom "aporte del Estado al Financiamiento Compartido"
+label var ruralidad "Monto Subvencion de Ruralidad"
+label var piso_rural "Monto Piso_Rural"
+label var pag_pend "Monto Pagos pendientes periodos anteriores"
+label var discrepancia "Monto descuento por Discrepancia"
+label var descuento_escolaridad "Monto Descuentopor Derechos de Escolaridad"
+label var reintegros "Monto de Reintegros"
+label var retenciones "Monto de Retenciones"
+label var multas "Monto de Multas"
+label var desempeno_dificil "Monto Subvencion Desempeño Dificil"
+label var desempeno_dificil_nodoc "Subv Desempeño Dificil asistentes Educacion"
+label var subv_adicional_especial "Monto Subvencion Adicional Especial"
+label var subv_asistentes_educacion "Monto Subvencion Asistentes de la Educacion"
+label var profesor_encargado "Monto Subvencion Profesor Encargado"
+label var reliquidacion "Monto Reliquidacion"
+label var apor_gratuidad "Subvencion aporte por Gratuidad"
+label var liquido_pago "Monto Liquido a Pago Subvencion Normal"
+label var subv_normal "Monto Liquido a Pago Subvencion Normal"
+label var sep "Monto Subvencion Escolar Preferencial"
+label var sep_pref "Subvencion SEP alumnos Preferentes"
+label var mantenimiento "Monto Subvencion Mantenimiento"
+label var sned "Monto Subvencion SNED"
+label var avdi "Monto Subvencion AVDI"
+label var aep "Monto Subvencion AEP"
+label var proretencion "Monto Subvencion Proretencion"
+label var adeco "Monto Subvencion adeco"
+label var reforzamiento "Monto Subvencion Reforzamiento Educativo"
+label var brp "Monto Subvencion BRP"
+
+// Generate anual dataset
+collapse (sum) escolaridad escolaridad_pie internado zona descuento_ficom ruralidad ///
+	aporte_estado_ficom piso_rural pag_pend discrepancia descuento_escolaridad ///
+	reintegros retenciones multas desempeno_dificil desempeno_dificil_nodoc ///
+	subv_adicional_especial subv_asistentes_educacion profesor_encargado reliquidacion ///
+	apor_gratuidad liquido_pago subv_normal sep sep_pref mantenimiento sned avdi aep ///
+	proretencion adeco reforzamiento brp zona_pie (mean) matricula porc_zona, by(agno rbd)
+	
+save "Data/clean/SubvencionesAnual_2008_2017.dta", replace
+}
+
+** BUILD SchoolAttendanceYearly.dta
+************************************
+{
+use "Data/clean/panel_performance_student_2008_2017.dta", clear
+collapse (mean) attendance, by(rbd agno)
+rename attendance ShareAttend
+save "Data/clean/SchoolAttendanceYearly.dta", replace
+}
+
+** BUILD MainPanelSchools.dta
+*******************************
+{
+use "Data/clean/panel_enrollment_school_2008_2017.dta", clear
+keep agno rbd matricula_* dgv_rbd cod_com_rbd cod_depe nom_rbd cod_depe2 rural_rbd estado_estab
+
+drop if cod_depe==5 
+gen Public  = (cod_depe==1|cod_depe==2)
+gen Voucher = (cod_depe==3)
+gen Private = (cod_depe==4)
+
+gen educ_adultos=(matricula_bas_adultos>0 | matricula_mediahc_adultos>0 | matricula_mediatp_adultos>0)
+gen educ_SOLOadultos=(educ_adultos==1 & ( matricula_bas ==0 & matricula_mediahc ==0 & matricula_mediatp ==0 & matricula_parv ==0 & matricula_especial ==0))
+				 
+merge 1:1 rbd agno using "Data/clean/rbd_panel_SEPEstab_2008_2017.dta", gen(mergeSEP) keepusing(n_prio n_ben prio_com)
+drop if mergeSEP==2
+
+merge 1:1 rbd agno using "Data/clean/panel_school_docentes.dta", gen(mergeTeacher)
+drop if mergeTeacher==2
+
+merge 1:1 rbd agno using "Data/clean/rbd_panel_enrollment_student_2008_2017.dta", gen(mergeEnrollment) keepusing(estudiantesSIMCE_2b2 estudiantesSIMCE_4b2 estudiantesSIMCE_8b2 estudiantesSIMCE_2m2 mat_*)
+
+rename estudiantesSIMCE_2b2 estudiantesSIMCE_2b 
+rename estudiantesSIMCE_4b2 estudiantesSIMCE_4b
+rename estudiantesSIMCE_8b2 estudiantesSIMCE_8b
+rename estudiantesSIMCE_2m2 estudiantesSIMCE_2m
+
+gen estab_SIMCE2b = (estudiantesSIMCE_2b>0 & estudiantesSIMCE_2b!=.)
+gen estab_SIMCE4b = (estudiantesSIMCE_4b>0 & estudiantesSIMCE_4b!=.)
+gen estab_SIMCE8b = (estudiantesSIMCE_8b>0 & estudiantesSIMCE_8b!=.)
+gen estab_SIMCE2m = (estudiantesSIMCE_2m>0 & estudiantesSIMCE_2m!=.)
+
+preserve
+	use "Data/clean/panelSIMCE2b_2012_2015.dta", clear
+	tempfile temp
+	save `temp'.dta, replace
+restore
+
+merge 1:1 rbd agno using `temp'.dta, force gen(merge2b)
+drop if merge2b==2
+
+preserve
+	use "Data/clean/panelSIMCE4b_2008_2016.dta", clear
+	tempfile temp
+	save `temp'.dta, replace
+restore
+
+merge 1:1 rbd agno using `temp'.dta, force gen(merge4b)
+drop if merge4b==2
+
+preserve
+	use "Data/clean/panelSIMCE8b.dta", clear
+	tempfile temp
+	save `temp'.dta, replace
+restore
+
+merge 1:1 rbd agno using `temp'.dta, force gen(merge8b)
+drop if merge8b==2
+
+preserve
+	use "Data/clean/panelSIMCE2m.dta", clear	
+	tempfile temp
+	save `temp'.dta, replace
+restore
+
+merge 1:1 rbd agno using `temp'.dta, force gen(merge2m)
+drop if merge2m==2
+
+merge 1:1 rbd agno using "Data/clean/SchoolAttendanceYearly.dta", gen(mergeAttend)
+drop if mergeAttend==2
+
+merge 1:1 rbd agno using "Data/clean/rbd_panel_SEPStudent_2008_2017.dta", gen(merge_prio_DatosAbiertos)
+drop if merge_prio_DatosAbiertos==2
+
+merge m:1 rbd agno using "Data/clean/rbd_panel_enrollment_student_2008_2017.dta", gen(merge_enrollment)
+drop if merge_enrollment==2
+
+egen matriculaPrioritarios_2008=rowtotal(mat_prekinder mat_kinder mat_basica_1 mat_basica_2 mat_basica_3 mat_basica_4) if agno==2008
+egen matriculaPrioritarios_2009=rowtotal(mat_prekinder mat_kinder mat_basica_1 mat_basica_2 mat_basica_3 mat_basica_4 mat_basica_5) if agno==2009
+egen matriculaPrioritarios_2010=rowtotal(mat_prekinder mat_kinder mat_basica_1 mat_basica_2 mat_basica_3 mat_basica_4 mat_basica_5 mat_basica_6) if agno==2010
+egen matriculaPrioritarios_2011=rowtotal(mat_prekinder mat_kinder mat_basica_1 mat_basica_2 mat_basica_3 mat_basica_4 mat_basica_5 mat_basica_6 mat_basica_7) if agno==2011
+egen matriculaPrioritarios_2012=rowtotal(mat_prekinder mat_kinder mat_basica_1 mat_basica_2 mat_basica_3 mat_basica_4 mat_basica_5 mat_basica_6 mat_basica_7 mat_basica_8) if agno==2012
+egen matriculaPrioritarios_2013=rowtotal(mat_prekinder mat_kinder mat_basica_1 mat_basica_2 mat_basica_3 mat_basica_4 mat_basica_5 mat_basica_6 mat_basica_7 mat_basica_8 mat_media_1) if agno==2013
+egen matriculaPrioritarios_2014=rowtotal(mat_prekinder mat_kinder mat_basica_1 mat_basica_2 mat_basica_3 mat_basica_4 mat_basica_5 mat_basica_6 mat_basica_7 mat_basica_8 mat_media_1 mat_media_2) if agno==2014
+egen matriculaPrioritarios_2015=rowtotal(mat_prekinder mat_kinder mat_basica_1 mat_basica_2 mat_basica_3 mat_basica_4 mat_basica_5 mat_basica_6 mat_basica_7 mat_basica_8 mat_media_1 mat_media_2 mat_media_3) if agno==2015
+egen matriculaPrioritarios_2016=rowtotal(mat_prekinder mat_kinder mat_basica_1 mat_basica_2 mat_basica_3 mat_basica_4 mat_basica_5 mat_basica_6 mat_basica_7 mat_basica_8 mat_media_1 mat_media_2 mat_media_3 mat_media_4) if agno==2016
+egen matriculaPrioritarios_2017=rowtotal(mat_prekinder mat_kinder mat_basica_1 mat_basica_2 mat_basica_3 mat_basica_4 mat_basica_5 mat_basica_6 mat_basica_7 mat_basica_8 mat_media_1 mat_media_2 mat_media_3 mat_media_4) if agno==2017
+
+gen matriculaPrioritarios=.
+foreach x of numlist 2008/2017  {
+replace matriculaPrioritarios=matriculaPrioritarios_`x' if agno==`x'
+}
+
+egen estudiantesPrioritarios_2008=rowtotal(prioritario_alu_prekinder prioritario_alu_kinder prioritario_alu_basica_1 prioritario_alu_basica_2 prioritario_alu_basica_3 prioritario_alu_basica_4) if agno==2008
+egen estudiantesPrioritarios_2009=rowtotal(prioritario_alu_prekinder prioritario_alu_kinder prioritario_alu_basica_1 prioritario_alu_basica_2 prioritario_alu_basica_3 prioritario_alu_basica_4 prioritario_alu_basica_5) if agno==2009
+egen estudiantesPrioritarios_2010=rowtotal(prioritario_alu_prekinder prioritario_alu_kinder prioritario_alu_basica_1 prioritario_alu_basica_2 prioritario_alu_basica_3 prioritario_alu_basica_4 prioritario_alu_basica_5 prioritario_alu_basica_6) if agno==2010
+egen estudiantesPrioritarios_2011=rowtotal(prioritario_alu_prekinder prioritario_alu_kinder prioritario_alu_basica_1 prioritario_alu_basica_2 prioritario_alu_basica_3 prioritario_alu_basica_4 prioritario_alu_basica_5 prioritario_alu_basica_6 prioritario_alu_basica_7) if agno==2011
+egen estudiantesPrioritarios_2012=rowtotal(prioritario_alu_prekinder prioritario_alu_kinder prioritario_alu_basica_1 prioritario_alu_basica_2 prioritario_alu_basica_3 prioritario_alu_basica_4 prioritario_alu_basica_5 prioritario_alu_basica_6 prioritario_alu_basica_7 prioritario_alu_basica_8) if agno==2012
+egen estudiantesPrioritarios_2013=rowtotal(prioritario_alu_prekinder prioritario_alu_kinder prioritario_alu_basica_1 prioritario_alu_basica_2 prioritario_alu_basica_3 prioritario_alu_basica_4 prioritario_alu_basica_5 prioritario_alu_basica_6 prioritario_alu_basica_7 prioritario_alu_basica_8 prioritario_alu_media_1) if agno==2013
+egen estudiantesPrioritarios_2014=rowtotal(prioritario_alu_prekinder prioritario_alu_kinder prioritario_alu_basica_1 prioritario_alu_basica_2 prioritario_alu_basica_3 prioritario_alu_basica_4 prioritario_alu_basica_5 prioritario_alu_basica_6 prioritario_alu_basica_7 prioritario_alu_basica_8 prioritario_alu_media_1 prioritario_alu_media_2) if agno==2014
+egen estudiantesPrioritarios_2015=rowtotal(prioritario_alu_prekinder prioritario_alu_kinder prioritario_alu_basica_1 prioritario_alu_basica_2 prioritario_alu_basica_3 prioritario_alu_basica_4 prioritario_alu_basica_5 prioritario_alu_basica_6 prioritario_alu_basica_7 prioritario_alu_basica_8 prioritario_alu_media_1 prioritario_alu_media_2 prioritario_alu_media_3) if agno==2015
+egen estudiantesPrioritarios_2016=rowtotal(prioritario_alu_prekinder prioritario_alu_kinder prioritario_alu_basica_1 prioritario_alu_basica_2 prioritario_alu_basica_3 prioritario_alu_basica_4 prioritario_alu_basica_5 prioritario_alu_basica_6 prioritario_alu_basica_7 prioritario_alu_basica_8 prioritario_alu_media_1 prioritario_alu_media_2 prioritario_alu_media_3 prioritario_alu_media_4) if agno==2016
+egen estudiantesPrioritarios_2017=rowtotal(prioritario_alu_prekinder prioritario_alu_kinder prioritario_alu_basica_1 prioritario_alu_basica_2 prioritario_alu_basica_3 prioritario_alu_basica_4 prioritario_alu_basica_5 prioritario_alu_basica_6 prioritario_alu_basica_7 prioritario_alu_basica_8 prioritario_alu_media_1 prioritario_alu_media_2 prioritario_alu_media_3 prioritario_alu_media_4) if agno==2017
+
+gen estudiantesPrioritarios=.
+foreach x of numlist 2008/2017  {
+replace estudiantesPrioritarios=estudiantesPrioritarios_`x' if agno==`x'
+}
+
+gen porc_conc_DatosAbiertos = estudiantesPrioritarios / matriculaPrioritarios
+
+preserve
+	use "Data/raw/school/porc_prioritarios_mineduc.dta", clear
+	replace agno=agno-1 // i.e., The enrollment of 2014 is used to determine the payments of 2015
+	tempfile prioritario
+	save `prioritario', replace
+restore
+
+merge 1:1 rbd agno using `prioritario', gen(merge_prio_estadisticas)
+rename porc_conc porc_conc_estadisticas
+drop if merge_prio_estadisticas==2
+
+merge 1:1 rbd agno using "Data/clean/PSUrbd_2010_2017.dta", force gen(mergePSU)
+drop if mergePSU==2
+
+merge 1:1 rbd agno using "Data/clean/panel_rbd_Ingresos_Gastos.dta", force gen(mergeIngrGast)
+drop if mergeIngrGast==2
+
+merge 1:1 rbd agno using "Data/clean/panel_ADP.dta", force gen(mergeADP)
+drop if mergeADP==2
+gen infoADP=(mergeADP==3)
+
+merge 1:1 rbd agno using "Data/clean/panel_rbd_Denuncias.dta", force gen(mergeComplaints)
+drop if mergeComplaints==2
+
+merge m:1 rbd using "Data/clean/SchoolLocation.dta", gen(mergeLocation)
+drop if mergeLocation==2
+
+merge m:1 cod_com_rbd agno using "Data/clean/ComunaControls.dta", gen(mergeComControls)
+drop if mergeComControls==2
+
+// 13. Add Voucher Income
+merge 1:1 agno rbd using "Data/Clean/SubvencionesAnual_2008_2017.dta", gen(mergeSubvenciones) keepusing(liquido_pago)
+drop if mergeSubvenciones==2
+
+gen educ_SOLOparv=(mat_parv>0 & mat_basica ==0 & mat_mediaHC ==0 & mat_mediaTP ==0 & mat_basica_adulto ==0 & mat_mediaHC_adulto ==0 & mat_mediaTP_adulto ==0)
+gen educ_especial=(matricula_especial>0)
+		
+drop if (educ_SOLOparv==1|educ_adultos==1|educ_especial==1) // excludes preschools, adult education schools, and special education schools
+drop if agno==.
+
+gen  Dmun      = (cod_depe==1|cod_depe==2) if cod_depe!=.
+gen  adp       = (ADP==1)
+gen  adp2      = (ADP2==1)
+egen YearsADP  = total(adp), by(rbd)
+gen  EverADP   = (YearsADP>0)
+
+gen matricula_basica = matricula_parv+matricula_bas
+gen matricula_media  = matricula_mediahc+matricula_mediatp
+gen share_sep    	 = n_ben/matricula_total
+gen share_prio_coun  = prio_com/matricula_com
+gen share_teach		 = N_teach/N_all
+gen share_adm		 = N_adm/N_all
+gen teacher_student  = (N_teach/matricula_total)*100
+
+foreach var in unempl_rate esc ytotcor{
+bys rbd: gen aux_`var'_2015=`var' if agno==2015
+bys rbd: egen `var'_2015=max(aux_`var'_2015)
+}
+
+
+label var esc_2015			"Average years of schooling (>15 yold) (2015)"
+label var ytotcor_2015	    "Average total corrected income per capita (2015)"
+label var unempl_rate_2015	"Unemployment rate (2015)"
+
+label var adp               "ADP Principal (at end of year)"
+label var adp               "ADP Principal (at least 1 month)"
+label var YearsADP			"Years w/ ADP principal"
+label var EverADP			"Had ADP principal at least once"
+
+label var PSU_leng          "PSU Leng"
+label var PSU_mat 	        "PSU Math"
+
+label var prom_lect4b_rbd   "SIMCE Leng 4b"
+label var prom_mate4b_rbd   "SIMCE Math 4b"
+label var prom_lect8b_rbd   "SIMCE Leng 8b"
+label var prom_mate8b_rbd   "SIMCE Math 8b"
+label var prom_lect2m_rbd   "SIMCE Leng 2m"
+label var prom_mate2m_rbd   "SIMCE Math 2m"
+label var prom_lect2b_rbd	"SIMCE Leng 2b"
+
+label var churn_adm         "Churn Admin. Workers"
+label var churn_sup			"Churn Support Workers"
+label var churn_teach 	    "Churn Teach"
+label var churn_teach_young "Churn Teach Young"
+
+label var fired_teach       "# Teachers Fired"
+label var fired_teach_young "# Young Teachers Fired"
+label var hired_teach       "# Teachers Hired"
+label var hired_teach_young "# Young Teachers Hired"
+
+label var denuncias_total   "# Total Complaints" 
+label var denuncia_1 "# School Accidents Comp."
+label var denuncia_2 "# Illegal Charges Comp."
+label var denuncia_3 "# Lack of infraestruc. Comp."
+label var denuncia_4 "# Absent Teachers Comp."
+label var denuncia_5 "# Irreg. in subv. or declared enrollment Comp."
+label var denuncia_6 "# Discrimination Comp."
+label var denuncia_7 "# Disciplinary measures Comp."
+
+label var deficit           	"Deficit (Expenditures/Income)"
+label var Sga_personal 			"% Exp. Human Resources"
+label var Sga_bienes  		 	"% Exp. Infrastructure"
+label var Sga_aprend_bienest 	"% Exp. Students Learning/Welfare"
+label var Sga_servicios_operat  "% Exp. Operation"
+
+label var rural_rbd         "Rural School"
+label var matricula_total 	"Total Enrollment"
+label var matricula_basica 	"Total Enrollment Primary"
+label var matricula_media 	"Total Enrollment High School"
+label var matricula_com     "County Size (Enrollment)"
+
+label var mat_prekinder "Enrollment Prekinder"
+label var mat_kinder    "Enrollment Kinder"
+label var mat_basica_1  "Enrollment 1st Year Primary"
+
+label var share_prio_coun   "Share Poor in County"
+label var share_sep		    "Share Poor SEP in County"
+label var share_teach 		"Teachers/School Workers"
+label var share_adm 		"Admin./School Workers"
+label var teacher_student   "Teachers per 100 students"
+label var Dmun 				"Public School"
+
+label var porc_conc_DatosAbiertos "% Concentracion Info Online"
+label var porc_conc_estadisticas "% Concentracion Adm. Info MINEDUC"
+
+label var latitud "Latitud"
+label var longitud "Longitud"
+label var cod_reg_rbd "Cod Region"
+label var cod_com_rbd "Cod Comuna"
+
+label var Public  "Public"
+label var Voucher "Voucher"
+label var Private "Private"
+
+label var crime_rate		 "Number of crimes of greater social relevance per 100.000 inhabitants"
+      
+label var h_ytotcorh		 "Average household total corrected income"
+label var h_ypchtot			 "Average HH per capita income"
+label var h_pobreza_multi_4d "Share of HH in 4-multidimensional poverty"
+label var h_pobreza_multi_5d "Share of HH in 5-multidimensional poverty"
+label var hm_extpoor_rate	 "Share of HH in extreme monetary poverty"
+label var hm_poor_rate		 "Share of HH in monetary poverty"
+label var n_peoplexhouse	 "Average number of people per HH"
+label var n_household		 "Number of HH in each comuna"
+
+label var ytotcor			 "Average total corrected income per capita"
+label var ypchtot			 "Average per capita income"
+label var pobreza_multi_4d 	"Share of people in 4-multidimensional poverty"
+label var pobreza_multi_5d 	"Share of people in 5-multidimensional poverty"
+label var m_extpoor_rate	 "Share of people in extreme monetary poverty"
+label var m_poor_rate		 "Share of people in monetary poverty"
+label var unempl_rate		 "Unemployment rate"
+label var empl_pop_rate		 "Employment-to-population ratio"
+label var esc				 "Average years of schooling (>15 years old)"
+label var literacy_rate		 "Share of people that can read and write"
+
+label var educ_level1		 "Share of >15 y without formal ed."
+label var educ_level2		 "Share of >15 y w/ incomplete basic ed."
+label var educ_level3		 "Share of >15 y w/ complete basic ed."
+label var educ_level4		 "Share of >15 y w/ incomplete middle hum. ed."
+label var educ_level5		 "Share of >15 y w/ incomplete middle tec. ed."
+label var educ_level6		 "Share of >15 y w/ complete middle hum. ed."
+label var educ_level7		 "Share of >15 y w/ complete middle tec. ed."
+label var educ_level8		 "Share of >15 y w/ incomplete superior tec. ed."
+label var educ_level9		 "Share of >15 y w/ complete superior tec. ed."
+
+label var liquido_pago       "Subvencion Total"
+label var ShareAttend      "Share Attendance"
+
+keep agno rbd Dmun rural_rbd adp adp2 YearsADP EverADP mat_prekinder mat_kinder mat_basica_1 matricula_total matricula_basica matricula_media matricula_mediahc share_sep matricula_com share_prio_coun ///
+	share_teach share_adm Sga_* deficit prom_lect4b_rbd PSU_leng prom_mate4b_rbd PSU_mat denuncia* churn_* fired_* hired_* /// 
+	teacher_student porc_conc_DatosAbiertos porc_conc_estadisticas latitud longitud cod_reg_rbd cod_com_rbd Public Voucher Private ///
+	educ_level* crime_rate h_ytotcorh h_ypchtot h_pobreza_multi_4d hm_extpoor_rate hm_poor_rate n_peoplexhouse n_household	///
+	ytotcor ypchtot pobreza_multi_4d pobreza_multi_5d m_extpoor_rate m_poor_rate unempl_rate empl_pop_rate esc literacy_rate ///
+	unempl_rate_2015 esc_2015 ytotcor_2015 prom_lect2b_rbd prom_lect4b_rbd prom_mate4b_rbd prom_lect8b_rbd prom_mate8b_rbd prom_lect2m_rbd prom_mate2m_rbd liquido_pago ShareAttend ///
+	PSU_leng PSU_mat PSU_hist PSU_cien NEM
+
+compress
+save "Data/clean/MainPanelSchools.dta", replace
+
+}
+
+
+** BUILD panel_VAM_GPA.dta
+***************************
+{
+use "Data/clean/panel_performance_student_2008_2017.dta", clear
+duplicates tag mrun_student agno, gen(tag)
+drop if tag>0
+tempfile X_student
+label var GPA "Average GPA"
+save `X_student', replace
+
+use "Data/clean/panel_GPA_student_2011_2017_clean.dta", clear
+rename mrun mrun_student
+merge m:1 mrun_student agno using `X_student'
+keep if _merge==3 
+drop _merge tag
+
+preserve
+	use "Data/clean/panel_docentes_curso.dta", clear
+	bys rbd agno subject grado let_cur: gen N=_N
+	drop if N>1 // eliminate cases with more than 1 teacher in a year (by subject and classroom).
+	tempfile teachsubj
+	save `teachsubj', replace
+restore
+
+merge m:1 rbd agno subject grado let_cur using `teachsubj' 
+keep if _merge==3
+drop _merge
+sort mrun_student subject agno
+
+merge m:1 clave using "Data/clean/key_clave_mrun.dta" // Xwalk with personnel id
+keep if _merge==3
+drop _merge
+
+duplicates tag mrun_student subject agno, gen(tag)
+drop if tag>0 
+drop tag 
+
+order mrun_student subject agno gpa rbd grado let_cur mrun
+compress
+
+preserve
+	use "Data/clean/panel_principals.dta", clear
+	rename id_prin mrun_principal
+	keep rbd agno mrun_principal Edad Hours SenioritySystem
+	tempfile principals
+	save `principals', replace
+restore
+
+merge m:1 rbd agno using `principals'
+drop if _merge==2
+drop _merge
+
+merge m:1 rbd agno using "Data/clean/MainPanelSchools.dta", keepusing(matricula_total matricula_basica matricula_media /// 
+														matricula_com cod_com_rbd rural_rbd  porc_conc_DatosAbiertos ///
+														porc_conc_estadisticas EverADP YearsADP Public Voucher Private /// 
+														prom_lect4b_rbd prom_mate4b_rbd unempl_rate_2015 esc_2015 ytotcor_2015 crime_rate)
+						
+keep if _merge==3
+drop _merge
+
+save "Data/clean/panel_VAM_GPA.dta", replace
+
+}
+
+** BUILD panel_VAM_GPA_beforeReg.dta
+*************************************
+{
+	
+use "Data/clean/panel_VAM_GPA.dta", clear
+
+merge m:1 rbd agno subject using "Data/clean/panel_simce_rbd_grado_subject.dta"
+drop if _merge == 2
+drop _merge
+
+merge 1:1 mrun_student agno subject using "Data/clean/alu_SIMCE.dta"
+drop if _merge == 2
+drop _merge
+
+merge m:1 rbd agno using "Data/clean/SocioEcon_surveySimce"
+drop if _merge==2
+drop _merge
+
+gen low_income  	= simce_ingresos_1+simce_ingresos_2+simce_ingresos_3+simce_ingresos_4
+gen med_income  	= simce_ingresos_5+simce_ingresos_6+simce_ingresos_7+simce_ingresos_8+simce_ingresos_9+simce_ingresos_10
+gen high_income 	= simce_ingresos_11+simce_ingresos_12+simce_ingresos_13+simce_ingresos_14+simce_ingresos_15
+gen father_college  = simce_educpadre_5+simce_educpadre_6
+gen mother_college  = simce_educmadre_5+simce_educmadre_6
+
+drop simce_ingresos_* simce_educpadre_* simce_educmadre_*
+
+egen clase=group(rbd agno grado let_cur subject) 
+
+bys clase: gen Nclase=_N
+quietly sum Nclase, d
+keep if Nclase>r(p1)&Nclase<r(p99)
+
+gen raw_gpa=gpa
+gen raw_test=test_score
+
+foreach var in test_score gpa attendance{
+	forval t = 2011(1)2016{
+	sum `var' if agno == `t'
+	replace `var'=(`var'-`r(mean)')/`r(sd)' if agno == `t'
+	}
+}
+
+foreach var in gpa attendance{
+bys mrun_student subject (agno): gen F1`var'=`var'[_n+1]
+bys mrun_student subject (agno): gen L1`var'=`var'[_n-1]
+}
+
+gen L1test_score = .
+bys mrun_student subject (agno): replace L1test_score=test_score[_n-2] if grado == 10 
+bys mrun_student subject (agno): replace L1test_score=test_score[_n-4] if grado == 8  
+bys mrun_student subject (agno): replace L1test_score=test_score[_n-2] if grado == 4  
+
+gen L1school_test = . 
+replace L1school_test = L1test_score2 if grado==2
+replace L1school_test = L1test_score4 if grado==4
+replace L1school_test = L1test_score8 if grado==8
+replace L1school_test = L1test_score10 if grado==10
+
+drop L1test_score2 L1test_score4 L1test_score8 L1test_score10
+
+foreach var in gpa attendance test_score{
+
+gen L1`var'2=(L1`var')^2
+gen L1`var'3=(L1`var')^3
+gen L1`var'_grado=L1`var'*grado
+gen L1`var'2_grado=L1`var'2*grado
+gen L1`var'3_grado=L1`var'3*grado
+
+bys clase agno: egen meanL1`var'=mean(L1`var')
+gen meanL1`var'2=(meanL1`var')^2
+gen meanL1`var'3=(meanL1`var')^3
+gen meanL1`var'_grado=meanL1`var'*grado
+gen meanL1`var'2_grado=meanL1`var'2*grado
+gen meanL1`var'3_grado=meanL1`var'3*grado
+}
+
+tab grado, gen(grado_)
+
+rename porc_conc_estadisticas poor 
+gen Dpoor=(poor==.)
+replace poor=0 if poor==.
+
+tab agno, gen(t)
+
+foreach var in poor Dpoor matricula_total low_income med_income high_income father_college mother_college t1 t2 t3 t4 t5 t6 {
+bys rbd: egen mean_`var'=mean(`var')
+}
+
+bys rbd: egen Public_s=max(Public)
+bys rbd: egen Voucher_s=max(Voucher)
+bys rbd: egen Private_s=max(Private)
+bys rbd: egen Rural_s=max(rural_rbd)
+
+gen Dselect = (low_income== . | med_income == . | high_income == . | father_college == . | mother_college == .) 
+
+foreach var in low_income med_income high_income father_college mother_college{ 
+sum `var'
+replace `var'=r(mean) if `var'==. 
+}
+
+rename SenioritySystem Tenure
+gen Tenure2=Tenure*Tenure
+
+drop if mrun_principal==.
+rename mrun_principal id_prin
+
+bys mrun_student subject (agno): gen F1mrun=mrun[_n+1]
+gen DiffTeacher=(F1mrun!=mrun)
+gen InSample=(F1gpa!=.&L1gpa!=.)
+
+compress
+save "Data/clean/panel_VAM_GPA_beforeReg.dta", replace
+
+}
+
+** BUILD school_panel_attendance_gpa_2011_2016.dta
+***************************************************
+{
+use "Data/clean/panel_VAM_GPA_beforeReg.dta", clear
+
+keep F1gpa gpa attendance grado rbd agno  // Save school-level course grades and attendance 
+
+forval g=1(1)12{
+		gen F1gpa_grado`g'      =  F1gpa if grado==`g'
+		gen gpa_grado`g'        =  gpa if grado==`g'
+		gen attendance_grado`g' =  attendance if grado==`g'
+}
+
+collapse (mean) F1gpa_* gpa_* attendance_*, by(rbd agno)
+save "Data/clean/school_panel_attendance_gpa_2011_2016.dta", replace 
+
+}
+
+
+
+** BUILD panel_corr_gpa_test.dta
+**********************************
+{
+use "Data/clean/panel_VAM_GPA.dta", clear
+
+merge 1:1 mrun_student agno subject using "Data/clean/alu_SIMCE.dta"
+drop if _merge == 2
+drop _merge
+
+egen clase=group(rbd agno grado let_cur subject) 
+
+bys  clase: gen Nclase=_N
+quietly sum Nclase, d
+keep if Nclase>r(p1)&Nclase<r(p99)
+
+foreach var in test_score gpa{
+forval t = 2011(1)2016{
+sum `var' if agno == `t'
+replace `var'=(`var'-r(mean))/r(sd) if agno == `t'
+}
+}
+
+keep if test_score!=.
+keep if grado==4
+
+* Empty datasets
+preserve
+	clear
+	gen agno = .
+	gen rbd  = .
+	gen beta = .
+	gen se_b = .
+	save "Data/clean/panel_corr_gpa_test.dta", replace
+restore
+
+* Regressions by rbd-year
+levelsof rbd, local(levels) 
+foreach l of local levels {
+    pause 100
+	forval t=2011(1)2016{
+	
+	preserve
+		keep if rbd == `l' & agno==`t'
+		keep agno rbd test_score gpa
+		
+		qui: cap reg test_score gpa if rbd == `l' & agno==`t'
+		cap g beta = _b[gpa]
+		cap g se_b = _se[gpa]
+		
+		cap keep agno rbd beta se_b 
+		cap duplicates drop
+		append using "Data/clean/panel_corr_gpa_test.dta"
+		compress
+		save "Data/clean/panel_corr_gpa_test.dta", replace
+	restore
+	
+	}
+}
+
+use  "Data/clean/panel_corr_gpa_test.dta", clear
+keep agno rbd beta se_b
+gen adj_beta=beta/(se_b^2)
+save  "Data/clean/panel_corr_gpa_test.dta", replace
+
+}
+
+** BUILD Sorting_Index_SchoolYear.dta and Sorting_Index_SchoolYear_UpperBound.dta
+**********************************************************************************
+{
+    
+use "Data/clean/panel_VAM_GPA.dta", clear 
+collapse (mean) gpa grado rbd (firstnm) let_cur, by(mrun_student agno)
+compress
+save "Data/clean/panel_VAM_GPAcollapsed.dta", replace
+
+egen clase=group(agno rbd grado let_cur) // Define classroom and drop outlayers (classes with too many students)
+bys  clase: gen Tclase=_N
+quietly sum Tclase, d
+keep if Tclase>r(p1)&Tclase<r(p99)
+
+
+bys agno rbd grado: gen dc=clase-clase[_n-1] // Count != classes... need variation across classrooms
+bys agno rbd grado: gen Nclases=sum(dc)
+bys agno rbd grado: egen maxNclass=max(Nclases)
+drop if maxNclass==0 // drop 25% (cases of schools with 1 class per grade) 
+
+bys mrun_student (agno): gen lag_gpa=gpa[_n-1]
+bys rbd agno: egen mean_school_gpa=mean(gpa)
+bys clase agno: egen mean_class_gpa=mean(gpa)
+
+quietly parmby "areg mean_class_gpa gpa, r a(grado)", by(agno rbd) list(parm estimate stderr) escal(N) ren(es_1 N) norestore
+
+drop if parm=="_cons"
+keep if parm=="gpa"
+winsor2 estimate, cuts(1 99)
+winsor2 estimate, cuts(1 99) trim
+sort rbd agno
+
+save "Data/clean/Sorting_Index_SchoolYear.dta", replace
+
+
+* Upper bound / placebo sorting
+
+use "Data/clean/panel_VAM_GPAcollapsed.dta", clear
+
+bys agno rbd grado let_cur: g ClassSize = _N // Class-level Sorting (within school)
+sum ClassSize, d
+
+bys agno rbd grado (gpa):  g ranking = _n
+bys agno rbd grado: egen AvgClassSize = mean(ClassSize)
+
+g FakeLetter = 1 if ranking <= AvgClassSize
+replace FakeLetter = 2 if ranking > AvgClassSize & ranking <= 2*AvgClassSize
+replace FakeLetter = 3 if ranking > 2*AvgClassSize & ranking <= 3*AvgClassSize
+replace FakeLetter = 4 if ranking > 3*AvgClassSize & ranking <= 4*AvgClassSize
+replace FakeLetter = 5 if ranking > 4*AvgClassSize & ranking <= 5*AvgClassSize
+replace FakeLetter = 6 if ranking > 5*AvgClassSize & ranking <= 6*AvgClassSize
+replace FakeLetter = 7 if ranking > 6*AvgClassSize & ranking <= 7*AvgClassSize
+replace FakeLetter = 8 if ranking > 7*AvgClassSize & ranking <= 8*AvgClassSize
+replace FakeLetter = 9 if ranking > 8*AvgClassSize & ranking <= 9*AvgClassSize
+replace FakeLetter = 10 if ranking > 9*AvgClassSize & ranking <= 10*AvgClassSize
+replace FakeLetter = 11 if ranking > 10*AvgClassSize & ranking <= 11*AvgClassSize
+replace FakeLetter = 12 if ranking > 11*AvgClassSize & ranking <= 12*AvgClassSize
+replace FakeLetter = 13 if ranking > 12*AvgClassSize & ranking <= 13*AvgClassSize
+
+sort agno rbd grado FakeLetter
+
+egen clase=group(agno rbd grado FakeLetter) // Define Class and drop outlayers (classes with too many students) 
+bys  clase: gen Tclase=_N
+sum Tclase, d
+keep if Tclase>r(p1)&Tclase<r(p99)
+
+sort agno rbd grado clase // Count != classes... need variation across classrooms
+bys agno rbd grado: gen dc=clase-clase[_n-1]
+bys agno rbd grado: gen Nclases=sum(dc)
+bys agno rbd grado: egen maxNclass=max(Nclases)
+drop if maxNclass==0 // drop 25% (cases of schools with 1 class per grade) 
+
+bys mrun_student (agno): gen lag_gpa=gpa[_n-1]
+bys clase agno: egen mean_class_gpa=mean(gpa)
+
+preserve	
+	quietly parmby "areg mean_class_gpa gpa, r a(grado)", by(agno rbd) list(parm estimate stderr) escal(N) ren(es_1 N) norestore
+	drop if parm=="_cons"
+	keep if parm=="gpa"
+	winsor2 estimate, cuts(1 99)
+	winsor2 estimate, cuts(1 99) trim
+	sort rbd agno
+	compress
+	save "Data/clean/Sorting_Index_SchoolYear_UpperBound.dta", replace
+restore
+}

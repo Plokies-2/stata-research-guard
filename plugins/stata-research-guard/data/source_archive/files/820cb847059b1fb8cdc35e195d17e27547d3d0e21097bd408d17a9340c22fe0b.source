@@ -1,0 +1,1747 @@
+********************************************************************************
+/*
+This program constructs the final individual-level and household-level datasets for the clientelism analysis:
+*    ${final_data_folder}/clientelism_individual_data.dta (individual)
+*    ${final_data_folder}/clientelism_household_data.dta (household)
+*    ${final_data_folder}/clientelism_individual_data_stacked.dta (individual)
+
+
+Table of Contents
+
+Sections:
+0. Setup
+1. Rainfall Measures
+2. Infrequent Interactor Variables 
+3. Incumbency Variables 
+4. Survey Variables (2012)
+5. Asking Variables 
+6. Other Individual-Level Variables 
+7. Household-Level Variables
+8. Final datasets
+
+*/
+********************************************************************************
+**# 0. Setup 
+********************************************************************************
+clear all
+
+use "${gen_data_folder}/clean_indiv_V6_V16.dta", clear
+
+
+********************************************************************************
+**# 1. Rainfall Measure for 2011-2013
+********************************************************************************
+
+*==============================================================================*
+**## Rainfall Measure for 2012 and 2013
+*==============================================================================*
+local months "01 02 03 04 05 06 07 08 09 10 11 12"
+local years "1986 1987 1988 1989 1990 1991 1992 1993 1994 1995 1996 1997 1998 1999 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 2010 2011"
+local study_years "2012 2013"
+
+*------------------------------------------------------------------------------*
+* Annual average rainfall for each municipality-month in the period 1986-2011
+*------------------------------------------------------------------------------*
+foreach month of local months {
+	gen temp_`month' = 0
+	
+	foreach year of local years {
+		replace temp_`month' = temp_`month' + rainfall_`year'_`month'
+	}
+	
+	* Annual average for each month across 26 years
+	gen rainfall_long_run_average_`month' = temp_`month' / 26
+}
+
+
+*------------------------------------------------------------------------------*
+* Monthly standard deviation of rainfall for each municipality in the period 1986-2011
+*------------------------------------------------------------------------------*
+gen temp = 0
+
+foreach year of local years {
+	foreach month of local months {
+		replace temp = temp + rainfall_`year'_`month'
+	}
+}
+
+* Monthly average over 312 (26 years x 12 months) months
+gen rainfall_long_run_average = temp / 312
+
+gen temp_2 = 0
+
+foreach month of local months {
+	foreach year of local years {
+	    
+		* Municipality-level variance of rainfall for each month-year
+		gen temp_`year'_`month' = (rainfall_`year'_`month' - rainfall_long_run_average) ^ 2
+		
+		* Create sum of variances across all month-years
+		replace temp_2 = temp_2 + temp_`year'_`month'
+	}
+}
+
+* Municipality-level monthly standard deviation of rainfall
+gen rainfall_long_run_sd = (temp_2 / 311) ^ 0.5
+
+drop temp*
+
+
+*------------------------------------------------------------------------------*
+* Monthly Standardized Rainfall measure
+*------------------------------------------------------------------------------*
+foreach month of local months {
+	foreach year of local study_years {
+	    
+		* Normalized measure using annual average rainfall for each month
+		gen rainfall_diff_`year'_`month' = rainfall_`year'_`month' - rainfall_long_run_average_`month'
+		gen rainfall_std_`year'_`month' = rainfall_diff_`year'_`month' / rainfall_long_run_sd	
+	}
+}
+
+
+*------------------------------------------------------------------------------*
+* Aggregate rainfall measures : monthly average in 2012 and 2013
+*------------------------------------------------------------------------------*
+foreach year of local study_years {
+	
+	
+	** Standardized values
+	gen rainfall_`year'_std = (rainfall_std_`year'_01 + rainfall_std_`year'_02 + rainfall_std_`year'_03 + rainfall_std_`year'_04 + 								 rainfall_std_`year'_05 + rainfall_std_`year'_06 + rainfall_std_`year'_07 + rainfall_std_`year'_08 + 							   rainfall_std_`year'_09) / 9
+
+	label variable rainfall_`year'_std "Rainfall `year': Jan-Sep"
+}
+
+
+*==============================================================================*
+**## Rainfall Measure for 2011
+*==============================================================================*
+local months2 "01 02 03 04 05 06 07 08 09 10 11 12"
+local years2 "1986 1987 1988 1989 1990 1991 1992 1993 1994 1995 1996 1997 1998 1999 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 2010"
+local study_years2 "2011"
+
+*------------------------------------------------------------------------------*
+* Annual average rainfall for each municipality-month in the period 1986-2010
+*------------------------------------------------------------------------------*
+foreach month of local months2 {
+	gen temp_`month' = 0
+	
+	foreach year of local years2 {
+		replace temp_`month' = temp_`month' + rainfall_`year'_`month'
+	}
+	
+	* Annual average for each month across 25 years
+	gen rainfall_long_run_average_`month'2 = temp_`month' / 25
+}
+
+
+*------------------------------------------------------------------------------*
+* Monthly standard deviation of rainfall for each municipality in the period 1986-2010
+*------------------------------------------------------------------------------*
+gen temp = 0
+
+foreach year of local years2 {
+	foreach month of local months2 {
+		replace temp = temp + rainfall_`year'_`month'
+	}
+}
+
+* Monthly average over 300 (25 years x 12 months) months
+gen rainfall_long_run_average2 = temp / 300
+
+gen temp_2 = 0
+
+foreach month of local months2 {
+	foreach year of local years2 {
+	    
+		* Municipality-level variance of rainfall for each month-year
+		gen temp_`year'_`month' = (rainfall_`year'_`month' - rainfall_long_run_average2) ^ 2
+		
+		* Create sum of variances across all month-years
+		replace temp_2 = temp_2 + temp_`year'_`month'
+	}
+}
+
+* Municipality-level monthly standard deviation of rainfall
+gen rainfall_long_run_sd2 = (temp_2 / 299) ^ 0.5
+
+drop temp*
+
+
+*------------------------------------------------------------------------------*
+* Monthly Standardized Rainfall measure
+*------------------------------------------------------------------------------*
+foreach month of local months2 {
+	foreach year of local study_years2 {
+	    
+		* Normalized measure using annual average rainfall for each month
+		gen rainfall_diff_`year'_`month' = rainfall_`year'_`month' - rainfall_long_run_average_`month'2
+		gen rainfall_std_`year'_`month' = rainfall_diff_`year'_`month' / rainfall_long_run_sd2
+	}
+}
+
+
+*------------------------------------------------------------------------------*
+* Aggregate rainfall measures : monthly average in 2011
+*------------------------------------------------------------------------------*
+
+** Standardized measure 
+gen rainfall_2011_std = (rainfall_std_2011_01 + rainfall_std_2011_02 + rainfall_std_2011_03 + rainfall_std_2011_04) / 4
+
+/* 
+rainfall_2011_std uses only Jan-Apr because we use rainfall measures before we conducted the survey. 
+For 2012 and 2013, we conducted the survey >= Oct. For 2011, we conducted the localization survey in May.
+*/
+label variable rainfall_2011_std "Rainfall 2011: Jan-Apr"
+						
+
+*==============================================================================*
+**## Final Rainfall Measures
+*==============================================================================*
+
+** Original measures (Jan - Apr for 2011; Jan - Sep for 2012 and 2013)
+forval year = 2011(1)2013 {
+			
+	** Normalize standardized rainfall measures to have mean 0 and standard deviation 1
+	rename rainfall_`year'_std rainfall_`year'_std_og
+	egen rainfall_`year'_std = std(rainfall_`year'_std_og)
+}
+
+label var rainfall_2011_std "Rainfall 2011: Jan-Apr (standardized)"
+label var rainfall_2012_std "Rainfall 2012: Jan-Sep (standardized)"
+label var rainfall_2013_std "Rainfall 2013: Jan-Sep (standardized)"
+
+
+********************************************************************************
+**# 2. Infrequent Interactor Variables
+********************************************************************************
+
+*==============================================================================*
+**## Frequency of talking with mayor (2012, before election), categorical
+*==============================================================================*
+gen c_talked_mayor_freq_2012_before = 0 if c_talk_pre_ == 0
+replace c_talked_mayor_freq_2012_before =  0 if c_talk_pre_before_ == 5
+
+replace c_talked_mayor_freq_2012_before = 1 if inlist(c_talk_pre_before_other_, "1", "1 vez", "1 vezes", "2", "2 VAZES", "2 vezes", 																			   "2 vezes antes da politica")
+replace c_talked_mayor_freq_2012_before = 1 if inlist(c_talk_pre_before_other_, "3", "3 vezes", "4", "5", "Apenas uma", "Raramente.", 																				 "somente uma vez", "uma vez",  "umas duas vezes")
+replace c_talked_mayor_freq_2012_before = 1 if c_talk_pre_before_ == 4
+
+replace c_talked_mayor_freq_2012_before = 2 if c_talk_pre_before_ == 3
+replace c_talked_mayor_freq_2012_before = 3 if c_talk_pre_before_ == 2
+replace c_talked_mayor_freq_2012_before = 4 if c_talk_pre_before_ == 1
+
+
+*==============================================================================*
+**## Frequency of talking with city councillor (2012, before election), categorical
+*==============================================================================*
+gen c_talked_ver_freq_2012_before = 0 if c_talk_ver_ == 0
+replace c_talked_ver_freq_2012_before = 0 if c_talk_ver_before_ == 5
+
+replace c_talked_ver_freq_2012_before = 1 if inlist(c_talk_ver_before_other_, "1", "1 VEZ", "1 vez", "1 vez\", "2", "2 VEZES", "2 veze")
+replace c_talked_ver_freq_2012_before = 1 if inlist(c_talk_ver_before_other_, "2 vezes", "3", "3 vezes", "4", "5", 																			  "Uma vez com cada candidato", "so uma vez", "uma vez")
+replace c_talked_ver_freq_2012_before = 1 if c_talk_ver_before_ == 4
+
+replace c_talked_ver_freq_2012_before = 2 if inlist(c_talk_ver_before_other_, "10", "10 vezes", "15 vezes", "6 vezes", "de 15 em 15 dias", 																				"de 15 em 15 dias", "A cada 15 dias")
+replace c_talked_ver_freq_2012_before  = 2 if c_talk_ver_before_ == 3
+
+replace c_talked_ver_freq_2012_before  = 3 if inlist(c_talk_ver_before_other_, "Quase todo fim de semana", "2 ou 3 vezes por semana")
+replace c_talked_ver_freq_2012_before  = 3 if c_talk_ver_before_ == 2
+
+replace c_talked_ver_freq_2012_before  = 4 if c_talk_ver_before_ == 1
+
+
+*==============================================================================*
+**## Frequency of talking with any politician (2012, before election), categorical and dummies
+*==============================================================================*
+
+** Categorical 
+egen c_talked_poli_freq_2012_before = rowmax(c_talked_mayor_freq_2012_before c_talked_ver_freq_2012_before)
+
+** Dummies 
+gen talk_pol_atleastonce_2012_bef = (c_talked_poli_freq_2012_before >= 1) if !missing(c_talked_poli_freq_2012_before)
+gen talk_pol_atleastmonthly_2012_bef = (c_talked_poli_freq_2012_before >= 2) if !missing(c_talked_poli_freq_2012_before)
+gen talk_pol_atleastweekly_2012_bef = (c_talked_poli_freq_2012_before >= 3) if !missing(c_talked_poli_freq_2012_before)
+gen talk_pol_atleastdaily_2012_bef = (c_talked_poli_freq_2012_before == 4) if !missing(c_talked_poli_freq_2012_before)
+
+gen c_often_talked_poli_2012_before = talk_pol_atleastweekly_2012_bef
+
+label variable talk_pol_atleastmonthly_2012_bef "Interact With Politician At Least Monthly Before Campaign"					
+
+
+*==============================================================================*
+**## Infrequent interactor with any politician (2012, before election), dummies
+*==============================================================================*
+
+recode talk_pol_atleastonce_2012_bef (0 = 1)(1 = 0), gen(infrequent_interact_2012_o)
+recode talk_pol_atleastmonthly_2012_bef (0 = 1)(1 = 0), gen(infrequent_interact_2012_m)
+recode talk_pol_atleastweekly_2012_bef (0 = 1)(1 = 0), gen(infrequent_interact_2012_w)
+recode talk_pol_atleastdaily_2012_bef (0 = 1)(1 = 0), gen(infrequent_interact_2012_d)
+
+
+label variable infrequent_interact_2012_o "Infrequent Interactor (At Least Once) with Politician"
+label variable infrequent_interact_2012_m "Infrequent Interactor (Monthly) with Politician"
+label variable infrequent_interact_2012_w "Infrequent Interactor (Weekly) with Politician"
+label variable infrequent_interact_2012_d "Infrequent Interactor (Daily) with Politician"
+
+		
+
+********************************************************************************
+**# 3. INCUMBENCY VARIABLES  
+********************************************************************************
+
+* Whether incumbent mayor ran for re-election in 2012
+gen incumbent_ran = 1 if inlist(mun_id, 27, 1, 6, 22, 56, 7, 24, 32, 41, 44, 2, 4, 12, 13, 18, 42, 11, 5, 8, 34, 55)
+
+* Whether incumbent mayor ran for re-election in 2012 & came in first place
+gen incumbent_was_cand_a = 1 if inlist(mun_id, 22, 56, 24, 41, 18, 11, 8, 55)
+
+* Whether incumbent mayor ran for re-election in 2012 & came in second place 
+gen incumbent_was_cand_b = 1 if inlist(mun_id, 27, 1, 6, 7, 32, 44, 2, 4, 12, 13, 5, 34)
+
+* Whether incumbent mayor ran for re-election in 2012 & came in third place 
+gen incumbent_was_cand_c = 1 if mun_id == 42
+
+* Whether incumbent party came in first place in 2012 election 
+gen incumbent_party_was_cand_a = incumbent_was_cand_a
+replace incumbent_party_was_cand_a = 1 if inlist(mun_id, 50, 51, 32)
+
+* Whether incumbent party came in second place in 2012 election 
+gen incumbent_party_was_cand_b = incumbent_was_cand_b
+replace incumbent_party_was_cand_b = 1 if inlist(mun_id, 45, 28, 26, 54)
+
+* Whether incumbent party came in third place in 2012 election
+gen incumbent_party_was_cand_c = incumbent_was_cand_c
+replace incumbent_party_was_cand_c = 1 if mun_id == 10
+
+
+* Whether incumbent is from PT party
+gen mayor_pt = inlist(mun_id, 56, 45, 2, 53, 55)
+
+
+********************************************************************************
+**# 4. 2012 Survey Variables
+********************************************************************************
+
+*------------------------------------------------------------------------------*
+* Candidate gave help? (Q817)
+*------------------------------------------------------------------------------*
+
+* gift_campaign_visit_2012:  Did R receive gift during a campaign visit?
+* Note: This variable is 0 if respondent did not receive a campaign visit.
+gen c_gift_campaign_visit_2012 = (c_candidate_delivered_ == 1) if (!missing(c_candidate_delivered_) | c_candidate_visits_num_times_ == 0)
+
+
+
+********************************************************************************
+**# 5. Asking Variables
+********************************************************************************
+
+*==============================================================================*
+**## Ask help from City Councillor (2012)
+*==============================================================================*
+
+local q "c_ask_help_other_spec_ver_=="
+
+*------------------------------------------------------------------------------*
+* Help with public goods
+*------------------------------------------------------------------------------*
+** Water
+replace c_ask_water_c_ver_ = 1 if `q' "AJEITAR O POÇO DA COMUNIDADE QUE DEU PROBLEMA" |`q' "Ajeitar o açude" | ///
+`q' "ESCAVADEIRA PARA CAVAR UM CACIMBÃO" |`q' "pediu para furarem um poço aqui na comunidade"
+
+
+** Roads
+replace c_ask_help_road_ver_ = 1 if `q' "PEDIU BUERO (TAMBOR) PARA COLOCAR NAS ESTRADAS PARA TER ACESSO AOS RIACHOS"
+
+
+** Health
+replace c_ask_help_health_c_ver_ = 1 if `q' "agente de sa,ude" |`q' "Melhorar a saúde"
+
+
+** Electricity
+replace c_ask_help_electricity_c_ver_ = 1 if `q' "Colocar um poste com iluminação" |`q' "um poste de energia"
+
+
+** Other
+gen c_ask_help_other_community_ver_ = 1 if `q' "Máquina para fazer uma barragem" | `q' "construir uma ponte" | ///
+`q' "Fiscaliza mais os trabalhos da Prefeitura" | `q' "Pediu para melhorar a vida da comunidade" | `q' "patrocinar um evento promovido." | ///
+`q' "obraço para a luiz do poste" | `q' "UM CARRO ESCOLAR PRA COMUNIDADE" | `q' "um patrocínio para um evento" | ///
+`q' "Ativar a associação de moradores"
+
+
+** Any public good
+gen c_ask_public_vereador_postcoded = 0 if !missing(c_talk_pre_) | !missing(c_talk_ver_)
+replace c_ask_public_vereador_postcoded  = 1 if c_ask_water_c_ver_ == 1 | c_ask_help_road_ver_ == 1 | c_ask_help_edu_c_ver_ == 1 | ///
+c_ask_help_electricity_c_ver_ == 1 | c_ask_help_health_c_ver_ == 1 | c_ask_help_other_community_ver_ == 1
+
+
+*------------------------------------------------------------------------------*
+* Help with private goods
+*------------------------------------------------------------------------------*
+** Water
+replace c_ask_help_water_f_ver_ = 1 if `q' "Canos" |`q' "Cisterna" |`q' "Conseguir a cisterna" |`q' "Trazer a cisterna" | ///
+`q' "cisterna" |`q' "um poço" |`q' "Materias para encanaçao" |`q' "caixa dgua" |`q' "Uma cisterna" | `q' "Ajuda pra onstruir um açude." | ///
+`q' "Pediu dinheiro pra construir uma cisterna" |`q' "um poço" |`q' "CAIXA DÁGUA" |`q' "encanamento para casa" | ///
+`q' "uma caixa de água." |`q' "pagar a conta de água" |`q' "pagamento de agua" |`q' "água encanada" |`q' "Um tambo pra carregar agua." | ///
+`q' "Encanaçao" | `q' "cavar uma cacimba" |`q' "uma maquina para fazer uma barragem" |`q' "construção de um barreiro" | ///
+`q' "Tirar a lama do tanque." | `q' "POÇO ARTESIANO" |`q' "Pediu ajuda pra terminar de construir o açude." |`q' "Construir uma cisterna." | ///
+`q' "construir um poço artesiano" |`q' "construir um poço artesiano." |`q' "Instalacao de um poço artesiano."
+
+
+** Construction
+replace c_ask_help_construction_ver_ = 1 if `q' "passar o trator na minha barragem pequena" |`q' "cimentos" | ///
+`q' "TRATOR PARA LIMPAR O AÇUDE DA PROPRIEDADE." |`q' "UM BANHEIRO" |`q' "Pediu ajuda pra construir um barreiro"
+
+
+** Electricity
+replace c_ask_help_electricity_f_ver_ = 1 if `q' "Instalação da eletricidade (energia)." |`q' "ELETRIFICAÇÃO PARA SUA CASA" | ///
+`q' "PARA COLOCAR ENERGIA EM UMA CASA NO BAIRRO BELA VISTA DO POVOADO DE POÇOS"
+
+
+** Medical treatment
+replace c_ask_help_med_ver_ = 1 if `q' "Remedio para minha filha." |`q' "Dinheiro para comprar medicamento para o filho." | ///
+`q' "receita de remedio" |`q' "Dinheiro para comprar remédio" |`q' "remedio" |`q' "remedios" |`q' "REMEDIO"
+
+
+** Food basket
+replace c_ask_help_basket_ver_ = 1 if `q' "pediu uma cesta básica"
+
+
+** Job
+replace c_ask_help_job_ver_ = 1 if `q' "para conseguir um emprego" |`q' "um emprego para a filha"
+
+
+** Money
+gen c_ask_money_ver = 1 if `q' "dinheiro" |`q' "um valor em dinheiro." |`q' "Dinheiro" |`q' "DINHEIRO" |`q' "AJUDA FINACEIRA" | ///
+`q' "dinheiro 70  reais" |`q' "Dinheiro 50 reais" |`q' "dinheiro." |`q' "Dinheiro." |`q' "Pediu dinheiro" |`q' "ajuda em dinheiro" | ///
+`q' "Pediu R$ 300,00"
+
+
+** Medicine
+replace c_ask_help_health_f_ver_ = 1 if `q' "EXAME MÉDICO" |`q' "Foi pedido óculos de grau" | `q' "pedipara ele pagar um exame" | ///
+`q' "pedi um odontólogo para fazer canal dentário" |`q' "uma cirurgia de ligadura de trompas." |`q' "um tratamento médico" | ///
+`q' "AJUDA PARA UMA CONSULTA MEDICA (OCULISTA) PRA O MEU FILHO" |`q' "pedi um exame de vista." | `q' "estrair os dentes" | ///
+`q' "Exame Médico - Ressonância Magnética" | `q' "pediu uma ultra-som e um raio-x" |`q' "exames" |`q' "Exame Médico" | ///
+`q' "cirurgia no tornozelo." |`q' "transporte para tratamento em Aracaju" |`q' "Óculos de grau." |`q' "exame médico" | ///
+`q' "Transporte para tratamento médico" |`q' "Exame." |`q' "UM TRANSPORTE PARA LEVAR MINHA FILHA PARA O HOSPITAL EM ARACI" | ///
+`q' "passagem para tratamento médico" |`q' "conseguir um transporte para o recife prá um tratemento médico." | ///
+///
+`q' "Ajuda pra conseguir transportar seu filho ao RECIFE pra fazer consulta." |`q' "tranporte para ir ao hospital" | ///
+`q' "Transporte para ir ao tratamento médico com o filho em Fortaleza." |`q' "Cirurgia de vesicula." | `q' "FAZER UM ÓCULOS DE GRAU" | ///
+`q' "conseguir exame de vista  para meu filho" | `q' "Um carro para leva o filho para o hospital" |`q' "Viagem ao hospital" | ///
+`q' "UM TRANSPORTE PARA VOLTAR PARA CASA DO HOSPITAL EM SANTA LUZ COM O MEU FILHO" |`q' "transporte( carro pra ir ao medico)" | ///
+`q' "TRANSPORTE PARA IR ATE BEZERROS FAZER CIRURGIA" |`q' "Da o transporte pra fazer tratamento médico em caruaru" | ///
+`q' "óculos, transporte" |`q' "UM TRANSPORTE PARA O HOSPITAL EM CAMPO FORMOSO (QUEBREI A PERNA EM AGOSTO/12)" | ///
+`q' "Exames (ressonância, hemograma completo, eletrocardiograma) para o marido e carro para levar ele no dia da realização." | ///
+///
+`q' "exames" |`q' "cirurgia da esposa." |`q' "PROTESE DENTARIA" |`q' "OCULOS DE GRAU" | `q' "EXAMES MEDICOS" | ///
+`q' "PEDI UMA AJUDA EM DINHEIRO PARA PAGAR A MINHA CIRURGIA(LAQUEADURA) QUE FOI PARTICULAR NO HOSPITAL EM SERRINHA" | ///
+`q' "UM TRANSPORTE PARA O HOSPITAL EM CAMPO FORMOSO" |`q' "tomografia" |`q' "Um carro pra levar uma criança doente" | ///
+`q' "uma ajuda pra fazer um tratamento" |`q' "Exame oftalmologico." |`q' "UM OCULOS COMPLETO" | `q' "Oculos de grau" | ///
+`q' "Passagem pra ir no médico de campina grande" |`q' "TRANSPORTE PRA IR SE CONSULTAR EM CARUARU." | `q' "EXAME DE VISTA" | ///
+`q' "Dinheiro para levar o filho ao médico e remedio." |`q' "pediu para ele levar p/ fazer exame em pesqueira no carro dele" | ///
+`q' "transporte para levar o marido para fazer um tratamento médico" |`q' "um carro pra ir ao hospital" |`q' "EXAME DE VISTA" | ///
+`q' "Prótese dentária." |`q' "pediu um carro para pegá-la na maternidade" |`q' "dinheiro pra pagar o plano de saúde do filho" 
+
+
+** Other
+gen c_ask_help_other_private_ver_ = 1 if `q' "Ajuda pra pagar habilitação" |`q' "AJUDA PARA PAGUAR UMA MOTO" |`q' "pneus da moto" | ///
+`q' "Para mim Aposentar." |`q' "bateria para mot0." |`q' "aposentadoria" |`q' "Pneu para meu carro." |`q' "Emplacamento da moto" | ///
+`q' "Pagar o sindicato que estava sem condições de pagar." |`q' "comprar o leite da criança" |`q' "tirar documentos que foram perdidos" | ///
+`q' "Dinheiro para consertar a moto." |`q' "para ele fazer a preparação da aposentadoria da mesma" |`q' "Documento de Habilitaçao." | ///
+`q' "Merenda da escola" |`q' "Regularizar documento do carro da família." |`q' "pagar o sindicato" |`q' "BOTIJÃO DE GÁS" | ///
+`q' "Pneu da moto" | `q' "ajuda pra conseguir documento de habilitaçao." |`q' "Para aposentar omarido dela." |`q' "casa" | ///
+`q' "Salário-maternidade" |`q' "Regularizar a documentação do carro da família." |`q' "conserto da geladeira" |`q' "Uma chuteia." | ///
+///
+`q' "aposentadoria" |`q' "pedi um par de luvas, pois sou atleta(goleiro)." |`q' "sapato para jogar" |`q' "ajudar a tirar documentos" | ///
+`q' "uma cama com colchao" |`q' "Dinheiro para pagar o sindicato." |`q' "chuteira" |`q' "3 PNEUS" | ///
+`q' "pedir um carro para ir buscar meu avõ em campina grande" |`q' "rEGISTRO (DOCUMENTO)" |`q' "Conserto da moto" | ///
+`q' "Uma ajuda nos estudos." |`q' "Dinheiro para combustível" |`q' "Um carro para ir a Aracaju." |`q' "foi de um pneu para á moto." | ///
+`q' "Dinheiro para comprar carne e 2 pneus para moto." |`q' "bujão" |`q' "arrumar um advogado ele pagou ao advogado" | ///
+`q' "AJUDA PARA PAGAR O CINDICATO" |`q' "AJUDA FINACEIRA" |`q' "tira registro e identidade" | ///
+`q' "alugar um carro para pegar algumas coisas" |`q' "ajuda de transporte" |`q' "Pedio um carro para ir buscar a menina na escola." | ///
+///
+`q' "Dinheiro para comprar um botijão de gás." |`q' "dinheiro para transporte" |`q' "Conserto da moto" | ///
+`q' "Cavar 3 buracos para cisternas para sua família." |`q' "Pediu ajuda pra ir a fortaleza com o pessoal da igreja." | ///
+`q' "ASSISTENCIA FUNERARIA" |`q' "viajem pra aracaju" |`q' "PRECISEI DE UM ADVOGADO" |`q' "Um botijão de gás" | ///
+`q' "SEGUNDA VIA DOS REGISTROS DE TRÊS PESSOAS" | `q' "uma chuteira" |`q' "um frete para pegar a mudança do filho" |`q' "Botijão de gás" | ///
+`q' "maquina de costura" |`q' "um butijão de gás" |`q' "transporte para deslocamento intermunicipal" | ///
+`q' "tirar a moto que estava presa por infraçao  de transito" |`q' "Ajuda para transporte" | `q' "deu uma seresta" | ///
+`q' "UM TRANSPORTE PARA LEVAR A MINHA FILHA PRA O SAC (TIRAR OS DOCUMENTOS, RG, CPF E O TÍTULO DE ELEITOR" | ///
+///
+`q' "Um carro para socorrer a filha." |`q' "pedio pra quebar as pedras da porta de casa" | `q' "um carro pra pode servi minha familia" | ///
+`q' "passagem para ir a fortaleza" |`q' "uma chuteira ,porque  eu jogo futebol" |`q' "gasolina" | `q' "Conserto da moto" | ///
+`q' "DINHEIRO PARA TIRAR A CERTIDÃO DE NASCIMENTO DO MEU FILHO" |`q' "amortecedor para moto" |`q' "transporte para Caruaru" | ///
+`q' "pedi um pneu para minha moto." |`q' "comprar um butijao de gas" |`q' "trazer um transporte no dia da eleição,para levar ás pessoas" | ///
+`q' "carro para pega uma produto em Quixadá." |`q' "um bolo de aniversário" |`q' "Dinheiro para pagar contas (80 reais)." | ///
+`q' "tranporte para outras cidades" |`q' "PASSAGEM DE ÔNIBUS(NÃO FOI EM DINHEIRO)" |`q' "Um carro para me levar para rua."
+
+
+** Any private good
+gen c_ask_private_vereador_postcoded = 0 if !missing(c_talk_pre_) | !missing(c_talk_ver_)
+replace c_ask_private_vereador_postcoded  = 1 if c_ask_help_water_f_ver_ == 1 | c_ask_help_construction_ver_ == 1 | ///
+c_ask_help_edu_f_ver_ == 1 | c_ask_help_electricity_f_ver_ == 1 | c_ask_help_med_ver_ == 1 | c_ask_help_basket_ver_ == 1 | ///
+c_ask_help_job_ver_ == 1 | c_ask_money_ver == 1 | c_ask_help_health_f_ver_ == 1 | c_ask_help_other_private_ver_ == 1
+
+
+** Any private good, excluding water
+gen c_ask_priv_vereador_nowater_post = 0 if !missing(c_talk_pre_) | !missing(c_talk_ver_)
+replace c_ask_priv_vereador_nowater_post  = 1 if  c_ask_help_construction_ver_ == 1 | c_ask_help_edu_f_ver_ == 1 | ///
+c_ask_help_electricity_f_ver_ == 1 | c_ask_help_med_ver_ == 1 | c_ask_help_basket_ver_ == 1 | c_ask_help_job_ver_ == 1 | ///
+c_ask_money_ver == 1 | c_ask_help_health_f_ver_ == 1 | c_ask_help_other_private_ver_ == 1
+
+
+*==============================================================================*
+**## Ask help from Mayor (2012)
+*==============================================================================*
+
+local q "c_ask_help_other_spec_pre_=="
+
+*------------------------------------------------------------------------------*
+* Help with public goods
+*------------------------------------------------------------------------------*
+** Education
+replace c_ask_help_edu_c_pre_ = 1 if `q' "Trazer uma escola, pois não tem escola nesse sítio"
+
+
+** Other
+gen c_ask_help_other_community_pre_ = 1 if `q' "Ativar a associação de moradores" |`q' "patrocinar um evento promovido por min."
+
+
+** Any public good
+gen c_ask_public_prefeito_postcoded = 0 if !missing(c_talk_pre_) | !missing(c_talk_ver_)
+replace c_ask_public_prefeito_postcoded  = 1 if c_ask_water_c_pre_ == 1 | c_ask_help_road_pre_ == 1 | c_ask_help_edu_c_pre_ == 1 | ///
+c_ask_help_electricity_c_pre_ == 1 | c_ask_help_health_c_pre_ == 1 | c_ask_help_other_community_pre_ == 1
+
+
+*------------------------------------------------------------------------------*
+* Help with private goods
+*------------------------------------------------------------------------------*
+** Water
+replace c_ask_help_water_f_pre_ = 1 if `q' "construção de um barreiro" |`q' "Para construir um poço d'água." | ///
+`q' "pediu para construir a cisterna e poste com luz para a comunidade" |`q' "tirar lama da barragem"  |`q' "um poço"
+
+
+** Construction
+replace c_ask_help_construction_pre_ = 1 if `q' "Construção de uma casa" |`q' "construir minha casa" | ///
+`q' "HORAS DE TRATOR PARA CONSTRUIR UM BARREIRO"
+
+
+** Electricity
+replace c_ask_help_electricity_f_pre_ = 1 if `q' "pediu para pagar uma conta de energia"
+
+
+** Job
+replace c_ask_help_job_pre_ = 1 if `q' "Conseguir emprego" |`q' "Emprego" |`q' "emprego" |`q' "EMPREGO PRO MARIDO" | ///
+`q' "pediu emprego para a filha" |`q' "um emprego."
+
+
+** Money
+gen c_ask_money_pre = 1 if `q' "AJUDA FINACEIRA" |`q' "ajuda finaceira" |`q' "dinheiro" |`q' "Dinheiro" |`q' "DINHEIRO" | ///
+`q' "dinheiro também." |`q' "Dinheiro." |`q' "foi em dinheiro." |`q' "Pediu dinheiro R$ 80,00"
+
+
+** Medicine
+replace c_ask_help_health_f_pre_ = 1 if `q' "Aparelho de medir a PRESSAO." |`q' "cadeira de roda eletrica" |`q' "Cirurgia para o filho" | ///
+`q' "Exame médico - Ressonância magnética" |`q' "Exames médicos" |`q' "transportacajue para tratamento medico em Aracaju." | ///
+`q' "transporte para levar o marido ao tratamento médico" |`q' "Ttamento Medicora" |`q' "Um exame médico" | ///
+`q' "Uma cirurgia para o filho" |`q' "UMA PASSAGEM PARA IR NA CIDADE DE IRECÊ-BA (MINHA MULHER FAZER EXAMES NA CABEÇA)"
+
+
+** Other
+gen c_ask_help_other_private_pre_ = 1 if `q' "ASSISTENCIA FUNERARIA" |`q' "casa" | `q' "concertar a minha moto" |`q' "concertar a moto"| ///
+`q' "cobrir a cisterna do vizinho que era aberta e as crianças corria o risco de cair dentro" |`q' "concerto da moto" | /// 
+`q' "Conserto da sua moto" |`q' "dinheiro para inteirar passagem de ônibus para outro município" |`q' "Dinheiro pra pagar as contas" | ///
+`q' "Leite para o filho" |`q' "Pae São Paulo para Adustinassagem d" |`q' "pagar taxa do sindicato" | ///
+`q' "Passagem de São Paulo para Adustina" |`q' "pediu a carteira nacional de habilitação" |`q' "pediu para limpar o barreiro" | ///
+`q' "Pediu pra tirar documentos" |`q' "PEDIU QUE AJUDASSE NA APOSENTADORIA." |`q' "pneu para a moto" |`q' "Pneu para meu carro." | ///
+`q' "residuo para os animais" |`q' "tirar 2 via de documentos perdidos" |`q' "transporte"
+
+
+** Any private good
+gen c_ask_private_prefeito_postcoded = 0 if !missing(c_talk_pre_) | !missing(c_talk_ver_)
+replace c_ask_private_prefeito_postcoded = 1 if c_ask_help_water_f_pre_ == 1 | c_ask_help_construction_pre_ == 1 | ///
+c_ask_help_edu_f_pre_ == 1 | c_ask_help_electricity_f_pre_ == 1 | c_ask_help_med_pre_ == 1 | c_ask_help_basket_pre_ == 1 | ///
+c_ask_help_job_pre_ == 1 | c_ask_money_pre == 1 | c_ask_help_health_f_pre_ == 1 | c_ask_help_other_private_pre_ == 1
+
+
+** Any private good, excluding water
+gen c_ask_priv_prefeito_nowater_post = 0 if !missing(c_talk_pre_) | !missing(c_talk_ver_)
+replace c_ask_priv_prefeito_nowater_post = 1 if c_ask_help_construction_pre_ == 1 | c_ask_help_edu_f_pre_ == 1 | ///
+c_ask_help_electricity_f_pre_ == 1 | c_ask_help_med_pre_ == 1 | c_ask_help_basket_pre_ == 1 | c_ask_help_job_pre_ == 1 | ///
+c_ask_money_pre == 1 | c_ask_help_health_f_pre_ == 1 | c_ask_help_other_private_pre_ == 1
+
+
+
+*==============================================================================*
+**## Ask help from Mayor or City Councillor (2012)
+*==============================================================================*
+
+*------------------------------------------------------------------------------*
+* Help with public goods
+*------------------------------------------------------------------------------*
+** Any public good
+gen c_ask_public_pol_postcoded = 1 if c_ask_public_vereador_postcoded == 1 | c_ask_public_prefeito_postcoded == 1
+replace c_ask_public_pol_postcoded = 0 if c_ask_public_vereador_postcoded == 0 & c_ask_public_prefeito_postcoded == 0
+
+
+*------------------------------------------------------------------------------*
+* Help with private goods
+*------------------------------------------------------------------------------*
+** Any private good
+gen c_ask_private_pol_postcoded = 1 if c_ask_private_vereador_postcoded == 1 | c_ask_private_prefeito_postcoded == 1
+replace c_ask_private_pol_postcoded = 0 if c_ask_private_vereador_postcoded == 0 & c_ask_private_prefeito_postcoded == 0
+
+
+** Any private good, excluding water
+gen c_ask_priv_pol_nowater_post = 1 if c_ask_priv_vereador_nowater_post == 1 | c_ask_priv_prefeito_nowater_post == 1
+replace c_ask_priv_pol_nowater_post = 0 if c_ask_priv_vereador_nowater_post == 0 & c_ask_priv_prefeito_nowater_post == 0
+
+
+*==============================================================================*
+**## Ask and received help for public goods from Mayor or City Councillor (2012)
+*==============================================================================*
+
+*------------------------------------------------------------------------------*
+* Any public good
+*------------------------------------------------------------------------------*
+** Any public good from councillor
+gen c_ver_askrec_pub_post = 0 if !missing(c_ask_help_gen_ver_)
+replace c_ver_askrec_pub_post = 1 if c_ask_public_vereador_postcoded == 1 & c_receive_help_ver_ == 1
+
+
+** Any public good from mayor
+gen c_pre_askrec_pub_post = 0 if !missing(c_ask_help_gen_ver_)      			// note - ver, not pre, else will drop too many observations
+replace c_pre_askrec_pub_post = 1 if c_ask_public_prefeito_postcoded == 1 & c_receive_help_pre_ == 1
+
+
+** Any public good from mayor or councillor
+gen c_pol_askrec_pub_post = 1 if c_ver_askrec_pub_post == 1 | c_pre_askrec_pub_post == 1
+replace c_pol_askrec_pub_post = 0 if c_ver_askrec_pub_post == 0 & c_pre_askrec_pub_post == 0
+
+
+*==============================================================================*
+**## Ask and received help for private goods from Mayor or City Councillor (2012)
+*==============================================================================*
+
+*------------------------------------------------------------------------------*
+* Any private good
+*------------------------------------------------------------------------------*
+** Any private good from councillor
+gen c_ver_askrec_priv_post = 0 if !missing(c_ask_help_gen_ver_)
+replace c_ver_askrec_priv_post = 1 if c_ask_private_vereador_postcoded == 1 & c_receive_help_ver_ == 1
+
+
+** Any private good from mayor
+gen c_pre_askrec_priv_post = 0 if !missing(c_ask_help_gen_ver_) 				// note - ver, not pre, else will drop too many observations
+replace c_pre_askrec_priv_post = 1 if c_ask_private_prefeito_postcoded == 1 & c_receive_help_pre_ == 1
+
+
+** Any private good from mayor or councillor
+gen c_pol_askrec_priv_post = 1 if c_ver_askrec_priv_post == 1 | c_pre_askrec_priv_post == 1
+replace c_pol_askrec_priv_post = 0 if c_ver_askrec_priv_post == 0 & c_pre_askrec_priv_post == 0
+
+
+*------------------------------------------------------------------------------*
+* Any private good, excluding water
+*------------------------------------------------------------------------------*
+** Any private good from councillor, excluding water
+gen c_ver_askrec_priv_nowater_post = 0 if !missing(c_ask_help_gen_ver_)
+replace c_ver_askrec_priv_nowater_post = 1 if c_ask_priv_vereador_nowater_post == 1 & c_receive_help_ver_ == 1
+
+
+** Any private good from mayor, excluding water 
+gen c_pre_askrec_priv_nowater_post = 0 if !missing(c_ask_help_gen_ver_) 		// note - ver, not pre, else will drop too many observations  
+replace c_pre_askrec_priv_nowater_post = 1 if c_ask_priv_prefeito_nowater_post == 1 & c_receive_help_pre_ == 1
+
+
+** Any private good from mayor or councillor, excluding water
+gen c_pol_askrec_priv_nowater_post = 1 if  c_ver_askrec_priv_nowater_post == 1 | c_pre_askrec_priv_nowater_post == 1
+replace c_pol_askrec_priv_nowater_post = 0 if c_ver_askrec_priv_nowater_post == 0 & c_pre_askrec_priv_nowater_post == 0
+
+
+
+*==============================================================================*
+**## Received help from City Councillor (2013)
+*==============================================================================*
+
+foreach x of varlist e_rec_hlp_*{
+	gen `x'post = `x'
+}
+
+local q "e_rec_hlp_cnclr_spec_=="
+
+
+** Water 
+replace e_rec_hlp_cnclr_wtr_post = 1 if `q' "bomba de agua" | `q' "maquina para carvar a cisterna"
+
+
+** Building material
+replace e_rec_hlp_cnclr_bldmtrl_post = 1 if `q' "SACO DE ADUBO" | `q' "areia" |`q' "uam porta para minha casa"
+
+
+** Medicine
+replace e_rec_hlp_cnclr_medicine_post = 1 if `q' "REMÉDIO" | `q' "Remedios" | `q' "medicamento" | `q' "medicamento(remedios)"| ///
+`q' "remedio" | `q' "remedios"
+
+
+** Medical treatment
+replace e_rec_hlp_cnclr_medtrt_post = 1 if `q' "A CONSULTA DO OCULISTA E O OCULOS." | `q' "Deu dinheiro para fazer um exame partic" | ///
+`q' "EXAMES" | `q' "TRANSPORTE MEDICO" | `q' "TRANSPORTE PARA O HOSPITAL" | `q' "VIAGEM COM PESSOA DOENTE" | ///
+`q' "conduçao para deixar a esposa no hospit" | `q' "consulta para meu filho no psicologo" | ///
+`q' "deu uma consulta do meu filho e exame q" | `q' "exame medico"| `q' "exames medicos"| `q' "levou meu irmão pro hospital" | ///
+`q' "pagou exame medico" | `q' "resebe uma ajuda medica" | `q' "tratamento de saude em recife"
+
+
+** Any private good
+gen rec_priv_ver_hlp_2013 = 0 if !missing(e_rec_hlp_cnclr_)
+replace rec_priv_ver_hlp_2013 = 1 if e_rec_hlp_cnclr_spec_ != "" & e_rec_hlp_cnclr_spec_ != "construção de um açude"
+replace rec_priv_ver_hlp_2013 = 1 if e_rec_hlp_cnclr_wtr_post == 1 | e_rec_hlp_cnclr_bldmtrl_post == 1 | ///
+e_rec_hlp_cnclr_medicine_post == 1 | e_rec_hlp_cnclr_schl_post == 1 | e_rec_hlp_cnclr_elecbl_post == 1 | ///
+e_rec_hlp_cnclr_medtrt_post == 1 | e_rec_hlp_cnclr_food_post == 1 | e_rec_hlp_cnclr_empl_post == 1
+
+
+** Any private good, excluding water
+gen rec_priv_ver_hlp_nowater_2013 = 0 if !missing(e_rec_hlp_cnclr_)
+replace rec_priv_ver_hlp_nowater_2013 = 1 if e_rec_hlp_cnclr_spec_ != "" & e_rec_hlp_cnclr_spec_ != "construção de um açude"
+replace rec_priv_ver_hlp_nowater_2013 = 1 if  e_rec_hlp_cnclr_bldmtrl_post == 1 | e_rec_hlp_cnclr_medicine_post == 1 | ///
+e_rec_hlp_cnclr_schl_post == 1 | e_rec_hlp_cnclr_elecbl_post == 1 | e_rec_hlp_cnclr_medtrt_post == 1 | ///
+e_rec_hlp_cnclr_food_post == 1 | e_rec_hlp_cnclr_empl_post == 1
+
+
+** Any public good
+gen rec_comm_ver_hlp_2013 = 0 if !missing(e_rec_hlp_cnclr_)
+replace rec_comm_ver_hlp_2013 = 1 if `q' "construção de um açude"
+replace rec_comm_ver_hlp_2013 = 1 if e_rec_hlp_cnclr_wtr_comm_post == 1 | e_rec_hlp_cnclr_roads_post == 1 | ///
+e_rec_hlp_cnclr_health_post == 1 | e_rec_hlp_cnclr_schlcomm_post == 1 | e_rec_hlp_cnclr_elec_post == 1
+
+gen rec_public_ver_help_2013 = rec_comm_ver_hlp_2013
+
+
+*==============================================================================*
+**## Received help from Mayor (2013)
+*==============================================================================*
+
+local q "e_rec_hlp_myr_spec_=="
+
+
+** Water
+replace e_rec_hlp_myr_wtr_post = 1 if `q' "cistetrna" | `q' "trazendo o carro pipa"
+
+
+** Food
+replace e_rec_hlp_myr_food_post = 1 if `q' "DEU PEIXE NA SEMANA SANTA" | `q' "Um Bolo pra formatura" |`q' "tratar a saude em recife"
+
+
+** Medical treatment
+replace e_rec_hlp_myr_medtrt_post = 1 if `q' "EXAME MEDICO"
+
+
+** Roads
+replace e_rec_hlp_myr_roads_post = 1 if `q' "MELHORIA DA ESTRADA"
+
+
+** Any private good
+gen rec_priv_myr_hlp_2013 = 0 if !missing(e_rec_hlp_myr_)
+
+replace rec_priv_myr_hlp_2013 = 1 if `q' "DEU PEIXE NA SEMANA SANTA" | `q' "Um Bolo pra formatura" | ///
+`q' "tratar a saude em recife" | `q' "EXAME MEDICO" | `q' "cistetrna" | `q' "trazendo o carro pipa" | `q' "DINHEIRO" | ///
+`q' "DINHEIRO PARA COMBUSTIVEL" |`q' "MAQUINA PARA CAVAR BARRAGEM" |`q' "MAQUINA PARA FAZER UM SEFVIÇO AQUI  NA " | ///
+`q' "PAGAMENTO DE CONTA DE AGUA"| `q' "SEMENTE" |`q' "construiu um barreirinho" |`q' "dinheiro"|`q' "oculos" | ///
+`q' "um valor em dinheiro"|`q' "uma casa"
+
+replace rec_priv_myr_hlp_2013 = 1 if e_rec_hlp_myr_wtr_post == 1 | e_rec_hlp_myr_bldmtrl_post == 1 | e_rec_hlp_myr_medicine_post == 1 |  ///
+e_rec_hlp_myr_schl_post == 1 | e_rec_hlp_myr_elecbl_post == 1 | e_rec_hlp_myr_medtrt_post == 1 | e_rec_hlp_myr_food_post == 1 | ///
+e_rec_hlp_myr_empl_post == 1
+
+
+** Any private good, excluding water
+gen rec_priv_myr_hlp_nowater_2013 = 0 if !missing(e_rec_hlp_myr_)
+
+replace rec_priv_myr_hlp_nowater_2013 = 1 if `q' "DEU PEIXE NA SEMANA SANTA" | `q' "Um Bolo pra formatura" | `q' "uma casa" | ///
+`q' "tratar a saude em recife" | `q' "EXAME MEDICO" | `q' "cistetrna" | `q' "trazendo o carro pipa" | `q' "DINHEIRO" | ///
+`q' "DINHEIRO PARA COMBUSTIVEL" |`q' "MAQUINA PARA CAVAR BARRAGEM" |`q' "MAQUINA PARA FAZER UM SEFVIÇO AQUI  NA " | ///
+`q' "PAGAMENTO DE CONTA DE AGUA"|`q' "SEMENTE" |`q' "construiu um barreirinho" |`q' "dinheiro"|`q' "oculos" |`q' "um valor em dinheiro"
+
+replace rec_priv_myr_hlp_nowater_2013 = 1 if e_rec_hlp_myr_bldmtrl_post == 1 | e_rec_hlp_myr_medicine_post == 1 | ///
+e_rec_hlp_myr_schl_post == 1 | e_rec_hlp_myr_elecbl_post == 1 | e_rec_hlp_myr_medtrt_post == 1 | e_rec_hlp_myr_food_post == 1 | ///
+e_rec_hlp_myr_empl_post == 1
+
+
+** Any public good
+gen rec_comm_myr_hlp_2013 = 0 if !missing(e_rec_hlp_myr_)
+replace rec_comm_myr_hlp_2013 = 1 if `q' "Colocar benheiros no sitio" | `q' "MELHORIA DA ESTRADA"
+replace rec_comm_myr_hlp_2013 = 1 if e_rec_hlp_myr_wtr_comm_post == 1 | e_rec_hlp_myr_roads_post == 1 | ///
+e_rec_hlp_myr_health_post == 1 | e_rec_hlp_myr_schlcomm_post == 1 | e_rec_hlp_myr_elec_post == 1
+
+gen rec_public_mayor_help_2013 = rec_comm_myr_hlp_2013
+
+
+*==============================================================================*
+**## Received help from Mayor or City Councillor (2013)
+*==============================================================================*
+** Any private good
+gen rec_priv_pol_hlp_2013 = 1 if rec_priv_ver_hlp_2013 == 1 | rec_priv_myr_hlp_2013 == 1
+replace rec_priv_pol_hlp_2013 = 0 if rec_priv_ver_hlp_2013 == 0 & rec_priv_myr_hlp_2013 == 0
+
+
+** Any private good, excluding water 
+gen rec_priv_pol_hlp_nowater_2013 = 1 if rec_priv_ver_hlp_nowater_2013 == 1 | rec_priv_myr_hlp_nowater_2013 == 1
+replace rec_priv_pol_hlp_nowater_2013 = 0 if rec_priv_ver_hlp_nowater_2013 == 0 & rec_priv_myr_hlp_nowater_2013 == 0
+
+
+** Any public good
+gen rec_comm_pol_hlp_2013 = 1 if rec_comm_ver_hlp_2013 == 1 | rec_comm_myr_hlp_2013 == 1
+replace rec_comm_pol_hlp_2013 = 0 if rec_comm_ver_hlp_2013 == 0 & rec_comm_myr_hlp_2013 == 0
+
+
+*==============================================================================*
+**## Ask help from City Councillor (2013)
+*==============================================================================*
+
+local q "e_ask_cnclr_spec_=="
+
+
+** Other goods (1: private; 0: public; missing: not applicable)
+gen ask_ver_other_private_2013 = 1 if e_ask_cnclr_spec_ != ""
+replace ask_ver_other_private_2013 = 0 if `q' "CHUTEIRA PRA JOGAR BOLA" | `q' "Praça" | `q' "LAMPADA PARA O POSTE" | ///
+`q' "MELHORIA DO TRANSPORTE" | `q' "construção de açude comunitário" | `q' "cortador de mato para o colegio"  | ///
+`q' "melhoria pra Associação Comunitária" | `q' "melhoria pro campo de futebol" | `q' "pediu carro de som, para divulgar event" | ///
+`q' "sobre a dificuldades da regiao" | `q' "um poste de iluminação público"
+
+
+** Water (public)
+gen e_ask_cnclr_wtr_comm_post =  e_ask_cnclr_wtr_comm_
+replace e_ask_cnclr_wtr_comm_post = 1 if `q' "construção de açude comunitário"
+
+** Roads (public)
+gen e_ask_cnclr_roads_post =  e_ask_cnclr_roads_
+
+** Health (public)
+gen e_ask_cnclr_health_post =  e_ask_cnclr_health_
+
+** School (public)
+gen e_ask_cnclr_schlcomm_post =  e_ask_cnclr_schlcomm_
+
+** Electricity (public)
+gen e_ask_cnclr_elec_post =  e_ask_cnclr_elec_
+replace e_ask_cnclr_elec_post = 1 if `q' "LAMPADA PARA O POSTE" | `q' "um poste de iluminação público"
+
+
+** Water (private)
+gen e_ask_cnclr_wtr_post =  e_ask_cnclr_wtr_
+replace e_ask_cnclr_wtr_post = 1 if `q' "caixa d gua" | `q' "uma cavadeira para cavarn a cisterna" | `q' "UMA MAQUINA DE CAVAR CISTERNAS"
+
+
+** Building Materials (private)
+gen e_ask_cnclr_bldmtrl_post =  e_ask_cnclr_bldmtrl_
+replace e_ask_cnclr_bldmtrl_post = 1 if `q' "madeiras para colocar no barco" | `q' "pediu dinheiro para comprar cimento" | ///
+`q' "UMA CAÇAMBA DE PIÇARRO (TERRA)" | `q' "Uma Retroescavadeira pra aterramento" | `q' "areia" | `q' "cimento" | ///
+`q' "pediu dinheiro para comprar cimento" | `q' "trator de esteira para ajeitar o campo"
+
+
+** Medicine (private)
+gen e_ask_cnclr_medicine_post =  e_ask_cnclr_medicine_
+replace e_ask_cnclr_medicine_post  = 1 if `q' "REMERDIO" | `q' "Remedio" | `q' "TRANSPORTE E REMÉDIO" | `q' "comprar remedios" | ///
+`q' "medicamento" | `q' "remedio" | `q' "remedio para meu pai" | `q' "remedios"
+
+
+** Electricity (private)
+gen e_ask_cnclr_elecbl_post =  e_ask_cnclr_elecbl_
+replace e_ask_cnclr_elecbl_post = 1 if `q' "dinheiro para comprar bujao"
+
+
+** Medical treatment (private)
+gen e_ask_cnclr_medtrt_post =  e_ask_cnclr_medtrt_
+replace e_ask_cnclr_medtrt_post = 1 if `q' "Ajudou agente conseguir Cirurgia do meu" | `q' "CONSULTA MEDICA E O OCULOS" | `q' "DENTADURA" | ///
+`q' "DINHEIRO PRA FAZER UM EXAME EM GARANHUN" | `q' "LEVA DE CARRO PRA MATERNIDADE,ESTAVA GR" | `q' "TRANSPORTE PARA OS DOENTES" | ///
+`q' "transporte para ir pro hospital"| `q' "200 reais para fazer um tratamento medi"| `q' "AJUDA PARA PROBLEMA DE SAUDE" | ///
+`q' "Dinheiro para fazer um exame, particula" | `q' "TRANSPORTE MEDICO" | `q' "cadeira de rodas para o filho"| `q' "exame medico" | ///
+`q' "exames" | `q' "levou pra recife para se consultar"| `q' "o medico para meu filho" | `q' "para fazer um exame"| ///
+`q' "transpoete para campina grande/tratamen"
+
+
+** Food (private)
+gen e_ask_cnclr_food_post = e_ask_cnclr_food_
+
+
+** Job (private)
+gen e_ask_cnclr_empl_post =  e_ask_cnclr_empl_
+replace e_ask_cnclr_empl_post = 1 if `q' "emprego"
+
+
+*------------------------------------------------------------------------------*
+* Aggregate measures 
+*------------------------------------------------------------------------------*
+
+/* 
+NOTE: These measures are the same whether they use the updated "_post" variables or the original survey variables, 
+because the "_post" variable updates are encapsulated in the ask_ver_other_private_2013 variable in aggregate. 
+*/
+
+** Any private good
+gen ask_ver_private_2013 = 0 if e_ask_cnclr_ != .
+replace ask_ver_private_2013 = 1 if e_ask_cnclr_wtr_ == 1 | e_ask_cnclr_bldmtrl_ == 1 | e_ask_cnclr_medicine_ == 1 | ///
+e_ask_cnclr_elecbl_ == 1 | e_ask_cnclr_medtrt_ == 1 | e_ask_cnclr_food_ == 1 | e_ask_cnclr_empl_ == 1 | e_ask_cnclr_schl_ == 1 | ///
+ask_ver_other_private_2013 == 1
+
+
+** Any private good, excluding water
+gen ask_ver_private_nowater_2013 = 0 if e_ask_cnclr_ != .
+replace ask_ver_private_nowater_2013 = 1 if e_ask_cnclr_bldmtrl_ == 1 | e_ask_cnclr_medicine_ == 1 | e_ask_cnclr_elecbl_ == 1 | ///
+e_ask_cnclr_medtrt_ == 1 | e_ask_cnclr_food_ == 1 | e_ask_cnclr_empl_ == 1 | e_ask_cnclr_schl_ == 1 | ask_ver_other_private_2013 == 1
+
+
+** Any public good
+gen ask_ver_community_2013 = 0 if e_ask_cnclr_ != .
+replace ask_ver_community_2013 = 1 if e_ask_cnclr_wtr_comm_ == 1 | e_ask_cnclr_roads_ == 1 | e_ask_cnclr_health_ == 1 | ///
+e_ask_cnclr_schlcomm_ == 1 | e_ask_cnclr_elec_ == 1 | ask_ver_other_private_2013 == 0
+
+gen ask_ver_public_2013 = ask_ver_community_2013
+
+
+*==============================================================================*
+**## Ask help from Mayor (2013)
+*==============================================================================*
+
+local q "e_ask_myr_spec_=="
+
+
+** Other goods (1: private; 0: public; missing: not applicable)
+gen ask_mayor_other_private_2013 = 1 if e_ask_myr_spec_ != ""
+replace ask_mayor_other_private_2013 = 0 if `q' "banheiros que falta no sitio" | `q' "TIRAR A LAMA DA BARRAGEM"
+
+
+** Water (private)
+gen e_ask_myr_wtr_post = e_ask_myr_wtr_
+replace e_ask_myr_wtr_post = 1 if `q' "pedir um poço arteziano" | `q' "cisterna"
+
+
+** Building materials (private)
+gen e_ask_myr_bldmtrl_post = e_ask_myr_bldmtrl_
+replace e_ask_myr_bldmtrl_post = 1 if `q' "consertar aminha casa" |  `q' "pediu um trator emprestado para afundar" | ///
+`q' "trator" |  `q' "uma retroescavadeira"
+ 
+ 
+** Medicine (private) 
+gen e_ask_myr_medicine_post = e_ask_myr_medicine_
+replace e_ask_myr_medicine_post = 1 if `q' "REMEDIO"  |  `q' "remedios"
+
+
+** Electricity (private)
+gen e_ask_myr_elecbl_post = e_ask_myr_elecbl_
+
+
+** Medical treatment (private)
+gen e_ask_myr_medtrt_post = e_ask_myr_medtrt_
+replace e_ask_myr_medtrt_post = 1 if `q' "DENTADURA" |  `q' "exames médicos" | `q' "CARRO PARA IR AO MÉDICO" | ///
+`q' "EXAME MEDICO" | `q' "ajuda de custo para exame medico"
+
+
+** Food (private)
+gen e_ask_myr_food_post = e_ask_myr_food_
+
+
+** Job (private)
+gen e_ask_myr_empl_post = e_ask_myr_empl_
+
+
+*------------------------------------------------------------------------------*
+* Aggregate measures 
+*------------------------------------------------------------------------------*
+
+/* 
+NOTE: These measures are the same whether they use the updated "_post" variables or the original survey variables, 
+because the "_post" variable updates are encapsulated in the ask_ver_other_private_2013 variable in aggregate. 
+*/
+
+
+** Any private good
+gen ask_mayor_private_2013 = 0 if e_ask_myr_ != .
+replace ask_mayor_private_2013 = 1 if e_ask_myr_wtr_ == 1 | e_ask_myr_bldmtrl_ == 1 | e_ask_myr_medicine_ == 1 | e_ask_myr_schl_ == 1| ///
+e_ask_myr_elecbl_ == 1 | e_ask_myr_medtrt_ == 1 | e_ask_myr_food_ == 1 | e_ask_myr_empl_ == 1 | ask_mayor_other_private_2013 == 1
+
+
+** Any private good, excluding water
+gen ask_mayor_private_nowater_2013 = 0 if e_ask_myr_ != .
+replace ask_mayor_private_nowater_2013 = 1 if e_ask_myr_bldmtrl_ == 1 | e_ask_myr_medicine_ == 1 | e_ask_myr_schl_ == 1| ///
+e_ask_myr_elecbl_ == 1 | e_ask_myr_medtrt_ == 1 | e_ask_myr_food_ == 1 | e_ask_myr_empl_ == 1 | ask_mayor_other_private_2013 == 1
+
+
+** Any public good
+gen ask_mayor_community_2013 = 0 if e_ask_myr_ != .
+replace ask_mayor_community_2013 = 1 if e_ask_myr_wtr_comm_ == 1 | e_ask_myr_roads_ == 1 | e_ask_myr_health_ == 1 | ///
+e_ask_myr_schlcomm_ == 1 | ask_mayor_other_private_2013 == 0
+
+gen ask_mayor_public_2013 = ask_mayor_community_2013
+
+
+*==============================================================================*
+**## Ask help from Mayor or City Councillor (2013)
+*==============================================================================*
+
+** Measures using updated survey variables, any private goods (private, private_nowater); any public goods (community, public)
+foreach var in "private" "private_nowater" "community" "public" {
+	
+	gen ask_pol_`var'_2013 = 1 if ask_ver_`var'_2013 == 1 | ask_mayor_`var'_2013 == 1
+	replace ask_pol_`var'_2013 = 0 if ask_ver_`var'_2013 == 0 & ask_mayor_`var'_2013 == 0
+}
+
+
+*==============================================================================*
+**## Ask and receive help from mayor or city councillor (2013), private goods
+*==============================================================================*
+
+*------------------------------------------------------------------------------*
+/* Any private good : ask for any private good and receive any private good (may not be requested good)
+				    + receive question was asked earlier in the survey, before the ask question */
+*------------------------------------------------------------------------------*
+** Any private good from councillor
+gen askrec_ver_private_2013 = 0 if !missing(ask_ver_private_2013)
+replace askrec_ver_private_2013 = 1 if ask_ver_private_2013 == 1 & rec_priv_ver_hlp_2013 == 1
+
+
+** Any private good from mayor
+gen askrec_mayor_private_2013 = 0 if !missing(ask_mayor_private_2013)
+replace askrec_mayor_private_2013 = 1 if ask_mayor_private_2013 == 1 & rec_priv_myr_hlp_2013 == 1
+
+
+** Any private good from mayor or councillor
+gen askrec_pol_private_2013 = 1 if askrec_ver_private_2013 == 1 | askrec_mayor_private_2013 == 1
+replace askrec_pol_private_2013 = 0 if askrec_ver_private_2013 == 0 & askrec_mayor_private_2013 == 0
+
+
+*------------------------------------------------------------------------------*
+/* Any private good, excluding water : ask for any private good and receive any private good (may not be requested good)
+									 + receive question was asked earlier in the survey, before the ask question */
+*------------------------------------------------------------------------------*
+** Any private good from councillor, excluding water
+gen askrec_ver_private_nowater_2013 = 0 if !missing(ask_ver_private_2013)
+replace askrec_ver_private_nowater_2013 = 1 if ask_ver_private_nowater_2013 == 1 & rec_priv_ver_hlp_nowater_2013 == 1
+
+
+** Any private good from mayor, excluding water
+gen askrec_myr_private_nowater_2013 = 0 if !missing(ask_mayor_private_2013)
+replace askrec_myr_private_nowater_2013 = 1 if ask_mayor_private_nowater_2013 == 1 & rec_priv_myr_hlp_nowater_2013 == 1
+
+
+** Any private good from mayor or councillor, excluding water
+gen askrec_pol_private_nowater_2013 = 1 if askrec_ver_private_nowater_2013 == 1 | askrec_myr_private_nowater_2013 == 1
+replace askrec_pol_private_nowater_2013 = 0 if askrec_ver_private_nowater_2013 == 0 & askrec_myr_private_nowater_2013 == 0
+
+
+*==============================================================================*
+**## Ask and receive help from mayor or city councillor (2013), public goods
+*==============================================================================*
+
+*------------------------------------------------------------------------------*
+/* Any public good  : received the requested public good 
+                    + was asked later in survey, after and conditional on the ask question. 
+*/
+*------------------------------------------------------------------------------*
+** Any public good from councillor 
+gen askrec_ver_pub_same_2013 = 0 if !missing(ask_ver_public_2013)
+replace askrec_ver_pub_same_2013 = 1 if e_askrec_cnclr_wtr_comm_ == 1 | e_askrec_cnclr_roads_ == 1 | ///
+e_askrec_cnclr_health_ == 1 | e_askrec_cnclr_schlcomm_ == 1 | e_askrec_cnclr_elec_ == 1 | ///
+(e_askrec_cnclr_spec_ == 1 & ask_ver_other_private_2013 == 0)
+
+
+** Any public good from mayor 
+gen askrec_mayor_pub_same_2013 = 0 if !missing(ask_mayor_public_2013)
+replace askrec_mayor_pub_same_2013 = 1 if e_askrec_myr_wtr_comm_ == 1 | e_askrec_myr_roads_ == 1 | ///
+e_askrec_myr_health_ == 1 | e_askrec_myr_schlcomm_ == 1 | e_askrec_myr_elec_ == 1 | ///
+(e_askrec_myr_spec_ == 1 & ask_mayor_other_private_2013 == 0)
+
+
+** Any public good from mayor or councillor 
+gen askrec_pol_pub_same_2013 = 1 if askrec_ver_pub_same_2013 == 1 | askrec_mayor_pub_same_2013 == 1
+replace askrec_pol_pub_same_2013 = 0 if askrec_ver_pub_same_2013 == 0 & askrec_mayor_pub_same_2013 == 0
+
+
+*------------------------------------------------------------------------------*
+/* Any public good  : ask for any public good and receive any public good (may not be requested good)
+				    + receive question was asked earlier in the survey, before the ask question */
+*------------------------------------------------------------------------------*
+** Any public good from councillor
+gen askrec_ver_public_2013 = 0 if !missing(ask_ver_public_2013)
+replace askrec_ver_public_2013 = 1 if ask_ver_public_2013 == 1 & rec_public_ver_help_2013 == 1
+
+
+** Any public good from mayor
+gen askrec_mayor_public_2013 = 0 if !missing(ask_mayor_public_2013)
+replace askrec_mayor_public_2013 = 1 if ask_mayor_public_2013 == 1 & rec_public_mayor_help_2013 == 1
+
+
+** Any public good from mayor or councillor
+gen askrec_pol_public_2013 = 1 if askrec_ver_public_2013 == 1 | askrec_mayor_public_2013 == 1
+replace askrec_pol_public_2013 = 0 if askrec_ver_public_2013 == 0 & askrec_mayor_public_2013 == 0
+
+
+*==============================================================================*
+**## Ask, Receive, and Ask & Receive by Incumbency Status 
+*==============================================================================*
+
+*------------------------------------------------------------------------------*
+* 2012 Private Goods
+*------------------------------------------------------------------------------*
+foreach status in "incumbent" "nonincumbent" {
+	
+	if "`status'" == "incumbent" local val = 1
+	else local val = 0
+	
+	
+	** Ask for private goods, councillor 
+	gen c_ask_`status'_ver = 0 if c_ask_private_pol_postcoded != .
+	replace c_ask_`status'_ver = 1 if c_ask_private_vereador_postcoded == 1 & c_incumbant_ver_ == `val'
+	
+	
+	** Ask for private goods, mayor
+	gen c_ask_`status'_pre = 0 if c_ask_private_pol_postcoded != .
+	replace c_ask_`status'_pre = 1 if c_ask_private_prefeito_postcoded == 1 & c_incumbant_pre_ == `val'
+
+	
+	** Ask for private goods, mayor or councillor 
+	gen ask_private_`status'_2012  = 1 if c_ask_`status'_ver == 1 | c_ask_`status'_pre == 1
+	replace ask_private_`status'_2012  = 0 if c_ask_`status'_ver == 0 & c_ask_`status'_pre == 0
+	
+	
+	** Ask for and receive private goods, councillor 
+	gen c_askrec_`status'_ver = 0 if c_pol_askrec_priv_post != .
+	replace c_askrec_`status'_ver = 1 if c_ver_askrec_priv_post == 1 & c_incumbant_ver_ == `val'
+	
+	
+	** Ask for and receive private goods, mayor 
+	gen c_askrec_`status'_pre = 0 if c_pol_askrec_priv_post != .
+	replace c_askrec_`status'_pre = 1 if c_pre_askrec_priv_post == 1 & c_incumbant_pre_ == `val'
+	
+	
+	** Ask for and receive private goods, mayor or councillor 
+	gen askrec_private_`status'_2012 = 1 if c_askrec_`status'_ver == 1 | c_askrec_`status'_pre == 1
+	replace askrec_private_`status'_2012 = 0 if c_askrec_`status'_ver == 0 & c_askrec_`status'_pre == 0
+}
+
+
+*------------------------------------------------------------------------------*
+* 2013 Private Goods, Non-Incumbent
+*------------------------------------------------------------------------------*
+
+** Ask for private goods, councillor
+gen e_ask_nonincumbent_ver = 0 if !missing(e_ask_cnclr_lost_)
+
+replace e_ask_nonincumbent_ver = 1 if e_ask_cnclr_lost_wtr_ == 1 | e_ask_cnclr_lost_bldmtrl_ == 1 | e_ask_cnclr_lost_medicine_ == 1 | ///
+e_ask_cnclr_lost_schl_ == 1 | e_ask_cnclr_lost_elecbl_ == 1 | e_ask_cnclr_lost_medtrt_ == 1 | e_ask_cnclr_lost_food_ == 1 | ///
+e_ask_cnclr_lost_empl_ == 1 | e_ask_cnclr_lost_oth_ == 1
+
+replace e_ask_nonincumbent_ver = 1 if inlist(e_ask_cnclr_lost_spec_, "minha filha para o hospital", "DINHEIRO", "carro de som", "dinheiro",												"remedio", "remedio para meu pai", "uma escavadeira para cavar um buraco para fazer a cisterna")
+
+
+** Ask for private goods, mayor 
+gen e_ask_nonincumbent_pre = 0 if !missing(e_ask_myr_lost_)
+
+replace e_ask_nonincumbent_pre = 1 if e_ask_myr_lost_wtr_ == 1 | e_ask_myr_lost_bldmtrl_ == 1 | e_ask_myr_lost_medicine_ == 1 | ///
+e_ask_myr_lost_schl_ == 1 | e_ask_myr_lost_elecbl_ == 1 | e_ask_myr_lost_medtrt_ == 1 | e_ask_myr_lost_food_ == 1 | ///
+e_ask_myr_lost_empl_ == 1 | e_ask_myr_lost_oth_ == 1 | e_ask_myr_lost_spec_ == "dinheiro"
+
+
+** Ask for private goods, mayor or councillor
+gen ask_private_nonincumbent_2013  = 1 if e_ask_nonincumbent_ver == 1 | e_ask_nonincumbent_pre == 1
+replace ask_private_nonincumbent_2013  = 0 if e_ask_nonincumbent_ver == 0 & e_ask_nonincumbent_pre == 0
+
+
+
+** Ask for private goods excluding water, councillor 
+gen e_ask_nonincumbent_ver_nowater = 0 if !missing(e_ask_cnclr_lost_)
+
+replace e_ask_nonincumbent_ver_nowater = 0 if e_ask_cnclr_lost_bldmtrl_ == 1 | e_ask_cnclr_lost_medicine_ == 1 | ///
+e_ask_cnclr_lost_schl_ == 1 | e_ask_cnclr_lost_elecbl_ == 1 | e_ask_cnclr_lost_medtrt_ == 1 | e_ask_cnclr_lost_food_ == 1 | ///
+e_ask_cnclr_lost_empl_ == 1 | e_ask_cnclr_lost_oth_ == 1
+
+replace e_ask_nonincumbent_ver_nowater = 1 if inlist(e_ask_cnclr_lost_spec_, "minha filha para o hospital", "DINHEIRO", "carro de som", "dinheiro",												"remedio", "remedio para meu pai", "uma escavadeira para cavar um buraco para fazer a cisterna")
+
+
+** Ask for private goods excluding water, mayor 
+gen e_ask_nonincumbent_pre_nowater = 0 if !missing(e_ask_myr_lost_)
+
+replace e_ask_nonincumbent_pre_nowater = 1 if e_ask_myr_lost_bldmtrl_ == 1 | e_ask_myr_lost_medicine_ == 1 | ///
+e_ask_myr_lost_schl_ == 1 | e_ask_myr_lost_elecbl_ == 1 | e_ask_myr_lost_medtrt_ == 1 | e_ask_myr_lost_food_ == 1 | ///
+e_ask_myr_lost_empl_ == 1 | e_ask_myr_lost_oth_ == 1 | e_ask_myr_lost_spec_ == "dinheiro"
+
+
+** Ask for private goods excluding water, mayor or councillor 
+gen ask_priv_nonincumb_nowater_2013  = 1 if e_ask_nonincumbent_ver_nowater == 1 | e_ask_nonincumbent_pre_nowater == 1
+replace ask_priv_nonincumb_nowater_2013  = 0 if e_ask_nonincumbent_ver_nowater == 0 & e_ask_nonincumbent_pre_nowater == 0
+
+
+
+** Ask for and receive private goods, councillor
+gen e_askrec_nonincumbent_ver = 0 if !missing(e_ask_cnclr_lost_)
+
+replace e_askrec_nonincumbent_ver = 1 if e_askrec_cnclr_lost_wtr_ == 1 | e_askrec_cnclr_lost_bldmtrl_ == 1 | ///
+e_askrec_cnclr_lost_medicine_ == 1 | e_askrec_cnclr_lost_schl_ == 1 | e_askrec_cnclr_lost_elecbl_ == 1 | ///
+e_askrec_cnclr_lost_medtrt_ == 1 | e_askrec_cnclr_lost_food_ == 1 | e_askrec_cnclr_lost_empl_ == 1 | e_askrec_cnclr_lost_spec_ == 1
+
+
+** Ask for and receive private goods, mayor
+gen e_askrec_nonincumbent_pre = 0 if !missing(e_ask_myr_lost_)
+
+replace e_askrec_nonincumbent_pre = 1 if e_askrec_myr_lost_wtr_ == 1 | e_askrec_myr_lost_bldmtrl_ == 1 | ///
+e_askrec_myr_lost_medicine_ == 1 | e_askrec_myr_lost_schl_ == 1 | e_askrec_myr_lost_elecbl_ == 1 | e_askrec_myr_lost_medtrt_ == 1 | ///
+e_askrec_myr_lost_food_ == 1 | e_askrec_myr_lost_empl_ == 1 | e_askrec_myr_lost_spec_ == 1
+
+
+** Ask for and receive private goods, mayor or councillor
+gen askrec_private_nonincumbent_2013  = 1 if e_askrec_nonincumbent_ver == 1 | e_askrec_nonincumbent_pre == 1
+replace askrec_private_nonincumbent_2013  = 0 if e_askrec_nonincumbent_ver == 0 & e_askrec_nonincumbent_pre == 0
+
+
+*------------------------------------------------------------------------------*
+* 2013 Private Goods, Incumbent
+*------------------------------------------------------------------------------*
+
+** Existing measures apply to the incumbent - rename these variables for clarity
+rename ask_pol_private_2013 ask_private_incumbent_2013
+rename askrec_pol_private_2013 askrec_private_incumbent_2013
+rename ask_pol_private_nowater_2013 ask_priv_incumb_nowater_2013
+rename ask_pol_public_2013 ask_public_incumb_2013
+
+
+*------------------------------------------------------------------------------*
+* 2013 Private Goods, Incumbent or Nonincumbent
+*------------------------------------------------------------------------------*
+foreach spec in "ask" "askrec" {
+	
+	** From mayor or councillor 
+	gen `spec'_pol_private_2013 = 1 if `spec'_private_incumbent_2013 == 1 | `spec'_private_nonincumbent_2013 == 1
+	replace `spec'_pol_private_2013 = 0 if `spec'_private_incumbent_2013 == 0 & `spec'_private_nonincumbent_2013 == 0
+
+	
+	** From mayor, 2012 goods 
+	gen c_`spec'_private_any_mayor = 1 if c_`spec'_incumbent_pre == 1 | c_`spec'_nonincumbent_pre == 1
+	replace c_`spec'_private_any_mayor = 0 if c_`spec'_incumbent_pre == 0 & c_`spec'_nonincumbent_pre == 0
+	
+	
+	** From mayor, 2013 goods 
+	gen e_`spec'_private_any_mayor = 1 if `spec'_mayor_private_2013 == 1 | e_`spec'_nonincumbent_pre == 1
+	replace e_`spec'_private_any_mayor = 0 if `spec'_mayor_private_2013 == 0 & e_`spec'_nonincumbent_pre == 0
+}
+
+
+* Requests for private goods excluding water, 2013 
+gen ask_pol_private_nowater_2013 = 1 if ask_priv_incumb_nowater_2013 == 1 | ask_priv_nonincumb_nowater_2013 == 1
+replace ask_pol_private_nowater_2013 = 0 if ask_priv_incumb_nowater_2013 == 0 & ask_priv_nonincumb_nowater_2013 == 0
+
+
+*------------------------------------------------------------------------------*
+* 2013 Public Goods, Incumbent or Non-Incumbent
+*------------------------------------------------------------------------------*
+
+** Ask for public goods, non-incumbent councillor
+gen e_ask_pub_nonincumb_ver = 0 if !missing(e_ask_cnclr_lost_)
+replace e_ask_pub_nonincumb_ver = 1 if e_ask_cnclr_lost_wtr_comm_ == 1 | e_ask_cnclr_lost_roads_ == 1 | e_ask_cnclr_lost_health_ == 1 | ///
+e_ask_cnclr_lost_schlcomm_ == 1 
+
+
+** Ask for public goods, non-incumbent mayor
+gen e_ask_pub_nonincumb_pre = 0 if !missing(e_ask_myr_lost_)
+replace e_ask_pub_nonincumb_pre = 1 if e_ask_myr_lost_wtr_comm_ == 1 | e_ask_myr_lost_roads_ == 1 | e_ask_myr_lost_health_ == 1 | ///
+e_ask_myr_lost_schlcomm_ == 1 
+
+
+** Ask for public goods, non-incumbent councillor or mayor 
+gen ask_public_nonincumb_2013  = 1 if e_ask_pub_nonincumb_ver == 1 | e_ask_pub_nonincumb_pre == 1
+replace ask_public_nonincumb_2013  = 0 if e_ask_pub_nonincumb_ver == 0 & e_ask_pub_nonincumb_pre == 0
+
+
+** Ask for public goods, incumbent or non-incumbent 
+gen ask_pol_public_2013 = 1 if ask_public_incumb_2013 == 1 | ask_public_nonincumb_2013 == 1
+replace ask_pol_public_2013 = 0 if ask_public_incumb_2013 == 0 & ask_public_nonincumb_2013 == 0
+
+
+********************************************************************************
+**# 6. Other Individual-Level Variables 
+********************************************************************************
+
+** Sex
+gen respondent_male = (b_male_ != 2)                                            
+recode respondent_male (0 = 1) (1 = 0), gen(resp_female)
+
+
+** Education 
+replace b_curr_grade_ = b_last_grade_ if b_curr_grade_ == .	
+replace b_curr_grade_ = 0 if b_curr_grade_ == .
+
+
+** Voting coordination
+rename e_vote_cnclr_myr_2012_smprty_ vote_same_party
+rename c_vote_together_house_pref_ vote_together					
+						
+
+*==============================================================================*
+**## Declaration of Support for Candidate 
+*==============================================================================*
+** MEASURE 1 - Declared Dummy
+gen c_declared_dummy = 1 if c_declare_shirt_campaign_ == 1 | c_declare_rally_support_ == 1 | c_declare_house_flag == 1 | ///
+c_declare_house_paint == 1
+
+replace c_declared_dummy = 0 if c_declared_dummy != 1 & (!missing(c_declare_shirt_campaign) | !missing(c_declare_rally_) | ///
+!missing(c_declare_house_flag) | !missing(c_declare_house_paint))
+
+
+** Declaration measure subcategories
+gen declare_body = 0 if c_declared_dummy != .
+replace declare_body = 1 if (c_declare_shirt_campaign_ == 1 | c_declare_shirt_electionday_ == 1)
+
+gen declare_house = 0 if c_declared_dummy != .
+replace declare_house = 1 if (c_declare_house_flag == 1 | c_declare_house_paint == 1)
+
+gen declare_rally = 0 if c_declared_dummy != .
+replace declare_rally = 1 if c_declare_rally_support_ == 1
+
+
+*==============================================================================*
+**## Frequent interactor 
+*==============================================================================*
+gen frequent_interactor = (infrequent_interact_2012_m == 0) if !missing(infrequent_interact_2012_m)
+
+** If anybody in a given household interacts frequently with a politician, then that household is assigned to the frequent interactor category
+egen temp_interactor = max(frequent_interactor), by(num_domicilio_from_loc)  
+
+
+*==============================================================================*
+**## Receive visits and gifts from candidates
+*==============================================================================*
+gen c_candidate_visit = (c_candidate_visits_num_times_ >= 1) if !missing(c_candidate_visits_num_times_)
+
+
+** From any candidate 
+replace c_candidate_visit = 0 if missing(c_candidate_visit) & !missing(c_mun_id)
+
+
+*==============================================================================*
+**## Other clientelism variables 
+*==============================================================================*
+** CONSTRUCT "OFFERED HANDOUT IN 2012 CAMPAIGN BASED ON QUESTIONS ASKED IN 2013 SURVEY"
+gen e_offered_handout = 0 if e_cand_offerred_truckwtr_ != .
+
+foreach var in e_cand_offerred_truckwtr_ e_cand_offerred_clothes_ e_cand_offerred_food_ e_cand_offerred_medicine_ e_cand_offerred_money_ e_cand_offerred_empl_ e_cand_offerred_oth_ {
+	
+	replace  e_offered_handout = 1 if `var' == 1
+}
+
+
+*==============================================================================*
+**## Other political engagement variables 
+*==============================================================================*
+foreach var in "c" "e" {	
+	replace `var'_ever_commun_president = 0 if `var'_ever_commun_president == .
+}
+
+
+********************************************************************************
+**# 7. Generate Variables at the Household Level
+********************************************************************************
+
+** Generate total no. of adults per household 
+gen adult = (b_age_ >= 16) if !missing(b_age_)
+egen total_adults = total(adult), by(num_dom)
+
+
+** Clean miscellaneous household variables 
+gen owns_house = 0
+replace owns_house = 1 if b_owns_house == 1
+
+gen elec_access = 0
+replace elec_access = 1 if b_elec_w_acc == 1
+
+replace a_hectares = 0 if a_hectares == .
+
+rename b_total_neighbors tot_neigh
+
+rename b_neighbor_has_cistern neigh_cist
+replace neigh_cist = 0 if neigh_cist == 2
+
+rename b_last_grade_hoh last_grade_hoh
+
+
+** Within each household, the household head (or, if not available, next closest relation) is sorted first
+sort num_domicilio_from_loc d_row_num_ ind_id
+
+
+save "${final_data_folder}/clientelism_individual_data.dta", replace
+
+
+** Keep only household head (or, if not available, next closest relation) from each household
+drop if num_domicilio_from_loc == num_domicilio_from_loc[_n-1]
+		
+	
+*==============================================================================*
+**## Measures of Wealth
+*==============================================================================*
+
+*------------------------------------------------------------------------------*
+* Net Savings
+*------------------------------------------------------------------------------*
+foreach wave in "b" "d" {
+    
+	** Total Savings
+	egen `wave'_tot_liquid_asset = rowtotal(`wave'_liq_savings `wave'_cash `wave'_lent_money `wave'_ag_stocks), missing
+			
+	** Total Loans
+	egen `wave'_tot_loans = rowtotal(`wave'_fam_loan `wave'_shark_loan `wave'_bank_loan `wave'_store_loan `wave'_gov_loan 									  `wave'_other_loan), missing
+		
+	** Net Savings = Total Savings - Total Loans
+	gen `wave'_net_savings = `wave'_tot_liquid_asset - `wave'_tot_loans
+}		
+		
+		
+*------------------------------------------------------------------------------*
+* Value of Property
+*------------------------------------------------------------------------------*
+
+** Replace missing (owned) house values with respective community-median house value
+foreach var in value_house value_anoth_plot {
+	
+	foreach wave in "b" "d" {
+		egen `wave'_comm_`var' = median(`wave'_`var'), by(mun_id) 
+		order `wave'_comm_`var', after(`wave'_`var') 
+		replace `wave'_`var' = . if `wave'_`var' == .b | `wave'_`var' == .c 
+		replace `wave'_`var' = `wave'_comm_`var' if `wave'_owns_house == 1 & `wave'_`var' == . 
+		replace `wave'_`var' = `wave'_comm_`var' if `wave'_owns_house == 2 & `wave'_`var' == . 
+	}
+} 
+			
+				
+*------------------------------------------------------------------------------*
+* Value of Livestock and Durables (Winsorized)
+*------------------------------------------------------------------------------*
+
+local livestock "p_cow p_steer p_calve p_horse p_donkey p_fem_goat p_male_goat p_sheep p_adult_sheep p_pig p_chicken p_duck p_turkey p_goose p_rabbit p_fish p_animal_other"
+
+local durables "p_car p_truck p_motorcycle p_fridge p_stove p_wash_mach p_sew_mach p_tv p_dvd p_cell_phone p_pc p_phone p_satellite p_good_other value_house value_anoth_plot"
+
+foreach var in `livestock' `durables' {
+
+	foreach wave in "b" "d" {
+	    replace `wave'_`var' = . if `wave'_`var' == 0 
+
+		** Left-censor at the 5th percentile and right-censor at the 95th percentile
+		_pctile `wave'_`var', nq(1000) 			
+		replace `wave'_`var' = r(r50) if `wave'_`var' < r(r50) & `wave'_`var' != . 
+		replace `wave'_`var' = r(r950) if `wave'_`var' > r(r950) & `wave'_`var' != . 
+	}			
+} 
+
+
+*------------------------------------------------------------------------------*
+* Generate Wealth Indices
+*------------------------------------------------------------------------------*
+				
+** Use personal and municipality-level prices to define the value of assets
+local livestock "cow steer calve horse donkey fem_goat male_goat sheep adult_sheep pig chicken duck turkey goose rabbit fish animal_other animal_ns animal_nr"
+
+local durables "car truck motorcycle fridge stove wash_mach sew_mach tv dvd cell_phone pc phone satellite good_other good_ns good_nr"
+
+
+foreach var in `livestock' `durables' {	
+    
+	foreach wave in "b" "d" {
+	    replace `wave'_p_`var' = . if `wave'_p_`var' == 0 
+
+		** Define the municipality-level price of each good as the median of personal prices in that municipality.
+		egen `wave'_p_comm_`var' = median(`wave'_p_`var'), by(mun_id) 
+		
+		** If respondents have at least one of the good, replace missing personal prices with the municipality-level price
+		replace `wave'_p_`var' = `wave'_p_comm_`var' if `wave'_num_`var' != 0 & `wave'_p_`var' == . 
+
+		** Value of assets using personal prices: number of assets * personal price of assets
+		gen `wave'_val_`var' = `wave'_num_`var' * `wave'_p_`var' 
+		
+		** Value of assets using municipality-level prices: number of assets * municipality-level price of assets
+		gen `wave'_val_comm_`var' = `wave'_num_`var' * `wave'_p_comm_`var' 
+	}
+} 
+
+
+** Construct aggregate wealth indices
+foreach wave in "b" "d" {
+    
+	** Value of Durables
+	egen `wave'_total_durables = rowtotal(`wave'_val_car `wave'_val_truck `wave'_val_motorcycle `wave'_val_fridge `wave'_val_stove 											`wave'_val_wash_mach `wave'_val_sew_mach `wave'_val_tv `wave'_val_dvd `wave'_val_cell_phone 										 `wave'_val_pc `wave'_val_phone `wave'_val_satellite `wave'_val_good_other `wave'_val_good_ns 										   `wave'_val_good_nr), missing
+	
+	** Value of Livestock
+	egen `wave'_total_livestock = rowtotal(`wave'_val_cow `wave'_val_steer `wave'_val_calve `wave'_val_horse `wave'_val_donkey 											 `wave'_val_fem_goat `wave'_val_male_goat `wave'_val_sheep `wave'_val_adult_sheep `wave'_val_pig 										   `wave'_val_chicken `wave'_val_duck `wave'_val_turkey `wave'_val_goose `wave'_val_rabbit 											 `wave'_val_fish `wave'_val_animal_other `wave'_val_animal_ns `wave'_val_animal_nr), missing
+	
+	** Value of Property
+	egen `wave'_value_tot_property = rowtotal(`wave'_value_house `wave'_value_anoth_plot), missing
+	
+	
+	** Total Wealth = Value of Durables + Value of Livestock + Value of Property + Net Savings
+	egen `wave'_tot_Wealth = rowtotal(`wave'_total_durables `wave'_total_livestock `wave'_value_tot_property `wave'_net_savings), missing
+}
+
+
+*==============================================================================*
+**## Vulnerability Indices
+*==============================================================================*
+
+*------------------------------------------------------------------------------*
+*	Health Index - Specifically: SRHS
+*------------------------------------------------------------------------------*
+
+foreach wave in "b" "d" {
+    
+	** To add the Self Reported Health Status (SRHS), we first remove DK and DA observations:
+	replace `wave'_srhs_nm = . if `wave'_srhs_nm == 5 | `wave'_srhs_nm == 6
+			
+	/* Since SRHS asked respondents how BAD their health is (from 1 to 4, 4 being worst), we take the negative of this.
+	   Thus a higher index means better SRHS. */
+	gen `wave'_neg_srhs = `wave'_srhs_nm * (-1)	
+	
+	** Make index strictly positive
+	recode `wave'_neg_srhs (-1 = 4) (-2 = 3) (-3 = 2) (-4 = 1), gen(`wave'_Health)
+	
+	** Normalize new index to create a measure with mean 0 and standard deviation 1
+	egen `wave'_Health_norm = std(`wave'_Health)
+}
+
+
+*------------------------------------------------------------------------------*
+*	Child Food Security Index
+*------------------------------------------------------------------------------*
+foreach wave in "b" "d" {	
+	foreach var in iac_lack iac_ateless iac_hunger iac_atelessq iac_notvaried iac_limited {
+	    
+		** Reverse index such that higher values mean more food security
+		gen `wave'_neg_`var' = `wave'_`var' * (-1) 
+	}
+		
+	** Aggregate food security index
+	egen `wave'_Child_Food_Security = rowtotal(`wave'_neg_iac_lack `wave'_neg_iac_ateless `wave'_neg_iac_hunger 										   	  	`wave'_neg_iac_atelessq `wave'_neg_iac_notvaried `wave'_neg_iac_limited), missing
+	
+	** Aggregate food security index (standardized)
+	egen `wave'_Child_Food_Security_norm = std(`wave'_Child_Food_Security)
+}
+			
+
+*------------------------------------------------------------------------------*
+*	Happiness Index
+*------------------------------------------------------------------------------*
+foreach wave in "b" "d"	{
+    foreach var in sem_animo solitario sem_dormir triste {
+	
+		** Reverse index such that higher values mean more happiness (less depression)
+		recode `wave'_`var' (4 = 1) (3 = 2) (2 = 3) (1 = 4), gen(`wave'_neg_`var')
+	}
+	
+	** Aggregate happiness index
+	egen `wave'_Happiness = rowmean(`wave'_neg_sem_animo `wave'_neg_solitario `wave'_neg_sem_dormir `wave'_neg_triste `wave'_feliz)	
+	
+	** Normalize to create a measure with mean 0 and standard deviation 1
+	egen `wave'_Happiness_norm = std(`wave'_Happiness)
+}
+
+
+*------------------------------------------------------------------------------*
+*	Expenditure
+*------------------------------------------------------------------------------*
+
+* Total household expenditure
+rename a_total_exp a_Household_Expenditure
+
+* Household expenditure per capita
+gen b_percap_exp = b_total_exp / b_total_members
+
+* Household wealth per capita
+gen b_percap_wealth = b_tot_Wealth / b_total_members
+
+
+*------------------------------------------------------------------------------*
+*   Overall Index
+*------------------------------------------------------------------------------*
+
+** 2012 Overall Index - unweighted mean of normalized Health, Happiness, and Child Food Security indices	
+egen b_Overall_index = rowmean(b_Health_norm b_Happiness_norm b_Child_Food_Security_norm)
+
+** 2013 Overall Index - unweighted mean of normalized Health, Happiness, and Child Food Security indices	
+egen d_Overall_index = rowmean(d_Health_norm d_Happiness_norm d_Child_Food_Security_norm)
+
+
+*==============================================================================*
+**## Organize miscellaneous household variables
+*==============================================================================*
+
+** If anybody in a given household interacts frequently with a politician, then that household is assigned to the frequent interactor category
+replace frequent_interactor = temp_interactor
+drop temp_interactor
+
+quietly compress
+save "${final_data_folder}/clientelism_household_data.dta", replace
+
+
+********************************************************************************
+**# 8. Final datasets
+********************************************************************************
+
+*==============================================================================*
+**# 8.1 Stacked dataset 
+*==============================================================================*
+
+use "${final_data_folder}/clientelism_individual_data.dta", clear
+
+
+** Fill stacked variables with 2012 values
+save "${final_data_folder}/clientelism_individual_data_stacked.dta", replace
+gen year2012 = 1
+
+gen ask_private_stacked = c_ask_private_pol_postcoded
+gen ask_nowater_private_stacked = c_ask_priv_pol_nowater_post
+gen askrec_private_stacked = c_pol_askrec_priv_post
+gen ask_public_stacked = c_ask_public_pol_postcoded
+
+gen rainfall_std_stacked = rainfall_2012_std
+gen rainfall_std_stacked_og = rainfall_2012_std_og
+
+* Controls for citizen engagement for supplementary table
+gen mem_assoc = c_mem_assoc_comunitaria
+gen pres_assoc = c_ever_commun_president
+
+
+** Fill stacked variables with 2013 values
+append using "${final_data_folder}/clientelism_individual_data_stacked.dta"
+replace year2012 = 0 if missing(year2012)
+recode year2012 (0 = 1)(1 = 0), gen(year2013)
+
+replace ask_private_stacked = ask_pol_private_2013 if year2013 == 1
+replace ask_nowater_private_stacked = ask_pol_private_nowater_2013 if year2013 == 1
+replace askrec_private_stacked = askrec_pol_private_2013 if year2013 == 1
+replace ask_public_stacked = ask_pol_public_2013 if year2013 == 1
+
+replace rainfall_std_stacked = rainfall_2013_std if year2013 == 1
+replace rainfall_std_stacked_og = rainfall_2013_std_og if year2013 == 1
+
+* Controls for citizen engagement
+replace mem_assoc = e_mem_assoc_comunitaria_ if year2013 == 1
+replace pres_assoc = e_ever_commun_president if year2013 == 1
+
+
+** Keep only observations for which we have data on interactions with politicians
+keep if frequent_interactor != .
+
+
+** Keep only variables needed for stacked regressions 
+keep ask_private_stacked askrec_private_stacked ask_nowater_private_stacked ask_public_stacked ///
+mun_id c_mun_id year2012 year2013 b_clusters ///
+treatment rainfall_std_stacked rainfall_std_stacked_og frequent_interactor mem_assoc pres_assoc b_voted
+
+
+** Variable labels 
+label var ask_private_stacked "Asked politician for private good"
+label var askrec_private_stacked "Asked politician for private good and received it"
+label var ask_nowater_private_stacked "Asked politician for private good excluding water"
+label var ask_public_stacked "Asked politician for public good"
+label var year2012 "Year 2012 dummy"
+label var year2013 "Year 2013 dummy"
+label var frequent_interactor "Frequent interactions with politician outside campaign"
+label var mem_assoc "Household member is/was member of community association"
+label var pres_assoc "Household member is/was president of community association"
+label var rainfall_std_stacked "Rainfall shock (standardized)"
+label var rainfall_std_stacked_og "Rainfall shock"
+
+
+quietly compress
+save "${final_data_folder}/clientelism_individual_data_stacked.dta", replace
+
+
+*==============================================================================*
+**# 8.2 Individual-level dataset (non-stacked)
+*==============================================================================*
+
+use "${final_data_folder}/clientelism_individual_data.dta", clear
+
+** Keep only variables used in final analysis
+keep num_domicilio_from_loc ind_id treatment c_mun_id e_mun_id mun_id b_clusters frequent_interactor ///
+rainfall_2011_std rainfall_2012_std rainfall_2013_std ///
+vote_same_party vote_together c_candidate_visit c_declared_dummy declare_body declare_house declare_rally ///
+c_ask_private_pol_postcoded ask_pol_private_2013 c_pol_askrec_priv_post askrec_pol_private_2013 ///
+///
+c_vote_here_ c_voter_section_no_ c_vote_location_specified_ c_age_ total_adults a_total_neighbors ///
+///
+c_cistern_status d_cistern_status ///
+talk_pol_atleastdaily_2012_bef talk_pol_atleastweekly_2012_bef talk_pol_atleastmonthly_2012_bef talk_pol_atleastonce_2012_bef ///
+b_age_ b_estudando_ b_curr_grade_ resp_female vote_same_party vote_together ///
+c_candidate_a_honesty_ c_candidate_b_honesty_ c_candidate_a_competence_ c_candidate_b_competence_ c_candidate_max_competent_ ///
+incumbent_was_cand_a incumbent_was_cand_b incumbent_was_cand_c incumbent_ran ///
+c_gift_campaign_visit_2012 e_offered_handout e_rec_gifts_favors_ ///
+accept_riskiest_lot_hyp_1 accept_riskiest_lot_incent_2 alt_binary_P2_hyp alt_binary_P2_incent_2 ///
+rcpt_high_type_hyp_1 rcpt_high_type_incent_2 time_pref_threshold_hyp_1 time_pref_threshold_hyp_2 pub_good_share_contributed
+
+
+** Variable labels
+label var talk_pol_atleastonce_2012_bef "Interact With Politician At Least Once Before Campaign"
+label var talk_pol_atleastweekly_2012_bef "Interact With Politician At Least Weekly Before Campaign"
+label var talk_pol_atleastdaily_2012_bef "Interact With Politician At Least Daily Before Campaign"
+label var incumbent_ran "Incumbent mayor ran for re-election"
+label var incumbent_was_cand_a "Incumbent mayor won re-election"
+label var incumbent_was_cand_b "Incumbent mayor was runner-up in re-election"
+label var incumbent_was_cand_c "Incumbent mayor was second runner-up in re-election"
+label var c_gift_campaign_visit_2012 "Received gift from candidate during campaign visit"
+label var c_ask_private_pol_postcoded "Asked politician for private good (2012)"
+label var c_pol_askrec_priv_post "Asked politician for private good and received it (2012)"
+label var ask_pol_private_2013 "Asked politician for private good (2013)"
+label var askrec_pol_private_2013 "Asked politician for private good and received it (2013)"
+label var resp_female "Respondent is female"
+label var c_declared_dummy "Declared support for politician during campaign"
+label var declare_body "Declared support for politician with sticker/shirt during campaign"
+label var declare_house "Declared support for politician on house during campaign"
+label var declare_rally "Declared support for politician at rally during campaign"
+label var frequent_interactor "Frequent interactions with politician outside campaign"
+label var c_candidate_visit "Received campaign visit"
+label var total_adults "No. of adults in household"
+label var e_offered_handout "Offered handout during 2012 campaign"
+
+
+quietly compress
+save "${final_data_folder}/clientelism_individual_data.dta", replace
+
+
+*==============================================================================*
+**# 8.3 Household-level dataset (non-stacked) 
+*==============================================================================*
+
+use "${final_data_folder}/clientelism_household_data.dta", clear
+
+** Keep only variables used in final analysis
+keep num_domicilio_from_loc ind_id treatment c_mun_id e_mun_id mun_id b_clusters frequent_interactor ///
+rainfall_2011_std rainfall_2012_std rainfall_2013_std ///
+d_Happiness d_Health d_Child_Food_Security d_Overall_index a_Household_Expenditure ///
+///
+b_total_members tot_neigh neigh_cist b_bolsa_fam b_total_exp b_tot_Wealth b_age_hoh last_grade_hoh b_female_hoh owns_house b_rooms elec_access ///
+b_migrou a_terra a_hectares a_me_6ms a_x6ms_5_an a_x5_64_an a_x65_an b_voted ///
+d_total_durables d_total_livestock d_value_house d_value_anoth_plot d_value_tot_property d_net_savings d_tot_Wealth ///
+b_percap_wealth b_percap_exp b_Health b_Happiness b_Child_Food_Security b_Overall_index
+
+
+** Variable labels
+label var frequent_interactor "Frequent interactions with politician outside campaign"
+label var owns_house "Owns house"
+label var elec_access "Has electricity with own meter"
+label var d_net_savings "Net household savings"
+label var b_tot_Wealth "Total household wealth"
+label var d_total_durables "Value of household durables"
+label var d_total_livestock "Value of household livestock"
+label var d_value_tot_property "Value of property"
+label var d_tot_Wealth "Total household wealth"
+label var b_Health "SRHS Index"
+label var d_Health "SRHS Index"
+label var b_Child_Food_Security "Child Food Security Index"
+label var d_Child_Food_Security "Child Food Security Index"
+label var b_Happiness "-(CES-D) Scale"
+label var d_Happiness "-(CES-D) Scale"
+label var b_Overall_index "Overall Vulnerability Index"
+label var d_Overall_index "Overall Vulnerability Index"
+label var b_percap_exp "Household expenditure per member"
+label var b_percap_wealth "Household wealth per member" 
+
+
+quietly compress
+save "${final_data_folder}/clientelism_household_data.dta", replace

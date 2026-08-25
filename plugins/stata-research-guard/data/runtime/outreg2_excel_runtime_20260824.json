@@ -1,0 +1,75 @@
+{
+  "verification_id": "outreg2_excel_runtime_20260824_generic_2sls_first_stage_missing_r2",
+  "verified_at": "2026-08-24T15:57:47+09:00",
+  "stata_version": "18.0 MP",
+  "fixture": "tests/fixtures/outreg2_excel_runtime.do",
+  "fixture_sha256": "94562dfb6c9da92c81c2a7fd4d8646cf590aeeb05adb6011e926498241b6e409",
+  "assembly_snapshot": "annotations/source_snapshots/default_style_outreg2_xlsx.do",
+  "assembly_snapshot_sha256": "e98c97dfd21e7e4cffd8a0b0520de256afd36dceae8437cbf8a774a2f2b1a473",
+  "runtime_log": "tests/runtime/outreg2_excel/outreg2_excel_runtime.log",
+  "runtime_log_sha256": "7d3079ee7b6057af3d2615179e3cdd7224372f7051c029f2cbb299a88a9618a7",
+  "output_workbook": "tests/runtime/outreg2_excel/tables/all.xlsx",
+  "output_workbook_sha256": "e8d7091efeef7a22c19b1d63a6abce0dee86e6d586cdebe3962fd6b60b26b669",
+  "workbook_bytes": 6863,
+  "sheet_names": ["Table A", "First stage", "2SLS", "Poisson"],
+  "sheet_dimensions": {
+    "Table A": {"rows": 29, "columns": 4},
+    "First stage": {"rows": 29, "columns": 2},
+    "2SLS": {"rows": 31, "columns": 3},
+    "Poisson": {"rows": 29, "columns": 2}
+  },
+  "native_header_contract": {
+    "Table A": {"model_headers": ["(1)", "(2)", "(3)"], "dependent_variable_headers": ["y1", "y1", "y1"]},
+    "First stage": {"model_headers": ["(1)"], "dependent_variable_headers": ["x1"]},
+    "2SLS": {"model_headers": ["(1)", "(2)"], "dependent_variable_headers": ["y1", "x1"]},
+    "Poisson": {"model_headers": ["(1)"], "dependent_variable_headers": ["count_y"]},
+    "policy": "the formatter does not rewrite outreg2 model or dependent-variable headers"
+  },
+  "estimation_handoff": "the caller restores any approved .ster states under readable estimate names; the formatter consumes the ordered names without assuming an outcome count, specification count, sample, estimator, or model role. A 2SLS second-stage estimate and its separately estimated first-stage can be passed together in one caller-declared sheet.",
+  "variance_estimators": ["event-study columns: vce(cluster cluster_id)", "2SLS second-stage column: vce(cluster cluster_id)", "first-stage column: vce(cluster cluster_id)", "Poisson column: vce(cluster cluster_id)"],
+  "raw_output_contract": {
+    "policy": "preserve the complete native outreg2 coefficient and standard-error output without keep(), drop(), relabeling, or coefficient reconstruction",
+    "verified_rows": ["2017bn.year#1.exposed", "2018.year#1.exposed", "2024o.year#1o.exposed", "Poisson x1"],
+    "explicitly_excluded_reference_period": "2019 has no coefficient row because it is absent from the selected event levels",
+    "absent_nuisance_rows": ["#0b.exposed interactions", "1.exposed main effect"],
+    "native_row_order": "unchanged before the two explicitly assembled statistic rows and native note rows",
+    "blank_standard_error_row_labels": "preserved as native blanks"
+  },
+  "row_order": ["Observations", "Adjusted R-squared", "Dep. variable mean", "Robust standard errors in parentheses", "significance note"],
+  "allowed_standard_error_notes": ["Standard errors in parentheses", "Robust standard errors in parentheses"],
+  "observed_standard_error_note": "Robust standard errors in parentheses",
+  "source_table_contract": "outreg2 produces the unfiltered native coefficient, standard-error, header, and note table; stored statistics are inserted separately after import",
+  "dependent_mean_attachment": "Each of the three event-study estimates, the separately estimated first stage, the ivregress 2sls second stage, and the Poisson estimate ran estadd ysumm, mean after an independent e(sample) mean check. The fixture then asserted formatted e(ymean) values at six decimal places before saving each .ster.",
+  "display_precision": {"adjusted_r_squared": 3, "dependent_variable_mean": 6},
+  "readability_contract": {
+    "mechanism": "Stata Mata xl().set_column_width() after export",
+    "row_label_column_width": 36,
+    "model_column_width": 22,
+    "observed_xlsx_column_ranges": ["Table A A: 36.86328125", "Table A B:D: 22.86328125", "First stage A: 36.86328125", "First stage B: 22.86328125", "Poisson A: 36.86328125", "Poisson B: 22.86328125"],
+    "new_caller_options": false
+  },
+  "scratch_cleanup": {
+    "operation_order": ["restore", "erase", "confirm absent"],
+    "scratch_files": [
+      "tests/runtime/outreg2_excel/tables/__outreg2_Table A.txt",
+      "tests/runtime/outreg2_excel/tables/__outreg2_First stage.txt",
+      "tests/runtime/outreg2_excel/tables/__outreg2_2SLS.txt",
+      "tests/runtime/outreg2_excel/tables/__outreg2_Poisson.txt"
+    ],
+    "confirmed_absent": true
+  },
+  "transient_estimate_cleanup": {
+    "count": 6,
+    "confirmed_absent_after_runtime_verification": true
+  },
+  "required_additional_statistics": {
+    "Adjusted R-squared": {"Table A": ["0.003", "0.533", "0.543"], "First stage": ["0.344"], "Poisson": [""]},
+    "Dep. variable mean": {"Table A": ["280.857635", "280.857635", "280.857635"], "First stage": ["-0.068523"], "2SLS": ["280.857635", "-0.068523"], "Poisson": ["1.129167"]},
+    "2SLS": {"Adjusted R-squared": ["0.527", "0.344"], "columns": ["2SLS second stage", "first stage"]},
+    "forbidden_extra_first_stage_rows": ["Excluded-instrument F"]
+  },
+  "marker": "OUTREG2_XLSX_RUNTIME_PASSED",
+  "markers": ["OUTREG2_XLSX_WIDTHS_APPLIED", "OUTREG2_XLSX_FIRST_STAGE_PASSED", "OUTREG2_XLSX_2SLS_AND_FIRST_STAGE_PASSED", "OUTREG2_XLSX_POISSON_MISSING_R2_PASSED", "OUTREG2_XLSX_RUNTIME_PASSED"],
+  "exit_status": "passed",
+  "claim_boundary": "This verifies one estimator- and specification-count-neutral formatter on three synthetic clustered event-study estimates, a separately estimated first stage, a real ivregress 2sls second stage, and a clustered Poisson estimate. The caller can place the 2SLS and first-stage estimates together in one named sheet. It leaves native outreg2 headers, coefficient rows, standard-error rows, base and omitted forms, and notes unchanged; the single-# event RHS avoids ##-generated treatment main effects and #0b rows. The Poisson estimate has missing e(r2_a), and the formatter writes an empty Adjusted R-squared cell while retaining the raw Poisson row and its e(sample)-derived dependent-variable mean. No first-stage diagnostic row was added. The fixture confirms scratch cleanup and fixed readable widths."
+}

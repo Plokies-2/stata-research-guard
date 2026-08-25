@@ -1,0 +1,513 @@
+
+	// Principals Panel 
+	use "Data/clean/panel_principals.dta", clear	
+	
+	merge m:1 id_prin using "Data/clean/EverPrin_Panel.dta"
+	drop if _merge == 2
+	drop _merge
+	
+	tempfile temp
+	save `temp'.dta, replace	
+	
+// Summary stat average years of tenure for ADP	
+	bys rbd id_prin: egen min_year=min(agno) if ADP2 == 1
+	bys rbd id_prin: egen max_year=max(agno) if ADP2 == 1
+	g tenureADP = max_year - min_year + 1
+	
+	sum tenureADP if min_year == 2012 | min_year == 2013 , d
+	codebook id_prin if min_year == 2012 | min_year == 2013
+	codebook id_prin if (min_year == 2012) & tenureADP == 6	/*118*/
+	codebook id_prin if (min_year == 2013) & tenureADP == 5 /*373*/
+	di (118+373)/1157
+	
+	
+// Load main dataset	
+	use "Data/clean/MainPanelSchools.dta", clear
+		
+// Principal wage	
+	preserve
+		use "Data/clean/panel_principals.dta", clear // 2008-2017 but wages only 2015-2017
+		keep if agno==2015|agno==2016|agno==2017
+		rename id_prin mrun
+		keep mrun rbd agno
+		tempfile prin
+		save `prin', replace
+		
+		use "Data/clean/Panel_Wages.dta", clear
+		merge 1:1 mrun rbd agno using `prin'
+		gen WagePrin=All if _merge == 3
+		collapse (mean) WagePrin, by(rbd)
+		tempfile wage
+		save `wage', replace		
+	restore
+	
+	merge m:1 rbd using `wage'
+	drop if _merge==2
+	drop _merge
+	
+	
+// School wage
+	preserve
+		use "Data/clean/Panel_Wages.dta", clear
+		gen N=1
+		collapse (sum) All N, by(rbd)
+		gen WageSchool=All/N
+		winsor2 WageSchool, c(1 99) replace
+		keep rbd WageSchool
+		tempfile Wage
+		save `Wage', replace
+	restore
+
+	merge m:1 rbd using `Wage'
+	drop if _merge==2
+	drop _merge
+	
+// Add Principal WorkHistory 
+	merge 1:1 rbd agno using `temp'.dta
+	drop if _merge == 2
+	drop _merge
+	
+// Add tracking 	
+	merge 1:1 rbd agno using "Data/clean/Sorting_Index_SchoolYear.dta"
+	drop if _merge == 2
+	drop _merge
+	* 
+
+// Add GPA/attendance ["Data/clean/\school_panel_attendance_gpa_2012_2015.dta"] 	
+	merge 1:1 rbd agno using "Data/clean/school_panel_attendance_gpa_2011_2016.dta"
+	drop if _merge == 2
+	drop _merge
+
+	
+// Add fixed effects
+	preserve
+		use "Data/clean/principal_TwoWay_felsdv_v3.dta", clear
+		rename fe_prin_adj fe_prin_2wayfe	
+		rename fe_prin fe_prin_2wayfe_nonadj	
+
+		* Main model using t instead of t+1 GPA
+		merge 1:1 id_prin using "Data/clean/principal_TwoWay_felsdv_ContGPA.dta", keep(1 3) keepusing(fe_prin_adj_contGPA) 
+		drop _merge
+		 
+		* Using test-scores
+		merge 1:1 id_prin using "Data/clean/principal_TwoWay_felsdv_test_scores_schoolCRE.dta", keep(1 3) 
+		drop _merge
+		rename fe_prin_test fe_prin_testcre
+	
+		merge 1:1 id_prin using  "Data/clean/principal_TwoWay_felsdv_gpa_schoolCRE.dta", keep(1 3) 
+		rename fe_prin_gpa fe_prin_adj_contGPA_noTFE
+		drop _merge 
+		
+		merge 1:1 id_prin using  "Data/clean/principal_TwoWay_felsdv_attendance.dta", keep(1 3) 
+		drop _merge 
+
+		foreach i in fe_prin_2wayfe fe_prin_2wayfe_nonadj fe_prin_adj_contGPA fe_prin_testcre  fe_prin_attendance fe_prin_adj_contGPA_noTFE {
+			sum `i'
+			g SDall_`i'=(`i'-`r(mean)')/`r(sd)'
+		}
+	
+		tempfile temp_fe
+		save `temp_fe'.dta, replace
+	restore 
+	
+	merge m:1 id_prin using `temp_fe'.dta
+	drop if _merge == 2
+	drop _merge 
+
+// Adds Teacher's Surveys: see data7-SimceSurveys (info is by school-year, but only for a few years: 2009-2012)
+	merge 1:1 rbd agno using "Data/clean/surveySchool_aboutprincipals.dta", keepusing(d_about_dir_01 d_about_dir_02 d_about_dir_03 d_about_dir_04 d_about_dir_05 d_about_dir_06 d_about_dir_07 d_about_dir_09 d_about_dir_10 d_about_dir_11 d_about_dir_12 d_about_dir_15)
+	drop if _merge==2
+	drop _merge
+	
+	
+// Add gpa
+	merge 1:1 rbd agno using "Data/clean/panel_corr_gpa_test.dta", keep(1 3)
+	drop _merge
+	rename beta beta_corr_gpa_test 
+	rename se_b se_b_corr_gpa_test 
+	rename adj_beta adj_beta_corr_gpa_test	
+	
+// Declare panel	
+	rename agno year
+	xtset rbd year
+	
+// Variable cleaning	
+	replace porc_conc_estadisticas = 0 if porc_conc_estadisticas==.
+	replace porc_conc_DatosAbiertos = 0 if porc_conc_DatosAbiertos==.
+	
+	gen ShPoor=porc_conc_estadisticas
+	replace ShPoor=porc_conc_DatosAbiertos if year<2011
+
+	g liquido_pago_student = (liquido_pago/100000) / matricula_total
+	sum liquido_pago_student, d
+	replace h_ypchtot = h_ypchtot / 100000
+	
+	replace WageSchool=(WageSchool/700)/1000
+	replace WagePrin  =(WagePrin/700)/1000
+		
+	gen mean_test=(prom_mate4b_rbd+prom_lect4b_rbd)/2
+
+// Save dataset with public and private before leaving only public
+
+	compress
+	save "Data/clean/ADPREG_TEMP.dta", replace
+
+		
+// Create dataset only public schools for summary tables	
+	keep if Dmun == 1
+	keep if year >= 2008
+	
+// A school is "adp" if there is an ADP principal by the end of the year	
+	by rbd: egen aux_min_adp = min(year) if adp == 1
+	egen min_adp=min(aux_min_adp), by(rbd)
+	drop aux_min_adp
+	
+	cap drop t
+	g t = year - min_adp 
+	replace t = 0 if EverADP == 0
+	
+	
+// Change principal: for placebo exercise
+	xtset rbd year
+	g change_ppal = 1 if id_prin != l.id_prin
+	g YearPpalChange = year if change_ppal == 1 & year != 2008
+	bys rbd: egen aux_MinYearPpalChange = min(YearPpalChange)
+	egen MinYearPpalChange = min(aux_MinYearPpalChange), by(rbd)
+	drop aux_MinYearPpalChange
+	g t_pla = year - MinYearPpalChange
+	
+	g PostChangePpal = 1 if (year >= MinYearPpalChange)  & MinYearPpalChange <= 2011  & MinYearPpalChange >= 2010
+	replace PostChangePpal = 0 if PostChangePpal == .
+	
+// Controls	
+	global contS "ShPoor matricula_total prom_lect4b_rbd prom_mate4b_rbd liquido_pago_student"
+
+	foreach i in $contS {		
+		g aux_`i'_11 = `i' if year == 2011
+		bys cod_com_rbd: egen aux = mean(aux_`i'_11)
+		replace aux_`i'_11 = aux if aux_`i'_11 == . & year == 2011
+		
+		egen `i'_11 = min(aux_`i'_11), by(rbd)
+		drop aux aux_`i'_11
+	}
+		
+	global contM "hm_extpoor_rate h_ypchtot unempl_rate esc literacy_rate"
+		
+	foreach i in $contM {		
+		g aux_`i'_11 = `i' if year == 2011	
+		bys cod_com_rbd: egen aux = mean(aux_`i'_11)
+		replace aux_`i'_11 = aux if aux_`i'_11 == . & year == 2011
+		egen `i'_11 = min(aux_`i'_11), by(rbd)
+		drop aux aux_`i'_11
+	}
+	
+// Label vars	
+	label var PostChangePpal 			"Principal turnover"
+	label var adp 						"ADP"
+	label var ShPoor 					"Share of poor students"	
+	label var liquido_pago_student		"Income per student"
+	label var literacy_rate				"Literacy rate"	
+
+// Save
+	compress
+	save "Data/clean/Base_ADPAnalysis.dta", replace
+	
+***********************************
+*** COMBINE PREVIOUS DTAs
+***********************************	
+	
+	****** DATASET: Keep public
+	use "Data/clean/Base_ADPAnalysis.dta", clear
+
+	global contS "ShPoor matricula_total prom_lect4b_rbd prom_mate4b_rbd liquido_pago_student"
+	global contM "hm_extpoor_rate h_ypchtot unempl_rate esc literacy_rate"	
+		
+	* Placebo treatment	
+	rename PostChangePpal PostChangePpal_pre
+	rename t_pla t_pla_pre
+	rename MinYearPpalChange MinYearPpalChange_pre
+	
+	keep cod_com_rbd rbd year id_prin fe_prin_2wayfe adp EverADP t Dmun $contS $contM ///
+		churn_teach churn_teach_young denuncias_* ///
+		EverTeacher EverSupportWorker EverAdministrative EverPrincipal ///
+		Edad Female CollegeDegree EverPrivate ///
+		mat_prekinder mat_kinder mat_basica_1 matricula_basica matricula_media rural_rbd PostChangePpal_pre t_pla_pre ///
+		MinYearPpalChange_pre matricula_total liquido_pago_student rural_rbd  porc_conc_DatosAbiertos ///
+		prom_lect2b_rbd prom_lect4b_rbd prom_mate4b_rbd prom_lect8b_rbd prom_mate8b_rbd prom_lect2m_rbd prom_mate2m_rbd ///
+		PSU_leng PSU_mat PSU_hist PSU_cien NEM hm_extpoor_rate h_ypchtot unempl_rate ///
+		esc EverTeacher EverSupportWorker EverAdministrative EverPrivate CollegeDegree Edad Female	///
+		churn_teach_young churn_teach churn_teach_new fired_teach_new hired_teach_new ///
+		fired_teach hired_teach fired_teach_young hired_teach_young churn_teach_bad fired_teach_bad hired_teach_bad ///
+		churn_teach_good fired_teach_good hired_teach_good fired_sup_20501 hired_sup_20501 churn_sup_20501 ///
+		fired_all hired_all fired_sup hired_sup fired_adm hired_adm churn_all churn_sup churn_adm ///
+		SDall_fe_prin_2wayfe SDall_fe_prin_adj_contGPA SDall_fe_prin_testcre SDall_fe_prin_attendance ///
+		beta_corr_gpa_test se_b_corr_gpa_test adj_beta_corr_gpa_test SDall_fe_prin_adj_contGPA_noTFE ///
+		d_about_dir_01 d_about_dir_02 d_about_dir_03 d_about_dir_04 d_about_dir_05 d_about_dir_06 d_about_dir_07 ///
+		d_about_dir_09 d_about_dir_10 d_about_dir_11 d_about_dir_12 d_about_dir_15 ///
+		estimate estimate_w gpa_grado1-gpa_grado12 attendance_grado1-attendance_grado12 se2_fe_prin SDall_fe_prin_2wayfe_nonadj 
+	
+	rename adp PostChangePpal
+	
+	tempfile temp0
+	save `temp0'.dta, replace
+	
+	
+	****** Keep private	
+	use "Data/clean/ADPREG_TEMP.dta", clear	
+	*use "Data/clean//ADPREG_TEMP_August5.dta", clear	
+	
+	keep if Dmun == 0
+
+	xtset rbd year
+	g change_ppal = 1 if id_prin != l.id_prin
+	g YearPpalChange = year if change_ppal == 1 & year >= 2012
+	bys rbd: egen aux_MinYearPpalChange = min(YearPpalChange)
+	egen MinYearPpalChange=min(aux_MinYearPpalChange), by(rbd)
+	drop aux_MinYearPpalChange
+	g t_pla_pre = year - MinYearPpalChange
+	
+	g EverChange = (MinYearPpalChange != .)
+ 
+	g PostChangePpal = 1 if (year >= MinYearPpalChange) 
+	replace PostChangePpal = 0 if PostChangePpal == .
+	
+	cap drop t
+	g t = year - MinYearPpalChange
+	replace t = 0 if EverChange == 0
+		
+	keep cod_com_rbd rbd year id_prin fe_prin_2wayfe PostChangePpal t EverADP Dmun $contS $contM  ///
+		prom_lect4b_rbd prom_mate4b_rbd churn_teach churn_teach_young denuncia* ///
+		EverTeacher EverSupportWorker EverAdministrative EverPrincipal EverPrivate ///
+		Edad Female CollegeDegree t_pla_pre ///
+		mat_prekinder mat_kinder mat_basica_1 rural_rbd matricula_basica matricula_total matricula_media liquido_pago_student ///
+		rural_rbd  porc_conc_DatosAbiertos PSU_leng PSU_mat PSU_hist PSU_cien NEM ///
+		prom_lect2b_rbd prom_lect4b_rbd prom_mate4b_rbd prom_lect8b_rbd prom_mate8b_rbd prom_lect2m_rbd prom_mate2m_rbd ///
+		PSU_leng PSU_mat PSU_hist PSU_cien NEM hm_extpoor_rate h_ypchtot unempl_rate ///
+		EverSupportWorker EverAdministrative EverPrivate CollegeDegree Edad Female	///
+		churn_teach_young churn_teach churn_teach_new fired_teach_new hired_teach_new ///
+		fired_teach hired_teach fired_teach_young hired_teach_young churn_teach_bad fired_teach_bad hired_teach_bad ///
+		churn_teach_good fired_teach_good hired_teach_good fired_sup_20501 hired_sup_20501 churn_sup_20501 ///
+		fired_all hired_all fired_sup hired_sup fired_adm hired_adm churn_all churn_sup churn_adm ///
+		SDall_fe_prin_2wayfe SDall_fe_prin_adj_contGPA SDall_fe_prin_testcre SDall_fe_prin_adj_contGPA_noTFE ///
+		beta_corr_gpa_test se_b_corr_gpa_test adj_beta_corr_gpa_test SDall_fe_prin_attendance /// ///
+		d_about_dir_01 d_about_dir_02 d_about_dir_03 d_about_dir_04 d_about_dir_05 d_about_dir_06 d_about_dir_07 ///
+		d_about_dir_09 d_about_dir_10 d_about_dir_11 d_about_dir_12 d_about_dir_15 ///
+		estimate estimate_w gpa_grado1-gpa_grado12 attendance_grado1-attendance_grado12 se2_fe_prin SDall_fe_prin_2wayfe_nonadj 
+		
+	
+// Append public and private
+	append using `temp0'.dta
+	
+// Create logs
+	foreach i in mat_prekinder mat_kinder mat_basica_1 matricula_total	{
+		g ln_`i' = ln(`i')
+	}
+	
+// Controls: replace missing by avg in county in 2011	
+	foreach i in $contS {		
+		g aux_`i'_11 = `i' if year == 2011
+		bys cod_com_rbd: egen aux = mean(aux_`i'_11)
+		replace aux_`i'_11 = aux if aux_`i'_11 == . & year == 2011
+		egen `i'_11=min(aux_`i'_11), by(rbd)
+		drop aux aux_`i'_11
+	}
+				
+	foreach i in $contM {		
+		g aux_`i'_11 = `i' if year == 2011	
+		bys cod_com_rbd: egen aux = mean(aux_`i'_11)
+		replace aux_`i'_11 = aux if aux_`i'_11 == . & year == 2011
+		egen `i'_11=min(aux_`i'_11), by(rbd)
+		drop aux aux_`i'_11
+	}
+	
+	 
+// Estimate pscores
+	preserve
+		replace EverADP = 0 if EverADP == .
+		keep rbd EverADP $Xs $Xm  
+		duplicates drop 
+		
+		quietly probit EverADP $Xs $Xm
+		predict pscore, pr
+		drop if pscore == .
+		keep rbd pscore 
+	
+		tempfile temp
+		save `temp'.dta, replace
+		format %9.6f pscore 
+		*outsheet pscore using "${Path}/Analysis/MatlabCodes/pscoreADP.csv", replace	 
+	restore
+	
+	merge m:1 rbd using `temp'.dta
+	drop _merge
+	* 1,518 schools without controls	
+	
+// Adds College Admission Scores
+	merge 1:1 rbd year using "Data/clean/Avg_CollegeAdmission_rbd_year.dta"
+	drop if _merge==2
+	drop _merge
+	
+// Main treatment	
+	g PostChangePpal_ADP = PostChangePpal * EverADP
+	
+// Labels
+	label var PostChangePpal_ADP 	"Principal Turnover $\times$ ADP"
+	label var PostChangePpal 		"Principal Turnover"
+	label var PostChangePpal_pre 	"Principal Turnover"
+	
+// Add rural 
+	merge m:1 cod_com_rbd using "Data/clean/ShRural.dta"
+	drop _merge
+
+// Add markets definitions	
+	merge m:1 rbd using	"Data/clean/RBD_Markets.dta"
+	drop if _merge == 2
+	drop _merge
+		
+// Variables for regressions
+	gen simce_4to = (prom_lect4b_rbd+prom_mate4b_rbd)/2
+	gen simce_8vo = (prom_lect8b_rbd+prom_mate8b_rbd)/2
+	gen simce_2do = (prom_lect2m_rbd+prom_mate2m_rbd)/2
+		
+	gen weight = 1/se_b_corr_gpa_test^2
+
+// Controls	
+	global Xs "ShPoor_11 matricula_total_11 prom_lect4b_rbd_11 prom_mate4b_rbd_11"
+	global Xm "hm_extpoor_rate_11 h_ypchtot_11 unempl_rate_11 esc_11 literacy_rate_11"
+	
+// Fix main sample:
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016, abs(c.($Xm $Xs)#year year rbd)  vce(cluster rbd)
+	g sample = 1 if e(sample) == 1	
+
+// Main sample for testscores FE	
+	reghdfe SDall_fe_prin_testcre PostChangePpal_ADP PostChangePpal if sample==1, a(year rbd c.($Xm )#year )  vce(cluster rbd)
+	g sample2 = 1 if e(sample) == 1
+
+	foreach var in  simce_4to simce_8vo simce_2do NEM {
+		cap drop Std_`var'
+		gen Std_`var' = .
+		cap sum `var' if sample2==1
+		cap replace Std_`var'=(`var'-`r(mean)')/`r(sd)' if sample2==1
+	}
+	cap drop SimceIndex
+	egen SimceIndex = rowmean(Std_simce_4to Std_simce_8vo Std_simce_2do) 
+	
+	egen AvgPSU = rowmean(sd_mate_actual sd_lyc_actual)
+			
+	xtset rbd year
+	g Fhired_teach = f.hired_teach
+	g Fhired_teach_bad = f.hired_teach_bad
+	
+	foreach i in fired_sup_20501 hired_sup_20501 fired_teach Fhired_teach fired_teach_bad Fhired_teach_bad {
+		cap g D`i' = `i' > 0 
+		cap replace D`i' = . if `i' == .
+	}			
+		
+	egen gpa_grado1_4 = rowmean(gpa_grado1 gpa_grado2 gpa_grado3 gpa_grado4)
+	egen gpa_grado5_8 = rowmean(gpa_grado5 gpa_grado6 gpa_grado7 gpa_grado8)
+	egen gpa_grado1_8 = rowmean(gpa_grado1 gpa_grado2 gpa_grado3 gpa_grado4 gpa_grado5 gpa_grado6 gpa_grado7 gpa_grado8)
+	egen gpa_grado9_12 = rowmean(gpa_grado9 gpa_grado10 gpa_grado11 gpa_grado12)
+
+	egen attendance_grado1_4 = rowmean(attendance_grado1 attendance_grado2 attendance_grado3 attendance_grado4)
+	egen attendance_grado5_8 = rowmean(attendance_grado5 attendance_grado6 attendance_grado7 attendance_grado8)
+	egen attendance_grado1_8 = rowmean(attendance_grado1 attendance_grado2 attendance_grado3 attendance_grado4 attendance_grado5 attendance_grado6 attendance_grado7 attendance_grado8)
+	egen attendance_grado9_12 = rowmean(attendance_grado9 attendance_grado10 attendance_grado11 attendance_grado12)
+
+	g EverAnyAdmin = (EverSupportWorker + EverAdministrative > 0)	
+	
+	label var d_about_dir_01 "Does a good job"
+	label var d_about_dir_02 "Can be trusted"
+	label var d_about_dir_03 "Makes good decisions"
+	label var d_about_dir_04 "Is effective"
+	label var d_about_dir_05 "Is good at communicating"
+	label var d_about_dir_06 "Is a good manager"
+	label var d_about_dir_07 "Engages teachers"
+	label var d_about_dir_09 "Engages parents"
+	label var d_about_dir_10 "Knows teacher needs" 
+	label var d_about_dir_11 "Knows student needs"
+	label var d_about_dir_12 "Includes teachers"
+	label var d_about_dir_15 "Promotes good work climate"
+	
+// Save main dataset before regressions	
+	compress
+	save "Data/clean/DataForRegressionsADP.dta", replace
+	
+	
+// DATA FOR R	
+	use "Data/clean/DataForRegressionsADP.dta", clear
+
+	g d_4_t = EverADP * t == -4
+	g d_3_t = EverADP * t == -3
+	g d_2_t = EverADP * t == -2
+	g d_1_t = EverADP * t == -1
+	g d0_t = EverADP * t == 0
+	g d1_t = EverADP * t == 1
+	g d2_t = EverADP * t == 2
+	g d3_t = EverADP * t == 3
+	
+	preserve
+		keep if sample == 1
+		keep if t>=-4 & t <= 3 & year >= 2009 & year <= 2016
+		keep SDall_fe_prin_2wayfe year rbd d_4_t d_3_t d_2_t d0_t d1_t d2_t d3_t t
+	
+		compress
+		save "Data/clean/DataForR.dta", replace
+	restore
+	
+// Data for R for CS
+	use "Data/clean/Base_ADPAnalysis.dta", clear
+	
+	keep cod_com_rbd rbd year SDall_fe_prin_2wayfe rbd year adp min_adp
+			
+	keep if year >= 2009 & year <= 2016	
+		
+	replace min_adp = 0 if min_adp == .	
+	
+	compress 
+	save "Data/temp/Temp_Adp_v2.dta", replace
+	
+// Data for R for placebos: public	
+	use "Data/clean/Base_ADPAnalysis.dta", clear
+	
+	rename PostChangePpal PostChangePpal_pre
+	rename t_pla t_pla_pre
+	rename MinYearPpalChange MinYearPpalChange_pre
+		
+	keep if t_pla_pre>=-4 & t_pla_pre <= 3 & year >= 2009 & year <= 2012 & Dmun == 1
+	drop min_adp	
+	g min_adp = year if t_pla_pre == 0
+	spread min_adp, by(rbd)
+	
+	keep SDall_fe_prin_2wayfe PostChangePpal_pre rbd year min_adp
+	
+	replace min_adp = 0 if min_adp == 2012 | min_adp == .
+	compress
+	save "Data/temp/Temp_Adp_placebomun.dta", replace	
+	
+// Data for R for placebos: private		
+	use "Data/clean/ADPREG_TEMP.dta", clear	
+	
+	keep if Dmun == 0
+
+	xtset rbd year
+	g change_ppal = 1 if id_prin != l.id_prin
+	g YearPpalChange = year if change_ppal == 1 & year >= 2012
+	bys rbd: egen MinYearPpalChange = min(YearPpalChange)
+	spread MinYearPpalChange, by(rbd)
+	g t_pla = year - MinYearPpalChange
+	
+	g EverChange = (MinYearPpalChange != .)
+ 
+	g PostChangePpal = 1 if (year >= MinYearPpalChange) 
+	replace PostChangePpal = 0 if PostChangePpal == .
+	cap drop t
+	g t = year - MinYearPpalChange
+	replace t = 0 if EverChange == 0
+			
+	keep if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & Dmun == 0
+			
+	keep SDall_fe_prin_2wayfe PostChangePpal rbd year MinYearPpalChange
+	rename MinYearPpalChange min_adp
+	replace min_adp = 0 if min_adp == 2017 | min_adp == .
+	compress
+	save "Data/temp/Temp_Adp_placebopriv.dta", replace	

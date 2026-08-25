@@ -1,0 +1,139 @@
+
+
+
+*******************************************************************************
+*******************************************************************************
+****                                  WID                                  ****
+*******************************************************************************
+*******************************************************************************
+
+
+*Run this first to install the wid package
+*ssc install wid
+*cd "C:\Users\oconn\Dropbox\Robots\Revision RESTUD\Replication\"
+
+*Download data
+wid, area(US) year(2000) indicator(spllin apllin) age(992) population(j) clear 
+
+*We now eliminate all of the percentiles except the steps of 1
+gen from = regexs(2) if regexm(percentile, "(p)([0-9]+)(p)([0-9]+)")
+gen to = regexs(4) if regexm(percentile, "(p)([0-9]+)(p)([0-9]+)")
+destring to , replace
+destring from , replace
+gen diff = to - from
+keep if diff == 1
+*Combine into 5s
+sort variable to
+egen per = cut(to), group(20)
+gen p = (per+1)*5
+collapse (sum) value , by(variable p)
+
+*Reshape and rename
+reshape wide value, i(p) j(variable) string
+rename valuespllin992j labor_share
+rename valueapllin992j labor_income
+rename p percentile
+
+*Save
+save "Table 1 Section 5/RawData/Income_Shares.dta", replace
+
+*********************************************************************
+*We now create the income shares for deciles
+wid, area(US) year(2000) indicator(spllin apllin) age(992) population(j) clear 
+
+*We now eliminate all of the percentiles except the steps of 1
+gen from = regexs(2) if regexm(percentile, "(p)([0-9]+)(p)([0-9]+)")
+gen to = regexs(4) if regexm(percentile, "(p)([0-9]+)(p)([0-9]+)")
+destring to , replace
+destring from , replace
+gen diff = to - from
+keep if diff == 1
+*Combine into 10s
+sort variable to
+egen per = cut(to), group(10)
+gen p = (per+1)*10
+collapse (sum) value , by(variable p)
+
+*Reshape and rename
+reshape wide value, i(p) j(variable) string
+rename valuespllin992j labor_share
+rename valueapllin992j labor_income
+rename p percentile
+
+*Save
+save "Table 1 Section 5/RawData/Income_Shares_deciles.dta", replace
+
+************************************************************************
+* also want the percentiles*Download data
+wid, area(US) year(2000) indicator(spllin apllin) age(992) population(j) clear 
+
+*We now eliminate all of the percentiles except the steps of 1
+gen from = regexs(2) if regexm(percentile, "(p)([0-9]+)(p)([0-9]+)")
+gen to = regexs(4) if regexm(percentile, "(p)([0-9]+)(p)([0-9]+)")
+destring to , replace
+destring from , replace
+gen diff = to - from
+keep if diff == 1
+sort variable to
+drop percentile year pop from diff age country
+
+*Reshape and rename
+reshape wide value, i(to) j(variable) string
+rename valuespllin992j labor_share
+rename valueapllin992j labor_income
+rename to percentile
+
+*Save
+save "Table 1 Section 5/RawData/Income_Shares_percentile.dta", replace
+
+*******************************************************************************
+*******************************************************************************
+****                                 Guner                                 ****
+*******************************************************************************
+*******************************************************************************
+
+*Run this code to extract the correct tax information from the Guner sheets
+
+import excel "Table 1 Section 5\RawData\gkv_Figures_RED_USTaxes_2013.xls", sheet("Figures 5&6 -- Data") cellrange(A20:D59) clear
+drop B
+export excel using "Table 1 Section 5\CleanedData\StatutoryTaxes.xls", firstrow(variables) replace
+
+
+
+*******************************************************************************
+*******************************************************************************
+****                              CLP and AR                               ****
+*******************************************************************************
+*******************************************************************************
+
+*This do-file prepares the estimates
+
+use "Table 1 Section 5/RawData/results_by_percentile.dta" , clear
+* beta is reduced form, we have to divide by 2 (first stage coefficient) to have the IV estimate
+* IV is the percent change in wages resulting from an increase in robots of 1 per thousand 
+* workers---roughly the increase observed in the US between 1993-2007.
+gen semielast_w_r = beta/2
+
+forval i = 1/7 {
+    local estim_number`i' "`=estimator[`i']'"
+    display "`estim_number`i''"
+}
+
+keep category estim_number semielast_w_r serror
+reshape wide semielast_w_r serror, i(category) j(estim_number)
+
+forval i = 1/7 {
+    label var semielast_w_r`i' "`estim_number`i''"
+}
+
+gen percentile = real(substr(category,1,2))
+order percentile, first
+
+export excel "Table 1 Section 5/CleanedData/AR_estimates.xls" , replace first(varl) sheet("AR_semielas")
+
+*We then do the trade estimates
+import excel "Table 1 Section 5/RawData/fig1 point estimates for arnaud.xlsx", sheet("Sheet1") firstrow clear
+gen percentile = quantile*100
+order percentile, first
+
+export excel "Table 1 Section 5/CleanedData/CLP_estimates.xls" , replace first(varl) sheet("CLP_elas")

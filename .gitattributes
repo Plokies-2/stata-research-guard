@@ -1,0 +1,2 @@
+# Preserve the exact bytes covered by the plugin bundle manifest on every platform.
+* -text

@@ -1,0 +1,94 @@
+********************************************************************************
+/*
+Run all programs from this master do file.
+
+IMPORTANT: In section 1.1.b. of this do file, set the global master_file_path to the file path of the README file on your computer
+*/
+********************************************************************************
+* 1. Setup
+********************************************************************************
+version 13.1
+clear all
+macro drop _all
+set more off
+set maxvar 32000
+cap log close
+
+set type float
+
+
+*------------------------------------------------------------------------------*
+* 1.1 a. Install external code packages - comment out if already installed
+*------------------------------------------------------------------------------*
+/*
+ssc install reghdfe, replace 
+ssc install estout, replace 
+ssc install texdoc, replace
+ssc install boottest, replace
+ssc install winsor2, replace
+ssc install unique, replace
+*/
+
+
+*------------------------------------------------------------------------------*
+* 1.1.b. Set file path
+*------------------------------------------------------------------------------*
+		
+* Set the global master_file_path to the file path of the README file on your computer
+
+global username = c(username)
+global dropbox "/Users/${username}/Dropbox"
+global master_file_path "${dropbox}/Cisterns_Political_Results_Evaluation/AEA_round2_Replication"
+	
+
+*------------------------------------------------------------------------------*
+* 1.1.c. Folders
+*------------------------------------------------------------------------------*
+
+** Data Folders
+global source_data_folder "${master_file_path}/data/source_data"
+global gen_data_folder "${master_file_path}/data/generated_data"
+global final_data_folder "${master_file_path}/data/final_data"
+
+
+** Code Folders
+global main_code_folder "${master_file_path}/dofiles"
+
+
+** Output Folders
+global main_tables_folder "${master_file_path}/output/main_tables"
+global appendix_tables_folder "${master_file_path}/output/appendix_tables"
+global figures_folder "${master_file_path}/output/figures"
+
+
+
+********************************************************************************
+* 2. Construct main datasets: 
+*    ${final_data_folder}/clientelism_individual_data.dta (individual)
+*    ${final_data_folder}/clientelism_household_data.dta (household)
+*    ${final_data_folder}/clientelism_individual_data_stacked.dta (individual)
+*    ${final_data_folder}/voting_data.dta (electoral)
+********************************************************************************	
+
+do "${main_code_folder}/1. Cleaning.do"
+do "${main_code_folder}/2. Variable_Construction.do"
+do "${main_code_folder}/3. Voting_Analysis_Cleaning.do"
+
+
+********************************************************************************
+* 3. Conduct analyses
+********************************************************************************	
+
+do "${main_code_folder}/4. Main_Tables.do"
+do "${main_code_folder}/5. Appendix_Tables.do"
+
+
+********************************************************************************
+* 4. Remove intermediate datasets 
+********************************************************************************
+
+cap erase "${master_file_path}/data/generated_data/clean_indiv_V6_V16.dta"
+cap erase "${master_file_path}/data/generated_data/caruaru_voting_data.dta"
+cap erase "${master_file_path}/data/generated_data/vitoria_voting_data.dta"
+cap erase "${master_file_path}/data/generated_data/voting_data_unadjusted.dta"
+

@@ -1,0 +1,258 @@
+*-------------------------------------------------------------------------------
+*						TABLE 5. HETEROGENEITY BY DEMOGRAPHICS 
+*
+*------------------------------------------------------------------------------- 
+clear
+use  "$data/analysis.dta", clear 
+
+drop if math_std<-12
+
+* Create variables for estimation
+#delimit;
+
+gen gK2 = inrange(grade, 0, 2) if !mi(grade);
+gen g38 = inrange(grade, 3, 8) if !mi(grade);
+gen all = 1;
+gen male = 1-female;
+gen year2=(year==2);
+
+foreach subj in math { ;
+	gen above_`subj' = . ;
+	gen below_`subj' = . ;
+	gen above_`subj'_1 = . ;
+	gen below_`subj'_1 = . ;
+	gen above_`subj'_2 = . ;
+	gen below_`subj'_2 = . ;
+	forvalues g = 0/8 { ;
+		su `subj'_pre if grade == `g', detail;
+		local med = r(p50);
+		replace above_`subj' = 1 if `subj'_pre >= `med' & !mi(`subj'_pre) & grade == `g';
+		replace below_`subj' = 0 if `subj'_pre >= `med' & !mi(`subj'_pre) & grade == `g';
+		replace below_`subj' = 1 if `subj'_pre < `med' & !mi(`subj'_pre) & grade == `g';
+		replace above_`subj' = 0 if `subj'_pre < `med' & !mi(`subj'_pre) & grade == `g';
+		
+		su `subj'_pre if grade == `g' & year2 == 0, detail;
+		local med = r(p50);
+		replace above_`subj'_1 = 1 if `subj'_pre >= `med' & !mi(`subj'_pre) & grade == `g' & year2 == 0;
+		replace below_`subj'_1 = 0 if `subj'_pre >= `med' & !mi(`subj'_pre) & grade == `g' & year2 == 0;
+		replace below_`subj'_1 = 1 if `subj'_pre < `med' & !mi(`subj'_pre) & grade == `g' & year2 == 0;
+		replace above_`subj'_1 = 0 if `subj'_pre < `med' & !mi(`subj'_pre) & grade == `g' & year2 == 0;
+		
+		su `subj'_pre if grade == `g' & year2 == 1, detail;
+		local med = r(p50);
+		replace above_`subj'_2 = 1 if `subj'_pre >= `med' & !mi(`subj'_pre) & grade == `g' & year2 == 1;
+		replace below_`subj'_2 = 0 if `subj'_pre >= `med' & !mi(`subj'_pre) & grade == `g' & year2 == 1;
+		replace below_`subj'_2 = 1 if `subj'_pre < `med' & !mi(`subj'_pre) & grade == `g' & year2 == 1;
+		replace above_`subj'_2 = 0 if `subj'_pre < `med' & !mi(`subj'_pre) & grade == `g' & year2 == 1;
+		
+	};
+};
+
+gen aV = . ;
+gen bV = . ;
+su value_added, d ;
+local med = r(p50) ;
+replace aV = 1 if value_added >= `med' & M_value_added!=1;
+replace aV = 0 if value_added < `med' & M_value_added!=1;
+replace bV = 1 - aV if M_value_added!=1;
+
+forvalues y=1/2 { ;
+gen aV_`y' = . ;
+gen bV_`y' = . ;
+su value_added if year2==`y'-1, d ;
+local med = r(p50) ;
+replace aV_`y' = 1 if value_added >= `med' & M_value_added!=1 & year2==`y'-1 ;
+replace aV_`y' = 0 if value_added < `med' & M_value_added!=1 & year2==`y'-1 ;
+replace bV_`y' = 1 - aV_`y' if M_value_added!=1 & year2==`y'-1;
+};
+
+
+
+
+
+//interact variables for test;
+ foreach var in loss gain year2 {;
+    gen `var'_K2 = `var' * gK2;
+	gen `var'_38 = `var' * g38;
+	gen `var'_ma = `var' * male;
+	gen `var'_fe = `var' * female;
+	gen `var'_bl = `var' * black;
+	gen `var'_hi = `var' * hispanic;
+	gen `var'_ab = `var' * above_math;
+	gen `var'_be = `var' * below_math;
+	gen `var'_aV = `var' * aV;
+	gen `var'_bV = `var' * bV;
+ };
+
+
+
+
+* Create table;
+
+
+file open fh using "$results/Table5_Heterogeneity.tex", write replace;
+file write fh "\begin{table}[htbp]\centering" _n
+	"\caption{The Effect of Treatment on ThinkLink Scores within Demographic Subgroups}" _n
+	"\small" _n
+	"\begin{tabular}{l c c c c c c}" _n 
+	"\hline \hline" _n 
+	" & \multicolumn{2}{c}{Year 1} & \multicolumn{2}{c}{Year 2} & \multicolumn{2}{c}{Pooled} \\" _n
+	" & Loss & Gain & Loss & Gain & Loss & Gain  \\" _n
+	"\cline{2-3} \cline{4-5} \cline{6-7}" _n 
+	" & (1) & (2) & (3) & (4) & (5) & (6) \\" _n
+	"\cline{2-7}" _n;
+	
+
+
+local var_loop "all gK2 g38 male female black hispanic above_math below_math aV bV"; 
+foreach var in `var_loop'{ ;
+
+ local va = substr("`var'", 1, 2) ;
+ 
+  foreach yr in 0 1 all{ ;
+  
+  	if "`yr'" == "0"{;
+		local condition "year == 1";
+		local yr_fix "";
+		local controls "$oldX_vam";
+	};
+	else if "`yr'" == "1"{;
+		local condition "year == 2";
+		local yr_fix "";
+		local controls "$oldX_vam t_gain_y1 t_loss_y1 t_nis_y1 lottery";
+	};
+	if "`yr'" == "all"{;
+		local condition "1";
+		local yr_fix "i.year";
+		local controls "$oldX_vam_pool t_gain_y1 t_loss_y1 t_nis_y1 lottery";
+	};
+			
+	cgmreg math_std loss gain `controls' `yr_fix' if `var' == 1 & `condition', cluster(teacher_id newstudid) ;
+			local b_l_`va'_`yr' = string(_b[loss], "%4.3f") ;
+			local se_l_`va'_`yr' = "(" + string(_se[loss], "%4.3f") + ")" ;
+			local p =  2*ttail(e(df_m),abs(_b[loss]/_se[loss]));
+			local b_g_`va'_`yr' = string(_b[gain], "%4.3f") ;
+			local se_g_`va'_`yr' = "(" + string(_se[gain], "%4.3f") + ")" ;
+			local p =  2*ttail(e(df_m),abs(_b[gain]/_se[gain]));
+	
+			local obs_`va'_`yr' = string(e(N), "%4.0f");
+			local cl_`va'_`yr' = string(e(N_clust), "%4.0f");	
+  };
+};
+	
+
+
+
+foreach yr in 0 1 all{ ;
+
+ 	if "`yr'" == "0"{;
+		local condition "year == 1";
+		local yr_fix "";
+		local controls "$oldX_vam";
+	};
+	else if "`yr'" == "1"{;
+		local condition "year == 2";
+		local yr_fix "";
+		local controls "$oldX_vam t_gain_y1 t_loss_y1 t_nis_y1 lottery";
+	};
+	if "`yr'" == "all"{;
+		local condition "1";
+		local yr_fix "i.year";
+		local controls "$oldX_vam_pool t_gain_y1 t_loss_y1 t_nis_y1 lottery";
+	};
+
+   cgmreg math_std loss_ma gain_ma loss_fe gain_fe `controls' `yr_fix' if `condition', cluster(teacher_id newstudid) ;
+	test loss_ma = loss_fe;
+	local p_l_gend_`yr' = string(r(p), "%4.3f") ;
+	test gain_ma = gain_fe;
+	local p_g_gend_`yr' = string(r(p), "%4.3f") ;
+	
+	
+	cgmreg math_std loss_bl gain_bl loss_hi gain_hi `controls' `yr_fix' if `condition', cluster(teacher_id newstudid) ;
+	test loss_bl = loss_hi;
+	local p_l_race_`yr' = string(r(p), "%4.3f") ;
+	test gain_bl = gain_hi;
+	local p_g_race_`yr' = string(r(p), "%4.3f") ;
+		
+	
+	cgmreg math_std loss_ab gain_ab loss_be gain_be `controls' `yr_fix' if `condition', cluster(teacher_id newstudid) ;
+	test loss_ab = loss_be;
+	local p_l_q_`yr' = string(r(p), "%4.3f") ;
+	test gain_ab = gain_be;
+	local p_g_q_`yr' = string(r(p), "%4.3f") ;
+		
+	
+	cgmreg math_std loss_K2 gain_K2 loss_38 gain_38 `controls' `yr_fix' if `condition', cluster(teacher_id newstudid) ;
+	test loss_K2 = loss_38;
+	local p_l_grade_`yr' = string(r(p), "%4.3f") ;
+	test gain_K2 = gain_38;
+	local p_g_grade_`yr' = string(r(p), "%4.3f") ;
+	
+	cgmreg math_std loss_aV gain_aV loss_bV gain_bV `controls' `yr_fix' if `condition', cluster(teacher_id newstudid) ;
+	test loss_aV = loss_bV;
+	local p_l_aV_`yr' = string(r(p), "%4.3f") ;
+	test gain_aV = gain_bV;
+	local p_g_aV_`yr' = string(r(p), "%4.3f") ;
+		
+};
+	estimates clear ;
+	
+	
+
+		
+	file write fh "\emph{Panel A: Full Sample} \\" _n;
+	file write fh "& `b_l_al_0' & `b_g_al_0' & `b_l_al_1' & `b_g_al_1' & `b_l_al_all' & `b_g_al_all' \\" _n ;
+	file write fh "& `se_l_al_0' & `se_g_al_0' & `se_l_al_1' & `se_g_al_1' & `se_l_al_all' & `se_g_al_all'\\" _n;
+	file write fh "\\" _n ;
+	file write fh "\emph{Panel B: Grade Level} \\" _n;
+	file write fh "\hspace{10 pt} K-2 & `b_l_gK_0' & `b_g_gK_0' & `b_l_gK_1' & `b_g_gK_1' & `b_l_gK_all' & `b_g_gK_all' \\" _n ;
+	file write fh "& `se_l_gK_0' & `se_g_gK_0' & `se_l_gK_1' & `se_g_gK_1' & `se_l_gK_all' & `se_g_gK_all' \\" _n;
+	file write fh "\hspace{10 pt} 3-8 & `b_l_g3_0' & `b_g_g3_0' & `b_l_g3_1' & `b_g_g3_1' & `b_l_g3_all' & `b_g_g3_all' \\" _n ;
+	file write fh "& `se_l_g3_0' & `se_g_g3_0' & `se_l_g3_1' & `se_g_g3_1' & `se_l_g3_all' & `se_g_g3_all'\\" _n;
+	file write fh "\hspace{10 pt} p-value & `p_l_grade_0' & `p_g_grade_0' & `p_l_grade_1' & `p_g_grade_1' & `p_l_grade_all' & `p_g_grade_all' \\ " _n;
+    file write fh "\\" _n ;
+	file write fh "\emph{Panel C: Gender} \\" _n;
+	file write fh "\hspace{10 pt} Male & `b_l_ma_0' & `b_g_ma_0' & `b_l_ma_1' & `b_g_ma_1' & `b_l_ma_all' & `b_g_ma_all' \\" _n ;
+	file write fh "& `se_l_ma_0' & `se_g_ma_0' & `se_l_ma_1' & `se_g_ma_1'  & `se_l_ma_all' & `se_g_ma_all' \\" _n;
+	file write fh "\hspace{10 pt} Female & `b_l_fe_0' & `b_g_fe_0' & `b_l_fe_1' & `b_g_fe_1' & `b_l_fe_all' & `b_g_fe_all' \\" _n ;
+	file write fh "& `se_l_fe_0' & `se_g_fe_0' & `se_l_fe_1' & `se_g_fe_1' & `se_l_fe_all' & `se_g_fe_all'\\" _n;
+	file write fh "\hspace{10 pt} p-value & `p_l_gend_0' & `p_g_gend_0' & `p_l_gend_1' & `p_g_gend_1' & `p_l_gend_all' & `p_g_gend_all'\\ " _n;
+	file write fh "\\" _n ;
+	file write fh "\emph{Panel D: Race} \\" _n;
+	file write fh "\hspace{10 pt} Black & `b_l_bl_0' & `b_g_bl_0' & `b_l_bl_1' & `b_g_bl_1' & `b_l_bl_all' & `b_g_bl_all' \\" _n ;
+	file write fh "& `se_l_bl_0' & `se_g_bl_0' & `se_l_bl_1' & `se_g_bl_1' & `se_l_bl_all' & `se_g_bl_all'\\" _n;
+	file write fh "\hspace{10 pt} Hispanic & `b_l_hi_0' & `b_g_hi_0' & `b_l_hi_1' & `b_g_hi_1' & `b_l_hi_all' & `b_g_hi_all' \\" _n ;
+	file write fh "& `se_l_hi_0' & `se_g_hi_0' & `se_l_hi_1' & `se_g_hi_1' & `se_l_hi_all' & `se_g_hi_all' \\" _n;
+	file write fh "\hspace{10 pt} p-value & `p_l_race_0' & `p_g_race_0' & `p_l_race_1' & `p_g_race_1' & `p_l_race_all' & `p_g_race_all'\\ " _n;
+	file write fh "\\" _n ;
+	file write fh "\emph{Panel E: Baseline Scores} \\" _n;
+	file write fh "\hspace{10 pt} Above Median & `b_l_ab_0' & `b_g_ab_0' & `b_l_ab_1' & `b_g_ab_1'  & `b_l_ab_all' & `b_g_ab_all' \\" _n ;
+	file write fh "& `se_l_ab_0' & `se_g_ab_0' & `se_l_ab_1' & `se_g_ab_1' & `se_l_ab_all' & `se_g_ab_all'\\" _n;
+	file write fh "\hspace{10 pt} Below Median & `b_l_be_0' & `b_g_be_0' & `b_l_be_1' & `b_g_be_1' & `b_l_be_all' & `b_g_be_all' \\" _n ;
+	file write fh "& `se_l_be_0' & `se_g_be_0' & `se_l_be_1' & `se_g_be_1' & `se_l_be_all' & `se_g_be_all' \\" _n;
+	file write fh "\hspace{10 pt} p-value & `p_l_q_0' & `p_g_q_0' & `p_l_q_1' & `p_g_q_1' & `p_l_q_all' & `p_g_q_all'\\ " _n;
+	file write fh "\\" _n ;
+
+
+file write fh
+	" \hline" _n
+	"\hline" _n
+	"\end{tabular}" _n
+	"\begin{tabular}{ p{6in} }" _n
+	"\footnotesize" _n 
+
+"Notes: This table reports the effect of the treatment on ThinkLink scores, estimated separately  for various subgroups in the data. 
+Included on the right-hand side of each regression are the same set of control variables as used in Table 3.  
+We present results both estimating years of the experiment separately and pooling across years of data.         
+The coefficients we report are Intent-to-Treat estimates, i.e. students are classified based on their initial classroom assignment. 
+We also report p-values from tests of equal coefficients between grade level groups, genders, races and baseline testscore groups.
+Standard errors are reported in parentheses and are clustered on the teacher and the student level." _n
+
+	"\end{tabular}" _n
+	"\end{table}" _n;
+
+file close fh ;
+
+
+	*** END *** 
+	

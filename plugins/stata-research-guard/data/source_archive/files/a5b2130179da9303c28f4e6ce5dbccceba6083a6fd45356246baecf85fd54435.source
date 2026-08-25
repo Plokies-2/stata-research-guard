@@ -1,0 +1,29 @@
+********************************************************************************
+* MAIN .do file for Budjan, Angelika J., and Andreas Fuchs
+* "Democracy and Aid Donorship"
+* American Economic Journal: Economic Policy
+* AEA Data and Code Repository project ID ("120068")
+* Last edited on June 23, 2020
+********************************************************************************
+********************************************************************************
+
+clear
+drop _all
+clear matrix
+clear mata
+version 14.0 
+
+set more off, permanently
+
+* Set working directory
+global basepath ".\your\path"      // change this to the path of the replication folder
+
+* Call configuration file
+do "${basepath}/config.do"
+
+* Prepare analysis data sets
+do "${basepath}/Prepare data.do"
+
+* Analyse data sets
+do "${basepath}/Analyse data.do"
+

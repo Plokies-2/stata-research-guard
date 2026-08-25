@@ -1,0 +1,340 @@
+{
+  "schema_version": "1.0",
+  "sources": {
+    "corpus/packages/115162/do/Analysis-4.do": {
+      "archive_path": "data/source_archive/files/73ce29302c2faa23659c1e6bf7e18a6ea688613c6743b5576d2e42124963d5e0.source",
+      "bytes": 22277,
+      "sha256": "73ce29302c2faa23659c1e6bf7e18a6ea688613c6743b5576d2e42124963d5e0"
+    },
+    "corpus/packages/120068/Analyse data.do": {
+      "archive_path": "data/source_archive/files/e41a8bd865b5954c0d8fddee81caa53ca524860e6331bde698044a136cc43b52.source",
+      "bytes": 57028,
+      "sha256": "e41a8bd865b5954c0d8fddee81caa53ca524860e6331bde698044a136cc43b52"
+    },
+    "corpus/packages/120068/Democracy and Aid Donorship replication file MAIN.do": {
+      "archive_path": "data/source_archive/files/a5b2130179da9303c28f4e6ce5dbccceba6083a6fd45356246baecf85fd54435.source",
+      "bytes": 859,
+      "sha256": "a5b2130179da9303c28f4e6ce5dbccceba6083a6fd45356246baecf85fd54435"
+    },
+    "corpus/packages/120068/Prepare data.do": {
+      "archive_path": "data/source_archive/files/345beceb3363dd18a093d9e401995cb177692f7a3fda0bc2615a450b84f2cf2f.source",
+      "bytes": 59182,
+      "sha256": "345beceb3363dd18a093d9e401995cb177692f7a3fda0bc2615a450b84f2cf2f"
+    },
+    "corpus/packages/148522/4a.Table4_ThinkLink.do": {
+      "archive_path": "data/source_archive/files/f8ee71f30e9f49d09e50b72c849fdab2b05e035b97c0afadabfa01dc8e7c164b.source",
+      "bytes": 5044,
+      "sha256": "f8ee71f30e9f49d09e50b72c849fdab2b05e035b97c0afadabfa01dc8e7c164b"
+    },
+    "corpus/packages/148522/5.Table5_Heterogeneity.do": {
+      "archive_path": "data/source_archive/files/fe42f6b9d59314194a55e8b26885b050a004a477ab7f3ffbc73bed47200ee28a.source",
+      "bytes": 10732,
+      "sha256": "fe42f6b9d59314194a55e8b26885b050a004a477ab7f3ffbc73bed47200ee28a"
+    },
+    "corpus/packages/148522/6.Table6_LongTermTeacher.do": {
+      "archive_path": "data/source_archive/files/c63a303ba246e7aa45fe9cb0e71286e06b30cd27b4db949b4efacc561c7a5fd8.source",
+      "bytes": 8782,
+      "sha256": "c63a303ba246e7aa45fe9cb0e71286e06b30cd27b4db949b4efacc561c7a5fd8"
+    },
+    "corpus/packages/148522/A.6.TableA6_Teacher_Attrition.do": {
+      "archive_path": "data/source_archive/files/f19cc8a831d0e8289296a3844124d95b32d2df21cf15ac98114a42de381972ac.source",
+      "bytes": 4827,
+      "sha256": "f19cc8a831d0e8289296a3844124d95b32d2df21cf15ac98114a42de381972ac"
+    },
+    "corpus/packages/148522/A.8.TableA8_In_Sample_Both_Years.do": {
+      "archive_path": "data/source_archive/files/b08259b47a846edf0cdda6024aa6d0f66f2b793724e1547a6e453b4c6dad9e18.source",
+      "bytes": 10211,
+      "sha256": "b08259b47a846edf0cdda6024aa6d0f66f2b793724e1547a6e453b4c6dad9e18"
+    },
+    "corpus/packages/173341/dofiles/0. Master.do": {
+      "archive_path": "data/source_archive/files/d45a08fe76967098fe7125752ef36719dd1f09b7d8edaace03115db8ed05f410.source",
+      "bytes": 3587,
+      "sha256": "d45a08fe76967098fe7125752ef36719dd1f09b7d8edaace03115db8ed05f410"
+    },
+    "corpus/packages/173341/dofiles/1. Cleaning.do": {
+      "archive_path": "data/source_archive/files/ba31bd7e4709d0e83f3976f25c7eef5883d962799d09fc29596761c6c2fba7ce.source",
+      "bytes": 21849,
+      "sha256": "ba31bd7e4709d0e83f3976f25c7eef5883d962799d09fc29596761c6c2fba7ce"
+    },
+    "corpus/packages/173341/dofiles/2. Variable_Construction.do": {
+      "archive_path": "data/source_archive/files/820cb847059b1fb8cdc35e195d17e27547d3d0e21097bd408d17a9340c22fe0b.source",
+      "bytes": 88466,
+      "sha256": "820cb847059b1fb8cdc35e195d17e27547d3d0e21097bd408d17a9340c22fe0b"
+    },
+    "corpus/packages/173341/dofiles/3. Voting_Analysis_Cleaning.do": {
+      "archive_path": "data/source_archive/files/b81992d1b82969e738404e16d113d35611dd81bda7d2b8ce760533c595641f4d.source",
+      "bytes": 40030,
+      "sha256": "b81992d1b82969e738404e16d113d35611dd81bda7d2b8ce760533c595641f4d"
+    },
+    "corpus/packages/173341/dofiles/4. Main_Tables.do": {
+      "archive_path": "data/source_archive/files/18f2088cee3150ffb8d3e6f9c147a6560b814f4962101cee0e8832b3ec1ca78b.source",
+      "bytes": 34621,
+      "sha256": "18f2088cee3150ffb8d3e6f9c147a6560b814f4962101cee0e8832b3ec1ca78b"
+    },
+    "corpus/packages/173341/dofiles/5. Appendix_Tables.do": {
+      "archive_path": "data/source_archive/files/3761751a3c1306b4c5df10d11e75a45de6f02fdf357df7c3a69b09ba20b07d7c.source",
+      "bytes": 64433,
+      "sha256": "3761751a3c1306b4c5df10d11e75a45de6f02fdf357df7c3a69b09ba20b07d7c"
+    },
+    "corpus/packages/175582/Code/Analysis/Figures_MainText/Figures_MainText.do": {
+      "archive_path": "data/source_archive/files/23b3e7875eefd46bc9fa0deb17b66841cba3e3db8fdbea47f3600d71b1492577.source",
+      "bytes": 28568,
+      "sha256": "23b3e7875eefd46bc9fa0deb17b66841cba3e3db8fdbea47f3600d71b1492577"
+    },
+    "corpus/packages/175582/Code/ado/e/five_estimators_example.do": {
+      "archive_path": "data/source_archive/files/9092710a972900367d449c2f06c7916f4e22f1a4ff6ae2e9a171333c85921ec1.source",
+      "bytes": 6321,
+      "sha256": "9092710a972900367d449c2f06c7916f4e22f1a4ff6ae2e9a171333c85921ec1"
+    },
+    "corpus/packages/191751/script_buildatasets.do": {
+      "archive_path": "data/source_archive/files/ff65b6d4df4f03e3eaa247d512bacfa23e116588b102162cc1d093809faa4e5e.source",
+      "bytes": 152704,
+      "sha256": "ff65b6d4df4f03e3eaa247d512bacfa23e116588b102162cc1d093809faa4e5e"
+    },
+    "corpus/packages/191751/script_dataforregressions.do": {
+      "archive_path": "data/source_archive/files/17bc94ae771e9981454402904e4fab5b010da6730319ed715f731f632cb62afa.source",
+      "bytes": 17861,
+      "sha256": "17bc94ae771e9981454402904e4fab5b010da6730319ed715f731f632cb62afa"
+    },
+    "corpus/packages/191751/script_descriptives.do": {
+      "archive_path": "data/source_archive/files/9186daa2db4865da8fa1395c93a866af6a3095f11a995edd24d82f6b6f3120c7.source",
+      "bytes": 11012,
+      "sha256": "9186daa2db4865da8fa1395c93a866af6a3095f11a995edd24d82f6b6f3120c7"
+    },
+    "corpus/packages/191751/script_recruitment_figures.do": {
+      "archive_path": "data/source_archive/files/b5b389d5573ff48c2c307026e6c1d118a64e4f5df08baba1ecf57659e89e5e1d.source",
+      "bytes": 47045,
+      "sha256": "b5b389d5573ff48c2c307026e6c1d118a64e4f5df08baba1ecf57659e89e5e1d"
+    },
+    "corpus/packages/191751/script_recruitment_regressions.do": {
+      "archive_path": "data/source_archive/files/8396153c08ca59b6cae0eb9285340b55bc6731cff9029a9fb8f29ed8dfcde048.source",
+      "bytes": 42081,
+      "sha256": "8396153c08ca59b6cae0eb9285340b55bc6731cff9029a9fb8f29ed8dfcde048"
+    },
+    "corpus/packages/193441/replicate_information/1_build/build.do": {
+      "archive_path": "data/source_archive/files/e1d6d62ac20ffd78a1d8f38ced9526a521b1f926dccf3d944e780154b9458ecb.source",
+      "bytes": 46267,
+      "sha256": "e1d6d62ac20ffd78a1d8f38ced9526a521b1f926dccf3d944e780154b9458ecb"
+    },
+    "corpus/packages/193441/replicate_information/2_analysis/appendix_figure12.do": {
+      "archive_path": "data/source_archive/files/c9ed08cc20689c1284081329cd978bf72cfd73200782cdf690e3013a64c5e897.source",
+      "bytes": 5068,
+      "sha256": "c9ed08cc20689c1284081329cd978bf72cfd73200782cdf690e3013a64c5e897"
+    },
+    "corpus/packages/193441/replicate_information/2_analysis/appendix_table4.do": {
+      "archive_path": "data/source_archive/files/e0db590d4584ef22b8d09e6a2b47f9e92b8d5674cc3c1e12c6acc0e3d9f40b8f.source",
+      "bytes": 3973,
+      "sha256": "e0db590d4584ef22b8d09e6a2b47f9e92b8d5674cc3c1e12c6acc0e3d9f40b8f"
+    },
+    "corpus/packages/194561/code/0_master.do": {
+      "archive_path": "data/source_archive/files/db505d669895169e5da796a07255efe78093b9fea9ca323063bf16f24b0c5293.source",
+      "bytes": 4403,
+      "sha256": "db505d669895169e5da796a07255efe78093b9fea9ca323063bf16f24b0c5293"
+    },
+    "corpus/packages/194561/code/10_data_preparation.do": {
+      "archive_path": "data/source_archive/files/28d3bf8bde49cce093ad583a3f62a9089981154fdb71f35892d39a8d9c42cc38.source",
+      "bytes": 8745,
+      "sha256": "28d3bf8bde49cce093ad583a3f62a9089981154fdb71f35892d39a8d9c42cc38"
+    },
+    "corpus/packages/194561/code/20_Figure_1.do": {
+      "archive_path": "data/source_archive/files/45cbd8fd156489333edc3c8abc25372781abc38af7aa71aaa7e73b599d3e1a23.source",
+      "bytes": 5137,
+      "sha256": "45cbd8fd156489333edc3c8abc25372781abc38af7aa71aaa7e73b599d3e1a23"
+    },
+    "corpus/packages/194561/code/20_Figure_2.do": {
+      "archive_path": "data/source_archive/files/c0b2a114d145cf34a49c123d0194db349fa914275ea11ccba60fb0b8cd3c0030.source",
+      "bytes": 3018,
+      "sha256": "c0b2a114d145cf34a49c123d0194db349fa914275ea11ccba60fb0b8cd3c0030"
+    },
+    "corpus/packages/194561/code/30_Table_1.do": {
+      "archive_path": "data/source_archive/files/7e9a373530546e93ca57889d7f78be059142fdc6ab511adbd51cf4b22888d30f.source",
+      "bytes": 17769,
+      "sha256": "7e9a373530546e93ca57889d7f78be059142fdc6ab511adbd51cf4b22888d30f"
+    },
+    "corpus/packages/194561/code/30_Table_1f_TWFE_jackknife_large.do": {
+      "archive_path": "data/source_archive/files/fda660e578ca0dd12843c68dc7bc91431b155b22e18b9d48755087074a7a9cef.source",
+      "bytes": 4276,
+      "sha256": "fda660e578ca0dd12843c68dc7bc91431b155b22e18b9d48755087074a7a9cef"
+    },
+    "corpus/packages/195983/nafta_politics_replication_submission_PUBLIC/do_files/99_analysis.do": {
+      "archive_path": "data/source_archive/files/d7d91443c4aee693d2f341c3706d45cc46c948b56e859d82c71cef19eaa13022.source",
+      "bytes": 123890,
+      "sha256": "d7d91443c4aee693d2f341c3706d45cc46c948b56e859d82c71cef19eaa13022"
+    },
+    "corpus/packages/196012/Do/Figure6.do": {
+      "archive_path": "data/source_archive/files/b8b62ca01c024e6288583e3f300afd1eb10ba0ebed5dd6b50d7c31b32676d797.source",
+      "bytes": 2873,
+      "sha256": "b8b62ca01c024e6288583e3f300afd1eb10ba0ebed5dd6b50d7c31b32676d797"
+    },
+    "corpus/packages/196012/Do/TableA7.do": {
+      "archive_path": "data/source_archive/files/5867741089d569afd29c2c39e10b68eac398f977b8164f290903e24e66abc6da.source",
+      "bytes": 6754,
+      "sha256": "5867741089d569afd29c2c39e10b68eac398f977b8164f290903e24e66abc6da"
+    },
+    "corpus/packages/202444/code/cleaning/financial/create_egs_analysis_data.do": {
+      "archive_path": "data/source_archive/files/5c103077af301876c7297c30830457b9c5b72c0e28f006a6ba5596c57ba9a871.source",
+      "bytes": 6789,
+      "sha256": "5c103077af301876c7297c30830457b9c5b72c0e28f006a6ba5596c57ba9a871"
+    },
+    "corpus/packages/209030/(3) STATA - Graphs and Tables/Table 3.do": {
+      "archive_path": "data/source_archive/files/d8acb5956ad0422d98360e142b7bba360ac5a462e27333741c76b2223e33b69d.source",
+      "bytes": 1235,
+      "sha256": "d8acb5956ad0422d98360e142b7bba360ac5a462e27333741c76b2223e33b69d"
+    },
+    "corpus/packages/209484/table_1.do": {
+      "archive_path": "data/source_archive/files/ac4c50ff79cec785576efe8ad67c63c05f26283d2e2641dc14580c27c6e43fcc.source",
+      "bytes": 1522,
+      "sha256": "ac4c50ff79cec785576efe8ad67c63c05f26283d2e2641dc14580c27c6e43fcc"
+    },
+    "corpus/packages/209484/tables_2_to_6.do": {
+      "archive_path": "data/source_archive/files/322f78ecc0217dc24d7f0c69da680510bfe91a4703d11964dbde18619f69a419.source",
+      "bytes": 5557,
+      "sha256": "322f78ecc0217dc24d7f0c69da680510bfe91a4703d11964dbde18619f69a419"
+    },
+    "corpus/packages/z15288849/distance_prep.do": {
+      "archive_path": "data/source_archive/files/0e31f436055b5d378ff5011e420d93a34ce296168409fbc7bb1017b2d0a04f65.source",
+      "bytes": 14463,
+      "sha256": "0e31f436055b5d378ff5011e420d93a34ce296168409fbc7bb1017b2d0a04f65"
+    },
+    "corpus/packages/z17712099/Table6.do": {
+      "archive_path": "data/source_archive/files/99e07a8a2c830abb061e8a9364c615dca4a5d1d81f3be7326d770e6f36a20a2b.source",
+      "bytes": 3869,
+      "sha256": "99e07a8a2c830abb061e8a9364c615dca4a5d1d81f3be7326d770e6f36a20a2b"
+    },
+    "corpus/packages/z21562174/Code/confidential/01_mgr_estab_spells.do": {
+      "archive_path": "data/source_archive/files/e5f1f3b28892a5516fc8671b1d0f251195fcc1aa4f7821a6753454cff9f3a0da.source",
+      "bytes": 17859,
+      "sha256": "e5f1f3b28892a5516fc8671b1d0f251195fcc1aa4f7821a6753454cff9f3a0da"
+    },
+    "corpus/packages/z21562174/Code/public/figA8_parental_leave.do": {
+      "archive_path": "data/source_archive/files/a3f2f07e925982ae566f221c3300904bd360989f14737afe4a5884874bccdd94.source",
+      "bytes": 933,
+      "sha256": "a3f2f07e925982ae566f221c3300904bd360989f14737afe4a5884874bccdd94"
+    },
+    "corpus/packages/z4602567/Replication_files/2_structural_get_weighting_matrix.do": {
+      "archive_path": "data/source_archive/files/ea2ba20fb471cf19b5b433cf959a9002686b0621b3f30fb99fec3b98e813b90f.source",
+      "bytes": 12624,
+      "sha256": "ea2ba20fb471cf19b5b433cf959a9002686b0621b3f30fb99fec3b98e813b90f"
+    },
+    "corpus/packages/z4665536/Replication files/Stata code/Code tables/Table_1.do": {
+      "archive_path": "data/source_archive/files/8893985ee004d7732da25e7c0f5d758b010caa276a964ff6c5d30514f4cf6600.source",
+      "bytes": 849,
+      "sha256": "8893985ee004d7732da25e7c0f5d758b010caa276a964ff6c5d30514f4cf6600"
+    },
+    "corpus/packages/z5338362/ReproductionFiles/dofiles/projections_EnglandIV_baseline_1700.do": {
+      "archive_path": "data/source_archive/files/84620e5ff102bf72f4aedc360710bb3fc43a0459bb2f6380b31c8bdbb7b29f58.source",
+      "bytes": 8060,
+      "sha256": "84620e5ff102bf72f4aedc360710bb3fc43a0459bb2f6380b31c8bdbb7b29f58"
+    },
+    "corpus/packages/z6976241/Replication/Table 1 Section 5/Code/CleanData.do": {
+      "archive_path": "data/source_archive/files/3573ffbf1239633b531c25471918a06a260965a12735a1d708473f4af1fcadb8.source",
+      "bytes": 5274,
+      "sha256": "3573ffbf1239633b531c25471918a06a260965a12735a1d708473f4af1fcadb8"
+    },
+    "corpus/packages/z8376886/replication package/02_restud2_mass_layoffs.do": {
+      "archive_path": "data/source_archive/files/eda16fb081e9826b497ee73c974a589df795085d39d5eb5ef32820d6e9ed04fe.source",
+      "bytes": 4792,
+      "sha256": "eda16fb081e9826b497ee73c974a589df795085d39d5eb5ef32820d6e9ed04fe"
+    },
+    "corpus/packages/z8376886/replication package/clean_3_LIAB_all.do": {
+      "archive_path": "data/source_archive/files/aafc2517b0a31ffcbcae07d4ffe8ff655fc431d4cf79cb303fe53f507b759a74.source",
+      "bytes": 27473,
+      "sha256": "aafc2517b0a31ffcbcae07d4ffe8ff655fc431d4cf79cb303fe53f507b759a74"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/default_style_estadd_ymean.do": {
+      "archive_path": "data/source_archive/files/991356a8f8271bf136e02f62cd080e095d6e209123364d44f666cf58e7787c06.source",
+      "bytes": 331,
+      "sha256": "991356a8f8271bf136e02f62cd080e095d6e209123364d44f666cf58e7787c06"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/default_style_estimate_collection.do": {
+      "archive_path": "data/source_archive/files/c1d3e79c96c01b4a737ac2d5f4a3c5641d2e99a8dcc62708c07938fde05f158c.source",
+      "bytes": 276,
+      "sha256": "c1d3e79c96c01b4a737ac2d5f4a3c5641d2e99a8dcc62708c07938fde05f158c"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/default_style_outreg2_coherent_multioutcome_direct.do": {
+      "archive_path": "data/source_archive/files/8ee474905d70b373eeeb8382b9e7a6fbf9abe4c56587ad8057a9105669e3309e.source",
+      "bytes": 3956,
+      "sha256": "8ee474905d70b373eeeb8382b9e7a6fbf9abe4c56587ad8057a9105669e3309e"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/default_style_outreg2_single_outcome_direct.do": {
+      "archive_path": "data/source_archive/files/429cd52901a16fd84dfe744ff36ca28faf03e615889be72e27ebfd2ae22f764f.source",
+      "bytes": 3461,
+      "sha256": "429cd52901a16fd84dfe744ff36ca28faf03e615889be72e27ebfd2ae22f764f"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/default_style_outreg2_xlsx.do": {
+      "archive_path": "data/source_archive/files/e98c97dfd21e7e4cffd8a0b0520de256afd36dceae8437cbf8a774a2f2b1a473.source",
+      "bytes": 4094,
+      "sha256": "e98c97dfd21e7e4cffd8a0b0520de256afd36dceae8437cbf8a774a2f2b1a473"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/default_style_path_setup.do": {
+      "archive_path": "data/source_archive/files/af0c57117c6af86fd2e7d0ba836493c6ec8be10f70d536723308fc8ec0ee423d.source",
+      "bytes": 448,
+      "sha256": "af0c57117c6af86fd2e7d0ba836493c6ec8be10f70d536723308fc8ec0ee423d"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/official_import_delimited_single_source.do": {
+      "archive_path": "data/source_archive/files/920a29063d15465f3b1bd54945e657620a3ea8b9fc8bb08bacb4e487646b49ce.source",
+      "bytes": 286,
+      "sha256": "920a29063d15465f3b1bd54945e657620a3ea8b9fc8bb08bacb4e487646b49ce"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/official_postfile_named_sample_flow.do": {
+      "archive_path": "data/source_archive/files/a5c779dea5020bf619a1c150499462ab4dd776878a696c119a9999a56c89cb98.source",
+      "bytes": 373,
+      "sha256": "a5c779dea5020bf619a1c150499462ab4dd776878a696c119a9999a56c89cb98"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/research_practice_event_plot_flat_loops.do": {
+      "archive_path": "data/source_archive/files/a455fbb3406c0fbab443650e1a400d5289cf6c71eeeb6b2615c20bb72e0f1abe.source",
+      "bytes": 3147,
+      "sha256": "a455fbb3406c0fbab443650e1a400d5289cf6c71eeeb6b2615c20bb72e0f1abe"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/research_practice_event_plot_flat_mixed_axis.do": {
+      "archive_path": "data/source_archive/files/8e1a689df8097953a6f96a565347d150122511428b1c28605dd49dab70b7f78b.source",
+      "bytes": 1764,
+      "sha256": "8e1a689df8097953a6f96a565347d150122511428b1c28605dd49dab70b7f78b"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/research_practice_event_plot_single_automatic.do": {
+      "archive_path": "data/source_archive/files/51d40114216beca01459ded18409a1eacf3a915c3da2e1161fec85a34a54797e.source",
+      "bytes": 1082,
+      "sha256": "51d40114216beca01459ded18409a1eacf3a915c3da2e1161fec85a34a54797e"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/research_practice_event_rhs_single_hash.do": {
+      "archive_path": "data/source_archive/files/7039190e6b2d0bcb6a4d25eff30a8c294adb137690d733b56062b798a78f5eda.source",
+      "bytes": 634,
+      "sha256": "7039190e6b2d0bcb6a4d25eff30a8c294adb137690d733b56062b798a78f5eda"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/research_practice_iv_first_stage_handoff.do": {
+      "archive_path": "data/source_archive/files/797c4d7e9982980cbe18b0e22a6c13b26911edeeb6abd35b2cb1b1ead949f686.source",
+      "bytes": 438,
+      "sha256": "797c4d7e9982980cbe18b0e22a6c13b26911edeeb6abd35b2cb1b1ead949f686"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/research_practice_merge_11_require_using_match.do": {
+      "archive_path": "data/source_archive/files/a16f4e37f8f3e5c5497a3da8f89972531806b1e7a3494484d7c22f17d18fb69e.source",
+      "bytes": 129,
+      "sha256": "a16f4e37f8f3e5c5497a3da8f89972531806b1e7a3494484d7c22f17d18fb69e"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/research_practice_ppmlhdfe_active.do": {
+      "archive_path": "data/source_archive/files/c97f286b139c211b60981ec9dd0149829c5bc43177d5c71d0877fcff10a0dd0b.source",
+      "bytes": 106,
+      "sha256": "c97f286b139c211b60981ec9dd0149829c5bc43177d5c71d0877fcff10a0dd0b"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/research_practice_reghdfe_fe_clustered_visible.do": {
+      "archive_path": "data/source_archive/files/5425c3c0dbdd12cf8f54c787f434d793195ac0726fe9beb1d131d40ed4061dcd.source",
+      "bytes": 114,
+      "sha256": "5425c3c0dbdd12cf8f54c787f434d793195ac0726fe9beb1d131d40ed4061dcd"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/research_practice_scatter_lfit_binary_group.do": {
+      "archive_path": "data/source_archive/files/7e98306d140f3025d15b065106693f4176f86dc7c0b647bbe836d5b02978687e.source",
+      "bytes": 453,
+      "sha256": "7e98306d140f3025d15b065106693f4176f86dc7c0b647bbe836d5b02978687e"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/research_practice_scatter_lfit_by_binary_group.do": {
+      "archive_path": "data/source_archive/files/46ca6e3e267f08166745bf11d8b8d06e381c60e399add893f95cdcec8f494bb5.source",
+      "bytes": 507,
+      "sha256": "46ca6e3e267f08166745bf11d8b8d06e381c60e399add893f95cdcec8f494bb5"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/research_practice_standardize_fixed_esample_complete_components.do": {
+      "archive_path": "data/source_archive/files/f573f4962bf0904a7ab52c170232ab4b5ea356ddd8c2f299b0a82d7901aef984.source",
+      "bytes": 548,
+      "sha256": "f573f4962bf0904a7ab52c170232ab4b5ea356ddd8c2f299b0a82d7901aef984"
+    }
+  }
+}

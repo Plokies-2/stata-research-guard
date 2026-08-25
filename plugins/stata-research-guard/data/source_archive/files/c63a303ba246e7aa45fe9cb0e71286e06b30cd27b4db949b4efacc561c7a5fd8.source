@@ -1,0 +1,260 @@
+*-------------------------------------------------------------------------------
+*						TABLE 6. LONG TERM IMPACT OF YEAR 1 
+* (i.e. treated teachers' impact on test scores of students they subsequently teach)
+*------------------------------------------------------------------------------- 
+
+
+clear
+use  "$data/analysis.dta", clear 
+
+drop if math_std<-12
+
+gen teacher_any_y1 = 0
+replace teacher_any_y1 = 1 if teacher_gain_y1==1 | teacher_loss_y1==1
+ 
+keep if treat_desc_y1~="Not In Study"
+
+* Column 1: 2010-11 (Year One), ThinkLink, K-8, Spillover in Control
+
+ qui reg math_std loss gain $oldX_vam  if year == 1 , cluster(teacher_id)
+ qui gen inS = e(sample)
+ 
+ qui cgmreg math_std any $oldX_vam  if year == 1 , cluster(teacher_id newstudid)
+ eststo c1_any
+ 
+ qui cgmreg math_std loss gain $oldX_vam  if year == 1 , cluster(teacher_id newstudid)
+ eststo c1_gl
+ test gain=loss
+ estadd scalar p = r(p): c1_gl
+ qui tab newstudid if inS==1
+ estadd scalar nstud = r(r): c1_gl
+ qui tab teacher_id if inS==1
+ estadd scalar nteach = r(r): c1_gl
+ qui tab h_id if inS==1
+ estadd scalar nclass = r(r): c1_gl
+ drop inS
+ 
+* Column 2: 2010-11 (Year One), ISAT/ITBS, K-8, Spillover in Control
+
+ qui reg mathI_std loss gain $oldX_vam  if year == 1 , cluster(teacher_id)
+ qui gen inS = e(sample)
+ 
+ qui cgmreg mathI_std any $oldX_vam  if year == 1 , cluster(teacher_id newstudid)
+ eststo c2_any
+ 
+ qui cgmreg mathI_std loss gain $oldX_vam  if year == 1 , cluster(teacher_id newstudid)
+ eststo c2_gl
+ test gain=loss
+ estadd scalar p = r(p): c2_gl
+ qui tab newstudid if inS==1
+ estadd scalar nstud = r(r): c2_gl
+ qui tab teacher_id if inS==1
+ estadd scalar nteach = r(r): c2_gl
+ qui tab h_id if inS==1
+ estadd scalar nclass = r(r): c2_gl
+ drop inS
+ 
+* Column 3: 2011-12 (impact of Year One treatment), ThinkLink, K-8
+
+ qui reg math_std teacher_loss_y1 teacher_gain_y1 $oldX_vam  if year==2 , cluster(teacher_id)
+ qui gen inS = e(sample)
+ 
+ qui cgmreg math_std teacher_any_y1 $oldX_vam  if year==2  , cluster(teacher_id newstudid)
+ eststo c3_any
+
+ qui cgmreg math_std teacher_loss_y1 teacher_gain_y1 $oldX_vam  if year==2  , cluster(teacher_id newstudid)
+ eststo c3_gl
+ 
+ test teacher_gain_y1=teacher_loss_y1
+ estadd scalar p = r(p): c3_gl
+ qui tab newstudid if inS==1
+ estadd scalar nstud = r(r): c3_gl
+ qui tab teacher_id if inS==1
+ estadd scalar nteach = r(r): c3_gl
+ qui tab h_id if inS==1
+ estadd scalar nclass = r(r): c3_gl
+ drop inS
+ 
+ * Column 4: 2011-12 (impact of Year One treatment), ISAT, 3-8
+
+ qui reg mathI_std teacher_loss_y1 teacher_gain_y1 $oldX_vam  if year==2 , cluster(teacher_id)
+ qui gen inS = e(sample)
+ 
+ qui cgmreg mathI_std teacher_any_y1 $oldX_vam  if year==2  , cluster(teacher_id newstudid)
+ eststo c4_any
+
+ qui cgmreg mathI_std teacher_loss_y1 teacher_gain_y1 $oldX_vam  if year==2  , cluster(teacher_id newstudid)
+ eststo c4_gl
+ 
+ test teacher_gain_y1=teacher_loss_y1
+ estadd scalar p = r(p): c4_gl
+ qui tab newstudid if inS==1
+ estadd scalar nstud = r(r): c4_gl
+ qui tab teacher_id if inS==1
+ estadd scalar nteach = r(r): c4_gl
+ qui tab h_id if inS==1
+ estadd scalar nclass = r(r): c4_gl
+ drop inS
+ 
+ * Subsequent years
+ 
+ keep mathI_std gain loss any teacher_gain_y1 teacher_loss_y1 teacher_any_y1 $oldX_vam sy year grade teacher_id newstudid newstudid_cons h_id
+ tempfile working
+ save `working'
+			
+ clear	
+ use "$data/long_term_testscores.dta"
+ 
+ keep if treat_desc_y1~="Not In Study"	
+ gen teacher_any_y1 = 0
+ replace teacher_any_y1 = 1 if teacher_gain_y1==1 | teacher_loss_y1==1
+ 
+ 
+ * Column 5: 2012-13, ISAT, grades 3-8		
+
+ qui reg  mathI_std teacher_loss_y1 teacher_gain_y1 $oldX_vam if sy==201213 & grade>2 & grade<=8  , cluster(teacher_id)
+ qui gen inS = e(sample)
+ 
+ qui cgmreg  mathI_std teacher_any_y1 $oldX_vam  if sy==201213 & grade>2 & grade<=8  , cluster(teacher_id newstudid)
+ eststo c5_any
+ 
+ qui cgmreg  mathI_std teacher_loss_y1 teacher_gain_y1 $oldX_vam  if sy==201213 & grade>2 & grade<=8  , cluster(teacher_id newstudid)
+ eststo c5_gl
+ test teacher_gain_y1=teacher_loss_y1
+ estadd scalar p = r(p): c5_gl
+ qui tab newstudid_cons if inS==1
+ estadd scalar nstud = r(r): c5_gl
+ qui tab teacher_id if inS==1
+ estadd scalar nteach = r(r): c5_gl
+ //qui tab h_id if inS==1
+ //estadd scalar nclass = r(r): c5_gl
+ drop inS		
+ 
+ *Column 6: 2013-14, ISAT, grades 3-8	
+ 
+ qui reg  mathI_std teacher_loss_y1 teacher_gain_y1 $oldX_vam if sy==201314 & grade>2 & grade<=8  , cluster(teacher_id)
+ qui gen inS = e(sample)
+ 
+ qui cgmreg  mathI_std teacher_any_y1 $oldX_vam  if sy==201314 & grade>2 & grade<=8  , cluster(teacher_id newstudid)
+ eststo c6_any
+ 
+ qui cgmreg  mathI_std teacher_loss_y1 teacher_gain_y1 $oldX_vam  if sy==201314 & grade>2 & grade<=8  , cluster(teacher_id newstudid)
+ eststo c6_gl
+ test teacher_gain_y1=teacher_loss_y1
+ estadd scalar p = r(p): c6_gl
+ qui tab newstudid_cons if inS==1
+ estadd scalar nstud = r(r): c6_gl
+ qui tab teacher_id if inS==1
+ estadd scalar nteach = r(r): c6_gl
+ //qui tab h_id if inS==1
+ //estadd scalar nclass = r(r): c6_gl
+ drop inS		
+			
+ *Column 7: 2014-15, PARCC, grades 3-8	
+ qui reg  mathI_std teacher_loss_y1 teacher_gain_y1 $oldX_vam if sy==201415 & grade>2 & grade<=8  , cluster(teacher_id)
+ qui gen inS = e(sample)
+ 
+ qui cgmreg  mathI_std teacher_any_y1 $oldX_vam  if sy==201415 & grade>2 & grade<=8  , cluster(teacher_id newstudid)
+ eststo c7_any
+
+ qui cgmreg  mathI_std teacher_loss_y1 teacher_gain_y1 $oldX_vam  if sy==201415 & grade>2 & grade<=8  , cluster(teacher_id newstudid)
+ eststo c7_gl
+ test teacher_gain_y1=teacher_loss_y1
+ estadd scalar p = r(p): c7_gl
+ qui tab newstudid_cons if inS==1
+ estadd scalar nstud = r(r): c7_gl
+ qui tab teacher_id if inS==1
+ estadd scalar nteach = r(r): c7_gl
+ //qui tab h_id if inS==1
+ //estadd scalar nclass = r(r): c7_gl
+ drop inS		
+ 
+  *Column 8: 2015-16, PARCC, grades 2-8	
+ qui reg  mathI_std teacher_loss_y1 teacher_gain_y1 $oldX_vam if sy==201516 & grade>=2 & grade<=8  , cluster(teacher_id)
+ qui gen inS = e(sample)
+ 
+ qui cgmreg  mathI_std teacher_any_y1 $oldX_vam  if sy==201516 & grade>=2 & grade<=8  , cluster(teacher_id newstudid)
+ eststo c8_any
+ 
+ qui cgmreg  mathI_std teacher_loss_y1 teacher_gain_y1 $oldX_vam  if sy==201516 & grade>=2 & grade<=8  , cluster(teacher_id newstudid)
+ eststo c8_gl
+ test teacher_gain_y1=teacher_loss_y1
+ estadd scalar p = r(p): c8_gl
+ qui tab newstudid_cons if inS==1
+ estadd scalar nstud = r(r): c8_gl
+ qui tab teacher_id if inS==1
+ estadd scalar nteach = r(r): c8_gl
+ //qui tab h_id if inS==1
+ //estadd scalar nclass = r(r): c8_gl
+ drop inS
+	
+	
+ * Pooled estimates 
+ append using `working'
+ 
+ * Column 10: Pooled 2011/12-2015/16, ISAT/PARCC, grades 2-8
+ 
+ qui reg  mathI_std teacher_loss_y1 teacher_gain_y1 $oldX_vam i.sy if sy>=201112, cluster(teacher_id)
+ qui gen inS = e(sample)
+ 
+ qui cgmreg  mathI_std teacher_any_y1 $oldX_vam i.sy if sy>=201112  , cluster(teacher_id newstudid_cons)
+ eststo c10_any
+ 
+ qui cgmreg  mathI_std teacher_loss_y1 teacher_gain_y1 $oldX_vam i.sy  if sy>=201112 , cluster(teacher_id newstudid_cons)
+ eststo c10_gl
+ test teacher_gain_y1=teacher_loss_y1
+ estadd scalar p = r(p): c10_gl
+ qui tab newstudid_cons if inS==1
+ estadd scalar nstud = r(r): c10_gl
+ qui tab teacher_id if inS==1
+ estadd scalar nteach = r(r): c10_gl
+ qui tab h_id if inS==1
+ estadd scalar nclass = r(r): c10_gl
+ drop inS
+ 
+ * Column 9: Pooled 2010/11-2015/16, ITBS/ISAT/PARCC, all grades - change indicator for year 1 to have spillover in control!
+ 
+ replace teacher_gain_y1 = gain if year==1
+ replace teacher_loss_y1 = loss if year==1
+ replace teacher_any_y1 = any if year==1
+ 
+ qui reg  mathI_std teacher_loss_y1 teacher_gain_y1 $oldX_vam i.sy, cluster(teacher_id)
+ qui gen inS = e(sample)
+ 
+ qui cgmreg  mathI_std teacher_any_y1 $oldX_vam i.sy   , cluster(teacher_id newstudid_cons)
+ eststo c9_any
+ 
+ qui cgmreg  mathI_std teacher_loss_y1 teacher_gain_y1 $oldX_vam i.sy   , cluster(teacher_id newstudid_cons)
+ eststo c9_gl
+ test teacher_gain_y1=teacher_loss_y1
+ estadd scalar p = r(p): c9_gl
+ qui tab newstudid_cons if inS==1
+ estadd scalar nstud = r(r): c9_gl
+ qui tab teacher_id if inS==1
+ estadd scalar nteach = r(r): c9_gl
+ qui tab h_id if inS==1
+ estadd scalar nclass = r(r): c9_gl
+ drop inS	
+ 
+ 
+ 
+ 
+ 
+  * Create estimation table
+
+	esttab c1_any c2_any c3_any c4_any c5_any c6_any c7_any c8_any c9_any c10_any ///
+	using "$results/Table6_LongTermTeacher_raw.tex", replace ///
+	keep(any teacher_any_y1  ) cells(b(fmt(3))  se(par fmt(3)))  ///
+	rename(any_teacher Any_treatment) ///
+	collabels(,none) tex 
+
+	esttab c1_gl c2_gl c3_gl c4_gl c5_gl c6_gl c7_gl c8_gl c9_gl c10_gl ///
+	using "$results/Table6_LongTermTeacher_raw.tex", append ///
+	keep(loss gain teacher_loss_y1 teacher_gain_y1 ) cells(b(fmt(3))  se(par fmt(3)))  ///
+	collabels(,none) stat(p N nstud nclass nteach) tex 
+	
+	
+	*** END *** 
+	
+
+	

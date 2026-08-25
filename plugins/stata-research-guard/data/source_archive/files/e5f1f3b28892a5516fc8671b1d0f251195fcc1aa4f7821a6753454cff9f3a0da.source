@@ -1,0 +1,586 @@
+********************************************************************************
+* 01_mgr_estab_spells.do
+* Daddy's Girl: Daughters, Managerial Decisions, and Gender Inequality
+* Ronchi and Smith
+*
+* Builds the establishment-year panel: identifies hiring and separation events,
+* constructs fertility and lagged variables, restricts to single-manager
+* establishments, and collapses employee characteristics to the establishment
+* level to create the outcome variables.
+*
+* Paths are defined in config.do (run via _master.do). Raw registry data are
+* read from $dst_data; intermediate datasets are written to $derived.
+********************************************************************************
+
+*************************
+/* DESCRIPTION OF DO FILE:
+
+PART 1
+- first we compress data and drop var we dont use for memory  
+- we identify individuals who are hired and who separate in a given year
+- add extra fertility variables at the individual level (which we will need for endog stopping rule) and lagged variables before removing 1990-1991 when I do not obs occ codes
+- this gen the dta employer_employee_compressed_original
+
+PART 2
+- keep only single-manager estab-year obs e create avg values for manager variables before collapsing the data at the estb level 
+- then we can drop managers and create avg values of workforce before collapsing 
+- collapse data at the estab-year level
+- this gen the dta e_single_mgmt_collapse
+*/
+**************************
+
+
+*compress the data and substitute industry classification
+use "$dst_data/employer_employee.dta", clear			
+drop   d_educ_miss d_separation_old old_timelon tilknyt tlonkval heltid_deltid export tot_atp atpxx atpxx_adjusted pstill
+compress
+destring year, replace
+drop ind_class
+gen ind_class=" "
+replace ind_class="<2003" if year>=1992 & year<2003
+replace ind_class="03-06" if year>=2003 & year<2007
+replace ind_class=">=2007" if year>=2007
+
+rename e_id e_id_string
+destring e_id_string, gen(e_id)
+format e_id %12.0g
+save "$derived/employer_employee_compressed_original.dta", replace
+
+
+
+***************************************************
+********** HIRING/FIRING *************
+***************************************************
+
+
+** gen hirings
+bys e_id id : egen y_hired=min(year)
+
+	*nobody is considered hired in the fist year I observe an establishment (even if I can observe previous years of the individuals)
+	*but id are considered hired the first year I observe them if the establishment was pre-existing (even if that is the first year I am observing the id)
+
+*var hired
+sort e_id year
+by e_id: egen estab_start=min(year)
+by e_id: egen estab_end=max(year)
+
+sort id year
+by id: gen hired=1 if y_hired!=y_hired[_n-1] & year!=estab_start
+replace hired=0 if hired==.
+label var hired "=1 the first year I observe id in an e_id & y!=estab_start"
+
+*var hired_3y --> we use hired 3y as a more conservative measure of hiring
+sort id e_id year
+gen hired_3y=hired 
+by id e_id: replace hired_3y=0 if year<=year[_n-1]+3 & year!=estab_start & _n!=1
+label var hired_3y "=1 if id is hired by e_id that y & didnt work there previous 3y"
+
+save "$derived/employer_employee_compressed_original.dta", replace		
+
+*gen separations: separations are equal to one the last time I observe an individual in an estab (separation)
+*same as above + conditionng on not observing the individual in that estab until t+3 after the separation - more conservative (separation_3y)
+*both variables are set to zero in two cases:
+*--> separation is never=1 the last time I observe an estab. An estab closing is not a worker sep
+*separation is never equal to one if d_retirement=1 that year 
+
+bys e_id id: egen y_fired=max(year)
+sort id year
+by id: gen n=_n
+by id: gen N=_N
+* 
+sort id year
+by id: gen separat=1 if y_fired!=y_fired[_n+1] & year!=estab_end 
+replace separat=0 if separat==.
+label var separat "=1 if in t+1 id is not n the same estab"
+
+sort id e_id year
+gen separat_3y=separat 
+by id e_id: replace separat_3y=0 if year>=year[_n+1]-3 & year!=estab_end // & _n!=1
+label var separat_3y "=1 if in t+1 until t+3 id is not in the same estab"
+
+foreach var of varlist separat*{
+replace `var'=0 if d_retirement==1	
+}
+*
+
+sort id year
+
+save "$derived/employer_employee_compressed_original.dta", replace
+
+
+***************************************************
+*********** FERTILITY VARIABLES: needed for endog fertitlity stopping rule
+***************************************************
+
+* gen max_fertility variables
+sort id year
+by id: egen max_daughters_alllife=max(n_daughters)
+by id: egen max_sons_alllife=max(n_sons)
+by id: egen max_children_alllife=max(n_children)
+by id: egen min_n_children_alllife=min(n_children)
+by id: egen max_d_birth_alllife=max(d_birth)
+
+
+***************************************************
+********** GEN LAGGED VARIABLE BEFORE DELETING YEARS
+***************************************************
+
+*lagged and max n_children
+sort id year
+local var "n_children n_daughters n_sons"
+foreach v of local var{
+by id: gen l_`v'=`v'[_n-1] if _n!=1
+}
+*
+
+*lagged N_F N_M TOT_WORKERS
+sort e_id year
+
+gen d_women_count=d_women if d_manager==0
+by e_id year: egen n_f=total(d_women_count)
+
+gen workers_count=1 if d_manager==0
+by e_id year: egen tot_workers=total(workers_count)
+gen n_m=tot_workers-n_f
+
+
+preserve
+collapse n_f tot_workers n_m e_size, by (e_id year)
+
+sort e_id year
+local var "n_f tot_workers n_m e_size"
+foreach v of local var {
+by e_id : gen `v'_l=`v'[_n-1] if _n!=1
+}
+*
+tempfile ciccio
+save `ciccio', replace
+restore
+*drop _merge
+
+merge m:1 e_id year using `ciccio'
+sort e_id year
+drop _merge
+save "$derived/employer_employee_compressed_original.dta", replace
+
+
+***************************************************
+********** DROP YEAR<1992 
+***************************************************
+
+
+*keep only years in which I have occ codes (drop 1990) & industry classification comparable with Nace (drop 90-91)
+drop if year==1990 | year==1991	
+		
+save "$derived/employer_employee_compressed", replace
+
+
+***************************************************
+********** GEN PRESENCE OF MGMT&OWNER & KEEP IF E_MGMT_YEAR==1 (is mgmt=owner/woman)
+***************************************************
+
+**** gen presence of manager at the establishment-year level --> ultimately keep only ey with at least one manager
+sort e_id year
+by e_id year: egen e_manager_y=max(d_manager)
+label var e_manager_y "dummy for mgr presence in estab-year"
+by e_id year: egen tot_mgr=total(d_manager)
+
+
+gen owner=1 if type=="o"
+replace owner=0 if owner==.
+gen d_mgmt_owner=1 if d_manager==1 & owner==1 
+label var d_mgmt_owner "=1 if id is both mgmt&owner in that year"
+
+save "$derived/employer_employee_compressed.dta", replace	
+
+
+******************************************************
+**** Flag multi-establishment firms - needed for descriptive stats
+******************************************************
+keep year e_id f_id e_manager_y 
+duplicates drop
+sort f_id year e_id
+by f_id year: gen N=_N
+by f_id year: egen N_mgr=total(e_manager_y)
+
+ 
+gen multi_estab=1 if N>1
+replace multi_estab=0 if N==1
+rename N n_estab_firmyear
+
+gen multi_estab_wmgr=1 if N_mgr>1
+replace multi_estab_wmgr=0 if N_mgr<=1
+
+save "$derived/multi_estab_firmyear.dta", replace
+
+******************************************************
+******************************************************
+
+use "$derived/employer_employee_compressed.dta", clear
+
+******
+keep if e_manager_y==1				
+save "$derived/e_manager_y.dta", replace
+******
+
+*gender of manager
+gen w_manager_temp=1 if d_women==1 & d_manager==1
+bys e_id year: egen w_manager=max(w_manager_temp)
+replace w_manager=0 if w_manager==.
+label var w_manager "woman mgmt present in ey"
+drop w_manager_temp
+
+*e-y with owners
+bys e_id year: egen ey_owner=max(owner)
+label var ey_owner "=1 if owner is present in that e-y"
+
+replace disco_1=0 if disco_1==.
+											
+save "$derived/e_manager_y.dta", replace		
+
+
+***************************************************
+********** KEEP SINGLE-MGMT ESTAB & CREATE AVG VALUES FOR MGMT VAR & MGR-ESTAB ID BEFORE COLLAPSE
+***************************************************
+
+keep if tot_mgr==1						
+
+*create mgr-estab id 
+egen mgmt_estab_temp=group(e_id id) if d_manager==1		//id identifying the couple mgmt-estab (no time variation; if mgmt change estab the new id changes as well)
+by e_id year: egen mgmt_estab=max(mgmt_estab_temp)
+drop mgmt_estab_temp
+
+
+save "$derived/e_single_mgmt.dta", replace		
+
+
+***************************************************
+********** CREATE AVG VALUES FOR MGMT VAR & MGR-ESTAB ID BEFORE COLLAPSE
+***************************************************
+
+gen d_married=1 if s_id!=""
+replace d_married=0 if d_married==.
+destring age, replace
+
+drop d_mgmt_owner
+gen d_mgmt_owner=1 if d_manager==1  & owner==1
+replace d_mgmt_owner=0 if d_manager==1  & owner==0
+
+local var "d_mgmt_owner d_parental_leave_next d_fb_daughter d_birth age educ_length educ_level d_married e_tenure experience  n_children n_sons n_daughters  d_no_child avg_age_children avg_age_d avg_age_s youngest_age youngest_age_d youngest_age_s oldest_age oldest_age_d oldest_age_s l_n_children l_n_sons l_n_daughters"
+foreach v of local var {
+bys e_id year: gen `v'_mgmt_temp=`v' if d_manager==1
+by e_id year: egen `v'_mgmt=max(`v'_mgmt_temp)
+
+drop `v'_mgmt_temp 
+}
+*
+drop d_mgmt_owner
+rename d_mgmt_owner_mgmt d_mgmt_owner
+
+format mgt_* %14.0g
+
+
+***************************************************
+********** DROP MANAGERS 
+***************************************************
+
+* Drop managers to the compute employees controls
+drop if d_manager==1	
+save "$derived/e_single_mgmt_nomgmt.dta", replace
+
+
+* Exclude establishment-years with owner-employees: they have zero earnings and should not be counted as regular employees
+
+*estab-level var
+by e_id year: egen employee_own=max(owner)
+label var employee_own "=1 if in ey there is an id=owner"
+drop if employee_own==1
+
+save "$derived/e_single_mgmt_nomgmt_noowner.dta", replace
+
+
+***************************************************
+********** COMPUTE AVG VALUES OF EMPLOYEES CHARACT BEFORE COLLAPSING
+***************************************************
+
+gen higher_edu=1 if educ_level>=3
+replace higher_edu=0 if higher_edu==.	
+label var higher_edu "=1 if educ_level>=3"
+gen university=1 if educ_level>=4
+replace university=0 if university==.
+label var university "=1 if educ_level>=4"
+
+gen educ_years=1 if educ_length<=10
+replace educ_years=2 if educ_length>10 & educ_length<=12
+replace educ_year=3 if educ_length>12 & educ_length<=15
+replace educ_year=4 if educ_length>15
+label define l_educ_years 1 "<=10years" 2 ">10 and <=12" 3 ">12 and <=15" 4 ">15"
+label value educ_years l_educ_years
+
+destring youngest_age, replace	
+gen child_5l=1 if youngest_age<6
+replace child_5l=0 if child_5l==.
+
+gen d_pt=1 if d_ft==0
+replace d_pt=0 if d_ft==1
+
+sort e_id year
+local charact "age experience educ_length educ_level higher_edu university educ_years  d_no_child n_children d_ft d_pt e_tenure d_married "		//
+foreach c of local charact{
+bys e_id year: egen avg_`c'_temp=mean(`c')
+by e_id year: egen avg_`c'=max(avg_`c'_temp)
+drop avg_`c'_temp
+label var avg_`c' "mean value of `c' across all employees in that ey"
+}
+*
+
+save "$derived/e_single_mgmt_nomgmt_noowner_cont.dta", replace
+
+
+** annualize earnings variable of the most important nov job (imp only in case of incomplete annual spells)
+rename ansdage days_worked
+label var days_worked "days worked in the job observed"
+
+gen wage_adj=wage
+replace wage_adj=365*wage/days_worked if days_worked>1 & days_worked<365
+gen log_w_adj=log(wage_adj)
+*
+format wage_adj %12.0g
+
+*gen total Wage bill and avg earnings of the estab
+drop tot_wage
+sort e_id year
+local var "wage wage_adj"
+foreach v of local var{
+by e_id year: egen totf_`v'_temp=total(`v') if d_women==1
+by e_id year: egen totf_`v'=max(totf_`v'_temp)
+by e_id year: egen totm_`v'_temp=total(`v') if d_women==0
+by e_id year: egen totm_`v'=max(totm_`v'_temp)
+by e_id year: egen tot_`v'=total(`v')
+drop totf_`v'_temp totm_`v'_temp
+replace totf_`v'=0 if n_f==0
+replace totm_`v'=0 if n_m==0
+}
+*
+
+*full-time earnings
+foreach var of varlist log_w_adj wage wage_adj{
+gen `var'_ft=`var' if d_ft==1
+}
+
+*earnings for h-edu
+foreach var of varlist wage_adj{
+gen `var'_hedu=`var' if higher_edu==1
+}
+
+* gen avg earnings at the establishment level
+cap drop _0000*
+sort e_id year
+by e_id year: egen wage_avg=mean(wage)
+by e_id year: egen wage_adj_avg=mean(wage_adj)
+
+
+*rename var that are too long otherwise
+local var "age_children_mgmt age_d_mgmt age_s_mgmt"
+foreach v of local var{
+rename avg_`v' `v'
+}
+*
+
+* GEN TOTALS: TOT & TOTF (needed to create controls on workforce characteristics used in the female manager magnitude table)
+sort e_id year
+local outcome "d_ft higher_edu  child_5l"
+foreach v of local outcome{
+
+*tot employees
+by e_id year: egen tot_`v'_temp=total(`v')
+by e_id year: egen tot_`v'=max(tot_`v'_temp)
+drop tot_`v'_temp
+
+*tot females
+by e_id year: egen totf_`v'_temp=total(`v') if d_women==1
+by e_id year: egen totf_`v'=max(totf_`v'_temp)
+drop totf_`v'_temp
+}
+*
+
+*replace missing values of totf_* with zeros when n_f==0)
+local var "totf_d_ft totf_higher_edu totf_child_5l  "
+foreach v of local var{
+replace `v'=0 if n_f==0
+}
+
+save "$derived/e_single_mgmt_nomgmt_noowner_cont.dta", replace
+
+***************************************************
+********** COLLAPSE BY GENDER AT THE ESTAB LEVEL TO CREATE OUTCOME VAR
+***************************************************
+
+rename f_industry_new firm_code
+macro def mgr				*_mgmt mgmt_estab
+macro def avg_employees		avg_* 
+macro def employees			age experience educ_length educ_level higher_edu university d_married d_no_child e_tenure d_ft 
+macro def tot				tot_* totf_* totm_* f_*
+macro def estab 			estab_start estab_end e_size e_size_l n_m* n_f*  e_count w_manager d_mgmt_owner  ey_owner   
+macro def perf				sales  value_added profits n_profits 	
+macro def outcome 			wage* log_w*   
+********
+
+*copy labels before collapse : need to run everything together untill attach label included
+
+foreach v of var * {
+local `v'_l: var l `v'
+}
+*
+
+collapse $employees $avg_employees $mgr $tot $estab $perf $outcome  (first) ind* municipality* firm_code, by (e_id year d_women)
+order e_id year d_women tot_workers n_f* e_size
+*attach label 
+foreach v of var * {
+label var `v' `"``v'_l'"'
+}
+
+save "$derived/e_single_mgmt_collapse_gender.dta", replace
+
+***************************************************
+********** GEN SHARES AND DEPENDENT VARIABLES
+***************************************************
+gen sharef=n_f/tot_workers 			
+
+local var "d_ft higher_edu child_5l"  
+foreach v of local var{
+
+gen sharef_`v'_tot=totf_`v'/tot_`v'
+gen sharef_`v'_f=totf_`v'/n_f
+gen sharef_`v'_work=totf_`v'/tot_workers
+gen sharef_`v'_lwork=totf_`v'/tot_workers_l
+
+label var sharef_`v'_tot "n_f haveing `v'=1 over tot id with `v'=1"
+label var sharef_`v'_f "n_f having `v'=1 over n_f"
+label var sharef_`v'_work "n_f having `v'=1 over tot_workers"
+label var sharef_`v'_lwork "n_f having `v'=1 over tot_workers_l"
+
+replace sharef_`v'_f=0 if n_f==0
+}
+*
+
+*shorten some variables names
+local type "ft"
+foreach t of local type{
+rename sharef_d_`t'_tot sharef_`t'_tot
+rename sharef_d_`t'_f sharef_`t'_f
+rename sharef_d_`t'_work sharef_`t'_work
+rename sharef_d_`t'_lwork sharef_`t'_lwork
+}
+*
+local end "tot f work lwork"
+foreach x of local end{
+rename sharef_higher_edu_`x' sharef_hedu_`x'
+}
+*
+
+*OUTCOME VAR ON WAGES/EARNINGS
+ 
+*Gen female and male variables
+local wage "wage wage_ft wage_adj log_w_adj wage_adj_ft log_w_adj_ft wage_adj_hedu"
+local number "1 0"
+local gender "f m"
+forvalues x=1/2{
+
+local g: word `x' of `gender'
+disp "`g'"
+local n: word `x' of `number'
+disp "`n'"
+foreach w of local wage{
+gen `w'_`g'_temp=`w' if d_women==`n'
+by e_id year: egen 	`w'_`g'=max(`w'_`g'_temp) 
+drop `w'_`g'_temp		
+
+label var `w'_`g' "avg `w' for d_women==`n'"
+}
+}
+*
+
+*substitute missing with zeros when n_f/n_m==0
+* 
+local wage "wage wage_ft wage_adj log_w_adj wage_adj_ft log_w_adj_ft wage_adj_hedu"
+foreach v of local wage{
+replace `v'_f=0 if n_f==0
+replace `v'_m=0 if n_m==0
+}
+
+gen totm_d_ft=tot_d_ft-totf_d_ft
+local wage "  wage_ft wage_adj_ft log_w_adj_ft"
+foreach v of local wage{
+replace `v'_f=0 if totf_d_ft==0 
+replace `v'_m=0 if totm_d_ft==0
+}
+
+gen totm_higher_edu= tot_higher_edu - totf_higher_edu  
+local wage "wage_adj_hedu"
+foreach v of local wage{
+replace `v'_f=0 if totf_higher_edu==0 
+replace `v'_m=0 if totm_higher_edu==0
+}
+
+*ratio: avg earnings
+local wage "wage_adj wage_adj_ft wage wage_ft wage_adj_hedu"
+foreach w of local wage{
+gen `w'_tot=`w'_f+`w'_m
+gen `w'_ratio=`w'_f/(`w'_tot)
+gen `w'_ratio_normal=`w'_f/`w'_m
+label var `w'_ratio "`w'_f over (`w'_f + `w'_m)"
+label var `w'_ratio_normal "`w'_f over `w'_m"
+}
+*
+
+* ratio: wage bill
+local wage "wage_adj wage"
+foreach w of local wage{
+gen `w'_bill_ratio=totf_`w'/tot_`w'
+}
+*
+* do log gap in earnings
+gen log_w_m_f=log_w_adj_m-log_w_adj_f
+label var log_w_m_f "GAP: log_w_adj_m - log_w_adj_f"
+replace log_w_m_f=. if n_f==0 | n_m==0
+
+save "$derived/e_single_mgmt_collapse_gender_cont.dta", replace
+
+***************************************************
+********** COLLAPSE AT THE E-Y LEVEL
+***************************************************
+*collapse e-y level
+macro def mgr				*_mgmt mgmt_estab
+macro def avg_employees		avg_* 
+macro def tot				tot_* totf_* totm_* f_*
+macro def share				share* 		
+macro def estab 			estab_start estab_end e_size e_size_l n_m* n_f*  e_count w_manager d_mgmt_owner  ey_owner    
+macro def perf				sales   value_added profits n_profits  	
+macro def outcome 			wage* log_w*   
+
+*copy labels before collapse 
+foreach v of var * {
+local `v'_l: var label `v'
+}
+*
+collapse $mgr $avg_employees $tot $share $estab $perf $outcome (first) ind* municipality* firm_code, by(e_id year)
+*attach label 
+foreach v of var * {
+label var `v' `"``v'_l'"'
+}
+*
+
+save "$derived/e_single_mgmt_collapse.dta", replace		
+
+
+**** THE END *****
+
+
+
+
+
+
+
+
+

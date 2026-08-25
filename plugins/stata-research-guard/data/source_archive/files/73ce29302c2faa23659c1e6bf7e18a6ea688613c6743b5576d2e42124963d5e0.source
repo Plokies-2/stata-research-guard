@@ -1,0 +1,542 @@
+*************************************************************************
+* 							MERGE ALL SETS								*			
+*************************************************************************
+	clear all
+	set more off
+	pause on
+	version 14.1		// Update with using version	
+ 
+	global latex "X:/Dropbox (IFPRI)/Betting/Data Editor Files/out/raw/"	
+	global panelclean "X:/Dropbox (IFPRI)/Betting/Data Editor Files/data/Panel Clean.dta"	
+	global miniclean "X:/Dropbox (IFPRI)/Betting/Data Editor Files/data/Mini Clean.dta"	
+	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+*												DATA PREP 												*
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	use "$miniclean", clear
+
+	drop if lmp_hasmoney==1										// 8% respondents (63) already had enough money to purchase desired expenditure 
+	gen aop_prop = actoverperc_full / (incnorm / 1000)			
+	label var sav_29b "Save Ability (USD)"	
+	gen actoverperc_usd = actoverperc_full / 3.5				// converting from 1000s of UGX to USD
+	label var actoverperc_usd "Saving Update (USD)"
+	replace sav_29b = sav_29b / 3500
+	label var aop_prop "Save Update / Weekly Inc"
+	tempfile prepdata
+	
+	save `prepdata'
+	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+*											Balance Table												*
+/////////////////////////////////////////////////////////////////////////////////////////////////////////	
+*
+	preserve
+			local covars2 = "betmean_prop meaninc coinsamt lumpyprice_prop liqprop livealone sav_abil_prop alevel olevel primary riskaversion beta delta mathscore"
+			
+			foreach v in `covars2'{
+				drop if `v' ==.
+				}
+			
+			local covars = "amtneeded aop_prop actoverperc_usd sav_abil_prop sav_29b lumpyprice_prop  bet_norm liqprop sindex incnorm coinsamt livealone hhsize alevel olevel primary riskaversion beta delta ups* mathgrade"
+			local treats = "lumpyprime"
+			
+		* BUILD REGRESSION:
+			replace hhsize = 1 if hh_mbrs==.
+
+			desc `covars' 
+			replace coinsamt=round(coinsamt)
+			replace incnorm = incnorm / 3500
+			replace bet_norm = bet_norm / 3500
+			gen betprop = bet_norm / incnorm
+			
+			count if saveprime==1
+			local sp = r(N)
+			count if saveprime==0
+			local nsp = r(N) 
+			
+		local outvars = "incnorm betprop sav_29b sav_abil_prop liqprop sindex actoverperc_usd aop_prop livealone hhsize  primary olevel alevel mathgrade beta delta ups* riskaversion"
+			
+		estpost ttest `covars' betprop , by(saveprime)
+		estimates store sumtable
+
+		esttab sumtable using "${latex}AT19_D.tex", cells("mu_1(fmt(3) label(No Prime)) mu_2(fmt(3) label(Prime)) p(fmt(2) label(P-value of Diff))") ///
+			varlabels(meaninc "Mean Weekly Income (USD)"  betmean_prop "Mean Betting Exp / Mean Inc" lmp_purchased "Lumpy Good Purchased" lumpy_incprop "Cost of Lumpy Good / Mean Inc" ///
+			livealone "Live Alone" primary "Completed Primary" olevel "Completed O-Level" alevel "Completed A-Level" mathscore2 "Math Score" beta "Beta Discounting" delta "Delta Discounting" ///
+			betprop "Bet Expenditures / Weekly Inc" upsideseeker_low "Upside Seeker - Low" upsideseeker_mid "Upside Seeker - Mid" upsideseeker_high "Upside Seeker - High" ///
+			tr1_budget "Treatment - Budgeting"  tr1_wallet "Treatment - Wallet" tr2_savbox "Treatment - Saving Box" tr2_bankacct "Treatment - Bank Account" ///
+			sindex "Saving Ability Index" lumpyprice_prop "Price of Lumpy Good / Liq Avail" bet_norm "Weekly Betting Expenditures (USD)" tr3_betinfo "Treatment - Bet Info" tr3_foodinfo "Treatment - Food Info" riskaversion "Risk Aversion. 0=Low 6=High" ///
+			hhsize "Household Size" sav_abil_prop "Save Ability / Mean Income" liqprop "Liquidity available / Weekly Inc" incnorm "Weekly Income (USD)" coinsamt "Cash Offered" mathgrade "Math Score" ) ///
+			order(`outvars')  ///
+			note(SP = `sp' NSP = `nsp') replace noobs nostar scalars(N) label nonumbers alignment(ccccc) ///
+			gaps keep(`outvars') title(APPENDIX TABLE 19 - PANEL (D) - Saving Prime Balance)
+	
+	restore
+	
+*/ 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+*												MAIN REGRESSION RESULTS									*
+/////////////////////////////////////////////////////////////////////////////////////////////////////////	
+	
+* Set covariates for all specifications here:
+local covars = "betmean_prop meaninc i.coinsamt lumpyprice_prop liqprop livealone sav_abil_prop alevel olevel primary riskaversion beta delta mathscore"	
+	*
+use `prepdata', clear
+drop if actoverperc_usd==.
+
+		* Update size graphs
+			label var actoverperc_usd "Updated - Naive Saving Ability"
+			hist actoverperc_usd if actoverperc_usd>-25 & actoverperc_usd < 25, width(1) ylabel( , angle(0))  scheme(s1color)
+			graph export "${latex}AF6_A.pdf", replace
+		
+			gen apfp = actoverperc_usd / (meaninc / 3500)			
+			label var apfp "(Updated - Naive Save Ability) / Mean Income"
+			hist apfp if apfp>-.6 & apfp < .5, width(.025) ylabel( , angle(0))  bgcolor(white) scheme(s1color)
+			graph export "${latex}AF6_B.pdf", replace			
+		*/		
+
+* SAVINGS ABILITY
+	local onum = 1
+	
+	foreach oc in lmp_maxtix tix_dem{
+*
+ 	  	preserve
+
+			sum `oc' if saveprime==0 & lumpyprime==0
+			local c = r(mean)
+			local ctrmean = round(`c', .0001)
+			di `ctrmean'
+		
+			reg `oc' lumpyprime saveprime `covars', robust
+			estadd loc tp = "Yes"
+			estadd loc ed = "Yes"
+			estadd loc pr = "Yes"	
+			estadd loc cm = "0`ctrmean'"				
+			estadd ysumm
+			estimates store m1_`onum'
+			
+			gen update = actoverperc_usd	
+			gen savxupdate = saveprime * update
+				
+			reg `oc' lumpyprime saveprime savxupdate update `covars', robust			
+			estadd loc tp = "Yes"
+			estadd loc ed = "Yes"
+			estadd loc pr = "Yes"	
+			estadd loc cm = "0`ctrmean'"			
+			estadd ysumm
+			estimates store m2_`onum'
+			
+			replace update = actoverperc_usd / (meaninc / 3500)						// scaled by mean weekly income in USD			
+			replace savxupdate = saveprime * update 
+	
+			reg `oc' lumpyprime saveprime savxupdate update `covars', robust			
+			estadd loc tp = "Yes"
+			estadd loc ed = "Yes"
+			estadd loc pr = "Yes"	
+			estadd loc cm = "0`ctrmean'"			
+			estadd ysumm
+			estimates store m3_`onum'
+			
+			gen pos = update > 0
+			gen neg = update < 0
+			gen savxpos = saveprime * pos
+			gen savxneg = saveprime * neg
+		
+			reg `oc' saveprime savxpos savxneg pos neg lumpyprime `covars', robust
+			test savxpos = savxneg
+			estadd scalar pv = round(r(p), .0001)
+			estadd loc tp = "Yes"
+			estadd loc ed = "Yes"	
+			estadd loc pr = "Yes"	
+			estadd loc cm = "0`ctrmean'"			
+			estadd ysumm
+			estimates store m4_`onum'		
+			
+			replace update = actoverperc_usd	
+			gen update_pos = pos * update
+			gen update_neg = neg * update * -1							// invert so size of update is positive even though it is a negative update					
+			gen savexupdate_pos = saveprime * update_pos 
+			gen savexupdate_neg = saveprime * update_neg 							
+
+			reg `oc' lumpyprime saveprime savexupdate_pos savexupdate_neg update_pos update_neg `covars', robust	
+			test savexupdate_pos = -1 * savexupdate_neg
+			estadd scalar pv = round(r(p), .0001)			
+			estadd loc tp = "Yes"
+			estadd loc ed = "Yes"
+			estadd loc pr = "Yes"
+			estadd loc cm = "0`ctrmean'"			
+			estadd ysumm
+			estimates store m5_`onum'
+			
+			replace update = (update / (meaninc /3500))				
+			replace update_pos = pos * update
+			replace update_neg = neg * update * -1							// invert so size of update is positive even though it is a negative update					
+			replace savexupdate_pos = saveprime * update_pos
+			replace savexupdate_neg = saveprime * update_neg 			
+			
+			reg `oc' lumpyprime saveprime savexupdate_pos savexupdate_neg update_pos update_neg `covars', robust
+			test savexupdate_pos = -1 * savexupdate_neg
+			estadd scalar pv = round(r(p), .0001)				
+			estadd loc tp = "Yes"
+			estadd loc ed = "Yes"
+			estadd loc pr = "Yes"	
+			estadd loc cm = "0`ctrmean'"			
+			estadd ysumm
+			estimates store m6_`onum'
+			
+		restore	
+		
+		local onum = `onum' + 1
+
+		}
+		
+		# delimit ;
+			esttab m1_1 m2_1 m3_1 m4_1 m5_1 m6_1 using "${latex}T7.tex", replace b(%10.3f) se 
+			scalars("ymean Mean Dep Var" "cm Control Group Mean"  "pv P-Value of Pos = -1 * Neg Update" "tp Full Set of Covariates" "N Num Obs" "r2 R2" "r2_a Adj R2") 
+			sfmt(%10.4f %10.4f %10.4f %10.0f %10.4f %10.4f) nostar
+			keep(lumpyprime saveprime savxupdate update savxpos savxneg pos neg savexupdate_pos savexupdate_neg update_pos update_neg)
+			order()
+			varlabels(lumpyprime "Lumpy Good Prime" saveprime "Budgeting Exercise (BE)" savxupdate "BE x Update" update "Update"
+			savexupdate_pos "BE x Positive Update Amount" update_pos "Positive Update Amount" savexupdate_neg "BE x Negative Update Amount" update_neg "Negative Update Amount"
+			savxpos "BE x (Update $>$ 0)" savxneg "BE x (Update $<$ 0)" pos "Update $>$ 0" neg "Update $<$ 0") 
+			mlabel(NA USD Prop NA USD Prop)
+			align(ccccc) width() 
+			note(Prop columns scaled to respondent income. Update = Assisted - Naive Estimate)
+			title(TABLE 7: Lumpy Good and Savings Prime - Savings Ability - Max Tickets \label{savprime}) ;
+		# delimit cr		
+		
+		# delimit ;
+			esttab m1_2 m2_2 m3_2 m4_2 m5_2 m6_2 using "${latex}AT33.tex", replace b(%10.3f) se 
+			scalars("ymean Mean Dep Var" "cm Control Group Mean"  "pv P-Value of Pos = -1 * Neg Update" "tp Full Set of Covariates" "N Num Obs" "r2 R2" "r2_a Adj R2") 
+			sfmt(%10.4f %10.4f %10.4f %10.0f %10.4f %10.4f) nostar
+			keep(lumpyprime saveprime savxupdate update savxpos savxneg pos neg savexupdate_pos savexupdate_neg update_pos update_neg)
+			order()
+			varlabels(lumpyprime "Lumpy Good Prime" saveprime "Budgeting Exercise (BE)" savxupdate "BE x Update" update "Update"
+			savexupdate_pos "BE x Positive Update Amount" update_pos "Positive Update Amount" savexupdate_neg "BE x Negative Update Amount" update_neg "Negative Update Amount"
+			savxpos "BE x (Update $>$ 0)" savxneg "BE x (Update $<$ 0)" pos "Update $>$ 0" neg "Update $<$ 0") 
+			mlabel(NA USD Prop NA USD Prop)
+			align(ccccc) width() 
+			note(Prop columns scaled to respondent income. Update = Assisted - Naive Estimate)
+			title(APPENDIX TABLE 33: Lumpy Good and Savings Prime - Savings Ability - Total Tickets) ;
+		# delimit cr
+
+*/
+
+*******************************************************************************************
+* 					Robustness with Minimal Covariates
+*******************************************************************************************
+
+	local covars2 = "incnorm bet_norm lumpyprice_prop sav_abil_prop i.coinsamt"
+ 
+* SAVINGS ABILITY
+	local onum = 1
+	
+	foreach oc in lmp_maxtix tix_dem{
+*
+ 	  	preserve
+
+			sum `oc' if saveprime==0 & lumpyprime==0
+			local c = r(mean)
+			local ctrmean = round(`c', .0001)
+			di `ctrmean'
+		
+			reg `oc' lumpyprime saveprime `covars2', robust
+			estadd loc tp = "Yes"
+			estadd loc ed = "Yes"
+			estadd loc pr = "Yes"	
+			estadd loc cm = "0`ctrmean'"				
+			estadd ysumm
+			estimates store m1_`onum'
+			
+			gen update = actoverperc_usd
+			gen savxupdate = saveprime * update
+				
+			reg `oc' lumpyprime saveprime savxupdate update `covars2', robust			
+			estadd loc tp = "Yes"
+			estadd loc ed = "Yes"
+			estadd loc pr = "Yes"	
+			estadd loc cm = "0`ctrmean'"			
+			estadd ysumm
+			estimates store m2_`onum'
+			
+			replace update = update / (meaninc / 3500)						// scaled by mean weekly income in USD
+			replace savxupdate = saveprime * update 
+	
+			reg `oc' lumpyprime saveprime savxupdate update `covars2', robust			
+			estadd loc tp = "Yes"
+			estadd loc ed = "Yes"
+			estadd loc pr = "Yes"	
+			estadd loc cm = "0`ctrmean'"			
+			estadd ysumm
+			estimates store m3_`onum'
+			
+			gen pos = update > 0
+			gen neg = update < 0
+			gen savxpos = saveprime * pos
+			gen savxneg = saveprime * neg
+		
+			reg `oc' saveprime savxpos savxneg pos neg lumpyprime `covars2', robust
+			test savxpos = savxneg
+			estadd scalar pv = round(r(p), .0001)
+			estadd loc tp = "Yes"
+			estadd loc ed = "Yes"	
+			estadd loc pr = "Yes"	
+			estadd loc cm = "0`ctrmean'"			
+			estadd ysumm
+			estimates store m4_`onum'		
+			
+			replace update = actoverperc_usd
+			gen update_pos = pos * update
+			gen update_neg = neg * update * -1							// invert so size of update is positive even though it is a negative update					
+			gen savexupdate_pos = saveprime * update_pos 
+			gen savexupdate_neg = saveprime * update_neg 							
+
+			reg `oc' lumpyprime saveprime savexupdate_pos savexupdate_neg update_pos update_neg `covars2', robust	
+			test savexupdate_pos = -1 * savexupdate_neg
+			estadd scalar pv = round(r(p), .0001)			
+			estadd loc tp = "Yes"
+			estadd loc ed = "Yes"
+			estadd loc pr = "Yes"
+			estadd loc cm = "0`ctrmean'"			
+			estadd ysumm
+			estimates store m5_`onum'
+			
+			replace update = (actoverperc_usd / (meaninc /3500))
+			replace update_pos = pos * update
+			replace update_neg = neg * update * -1							// invert so size of update is positive even though it is a negative update					
+			replace savexupdate_pos = saveprime * update_pos
+			replace savexupdate_neg = saveprime * update_neg 			
+			
+			reg `oc' lumpyprime saveprime savexupdate_pos savexupdate_neg update_pos update_neg `covars2', robust
+			test savexupdate_pos = -1 * savexupdate_neg
+			estadd scalar pv = round(r(p), .0001)				
+			estadd loc tp = "Yes"
+			estadd loc ed = "Yes"
+			estadd loc pr = "Yes"	
+			estadd loc cm = "0`ctrmean'"			
+			estadd ysumm
+			estimates store m6_`onum'
+			
+		restore		
+		local onum = `onum' + 1
+		}
+		
+		# delimit ;
+			esttab m1_1 m2_1 m3_1 m4_1 m5_1 m6_1 using "${latex}AT32.tex", replace b(%10.3f) se 
+			scalars("ymean Mean Dep Var" "cm Control Group Mean"  "pv P-Value of Pos = -1 * Neg Update" "tp Full Set of Covariates" "N Num Obs" "r2 R2" "r2_a Adj R2") 
+			sfmt(%10.4f %10.4f %10.4f %10.0f %10.4f %10.4f) nostar
+			keep(lumpyprime saveprime savxupdate update savxpos savxneg pos neg savexupdate_pos savexupdate_neg update_pos update_neg)
+			order()
+			varlabels(lumpyprime "Lumpy Good Prime" saveprime "Budgeting Exercise (BE)" savxupdate "BE x Update" update "Update"
+			savexupdate_pos "BE x Positive Update Amount" update_pos "Positive Update Amount" savexupdate_neg "BE x Negative Update Amount" update_neg "Negative Update Amount"
+			savxpos "BE x (Update $>$ 0)" savxneg "BE x (Update $<$ 0)" pos "Update $>$ 0" neg "Update $<$ 0") 
+			mlabel(NA USD Prop NA USD Prop)
+			align(ccccc) width() 
+			note(Prop columns scaled to respondent income. Update = Assisted - Naive Estimate)
+			title(APPENDIX TABLE 32: Lumpy Good and Savings Prime - Savings Ability - Max Tix - Minimal Covariates) ;
+		# delimit cr		
+*/
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+*												TIME UPDATE RESULTS										*
+/////////////////////////////////////////////////////////////////////////////////////////////////////////			
+* 
+use `prepdata', clear
+					
+	* Sample consistency
+		drop if timeupdate==. 	
+
+	* Variables for loops
+		gen savexbeta=.
+		gen savexdelta=.
+			
+	local onum = 1		
+	foreach oc in lmp_maxtix {		
+	
+			sum `oc' if saveprime==0 & lumpyprime==0
+			local c = r(mean)
+			local ctrmean = round(`c', .0001)	
+			
+			reg `oc' lumpyprime saveprime `covars', robust
+			estadd loc tp = "Yes"
+			estadd loc ed = "Yes"
+			estadd loc pr = "Yes"	
+			estadd loc cm = "0`ctrmean'"				
+			estadd ysumm
+			estimates store m0
+
+			reg `oc' lumpyprime savexpoa_time timeupdate saveprime `covars', robust
+			estadd loc tp = "Yes"
+			estadd loc ed = "Yes"		
+			estadd loc pr = "Yes"	
+			estadd loc cm = "0`ctrmean'"				
+			estadd ysumm
+			estimates store m1
+			
+			replace savexbeta = saveprime * beta
+			replace savexdelta = saveprime * delta
+			
+			reg `oc' lumpyprime saveprime savexpoa_time timeupdate poa_timexbeta savexpoa_timexbeta savexbeta `covars', robust
+			estadd loc tp = "Yes"
+			estadd loc ed = "Yes"
+			estadd loc pr = "Yes"	
+			estadd loc cm = "0`ctrmean'"	
+			estadd ysumm
+			estimates store m2
+			
+			reg `oc' lumpyprime saveprime savexpoa_time timeupdate poa_timexdelta savexpoa_timexdelta savexdelta `covars', robust
+			estadd loc tp = "Yes"
+			estadd loc ed = "Yes"	
+			estadd loc pr = "Yes"
+			estadd loc cm = "0`ctrmean'"				
+			estadd ysumm
+			estimates store m3
+
+		# delimit ;
+			esttab m0 m1 m2 m3 using "${latex}AT30.tex", replace b(%10.3f) se 
+			scalars("cm Control Group Mean" "ymean Mean Dep Var" "tp Full Set of Covariates" "N Num Obs" "r2 R2" "r2_a Adj R2") 
+			sfmt(%10.4f %10.4f %10.0f %10.4f %10.4f) nostar
+			keep(lumpyprime saveprime savexpoa_time timeupdate poa_timexbeta savexpoa_timexbeta poa_timexdelta savexpoa_timexdelta savexbeta savexdelta beta delta)
+			order(lumpyprime saveprime savexpoa_time timeupdate savexpoa_timexbeta poa_timexbeta  savexbeta   savexpoa_timexdelta poa_timexdelta savexdelta beta delta)
+			varlabels(lumpyprime "Lumpy Good Prime" saveprime "Betting Exercise (BE)" savexpo_time "BE x Time Update" timeupdate "Time Update" 
+			poa_timexbeta "Time Update x Beta" poa_timexdelta "Time Update x Delta" savexbeta "BE x Beta" savexdelta "BE x Delta"
+			savexpoa_timexbeta "BE x Time Update x Beta" savexpoa_time "BE x Time Update" beta "Beta" delta "Delta" savexpoa_timexdelta "BE x Time Update x Delta" ) 
+			mlabel(Max Max Max Max)
+			align(cccccc) width() 
+			note(Time update is in logs.)
+			title(APPENDIX TABLE 30: Effect of Saving Prime Time Update on Betting Demand - Maximum Tickets Demanded \label{sptime} ) ;
+		# delimit cr	
+		
+		local onum = `onum' + 1
+		}
+*/
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+*								NON-PARAMETRIC RESULTS	WITH PROPORTIONATE UPDATE						*
+/////////////////////////////////////////////////////////////////////////////////////////////////////////	
+
+	use `prepdata', clear
+	
+	cap drop flag
+	
+	local bwidth = 1.645										// set confidence interval bandwidth for figure
+			
+		gen actoverperc_prop = 	actoverperc_usd / (incnorm / 3500)
+		gen savxactoperc_prop = saveprime * actoverperc_prop
+		
+			reg lmp_maxtix lumpyprime saveprime actoverperc_prop `covars', robust		
+			predict resids3, residuals
+			
+			reg savxactoperc_prop lumpyprime saveprime actoverperc_prop `covars', robust	
+			predict resids4, residuals
+			
+			sum resids4 , detail
+			drop if resids4 <r(p1) | resids4 > r(p99)
+			
+			gen pr4 = resids4 > 0
+			gen posresids4 = resids4 * pr4
+			reg resids3 resids4 posresids4, robust
+			
+			matrix ests = J(1, 5, .)
+			local k = -.25
+			while `k' < 0{
+				lincom (`k')*(resids4) + _cons
+				matrix temp0 = `k'
+				matrix temp1 = r(se)
+				matrix temp2 = r(estimate) 			
+				matrix fulltemp = temp0[1,1], temp1[1,1], temp2[1,1], temp2[1,1] - `bwidth' * temp1[1,1], temp2[1,1] + `bwidth' * temp1[1,1]					
+				matrix ests = (ests \ fulltemp)
+				local k = `k' + .01
+			}
+			
+				lincom (-.0001)*(resids4) + _cons
+				matrix temp0 = -.0001
+				matrix temp1 = r(se)
+				matrix temp2 = r(estimate) 		
+				matrix fulltemp = temp0[1,1], temp1[1,1], temp2[1,1], temp2[1,1] - `bwidth' * temp1[1,1], temp2[1,1] + `bwidth' * temp1[1,1]				
+				matrix ests = (ests \ fulltemp)			
+			
+		
+			local k = 0
+			while `k' <=.21{
+				lincom (`k')*(resids4+posresids4) + _cons
+				matrix temp0 = `k'
+				matrix temp1 = r(se)
+				matrix temp2 = r(estimate)			
+				matrix fulltemp = temp0[1,1], temp1[1,1], temp2[1,1], temp2[1,1] - `bwidth' * temp1[1,1], temp2[1,1] + `bwidth' * temp1[1,1]					
+				matrix ests = (ests \ fulltemp)
+				local k = `k' + .01
+			}		
+			
+			matrix list ests
+			
+			putexcel set "$latex/lincom_prop.xlsx", replace 
+			putexcel A1=("resids4") B1=("ses") C1=("betax") D1=("cimin") E1=("cimax")			
+			putexcel A2=matrix(ests)
+			
+			preserve
+			clear all
+			import excel "$latex/lincom_prop.xlsx", first
+			tempfile lincomfit
+			save `lincomfit'
+			restore
+		
+			append using `lincomfit'
+			
+			reg resids3 resids4, robust
+			
+			drop if resids4 < -.2 | resids4 > .2			// set range so graph is more intelligible
+			
+			# delimit ;				
+			twoway  (rarea cimin cimax resids4 if resids4, color(gs14)) (line betax resids4 if resids4 , lpattern(dash) lwidth(medthick) color(gs6) xline(0) yline(0)) 
+			(lowess resids3 resids4 if resids4, bwidth(.8) lcolor(black) lwidth(thick) astyle(foreground)),
+				graphregion(color(white)) bgcolor(white) xtitle(Saving Ability Update / Weekly Income)
+				scheme(fb, perm) ytitle(Effect of Update) ylabel( , angle(0)) yscale(titlegap(*-38)) title() xlabel(-.2 -.1 0 .1 .2)
+				note(Top and Bottom 1% of x-var and updates trimmed. Update = Assisted - Naive) legend(label(1 "CI-90%") label(2 "Linear Fit") label(3 "Lowess Estimate") );
+				graph export "$latex/F3.pdf", replace;
+			# delimit cr
+				
+* ROBUSTNESS TABLE FOR REVERSE CAUSALITY
+
+use `prepdata', clear
+			drop if actoverperc_usd==.
+			gen posupdate = actoverperc_usd < 0
+			gen negupdate = actoverperc_usd > 0
+			gen noupdate = actoverperc_usd ==0	
+			gen aop_prop2 = actoverperc_usd / (incnorm / 3500)
+			
+			reg actoverperc_usd saveprime, robust
+			estadd ysumm
+			estimates store m1	
+			
+			reg aop_prop2 saveprime, robust
+			estadd ysumm
+			estimates store m2
+			
+			reg posupdate saveprime, robust
+			estadd ysumm
+			estimates store m3	
+			
+			reg negupdate saveprime, robust
+			estadd ysumm
+			estimates store m4	
+			
+			reg noupdate saveprime, robust
+			estadd ysumm
+			estimates store m5	
+			
+		# delimit ;
+			esttab m1 m2 m3 m4 m5 using "${latex}AT31.tex", replace b(%10.3f) se 
+			scalars("ymean Mean Dep Var" "N Num Obs" "r2 R2") 
+			sfmt(%10.4f %10.0f %10.4f)  nostar 
+			keep(saveprime)
+			order()
+			varlabels(saveprime "Saving Prime Treatment Group")
+			mlabel("USD" "Prop" "Positive" "Negative" "None")
+			align(cccccc) width() 
+			note( )
+			title(APPENDIX TABLE 31 - Robustness: Effect of Saving Prime on Saving Update) ;
+		# delimit cr	
+	
+*/	

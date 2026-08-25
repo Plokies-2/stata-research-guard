@@ -1,0 +1,92 @@
+[
+  {
+    "example_id": "official-regress-001",
+    "command": "regress",
+    "authority": "official",
+    "source_file": "01_StataCorp_regress_linear_regression.pdf",
+    "source_url": "https://www.stata.com/manuals/rregress.pdf",
+    "page": 1,
+    "derivation": "official quick-start syntax adapted to bundled auto data",
+    "code": "sysuse auto, clear\nregress price mpg weight i.foreign, vce(robust)"
+  },
+  {
+    "example_id": "official-factor-variables-001",
+    "command": "factor_variables",
+    "authority": "official",
+    "source_file": "02_StataCorp_language_syntax_factor_variables.pdf",
+    "source_url": "https://www.stata.com/manuals/u11.pdf",
+    "page": 21,
+    "derivation": "official factor-variable syntax adapted to bundled auto data",
+    "code": "sysuse auto, clear\nregress price i.foreign c.weight##c.weight"
+  },
+  {
+    "example_id": "official-foreach-001",
+    "command": "foreach",
+    "authority": "official",
+    "source_file": "03_StataCorp_foreach_loop.pdf",
+    "source_url": "https://www.stata.com/manuals/pforeach.pdf",
+    "page": 5,
+    "derivation": "minimal official local-macro loop form",
+    "code": "sysuse auto, clear\nlocal variables mpg weight\nforeach variable of local variables {\n    summarize `variable'\n}"
+  },
+  {
+    "example_id": "official-forvalues-001",
+    "command": "forvalues",
+    "authority": "official",
+    "source_file": "04_StataCorp_forvalues_loop.pdf",
+    "source_url": "https://www.stata.com/manuals/pforvalues.pdf",
+    "page": 3,
+    "derivation": "minimal official consecutive-integer loop form",
+    "code": "forvalues index = 1/3 {\n    display `index'\n}"
+  },
+  {
+    "example_id": "official-macro-001",
+    "command": "macro",
+    "authority": "official",
+    "source_file": "05_StataCorp_macro.pdf",
+    "source_url": "https://www.stata.com/manuals/pmacro.pdf",
+    "page": 6,
+    "derivation": "minimal official evaluated local macro form",
+    "code": "local result = 2 + 2\ndisplay `result'"
+  },
+  {
+    "example_id": "official-estimates-store-001",
+    "command": "estimates",
+    "authority": "official",
+    "source_file": "06_StataCorp_estimates_overview.pdf",
+    "source_url": "https://www.stata.com/manuals/restimates.pdf",
+    "page": 3,
+    "derivation": "official in-memory store and restore example with bundled data",
+    "code": "sysuse auto, clear\nregress price mpg weight\nestimates store base\nestimates restore base"
+  },
+  {
+    "example_id": "official-estimates-save-001",
+    "command": "estimates_save",
+    "authority": "official",
+    "source_file": "07_StataCorp_estimates_save_use.pdf",
+    "source_url": "https://www.stata.com/manuals/restimatessave.pdf",
+    "page": 2,
+    "derivation": "official disk save and use syntax with a temporary file",
+    "code": "sysuse auto, clear\nregress price mpg weight\ntempfile saved_model\nestimates save `saved_model', replace\nestimates use `saved_model'"
+  },
+  {
+    "example_id": "official-putexcel-001",
+    "command": "putexcel",
+    "authority": "official",
+    "source_file": "08_StataCorp_putexcel.pdf",
+    "source_url": "https://www.stata.com/manuals/rptputexcel.pdf",
+    "page": 1,
+    "derivation": "minimal official workbook and cell syntax",
+    "code": "putexcel set \"manual_putexcel.xlsx\", replace\nputexcel A1 = \"Verified\"\nputexcel save"
+  },
+  {
+    "example_id": "official-putdocx-001",
+    "command": "putdocx",
+    "authority": "official",
+    "source_file": "09_StataCorp_putdocx_intro.pdf",
+    "source_url": "https://www.stata.com/manuals/rptputdocxintro.pdf",
+    "page": 3,
+    "derivation": "minimal official document creation sequence",
+    "code": "putdocx begin\nputdocx paragraph\nputdocx text (\"Verified\")\nputdocx save \"manual_putdocx.docx\", replace"
+  }
+]

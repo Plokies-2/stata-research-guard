@@ -1,0 +1,1412 @@
+clear * 
+set more off
+adopath ++ "$Rep_information\_packages"
+
+** [1] city people's daily files 
+if 1 {
+	
+	** upzip data
+	* unzip "./1_build/peoplesdaily/raw.zip" 
+	* after unzipping, the folder structure should look like:
+	*	"./1_build/peoplesdaily/raw/.."
+	pause on
+	pause !!! unzip raw data before proceeding; type q to continue
+	pause off
+	
+	cap mkdir "$Rep_information/1_build/peoplesdaily/tmp"
+	
+	foreach keyword in smog pollutionregulation {
+		
+		local files: dir "$Rep_information/1_build/peoplesdaily/raw/city_`keyword'" files "*.xlsx"
+		
+		* Aggregate news counts for each city
+		qui foreach file in `files' {
+			import excel using "$Rep_information/1_build/peoplesdaily/raw/city_`keyword'/`file'", clear first
+			
+			if !(_N==1 & missing(title)) {
+				
+				* Time
+				split date, parse("年")
+				split date2, parse("月")
+				split date22, parse("日")
+				
+				destring date1 date21 date221, replace
+				keep if inrange(date1,2011,2016)
+				
+				gen rfrnc_wkos = date1*100+week(mdy(date21,date221,date1))
+				
+				* nbs code
+				gen nbs6 = "`file'"
+				replace nbs6 = substr(nbs6,1,6)
+				destring nbs6, replace
+				
+				gen PDnews_`keyword' = 1
+				
+				* Aggregate to nbs x time
+				cap collapse (sum) PDnews_`keyword', by(nbs6 rfrnc_wkos)
+				if !_rc {
+					lab var nbs6 "6-digit NBS code"
+					lab var rfrnc_wkos "Reference week-of-sample"
+					lab var PDnews_`keyword' "People's Daily news mentions on topic: `keyword'"
+					
+					compress
+					saveold "$Rep_information/1_build/peoplesdaily/tmp/PDnews_`keyword'_`file'.dta", replace
+				}
+			}
+		}
+		
+		* Append
+		clear
+		foreach file in `files' {
+			cap append using "$Rep_information/1_build/peoplesdaily/tmp/PDnews_`keyword'_`file'.dta"
+			cap erase "$Rep_information/1_build/peoplesdaily/tmp/PDnews_`keyword'_`file'.dta"
+		}
+		
+		compress
+		saveold "$Rep_information/1_build/peoplesdaily/tmp/PDnews_`keyword'.dta", replace
+		
+		* Merge to balanced city x time panel
+		clear
+		set obs 363
+		gen nbs6 = ""
+		local i = 0
+		foreach file in `files' {
+			local i = `i'+1
+			replace nbs6 = "`file'" if _n==`i'
+		}
+		replace nbs6 = substr(nbs6,1,6)
+		destring nbs6, replace
+		expand 2016-2011+1
+		bys nbs6: gen rfrnc_yr = 2011+_n-1
+		expand week(mdy(12,31,rfrnc_yr))
+		bys nbs6 rfrnc_yr: gen rfrnc_week = _n
+		gen rfrnc_wkos = rfrnc_yr*100+rfrnc_week
+		
+		merge 1:1 nbs6 rfrnc_wkos using "$Rep_information/1_build/peoplesdaily/tmp/PDnews_`keyword'.dta", assert(match master) nogen
+		replace PDnews_`keyword' = 0 if missing(PDnews_`keyword')
+		
+		keep nbs6 rfrnc_wkos PDnews_`keyword'
+		
+		compress
+		saveold "$Rep_information/1_build/peoplesdaily/proc/peoplesdaily_`keyword'_city_week.dta", replace
+		
+		* Clean up
+		erase "$Rep_information/1_build/peoplesdaily/tmp/PDnews_`keyword'.dta"
+	}
+	** end of keyword loop
+	
+}
+
+** [2] city rollout wave assignment file
+* 	note: code involves chinese characters; see https://www.stata.com/manuals/gsu13.pdf for guidance on handling unicode strings in Stata
+if 1 {
+	
+	import excel using "$Rep_information\1_build\rollout\raw\compile.xlsx", first clear
+	rename city_nm nbs6_nm
+	merge 1:m nbs6_nm using "$Rep_information\1_build\nbs\raw\nbs6_2013.dta", keep(match master) nogen
+	bys nbs6_nm: assert _N==1	
+	
+	* among 367 cities, 32 non exact matches
+	* for the mismatches, manually find matches with 2013 nbs6 code list
+	replace nbs6 = 622900 if nbs6_nm=="临夏州" 
+	replace nbs6 = 654000 if nbs6_nm=="伊犁州" 
+	replace nbs6 = 653000 if nbs6_nm=="克孜勒苏柯尔克孜州" 
+	replace nbs6 = 513400 if nbs6_nm=="凉山州" 
+	replace nbs6 = 652700 if nbs6_nm=="博尔塔拉州" 
+	replace nbs6 = 320509 if nbs6_nm=="吴江市" 
+	replace nbs6 = 532900 if nbs6_nm=="大理州" 
+	replace nbs6 = 222400 if nbs6_nm=="延边州" 
+	replace nbs6 = 533100 if nbs6_nm=="德宏州" 
+	replace nbs6 = 533300 if nbs6_nm=="怒江州" 
+	replace nbs6 = 422800 if nbs6_nm=="恩施州" 
+	replace nbs6 = 532600 if nbs6_nm=="文山州" 
+	replace nbs6 = 652300 if nbs6_nm=="昌吉州" 
+	replace nbs6 = 632600 if nbs6_nm=="果洛州" 
+	replace nbs6 = 532300 if nbs6_nm=="楚雄州" 
+	replace nbs6 = 630200 if nbs6_nm=="海东地区" 
+	replace nbs6 = 632200 if nbs6_nm=="海北州" 
+	replace nbs6 = 632500 if nbs6_nm=="海南州" 
+	replace nbs6 = 632800 if nbs6_nm=="海西州" 
+	replace nbs6 = 433100 if nbs6_nm=="湘西州" 
+	replace nbs6 = 632700 if nbs6_nm=="玉树州" 
+	replace nbs6 = 623000 if nbs6_nm=="甘南州" 
+	replace nbs6 = 513300 if nbs6_nm=="甘孜州" 
+	replace nbs6 = 532500 if nbs6_nm=="红河州" 
+	replace nbs6 = 266400 if nbs6_nm=="胶南市" 
+	replace nbs6 = 532800 if nbs6_nm=="西双版纳州" 
+	replace nbs6 = 533400 if nbs6_nm=="迪庆州" 
+	replace nbs6 = 513200 if nbs6_nm=="阿坝州" 
+	replace nbs6 = 632300 if nbs6_nm=="黄南州" 
+	replace nbs6 = 522600 if nbs6_nm=="黔东南州" 
+	replace nbs6 = 522700 if nbs6_nm=="黔南州" 
+	replace nbs6 = 522300 if nbs6_nm=="黔西南州" 
+	
+	bys nbs6: assert _N==1
+	rename nbs6_nm nbs_city_nm
+	
+	lab var nbs_city_nm "City name, as appeared in MEP's policy notice"
+	lab var N_monitor "Number of sites, as appeared in MEP's policy notice"
+	lab var wave "City roll-out wave 1/2/3, as appeared in MEP's policy notice"
+	lab var rollout "Roll-out timing, [exp]=construct began bf desig time, [county]=county-level site"
+	lab var nbs6 "6-digit NBS code"
+	
+	order nbs6 nbs_city_nm N_monitor wave rollout
+	
+	compress
+	saveold "$Rep_information\1_build\rollout\proc\monitor_prefcity_roll_out.dta", replace
+}
+
+** [3] city rollout wave manual collectoin 
+if 1 {
+	
+	** prep a list of mos-natural number cw 
+	if 1 {
+		clear 
+		set obs 12 
+		gen mo=_n 
+		expand 6 
+		bys mo: gen yr=2010+_n
+		gen mos=yr*100+mo 
+		sort mos 
+		gen index=_n
+		keep mos index 
+		compress
+		saveold "$Rep_information/1_build/fieldrollout/proc/mos_index.dta", replace
+	}
+	
+	** hand-collected policy vs. real date 
+	if 1 {
+		
+		* hand-collected mos 
+		import excel using "$Rep_information/1_build/fieldrollout/raw/fieldrollout.xlsx", clear cellrange(A2) 
+		keep A B D F
+		
+		ren (A B D F) (nbs6 nbs6_nm wave realdate)
+		
+		split realdate, parse(".")
+		destring realdate1 realdate2 , replace 
+		
+		gen handcollected_mos=realdate1*100+realdate2
+		
+		* 25 wave-2 city missing observations
+		tab wave if mi(handcollected_mos)
+		
+		* policy mos
+		gen policy_mos = . 
+		replace policy_mos = 201301 if wave==1
+		replace policy_mos = 201311 if wave==2
+		replace policy_mos = 201412 if wave==3
+		
+		replace handcollected_mos=policy_mos if mi(handcollected_mos)
+		
+		** create an event-month adjustment file
+		ren handcollected_mos mos 
+		merge m:1 mos using "$Rep_information/1_build/fieldrollout/proc/mos_index.dta", keep(match master) nogen
+		ren (index mos) (handcollected_mindex handcollected_mos)
+		
+		ren policy_mos mos 
+		merge m:1 mos using "$Rep_information/1_build/fieldrollout/proc/mos_index.dta", keep(match master) nogen
+		ren (index mos) (policy_mindex policy_mos)
+		
+		gen emo_adj_handcollected=policy_mindex-handcollected_mindex
+		
+		keep nbs6 emo_adj 
+		destring nbs6, replace force 
+		drop if mi(nbs6)
+		compress 
+		saveold "$Rep_information/1_build/fieldrollout/proc/nbs6_emo_adj_handcollected.dta", replace 
+			
+		
+	}
+	
+	
+}
+
+** [4] cfps cleaning
+if 1 {
+    
+	use "$Rep_information\1_build\_confidential\cfps\raw\cfps.dta", clear 
+	drop if mi(pid)
+	
+	* a unique obs is an id-year 
+	gisid pid cyear
+	
+	* concern variables
+	* 	0-10 scale
+	* 	<0: don't know, not-availbale, refuses (<~3% in all cases)
+	* SURVEY: 您认为 环境保护 问题在我国的严重程度如何？
+	* 		  不严重 0 1 2 3 4 5 6 7 8 9 10 非常严重
+	qui foreach var of varlist concern_* {
+		count if `var'<0
+		local fnon=`r(N)'/_N
+		drop if `var'<0
+		noisily di "[`var'] frac. of no-rating: `fnon' --> dropped"
+	}
+	
+	gen dpost_2013=(cyear>=2013)
+	egen g_cityname=group(cityname)
+	egen tlin=group(cyear)
+	gen d_sample=inlist(cyear,2012,2014,2016,2018)
+
+	ren cityname nbs_city_nm 
+	merge m:1 nbs_city_nm using "$Rep_information\1_build\rollout\monitor_prefcity_roll_out.dta", keep(match master) nogen 
+	
+	gen d_post=. 
+	replace d_post=1 if cyear>=2013 & (wave==1 | wave==2) 
+	replace d_post=1 if cyear>=2015 & wave==3
+	replace d_post=0 if mi(d_post)
+	
+	merge m:1 nbs6 using "$Rep_information\1_build\pollution\pm25_nbs6.dta", keep(match master) nogen
+	
+	compress
+	saveold "$Rep_information\1_build\_confidential\cfps\proc\cfps.dta", replace 
+	
+}
+
+** [5] city yearbook demographics, y2011-2015 mean 
+if 1 {
+	
+	* number of hospitals
+	if 1 {
+				
+		import excel using "$Rep_information/1_build/yearbook/raw/10601_NumberOfHospitals_city.xlsx", clear first case(lower)
+		bys nbs6: assert _N==1
+		
+		egen city_N_hospital = rowmean(y2011 y2012 y2013 y2014 y2015)
+		keep nbs6 city_N_hospital
+		drop if missing(city_N_hospital)
+		
+		lab var nbs6 "6-digit NBS code"
+		lab var city_N_hospital "Number of hospital: y2011-2015 mean"
+		
+		compress
+		saveold "$Rep_information/1_build/yearbook/proc/N_hospital_nbs6_avg_2011_2015.dta", replace
+		
+	}
+
+	* per capita gdp
+	if 1 {
+		
+		import excel using "$Rep_information/1_build/yearbook/raw/10106_GDPperCapita_city.xlsx", clear first
+		drop if missing(nbs6)
+		bys nbs6: assert _N==1
+		
+		egen city_pc_GDP = rowmean(y2011 y2012 y2013 y2014 y2015)
+		keep nbs6 city_pc_GDP
+		drop if missing(city_pc_GDP)
+		
+		lab var nbs6 "6-digit NBS code"
+		lab var city_pc_GDP "Per cap GDP: y2011-2015 mean"
+		
+		compress
+		saveold "$Rep_information/1_build/yearbook/proc/pc_GDP_nbs6_avg_2011_2015.dta", replace
+	}
+
+	* total residential electricity use 
+	if 1 {
+		
+		import excel using "$Rep_information/1_build/yearbook/raw/0162_ElactricityConsumptionResidential_city.xlsx", clear first
+		bys nbs6: keep if _n==1
+		
+		egen city_residkwh = rowmean(y2011 y2012 y2013 y2014 y2015)
+		keep nbs6 city_residkwh
+		drop if missing(city_residkwh)
+		
+		lab var nbs6 "6-digit NBS code"
+		lab var city_residkwh "Total residential electricity use (billion kwh): y2011-2015 mean"
+		
+		compress
+		saveold "$Rep_information/1_build/yearbook/proc/residkwh_nbs6_avg_2011_2015.dta", replace
+		
+	}
+
+	* per capita dispensible personal income 
+	if 1 {
+		
+		import excel using "$Rep_information/1_build/yearbook/raw/10202_DisposableIncome_city.xlsx", clear first
+		bys nbs6: keep if _n==1
+		
+		egen city_pc_dpi = rowmean(y2011 y2012 y2013 y2014 y2015)
+		keep nbs6 city_pc_dpi
+		drop if missing(city_pc_dpi)
+		
+		lab var nbs6 "6-digit NBS code"
+		lab var city_pc_dpi "Per capita disposable personal income (yuan): y2011-2015 mean"
+		
+		compress
+		saveold "$Rep_information/1_build/yearbook/proc/dpi_nbs6_avg_2011_2015.dta", replace
+		
+	}
+
+	* urban population counts
+	if 1 {
+		
+		import excel using "$Rep_information/1_build/yearbook/raw/10303_nonAgPopulation_city.xlsx", clear first
+		split A, parse(":")
+		replace A4=A3 if mi(A4)
+		rename A4 nbs6_nm
+		merge 1:m nbs6_nm using "$Rep_information/1_build/nbs/raw/nbs6_2013.dta", keep(match master) nogen
+		
+		tab nbs6_nm if mi(nbs6)
+		replace nbs6 = 310000 if nbs6_nm=="上海"
+		replace nbs6 = 110000 if nbs6_nm=="北京"
+		replace nbs6 = 130200 if nbs6_nm=="唐山"
+		replace nbs6 = 120000 if nbs6_nm=="天津"
+		replace nbs6 = 540100 if nbs6_nm=="拉萨"
+		replace nbs6 = 130100 if nbs6_nm=="石家庄"
+		replace nbs6 = 500000 if nbs6_nm=="重庆"
+		
+		drop if nbs6_nm=="地级市合计"
+		bys nbs6: assert _N==1
+		
+		* compute y2005-y2008 avg non-ag population
+		egen city_nonagpop = rowmean(y2005 y2006 y2007 y2008)
+		keep nbs6 city_nonagpop
+		drop if mi(city_nonagpop)
+		
+		lab var nbs6 "6-digit NBS code"
+		lab var city_nonagpop "Non-agricultural population (1000s people): y2005-2008 mean"
+		
+		compress
+		saveold "$Rep_information/1_build/yearbook/proc/nonagpop_nbs6_avg_2005_2008.dta", replace
+		
+	}
+
+	* number of mobile phone users
+	if 1 {
+		
+		import excel using "$Rep_information/1_build/yearbook/raw/11303_mobile_users_city.xlsx", clear first
+		split A, parse(":")
+		replace A5=A4 if mi(A5)
+		rename A5 nbs6_nm
+		merge 1:m nbs6_nm using "$Rep_information/1_build/nbs/raw/nbs6_2013.dta", keep(match master) nogen
+		
+		tab nbs6_nm if mi(nbs6)
+		replace nbs6 = 310000 if nbs6_nm=="上海"
+		replace nbs6 = 110000 if nbs6_nm=="北京"
+		replace nbs6 = 130200 if nbs6_nm=="唐山"
+		replace nbs6 = 120000 if nbs6_nm=="天津"
+		replace nbs6 = 540100 if nbs6_nm=="拉萨"
+		replace nbs6 = 130100 if nbs6_nm=="石家庄"
+		replace nbs6 = 500000 if nbs6_nm=="重庆"
+		
+		drop if nbs6_nm=="地级市合计"
+		bys nbs6: assert _N==1
+		
+		* Compute y2005-y2008 avg non-ag population
+		egen city_mphone = rowmean(y2011 y2012 y2013 y2014 y2015)
+		keep nbs6 city_mphone
+		drop if mi(city_mphone)
+		
+		lab var nbs6 "6-digit NBS code"
+		lab var city_mphone "Mobile phone users (1000s people): y2011-2015 mean"
+		
+		compress
+		saveold "$Rep_information/1_build/yearbook/proc/mphone_nbs6_avg_2011_2015.dta", replace
+		
+	}
+
+	* population
+	if 1 {
+		
+		import excel using "$Rep_information/1_build/yearbook/raw/10300_population_city.xlsx", clear first
+		egen city_population = rowmean(y2011 y2012 y2013 y2014 y2015)
+		keep nbs6 city_population
+		drop if mi(nbs6)|mi(city_population)
+		
+		bys nbs6: assert _N==1
+		
+		lab var nbs6 "6-digit NBS code"
+		lab var city_population "Population (1000s people): y2011-2015 mean"
+		
+		compress
+		saveold "$Rep_information/1_build/yearbook/proc/population_nbs6_avg_2011_2015.dta", replace
+	}
+
+	
+}
+
+** [6] city-day modis file 
+if 1 {
+    
+	** 0. upzip data
+	* unzip "./1_build/modis/modis.zip" 
+	* after unzipping, the folder structure should look like:
+	*	"./1_build/modis/proc/.."
+	*	"./1_build/modis/raw/.."
+	pause on
+	pause !!! unzip raw data before proceeding; type q to continue
+	pause off
+
+	* set up gis environment
+	forv y = 2006/2017 {
+		cap mkdir "$Rep_information/1_build/modis/proc/`y'"
+		cap mkdir "$Rep_information/1_build/modis/proc/`y'/1setnull"
+		cap mkdir "$Rep_information/1_build/modis/proc/`y'/2resample"
+		cap mkdir "$Rep_information/1_build/modis/proc/`y'/3zonal"
+	}
+	
+	** 1. execute arcgis steps 
+	* execute "proc_2006" through "proc_2017" routines in "$Rep_information/1_build/gis.tbx" 
+	* these tools compute city-day average modis aod value
+	* replication folder location has to be re-defined
+	pause on
+	pause !!! execute arcgis steps before proceeding; type q to continue
+	pause off
+	
+	** 2. gis dbf output to csvs 
+	* set path to R.exe
+	* set path to the modis/proc folder 
+	pause on
+	pause !!! set paths to R.exe and ./1_build/modis/proc folder; type q to continue
+	pause off
+	
+	local R 	C:/Program Files/R/R-3.5.2/bin/x64/R.exe
+	local proc  C:/Users/Eric Zou/Dropbox/replicate_information/1_build/modis/proc
+	local lp 	"{"
+	local rp 	"}"
+	
+	forv year = 2006/2017 {
+	    		
+		cd "`proc'/`year'"
+		
+		* write r codes
+		qui: file open rcode using dbf2csv.R, write replace
+		qui: file write rcode ///
+			`"library(foreign)"' _newline ///
+			`"setwd("`proc'/`year'/3zonal")"' _newline ///
+			`"file_list <-list.files(pattern = "\\.dbf$")"' _newline ///
+			`"i <- 0"' _newline ///
+			`"for (file in file_list)`lp'"' _newline ///
+			`"  i <- i + 1"' _newline ///
+			`"  sdata <-read.dbf(file)"' _newline ///
+			`"  vars <- c("nbs6","MEAN","identify")"' _newline ///
+			`"  sdata <- sdata[vars]"' _newline ///
+			`"  write.table(sdata,paste("zonal",i,".csv", sep = ""))  "' _newline ///
+			`"  rm(sdata)"' _newline ///
+			`"`rp'"' _newline 
+		qui: file close rcode
+		
+		* run r code
+		! cd "`proc'/`year'" && "`R'" CMD BATCH dbf2csv.R
+		
+		* clean up
+		erase "`proc'/`year'/3zonal/.RData"
+		erase "`proc'/`year'/dbf2csv.R"
+		erase "`proc'/`year'/dbf2csv.Rout"
+	}
+	
+	** 3. assemble data
+	* total number of available MODIS days for each year 
+	local Ndt2006 363
+	local Ndt2007 365
+	local Ndt2008 363
+	local Ndt2009 365
+	local Ndt2010 365
+	local Ndt2011 364
+	local Ndt2012 366
+	local Ndt2013 365
+	local Ndt2014 364
+	local Ndt2015 365
+	local Ndt2016 357
+	local Ndt2017 365
+	
+	* loop over years
+	qui forvalues year = 2006/2017 {
+		
+		noisily di "*** processing data for year `year'..."
+		
+		qui forvalues day = 1/`Ndt`year'' {
+			
+			import delimited using "$Rep_information/1_build/modis/proc/`year'/3zonal/zonal`day'.csv", clear delimit(" ")
+			
+			* small number of days with no aod observations
+			if _N==0 {
+				noisily di "  * y`year'day`day': no AOD observation"
+				confirm variable nbs6 mean identify
+				drop identify
+				gen str7 date = "."
+				keep nbs6 mean date
+				
+				saveold "${gis}/modis/zonal`year'/3zonal/tmpfile_zonal`day'.dta", replace
+			}
+			else {
+				rename (nbs6 mean identify v4) (_id nbs6 mean identify)
+				gen date = substr(identify,11,7)
+				keep nbs6 mean date
+				
+				saveold "$Rep_information/1_build/modis/proc/`year'/3zonal/tmpfile_zonal`day'.dta", replace
+			}
+		}
+		*** end of day loop
+		
+		* append day files
+		clear
+		forvalues day = 1/`Ndt`year'' {
+			append using "$Rep_information/1_build/modis/proc/`year'/3zonal/tmpfile_zonal`day'.dta"
+			erase "$Rep_information/1_build/modis/proc/`year'/3zonal/tmpfile_zonal`day'.dta"
+		}
+		
+		saveold "$Rep_information/1_build/modis/proc/tmpfile_modis_dbdkt_prefcity_daily_`year'.dta", replace
+		
+	}
+	*** end of year loop
+	
+	* append years
+	clear
+	forvalues year = 2006/2017 {
+		append using "$Rep_information/1_build/modis/proc/tmpfile_modis_dbdkt_prefcity_daily_`year'.dta"
+		erase "$Rep_information/1_build/modis/proc/tmpfile_modis_dbdkt_prefcity_daily_`year'.dta"
+	}
+	
+	* check 1 obs is a city-day
+	bys nbs date: assert _N==1
+	
+	* date vars
+	gen rfrnc_yr = substr(date,1,4)
+	gen rfrnc_doy = substr(date,5,3)
+	destring rfrnc_yr rfrnc_doy, replace
+	
+	drop date
+	gen date = mdy(1,1,rfrnc_yr)+rfrnc_doy-1
+	gen rfrnc_moy = month(date)
+	gen rfrnc_dom = day(date)
+	drop date
+	
+	* rescale aerosol field to aod
+	replace mean = mean* 0.001000000047497451
+	rename mean dpblue_aod
+	
+	lab var nbs6 		"6-digit NBS prefecture city code (gadm shp)"
+	lab var dpblue_aod 	"MOD04 10km dkt+dpblue AOD (-0.05, 5)"
+	lab var rfrnc_yr 	"Reference year"
+	lab var rfrnc_moy 	"Reference month of year"
+	lab var rfrnc_dom 	"Reference day of month"
+	lab var rfrnc_doy 	"Reference day of year"
+	
+	compress
+	saveold "$Rep_information/1_build/modis/proc/mod04_city_day.dta", replace
+}
+
+** [7] people's daily monthly long time series
+if 1 {
+    
+	cap mkdir "$Rep_information/1_build/peoplesdaily/tmp"
+	
+	local files: dir "$Rep_information/1_build/peoplesdaily/raw/city_smog" files "*.xlsx"
+	qui foreach file in `files' {
+		import excel using "$Rep_information/1_build/peoplesdaily/raw/city_smog/`file'", clear first
+		if !(_N==1 & missing(title)) saveold "$Rep_information/1_build/peoplesdaily/tmp/raw_smog_`file'.dta", replace
+	}
+	
+	clear
+	qui foreach file in `files' {
+		cap append using "$Rep_information/1_build/peoplesdaily/tmp/raw_smog_`file'.dta"
+		cap erase "$Rep_information/1_build/peoplesdaily/tmp/raw_smog_`file'.dta"
+	}
+	
+	* Keep 1 article per obs
+	bys title date: keep if _n==1
+	
+	* Time
+	split date, parse("年")
+	split date2, parse("月")
+	split date22, parse("日")
+	
+	destring date1 date21 date221, replace
+	keep if inrange(date1,1990,2017)
+	
+	gen rfrnc_dt = mdy(date21,date221,date1)
+	gen PDnews_smog = 1
+	collapse (max) PDnews_smog, by(rfrnc_dt)
+	
+	gen rfrnc_mos = year(rfrnc_dt)*100+month(rfrnc_dt)
+	collapse (sum) PDnews_smog, by(rfrnc_mos)
+	saveold "$Rep_information/1_build/peoplesdaily/proc/peoplesdaily.dta", replace
+	
+}
+
+** [8] city-week main regression file 
+if 1 {
+    
+	** 1. prep city-week modis pollution file
+	
+		use "$Rep_information\1_build\modis\mod04_city_day.dta", clear 
+		gen rfrnc_dt=mdy(rfrnc_moy, rfrnc_dom, rfrnc_yr)
+		gen rfrnc_wkos = year(rfrnc_dt)*100+week(rfrnc_dt)
+		
+		collapse (mean) aod=dpblue_aod (max) aod_max=dpblue_aod, by(nbs6 rfrnc_wkos)
+		drop if missing(rfrnc_wkos)
+		lab var aod "MOD04 10km dkt+dpblue AOD (-0.05, 5) - weekly mean"
+		lab var aod_max "MOD04 10km dkt+dpblue AOD (-0.05, 5) - weekly max"
+		
+		compress
+		tempfile city_week_modis
+		save `city_week_modis', replace 
+		
+	** 2. prep city-week isd winds file 
+		
+		use nbs6 rfrnc_dt wspd using "$Rep_information\1_build\isd\isd_city_day.dta", clear
+		gen rfrnc_wkos = year(rfrnc_dt)*100+week(rfrnc_dt)
+		
+		collapse (mean) wspd , by(nbs6 rfrnc_wkos)
+		drop if missing(rfrnc_wkos)
+		lab var wspd "Wind speed (m/s): weekly mean"
+		
+		compress
+		tempfile city_week_isd
+		save `city_week_isd', replace 
+		
+	** 3. prep city-week gsod weather file 
+		
+		use nbs6 rfrnc_dt temp visib prcp using "$Rep_information\1_build\gsod\gsod_city_day.dta", clear 
+		gen rfrnc_wkos = year(rfrnc_dt)*100+week(rfrnc_dt)
+		
+		collapse (mean) temp visib (sum) prcp , by(nbs6 rfrnc_wkos)
+		drop if missing(rfrnc_wkos)
+		lab var temp "Air temperature (degree F): weekly mean"
+		lab var visib "Visibility (miles): weekly mean"
+		lab var prcp "Total precipitation (inches): weekly sum"
+
+		compress
+		tempfile city_week_gsod 
+		save `city_week_gsod', replace 
+	
+	** 4. prep beijing embassy pm2.5 monitoring file 
+		
+		use "$Rep_information\1_build\embassy\embassy_day.dta", clear
+		gen rfrnc_wkos = year(rfrnc_dt)*100+week(rfrnc_dt)
+		
+		collapse (mean) pm25_embassy = pm25, by(nbs6 rfrnc_wkos)
+		lab var pm25_embassy "Beijing embassy PM 2.5 (ug/m3): weekly mean"
+		
+		compress
+		tempfile city_week_embassy
+		save `city_week_embassy', replace 
+		
+	** 5. merge all sources 
+		
+		* unionpay card 
+		use "$Rep_information\1_build\_confidential\unionpay\unionpay_city_week.dta", clear
+				
+		* month-of-sample
+		gen rfrnc_mos = rfrnc_yr*100+month(rfrnc_dt)
+		lab var rfrnc_mos "Reference month of sample (yyyymm)"
+		
+		* city rollout waves
+		merge m:1 nbs6 using "$Rep_information\1_build\rollout\proc\monitor_prefcity_roll_out.dta", keep(match) nogen
+		
+		* pollution and weather
+		foreach source in modis isd gsod embassy {
+			merge m:1 nbs6 rfrnc_wkos using `city_week_`source'', keep(match master) nogen
+		}
+		
+		* anti-corruptoin campaign downfall cases 
+		merge m:1 nbs6 rfrnc_mos using "$Rep_information\1_build\_confidential\anticorruption\raw\anticorruption_city_month.dta", keep(match master) nogen
+		replace N_anticorrupt = 0 if missing(N_anticorrupt)
+		
+		* people's daily news
+		foreach keyword in smog pollutionregulation {
+			merge 1:1 nbs6 rfrnc_wkos using "$Rep_information\1_build\peoplesdaily\peoplesdaily_`keyword'_city_week.dta", keep(match master) nogen
+		}
+		
+		* baidu searches 
+		merge 1:1 nbs6 rfrnc_wkos using "$Rep_information\1_build\baiduindex\raw\baiduindex_smog_city_week.dta", keep(match master) nogen
+		
+		* city mayor characteristics
+		merge m:1 nbs6 rfrnc_mos using "$Rep_information\1_build\mayor\mayor_city_month.dta", keep(match master) nogen
+		
+		* city demographics 
+		* 	residential electricity use
+		merge m:1 nbs6 using "$Rep_information\1_build\yearbook\proc\residkwh_nbs6_avg_2011_2015.dta", keep(match master) nogen
+		
+		* 	hospitals
+		merge m:1 nbs6 using "$Rep_information\1_build\yearbook\proc\N_hospital_nbs6_avg_2011_2015.dta", keep(match master) nogen
+		
+		* 	per capita gdp
+		merge m:1 nbs6 using "$Rep_information\1_build\yearbook\proc\pc_GDP_nbs6_avg_2011_2015.dta", keep(match master) nogen
+		
+		* 	per capita DPI
+		merge m:1 nbs6 using "$Rep_information\1_build\yearbook\proc\dpi_nbs6_avg_2011_2015.dta", keep(match master) nogen		
+		
+		* 	non-ag population
+		merge m:1 nbs6 using "$Rep_information\1_build\yearbook\proc\nonagpop_nbs6_avg_2005_2008.dta", keep(match master) nogen
+		
+		* 	mobile phone users
+		merge m:1 nbs6 using "$Rep_information\1_build\yearbook\mphone_nbs6_avg_2011_2015.dta", keep(match master) nogen
+		
+		* region code
+		tostring nbs6, gen(nbs2)
+		replace nbs2 = substr(nbs2,1,2)
+		destring nbs2, replace
+		merge m:1 nbs2 using "$Rep_information\1_build\nbs\raw\nbs2_to_region_cw.dta", keep(match) nogen
+		
+		* program rollout event time
+		gen d_post = .
+		replace d_post = 1 if wave==1 & (rfrnc_mos > 201212)
+		replace d_post = 1 if wave==2 & (rfrnc_mos > 201310)
+		replace d_post = 1 if wave==3 & (rfrnc_mos > 201411)
+		replace d_post = 0 if missing(d_post)
+		lab var d_post "=1 if post information disclosure"
+		
+		* time since monitoring
+		egen tmpvar_mos = group(rfrnc_mos)
+		assert rfrnc_mos==201301 if tmpvar_mos==25
+		gen emonth = .
+		replace emonth = tmpvar_mos - 25 if wave==1
+		replace emonth = tmpvar_mos - 35 if wave==2
+		replace emonth = tmpvar_mos - 48 if wave==3
+		drop tmpvar_mos
+		lab var emonth "Months since information disclosure"
+		
+		* per 1,000 cards transformation
+		local ls_cat all ol superm dining entertainment
+		foreach param in cnt val {
+			foreach cat in `ls_cat' {
+				gen pck_`param'_`cat' = (`param'_`cat'/N_card_cityyr)*1000
+			}
+		}
+		
+		* log transformation 
+		local ls_logvars aod aod_max pm25_embassy 
+		foreach var of varlist `ls_logvars' {
+			gen ln_`var' = log(`var')
+		}
+		
+		* std transformation 
+		local ls_keyword smog pollutionregulation
+		foreach keyword in `ls_keyword' {
+			egen std_PDnews_`keyword' = std(PDnews_`keyword') 
+		}
+		egen std_bdsearch_smog = std(bdsearch_smog)
+		
+		* fes 
+		gen rfrnc_week = rfrnc_wkos-rfrnc_yr*100
+		egen fe_regionyr = group(region rfrnc_yr)
+		egen fe_regionwkos = group(region rfrnc_wkos)
+		
+		lab var rfrnc_week "Reference week-of-year"
+		lab var fe_regionyr  "FEs: region by year"
+		lab var fe_regionwkos "FEs: region by wkos" 
+		
+		* a constant 
+		gen one = 1
+		
+		* positive-integer event time for regs
+		gen emonth25 = emonth
+		replace emonth25=-25 if emonth<=-25
+		replace emonth25=17 if emonth>=17
+		replace emonth25=emonth25+25
+		tab emonth25
+		
+		* event quater
+		gen eqtr = .
+		forvalues iqtr = -45(3)39 {
+			replace eqtr = `iqtr' if (emonth==`iqtr'|emonth==`=`iqtr'+1'|emonth==`=`iqtr'+2') & !missing(emonth)
+		}
+		replace eqtr=-48 if mi(eqtr)
+		gen eqtr25=eqtr
+		replace eqtr25=-25 if emonth<=-25
+		replace eqtr25=15 if emonth>=15
+		replace eqtr25=eqtr25+25
+		tab eqtr25
+		
+		* linear time trends
+		egen tlin=group(rfrnc_wkos)
+		
+		* per 10k-card transformation
+		gen pck_cnt_deferrable = pck_cnt_superm + pck_cnt_dining + pck_cnt_entertain
+		gen pck_cnt_nondeferrable = pck_cnt_all - pck_cnt_deferrable
+		foreach var in pck_cnt_all pck_cnt_deferrable pck_cnt_nondeferrable {
+			replace `var'=`var'*10
+		}
+		
+		* air purifier sales
+		merge m:1 nbs6 rfrnc_mos using "$Rep_information/1_build/_confidential/airpurifiers/raw/nbs6_month_airpurifiers.dta", keepusing(vol_airpurifiers pc_vol_airpurifiers ln_vol_airpurifiers lnpc_vol_airpurifiers) keep(match master) nogen 
+		
+		* precipitation-sensitive transactions
+		merge 1:1 nbs6 rfrnc_wkos using "$Rep_information/1_build/_confidential/unionpay/raw/outdoormcc_city_week.dta", keep(match master) nogen
+		gen pck_cnt_outdoormcc_p20=(cnt_outdoormcc_p20/N_card_cityyr)*10000
+		
+		* online transaction shares
+		gen f_ol = cnt_ol/cnt_all
+		
+		* "field" rollout date
+		merge m:1 nbs6 using "$Rep_information/1_build/fieldrollout/proc/nbs6_emo_adj_handcollected.dta", keep(match master) nogen
+		gen emonth_manual=emonth+emo_adj_handcollected-1
+		gen d_post_manual=(emonth_manual>=0)
+		
+		
+	compress
+	saveold "$Rep_information\1_build\_confidential\regdata\proc\city_week.dta", replace
+	
+}
+
+** [9] triple-d file 
+if 1 {
+	
+				
+	forvalues wave = 1/2 {
+		
+		use "$Rep_information/1_build/gadm/nbs6_nb_long.dta", clear
+		
+		* Keep wave i cities
+		merge m:1 nbs6 using "$Rep_information/1_build/rollout/monitor_prefcity_roll_out.dta", keepusing(wave) keep(match) nogen
+		keep if wave==`wave'
+		drop wave
+		
+		* Keep wave -i neighboring cities
+		rename (nbs6 nbs_nb) (_nbs6 nbs6)
+		merge m:1 nbs6 using "$Rep_information/1_build/rollout/monitor_prefcity_roll_out.dta", keepusing(wave) keep(match) nogen
+		
+		*keep if !(wave==`wave')
+		if `wave'==1 keep if (wave==2|wave==3)
+		if `wave'==2 keep if wave==3
+		
+		gen pair = _nbs6
+		egen g_pair = group(nbs6 pair)
+		drop _nbs6 wave
+		
+		* Expand to weekly
+		expand 6
+		bys g_pair: gen rfrnc_yr=_n+2010
+		
+		expand 52
+		bys g_pair rfrnc_yr: gen rfrnc_week = _n
+		
+		isid g_pair rfrnc_yr rfrnc_week
+		
+		merge m:1 nbs6 rfrnc_yr rfrnc_week using "$Rep_information\1_build\_confidential\regdata\city_week.dta", keep(match) nogen
+		
+		* Redefine wave information
+		drop wave d_post emonth
+		gen wave = `wave'
+		gen d_post = .
+		replace d_post = 1 if wave==1 & (rfrnc_mos > 201212)
+		replace d_post = 1 if wave==2 & (rfrnc_mos > 201310)
+		replace d_post = 1 if wave==3 & (rfrnc_mos > 201411)
+		replace d_post = 0 if missing(d_post)
+		lab var d_post "=1 if post information disclosure"
+		
+		* Time (months) since monitoring
+		egen tmpvar_mos = group(rfrnc_mos)
+		assert rfrnc_mos==201301 if tmpvar_mos==25
+		gen emonth = .
+		replace emonth = tmpvar_mos - 25 if wave==1
+		replace emonth = tmpvar_mos - 35 if wave==2
+		replace emonth = tmpvar_mos - 48 if wave==3
+		drop tmpvar_mos
+		lab var emonth "Months since information disclosure"
+		
+		
+		gen d_treat = 0
+		drop g_pair
+		compress
+		saveold "$Rep_information\1_build\_confidential\regdata\proc\nb_of_wave`wave'cities_pair.dta", replace
+	}
+	
+	clear
+	forvalues wave = 1/2 {
+		append using "$Rep_information\1_build\_confidential\regdata\proc\nb_of_wave`wave'cities_pair.dta"
+		erase "$Rep_information\1_build\_confidential\regdata\proc\nb_of_wave`wave'cities_pair.dta"
+	}
+	
+	lab var pair "DDD: NBS6 of matched treated city"
+	
+	compress
+	saveold "$Rep_information\1_build\_confidential\regdata\proc\nbs6_week_neighbor_pair.dta", replace
+
+		
+	
+}
+
+** [10] stata date to dsp date crosswalk file
+* 	DSP data has time info up to week level, but DSP week is coded differently from Stata week
+* 	DSP week 1 = the seven days since the first Sunday of the year
+* 	(Stata week 1 = the seven days since Jan 1st of the year)
+if 1 {
+
+	* create day list from 2011-2016
+	clear
+	set obs 6
+	gen rfrnc_yr = 2010+_n
+	expand doy(mdy(12,31,rfrnc_yr))
+	bys rfrnc_yr: gen rfrnc_doy = _n
+	gen rfrnc_dt = mdy(1,1,rfrnc_yr)+rfrnc_doy-1
+	format rfrnc_dt %td
+	
+	* identify each year's weeks, start by the first sunday
+	gen rfrnc_dow = dow(rfrnc_dt)
+	gen sundaystart = rfrnc_dt-rfrnc_dow
+	format sundaystart %td
+	
+	gen dsp_yr = year(sundaystart)
+	forvalues y = 2011/2016 {
+		egen dspwk`y' = group(sundaystart) if dsp_yr==`y'
+	}
+	egen dspwk = rowmax(dspwk*)
+	drop dspwk2*
+	
+	tab dspwk dsp_yr
+	gen dsp_wkos = dsp_yr*100+dspwk
+	keep rfrnc_dt dsp_yr dsp_wkos
+	
+	* assign Jan 1, 2011 to the first week of 2011
+	replace dsp_wkos = 201101 if rfrnc_dt==18628
+	replace dsp_yr = 2011 if rfrnc_dt==18628
+	assert !missing(dsp_wkos)
+	
+	* define DSP month for each day:
+	* 	assign (31) 30 days to "Jan" - "Nov" for (2012) 2011, 2013, 2014, 2015, (2016)
+	*   "Dec" will have 30-35 days, depending on years
+	sort dsp_yr rfrnc_dt
+	by dsp_yr: gen dsp_doy = _n
+	gen dspmo = .
+	
+	forvalues dsp_yr = 2011/2016 {
+		if (`dsp_yr'==2011|`dsp_yr'==2013|`dsp_yr'==2014|`dsp_yr'==2015) {
+			forvalues m = 1/12 {
+				replace dspmo = `m' if inrange(dsp_doy,30*`m'-29,30*`m') & dsp_yr==`dsp_yr'
+			}
+		}
+		else if (`dsp_yr'==2012|`dsp_yr'==2016) {
+			forvalues m = 1/12 {
+				replace dspmo = `m' if inrange(dsp_doy,31*`m'-30,31*`m') & dsp_yr==`dsp_yr'
+			}
+		}
+	}
+	assert dsp_doy>30*12 if missing(dspmo)
+	replace dspmo = 12 if missing(dspmo)
+	gen _dsp_mos = dsp_yr*100+dspmo
+	
+	* assign DSP week to DSP month
+	* 	in cases where a week is linked to multiple month (ie days in a week cross over months), use the month that contain more days of that week
+	egen dsp_mos = mode(_dsp_mos), minmode by(dsp_wkos)
+	keep rfrnc_dt dsp_yr dsp_wkos dsp_mos
+	
+	* assign DSP quarter 
+	* 	4 DSP months per quarter
+	gen dspmo = dsp_mos - dsp_yr*100
+	gen dspqtr = 1*inrange(dspmo,1,3)+2*inrange(dspmo,4,6)+3*inrange(dspmo,7,9)+4*inrange(dspmo,10,12)
+	gen dsp_qtros = dsp_yr*100+dspqtr
+	drop dspmo dspqtr
+	
+	lab var rfrnc_dt "Reference date"
+	lab var dsp_yr "DSP year"
+	lab var dsp_wkos "DSP week-of-sample"
+	lab var dsp_mos "DSP month-of-sample"
+	lab var dsp_qtros "DSP quarter-of-sample"
+	
+	compress
+	saveold "$Rep_information\1_build\_confidential\dsp\proc\rfrnc_dt_to_dsp_time_cw.dta", replace
+	
+
+}
+
+** [11] appstore data
+if 1 {
+    
+	insheet using "$Rep_information\1_build\appstore\raw\appsearch.csv", clear
+	
+	destring year, replace force
+	drop if missing(year)
+	
+	bys year qtr: assert _N==1
+	
+	rename (year qtr) (rfrnc_yr rfrnc_qtr)
+	foreach skey in air airquality airpollution pm25 stock game music video reading navigation shopping sports education {
+		rename `skey' appstore_N`skey'
+		lab var appstore_N`skey' "#launched apps in search category -`skey'-, if still living 2015-12-27"
+	}
+	lab var rfrnc_yr "Reference year"
+	lab var rfrnc_qtr "Reference quarter-of-year"
+	
+	compress
+	saveold "$Rep_information/1_build/appstore/proc/appstore.dta", replace
+	
+	
+}
+
+** [12] pollution iv 
+if 1 {
+    
+	** master data file
+	if 1 {
+		use nbs6 rfrnc_dt wdir wspd using "$Rep_information\1_build\isd\isd_city_day.dta", clear 
+		gisid nbs6 rfrnc_dt
+		gen rfrnc_yr=year(rfrnc_dt)
+		gen rfrnc_doy=doy(rfrnc_dt)
+		
+		* note wdir is defined st 0 = East wind (blow from West to the East), 90 = North, -90 = South
+		desc wdir 
+		
+		* merge in daily pollution value  
+		merge 1:1 nbs6 rfrnc_yr rfrnc_doy using "$Rep_information\1_build\modis\mod04_city_day.dta", keepusing(dpblue_aod) keep(match master) nogen
+		ren dpblue_aod aod
+		egen g_nbs6 = group(nbs6)
+				
+		compress
+		saveold "$Rep_information\1_build\iv\proc\master.dta", replace
+	}
+	
+	** generate iv: lasso version
+	if 1 {
+		
+		cap mkdir "$Rep_information\1_build\iv\proc\tmp"
+		
+		* lasso does not compute for two cities (g_nbs6 = 230, 279) for small sample
+		qui foreach i of numlist 1(1)229 231(1)278 280(1)332 {
+			
+			noisily di "!! generating iv for city `i'/332..."
+			
+			use "$Rep_information\1_build\iv\proc\master.dta", clear
+			
+			* record self code 
+			summ nbs6 if g_nbs6==`i'
+			local self_nbs6 `r(mean)'
+			
+			* drop self 
+			drop if (g_nbs6==`i') 
+			merge m:1 nbs6 using "$Rep_information\1_build\gadm\nbs6_centroid.dta", keep(match master) nogen
+			rename (nbs6 lon lat) (src_nbs6 src_lon src_lat)
+			
+			* Merge in destination city's lat/lon
+			gen nbs6 = `self_nbs6'
+			merge m:1 nbs6 using "$Rep_information\1_build\gadm\nbs6_centroid.dta", assert(using match) keep(match) nogen
+			
+			* Compute source-dest distance
+			geodist src_lat src_lon lat lon, gen(dist) sphere
+			
+			* Compute src to dest city angle
+			* Compute U component: 
+				* Magnitude: horizontal dist between source and destination
+				* Sign: positive if dest is to the east of src
+				gen usign = 1 if lon - src_lon >= 0
+				replace usign = -1 if missing(usign)
+				
+				* Line dest and src on the same latitude
+				gen _lat = src_lat
+				
+				* Compute horizontal dist
+				geodist _lat lon src_lat src_lon, gen(udist) miles sphere
+				replace udist = udist*usign
+				drop usign _lat
+			
+			* Compute V component:
+				* Magnitude: vertical dist between source and destination
+				* Sign: positive if dest is to the north of src
+				gen vsign = 1 if lat - src_lat >= 0
+				replace vsign = -1 if missing(vsign)
+				
+				* Line dest and src on the same longitude
+				gen _lon = src_lon
+				
+				* Compute vertical dist
+				geodist lat _lon src_lat src_lon, gen(vdist) miles sphere
+				replace vdist = vdist*vsign
+				drop vsign _lon
+			
+			* Check that U-V dist component can replicate dist
+				gen _dist = sqrt(udist^2+vdist^2)
+				corr(dist _dist) 
+				drop _dist
+			
+			* Compute the direction from source to destination centroid
+				gen src2dest_dir = atan2(vdist,udist)*(180/c(pi))
+				drop udist vdist
+				label variable src2dest_dir "Source to destination city direction (0 = W->E, 90 = S->N, -90 = N->S)"
+				
+			* Compute angel between src wind direction and src-dest direction
+			gen angle = abs(wdir-src2dest_dir)
+			replace angle=360-angle if angle>=180
+			
+			* Compute pollution*cosine(angle)
+			* 	replace 0 if angle > 90 (wind at source is blowing pollution away from the destiny city)
+			gen cos_aod = aod*cos(angle*c(pi)/180)
+			replace cos_aod = 0 if cos_aod < 0 & !missing(aod)
+			
+			* Weighting variables
+			gen ivd = 1/dist
+			
+			* set buffer : donor city must be at least 300-km away
+			drop if dist <= 300
+			drop if dist >= 9999
+			
+			gisid src_nbs6 rfrnc_dt
+			
+			* add a zero-stage of lasso
+			preserve 
+				replace cos_aod=0 if mi(cos_aod)
+				keep cos_aod rfrnc_dt src_nbs6 
+				ren cos_aod cos_aod_
+				reshape wide cos_aod_, i(rfrnc_dt) j(src_nbs6)
+				
+				gen nbs6 = `self_nbs6'
+				gen rfrnc_yr=year(rfrnc_dt)
+				gen rfrnc_doy=doy(rfrnc_dt)
+				merge 1:1 nbs6 rfrnc_yr rfrnc_doy using "$Rep_information\1_build\modis\mod04_city_day.dta", keep(match master) nogen
+				ren dpblue_aod aod
+				
+				foreach var of varlist cos_aod* {
+					replace `var'=0 if mi(`var')
+				}
+				
+				lasso linear aod cos_aod*, nolog rseed(1155665)
+				local lasso_sel `e(allvars_sel)'
+				_regress aod `lasso_sel'
+				
+				clear 
+				set obs 1
+				foreach var in `lasso_sel' {
+					gen `var'=_b[`var']
+				}
+				
+				gen id = 1 
+				reshape long cos_aod_, i(id) j(src_nbs6)
+				ren cos_aod_ postlasso_beta
+				drop id
+				saveold "$Rep_information\1_build\iv\proc\tmp\postlasso_nbs6_g`i'.dta", replace 
+			restore
+			
+			merge m:1 src_nbs6 using "$Rep_information\1_build\iv\proc\tmp\postlasso_nbs6_g`i'.dta", assert(master match) nogen 
+			erase "$Rep_information\1_build\iv\proc\tmp\postlasso_nbs6_g`i'.dta"
+			
+			* plot lasso cities for beijing (data underlying appendix fig 16)
+			if "`self_nbs6'"=="110000" {
+			preserve 
+				bys src_nbs6: keep if _n==1
+				
+				keep src_nbs6 src_lat src_lon postlasso_beta 
+				drop if mi(postlasso_beta)
+				
+				outsheet using "$Rep_information\1_build\iv\proc\lasso_donor_nbs`self_nbs6'.csv", replace
+				
+			restore
+			}
+			
+			drop if mi(postlasso_beta)
+			
+			
+			if !(_N==0) {
+				
+				collapse (mean) ivd_cos_aod=cos_aod [aw=ivd], by(nbs6 rfrnc_dt)
+				compress
+				saveold "$Rep_information\1_build\iv\proc\tmp\iv_daily_nbs`self_nbs6'.dta", replace version(12) 
+			}
+		}
+		** end of city loop
+		
+		clear 
+		local files : dir "$Rep_information\1_build\iv\proc\tmp" files "*.dta"
+		foreach file in `files' {
+			append using "$Rep_information\1_build\iv\proc\tmp\`file'"
+		}
+		gisid nbs6 rfrnc_dt
+		
+		* convert stata time to dsp time 
+		merge m:1 rfrnc_dt using "$Rep_information\1_build\_confidential\dsp\proc\rfrnc_dt_to_dsp_time_cw.dta", keep(match master) nogen
+		
+		collapse (mean) ivd_cos_aod (first) dsp_yr, by(nbs6 dsp_wkos)
+		compress
+		saveold "$Rep_information\1_build\iv\proc\iv.dta", replace
+	}
+	
+}
+
+** [13] dsp-week mortality regression file
+if 1 {
+	
+	** prep city-week pollution file
+		
+		use if inrange(rfrnc_yr,2011,2016) using "$Rep_information\1_build\modis\mod04_city_day.dta", clear 
+		gen rfrnc_dt=mdy(rfrnc_moy, rfrnc_dom, rfrnc_yr)
+		
+		* convert stata time to dsp time 
+		merge m:1 rfrnc_dt using "$Rep_information\1_build\_confidential\dsp\proc\rfrnc_dt_to_dsp_time_cw.dta", keep(match master) nogen
+		
+		* collapse to city-week 
+		collapse (mean) aod=dpblue_aod , by(nbs6 dsp_wkos)
+		drop if mi(dsp_wkos)
+		lab var aod "MOD04 10km dkt+dpblue AOD (-0.05, 5) - weekly mean"
+		
+		tempfile modis_city_week 
+		save `modis_city_week', replace 
+	
+	** assemble reg data 
+		
+		* load mortality file
+		use "$Rep_information\1_build\_confidential\dsp\raw\nbs6_week.dta", clear 
+	
+		* merge city rollout timing 
+		merge m:1 nbs6 using "$Rep_information\1_build\rollout\proc\monitor_prefcity_roll_out.dta", keep(match master) nogen
+		drop if missing(wave)
+			
+		* merge pollution 
+		merge 1:1 nbs6 dsp_wkos using `modis_city_week', keep(match master) nogen
+		
+		* merge city demographics 
+		* 	residential electricity use
+		merge m:1 nbs6 using "$Rep_information\1_build\yearbook\proc\residkwh_nbs6_avg_2011_2015.dta", keep(match master) nogen
+		
+		* 	hospitals
+		merge m:1 nbs6 using "$Rep_information\1_build\yearbook\proc\N_hospital_nbs6_avg_2011_2015.dta", keep(match master) nogen
+		
+		* 	per capita DPI
+		merge m:1 nbs6 using "$Rep_information\1_build\yearbook\proc\dpi_nbs6_avg_2011_2015.dta", keep(match master) nogen		
+		
+		* 	non-ag population
+		merge m:1 nbs6 using "$Rep_information\1_build\yearbook\proc\nonagpop_nbs6_avg_2005_2008.dta", keep(match master) nogen
+		
+		* 	mobile phone users
+		merge m:1 nbs6 using "$Rep_information\1_build\yearbook\proc\mphone_nbs6_avg_2011_2015.dta", keep(match master) nogen
+		
+		* region code
+		tostring nbs6, gen(nbs2)
+		replace nbs2 = substr(nbs2,1,2)
+		destring nbs2, replace
+		merge m:1 nbs2 using "$Rep_information\1_build\nbs\raw\nbs2_to_region_cw.dta", assert(using match) keep(match) nogen
+		
+		* event time
+		gen d_post = .
+		replace d_post = 1 if wave==1 & (dsp_mos > 201212)
+		replace d_post = 1 if wave==2 & (dsp_mos > 201310)
+		replace d_post = 1 if wave==3 & (dsp_mos > 201411)
+		replace d_post = 0 if missing(d_post)
+		lab var d_post "=1 if post information disclosure"
+	
+		egen tmpvar_mos = group(dsp_mos)
+		assert dsp_mos==201301 if tmpvar_mos==25
+		gen emonth = .
+		replace emonth = tmpvar_mos - 25 if wave==1
+		replace emonth = tmpvar_mos - 35 if wave==2
+		replace emonth = tmpvar_mos - 48 if wave==3
+		drop tmpvar_mos
+		lab var emonth "Months since information disclosure"
+
+		* fes
+		egen fe_regionyr = group(region dsp_yr)
+		egen fe_regionwkos = group(region dsp_wkos)
+		
+		
+		* positive-integer event time for regs
+		gen emonth25 = emonth
+		replace emonth25=-25 if emonth<=-25
+		replace emonth25=24 if emonth>=24
+		replace emonth25=emonth25+25
+		tab emonth25
+		
+		* event quater
+		gen eqtr = .
+		forvalues iqtr = -45(3)45 {
+			replace eqtr = `iqtr' if (emonth==`iqtr'|emonth==`=`iqtr'+1'|emonth==`=`iqtr'+2') & !missing(emonth)
+		}
+		replace eqtr=-48 if mi(eqtr)
+		gen eqtr25=eqtr
+		replace eqtr25=-25 if emonth<=-25
+		replace eqtr25=24 if emonth>=24
+		replace eqtr25=eqtr25+25
+		tab eqtr25
+		
+		* logs
+		gen ln_aod = log(aod)
+		gen ln_mort_age100_all_10c=log(mort_age100_all_10c)
+		gen ln_mort_age100_cardioresp_10c = log(mort_age100_cardio_10c + mort_age100_resp_10c)
+		gen ln_mort_age100_noncardioresp_10c=log(mort_age100_all_10c - mort_age100_cardio_10c - mort_age100_resp_10c)
+		gen ln_mort_age100_injury_10c=log(mort_age100_injury_10c)
+		gen ln_mort_age0_all_10c=log(mort_age0_all_10c)
+		gen ln_mort_age1to14_all_10c=log(mort_age1to14_all_10c)
+		gen ln_mort_age15to59_all_10c=log(mort_age15to59_all_10c)
+		gen ln_mort_age60plus_all_10c=log(mort_age60plus_all_10c)
+		gen ln_mort_age100_cardio_10c = log(mort_age100_cardio_10c)
+		gen ln_mort_age100_resp_10c = log(mort_age100_resp_10c)
+		
+		* linear time trends
+		egen tlin=group(dsp_wkos)
+		
+		* pollution iv variable
+		merge 1:1 nbs6 dsp_wkos using "$Rep_information/1_build/iv/iv.dta", keep(match master) nogen keepusing(ivd_cos_aod)
+		gen ln_ivd_cos_aod=log(ivd_cos_aod)
+		
+	compress
+	saveold "$Rep_information\1_build\_confidential\regdata\proc\dsp_week.dta", replace
+	
+}
+
+** [14] synth weights
+* 	note: this code is commented out; weights compuation requires CDC mortality data
+if 0 {
+		
+	use "$Rep_information/1_build/_confidential/regdata/dsp_week.dta", clear
+	
+	collapse (mean) ln_mort_age100_all_10c aod (first) wave, by(nbs6 dsp_qtros)
+			
+	tab dsp_qtros
+	gegen g_pair=group(nbs6)
+	summ g_pair
+	
+	compress 
+	saveold "$Rep_information/1_build/_confidential/synth/proc/master_quarter.dta", replace
+	
+	bys g_pair: keep if _n==1
+	keep g_pair nbs6 wave
+	saveold "$Rep_information/1_build/_confidential/synth/proc/g_pair_cw.dta", replace
+	
+	
+	qui forv i = 1/129 {
+		noisily di " Synth: city #`i' ..."
+		use "$Rep_information/1_build/_confidential/synth/proc/master_quarter.dta", clear 
+		
+		* drop donors from same wave
+		summ wave if g_pair==`i'
+		drop if wave==`r(mean)' & !(g_pair==`i')
+		
+		summ nbs6 if g_pair==`i'
+		local trunit=`r(mean)'
+		
+		drop if mi(ln_mort_age100_all_10c)
+		bys nbs6: gen Nquarter= _n
+		bys nbs6: replace Nquarter=Nquarter[_N]
+		keep if Nquarter==24
+		
+		tsset nbs6 dsp_qtros 
+		
+		cd "$Rep_information"
+		
+		summ wave if nbs6==`trunit'
+		if `r(mean)'==1 {
+			keep if nbs6==`trunit' | (wave==2|wave==3)
+			cap synth ln_mort_age100_all_10c ln_mort_age100_all_10c(201101) ln_mort_age100_all_10c(201102) ln_mort_age100_all_10c(201103) ln_mort_age100_all_10c(201104), trunit(`trunit') trperiod(201301) keep("./1_build/_confidential/synth/proc/synth_pair`i'.dta") replace
+		}
+		else if `r(mean)'==2 {
+			keep if nbs6==`trunit' | wave==3
+			cap synth ln_mort_age100_all_10c ln_mort_age100_all_10c(201101) ln_mort_age100_all_10c(201102) ln_mort_age100_all_10c(201103) ln_mort_age100_all_10c(201104) ln_mort_age100_all_10c(201201) ln_mort_age100_all_10c(201202), trunit(`trunit') trperiod(201304) keep("./1_build/_confidential/synth/proc/synth_pair`i'.dta") replace
+		}
+		
+	}
+	** end of pair loop
+	
+	** create synth-pair-cw file
+	clear
+	qui forv i = 1/129 {
+		cap append using "$Rep_information/1_build/_confidential/synth/proc/synth_pair`i'.dta"
+		if !_rc {
+			drop _Y_treated _Y_synthetic _time
+			drop if mi(_Co_Number)
+			cap gen g_pair=`i'
+			if _rc {
+				replace g_pair=`i' if mi(g_pair)
+			}
+		}
+	}
+	
+	drop if _W_Weight==0
+	
+	merge m:1 g_pair using "$Rep_information/1_build/_confidential/synth/proc/g_pair_cw.dta", assert(using match) keep(match) nogen
+	ren (_Co_Number _W_Weight) (donor_nbs6 synth_w)
+	drop g_pair 
+	
+	compress
+	saveold "$Rep_information/1_build/_confidential/synth/proc/synth_w.dta", replace
+	
+}
+

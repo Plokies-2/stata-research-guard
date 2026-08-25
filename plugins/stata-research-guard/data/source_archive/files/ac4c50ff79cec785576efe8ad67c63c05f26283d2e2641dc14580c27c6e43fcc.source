@@ -1,0 +1,41 @@
+
+use "${cd}\Tables 1 to 7, O1,O3,O4,O5,O6\database_all.dta", clear
+//note: ICRG data is not available due to contractual restrictions. Estimations here include only those without ICRG sourced variables. 
+
+encode ISO, generate(code)
+
+
+*declare data to be panel
+xtset code year, yearly
+
+*generate log variables of interest 
+gen ln_y=ln(NGDP_R) // real gdp 
+gen ln_ge=ln(NGDP_R*GGX_NGDP ) // real gov expenditure
+gen ln_x=ln(x)  // Commodity ToT of exports
+
+
+*generate log differences
+gen d_y=d.ln_y
+gen d_ge=d.ln_ge
+gen d_x=d.ln_x
+
+
+*generate averages per country for entire sample
+bysort code : egen corr_ge_y = corr(d_ge d_y)
+bysort code : egen sd_y = sd(d_y)
+bysort code : egen m_ka_open=mean(ka_open)
+bysort code : egen m_polcon=mean(polconiii) 
+
+keep if year==2019
+*create labels
+ label variable sd_y "GDP volatility"
+ label variable m_ka_open "Financial Openness"
+ label variable m_polcon "Political Constraint"
+*run regressions
+*theories of procyclicality regressions
+reg corr_ge_y m_ka_open if Commodity_exporter==1
+outreg2 using "${cd}\Tables 1 to 7, O1,O3,O4,O5,O6\Output\Table_1.xls", replace word dec(4) ctitle("Procyclicality") label
+reg corr_ge_y sd_y if Commodity_exporter==1
+outreg2 using "${cd}\Tables 1 to 7, O1,O3,O4,O5,O6\Output\Table_1.xls", append word dec(4) ctitle("Procyclicality") label
+reg corr_ge_y m_polcon if Commodity_exporter==1
+outreg2 using "${cd}\Tables 1 to 7, O1,O3,O4,O5,O6\Output\Table_1.xls", append word dec(4) ctitle("Procyclicality") label

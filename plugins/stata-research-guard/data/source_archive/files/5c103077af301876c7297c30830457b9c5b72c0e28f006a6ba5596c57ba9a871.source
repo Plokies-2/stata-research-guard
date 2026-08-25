@@ -1,0 +1,157 @@
+	**************************************************************
+	*LGD code to merge in
+	use "$intdata/villagedirectory/village_analysis_cleaned.dta", clear
+	set seed 1234
+	gen rand = runiform()
+	gen zilla_panchayat = districtname_lgd21 
+	gen block_panchayat = blockname_lgd21 
+	gen village_panchayat  = gp_name_lgd21 
+	drop if missing(village_panchayat)
+	
+	bys zilla_panchayat block_panchayat village_panchayat (gp_code_lgd21 villagename rand): drop if _n != 1
+	keep zilla_panchayat block_panchayat village_panchayat  ///
+		districtcode_lgd21 subdistrictcode_lgd21 blockcode_lgd21 gp_code_lgd21 
+	gen uid = _n
+	
+	tempfile lgdcode
+	save `lgdcode'
+	
+	
+	**************************************************************
+	use "$intdata/financial/expenditure_schemewise.dta", clear
+	set seed 1234
+	gen rand = runiform()
+	merge 1:1 zilla_panchayat block_panchayat village_panchayat  using `lgdcode', keep(1 3) nogen
+	order districtcode_lgd21 subdistrictcode_lgd21 blockcode_lgd21  gp_code_lgd21
+	bysort gp_code_lgd21 (rand): drop if _N > 1
+	
+	rename zilla_panchayat districtname_egs
+	rename block_panchayat blockname_egs
+	rename village_panchayat gpname_egs
+	
+	
+	merge 1:m gp_code_lgd21 using "$intdata/villagedirectory/village_analysis_cleaned.dta", keep(2 3) nogen
+	
+	*drop the years before 2013, as there is only really data on own resource in those years
+	drop spending*2010 spending*2011 spending*2012
+	
+	
+	/*
+	*For GPs that split, we need to fill in the spending for 2013-2015
+		*Note that in this case, we take the spending of the parent GP since 
+			at least one village will always remain in that GP. The process for doing this is:
+			1/ Check whether a simple case of the 2011 GP splitting into one parent and
+				some number of child GPs with spending of zero in the child GP 
+				(because the child GP is an entirely new political unit). If so, take the 
+				spending in the parent GP and put in the child GP (92% of cases)
+			2/ If the GP splits into multiple child GP, then it is often the case
+				that at least some of the child are agglomerated into existing GPs
+				that had spending in the 2010-2015 period. In these cases, we need
+				to figure out which the parent GP is (based on having the same name).
+				We use Jaro-Winkler to figure this out. Take the highest match above
+				a threshold -- if no matches are above the threshold, then we will 
+				put missing values in for those villages. 
+	*/
+			
+		*count the number of non-unique observations		
+		gen temp_total_spending = 0
+		foreach var of varlist spending_*_2013 spending_*_2014 spending_*_2015 {
+			replace temp_total_spending = temp_total_spending + `var' if !missing(`var')
+		
+		}
+		
+		bysort gp_code_jj11 temp_total_spending (rand): gen temp = _n //count unique values
+		bysort gp_code_jj11 temp (rand): gen unique_values = _N if temp == 1 & !missing(gp_code_jj11) 
+		bysort gp_code_jj11 (temp rand): replace unique_values = unique_values[1] //assign # of unique observations to each village in the GP
+		replace unique_values = . if missing(gp_code_jj11) // redundant, but as a check
+		drop temp
+		
+		gen temp = temp_total_spending == 0
+		bysort gp_code_jj11 (rand): egen any_zero = max(temp)
+		drop temp
+		
+		*get jaro winkler of old and new name		
+		jarowinkler gp_name_jj11 gpname_egs, gen(jaro)
+			replace jaro = . if missing(gp_name_jj11) | missing(gpname_egs)
+		bysort gp_code_jj11 (rand): egen jaro_max = max(jaro)
+			
+		*cases: 
+			*1. missing gp_code_jj11
+			*2. didn't change GP 
+			*3 only one non-zero spending value within their 2011 GP, indicating that 
+			*4. changed GP AND their original GP has a jaro-winkler match of >0.85
+			*5. two unique spending values, where one is zero; indicates that can take the non-zero as the correct one
+			*remaining cases are non-obvious how to handle, but only 1.5% of all cases, so don't need to worry that much. Mostly ones that didn't match to EGS anyway
+		cap drop temp_case_code
+		gen temp_case_code = 1 if missing(gp_code_jj11)
+		replace temp_case_code =2 if missing(temp_case_code) & changed_gp_jj11 ==0
+		replace temp_case_code =3 if missing(temp_case_code) & unique_values == 1 & any_zero == 0
+		replace temp_case_code =4 if missing(temp_case_code) & inrange(jaro_max, .85, 1) 
+		replace temp_case_code =5 if missing(temp_case_code) & unique_values == 2 & any_zero == 1
+		
+		*case 4
+		gen temp = -1 * jaro
+		foreach var of varlist spending_*_2013 spending_*_2014 spending_*_2015 {	
+			bysort gp_code_jj11 (temp shrid rand): replace `var' = `var'[1] if temp_case_code == 4
+		}
+		drop temp
+		
+		*case 5:
+		gen temp = -1 * temp_total_spending
+		foreach var of varlist spending_*_2013 spending_*_2014 spending_*_2015 {	
+			bysort gp_code_jj11 (temp shrid rand): replace `var' = `var'[1] if temp_case_code == 5
+		}
+		
+		*for the others, replace it as missing since not clear where it comes from
+		foreach var of varlist spending_*_2013 spending_*_2014 spending_*_2015 {	
+			replace `var' = . if missing(temp_case_code)
+		}		
+
+		
+	*create a long dataset by year
+	keep spending* gp_code_lgd21 shrid closestpop_1000 pc91_pca_tot_p pc01_pca_tot_p ///
+		pc11_pca_tot_p gp_code_jj11_num gp_code_lgd21_num pc11_gp_jj11 pc11_gp_lgd21
+	
+	reshape long spending_sfc4_ spending_asv_ spending_brgf_ spending_nfc12_ spending_nfc13_ ///
+		spending_nfc14_ spending_sfc2_ spending_sfc3_ spending_mdm_ spending_own_ spending_sn_ ///
+			spending_ssa_ spending_sbm_ spending_vn_, ///
+		i(gp_code_lgd21 shrid closestpop_1000 pc91_pca_tot_p pc01_pca_tot_p pc11_pca_tot_p ///
+			gp_code_jj11_num gp_code_lgd21_num pc11_gp_jj11 pc11_gp_lgd21) ///
+		j(year)
+		
+	
+	gen spending_sfc_ = spending_sfc2_ + spending_sfc3_ + spending_sfc4_
+	
+	gen spending_nfc_ = spending_nfc12_ + spending_nfc13_ + spending_nfc14_
+	drop spending_nfc12_ spending_nfc13_ spending_nfc14_
+	
+	gen spending_small_ = spending_asv_ + spending_brgf_ + spending_mdm_ + spending_sn_ + spending_ssa_ + spending_sbm_ + spending_vn_
+	
+	foreach var of varlist spending_* {
+	
+		gen `var'pc_ = cond( year < 2015, `var' / pc11_gp_jj11, `var' / pc11_gp_lgd21)
+		replace `var' = `var'/1000
+		
+	}
+	
+	egen spending_total_ = rowtotal( spending_sfc_ spending_nfc_ spending_small_)
+		replace spending_total_ = . if missing(spending_sfc_pc)
+	
+	
+	egen spending_total_pc_ = rowtotal(*_pc_)
+		replace spending_total_pc_ = . if missing(spending_sfc_pc)
+	
+	
+	gen village_pop_running = cond( year <= 2015, pc91_pca_tot_p, pc11_pca_tot_p)
+	
+	
+	*windsorize the spending vars
+	foreach var of varlist spending_* {
+		qui sum `var' if `var' != 0, d
+		gen w_`var' = cond(`var' > r(p99),  r(p99), `var') if !missing(`var')
+		
+	}
+	
+	
+	save "$cleandata/financial/egs_analysis.dta", replace
+	

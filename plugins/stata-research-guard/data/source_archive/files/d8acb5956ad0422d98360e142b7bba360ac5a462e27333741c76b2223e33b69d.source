@@ -1,0 +1,50 @@
+
+*** Load Data
+	cd "$project_dir"
+	cd Data
+	cd Output
+	cd "Baseline"
+	use "Model Data.dta",clear
+	
+*** Average Over Time
+	collapse (rawsum) pi_Phi w_Phi pi_W w_W pi_Pi w_Pi pi_H w_H  if gvkey>999 & year==2021, by(year)
+	
+*** Reshape vertically
+	reshape long pi_ w_, i(year) j(model) string
+	
+*** Convert to Trillions (current prices)
+	replace w_=w/(10^6)
+	replace pi_=pi/(10^6)
+
+*** Compute Table Stats	
+	rename w_ _1
+	rename pi_ _2
+	gen _3=_1-_2
+	gen temp=_1 if model=="W"
+	egen W_W=mean(temp)
+	gen _4=_1/W_W
+	gen _5=_2/_1
+	gen _6=_3/_1
+	drop year W_W temp
+	
+*** Rearrange	
+	reshape long _, i(model) j(statistic) 
+	
+*** Reshape horizontally
+	reshape wide _ , i(statistic) j(model) string
+	rename _* *
+	
+*** Format Variables and Reorder
+	format %9.3f H-W
+	gen Statistic="Total Surplus" if statistic==1
+	replace Statistic="Aggregate Profits" if statistic==2
+	replace Statistic="Consumer Surplus" if statistic==3
+	replace Statistic="Total Surplus / Perfect Competition" if statistic==4
+	replace Statistic="Aggregate Profit / Total Surplus" if statistic==5
+	replace Statistic="Consumer Surplus / Total Surplus" if statistic==6
+	drop statistic
+	order Statistic Phi W Pi H
+	
+*** Save
+	save "$project_dir/Tables/Table 3.dta",replace
+	browse

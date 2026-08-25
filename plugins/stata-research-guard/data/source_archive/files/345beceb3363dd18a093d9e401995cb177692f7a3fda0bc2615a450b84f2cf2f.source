@@ -1,0 +1,1564 @@
+********************************************************************************
+* .do file for DATA PROCESSING AND CLEANING 
+* for Budjan, Angelika J., and Andreas Fuchs
+* "Democracy and Aid Donorship"
+* American Economic Journal: Economic Policy
+* AEA Data and Code Repository project ID ("120068")
+* Last edited on October 16, 2020
+********************************************************************************
+********************************************************************************
+
+*** NOTE: This code generates four regression datasets in the “outputdata” folder. 
+*** We have omitted full raw databases from a number of sources due to copyright reasons 
+*** (Marshall et al. 2016, Tierney et al. 2011, Freedom House 2016, Correlates of War Project 2017,
+*** Banks and Wilson 2016, Bormann et al. 2017, Maoz et al. 2019). 
+*** The do file will thus neither run without error nor produce the complete datasets required for the analysis 
+*** – which we however provide in their entirety in the “outputdata” folder.
+
+*******************************************************************************************************************************************
+******************************************************** PART 1: Dependent variable *****************************************************
+*******************************************************************************************************************************************
+
+*** Create balanced panel 
+
+import excel "${inputdata}\New Donors Database.xlsx", sheet("data") firstrow clear
+
+foreach var of varlist first_aid_year inst_year old_inst_year law_year first_inst_year {
+	replace `var' = "998" if `var' == ".a"
+	destring `var', replace
+	replace `var' = .a if `var' == 998
+	}
+
+label define yesno 0 "No" 1 "Yes"
+foreach var of varlist first_aid inst old_inst law {
+	replace `var' = "1" if `var'== "Yes"
+	replace `var' = "0" if `var' == "No"
+	destring `var', replace
+	label values `var' yesno
+	}
+	
+save "${tempdata}\New Donors Database.dta", replace
+
+use "${tempdata}\New Donors Database.dta", clear
+
+keep country_i
+expand 71
+bysort country_i: gen t=1944+_n /* generate variable t for years 1945-2016 */
+save "${tempdata}\balanced_panel.dta", replace
+
+merge m:1 country_i using "${tempdata}\New Donors Database.dta", nogen
+
+** generate dummy for first aid 
+gen dummy_first_aid=.         /* generate dummy for "first aid"   */
+replace dummy_first_aid=0 if first_aid_year>t  /*make all years before first aid zero */
+replace dummy_first_aid=1 if first_aid_year==t /*make year of first aid 1 */
+
+** generate dummy for first institution
+gen dummy_inst=.
+replace dummy_inst=0 if first_inst_year>t
+replace dummy_inst=1 if first_inst_year==t
+
+keep country_i country_name t dummy_first_aid dummy_inst 
+save "${tempdata}\dep_var_panel.dta", replace
+
+** generate list of countries in sample
+use "${tempdata}\New Donors Database.dta", clear
+keep country_i
+save "${tempdata}\countries.dta", replace
+
+
+* Generate list of confirmed donor countries with missing year
+
+use "${tempdata}\New Donors Database.dta", clear
+
+	keep if first_aid==1 & first_aid_year==.
+	gen donor=1
+	keep country_i donor
+	save "${tempdata}\missing_donors", replace
+	
+****** Duration since statehood
+
+import delimited "${inputdata}\states2016.csv", clear
+
+kountry ccode, from(cown) to(iso3c)
+rename _ISO3C_ country_i
+drop if endyear<=1945
+
+drop if country_i=="SYR" & endyear==1958 /*drop Syria before 1961 */
+replace country_i=stateabb if country_i==""
+replace styear=1945 if country_i=="DEU" /*use GFR for Germany before 90 */
+drop if stateabb=="GFR"
+drop if stateabb=="CZE" /*drop Czechoslovakia */
+replace country_i="KSV" if country_i=="KOS" /*Kosovo code */
+replace endyear=. if endyear==2011
+
+replace styear=1945 if styear<1945
+keep country_i styear endyear
+save "${tempdata}\years.dta", replace
+
+expand 71
+bysort country_i: gen t=1944+_n /* generate variable t for years 1945-2016 */
+
+gen d=t-styear+1
+replace d=. if t<styear
+replace d=. if endyear<t
+label var d "Duration"
+
+merge 1:1 country_i t using "${tempdata}\dep_var_panel.dta", keep(1 3) nogen
+
+replace dummy_first_aid=. if d==.  
+replace dummy_inst=. if d==.       
+drop endyear
+
+keep country_i t d dummy_first_aid dummy_inst 
+gen d2=d*d
+gen d3=d*d*d
+save "${tempdata}\duration.dta", replace /* Final Duration File */
+
+
+*** Aid Budgets: OECD DATA ******************************************************************
+
+*** disbursemtns
+
+***NOTE: Download data from: 
+
+import delimited "${inputdata}\TABLE1_03092019115933818.csv", clear
+
+drop if amounttype == "National currency" | amounttype== "Current Prices"
+drop amounttype part v4
+keep if transactype == 1010 /* keep only ODA*/
+
+keep if fundflows == "Net Disbursements"
+ren value ODA_disbursements  
+
+ren year t
+
+kountry donor, from(other) stuck
+rename _ISO3N_ c_cum
+kountry c_cum, from(iso3n) to(iso3c)
+rename _ISO3C_ country_i
+drop if mi(country_i)
+
+keep country_i t ODA_disbursements 
+gen lg_ODA_disbursements = log(ODA_disbursements + 1)
+
+*save
+save "${tempdata}\oda_disbursements", replace
+
+********************************************************************************
+*** Aid Budgets: AidData DATA ***************************************************************
+
+import delimited "${inputdata}\AidDataCoreDonorRecipientYear_ResearchRelease_Level1_v3.1.csv", clear
+
+kountry donor, from(other) stuck
+rename _ISO3N_ c_cum
+kountry c_cum, from(iso3n) to(iso3c)
+rename _ISO3C_ country_i
+drop if mi(country_i)
+
+ren commitment_amount_usd_constant_s ODA_commitments_aiddata
+ren year t
+
+keep country_i t ODA_commitments_aiddata 
+
+collapse (sum) ODA_commitments_aiddata, by(country_i t)
+replace ODA_commitments_aiddata = ODA_commitments_aiddata/1000000
+gen lg_ODA_commitments_aiddata = log(ODA_commitments_aiddata + 1)
+
+*save
+save "${tempdata}\oda_commitments_aiddata", replace
+
+
+*****************************************************************************************************************************************
+******************************************************** PART 2: Democracy indicators                        ****************************
+*****************************************************************************************************************************************
+
+**** Democracy dummy measure - extention by Bjornskov Rode
+
+
+import excel "${inputdata}\Bjørnskov-Rode.xlsx", firstrow clear
+ren countryisocode country_i
+ren year t
+replace country_i="ROU" if country_i=="ROM"
+replace country_i="DEU" if country_i=="GER"
+replace country_i="COD" if country_i=="ZAR"
+keep country_i t Democracy
+ren Democracy Democ_dummy
+save "${tempdata}\democracy.dta", replace                    /* Final Democracy dummy data */  
+
+********************************************************************************
+***** Freedom House: Individual country ratings and status
+
+import excel "${inputdata}\Country Ratings and Status, 1973-2016 (FINAL)_0.xlsx", clear cellrange(A7:DZ212)
+
+/* preparing political freedom variable */
+drop in 1/1 
+
+keep A B E H K N Q T W Z AC AF AI AL AO AR AU AX BA BD BG BJ BM BP BS BV BY CB CE CH CK CN CQ CT CW CZ DC DF DI DL DO DR DU DX
+
+
+rename B pr1
+rename E pr2
+rename H pr3
+rename K pr4
+rename N pr5
+rename Q pr6
+rename T pr7 
+rename W pr8
+rename Z pr9
+rename AC pr10
+rename AF pr11
+rename AI pr12
+rename AL pr13
+rename AO pr14
+rename AR pr15
+rename AU pr16
+rename AX pr17
+rename BA pr18
+rename BD pr19
+rename BG pr20
+rename BJ pr21
+rename BM pr22
+rename BP pr23
+rename BS pr24
+rename BV pr25
+rename BY pr26
+rename CB pr27
+rename CE pr28
+rename CH pr29
+rename CK pr30
+rename CN pr31
+rename CQ pr32
+rename CT pr33
+rename CW pr34
+rename CZ pr35
+rename DC pr36
+rename DF pr37
+rename DI pr38
+rename DL pr39
+rename DO pr40
+rename DR pr41
+rename DU pr42
+rename DX pr43
+
+reshape long pr, i(A) j(t)
+replace pr="." if pr=="2(5)"
+replace pr="." if pr==".."
+destring pr, replace
+
+replace t=t+1972
+kountry A, from(other) stuck
+rename _ISO3N_ c_cum
+kountry c_cum, from(iso3n) to(iso3c)
+rename _ISO3C_ country_i
+
+replace country_i="DEw" if A=="Germany, W. "
+replace country_i="YEn" if A=="Yemen, N."
+drop if country_i=="DEw" & t>1989
+drop if country_i=="YEn" & t>1989
+drop if country_i=="DEU" & t<=1989
+drop if country_i=="YEM" & t<=1989
+replace country_i="DEU" if country_i=="DEw"
+replace country_i="YEM" if country_i=="YEn"
+
+drop if A=="Russia" & t<=1990
+drop if A=="USSR" & t>1990
+drop if A=="Serbia" & t<=2006
+drop if A=="Yugoslavia" & t>1991
+
+label var pr "Political rights"
+drop if mi(country_i)
+keep country_i t pr
+
+save "${tempdata}\freedomhouse_pl.dta", replace   /* Final Freedomhouse Political Rights File */
+
+/*preparing civil liberty variable */
+import excel "${inputdata}\Country Ratings and Status, 1973-2016 (FINAL)_0.xlsx", clear cellrange(A7:DZ212)
+
+keep A C F I L O R U X AA AD AG AJ AM AP AS AV AY BB BE BH BK BN BQ BT BW BZ CC CF CI CL CO CR CU CX DA DD DG DJ DM DP DS DV DY 
+
+
+rename C cl1
+rename F cl2
+rename I cl3
+rename L cl4
+rename O cl5
+rename R cl6
+rename U cl7
+rename X cl8
+rename AA cl9
+rename AD cl10
+rename AG cl11
+rename AJ cl12
+rename AM cl13
+rename AP cl14
+rename AS cl15
+rename AV cl16
+rename AY cl17
+rename BB cl18
+rename BE cl19
+rename BH cl20
+rename BK cl21
+rename BN cl22
+rename BQ cl23
+rename BT cl24
+rename BW cl25
+rename BZ cl26
+rename CC cl27
+rename CF cl28
+rename CI cl29
+rename CL cl30
+rename CO cl31
+rename CR cl32
+rename CU cl33
+rename CX cl34
+rename DA cl35
+rename DD cl36
+rename DG cl37
+rename DJ cl38
+rename DM cl39
+rename DP cl40
+rename DS cl41
+rename DV cl42
+rename DY cl43
+
+reshape long cl, i(A) j(t)
+replace cl="." if cl==".."
+replace cl="." if cl=="3(6)"
+drop if cl=="CL"
+drop if cl=="CL "
+destring cl, replace
+
+replace t=t+1972
+kountry A, from(other) stuck
+rename _ISO3N_ c_cum
+kountry c_cum, from(iso3n) to(iso3c)
+rename _ISO3C_ country_i
+
+replace country_i="DEw" if A=="Germany, W. "
+replace country_i="YEn" if A=="Yemen, N."
+drop if country_i=="DEw" & t>1989
+drop if country_i=="YEn" & t>1989
+drop if country_i=="DEU" & t<=1989
+drop if country_i=="YEM" & t<=1989
+replace country_i="DEU" if country_i=="DEw"
+replace country_i="YEM" if country_i=="YEn"
+
+drop if A=="Russia" & t<=1990
+drop if A=="USSR" & t>1990
+drop if A=="Serbia" & t<=2006
+drop if A=="Yugoslavia" & t>1991
+
+label var cl "Civil liberties"
+drop if mi(country_i)
+keep country_i t cl
+
+save "${tempdata}\freedomhouse_cl.dta", replace  /* Final Freedomhouse Civil Liberty File */
+
+***** Polity IV Annual Time-Series, 1800-2015
+
+import excel "${inputdata}\p4v2015.xls", sheet("p4v2015") firstrow clear
+
+keep year polity2 country scode  
+
+rename year t
+rename country country_name
+
+kountry country_name, from(other) stuck
+rename _ISO3N_ c_cum
+kountry c_cum, from(iso3n) to(iso3c)
+rename _ISO3C_ country_i
+drop if scode=="BAV"|scode=="BAD"|scode=="GCL"|scode=="GDR"|scode=="MOD"|scode=="OFS"|scode=="PMA"|scode=="SAR" ///
+	|scode=="SAX"|scode=="SIC"|scode=="UPC"|scode=="WRT"|scode=="YPR"|scode=="RVN"
+
+replace country_i="KSV" if country_name=="Kosovo"
+drop if country_name=="Sudan-North" & t>=2011
+replace country_i="SDN" if country_name=="Sudan-North"
+drop if country_name=="Yemen North" & t>=1990
+replace country_i="YEM" if country_name=="Yemen North"
+drop if country_name=="Vietnam North" & t>=1976
+replace country_i="VNM" if country_name=="Vietnam North"
+replace country_i ="COG" if country_name=="Congo-Brazzaville"
+drop if country_name=="Czechoslovakia"
+drop if scode=="ETI" & t==1993
+drop if scode=="YGS" & t==1991 
+drop if scode=="GMY" & t==1945
+drop if scode=="GFR" & t==1990
+drop if scode=="USR" & t==1922
+drop if scode=="YGS" & t==2006
+
+drop scode c_cum
+drop if t <1945
+
+replace polity2 = ( polity2 + 10 ) / 20
+
+save "${tempdata}\polity_iv.dta", replace   /* Final Polity IV File */
+
+
+****** V-Dem Democracy index
+
+use "${inputdata}\V-Dem-DS-CY-v6.2.dta", clear
+
+keep country_text_id year v2x_polyarchy 
+
+ren country_text_id country_i
+ren year t
+
+drop if t<1945
+replace country_i="KSV" if country_i=="XKX"
+replace country_i="TW" if country_i=="TWN"
+
+save "${tempdata}\vdem.dta", replace /* Final V-Dem Democracy index data */
+
+*** 1. W following Bueno de Mesquita and Smith 2009:
+
+use "${inputdata}\banks_fixxed.dta", clear
+	 keep country year polit14 polit02
+	 ren country country_name
+	 ren polit02 regtype
+	 ren polit14 legselec
+	 ren year t
+	 
+	kountry country_name, from(other) stuck
+	 rename _ISO3N_ c_cum
+	kountry c_cum, from(iso3n) to(iso3c)
+	rename _ISO3C_ country_i
+	replace country_i="CHN" if country_name=="China PR"
+	replace country_i="CHN" if country_name=="China Republic"
+	replace country_i="COG" if country_name=="Congo (BRA)"
+	replace country_i="COD" if country_name=="Congo (KIN)"
+	replace country_i="COD" if country_name=="Congo, Democratic Republic"
+	replace country_i="COG" if country_name=="Congo, Republic"
+	replace country_i="COD" if country_name=="Congo Dr"
+	replace country_i="DEU" if country_name=="German DR"
+	replace country_i="KSV" if country_name=="Kosovo"
+	replace country_i="RUS" if country_name=="USSR (Russia)"
+	replace country_i="VNM" if country_name=="Vietnam DR"
+	replace country_i="YEM" if country_name=="Yemen AR"
+	replace country_i="YEM" if country_name=="Yemen Republic"
+
+	replace regtype=1 if country_i=="CYP" & t>1982 /* based on polity there was no change in regime type */
+	replace regtype=1 if country_i=="VEN" & t==2014 /* based on polity there was no change in regime type */
+
+	drop c_cum
+	drop if t <1945
+	drop if mi(country_i)
+
+	 gen W_BdM=.
+	 replace W_BdM=0 if regtype==2 | regtype==3
+	 replace W_BdM=1 if !mi(regtype) & regtype!=2 & regtype!=3
+	 label var W_BdM "Winning coalition W measure"
+	 tempfile file1 file2
+	 drop regtype legselec
+	 save "${tempdata}\banks_processed", replace 
+ 
+import excel "${inputdata}\p4v2015.xls", sheet("p4v2015") firstrow clear
+
+rename year t
+rename country country_name
+
+kountry country_name, from(other) stuck
+rename _ISO3N_ c_cum
+kountry c_cum, from(iso3n) to(iso3c)
+rename _ISO3C_ country_i
+drop if scode=="BAV"|scode=="BAD"|scode=="GCL"|scode=="GDR"|scode=="MOD"|scode=="OFS"|scode=="PMA"|scode=="SAR" ///
+	|scode=="SAX"|scode=="SIC"|scode=="UPC"|scode=="WRT"|scode=="YPR"|scode=="RVN"
+
+replace country_i="KSV" if country_name=="Kosovo"
+drop if country_name=="Sudan-North" & t>=2011
+replace country_i="SDN" if country_name=="Sudan-North"
+drop if country_name=="Yemen North" & t>=1990
+replace country_i="YEM" if country_name=="Yemen North"
+drop if country_name=="Vietnam North" & t>=1976
+replace country_i="VNM" if country_name=="Vietnam North"
+drop if scode=="ETI" & t==1993
+drop if scode=="YGS" & t==1991 
+drop if scode=="GMY" & t==1945
+drop if scode=="GFR" & t==1990
+drop if scode=="USR" & t==1922
+drop if scode=="YGS" & t==2006
+
+drop scode c_cum
+drop if t <1945
+drop if mi(country_i)
+
+merge 1:1 country_i t using "${tempdata}\banks_processed", nogen keep(3)
+
+***  winning colation W:
+replace W_BdM=W_BdM+1 if xrcomp>=2 & !mi(W_BdM) & !mi(xrcomp)
+replace W_BdM=W_BdM+1 if xropen>2 & !mi(W_BdM) & !mi(xropen)
+replace W_BdM=W_BdM+1 if parcomp==5 & !mi(W_BdM) 
+replace W_BdM=W_BdM/4
+
+keep country_i t W_BdM  
+save "${tempdata}\BdM_data", replace
+
+****** prepare WB regions **************************************
+
+	import delimited "${inputdata}\WDI_Country.csv", varnames(1) clear
+			rename countrycode country_i
+			replace country_i="ROU" if country_i=="ROM"
+			replace country_i="COD" if country_i=="ZAR"
+			replace country_i="AND" if country_i=="ADO"
+			replace country_i= "TLS" if country_i=="TMP"
+			drop if mi(region)
+			keep country_i region
+			ren region WB_region
+			replace WB_region= "Europe & Central Asia" if country_i=="MLT"
+			save "${tempdata}\countries_WB_regions", replace
+
+********************************************************************************
+**Generate Acemoglu et al. democracy variable 
+********************************************************************************
+
+use "${tempdata}\duration.dta", clear
+	merge 1:1 t country_i using "${tempdata}\polity_iv.dta", nogen keep(match master)
+	merge 1:1 t country_i using "${inputdata}\ethnic.dta", nogen keep(match master)
+	merge 1:1 t country_i using "${tempdata}\BdM_data", nogen keep(match master)
+	merge 1:1 t country_i using "${tempdata}\democracy.dta", nogen keep(match master)
+	merge 1:1 t country_i using "${tempdata}\vdem.dta", nogen keep(match master)
+	merge 1:1 t country_i using "${tempdata}\freedomhouse_pl.dta", nogen keep(match master)
+	merge 1:1 t country_i using "${tempdata}\freedomhouse_cl.dta", nogen keep(match master)
+
+	gen freedomhouse_democ=(pr+cl)/2
+	gen acemoglu_democ=0 if !mi(d)
+	replace acemoglu_democ=1 if polity2>0.5 & freedomhouse_democ<=5 & !mi(d)
+		replace acemoglu_democ=1 if polity2>0.5 & Democ_dummy==1 & !mi(d)
+		replace acemoglu_democ=1 if Democ_dummy==1 & freedomhouse_democ<=5 & !mi(d)
+		replace acemoglu_democ=. if mi(polity2) & mi(freedomhouse_democ)  & mi(Democ_dummy)
+		
+		*Manual recoding according to Acemcoglu footnote 27 page A2
+		*Not recoded here , because they already are : Antigua and Barbuda, Barbados,  
+		replace acemoglu_democ=1 if country_i=="DEU" & t==1949
+		replace acemoglu_democ=1 if country_i=="ISL" & t<1950
+		replace acemoglu_democ=1 if country_i=="LUX" & t<1950
+		replace acemoglu_democ=0 if country_i=="MDV" & Democ_dummy==0 & !mi(d)
+		replace acemoglu_democ=0 if country_i=="TON" & !mi(d)
+		replace acemoglu_democ=0 if country_i=="WSM" & Democ_dummy==0 & !mi(d)
+		replace acemoglu_democ=0 if country_i=="MYS" & !mi(d)
+		replace acemoglu_democ=0 if country_i=="GUY" & t<1991 & !mi(d)
+		replace acemoglu_democ=1 if country_i=="GMB" & t<1973 & !mi(d)
+		drop if country_i == "AND" | country_i == "GDR" | country_i == "RVN" | country_i == "TLS" | country_i == "TWN" | country_i == "YAR" | country_i == "YPR" | country_i == "ZAN"
+
+		keep country_i t acemoglu_democ
+		save "${tempdata}\acemoglu_democ", replace
+		save "${outputdata}\acemoglu_democ", replace
+
+********************************************************************************
+*** Create dyadic panel for IV *****************************************
+********************************************************************************
+
+merge m:1 country_i using "${tempdata}\countries_WB_regions", nogen keep(match master)
+merge 1:1 t country_i using "${inputdata}\ethnic.dta", nogen keep(match master)
+merge 1:1 t country_i using "${tempdata}\BdM_data", nogen keep(match master)
+merge 1:1 t country_i using "${tempdata}\democracy.dta", nogen keep(match master)
+merge 1:1 t country_i using "${tempdata}\vdem.dta", nogen keep(match master)
+merge 1:1 t country_i using "${tempdata}\polity_iv.dta", nogen keep(match master)
+	ren country_i country_k
+	ren WB_region WB_region_k
+	ren acemoglu_democ acemoglu_democ_k
+	ren polity2 polity2_k
+	ren Democ_dummy Democ_dummy_k
+	ren W_BdM W_BdM_k
+	ren W_epr W_epr_k
+	ren v2x_polyarchy v2x_polyarchy_k
+save "${tempdata}\democracy_country_k", replace
+
+			*** Generat the dataset for all countries in the sample
+	import delimited "${inputdata}\WDI_Country.csv", varnames(1) clear
+			rename countrycode country_i
+			replace country_i="ROU" if country_i=="ROM"
+			replace country_i="COD" if country_i=="ZAR"
+			duplicates drop country_i, force
+			keep country_i
+			bysort country_i: gen id=_n
+			keep if id==1
+			replace id=_n
+			save "${tempdata}\countries_i.dta", replace
+
+			rename country_i country_k
+			quietly sum id
+			expand r(max)
+			drop id
+			bysort country_k: gen id=_n
+			save "${tempdata}\countries_k.dta", replace
+			merge m:1 id using "${tempdata}\countries_i.dta", nogen 
+
+			drop id
+			expand 71
+			bysort country_i country_k: gen t=1944+_n
+			save "${tempdata}\dyadic panel.dta", replace
+
+use "${tempdata}\dyadic panel.dta", clear
+	merge m:1 country_i using "${tempdata}\countries_WB_regions", nogen keep(match master)
+	merge m:1 t country_i using "${tempdata}\acemoglu_democ.dta", nogen keep(match master)
+	merge m:1 t country_i using "${inputdata}\ethnic.dta", nogen keep(match master)
+	merge m:1 t country_i using "${tempdata}\BdM_data", nogen keep(match master)
+	merge m:1 t country_i using "${tempdata}\democracy.dta", nogen keep(match master)
+	merge m:1 t country_i using "${tempdata}\vdem.dta", nogen keep(match master)
+	merge m:1 t country_i using "${tempdata}\polity_iv.dta", nogen keep(match master)
+	merge m:1 country_k t using "${tempdata}\democracy_country_k", nogen keep(match master)
+	merge m:1 t country_i using "${tempdata}\duration.dta", nogen keep(match master)
+save "${tempdata}\democracy_iv_panel", replace
+
+********************************************************************************
+
+*** Generate Democracy Instrument
+use "${tempdata}\democracy_iv_panel", clear
+
+	* Define peer-group
+	drop if country_i==country_k
+	keep if WB_region==WB_region_k
+	drop if t<1950
+	drop if mi(acemoglu_democ)
+	sort country_i country_k t
+	by country_i country_k: gen keeper=1 if acemoglu_democ==acemoglu_democ_k & _n==1
+	keep if keeper==1
+	keep country_i country_k keeper
+	
+	*Merge with democracy panel data
+	merge 1:m country_i country_k using "${tempdata}\democracy_iv_panel", keep(match) nogen
+	
+	**Now panel has only pairs of countries that are peer-group
+	**Next calculate instrument
+		gen dummy=1
+		bysort country_i t: egen count_I_c=total(dummy) if !mi(d) /* generate number of peers in peer group */
+		bysort country_i t: egen count_D_c=total(acemoglu_democ_k) if !mi(d) /* number of democracies in peer group */
+		gen Z_democracy=count_D_c/count_I_c if !mi(d) /* proportion of democracies in peer group */
+		drop count_D_c		
+		collapse (first) Z_democracy, by(country_i t)
+save "${tempdata}\Z_democracy", replace
+
+********************************************************************************
+* INSTRUMENTS for alternative democracy indicators
+* Polity IV ********************************************************************
+
+*** Democracy dummy
+use "${tempdata}\democracy_iv_panel", clear
+
+	* Define peer-group
+	drop if country_i==country_k
+	keep if WB_region==WB_region_k
+	drop if t<1950
+	drop if mi(polity2)
+	sort country_i country_k t
+	gen pdemoc = polity2 >= 0.5 if !mi(polity2)
+	gen pdemoc_k = polity2_k >= 0.5 if !mi(polity2_k)
+	sort country_i country_k t
+	by country_i country_k: gen keeper=1 if pdemoc==pdemoc_k & _n==1 & !mi(polity2)
+	keep if keeper==1
+	keep country_i country_k keeper
+	
+	*Merge with democracy panel data
+	merge 1:m country_i country_k using "${tempdata}\democracy_iv_panel", keep(match) nogen
+	sort country_i country_k t
+	gen pdemoc_k = polity2_k >= 0.5 if !mi(polity2_k)
+
+	**Next calculate instrument
+		gen dummy=1 if !mi(polity2_k)
+		bysort country_i t: egen count_I_c=total(dummy) if !mi(d) /* generate number of peers in peer group */
+		* Polity 
+		bysort country_i t: egen count_D_c=total(polity2_k) if !mi(d) /* number of democracies in peer group */
+		gen Z2_polity2=count_D_c/count_I_c if !mi(d) /* proportion of democracies in peer group */
+		drop count_D_c
+		
+		collapse (first) Z2_polity2 , by(country_i t)
+		
+save "${tempdata}\Z_polity", replace
+
+
+*** Democracy dummy
+use "${tempdata}\democracy_iv_panel", clear
+
+	* Define peer-group
+	drop if country_i==country_k
+	keep if WB_region==WB_region_k
+	drop if t<1950
+	drop if mi(Democ_dummy)
+	sort country_i country_k t
+	by country_i country_k: gen keeper=1 if Democ_dummy==Democ_dummy_k & _n==1
+	keep if keeper==1
+	keep country_i country_k keeper
+	
+	*Merge with democracy panel data
+	merge 1:m country_i country_k using "${tempdata}\democracy_iv_panel", keep(match) nogen
+	
+	**Next calculate instrument
+		gen dummy=1 
+		bysort country_i t: egen count_I_c=total(dummy) if !mi(d) /* generate number of peers in peer group */
+		* Cheibob 
+		bysort country_i t: egen count_D_c=total(Democ_dummy_k) if !mi(d) /* number of democracies in peer group */
+		gen Z2_cheibob=count_D_c/count_I_c if !mi(d) /* proportion of democracies in peer group */
+		drop count_D_c
+		
+		collapse (first) Z2_cheibob , by(country_i t)
+		
+save "${tempdata}\Z_cheibob", replace
+
+
+*** Winning coalition
+use "${tempdata}\democracy_iv_panel", clear
+
+	* Define peer-group
+	drop if country_i==country_k
+	keep if WB_region==WB_region_k
+	drop if t<1950
+	drop if mi(W_BdM)
+	sort country_i country_k t
+	gen pdemoc = W_BdM > 0.5 if !mi(W_BdM)
+	gen pdemoc_k = W_BdM_k > 0.5 if !mi(W_BdM_k)
+	sort country_i country_k t
+	by country_i country_k: gen keeper=1 if pdemoc==pdemoc_k & _n==1
+	keep if keeper==1
+	keep country_i country_k keeper
+	
+	*Merge with democracy panel data
+	merge 1:m country_i country_k using "${tempdata}\democracy_iv_panel", keep(match) nogen
+	sort country_i country_k t
+	gen pdemoc_k = W_BdM_k > 0.5 if !mi(W_BdM_k)
+
+	**Next calculate instrument
+		gen dummy=1
+		bysort country_i t: egen count_I_c=total(dummy) if !mi(d) /* generate number of peers in peer group */
+		* BdM 
+		bysort country_i t: egen count_D_c=total(W_BdM_k) if !mi(d) /* number of democracies in peer group */
+		gen Z2_W_BdM=count_D_c/count_I_c if !mi(d) /* proportion of democracies in peer group */
+		drop count_D_c
+		
+		collapse (first) Z2_W_BdM , by(country_i t)
+		
+save "${tempdata}\Z_BdM", replace
+
+
+*** Ethnic winning coalition
+use "${tempdata}\democracy_iv_panel", clear
+
+	* Define peer-group
+	drop if country_i==country_k
+	keep if WB_region==WB_region_k
+	drop if t<1950
+	drop if mi(W_epr)
+	sort country_i country_k t
+	gen pdemoc = W_epr > 0.5 if !mi(W_epr)
+	gen pdemoc_k = W_epr_k > 0.5 if !mi(W_epr_k)
+	sort country_i country_k t
+	by country_i country_k: gen keeper=1 if pdemoc==pdemoc_k & _n==1
+	keep if keeper==1
+	keep country_i country_k keeper
+	
+	*Merge with democracy panel data
+	merge 1:m country_i country_k using "${tempdata}\democracy_iv_panel", keep(match) nogen
+	sort country_i country_k t
+	gen pdemoc_k = W_epr_k > 0.5 if !mi(W_epr_k)
+
+	**Next calculate instrument
+		gen dummy=1
+		bysort country_i t: egen count_I_c=total(dummy) if !mi(d) /* generate number of peers in peer group */
+		* Ethnic winning coalition 
+		bysort country_i t: egen count_D_c=total(W_epr_k) if !mi(d) /* number of democracies in peer group */
+		gen Z2_W_epr=count_D_c/count_I_c if !mi(d) /* proportion of democracies in peer group */
+		drop count_D_c
+		
+		collapse (first) Z2_W_epr, by(country_i t)
+		
+save "${tempdata}\Z_Ethnic", replace
+
+
+*** V-Dem electoral democracy
+use "${tempdata}\democracy_iv_panel", clear
+
+	* Define peer-group
+	drop if country_i==country_k
+	keep if WB_region==WB_region_k
+	drop if t<1950
+	drop if mi(v2x_polyarchy)
+	sort country_i country_k t
+	gen pdemoc = v2x_polyarchy > 0.5 if !mi(v2x_polyarchy)
+	gen pdemoc_k = v2x_polyarchy_k > 0.5 if !mi(v2x_polyarchy_k)
+	sort country_i country_k t
+	by country_i country_k: gen counter = _n
+	by country_i country_k: gen keeper=1 if pdemoc==pdemoc_k & counter==1 
+	keep if keeper==1
+	keep country_i country_k keeper
+	
+	*Merge with democracy panel data
+	merge 1:m country_i country_k using "${tempdata}\democracy_iv_panel", keep(match) nogen
+	sort country_i country_k t
+	gen pdemoc_k = v2x_polyarchy_k > 0.5 if !mi(v2x_polyarchy_k)
+
+	
+	**Next calculate instrument
+		gen dummy=1
+		bysort country_i t: egen count_I_c=total(dummy) if !mi(d) /* generate number of peers in peer group */
+		* V-Dem electoral democracy index 
+		bysort country_i t: egen count_D_c=total(v2x_polyarchy_k) if !mi(d) /* number of democracies in peer group */
+		gen Z2_v2x_polyarchy=count_D_c/count_I_c if !mi(d) /* proportion of democracies in peer group */
+		drop count_D_c		
+		
+		collapse (first) Z2_v2x_polyarchy , by(country_i t)
+		
+save "${tempdata}\Z_Electoral", replace
+
+
+*Merge with other instruments
+use  "${tempdata}\Z_democracy", clear
+merge 1:1 country_i t using "${tempdata}\Z_polity", nogen
+merge 1:1 country_i t using "${tempdata}\Z_cheibob", nogen
+merge 1:1 country_i t using "${tempdata}\Z_BdM", nogen
+merge 1:1 country_i t using "${tempdata}\Z_Ethnic", nogen
+merge 1:1 country_i t using "${tempdata}\Z_Electoral", nogen
+*Save 
+save "${tempdata}\Z_democracy", replace
+
+	
+*****************************************************************************************************************************************
+******************************************************** PART 3: Controls                                    ****************************
+*****************************************************************************************************************************************
+
+***** Penn World Tables P9 Released on: June 9, 2016
+
+use "${inputdata}\pwt90.dta", clear
+
+rename countrycode country_i
+rename country country_name
+rename year t
+
+keep country_i country_name t ///
+	pop		/// 	/*population in millions*/
+	rgdpna  ///		/* Real GDP at constant 2005 national prices (in mil.2005US$) */
+
+gen rgdpna_percap=rgdpna/pop
+gen lg_rgdpna_percap=log(rgdpna_percap)
+replace pop=pop*1000000
+gen lgpop=log(pop)
+
+keep country_i t lgpop pop lg_rgdpna_percap rgdpna_percap
+
+save "${tempdata}\pwt.dta", replace             /* Final PWT File */
+
+***Openness and government share of GDP variables from PWT National Accounts data:
+
+use "${inputdata}\na_data.dta", clear  
+
+gen openness_pwt=(v_x+v_m)/v_gdp
+rename countrycode country_i
+rename year t
+
+keep country_i t openness_pwt 
+save "${tempdata}/open_pwt.dta", replace  /*Final Openness File*/
+
+use "${inputdata}\na_data.dta", clear  
+
+gen kg=v_g/v_gdp /* calcultate government share of GDP */
+rename countrycode country_i
+rename year t
+label var kg "Goverment Share in Percentage of GDP"
+
+keep country_i t kg
+save "${tempdata}/R_pwt.dta", replace  /*Final Government resources File*/
+
+
+
+******* Conflict Data
+*** Source: UCDP Conflict database 
+import delimited "${inputdata}\ucdp-onset-conf-2014.csv", clear
+
+replace gwno=255 if gwno==260 /* recode germany before 1990 */
+replace gwno=279 if gwno==278 /* recode north yemen before 1990 */
+ren year t
+
+kountry gwno, from(cown) to(iso3c)
+ren _ISO3C_ country_i
+
+ren terronlyv414 dummy_terr_conflict 
+drop if country_i==""
+
+keep t country_i  dummy_terr_conflict 
+
+save "${tempdata}\conflict.dta", replace /* Final territorial conflict data */
+
+******* Militarized Interstate Disputes
+
+import delimited "${inputdata}\MIDB_4.01.csv", clear
+collapse dispnum3, by(stabb) 
+	drop dispnum3
+	expand 71
+	bysort stabb: gen t=_n+1944
+save "${tempdata}\MIDB_tempfile", replace
+
+import delimited "${inputdata}\MIDB_4.01.csv", clear 
+	gen length= endyear- styear+1
+	expand length
+	bysort stabb dispnum3: gen t=styear+_n-1
+	gen dummy=1
+	bysort stabb t: egen total_midb=total(dummy)
+collapse total_midb, by(t stabb)
+	drop if t<1945
+
+merge 1:1 t stabb using "${tempdata}\MIDB_tempfile"
+	replace total_midb=0 if total_midb==.
+	gen dummy_midb=0
+	replace dummy_midb=1 if total_midb!=0
+	drop _merge
+	ren stabb country_i
+	keep country_i t dummy_midb
+save "${tempdata}\conflict_midb", replace /* Final militarized interstate dispute data */
+
+
+****** Population living in former Colony
+**** Source: CEPII Geo Dist and Penn World Tables
+
+import excel "${inputdata}\geo_cepii.xls", sheet("geo_cepii") firstrow clear
+ren colonizer1 country_i
+ren iso3 country_k
+keep country_i country_k
+drop if mi(country_i) | mi(country_k)
+duplicates tag country_i country_k, gen(dup)
+drop if dup==1
+drop dup
+replace country_i="ATG" if country_i=="ANT"
+save "${tempdata}\colony1", replace
+
+import excel "${inputdata}\geo_cepii.xls", sheet("geo_cepii") firstrow clear
+ren colonizer2 country_i
+ren iso3 country_k
+keep country_i country_k
+drop if mi(country_i) | mi(country_k)
+duplicates tag country_i country_k, gen(dup)
+drop if dup==1
+drop dup
+replace country_i="ATG" if country_i=="ANT"
+save "${tempdata}\colony2", replace
+
+import excel "${inputdata}\geo_cepii.xls", sheet("geo_cepii") firstrow clear
+ren colonizer3 country_i
+ren iso3 country_k
+keep country_i country_k
+drop if mi(country_i) | mi(country_k)
+duplicates tag country_i country_k, gen(dup)
+drop if dup==1
+drop dup
+replace country_i="ATG" if country_i=="ANT"
+save "${tempdata}\colony3", replace
+
+import excel "${inputdata}\geo_cepii.xls", sheet("geo_cepii") firstrow clear
+ren colonizer4 country_i
+ren iso3 country_k
+keep country_i country_k
+drop if mi(country_i) | mi(country_k)
+duplicates tag country_i country_k, gen(dup)
+drop if dup==1
+drop dup
+replace country_i="ATG" if country_i=="ANT"
+save "${tempdata}\colony4", replace 
+
+use "${tempdata}\colony1"
+append using "${tempdata}\colony2"
+append using "${tempdata}\colony3"
+append using "${tempdata}\colony4"
+sort country_i country_k
+duplicates drop country_i country_k, force
+drop if mi(country_i) | mi(country_k)
+expand 71
+bysort country_i country_k: gen t=1944+_n
+save "${tempdata}\colony", replace
+use "${tempdata}\pwt.dta", clear
+ren country_i country_k
+save "${tempdata}\penn_pop", replace
+
+use "${tempdata}\duration.dta", clear
+ren country_i country_k
+save "${tempdata}\duration_pop", replace
+
+use "${tempdata}\colony", clear
+merge m:1 country_k t using "${tempdata}\penn_pop", keep(1 3) nogen
+merge m:1 country_k t using "${tempdata}\duration_pop", keep(1 3) nogen
+
+bysort country_i t: egen colony_penn=total(pop), missing
+gen lg_colony_penn=log(colony_penn + 1)
+replace lg_colony_penn=.a if lg_colony_penn==. /* Code entries missing where we know country_i was colonizer but don't know the pop data */
+
+bysort country_i t: gen count=_n
+keep if count==1
+keep country_i t lg_colony_penn 
+save "${tempdata}\colony", replace
+
+********************************************************************************
+*** Voeten, Erik; Strezhnev, Anton; Bailey, Michael, 2009, "United Nations General Assembly Voting Data", 
+
+import delimited "${inputdata}\UNGA voting Dyadicdata.tab", clear
+
+rename year t
+kountry ccode1, from(cown) to(iso3c)
+rename _ISO3C_ country_i
+replace country_i="MNE" if ccode1==341  /* Montenegro */
+replace country_i="SSD" if ccode1==626  /* South-Sudan */
+replace country_i="DEU" if ccode1==260  /* code BRD as Germany */
+replace country_i="ADO" if country_i=="AND"
+replace country_i="TMP" if country_i=="TLS"
+
+/* COW codes 265 (DDR), 315(Czechoslovakia), 678 (Yemen North), 680 (Yemen South) have not been converted and will be missings */
+
+kountry ccode2, from(cown) to(iso3c) 
+rename _ISO3C_ country_k
+replace country_k="MNE" if ccode2==341  /* Montenegro */
+replace country_k="SSD" if ccode2==626  /* South-Sudan */
+replace country_k="DEU" if ccode2==260  /* code BRD as Germany */
+replace country_k="ADO" if country_k=="AND"
+replace country_k="TMP" if country_k=="TLS"
+
+
+drop if mi(country_i) | mi(country_k)
+replace agree2un="." if agree2un=="NA"
+destring agree2un, replace
+
+keep t country_i country_k absidealdiff agree2un agree3un /* keep the ideals point difference and the s-score based on yes/no/abstain */
+
+preserve
+
+*** Generate proximity to US variable ***
+keep if country_k=="USA"
+ren absidealdiff US_idealpoint
+
+keep t country_i  US_idealpoint 
+save "${tempdata}\US_voting.dta", replace  /* Final File for US Voting allignment */
+
+*** Generate proximity to Russia variable ***
+restore
+keep if country_k=="RUS"
+ren absidealdiff RUS_idealpoint
+
+keep t country_i  RUS_idealpoint 
+save "${tempdata}\RUS_voting.dta", replace  /* Final File for Russia/USSR Voting allignment */
+
+
+*******************************************************************************************************************************************
+******************************************************** PART 4: Network effects  *********************************************************
+*******************************************************************************************************************************************
+
+*** DV spatial lag
+
+*** Generate distance weights
+
+*** CEPII GeoDist dataset
+
+use "${inputdata}\dist_cepii.dta", clear
+*Generate data for Serbia and Montenegro (here treated as one country Yugoslavia)
+replace iso_o="MNE" if iso_o=="YUG"
+replace iso_d="MNE" if iso_d=="YUG"
+keep if iso_o=="MNE" | iso_d=="MNE"
+
+append using "${inputdata}\dist_cepii.dta"
+
+rename iso_o country_i
+rename iso_d country_k
+
+keep country_i country_k  dist distcap contig comlang_off  /* variables for distance of most populated cities and distance of capitals */
+
+*Generate data for Serbia and Montenegro (here treated as one country Yugoslavia)
+replace country_i="SRB" if country_i=="YUG"
+replace country_k="SRB" if country_k=="YUG"
+*Replace iso code by Congo DR
+replace country_i="COD" if country_i=="ZAR"
+replace country_k="COD" if country_i=="ZAR"
+
+** Generating the spatial lags
+gen prox= 1/dist   /* generate proximity following PlümperNeumayer 2016 */
+** Generate log proximity
+gen lgprox=log(dist)
+** Generate proximity of capitals
+gen proxcap=1/distcap   /*generate proximity following Plümper Neumayer 2016 */
+** Generate log of proximity of capitals
+gen lgproxcap=log(distcap)   /*generate proximity following Plümper Neumayer 2016 */
+
+gen id=_n
+expand 71
+bysort id: gen count=_n
+gen t=count+1944
+drop id count
+
+save "${tempdata}\cepii_weights.dta", replace   
+
+
+*** GDP spatial lag
+
+use "${tempdata}\pwt.dta",clear
+ren country_i country_k
+save "${tempdata}\pwt_k.dta", replace
+
+** Merge with dyadic panel dep var ****
+use "${tempdata}\dyadic panel.dta", clear
+merge 1:1 t country_i country_k using "${tempdata}\cepii_weights.dta", keep(master match) nogen
+merge m:1 t country_k using "${tempdata}\pwt_k.dta", keep(master match) nogen
+
+/* 1. Proximity of most populated cities */ 
+spmon rgdpna_percap, weightvar(prox) i(country_i) k(country_k) time(t) sename(SL_prox_gdp) filename("SL_prox_gdp_final")
+drop _merge
+gen lg_SL_prox_gdp=log(SL_prox_gdp)
+
+keep country_i t lg_SL_prox_gdp 
+bysort t country_i: drop if _n>1
+sort country_i t
+
+save "${tempdata}\GDP_spatiallags.dta", replace  
+
+capture erase "${basepath}\SL_prox_gdp_final.dta"
+
+*** GDP by democracy peer group
+
+use "${tempdata}\pwt.dta",clear
+ren country_i country_k 
+keep rgdpna_percap country_k t
+
+merge 1:m country_k t using "${tempdata}\democracy_iv_panel", nogen keep(2 3)
+
+	* Define peer-group
+	drop if country_i==country_k
+	keep if WB_region==WB_region_k
+	drop if t<1950
+	drop if mi(acemoglu_democ)
+	sort country_i country_k t
+	by country_i country_k: gen keeper=1 if acemoglu_democ==acemoglu_democ_k & _n==1
+	keep if keeper==1
+	keep country_i country_k keeper 
+
+	*Merge with democracy panel data
+	merge 1:m country_i country_k using "${tempdata}\democracy_iv_panel", keep(match) nogen
+	merge m:1 t country_k using "${tempdata}\pwt_k", keep(1 3) nogen
+		bysort country_i t: egen Z_gdp_percap=mean(rgdpna_percap)
+		gen Z_lg_gdp_percap=log(Z_gdp_percap)
+		
+		collapse (first) Z_lg_gdp_percap, by(country_i t)
+		label var Z_lg_gdp_percap "GDP IV: spatial lag per group"
+		
+save "${tempdata}\Z_GDP", replace
+
+
+**********************************************
+			*** Prepare dep var of country_k
+
+			use "${tempdata}\balanced_panel.dta", replace
+
+			merge m:1 country_i using "${tempdata}\New Donors Database.dta", nogen keep(3)
+			merge m:1 country_i using "${tempdata}\years.dta", nogen keep(3)
+
+			** generate dummy for first aid delivery
+			gen dummy_first_aid=.         
+			replace dummy_first_aid=0 if first_aid_year>t  & styear<=t & first_aid_year!=. 
+			replace dummy_first_aid=1 if first_aid_year<=t & styear<=t & first_aid_year!=.
+
+			** generate dummy for first institution
+			gen dummy_inst=.
+			replace dummy_inst=0 if first_inst_year>t & styear<=t & first_inst_year!=.
+			replace dummy_inst=1 if first_inst_year<=t & styear<=t & first_inst_year!=.
+
+			rename country_i country_k
+			keep country_k t dummy_first_aid dummy_inst 
+			save "${tempdata}\dep_var_panel_k.dta", replace  
+
+*** Donorship spatial lag
+
+use "${tempdata}\dyadic panel.dta", clear
+merge 1:1 t country_i country_k using "${tempdata}\cepii_weights.dta", keep(master match) nogen
+merge m:1 t country_k using "${tempdata}\dep_var_panel_k.dta", keep(master match) nogen
+
+/* 1. Proximity of most populated cities */ 
+spmon dummy_first_aid, weightvar(prox) i(country_i) k(country_k) time(t) sename(SL_prox_aid) filename("SL_prox_aid_final")
+drop _merge
+spmon dummy_inst, weightvar(prox) i(country_i) k(country_k) time(t) sename(SL_prox_inst) filename("SL_prox_inst_final")
+drop _merge
+
+keep country_i t SL_prox_aid SL_prox_inst 
+bysort t country_i: drop if _n>1
+sort country_i t
+
+save "${tempdata}\proximity_spatiallags.dta", replace  
+
+capture erase "${basepath}\SL_prox_aid_final.dta"
+
+capture erase "${basepath}\SL_prox_inst_final.dta"
+
+use "${tempdata}\dep_var_panel_k.dta",clear
+
+merge 1:m country_k t using "${tempdata}\democracy_iv_panel", nogen keep(2 3)
+
+	* Define peer-group
+	drop if country_i==country_k
+	keep if WB_region==WB_region_k
+	drop if t<1950
+	drop if mi(acemoglu_democ)
+	sort country_i country_k t
+	by country_i country_k: gen keeper=1 if acemoglu_democ==acemoglu_democ_k & _n==1
+	keep if keeper==1
+	keep country_i country_k keeper 
+
+	*Merge with democracy panel data
+	merge 1:m country_i country_k using "${tempdata}\democracy_iv_panel", keep(match) nogen
+	drop dummy_first_aid dummy_inst 
+	merge m:1 t country_k using "${tempdata}\dep_var_panel_k", keep(1 3) nogen
+		bysort country_i t: egen Z_dummy_inst=mean(dummy_inst)
+		bysort country_i t: egen Z_dummy_first_aid=mean(dummy_first_aid)
+
+		collapse (first) Z_dummy_inst Z_dummy_first_aid, by(country_i t)
+		
+save "${tempdata}\Z_donor", replace
+
+
+*******************************************************************************************************************************************
+******************************************************** PART 5 Merging all data together                     ***************************
+*******************************************************************************************************************************************
+use "${tempdata}\duration.dta", clear
+
+merge 1:1 t country_i using "${tempdata}\pwt.dta", nogen keep(match master)
+merge 1:1 t country_i using "${tempdata}\open_pwt.dta", nogen keep(match master)
+merge 1:1 t country_i using "${tempdata}\polity_iv.dta", nogen keep(match master)
+merge 1:1 t country_i using "${tempdata}\colony", nogen keep(match master)
+merge 1:1 t country_i using "${tempdata}\US_voting.dta", nogen keep(match master)
+merge 1:1 t country_i using "${tempdata}\RUS_voting.dta", nogen keep(match master)
+merge 1:1 t country_i using "${tempdata}\R_pwt.dta", nogen keep(match master)
+merge 1:1 t country_i using "${inputdata}\ethnic.dta", nogen keep(match master)
+merge 1:1 t country_i using "${tempdata}\BdM_data", nogen keep(match master)
+merge 1:1 t country_i using "${tempdata}\democracy.dta", nogen keep(match master)
+merge 1:1 t country_i using "${tempdata}\vdem.dta", nogen keep(match master)
+merge 1:1 t country_i using "${tempdata}\conflict_midb.dta", nogen keep(match master)
+merge 1:1 t country_i using "${tempdata}\conflict.dta", nogen keep(match master)
+merge 1:1 t country_i using "${tempdata}\Z_democracy.dta", nogen keep(match master using)
+merge 1:1 t country_i using "${tempdata}\Z_GDP.dta", nogen keep(match master using)
+merge 1:1 t country_i using "${tempdata}\Z_donor.dta", nogen keep(match master using)
+merge 1:1 t country_i using "${tempdata}\GDP_spatiallags.dta", nogen keep(match master using)
+merge 1:1 t country_i using "${tempdata}\acemoglu_democ.dta", nogen keep(match master)
+merge 1:1 t country_i using "${tempdata}\oda_disbursements.dta", nogen keep(match master)
+merge 1:1 t country_i using "${tempdata}\oda_commitments_aiddata.dta", nogen keep(match master)
+merge 1:1 t country_i using "${tempdata}\proximity_spatiallags.dta", nogen keep(match master)
+merge m:1 country_i using "${inputdata}\countries", nogen keep(match)
+
+
+order country_i country_name t d d2 d3 dummy_first_aid dummy_inst /*country year duration and the 3 DVs */
+
+encode country_i, gen(cid)
+tsset cid t
+
+*** More variables ****
+gen coldwar=0
+replace coldwar=1 if t>=1947 & t<=1990
+gen R_per_GDP=R/rgdpna
+
+*** Generate dummy for EU enlargement countries *******
+
+gen eu_enlargement=0
+replace eu_enlargement=1 if country_i=="BLR" | country_i=="LVA" | country_i=="LTU" | ///
+							country_i=="EST" | country_i=="CZE" | country_i=="SVK" | ///
+							country_i=="CYP" | country_i=="MLT" | country_i=="SVN" | ///
+							country_i=="HRV" | country_i=="ISL" | ///
+							country_i=="MDA" | country_i=="MNE" | country_i=="TUR" | ///
+							country_i=="SRB" | country_i=="BIH" | country_i=="ALB" 
+
+
+*** Set voting distance to US to zero for US ***
+replace US_idealpoint=0 if country_i=="USA"
+replace RUS_idealpoint=0 if country_i=="RUS"							
+							
+*** Set colony zero for non-colonizer countries ****
+replace lg_colony_penn=0 if lg_colony_penn==.
+
+*** Set dummy_midb and zero for all missings ***
+replace dummy_midb=0 if dummy_midb==.
+
+* Remove confirmed donors where year of first aid institution is missing
+replace dummy_inst=. if country_i=="POL"
+replace dummy_inst=. if country_i=="ROU"
+replace dummy_inst=. if country_i=="BGR"
+
+*** Generate lagged variables
+foreach var of varlist dummy_first_aid-eu_enlargement {
+clonevar `var'_1=`var'
+replace `var'_1=l.`var'
+}
+
+		*Generate Interaction Variables
+		gen democxgdp_1=acemoglu_democ_1*lg_rgdpna_percap_1 if !mi(acemoglu_democ_1) & !mi(lg_rgdpna_percap_1)
+		gen Z_democxgdp_1=Z_democracy_1*lg_rgdpna_percap_1 if !mi(Z_democracy_1) & !mi(lg_rgdpna_percap_1)
+		gen polity2xgdp_1 = polity2_1*lg_rgdpna_percap_1 if !mi(polity2_1) & !mi(lg_rgdpna_percap_1)
+		gen Cheibobxgdp_1 = Democ_dummy_1*lg_rgdpna_percap_1 if !mi(Democ_dummy_1) & !mi(lg_rgdpna_percap_1)
+		gen W_BdMxgdp_1 = W_BdM_1*lg_rgdpna_percap_1 if !mi(W_BdM_1) & !mi(lg_rgdpna_percap_1)
+		gen W_eprxgdp_1 = W_epr_1*lg_rgdpna_percap_1 if !mi(W_epr_1) & !mi(lg_rgdpna_percap_1)
+		gen VDemxgdp_1 = v2x_polyarchy_1*lg_rgdpna_percap_1 if !mi(v2x_polyarchy_1) & !mi(lg_rgdpna_percap_1)
+				
+		gen Z2_polity2xgdp_1 = Z2_polity2_1*lg_rgdpna_percap_1 if !mi(Z2_polity2_1) & !mi(lg_rgdpna_percap_1)
+		gen Z2_cheibobxgdp_1 = Z2_cheibob_1*lg_rgdpna_percap_1 if !mi(Z2_cheibob_1) & !mi(lg_rgdpna_percap_1)
+		gen Z2_W_BdMxgdp_1 = Z2_W_BdM_1*lg_rgdpna_percap_1 if !mi(Z2_W_BdM_1) & !mi(lg_rgdpna_percap_1)
+		gen Z2_W_eprxgdp_1 = Z2_W_epr_1*lg_rgdpna_percap_1 if !mi(Z2_W_epr_1) & !mi(lg_rgdpna_percap_1)
+		gen Z2_VDemxgdp_1 = Z2_v2x_polyarchy_1*lg_rgdpna_percap_1 if !mi(Z2_v2x_polyarchy_1) & !mi(lg_rgdpna_percap_1)
+
+		
+		*First generate lags
+		xtset cid t
+		clonevar Z_democracy_2=Z_democracy_1
+		replace Z_democracy_2=l.Z_democracy_1
+		clonevar Z_democracy_3=Z_democracy_2
+		replace Z_democracy_3=l.Z_democracy_2
+		clonevar Z_democracy_4=Z_democracy_3
+		replace Z_democracy_4=l.Z_democracy_3
+		clonevar Z_democracy_5=Z_democracy_4
+		replace Z_democracy_5=l.Z_democracy_4	
+		clonevar Z2_polity2_2 = Z2_polity2_1
+		replace Z2_polity2_2=l.Z2_polity2_1
+		clonevar Z2_cheibob_2 = Z2_cheibob_1
+		replace Z2_cheibob_2=l.Z2_cheibob_1
+		clonevar Z2_W_BdM_2 = Z2_W_BdM_1
+		replace Z2_W_BdM_2 = l.Z2_W_BdM_1
+		clonevar Z2_W_epr_2 = Z2_W_epr_1
+		replace Z2_W_epr_2 = l.Z2_W_epr_1
+		clonevar Z2_v2x_polyarchy_2 = Z2_v2x_polyarchy_1
+		replace Z2_v2x_polyarchy_2 = l.Z2_v2x_polyarchy_1
+
+		*Generate interaction term with multiple lags of Z
+		gen Z_democxgdp_2=Z_democracy_2*lg_rgdpna_percap_1
+		gen Z_democxgdp_3=Z_democracy_3*lg_rgdpna_percap_1
+		gen Z_democxgdp_4=Z_democracy_4*lg_rgdpna_percap_1
+		gen Z_democxgdp_5=Z_democracy_5*lg_rgdpna_percap_1
+		gen Z2_polity2xgdp_2=Z2_polity2_2*lg_rgdpna_percap_1
+		gen Z2_cheibobxgdp_2=Z2_cheibob_2*lg_rgdpna_percap_1
+		gen Z2_W_BdMxgdp_2=Z2_W_BdM_2*lg_rgdpna_percap_1
+		gen Z2_W_eprxgdp_2=Z2_W_epr_2*lg_rgdpna_percap_1
+		gen Z2_VDemxgdp_2=Z2_v2x_polyarchy_2*lg_rgdpna_percap_1
+		
+*** Label variables for tables ***
+	label var country_i "Country code (ISO 3-digit)"
+	label var t "Year"
+	label var d "Duration count"
+	label var d2 "Duration count^2"
+	label var d3 "Duration count^3"
+	label var dummy_first_aid "Aid donorship (broad definition)"
+	label var dummy_inst "Aid donorship (narrow definition)"
+	label var lg_ODA_disbursements "(log) Aid disbursements (OECD)"
+	label var lg_ODA_commitments_aiddata "(log) Aid commitments (Aiddata)"
+	
+	label var kg "Government share of GDP"
+	label var acemoglu_democ "Democracy (baseline)"
+	label var lg_rgdpna_percap "(log) GPD per capita"
+	label var lgpop "(log) population"
+	label var openness_pwt "Openness"
+	label var US_idealpoint  "Political distance to USA"
+	label var dummy_terr_conflict  "Intrastate conflict over territory"
+	label var Z_democracy "Democracy (instrument)"
+
+	label var lg_rgdpna_percap_1 "(log) GDP per capita"
+	label var acemoglu_democ_1 "Democracy (baseline)"
+	label var Z_democracy_2 "Democracy (instrument)"
+	label var democxgdp_1 "Democracy # (log) GDP per capita"
+	label var Z_democxgdp_2 "Democracy (instrument) # (log) GDP per capita"
+	label var lgpop_1 "(log) Population"
+	label var RUS_idealpoint_1 "Political distance to Russia"
+	label var US_idealpoint_1 "Political distance to USA"
+	label var coldwar_1 "Cold War dummy"
+	label var openness_pwt_1 "Openness"
+	label var lg_colony_penn_1 "(log) Colony population"
+	label var polity2_1 "Democracy (Polity IV)"
+	label var W_epr_1 "Democracy (ethnic winning coalition)"
+	label var Democ_dummy_1 "Democracy (DD)"
+	label var v2x_polyarchy_1 "Democracy (electoral democracy)"
+	label var Z_democracy_1 "Democracy (instrument)"
+	label var kg_1 "Government share of GDP"
+	label var dummy_midb_1 "Militarized interstate dispute"
+	label var dummy_terr_conflict_1 "Intrastate conflict over territory"
+	label var SL_prox_inst_1 "Donor spatial lag (by geographic distance)"
+	label var SL_prox_aid_1 "Donor spatial lag (by geographic distance)"
+	label var lg_SL_prox_gdp_1 "GDP spatial lag (by geographic distance)"
+	label var Z_lg_gdp_percap_1 "GDP spatial lag (by democracy peer group)"
+	label var Z_dummy_inst_1 "Donor spatial lag (by democracy peer group)"
+	label var Z_dummy_first_aid_1 "Donor spatial lag (by democracy peer group)"
+	label var lg_ODA_disbursements "(log) Aid disbursements (OECD)"
+	label var lg_ODA_commitments_aiddata "(log) Aid commitments (Aiddata)"
+	label var polity2xgdp_1 "Democracy # (log) GDP per capita"
+	label var Cheibobxgdp_1 "Democracy # (log) GDP per capita"
+	label var W_BdM_1 "Democracy (winning coaltion)"
+	label var Z2_polity2_2 "Democracy instrument (Polity IV)"
+	label var Z2_cheibob_2 "Democracy instrument (DD)"
+	label var Z2_polity2xgdp_2 "Democracy instrument (Polity IV) # (log) GDP per capita"
+	label var Z2_cheibobxgdp_2 "Democracy instrument (DD) # (log) GDP per capita"
+	label var eu_enlargement "EU enlargement country"
+	label var acemoglu_democ "Democracy (baseline - no lag)"
+
+	
+	*keep only relevant variables
+	save "${tempdata}\new_donors_temp.dta", replace /* dataset for robustness test */
+
+	keep country_i cid t d d2 d3 dummy_first_aid dummy_inst lg_ODA_disbursements lg_ODA_commitments_aiddata ///
+	lg_rgdpna_percap_1 acemoglu_democ_1 Z_democracy_2 democxgdp_1 Z_democxgdp_2 ///
+	lgpop_1 RUS_idealpoint_1 US_idealpoint_1 coldwar_1 openness_pwt_1 lg_colony_penn_1 ///
+	polity2_1 W_BdM_1 W_epr_1 Democ_dummy_1 v2x_polyarchy_1 Z_democracy_1 kg_1 dummy_midb_1 ///
+	dummy_terr_conflict_1 SL_prox_inst_1 SL_prox_aid_1 lg_SL_prox_gdp_1 Z_lg_gdp_percap_1 ///
+	Z_dummy_inst_1 Z_dummy_first_aid_1 lg_ODA_disbursements lg_ODA_commitments_aiddata ///
+	polity2xgdp_1 Cheibobxgdp_1 Z2_polity2_2 Z2_cheibob_2 Z2_polity2xgdp_2 Z2_cheibobxgdp_2 eu_enlargement ///
+	acemoglu_democ 
+
+save "${outputdata}\new_donors_limited.dta", replace /* dataset for robustness test */
+
+** Generate marker for first_aid and inst
+bysort country_i: egen first_aid=total(dummy_first_aid)
+bysort country_i: egen first_inst=total(dummy_inst)
+
+** Set missing DVs zero for all years where duration not missing ***
+replace dummy_first_aid=0 if dummy_first_aid==. & !mi(d) & first_aid==0
+replace dummy_inst=0 if dummy_inst==. & !mi(d) & first_inst==0
+
+replace dummy_inst=. if country_i=="POL"
+replace dummy_inst=. if country_i=="ROU"
+replace dummy_inst=. if country_i=="BGR"
+
+
+drop first_aid first_inst
+
+merge m:1 country_i using "${tempdata}\missing_donors", nogen 
+drop if donor==1
+drop donor
+
+ * generate marker for sample of main regression
+	xi: xtivreg2  dummy_inst lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1 openness_pwt_1 dummy_terr_conflict_1  (acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.t, fe cluster(cid) 
+	gen sample = 0
+	replace sample=1 if e(sample)
+	label var sample "Main sample dummy"
+	drop _It*
+	drop if t<1950
+
+save "${outputdata}\new_donors_MAIN.dta", replace  /* Main regression dataset */
+
+ * prepare sample for first aid project regressions
+	drop sample
+	xi: xtivreg2  dummy_first_aid lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  (acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.t, fe cluster(cid) 
+	gen sample = 0
+	replace sample=1 if e(sample)
+	label var sample "Main sample dummy"
+	drop _It*
+
+save "${outputdata}\new_donors_sample_firstaid", replace 
+
+* generate 3-year averages dataset
+	use "${tempdata}\new_donors_temp.dta", clear
+	
+						* Re-do steps to create main dataset
+						** Generate marker for first_aid and inst
+						bysort country_i: egen first_aid=total(dummy_first_aid)
+						bysort country_i: egen first_inst=total(dummy_inst)
+
+						** Set missing DVs zero for all years where duration not missing ***
+						replace dummy_first_aid=0 if dummy_first_aid==. & !mi(d) & first_aid==0
+						replace dummy_inst=0 if dummy_inst==. & !mi(d) & first_inst==0
+
+						replace dummy_inst=. if country_i=="POL"
+						replace dummy_inst=. if country_i=="ROU"
+						replace dummy_inst=. if country_i=="BGR"
+
+
+						drop first_aid first_inst
+
+						merge m:1 country_i using "${tempdata}\missing_donors", nogen 
+						drop if donor==1
+						drop donor
+
+			gen period=.
+			replace period=	1	if t==	1950	| t==	1951	| t==	1952
+			replace period=	2	if t==	1953	| t==	1954	| t==	1955
+			replace period=	3	if t==	1956	| t==	1957	| t==	1958
+			replace period=	4	if t==	1959	| t==	1960	| t==	1961
+			replace period=	5	if t==	1962	| t==	1963	| t==	1964
+			replace period=	6	if t==	1965	| t==	1966	| t==	1967
+			replace period=	7	if t==	1968	| t==	1969	| t==	1970
+			replace period=	8	if t==	1971	| t==	1972	| t==	1973
+			replace period=	9	if t==	1974	| t==	1975	| t==	1976
+			replace period=	10	if t==	1977	| t==	1978	| t==	1979
+			replace period=	11	if t==	1980	| t==	1981	| t==	1982
+			replace period=	12	if t==	1983	| t==	1984	| t==	1985
+			replace period=	13	if t==	1986	| t==	1987	| t==	1988
+			replace period=	14	if t==	1989	| t==	1990	| t==	1991
+			replace period=	15	if t==	1992	| t==	1993	| t==	1994
+			replace period=	16	if t==	1995	| t==	1996	| t==	1997
+			replace period=	17	if t==	1998	| t==	1999	| t==	2000
+			replace period=	18	if t==	2001	| t==	2002	| t==	2003
+			replace period=	19	if t==	2004	| t==	2005	| t==	2006
+			replace period=	20	if t==	2007	| t==	2008	| t==	2009
+			replace period=	21	if t==	2010	| t==	2011	| t==	2012
+
+			sort cid period t, stable
+			
+collapse (max) dummy_first_aid dummy_inst d (mean) kg acemoglu_democ lg_rgdpna_percap lgpop openness_pwt US_idealpoint  dummy_terr_conflict  Z_democracy (first) t country_i, by(cid period)
+			drop if mi(period)
+
+			/* Generate new duration dependence var */
+
+			replace d=	1	if inlist(d,	1, 2, 3	)
+			replace d=	2	if inlist(d,	4, 5, 6	)
+			replace d=	3	if inlist(d,	7, 8, 9	)
+			replace d=	4	if inlist(d,	10, 11, 12	)
+			replace d=	5	if inlist(d,	13, 14, 15	)
+			replace d=	6	if inlist(d,	16, 17, 18	)
+			replace d=	7	if inlist(d,	19, 20, 21	)
+			replace d=	8	if inlist(d,	22, 23, 24	)
+			replace d=	9	if inlist(d,	25, 26, 27	)
+			replace d=	10	if inlist(d,	28, 29, 30	)
+			replace d=	11	if inlist(d,	31, 32, 33	)
+			replace d=	12	if inlist(d,	34, 35, 36	)
+			replace d=	13	if inlist(d,	37, 38, 39	)
+			replace d=	14	if inlist(d,	40, 41, 42	)
+			replace d=	15	if inlist(d,	43, 44, 45	)
+			replace d=	16	if inlist(d,	46, 47, 48	)
+			replace d=	17	if inlist(d,	49, 50, 51	)
+			replace d=	18	if inlist(d,	52, 53, 54	)
+			replace d=	19	if inlist(d,	55, 56, 57	)
+			replace d=	20	if inlist(d,	58, 59, 60	)
+			replace d=	21	if inlist(d,	61, 62, 63	)
+			replace d=	22	if inlist(d,	64, 65, 66	)
+			replace d=	23	if inlist(d,	67, 68, 69	)
+
+			gen d2=d*d
+			gen d3=d*d*d
+
+tsset cid period
+
+			foreach var of varlist kg-Z_democracy {
+			clonevar `var'_1=`var'
+			replace `var'_1=l.`var'
+			}
+
+			*Generate Interaction Variables
+			gen democxgdp_1=acemoglu_democ_1*lg_rgdpna_percap_1 if !mi(acemoglu_democ_1) & !mi(lg_rgdpna_percap_1)
+			gen Z_democxgdp_1=Z_democracy_1*lg_rgdpna_percap_1 if !mi(Z_democracy_1) & !mi(lg_rgdpna_percap_1)
+			
+			*First generate lags
+			clonevar Z_democracy_2=Z_democracy_1
+			replace Z_democracy_2=l.Z_democracy_1
+		
+			*Generate interaction term with multiple lags of Z
+			gen Z_democxgdp_2=Z_democracy_2*lg_rgdpna_percap_1
+		
+			*** Label variables for tables ***
+				label var dummy_first_aid "Aid donorship (broad definition)"
+				label var dummy_inst "Aid donorship (narrow definition)"
+				label var lg_rgdpna_percap_1 "(log) GDP per capita"
+				label var acemoglu_democ_1 "Democracy"
+				label var Z_democracy_2 "Democracy (Instrument)"
+				label var democxgdp_1 "Democracy # (log) GDP per capita"
+				label var Z_democxgdp_2 "Democracy (instrument) # (log) GDP per capita"
+				label var lgpop_1 "(log) Population"
+				label var US_idealpoint_1 "Political distance to USA"
+				label var openness_pwt_1 "Openness"
+				label var kg_1 "Government share of GDP"
+				label var dummy_terr_conflict_1 "Intrastate conflict over territory"
+				label var d "Duration count"
+				label var d2 "Duration count^2"
+				label var d3 "Duration count^3"
+				label var period "Period"
+
+
+			replace dummy_inst=. if country_i=="POL"
+			replace dummy_inst=. if country_i=="ROU"
+			replace dummy_inst=. if country_i=="BGR"
+			
+			keep dummy_first_aid dummy_inst lg_rgdpna_percap_1 acemoglu_democ_1 Z_democracy_2 democxgdp_1 ///
+				Z_democxgdp_2 lgpop_1 US_idealpoint_1 openness_pwt_1 kg_1 dummy_terr_conflict_1 ///
+				d d2 d3 period cid
+
+save "${outputdata}\new_donors_3yaverages.dta", replace  /* Main regression dataset */
+
+

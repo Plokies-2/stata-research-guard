@@ -1,0 +1,148 @@
+clear all
+use "${cd}\Tables 1 to 7, O1,O3,O4,O5,O6\database_all.dta", clear
+
+
+**filter database for tables 2 to 6
+keep if Country=="Argentina" | Country=="Australia" | Country=="Brazil" | Country=="Canada" | ///
+         Country=="Chile" | Country=="Colombia" | Country=="Costa Rica" | Country=="Ecuador" | ///
+         Country=="Honduras" | Country=="Indonesia" | Country=="New Zealand" | Country=="Norway" | ///
+         Country=="Russia" | Country=="South Africa" | Country=="Ukraine"
+
+
+encode ISO, generate(code)
+
+*declare data to be panel
+xtset code year, yearly
+
+*generate logs and differences
+generate ln_x = ln(x)
+generate ln_tot = ln(tot_2000) //
+generate ln_g = ln(r_GGX)
+generate ln_y = ln(NGDP_R)
+
+generate d_ln_x = d.ln_x
+generate d_ln_tot = d.ln_tot
+generate d_ln_g = d.ln_g
+generate d_ln_y = d.ln_y
+
+*generate the rain and pours
+
+gen y_x_pred = 0.08531*emde*d.ln_x + 0.0237*d.ln_x*(1-emde)
+gen g_x_pred = 0.06*emde*d.ln_x - 0.123*d.ln_x*(1-emde)
+
+*calculate average size of gov per country
+
+bysort Country: egen g_over_y= mean( p_NGDP )
+bysort Country: egen growth= mean( d_ln_y )
+
+*calculate rains and pours 
+*insert fiscal multiplier for commodity exporting countries
+gen multiplier = 0.88 
+gen pours = g_x_pred*multiplier*g_over_y
+gen rains = y_x_pred-pours
+gen total = (rains+pours)*emde + (rains-pours)*(1-emde)
+gen pours_over_total= (pours/total)
+gen pours_over_rain= (pours/rains)
+gen rains_over_total= rains/total
+gen pours_over_cycle= pours/(d_ln_y-growth)
+
+gen rain_pos = rains if rains>0
+gen rain_neg = rains if rains<0
+gen pours_pos = pours if pours>0
+gen pours_neg = pours if pours<0
+
+*table 4
+preserve
+collapse (mean) pours_over_rain, by(Country)
+export excel using "${cd}\Tables 1 to 7, O1,O3,O4,O5,O6\Output\table_4.xlsx", sheet("table_4") firstrow(variables) replace
+restore
+*table 5 
+preserve
+drop if emde==0
+collapse (mean) pours_over_total, by(Country)
+export excel using "${cd}\Tables 1 to 7, O1,O3,O4,O5,O6\Output\table_5.xlsx", sheet("table_5") firstrow(variables) sheetmod
+restore
+
+*produce inputs for table 6
+// by year and emdegroup (AE/EMDE), calculate change in export prices, d_ln_x, 2003 to 2008
+preserve
+collapse (mean) d_ln_x, by(emde year)
+keep if year>=2003 & year<=2008
+export excel using "${cd}\Tables 1 to 7, O1,O3,O4,O5,O6\Output\Table_6.xlsx", sheet("comexp") firstrow(variables) sheetmod
+restore
+
+//calculate government as fraction of GDP by emde group
+preserve
+collapse (mean) g_over_y, by(emde)
+export excel using "${cd}\Tables 1 to 7, O1,O3,O4,O5,O6\Output\Table_6.xlsx", sheet("gov_gdp") firstrow(variables) sheetmod
+restore
+
+
+*declare data to be panel
+xtset code year, yearly
+*run regressions
+
+***GDP vs X ** Table 2
+label variable ln_y "GDP"
+label variable ln_x "Commodity Export Price Index"
+label variable ln_tot "Terms of Trade"
+label variable emde "EMDE"
+
+*EMDEs
+xtreg d.ln_y d.ln_x 			if emde==1, fe
+outreg2 using "${cd}\Tables 1 to 7, O1,O3,O4,O5,O6\Output\Table_2.xls", replace word dec(4) ctitle("EMDE") label
+xtreg d.ln_y d.ln_x d.ln_tot	if emde==1, fe
+outreg2 using "${cd}\Tables 1 to 7, O1,O3,O4,O5,O6\Output\Table_2.xls", append word dec(4) ctitle("EMDE") label
+xtreg d.ln_y d.ln_x L.d.ln_y	if emde==1, fe
+outreg2 using "${cd}\Tables 1 to 7, O1,O3,O4,O5,O6\Output\Table_2.xls", append word dec(4) ctitle("EMDE") label
+
+*Interactive
+xtreg d.ln_y c.d.ln_x##emde				, fe
+outreg2 using "${cd}\Tables 1 to 7, O1,O3,O4,O5,O6\Output\Table_2.xls", append word dec(4) ctitle("Full") label
+test d.ln_x+1.emde#cD.ln_x=0
+
+xtreg d.ln_y c.d.ln_x##emde	d.ln_tot	, fe
+outreg2 using "${cd}\Tables 1 to 7, O1,O3,O4,O5,O6\Output\Table_2.xls", append word dec(4) ctitle("Full") label
+test d.ln_x+1.emde#cD.ln_x=0
+xtreg d.ln_y c.d.ln_x##emde	L.d.ln_y	, fe
+outreg2 using "${cd}\Tables 1 to 7, O1,O3,O4,O5,O6\Output\Table_2.xls", append word dec(4) ctitle("Full") label
+test d.ln_x+1.emde#cD.ln_x=0
+
+
+***Gov Cons vs X ***  Table 3
+
+*EMDEs
+xtreg d.ln_g d.ln_x 			if emde==1, fe
+outreg2 using "${cd}\Tables 1 to 7, O1,O3,O4,O5,O6\Output\Table_3.xls", replace word dec(4) ctitle("EMDE") label
+xtreg d.ln_g d.ln_x d.ln_tot	if emde==1, fe
+outreg2 using "${cd}\Tables 1 to 7, O1,O3,O4,O5,O6\Output\Table_3.xls", append word dec(4) ctitle("EMDE") label
+xtreg d.ln_g d.ln_x L.d.ln_y	if emde==1, fe
+outreg2 using "${cd}\Tables 1 to 7, O1,O3,O4,O5,O6\Output\Table_3.xls", append word dec(4) ctitle("EMDE") label
+
+
+*Interactive
+xtreg d.ln_g c.d.ln_x##emde				, fe
+outreg2 using "${cd}\Tables 1 to 7, O1,O3,O4,O5,O6\Output\Table_3.xls", append word dec(4) ctitle("Full") label
+test d.ln_x+1.emde#cD.ln_x=0
+xtreg d.ln_g c.d.ln_x##emde	d.ln_tot	, fe
+outreg2 using "${cd}\Tables 1 to 7, O1,O3,O4,O5,O6\Output\Table_3.xls", append word dec(4) ctitle("Full") label
+test d.ln_x+1.emde#cD.ln_x=0
+xtreg d.ln_g c.d.ln_x##emde	L.d.ln_y	, fe
+outreg2 using "${cd}\Tables 1 to 7, O1,O3,O4,O5,O6\Output\Table_3.xls", append word dec(4) ctitle("Full") label
+test d.ln_x+1.emde#cD.ln_x=0
+
+*calculate inputs for tables 7
+tab emde, sum(y_x_pred) standard
+tab emde, sum(d_ln_y) standard
+tab emde, sum(rains) standard
+
+preserve
+collapse (sd) y_x_pred d_ln_y rains, by(emde)
+export excel using "${cd}\Tables 1 to 7, O1,O3,O4,O5,O6\Output\table 7.xlsx", sheet("vol_by_emde") firstrow(variables) sheetmod
+restore
+
+preserve
+collapse (sd) y_x_pred d_ln_y rains
+export excel using "${cd}\Tables 1 to 7, O1,O3,O4,O5,O6\Output\table 7.xlsx", sheet("vol_total") firstrow(variables) sheetmod
+restore
+

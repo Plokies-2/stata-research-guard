@@ -1,0 +1,959 @@
+
+// Controls	
+	global Xs "ShPoor_11 matricula_total_11 prom_lect4b_rbd_11 prom_mate4b_rbd_11"
+	global Xm "hm_extpoor_rate_11 h_ypchtot_11 unempl_rate_11 esc_11 literacy_rate_11"
+		
+*******************
+** Table 2: Principal Selection and Principal Effectiveness	
+*******************	
+{	
+	* Load dataset
+	use "Data/clean/DataForRegressionsADP.dta", clear
+		
+	global out outreg2 using "Tables/Table2",  label tex(frag) bdec(3) sdec(3) keep(PostChangePpal_ADP PostChangePpal) nocons nonotes 	
+		
+	* Baseline
+	local append replace
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1, a(year rbd )  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)'		 
+		$out `append' adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval') addtext(Year FE, Yes, School FE, Yes, School controls, No, Municipality controls, No) 		
+		local append append
+
+	* Add School controls
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1, a(c.($Xs)#year year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)'
+		$out `append' adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval') addtext(Year FE, Yes, School FE, Yes, School controls, Yes, Municipality controls, No) 		
+			
+	* Add Municipality controls 
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1, a(c.($Xm)#year year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)'
+		$out `append' adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval') addtext(Year FE, Yes, School FE, Yes, School controls, No, Municipality controls, Yes)
+		
+	* Add Municipality and School controls 
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1, a(c.($Xm $Xs)#year year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)'
+		$out `append' adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval') addtext(Year FE, Yes, School FE, Yes, School controls, Yes, Municipality controls, Yes)
+		
+	* Increasing overlap
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 & pscore > 0.082 & pscore < 0.918, a(year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)'
+		$out `append' adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval') addtext(Year FE, Yes, School FE, Yes, School controls, No, Municipality controls, No)
+		
+	* Only Public
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & Dmun == 1, a(year rbd)  vce(cluster rbd)
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `var' if e(sample)
+		local mean = `r(mean)'
+		$out `append' adds(# of Schools, `N', Mean Dep Var, `mean') addtext(Year FE, Yes, School FE, Yes, School controls, No, Municipality controls, No)
+						
+	* Only Public: PLACEBO
+	rename PostChangePpal aux
+	rename PostChangePpal_pre PostChangePpal
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal if t_pla_pre>=-4 & t_pla_pre <= 3 & year >= 2009 & year <= 2012 & Dmun == 1 , a(year rbd)  vce(cluster rbd)
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)'
+		codebook rbd if e(sample) == 1 & PostChangePpal == 1
+		$out `append' adds(# of Schools, `N', Mean Dep Var, `mean') addtext(Year FE, Yes, School FE, Yes, School controls, No, Municipality controls, No)
+	rename PostChangePpal PostChangePpal_pre 
+	rename aux PostChangePpal 
+		
+	* Only Private
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & Dmun == 0, a(year rbd)  vce(cluster rbd)
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)'
+		codebook rbd if e(sample) == 1 & PostChangePpal == 1
+		$out `append' adds(# of Schools, `N', Mean Dep Var, `mean') addtext(Year FE, Yes, School FE, Yes, School controls, No, Municipality controls, No)
+	
+	***** Columns 7: Need to add them by hand 
+	use "Data/clean/Base_ADPAnalysis.dta", clear
+	
+	keep cod_com_rbd rbd year SDall_fe_prin_2wayfe rbd year adp
+		
+	keep if year >= 2009 & year <= 2016	
+			
+	twowayfeweights SDall_fe_prin_2wayfe rbd year adp,  type(feTR)
+	di 265/3694 	
+				
+	local w = 3
+	local w1 = 3	
+	did_multiplegt SDall_fe_prin_2wayfe rbd year adp, placebo(`w1') breps(20) robust_dynamic dynamic(`w') cluster(rbd)	jointtestplacebo covariances seed(1111001) average_effect
+
+	** Values in the table
+	g avg = e(effect_average)
+	g se_avg = `e(se_effect_average)'
+	g tstat_avg = avg / se_avg
+	sum avg tstat_avg se_avg
+		
+	***** Columns 8: Need to add them by hand from R code CallawayAndSantAna.R
+	/*
+	Outcome from the R code:	
+	Overall summary of ATT's based on event-study/dynamic aggregation:  
+    ATT    Std. Error    
+	0.0399        0.0228 
+	*/
+}	
+
+
+*******************	
+** Table 3: Principal Selection and Principal Effectiveness: Other measures	
+*******************	
+{	
+	* Load dataset
+	use "Data/clean/DataForRegressionsADP.dta", clear
+	
+	global out outreg2 using "Tables/Table_3",  label tex(frag) bdec(3) sdec(3) keep(PostChangePpal_ADP PostChangePpal) nonotes 
+		
+	reghdfe SDall_fe_prin_attendance PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1, a(year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)'
+		$out adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval') nocons addtext(Year FE, Yes, School FE, Yes) replace
+
+	reghdfe SDall_fe_prin_testcre PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1, a(year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum SDall_fe_prin_testcre if e(sample)
+		local mean = `r(mean)'
+		$out adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval') nocons addtext(Year FE, Yes, School FE, Yes) append
+			
+	reghdfe SDall_fe_prin_adj_contGPA PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 , a(year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)'
+		$out adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval') nocons addtext(Year FE, Yes, School FE, Yes) append
+
+	reghdfe SDall_fe_prin_adj_contGPA_noTFE PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1, a(year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)'
+		$out adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval') nocons addtext(Year FE, Yes, School FE, Yes) append
+}
+
+*******************		
+*** Table 4: Principal Selection, SIMCE and College Admissions Scores	
+*******************		
+{	
+	* Load dataset
+	use "Data/clean/DataForRegressionsADP.dta", clear
+	
+	global out outreg2 using "Tables/Table_4",  label tex(frag) bdec(3) sdec(3) keep(PostChangePpal_ADP PostChangePpal) nocons addtext(Year FE, Yes, School FE, Yes, School controls, Yes, Municipality controls, Yes) nonotes
+	
+	local replace replace
+	reghdfe beta_corr_gpa_test PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 [aweight=weight], a(c.($Xm $Xs)#year year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' [aweight=weight] if e(sample)
+		local mean = `r(mean)' 
+		$out `replace' adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval') 
+		local replace append
+		
+	reghdfe beta_corr_gpa_test PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016, a(c.($Xm $Xs)#year year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)' 
+		$out `replace' adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval') 
+
+	reghdfe SimceIndex PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016, a(c.($Xm)#year year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)'
+		$out `replace' adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval') 
+
+	reghdfe sd_mate_actual PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016, a(c.($Xm)#year year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)'
+		$out `replace' adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval') 
+		
+	reghdfe sd_lyc_actual PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016, a(c.($Xm)#year year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)'
+		$out `replace' adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval') 
+		
+	reghdfe AvgPSU PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016, a(c.($Xm)#year year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)'
+		$out `replace' adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval') 
+		
+	reghdfe sd_puntaje PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016, a(c.($Xm)#year year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)'
+		$out `replace' adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval') 		
+}		
+		
+*******************	
+*** Table 5: Principal Selection and School Staff	
+*******************	
+{
+	* Load dataset
+	use "Data/clean/DataForRegressionsADP.dta", clear
+	
+	global out outreg2 using "Tables/Table_5",  label tex(frag) bdec(3) sdec(3) keep(PostChangePpal_ADP PostChangePpal) nocons nonotes addtext(Year FE, Yes, School FE, Yes, School controls, Yes, Municipality controls, Yes)  
+	
+	global MainTeacher "Dfired_sup_20501 Dhired_sup_20501 Dfired_teach DFhired_teach Dfired_teach_bad DFhired_teach_bad"
+		
+	local replace replace
+	foreach var in $MainTeacher {
+		reghdfe `var' PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1, a(c.($Xm $Xs)#year year rbd )  vce(cluster rbd)
+			test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+			local pval = `r(p)'
+			distinct rbd if e(sample) == 1
+			local N = `r(ndistinct)'
+			sum `var' if e(sample)
+			local mean = `r(mean)'
+			$out `replace' adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval')
+			local replace append	
+	}	
+}	
+
+
+
+**************************************************************************************
+**************************************************************************************
+** APPENDIX
+**************************************************************************************
+**************************************************************************************	
+
+
+**********************
+*** Table A.2: Manager Effectiveness and Observable Characteristics
+**********************
+{
+	use "Data/clean/ADPREG_TEMP.dta", clear
+	
+	gen Edad2=Edad*Edad
+	
+	label var Edad 					"Age"
+	label var Edad2 				"Age2"
+	label var Female 				"Female"
+	label var Perm  				"Perm. Contract"
+	label var Hours 				"Hours Contract"
+	label var CollegeDegree			"College Degree"
+	label var EverTeacher 			"Ever Teacher"
+	label var EverSupportWorker 	"Ever Admin. Supp. Worker"
+	label var EverAdministrative 	"Ever Admin Worker"
+	
+	global out outreg2 using "Tables/Table_A_2", label tex(frag) bdec(3) sdec(3) nocons nonotes 
+	
+	reghdfe SDall_fe_prin_2wayfe Edad Edad2 Female Perm Hours CollegeDegree, a(cod_com_rbd year)
+	distinct rbd if e(sample) == 1
+	local N = `r(ndistinct)'
+	sum SDall_fe_prin_2wayfe if e(sample)
+	local mean = `r(mean)'
+	$out replace adds(# of Schools, `N', Mean Dep Var, `mean') 
+	
+	reghdfe SDall_fe_prin_2wayfe Edad Edad2 Female Perm Hours CollegeDegree EverTeacher EverSupportWorker EverAdministrative, a(cod_com_rbd year)
+	distinct rbd if e(sample) == 1
+	local N = `r(ndistinct)'
+	sum SDall_fe_prin_2wayfe if e(sample)
+	local mean = `r(mean)'
+	distinct rbd if e(sample) == 1
+	local N = `r(ndistinct)'
+	sum SDall_fe_prin_2wayfe if e(sample)
+	local mean = `r(mean)'
+	$out append adds(# of Schools, `N', Mean Dep Var, `mean') 
+	
+	reghdfe SDall_fe_prin_2wayfe Edad Edad2 Female Perm Hours CollegeDegree EverTeacher EverSupportWorker EverAdministrative if Public==1, a(cod_com_rbd year)
+	distinct rbd if e(sample) == 1
+	local N = `r(ndistinct)'
+	sum SDall_fe_prin_2wayfe if e(sample)
+	local mean = `r(mean)'
+	distinct rbd if e(sample) == 1
+	local N = `r(ndistinct)'
+	sum SDall_fe_prin_2wayfe if e(sample)
+	local mean = `r(mean)'
+	$out append adds(# of Schools, `N', Mean Dep Var, `mean') 
+
+	reghdfe SDall_fe_prin_2wayfe Edad Edad2 Female Perm Hours CollegeDegree EverTeacher EverSupportWorker EverAdministrative if Public==0, a(cod_com_rbd year)
+	distinct rbd if e(sample) == 1
+	local N = `r(ndistinct)'
+	sum SDall_fe_prin_2wayfe if e(sample)
+	local mean = `r(mean)'
+	distinct rbd if e(sample) == 1
+	local N = `r(ndistinct)'
+	sum SDall_fe_prin_2wayfe if e(sample)
+	local mean = `r(mean)'
+	$out append adds(# of Schools, `N', Mean Dep Var, `mean') 
+	
+}
+
+**********************
+*** Table A.6: Principal Selection and Principal Effectiveness: Weighted least squares		
+**********************
+{		
+	* Load dataset	
+	use "Data/clean/DataForRegressionsADP.dta", clear
+	g se_fe_prin = sqrt(se2_fe_prin)
+	g wt = 1/se_fe_prin
+	
+	global out outreg2 using "Tables/Table_A_6",  label tex(frag) bdec(3) sdec(3) nocons nonotes keep(PostChangePpal_ADP PostChangePpal) 
+	
+	local append replace
+	* SDall_fe_prin_2wayfe SDall_fe_prin_2wayfe_nonadj
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 [aw=wt], a(year rbd )  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)'
+		$out `append' adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval')  addtext(Year FE, Yes, School FE, Yes, School controls, No, Municipality controls, No)  
+		local append append
+
+	* Add School controls
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 [aw=wt], a(c.($Xs)#year year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)'
+		$out `append' adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval') addtext(Year FE, Yes, School FE, Yes, School controls, Yes, Municipality controls, No) 
+	
+	* Add Municipality controls 
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 [aw=wt], a(c.($Xm)#year year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)'
+		$out `append' adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval') addtext(Year FE, Yes, School FE, Yes, School controls, No, Municipality controls, Yes)  
+		
+	* Add Municipality and School controls 
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1 [aw=wt], a(c.($Xm $Xs)#year year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)'
+		$out `append' adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval') addtext(Year FE, Yes, School FE, Yes, School controls, Yes, Municipality controls, Yes) 
+}	
+		
+**********************
+*** Table A.7: Principal Selection and Principal Effectiveness by Rurality
+**********************
+{	
+	* Load dataset	
+	use	"Data/clean/DataForRegressionsADP.dta", clear
+			
+	*** Panel A: Based on school status
+	global out outreg2 using "Tables/Table_A_7_A", label tex(frag) bdec(3) sdec(3) keep(PostChangePpal_ADP PostChangePpal)  nonotes 	
+	
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP PostChangePpal if rural_rbd == 1 & t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1, a(year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum SDall_fe_prin_2wayfe if e(sample)
+		local mean = `r(mean)'
+		$out replace adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval')  addtext(Year FE, Yes, School FE, Yes) ctitle("Rural")
+	
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP PostChangePpal if rural_rbd == 0 & t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1, a(year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum SDall_fe_prin_2wayfe if e(sample)
+		local mean = `r(mean)'
+		$out append adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval')  addtext(Year FE, Yes, School FE, Yes) ctitle("Urban")
+	
+	* pvalue difference: column 1-2 panel A, Take the value for the PostChangePpal_ADP_rural coefficient
+	g PostChangePpal_ADP_rural = PostChangePpal_ADP * rural_rbd
+	g PostChangePpal_rural = PostChangePpal * rural_rbd
+	
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP_rural PostChangePpal_ADP PostChangePpal PostChangePpal_rural if  t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1, a(year#i.rural_rbd rbd)  vce(cluster rbd)
+
+	
+	* Only Public
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP if rural_rbd == 1 & t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & Dmun == 1, a(year rbd)  vce(cluster rbd)
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum SDall_fe_prin_2wayfe if e(sample)
+		local mean = `r(mean)'
+		$out append adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval')  addtext(Year FE, Yes, School FE, Yes) ctitle("Rural")
+				
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP if rural_rbd == 0 & t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & Dmun == 1, a(year rbd)  vce(cluster rbd)
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum SDall_fe_prin_2wayfe if e(sample)
+		local mean = `r(mean)'
+		$out append adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval')  addtext(Year FE, Yes, School FE, Yes) ctitle("Urban")
+	
+	* pvalue difference: column 3-4 panel A, Take the value for the PostChangePpal_ADP_rural coefficient
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP_rural PostChangePpal_ADP if  t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & Dmun == 1, a(year#i.rural_rbd rbd)  vce(cluster rbd)	
+	
+	
+	
+	*** PANEL B: Based on municipality characteristic
+	global out outreg2 using "Tables/Table_A_7_B",  label tex(frag) bdec(3) sdec(3) keep(PostChangePpal_ADP PostChangePpal)  nonotes 	
+	
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP PostChangePpal if Rural_p50 == 1 & t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1, a(year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum SDall_fe_prin_2wayfe if e(sample)
+		local mean = `r(mean)'
+		$out replace adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval')  addtext(Year FE, Yes, School FE, Yes) ctitle("Rural")
+	
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP PostChangePpal if Rural_p50 == 0 & t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1, a(year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum SDall_fe_prin_2wayfe if e(sample)
+		local mean = `r(mean)'
+		$out append adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval')  addtext(Year FE, Yes, School FE, Yes) ctitle("Urban")
+	
+	* pvalue difference: column 1-2 panel B, Take the value for the PostChangePpal_ADP_rural coefficient
+	cap drop PostChangePpal_ADP_rural
+	cap drop PostChangePpal_rural
+	g PostChangePpal_ADP_rural = PostChangePpal_ADP * Rural_p50
+	g PostChangePpal_rural = PostChangePpal * Rural_p50
+	
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP_rural PostChangePpal_ADP PostChangePpal_rural PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 , a(year#i.Rural_p50 rbd)  vce(cluster rbd)
+	
+	* Only Public
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP if Rural_p50 == 1 & t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & Dmun == 1, a(year rbd)  vce(cluster rbd)
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum SDall_fe_prin_2wayfe if e(sample)
+		local mean = `r(mean)'
+		$out append adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval')  addtext(Year FE, Yes, School FE, Yes) ctitle("Rural")
+
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP if Rural_p50 == 0 & t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & Dmun == 1, a(year rbd)  vce(cluster rbd)
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum SDall_fe_prin_2wayfe if e(sample)
+		local mean = `r(mean)'
+		$out append adds(# of Schools, `N', Mean Dep Var, `mean', pvalue a + b = 0, `pval')  addtext(Year FE, Yes, School FE, Yes) ctitle("Urban")
+	
+	* pvalue difference: column 3-4 panel B, Take the value for the PostChangePpal_ADP_rural coefficient
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP_rural PostChangePpal_ADP if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & Dmun == 1, a(year#i.Rural_p50 rbd)  vce(cluster rbd)	
+}
+	
+**********************
+*** Table A.8: School and Municipality Characteristics, by ADP Adoption 
+**********************
+{
+	use "Data/clean/Base_ADPAnalysis.dta", clear
+		
+	global Xs "ShPoor_11 matricula_total_11 prom_lect4b_rbd_11 prom_mate4b_rbd_11"
+	global Xm "hm_extpoor_rate_11 h_ypchtot_11 unempl_rate_11 esc_11 literacy_rate_11"
+	
+	xtset rbd year
+	foreach k in matricula_total liquido_pago_student rural_rbd  porc_conc_DatosAbiertos ///
+				prom_lect4b_rbd prom_mate4b_rbd PSU_leng PSU_mat{
+		gen Del`k' = d.`k'			
+	}
+	
+	gen ADP2014_post = (min_adp > 2013 )
+	replace ADP2014_post = . if EverADP == 0
+		
+	* Columns 1 to 6	
+	balancetable (mean if EverADP == 0) (mean if EverADP == 1) (diff EverADP)  (mean if ADP2014_post == 0) (mean if ADP2014_post == 1) (diff ADP2014_post if ADP2014_post != .) ///
+				matricula_total Delmatricula_total rural_rbd liquido_pago_student Delliquido_pago_student   ///
+				porc_conc_DatosAbiertos Delporc_conc_DatosAbiertos prom_lect4b_rbd Delprom_lect4b_rbd ///
+				prom_mate4b_rbd Delprom_mate4b_rbd PSU_leng DelPSU_leng PSU_mat	DelPSU_mat ///   
+				if year==2011  using "Tables/Table_A_8_A.tex", replace varla pval ctitles("Never ADP" "Ever ADP" "Difference" "Early ADP" "Later ADP" "Difference") 
+
+	balancetable (mean if EverADP == 0) (mean if EverADP == 1) (diff EverADP)  (mean if ADP2014_post == 0) (mean if ADP2014_post == 1) (diff ADP2014_post if ADP2014_post != .) ///
+				hm_extpoor_rate h_ypchtot unempl_rate esc  ///
+				if year==2011  using "Tables/Table_A_8_B.tex", replace varla pval ctitles("Never ADP" "Ever ADP" "Difference" "Early ADP" "Later ADP" "Difference") 
+				
+	* Column 7 
+	use "Data/clean/DataForRegressionsADP.dta", clear
+	
+	xtset rbd year
+	foreach k in matricula_total liquido_pago_student rural_rbd  porc_conc_DatosAbiertos ///
+				prom_lect4b_rbd prom_mate4b_rbd  PSU_leng PSU_mat {
+		g Del`k' = d.`k'			
+	}
+	sum matricula_total Delmatricula_total rural_rbd liquido_pago_student Delliquido_pago_student   ///
+		porc_conc_DatosAbiertos Delporc_conc_DatosAbiertos prom_lect4b_rbd Delprom_lect4b_rbd ///
+		prom_mate4b_rbd Delprom_mate4b_rbd PSU_leng DelPSU_leng PSU_mat	DelPSU_mat ///  
+		if Dmun == 0 & year == 2011	
+		
+	sum hm_extpoor_rate h_ypchtot unempl_rate esc if Dmun == 0	& year == 2011
+	
+	codebook rbd if  Dmun == 0	& year == 2011
+	
+}
+
+	
+**********************
+*** Table A.9: Principal Selection and Principal Effectiveness: Placebos
+**********************
+{
+	/*
+	Observations: The number of observations in columns 1 and 2 in this table 
+		are the same as the in Table column 9, and for columns 3 and 4 the number 
+		of observations are the ones from column 10 of Table 2.	
+	*/
+	
+	* Column 1	
+	****** DATASET: Keep public
+	use "Data/clean/Base_ADPAnalysis.dta", clear
+	
+	* Placebo treatment	
+	rename PostChangePpal PostChangePpal_pre
+	rename t_pla t_pla_pre
+	rename MinYearPpalChange MinYearPpalChange_pre
+		
+	keep if t_pla_pre>=-4 & t_pla_pre <= 3 & year >= 2009 & year <= 2012 & Dmun == 1
+	drop min_adp	
+	g min_adp = year if t_pla_pre == 0
+	spread min_adp, by(rbd)
+	
+	keep SDall_fe_prin_2wayfe PostChangePpal_pre rbd year min_adp
+	
+	twowayfeweights SDall_fe_prin_2wayfe rbd year PostChangePpal_pre,  type(feTR)
+	di 192/555
+	* Sum of negative weights  -.01237145
+		
+	local w = 1
+	local w1 = 1
+	did_multiplegt SDall_fe_prin_2wayfe rbd year PostChangePpal_pre, placebo(`w1') breps(20) robust_dynamic dynamic(`w') cluster(rbd) covariances seed(1111001) average_effect
+	
+	* Column 2: See R code CallawayAndSantAna.R
+	/*
+	Overall summary of ATT's based on event-study/dynamic aggregation:  
+    ATT    Std. Error    
+	0.0213        0.1097    
+	*/
+	
+		
+	* Column 3	
+	****** DATASET: Keep private	
+	use "Data/clean/ADPREG_TEMP.dta", clear	
+	
+	keep if Dmun == 0
+
+	xtset rbd year
+	g change_ppal = 1 if id_prin != l.id_prin
+	g YearPpalChange = year if change_ppal == 1 & year >= 2012
+	bys rbd: egen MinYearPpalChange = min(YearPpalChange)
+	spread MinYearPpalChange, by(rbd)
+	g t_pla = year - MinYearPpalChange
+	
+	g EverChange = (MinYearPpalChange != .)
+ 
+	g PostChangePpal = 1 if (year >= MinYearPpalChange) 
+	replace PostChangePpal = 0 if PostChangePpal == .
+	cap drop t
+	g t = year - MinYearPpalChange
+	replace t = 0 if EverChange == 0
+			
+	keep if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & Dmun == 0
+			
+	keep SDall_fe_prin_2wayfe PostChangePpal rbd year MinYearPpalChange
+	rename MinYearPpalChange min_adp
+	replace min_adp = 0 if min_adp == 2017 | min_adp == .
+	
+	twowayfeweights SDall_fe_prin_2wayfe rbd year PostChangePpal,  type(feTR)
+	di 804/ 5195
+	* Sum of negative weights  -.0658051
+		
+	local w = 3
+	local w1 = 3	
+	did_multiplegt SDall_fe_prin_2wayfe rbd year PostChangePpal, placebo(`w1') breps(20) robust_dynamic dynamic(`w') cluster(rbd)	jointtestplacebo covariances seed(1111001) average_effect
+		
+	g avg = e(effect_average)
+	g se_avg = `e(se_effect_average)'
+	g tstat_avg = avg / se_avg
+	g pval_pre = `e(p_jointplacebo)'
+	sum avg tstat_avg se_avg pval_pre
+			
+	* Column 4: See R code CallawayAndSantAna.R
+	/*
+		Overall summary of ATT's based on event-study/dynamic aggregation:  
+		ATT    Std. Error     
+		-0.0268        0.0361    
+	*/
+
+			
+}	
+		
+**********************
+*** Table A.10: Principal Selection and Principal Effectiveness: Controlling for school markets
+**********************
+{	
+	* Load dataset		
+	use	"Data/clean/DataForRegressionsADP.dta", clear
+	
+	global out outreg2 using "Tables/Table_A_10",  label tex(frag) bdec(3) sdec(3) keep(PostChangePpal_ADP PostChangePpal) nonotes 
+	
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1, a(year rbd i.cod_com_rbd#i.year)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)'
+		distinct cod_com_rbd if e(sample) == 1
+		local N2 = `r(ndistinct)'
+		$out adds(# of Schools, `N', # of markets, `N2', Mean Dep Var, `mean', pvalue a + b = 0, `pval') addtext(Year FE, Yes, School FE, Yes, School Market-Year , Yes) ctitle("Municipality") replace
+	
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1, a(year rbd i.mkt_4km#i.year)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)'
+		distinct mkt_4km if e(sample) == 1
+		local N2 = `r(ndistinct)'
+		$out adds(# of Schools, `N', # of markets, `N2', Mean Dep Var, `mean', pvalue a + b = 0, `pval') addtext(Year FE, Yes, School FE, Yes, School Market-Year , Yes) ctitle("4km")	
+		
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1, a(year rbd i.mkt_5km#i.year)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)'
+		distinct mkt_5km if e(sample) == 1
+		local N2 = `r(ndistinct)'
+		$out adds(# of Schools, `N', # of markets, `N2', Mean Dep Var, `mean', pvalue a + b = 0, `pval') addtext(Year FE, Yes, School FE, Yes, School Market-Year , Yes) ctitle("5km")
+		
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1, a(year rbd i.mkt_6km#i.year)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)'
+		distinct mkt_6km if e(sample) == 1
+		local N2 = `r(ndistinct)'
+		$out adds(# of Schools, `N', # of markets, `N2', Mean Dep Var, `mean', pvalue a + b = 0, `pval') addtext(Year FE, Yes, School FE, Yes, School Market-Year , Yes) ctitle("6km")
+		
+	reghdfe SDall_fe_prin_2wayfe PostChangePpal_ADP PostChangePpal if t>=-4 & t <= 3 & year >= 2009 & year <= 2016 & sample == 1, a(year rbd i.mkt_7km#i.year)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		distinct rbd if e(sample) == 1
+		local N = `r(ndistinct)'
+		sum `e(depvar)' if e(sample)
+		local mean = `r(mean)'
+		distinct mkt_7km if e(sample) == 1
+		local N2 = `r(ndistinct)'
+		$out adds(# of Schools, `N', # of markets, `N2', Mean Dep Var, `mean', pvalue a + b = 0, `pval') addtext(Year FE, Yes, School FE, Yes, School Market-Year , Yes) ctitle("7km")		
+}	
+
+********************
+*** Table A.11: Principal Selection, GPA, and School Attendance
+********************	
+{	
+	* Load dataset		
+	use	"Data/clean/DataForRegressionsADP.dta", clear
+		
+	global out outreg2 using "Tables/Table_A_11",  label tex(frag) bdec(3) sdec(3) keep(PostChangePpal_ADP PostChangePpal) nocons addtext(Year FE, Yes, School FE, Yes) nonotes 	
+	
+	local append replace
+	foreach var in gpa_grado1_8 gpa_grado9_12 attendance_grado1_8 attendance_grado9_12 {
+	reghdfe `var' PostChangePpal_ADP PostChangePpal if sample==1, a(year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'
+		sum `e(depvar)' if e(sample) == 1
+		$out `append' adds(Mean dep var, `r(mean)', pvalue a + b = 0, `pval')
+	local append append
+	}	
+}
+		
+********************
+*** Table A.12: Principal Selection, Students' Sorting, and Teachers' Surveys
+********************		
+{
+	* Load dataset		
+	use	"Data/clean/DataForRegressionsADP.dta", clear
+
+	global out outreg2 using "Tables/Table_A_12",  label tex(frag) bdec(3) sdec(3)  keep(PostChangePpal_ADP PostChangePpal) nocons addtext(Year FE, Yes, School FE, Yes) nonotes 
+	
+	local append replace
+	reghdfe estimate_w PostChangePpal_ADP PostChangePpal if sample==1, a(year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'	
+		sum `e(depvar)' if e(sample) == 1
+		$out `append' adds(Mean dep var, `r(mean)', pvalue a + b = 0, `pval')
+	
+	local append append
+	foreach x of numlist 1/7 9{
+		reghdfe d_about_dir_0`x' PostChangePpal_ADP PostChangePpal if sample==1, a(year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'	
+		sum `e(depvar)' if e(sample) == 1
+		$out `append' adds(Mean dep var, `r(mean)', pvalue a + b = 0, `pval')
+	}
+	foreach x of numlist 10/12 15{
+		reghdfe d_about_dir_`x' PostChangePpal_ADP PostChangePpal if sample==1, a(year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'	
+		sum `e(depvar)' if e(sample) == 1
+		$out `append' adds(Mean dep var, `r(mean)', pvalue a + b = 0, `pval')	
+	}	
+}	
+		
+********************
+*** Table A.13: Principal Selection and Principals' Characteristics
+********************	
+{	
+	* Load dataset		
+	use	"Data/clean/DataForRegressionsADP.dta", clear
+
+	*** Panel A: Baseline
+	global out outreg2 using "Tables/Table_A_13_A",  label tex(frag) bdec(3) sdec(3)  keep(PostChangePpal_ADP PostChangePpal) nocons addtext(Year FE, Yes, School FE, Yes) nonotes 
+	
+	local append replace
+	foreach var in EverTeacher EverAnyAdmin EverPrincipal EverPrivate Edad Female CollegeDegree {
+		reghdfe `var' PostChangePpal_ADP PostChangePpal if sample==1, a(year rbd)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'			
+		sum `e(depvar)' if e(sample) == 1
+		$out `append' adds(Mean dep var, `r(mean)', pvalue a + b = 0, `pval')
+		local append append
+	}
+		
+	*** Panel B: Adds county-year fixed effects
+	global out outreg2 using "Tables/Table_A_13_B",  label tex(frag) bdec(3) sdec(3) keep(PostChangePpal_ADP PostChangePpal) nocons addtext(Year FE, Yes, School FE, Yes) nonotes 
+
+	local append replace
+	foreach var in EverTeacher EverAnyAdmin /*EverSupportWorker EverAdministrative*/ EverPrincipal EverPrivate Edad Female CollegeDegree{
+		reghdfe `var' PostChangePpal_ADP PostChangePpal if sample==1, a(year rbd i.cod_com_rbd#i.year)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'			
+		sum `e(depvar)' if e(sample) == 1
+		$out `append' adds(Mean dep var, `r(mean)', pvalue a + b = 0, `pval')
+		local append append
+	}
+	
+	*** Panel C: Adds school market-year fixed effects
+	global out outreg2 using "Tables/Table_A_13_C",  label tex(frag) bdec(3) sdec(3) keep(PostChangePpal_ADP PostChangePpal) nocons addtext(Year FE, Yes, School FE, Yes) nonotes 
+
+	local append replace
+	foreach var in EverTeacher EverAnyAdmin /*EverSupportWorker EverAdministrative*/ EverPrincipal EverPrivate Edad Female CollegeDegree{
+		reghdfe `var' PostChangePpal_ADP PostChangePpal if sample==1, a(year rbd i.mkt_7km#i.year)  vce(cluster rbd)
+		test _b[PostChangePpal_ADP] + _b[PostChangePpal] = 0
+		local pval = `r(p)'			
+		sum `e(depvar)' if e(sample) == 1
+		$out `append' adds(Mean dep var, `r(mean)', pvalue a + b = 0, `pval') 
+		local append append
+	}
+}
+	
+********************
+*** Table A.14: Principals' Characteristics by ADP Status 
+********************	
+{
+	use "Data/clean/Base_ADPAnalysis.dta", clear
+			
+	xtset rbd year
+	
+	gen ADP2014_post = (min_adp > 2013 )
+	replace ADP2014_post = . if EverADP == 0			
+	
+	g EverAnyAdmin = (EverSupportWorker + EverAdministrative > 0)
+		
+	collapse (max) EverTeacher EverAnyAdmin SDall_fe_prin_2wayfe Edad Female CollegeDegree EverPrivate (max) adp SenioritySystem, by(id_prin)
+		
+	label var EverTeacher				"Teacher before"
+	label var EverAnyAdmin				"Administrative before"
+	label var SDall_fe_prin_2wayfe 		"Principal effectiveness"
+	label var EverPrivate				"Worked in private sector"
+	label var CollegeDegree 			"College degree"
+	label var Edad 						"Age"
+	label var Female 					"Female"
+	label var SenioritySystem			"Experience in public sector"
+		
+	keep if SDall_fe_prin_2wayfe!=.
+	balancetable adp EverTeacher EverAnyAdmin EverPrivate CollegeDegree Edad Female	///
+		using "Tables/Table_A_14.tex", replace varla pval ctitles("Not ADP" "ADP" "Difference") 
+		
+	** Column 4	
+	use "Data/clean/DataForRegressionsADP.dta", clear
+	
+	keep if Dmun == 0	
+	collapse (max) EverTeacher EverAnyAdmin SDall_fe_prin_2wayfe Edad Female CollegeDegree EverPrivate , by(id_prin)
+		
+	keep if SDall_fe_prin_2wayfe!=.
+	sum EverTeacher EverAnyAdmin EverPrivate CollegeDegree Edad Female	
+	
+}	
+
+********************
+*** Table A.15: Market Level Treatments and Principal's Characteristics
+********************	
+{
+	* Load dataset		
+	use	"Data/clean/DataForRegressionsADP.dta", clear
+
+	*** PANEL A: County
+	preserve
+		bys cod_com_rbd: egen min_year_adp = min(year) if PostChangePpal_ADP == 1
+		spread min_year_adp , by(cod_com_rbd)
+		drop if Dmun == 1
+		keep if sample == 1
+		
+		g PostADPMarket = 1 if year > min_year_adp & min_year_adp != .
+		tab min_year_adp
+		codebook cod_com_rbd if min_year_adp == .
+		codebook cod_com_rbd if min_year_adp != .
+		replace PostADPMarket = 0 if PostADPMarket == .
+		
+		label var PostADPMarket "Post ADP turnouver in the market"
+		
+		global out outreg2 using "Tables/Table_A_15_A",  label tex(frag) bdec(3) sdec(3) keep(PostADPMarket) nocons addtext(Year FE, Yes, School FE, Yes) nonotes
+		
+		local append replace		
+		foreach var in EverTeacher EverAnyAdmin EverPrincipal EverPrivate Edad Female CollegeDegree{
+			reghdfe `var' PostADPMarket if sample==1, a(year rbd)  vce(cluster rbd)
+			sum `e(depvar)' if e(sample) == 1
+			$out `append' adds(Mean dep var, `r(mean)') 
+			local append append
+		}	
+	restore
+	
+	*** PANEL B: School Market
+	preserve
+		bys mkt_7km: egen min_year_adp = min(year) if PostChangePpal_ADP == 1
+		spread min_year_adp , by(mkt_7km)
+		drop if Dmun == 1
+		keep if sample == 1
+		
+		g PostADPMarket = 1 if year > min_year_adp & min_year_adp != .
+		tab min_year_adp
+		codebook mkt_7km if min_year_adp == .
+		codebook mkt_7km if min_year_adp != .
+		replace PostADPMarket = 0 if PostADPMarket == .
+		
+		label var PostADPMarket "Post ADP turnouver in the market"
+		
+		global out outreg2 using "Tables/Table_A_15_B",  label tex(frag) bdec(3) sdec(3) keep(PostADPMarket) nocons addtext(Year FE, Yes, School FE, Yes) nonotes
+		
+		local append replace
+		foreach var in EverTeacher EverAnyAdmin EverPrincipal EverPrivate Edad Female CollegeDegree{
+			reghdfe `var' PostADPMarket if sample==1, a(year rbd)  vce(cluster rbd)
+			sum `e(depvar)' if e(sample) == 1
+			$out `append' adds(Mean dep var, `r(mean)') 
+			local append append
+		}	
+	restore		
+}
+	
+********************
+*** Table A.16: Characteristics of Origin and Destination Schools of ADP principals 
+********************	
+{
+	use "Data/clean/ADPREG_TEMP.dta", clear	
+		
+	global contS "ShPoor mean_test matricula_total liquido_pago_student rural_rbd"
+	global contM "h_ypchtot esc hm_extpoor_rate literacy_rate unempl_rate "
+	
+		gen aux_EverADPppal = 1 if adp == 1
+		egen EverADPppal = min(aux_EverADPppal), by(id_prin) 
+		drop aux_EverADPppal
+		keep if EverADPppal == 1 
+		
+		** # of ADP principals
+		codebook id_prin 
+		** # of ADP principals that worked before in the pub sector
+		codebook id_prin if adp == 0 
+		
+		gen aux_Pre  = 1 if adp == 0 
+		gen aux_Post = 1 if adp == 1
+		
+		egen Pre=min(aux_Pre), by(id_prin)
+		egen Post=min(aux_Post), by(id_prin)
+		
+		drop aux_Pre aux_Post
+		
+		replace Pre = 0 if Pre == .
+		replace Post = 0 if Post == .
+		
+		gen Both = Pre * Post
+		keep if Both == 1
+		
+		collapse (mean) WageSchool WagePrin $contS $contM , by(adp id_prin)
+				
+		label var WageSchool			"Average Wage"
+		label var WagePrin				"Average Principal Wage"
+		label var ShPoor				"Share of Disadvantaged Students"
+		label var matricula_total 		"School Size"
+		label var mean_test 			"Average Test Score"
+		label var liquido_pago_student	"Income per student"
+		label var rural_rbd         	"Rural School"
+		
+		label var h_ypchtot				"Average Income"
+		label var esc					"Average Years of Education"
+		label var literacy_rate			"Literacy Rate"
+		label var hm_extpoor_rate		"Poverty Rate"
+		label var unempl_rate			"Unemployment Rate"
+		
+		balancetable adp WagePrin WageSchool $contS hm_extpoor_rate h_ypchtot unempl_rate esc	///
+			using "Tables/Table_A_16.tex", replace varla ctitles("Origin" "Destination" "Difference") 
+	
+}	

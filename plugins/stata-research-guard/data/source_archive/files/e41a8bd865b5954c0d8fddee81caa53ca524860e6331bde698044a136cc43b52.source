@@ -1,0 +1,757 @@
+********************************************************************************
+* .do file for DATA ANALYSIS
+* for Budjan, Angelika J., and Andreas Fuchs
+* "Democracy and Aid Donorship"
+* American Economic Journal: Economic Policy
+* AEA Data and Code Repository project ID ("120068")
+* Last edited on August 5, 2020
+********************************************************************************
+********************************************************************************
+clear all
+clear matrix
+clear mata
+set maxvar 10000
+set matsize 10000
+
+use "${outputdata}\new_donors_MAIN", clear
+
+*********************************************************************************************
+*** MAIN REGRESSION RESULTS *****************************************************************
+*********************************************************************************************
+
+****************************************************************************************
+*** Table 2: Baseline results: OLS and IV **********************************************
+****************************************************************************************
+*** 1. No internation **************************************************
+				
+** OLS with FE:
+	xtreg  dummy_inst  acemoglu_democ_1 lg_rgdpna_percap_1 d d2 d3 i.t, fe cluster(cid) 
+		outreg2 using "${results}\table2", tex noaster dec(4) nocons replace e( r2_a) label keep(acemoglu_democ_1 lg_rgdpna_percap_1) addtext(Country FE and year FE, Yes, Duration dependence, Yes)
+
+** IV 
+	 xi: xtivreg2  dummy_inst lg_rgdpna_percap_1 (acemoglu_democ_1 =Z_democracy_2 ) d d2 d3 i.t, fe cluster(cid) endog(acemoglu_democ_1) first savefirst savefprefix(fstage_) 
+		outreg2 using "${results}\table2", tex noaster dec(4) nocons label addstat("Kleibergen-Paap", e(widstat))  append keep(lg_rgdpna_percap_1 acemoglu_democ_1 ) addtext(Country FE and year FE, Yes, Duration dependence, Yes)	
+		est restore fstage_acemoglu_democ_1
+		outreg2 using "${results}\appendixB1", tex noaster dec(4) nocons label  replace keep(Z_democracy_2 lg_rgdpna_percap_1) addtext(Control variables, No, Country and year FE, Yes, Duration dependence, Yes)
+
+***2. With interaction **************************************************
+
+** OLS with FE:
+	xtreg  dummy_inst  acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 d d2 d3 i.t, fe cluster(cid) 
+		outreg2 using "${results}\table2", tex noaster nocons label dec(4) append e( r2_a) keep(acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1) addtext(Country FE and year FE, Yes, Duration dependence, Yes)
+**IV 
+	 xi: xtivreg2  dummy_inst lg_rgdpna_percap_1 (acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.t, fe cluster(cid)  first savefirst savefprefix(fstage_) 
+		outreg2 using "${results}\table2", tex noaster dec(4) nocons label addstat("Kleibergen-Paap", e(widstat))  append keep(lg_rgdpna_percap_1 acemoglu_democ_1 democxgdp_1) addtext(Country FE and year FE, Yes, Duration dependence, Yes)
+		est restore fstage_acemoglu_democ_1
+		outreg2 using "${results}\appendixB1", tex noaster dec(4) nocons label  append keep(Z_democracy_2 Z_democxgdp_2 lg_rgdpna_percap_1) addtext(Control variables, No, Country and year FE, Yes, Duration dependence, Yes)
+		est restore fstage_democxgdp_1
+		outreg2 using "${results}\appendixB1", tex noaster dec(4) nocons label  append keep(Z_democracy_2 Z_democxgdp_2 lg_rgdpna_percap_1) addtext(Control variables, No, Country and year FE, Yes, Duration dependence, Yes)
+
+*** 3. With interaction and controls *************************************	
+		
+
+** OLS with FE and controls
+	xtreg  dummy_inst  acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 kg_1 US_idealpoint_1  lgpop_1 lg_rgdpna_percap_1  openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t, fe cluster(cid) 
+		outreg2 using "${results}\table2", tex noaster dec(4) nocons label append e( r2_a) keep(acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 kg_1 US_idealpoint_1  lgpop_1 lg_rgdpna_percap_1  openness_pwt_1 dummy_terr_conflict_1)  addtext(Country FE and year FE, Yes, Duration dependence, Yes)
+		
+**IV with controls
+	 xi: xtivreg2  dummy_inst lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  (acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.t, fe cluster(cid) endog(acemoglu_democ_1 democxgdp_1) first savefirst savefprefix(fstage_) 
+		outreg2 using "${results}\table2", tex noaster dec(4) nocons label addstat("Kleibergen-Paap", e(widstat)) append keep(lg_rgdpna_percap_1 acemoglu_democ_1 democxgdp_1 lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1  openness_pwt_1 dummy_terr_conflict_1 ) addtext(Country FE and year FE, Yes, Duration dependence, Yes)
+		est restore fstage_acemoglu_democ_1
+		outreg2 using "${results}\appendixB1", tex noaster dec(4) nocons label  append keep(Z_democracy_2 Z_democxgdp_2 lg_rgdpna_percap_1) addtext(Control variables, Yes, Country and year FE, Yes, Duration dependence, Yes)
+		est restore fstage_democxgdp_1
+		outreg2 using "${results}\appendixB1", tex noaster dec(4) nocons label  append keep(Z_democracy_2 Z_democxgdp_2 lg_rgdpna_percap_1) addtext(Control variables, Yes, Country and year FE, Yes, Duration dependence, Yes)
+		
+*** 4. First aid project (broad definition) ************************************
+
+	*OLS with FE and controls
+	xtreg  dummy_first_aid acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 kg_1 US_idealpoint_1  lgpop_1  openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t, fe cluster(cid)  
+		outreg2 using "${results}\table2", tex noaster dec(4) nocons label  append e( r2_a) keep(acemoglu_democ_1   lg_rgdpna_percap_1 democxgdp_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1 ) addtext(Country FE and year FE, Yes, Duration dependence, Yes)
+		
+**IV with controls
+	* IV with controls
+	 xi: xtivreg2  dummy_first_aid lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  (acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.t, fe cluster(cid) first savefirst savefprefix(fstage_) 
+		outreg2 using "${results}\table2", tex noaster dec(4) nocons label addstat("Kleibergen-Paap", e(widstat)) append keep(lg_rgdpna_percap_1 acemoglu_democ_1 democxgdp_1 lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1 ) addtext(Country FE and year FE, Yes, Duration dependence, Yes)
+		est restore fstage_acemoglu_democ_1
+		outreg2 using "${results}\appendixB1", tex noaster dec(4) nocons label  append keep(Z_democracy_2 Z_democxgdp_2 lg_rgdpna_percap_1) addtext(Control variables, Yes, Country and year FE, Yes, Duration dependence, Yes)
+		est restore fstage_democxgdp_1
+		outreg2 using "${results}\appendixB1", tex noaster dec(4) nocons label  append keep(Z_democracy_2 Z_democxgdp_2 lg_rgdpna_percap_1) addtext(Control variables, Yes, Country and year FE, Yes, Duration dependence, Yes)
+			
+********************************************************************************
+*** Table 1: Summary Statistics ************************************************
+********************************************************************************
+use "${outputdata}\new_donors_MAIN", clear
+
+outreg2 using "${results}\table1a" if sample==1, tex label sum(log) keep(dummy_first_aid dummy_inst  coldwar_1 lg_colony_penn_1 acemoglu_democ_1 Democ_dummy_1 v2x_polyarchy_1 W_epr_1 Z_democracy_1 polity2_1 W_BdM_1 d lg_rgdpna_percap_1 kg_1 dummy_terr_conflict_1 dummy_midb_1 openness_pwt_1 RUS_idealpoint_1 US_idealpoint_1  lgpop_1  SL_prox_inst_1 Z_dummy_inst_1 lg_SL_prox_gdp_1 Z_lg_gdp_percap_1) replace ///
+	sortvar(dummy_first_aid dummy_inst lg_ODA_disbursements lg_ODA_commitments_aiddata coldwar_1 lg_colony_penn_1 acemoglu_democ_1 Democ_dummy_1 v2x_polyarchy_1 W_epr_1 Z_democracy_1 polity2_1 W_BdM_1 d lg_rgdpna_percap_1 kg_1 dummy_terr_conflict_1 dummy_midb_1 openness_pwt_1 RUS_idealpoint_1 US_idealpoint_1  lgpop_1  SL_prox_inst_1 Z_dummy_inst_1 lg_SL_prox_gdp_1 Z_lg_gdp_percap_1) auto(3)
+
+qui xtreg lg_ODA_disbursements  acemoglu_democ_1##c.lg_rgdpna_percap_1 kg_1 US_idealpoint_1 lgpop_1 lg_rgdpna_percap_1  openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t if t>1970, fe cluster(cid) 
+outreg2 using "${results}\table1b" if e(sample), tex label sum(log) auto(3) keep(lg_ODA_disbursements) replace ///
+
+qui xtreg lg_ODA_commitments_aiddata  acemoglu_democ_1##c.lg_rgdpna_percap_1 kg_1 US_idealpoint_1 lgpop_1 lg_rgdpna_percap_1  openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t if t>1970, fe cluster(cid) 
+outreg2 using "${results}\table1c" if e(sample), tex label sum(log) auto(3) keep(lg_ODA_commitments_aiddata) replace ///
+
+********************************************************************************
+*** Table 3: Robustness Test - Controlled for spatial lags *********************
+********************************************************************************
+use "${outputdata}\new_donors_MAIN", clear
+
+** A Donor spatial lag (by geographic distance)
+
+		xtreg  dummy_inst  acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 kg_1 US_idealpoint_1  lgpop_1  openness_pwt_1 dummy_terr_conflict_1  SL_prox_inst_1 d d2 d3 i.t if sample==1, fe cluster(cid)
+			outreg2 using "${results}\table3", tex noaster dec(4) nocons replace e(r2_w) label keep(acemoglu_democ_1 lg_rgdpna_percap_1  democxgdp_1 SL_prox_inst_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+		xi: xtivreg2  dummy_inst lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  SL_prox_inst_1 (acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.t, fe cluster(cid) first savefirst savefprefix(fstage_) 
+			outreg2 using "${results}\table3", tex noaster dec(4) nocons label addstat("Kleibergen-Paap", e(widstat)) append keep(lg_rgdpna_percap_1 acemoglu_democ_1 democxgdp_1  SL_prox_inst_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+
+** B Donor spatial (by democracy peer group)
+
+		xtreg  dummy_inst  acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 kg_1 US_idealpoint_1  lgpop_1 openness_pwt_1 dummy_terr_conflict_1 Z_dummy_inst_1 d d2 d3 i.t if sample==1, fe cluster(cid)
+			outreg2 using "${results}\table3", tex noaster dec(4) nocons append e( r2_w) label keep(acemoglu_democ_1 lg_rgdpna_percap_1  democxgdp_1 Z_dummy_inst_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+		 xi: xtivreg2  dummy_inst lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1 Z_dummy_inst_1 (acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.t, fe cluster(cid) first savefirst savefprefix(fstage_) 
+			outreg2 using "${results}\table3", tex noaster dec(4) nocons label addstat("Kleibergen-Paap", e(widstat)) append keep(lg_rgdpna_percap_1 acemoglu_democ_1 democxgdp_1 Z_dummy_inst_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+
+			
+** C GDP spatial lag (by geographic distance)
+
+		xtreg  dummy_inst  acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 kg_1 US_idealpoint_1  lgpop_1  openness_pwt_1 dummy_terr_conflict_1 lg_SL_prox_gdp_1 d d2 d3 i.t if sample==1, fe cluster(cid)
+			outreg2 using "${results}\table3", tex noaster dec(4) nocons append e(r2_w) label keep(acemoglu_democ_1 lg_rgdpna_percap_1  democxgdp_1 lg_SL_prox_gdp_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+		 xi: xtivreg2  dummy_inst lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  lg_SL_prox_gdp_1 (acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.t, fe cluster(cid) first savefirst savefprefix(fstage_) 
+			outreg2 using "${results}\table3", tex noaster dec(4) nocons label addstat("Kleibergen-Paap", e(widstat)) append keep(lg_rgdpna_percap_1 acemoglu_democ_1 democxgdp_1  lg_SL_prox_gdp_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+
+** D GDP spatial lag (by democracy peer group)
+
+		xtreg  dummy_inst  acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 kg_1 US_idealpoint_1  lgpop_1  openness_pwt_1 dummy_terr_conflict_1 Z_lg_gdp_percap_1 d d2 d3 i.t if sample==1, fe cluster(cid)
+			outreg2 using "${results}\table3", tex noaster dec(4) nocons append e(r2_w) label keep(acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1  Z_lg_gdp_percap_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+		 xi: xtivreg2  dummy_inst lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  Z_lg_gdp_percap_1 (acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.t, fe cluster(cid) first savefirst savefprefix(fstage_) 
+			outreg2 using "${results}\table3", tex noaster dec(4) nocons label addstat("Kleibergen-Paap", e(widstat)) append keep(lg_rgdpna_percap_1 acemoglu_democ_1 democxgdp_1  Z_lg_gdp_percap_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+
+********************************************************************************
+*** Appnedix Table A4: Correlation matrix **************************************
+********************************************************************************
+
+cd "${results}"
+
+corrtex dummy_first_aid dummy_inst  coldwar_1 lg_colony_penn_1 acemoglu_democ_1 ///
+Democ_dummy_1 v2x_polyarchy_1 W_epr_1 Z_democracy_1 polity2_1 W_BdM_1 d lg_rgdpna_percap_1 ///
+kg_1 dummy_terr_conflict_1 dummy_midb_1 openness_pwt_1 RUS_idealpoint_1 US_idealpoint_1  ///
+lgpop_1  SL_prox_inst_1 Z_dummy_inst_1 lg_SL_prox_gdp_1 Z_lg_gdp_percap_1 if sample==1 ///
+, file("appendixA4") replace digits(2)
+
+cd "${basepath}"
+
+********************************************************************************
+*** Appnedix Table B2: Robustness - Democracy **********************************
+********************************************************************************
+	
+use "${outputdata}\new_donors_MAIN", clear
+
+*** Average effect
+
+		**a) First inst: Baseline
+	 xi: xtivreg2  dummy_inst  lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t (acemoglu_democ_1 =Z_democracy_2), fe cluster(cid)
+			outreg2 using "${results}\appendixB2a", tex noaster dec(4) replace  addstat("Kleibergen-Paap", e(widstat)) label	keep(acemoglu_democ_1 lg_rgdpna_percap_1) addtext(Controls, Yes, Country and year FE, Yes, Duration dependence, Yes)
+		**b) First inst: Polity IV
+	 xi: xtivreg2  dummy_inst  lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t (polity2_1 = Z2_polity2_2), fe cluster(cid)
+			outreg2 using "${results}\appendixB2a", tex noaster dec(4) append addstat("Kleibergen-Paap", e(widstat)) label	keep(polity2_1 lg_rgdpna_percap_1) addtext(Controls, Yes, Country and year FE, Yes, Duration dependence, Yes)
+		**c) First inst: Democracy Dummy
+	 xi: xtivreg2  dummy_inst   lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t (Democ_dummy_1 = Z2_cheibob_2 ), fe cluster(cid)
+			outreg2 using "${results}\appendixB2a", tex noaster dec(4) append addstat("Kleibergen-Paap", e(widstat)) label	keep(Democ_dummy_1 lg_rgdpna_percap_1) addtext(Controls, Yes, Country and year FE, Yes, Duration dependence, Yes)
+		**d) First aid: Baseline
+	 xi: xtivreg2  dummy_first_aid  lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t (acemoglu_democ_1 =Z_democracy_2), fe cluster(cid)
+			outreg2 using "${results}\appendixB2a", tex noaster dec(4) append addstat("Kleibergen-Paap", e(widstat)) label	keep(acemoglu_democ_1 lg_rgdpna_percap_1) addtext(Controls, Yes, Country and year FE, Yes, Duration dependence, Yes)
+		**e) First aid: Polity IV
+	 xi: xtivreg2  dummy_first_aid  lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t (polity2_1 = Z2_polity2_2), fe cluster(cid)
+			outreg2 using "${results}\appendixB2a", tex noaster dec(4) append addstat("Kleibergen-Paap", e(widstat)) label	keep(polity2_1 lg_rgdpna_percap_1) addtext(Controls, Yes, Country and year FE, Yes, Duration dependence, Yes)
+		**f) First aid: Democracy Dummy
+	 xi: xtivreg2  dummy_first_aid   lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1  openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t (Democ_dummy_1 = Z2_cheibob_2 ), fe cluster(cid)
+			outreg2 using "${results}\appendixB2a", tex noaster dec(4) append addstat("Kleibergen-Paap", e(widstat)) label	keep(Democ_dummy_1 lg_rgdpna_percap_1) addtext(Controls, Yes, Country and year FE, Yes, Duration dependence, Yes)
+
+*** Heterogenous effect
+
+use "${outputdata}\new_donors_MAIN", clear
+
+* Generate mean income
+sum lg_rgdpna_percap_1 if sample==1, detail
+global mean_income = `r(mean)' - 4 /*Since the plot starts at 5 instead of 1 need to adjust this */
+global median_income = `r(p50)' - 4 /*Since the plot starts at 5 instead of 1 need to adjust this */
+
+		**a)Original specification: First Institution
+	 xi: xtivreg2  dummy_inst lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1 	(acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.t, fe cluster(cid) first savefirst savefprefix(fstage_) 
+			outreg2 using "${results}\appendixB2b", tex dec(4) replace noaster addstat("Kleibergen-Paap", e(widstat)) label	keep(acemoglu_democ_1 democxgdp_1 lg_rgdpna_percap_1) addtext(Controls, Yes, Country and year FE, Yes, Duration dependence, Yes)
+				local replace replace
+				local append
+				matrix M=J(9,4,.)
+				matrix coln M = x coeff ll95 ul95
+				matrix rown M = 5 6 7 8 9 10 11 12 13
+				local n 1
+			forvalues x=5(1)13 {
+				nlcom _b[acemoglu_democ_1] + _b[democxgdp_1]*(`x')
+					local tvalue= invttail(e(df_m),0.025)
+					matrix b = r(b)
+					local bw = b[1,1]
+					matrix v = r(V)
+					local vw = v[1,1]
+					local se = sqrt(`vw')
+					local lbx1 = `bw' - `tvalue'*`se'
+					local ubx1 = `bw' + `tvalue'*`se' 
+					cap matrix M[`n',1]= `x', `bw', `lbx1' , `ubx1'
+					local replace
+					local append append
+					local n `n'+1
+			}
+	coefplot (matrix(M[,2]), ci((M[,3] M[,4]))),  vertical graphregion( color(white))  ///
+	xtitle((log) GDP per capita)  ytitle(Narrow definition) recast(connected) /// 
+	yscale(range(-0.4 0.8))  ytick(-0.4(0.1)0.8)  ylabel(-0.4(0.1)0.8) ciopts(recast(rcap))  xline($median_income) title(Democracy (Baseline))
+	graph export "${figures}\figure3a1.png", replace
+	graph export "${figures}\figure3a1.wmf", as(wmf) replace
+
+		**b) First inst: Polity IV
+	 xi: xtivreg2  dummy_inst lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1 (polity2_1 polity2xgdp_1=Z2_polity2_2 Z2_polity2xgdp_2) d d2 d3 i.t, fe cluster(cid) first savefirst savefprefix(fstage_) 
+			outreg2 using "${results}\appendixB2b", tex dec(4) append noaster addstat("Kleibergen-Paap", e(widstat)) label	keep(polity2_1 polity2xgdp_1 lg_rgdpna_percap_1) addtext(Controls, Yes, Country and year FE, Yes, Duration dependence, Yes)
+				local replace replace
+				local append
+				matrix M=J(9,4,.)
+				matrix coln M = x coeff ll95 ul95
+				matrix rown M = 5 6 7 8 9 10 11 12 13
+				local n 1
+			forvalues x=5(1)13 {
+				nlcom _b[polity2_1] + _b[polity2xgdp_1]*(`x')
+					local tvalue= invttail(e(df_m),0.025)
+					matrix b = r(b)
+					local bw = b[1,1]
+					matrix v = r(V)
+					local vw = v[1,1]
+					local se = sqrt(`vw')
+					local lbx1 = `bw' - `tvalue'*`se'
+					local ubx1 = `bw' + `tvalue'*`se' 
+					cap matrix M[`n',1]= `x', `bw', `lbx1' , `ubx1'
+					local replace
+					local append append
+					local n `n'+1
+			}
+	coefplot (matrix(M[,2]), ci((M[,3] M[,4]))),  vertical  graphregion( color(white))  ///
+	xtitle((log) GDP per capita)  ytitle(Narrow definition) recast(connected) /// 
+	yscale(range(-0.4 0.8))  ytick(-0.4(0.1)0.8)  ylabel(-0.4(0.1)0.8) ciopts(recast(rcap))  xline($median_income) title(Democracy (Polity IV))
+	graph export "${figures}\figure3a2.png", replace
+	graph export "${figures}\figure3a2.wmf", as(wmf) replace
+
+
+		
+		**c) First inst: Cheibob Democracy Dummy
+	 xi: xtivreg2  dummy_inst lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1 (Democ_dummy_1 Cheibobxgdp_1=Z2_cheibob_2 Z2_cheibobxgdp_2) d d2 d3 i.t, fe cluster(cid) first savefirst savefprefix(fstage_) 
+			outreg2 using "${results}\appendixB2b", tex dec(4) append noaster  addstat("Kleibergen-Paap", e(widstat)) label	keep(Democ_dummy_1 Cheibobxgdp_1 lg_rgdpna_percap_1) addtext(Controls, Yes, Country and year FE, Yes, Duration dependence, Yes)
+				local replace replace
+				local append
+				matrix M=J(9,4,.)
+				matrix coln M = x coeff ll90 ul90
+				matrix rown M = 5 6 7 8 9 10 11 12 13
+				local n 1
+			forvalues x=5(1)13 {
+				nlcom _b[Democ_dummy_1] + _b[Cheibobxgdp_1]*(`x')
+					local tvalue= invttail(e(df_m),0.05)
+					matrix b = r(b)
+					local bw = b[1,1]
+					matrix v = r(V)
+					local vw = v[1,1]
+					local se = sqrt(`vw')
+					local lbx1 = `bw' - `tvalue'*`se'
+					local ubx1 = `bw' + `tvalue'*`se' 
+					cap matrix M[`n',1]= `x', `bw', `lbx1' , `ubx1'
+					local replace
+					local append append
+					local n `n'+1
+			}
+	coefplot (matrix(M[,2]), ci((M[,3] M[,4]))),  vertical  graphregion( color(white))  ///
+	xtitle((log) GDP per capita)  ytitle(Narrow definition) recast(connected) /// 
+	yscale(range(-0.4 0.8))  ytick(-0.4(0.1)0.8)  ylabel(-0.4(0.1)0.8) ciopts(recast(rcap))  xline($median_income) title(Democracy (DD))
+	graph export "$figures\figure3a3.png", replace
+	graph export "${figures}\figure3a3.wmf", as(wmf) replace
+
+
+		**d)Original specification: First Institution
+	 xi: xtivreg2  dummy_first_aid lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1 	(acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.t, fe cluster(cid) first savefirst savefprefix(fstage_) 
+			outreg2 using "${results}\appendixB2b", tex dec(4) append noaster  addstat("Kleibergen-Paap", e(widstat)) label	keep(acemoglu_democ_1 democxgdp_1 lg_rgdpna_percap_1) addtext(Controls, Yes, Country and year FE, Yes, Duration dependence, Yes)
+				local replace replace
+				local append
+				matrix M=J(9,4,.)
+				matrix coln M = x coeff ll95 ul95
+				matrix rown M = 5 6 7 8 9 10 11 12 13
+				local n 1
+			forvalues x=5(1)13 {
+				nlcom _b[acemoglu_democ_1] + _b[democxgdp_1]*(`x')
+					local tvalue= invttail(e(df_m),0.025)
+					matrix b = r(b)
+					local bw = b[1,1]
+					matrix v = r(V)
+					local vw = v[1,1]
+					local se = sqrt(`vw')
+					local lbx1 = `bw' - `tvalue'*`se'
+					local ubx1 = `bw' + `tvalue'*`se' 
+					cap matrix M[`n',1]= `x', `bw', `lbx1' , `ubx1'
+					local replace
+					local append append
+					local n `n'+1
+			}
+	coefplot (matrix(M[,2]), ci((M[,3] M[,4]))),  vertical graphregion( color(white))  ///
+	xtitle((log) GDP per capita)  ytitle(Broad definition) recast(connected) /// 
+	yscale(range(-0.4 0.8))  ytick(-0.4(0.1)0.8)  ylabel(-0.4(0.1)0.8) ciopts(recast(rcap))  xline($median_income) title(Democracy (Baseline))
+	graph export "${figures}\figure3b1.png", replace
+	graph export "${figures}\figure3b1.wmf", as(wmf) replace
+
+
+		**e) First inst: Polity IV
+	 xi: xtivreg2  dummy_first_aid lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1 (polity2_1 polity2xgdp_1=Z2_polity2_2 Z2_polity2xgdp_2) d d2 d3 i.t, fe cluster(cid) first savefirst savefprefix(fstage_) 
+			outreg2 using "${results}\appendixB2b", tex dec(4) append noaster addstat("Kleibergen-Paap", e(widstat)) label	keep(polity2_1 polity2xgdp_1 lg_rgdpna_percap_1) addtext(Controls, Yes, Country and year FE, Yes, Duration dependence, Yes)
+				local replace replace
+				local append
+				matrix M=J(9,4,.)
+				matrix coln M = x coeff ll95 ul95
+				matrix rown M = 5 6 7 8 9 10 11 12 13
+				local n 1
+			forvalues x=5(1)13 {
+				nlcom _b[polity2_1] + _b[polity2xgdp_1]*(`x')
+					local tvalue= invttail(e(df_m),0.025)
+					matrix b = r(b)
+					local bw = b[1,1]
+					matrix v = r(V)
+					local vw = v[1,1]
+					local se = sqrt(`vw')
+					local lbx1 = `bw' - `tvalue'*`se'
+					local ubx1 = `bw' + `tvalue'*`se' 
+					cap matrix M[`n',1]= `x', `bw', `lbx1' , `ubx1'
+					local replace
+					local append append
+					local n `n'+1
+			}
+	coefplot (matrix(M[,2]), ci((M[,3] M[,4]))),  vertical  graphregion( color(white))  ///
+	xtitle((log) GDP per capita)  ytitle(Broad definition) recast(connected) /// 
+	yscale(range(-0.4 0.8))  ytick(-0.4(0.1)0.8)  ylabel(-0.4(0.1)0.8) ciopts(recast(rcap))  xline($median_income) title(Democracy (Polity IV))
+	graph export "${figures}\figure3b2.png", replace
+	graph export "${figures}\figure3b2.wmf", as(wmf) replace
+
+
+		
+		**f) First inst: Cheibob Democracy Dummy
+	 xi: xtivreg2  dummy_first_aid lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1 (Democ_dummy_1 Cheibobxgdp_1=Z2_cheibob_2 Z2_cheibobxgdp_2) d d2 d3 i.t, fe cluster(cid) first savefirst savefprefix(fstage_) 
+			outreg2 using "${results}\appendixB2b", tex dec(4) append noaster addstat("Kleibergen-Paap", e(widstat)) label	keep(Democ_dummy_1 Cheibobxgdp_1 lg_rgdpna_percap_1) addtext(Controls, Yes, Country and year FE, Yes, Duration dependence, Yes)
+				local replace replace
+				local append
+				matrix M=J(9,4,.)
+				matrix coln M = x coeff ll90 ul90
+				matrix rown M = 5 6 7 8 9 10 11 12 13
+				local n 1
+			forvalues x=5(1)13 {
+				nlcom _b[Democ_dummy_1] + _b[Cheibobxgdp_1]*(`x')
+					local tvalue= invttail(e(df_m),0.05)
+					matrix b = r(b)
+					local bw = b[1,1]
+					matrix v = r(V)
+					local vw = v[1,1]
+					local se = sqrt(`vw')
+					local lbx1 = `bw' - `tvalue'*`se'
+					local ubx1 = `bw' + `tvalue'*`se' 
+					cap matrix M[`n',1]= `x', `bw', `lbx1' , `ubx1'
+					local replace
+					local append append
+					local n `n'+1
+			}
+	coefplot (matrix(M[,2]), ci((M[,3] M[,4]))),  vertical  graphregion( color(white))  ///
+	xtitle((log) GDP per capita)  ytitle(Broad definition) recast(connected) /// 
+	yscale(range(-0.4 0.8))  ytick(-0.4(0.1)0.8)  ylabel(-0.4(0.1)0.8) ciopts(recast(rcap))  xline($median_income) title(Democracy (DD))
+	graph export "${figures}\figure3b3.png", replace
+	graph export "${figures}\figure3b3.wmf", as(wmf) replace
+
+	
+********************************************************************************
+*** Appendix B3: Robustness tests                          *********************
+********************************************************************************
+
+*** Institution
+use "${outputdata}\new_donors_MAIN", clear
+
+	** a) Baseline
+
+	* FE
+	xtreg  dummy_inst acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t, fe cluster(cid)  
+		outreg2 using "${results}\appendixB3", tex noaster dec(4) nocons label  replace keep(acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+	* IV
+	 xi: xtivreg2  dummy_inst lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  (acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.t, fe cluster(cid)
+		outreg2 using "${results}\appendixB3", tex noaster dec(4) nocons label addstat("Kleibergen-Paap", e(widstat)) append keep(lg_rgdpna_percap_1 acemoglu_democ_1 democxgdp_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+
+** 2. Limited dataset:
+use "${outputdata}\new_donors_limited.dta", clear
+				
+	*FE
+	xtreg  dummy_inst acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t, fe cluster(cid)  
+		outreg2 using "${results}\appendixB3", tex noaster dec(4) nocons label  append keep(acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 lg_rgdpna_percap_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+	* IV
+	 xi: xtivreg2  dummy_inst lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  (acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.t, fe cluster(cid) 
+		outreg2 using "${results}\appendixB3", tex noaster dec(4) nocons label addstat("Kleibergen-Paap", e(widstat)) append keep(lg_rgdpna_percap_1 acemoglu_democ_1 democxgdp_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+
+*** 4. 3-year averages
+use "${outputdata}\new_donors_3yaverages", clear
+
+	* FE
+	xtreg  dummy_inst acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 kg_1 US_idealpoint_1  lgpop_1  openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.period, fe cluster(cid)  
+		outreg2 using "${results}\appendixB3", tex noaster dec(4) nocons label  append keep(acemoglu_democ_1 lg_rgdpna_percap_1  democxgdp_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+	* IV
+	 xi: xtivreg2  dummy_inst lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  (acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.period, fe cluster(cid) 
+		outreg2 using "${results}\appendixB3", tex noaster dec(4) nocons label addstat("Kleibergen-Paap", e(widstat)) append keep(lg_rgdpna_percap_1 acemoglu_democ_1 democxgdp_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+
+********************************************************************************
+*** Appendix B4: Robustness Test - Additional control variables ****************
+********************************************************************************
+use "${outputdata}\new_donors_MAIN", clear
+
+** Political distance to Russia 
+
+	xtreg  dummy_inst acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 kg_1 RUS_idealpoint_1 US_idealpoint_1  lgpop_1 openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t, fe cluster(cid)  
+		outreg2 using "${results}\appendixB4", tex noaster dec(4) nocons label e(r2_w) replace keep(acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 RUS_idealpoint_1)  addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+	 xi: xtivreg2  dummy_inst lg_rgdpna_percap_1 kg_1 RUS_idealpoint_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  (acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.t, fe cluster(cid) first savefirst savefprefix(fstage_) 
+		outreg2 using "${results}\appendixB4", tex noaster dec(4) nocons label addstat("Kleibergen-Paap", e(widstat)) append keep(lg_rgdpna_percap_1 acemoglu_democ_1 democxgdp_1 RUS_idealpoint_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+
+** Coldwar
+		
+		xtreg  dummy_inst  acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  coldwar_1 d d2 d3 i.t if sample==1, fe cluster(cid)
+			outreg2 using "${results}\appendixB4", tex noaster dec(4) nocons append e(r2_w) label keep(acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 coldwar_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+		 xi: xtivreg2  dummy_inst lg_rgdpna_percap_1 kg_1 coldwar_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  (acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.t, fe cluster(cid) first savefirst savefprefix(fstage_) 
+			outreg2 using "${results}\appendixB4", tex noaster dec(4) nocons label addstat("Kleibergen-Paap", e(widstat)) append keep(lg_rgdpna_percap_1 acemoglu_democ_1 democxgdp_1 coldwar_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+
+** Militarized interstate dispute
+		
+		xtreg  dummy_inst  acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  dummy_midb_1 d d2 d3 i.t if sample==1, fe cluster(cid)
+			outreg2 using "${results}\appendixB4", tex noaster dec(4) nocons append e(r2_w) label keep(acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1  dummy_midb_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+		 xi: xtivreg2  dummy_inst lg_rgdpna_percap_1 kg_1 dummy_midb_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  (acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.t, fe cluster(cid) first savefirst savefprefix(fstage_) 
+			outreg2 using "${results}\appendixB4", tex noaster dec(4) nocons label addstat("Kleibergen-Paap", e(widstat)) append keep(lg_rgdpna_percap_1 acemoglu_democ_1 democxgdp_1 dummy_midb_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+
+** Colonial population
+		
+		xtreg  dummy_inst  acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  lg_colony_penn_1 d d2 d3 i.t if sample==1, fe cluster(cid)
+			outreg2 using "${results}\appendixB4", tex noaster dec(4) nocons append e(r2_w) label keep(acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 lg_colony_penn_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+		 xi: xtivreg2  dummy_inst lg_rgdpna_percap_1 kg_1 lg_colony_penn_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  (acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.t, fe cluster(cid) first savefirst savefprefix(fstage_) 
+			outreg2 using "${results}\appendixB4", tex noaster dec(4) nocons label addstat("Kleibergen-Paap", e(widstat)) append keep(lg_rgdpna_percap_1 acemoglu_democ_1 democxgdp_1 lg_colony_penn_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+				
+
+********************************************************************************
+*** Appendix B5: Without EU accession countries  ********************************
+********************************************************************************
+use "${outputdata}\new_donors_MAIN", clear
+			
+** Without EU enlargement countries
+drop if eu_enlargement==1
+
+** OLS with FE:
+	xtreg  dummy_inst  acemoglu_democ_1 lg_rgdpna_percap_1 d d2 d3 i.t, fe cluster(cid) 
+		outreg2 using "${results}\appendixB5", tex dec(4) replace noaster nocons e( r2_w) label keep(acemoglu_democ_1 lg_rgdpna_percap_1) addtext(Country and year FE, Yes, Duration dependence, Yes)
+
+** IV 
+	 xi: xtivreg2  dummy_inst lg_rgdpna_percap_1 (acemoglu_democ_1 =Z_democracy_2 ) d d2 d3 i.t, fe cluster(cid) endog(acemoglu_democ_1) 
+		outreg2 using "${results}\appendixB5", tex noaster dec(4) nocons label addstat("Kleibergen-Paap", e(widstat))  append keep(lg_rgdpna_percap_1 acemoglu_democ_1 ) addtext(Country and year FE, Yes, Duration dependence, Yes)
+
+***2. With interaction **************************************************
+
+** OLS with FE:
+	xtreg  dummy_inst  acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 d d2 d3 i.t, fe cluster(cid) 
+		outreg2 using "${results}\appendixB5", tex dec(4) append noaster nocons e( r2_w) label keep(acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1) addtext(Country and year FE, Yes, Duration dependence, Yes)
+**IV 
+	 xi: xtivreg2  dummy_inst lg_rgdpna_percap_1 (acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.t, fe cluster(cid)   
+		outreg2 using "${results}\appendixB5", tex noaster dec(4) nocons label addstat("Kleibergen-Paap", e(widstat))  append keep(lg_rgdpna_percap_1 acemoglu_democ_1 democxgdp_1) addtext(Country and year FE, Yes, Duration dependence, Yes)
+
+*** 3. With interaction and controls *************************************	
+		
+
+** OLS with FE and controls
+	xtreg  dummy_inst  acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 kg_1 US_idealpoint_1  lgpop_1 lg_rgdpna_percap_1  openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t, fe cluster(cid) 
+		outreg2 using "${results}\appendixB5", tex dec(4) append noaster nocons e( r2_w) label keep(acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 kg_1 US_idealpoint_1  lgpop_1 lg_rgdpna_percap_1  openness_pwt_1 dummy_terr_conflict_1 ) addtext(Country and year FE, Yes, Duration dependence, Yes)
+		
+**IV with controls
+	 xi: xtivreg2  dummy_inst lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  (acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.t, fe cluster(cid)  
+		outreg2 using "${results}\appendixB5", tex noaster dec(4) nocons label addstat("Kleibergen-Paap", e(widstat)) append keep(lg_rgdpna_percap_1 acemoglu_democ_1 democxgdp_1 lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1  openness_pwt_1 dummy_terr_conflict_1 ) addtext(Country and year FE, Yes, Duration dependence, Yes)
+		
+*** 4. First aid (broad definition) ********************************************
+	*FE
+	xtreg  dummy_first_aid acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 kg_1 US_idealpoint_1  lgpop_1  openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t, fe cluster(cid)  
+		outreg2 using "${results}\appendixB5", tex noaster dec(4) nocons label  append e( r2_w) keep(acemoglu_democ_1 lg_rgdpna_percap_1  democxgdp_1 lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1 ) addtext(Country and year FE, Yes, Duration dependence, Yes)
+	* IV
+	 xi: xtivreg2  dummy_first_aid lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  (acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.t, fe cluster(cid) 
+		outreg2 using "${results}\appendixB5", tex noaster dec(4) nocons label addstat("Kleibergen-Paap", e(widstat)) append keep(lg_rgdpna_percap_1 acemoglu_democ_1 democxgdp_1 lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1 ) addtext(Country and year FE, Yes, Duration dependence, Yes)
+
+
+********************************************************************************
+*** Appendix B6: Aid volumes ***************************************************
+********************************************************************************
+use "${outputdata}\new_donors_MAIN", clear
+
+sum lg_rgdpna_percap_1 if sample==1, detail
+global mean_income = `r(mean)'  /*Since the plot starts at 5 insteadt of 1 need to adjust this */
+global median_income = `r(p50)'  /*Since the plot starts at 5 insteadt of 1 need to adjust this */
+
+** OECD DISBURSEMENTS ************************************************************************
+
+** OLS with FE and controls
+	xtreg  lg_ODA_disbursements  acemoglu_democ_1##c.lg_rgdpna_percap_1 kg_1 US_idealpoint_1 ///
+	lgpop_1 lg_rgdpna_percap_1  openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t if t>1970, fe cluster(cid) 
+		outreg2 using "${results}\appendixB6", tex dec(4) replace noaster nocons label keep(acemoglu_democ_1##c.lg_rgdpna_percap_1 ) addtext(Control variables, Yes, Country and year FE, Yes, Duration dependence, Yes, Sample period, 1971-2015)
+		margins, dydx(acemoglu_democ_1) at(lg_rgdpna_percap_1=(5(1)13)) level(90)
+		marginsplot, xline($median_income) title(Effect on aid disbursements (OECD)) ytitle(" ") graphregion( color(white)) 
+		graph export "${figures}/figure4a.png", replace
+		graph export "${figures}\figure4a.wmf", as(wmf) replace
+
+
+** AidData commitments *********************************************************
+*/
+** OLS with FE and controls
+	xtreg  lg_ODA_commitments_aiddata  acemoglu_democ_1##c.lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1 lg_rgdpna_percap_1  openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t, fe cluster(cid) 
+		outreg2 using "${results}\appendixB6", tex dec(4) append noaster nocons label keep(acemoglu_democ_1##c.lg_rgdpna_percap_1 ) addtext(Control variables, Yes, Country and year FE, Yes, Duration dependence, Yes, Sample period, 1971-2013)
+		margins, dydx(acemoglu_democ_1) at(lg_rgdpna_percap_1=(5(1)13)) level(90)
+		marginsplot, xline($median_income) title(Effect on aid commitments (AidData)) ytitle(" ") graphregion( color(white)) 
+		graph export "${figures}/figure4b.png", replace
+		graph export "${figures}\figure4b.wmf", as(wmf) replace
+
+		
+********************************************************************************
+*** Appendix B7: Marginal effects for alternative measures of democracy ********
+********************************************************************************
+use "${outputdata}\new_donors_MAIN", clear
+
+	***a) First aid
+		**a)Original specification : First Aid
+	xtreg  dummy_first_aid  acemoglu_democ_1##c.lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1 lg_rgdpna_percap_1  openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t, fe cluster(cid)
+		margins, dydx(acemoglu_democ_1) at(lg_rgdpna_percap_1=(5(1)13)) level(90)
+		marginsplot, xline($median_income) title(Democracy (Baseline)) ytitle("Broad definition") yscale(range(-0.2 0.3))  ytick(-0.2(0.1)0.3)  ylabel(-0.2(0.1)0.3) graphregion( color(white)) 
+		graph export "${figures}/appendixB7A1.png", replace
+		graph export "${figures}\appendixB7A1.wmf", as(wmf) replace
+			
+		**b) First Aid: Polity IV
+	xtreg  dummy_first_aid  c.polity2_1##c.lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1 lg_rgdpna_percap_1  openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t, fe cluster(cid)
+	margins, dydx(polity2_1) at(lg_rgdpna_percap_1=(5(1)13)) level(90)
+		marginsplot, xline($median_income) title(Democracy (Polity IV)) ytitle("Broad definition") yscale(range(-0.2 0.3))  ytick(-0.2(0.1)0.3)  ylabel(-0.2(0.1)0.3) graphregion( color(white)) 
+		graph export "${figures}/appendixB7A2.png", replace
+		graph export "${figures}\appendixB7A2.wmf", as(wmf) replace
+
+
+		**c) First Aid: Cheibob Democracy Dummy
+	xtreg  dummy_first_aid  Democ_dummy_1##c.lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1 lg_rgdpna_percap_1  openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t, fe cluster(cid)
+		margins, dydx(Democ_dummy_1) at(lg_rgdpna_percap_1=(5(1)13)) level(90)
+		marginsplot, xline($median_income) title(Democracy (DD)) ytitle("Broad definition") yscale(range(-0.2 0.3))  ytick(-0.2(0.1)0.3)  ylabel(-0.2(0.1)0.3) graphregion( color(white)) 
+		graph export "${figures}/appendixB7A3.png", replace
+		graph export "${figures}\appendixB8A3.wmf", as(wmf) replace
+
+
+		**d) First Aid: BdM W
+	xtreg  dummy_first_aid  c.W_BdM_1##c.lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1 lg_rgdpna_percap_1  openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t, fe cluster(cid)
+		margins, dydx(W_BdM_1) at(lg_rgdpna_percap_1=(5(1)13)) level(90)
+		marginsplot, xline($median_income) title(Democracy (Winning coalition)) ytitle("Broad definition") yscale(range(-0.2 0.3))  ytick(-0.2(0.1)0.3)  ylabel(-0.2(0.1)0.3) graphregion( color(white)) 
+		graph export "${figures}/appendixB7A4.png", replace
+		graph export "${figures}\appendixB8A4.wmf", as(wmf) replace
+
+
+		**d) First Aid:W_epr_1
+	xtreg  dummy_first_aid  c.W_epr_1##c.lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1 lg_rgdpna_percap_1  openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t, fe cluster(cid)
+		margins, dydx(W_epr_1) at(lg_rgdpna_percap_1=(5(1)13)) level(90)
+		marginsplot, xline($median_income) title(Democracy (Ethnic winning coalition)) ytitle("Broad definition") yscale(range(-0.2 0.3))  ytick(-0.2(0.1)0.3)  ylabel(-0.2(0.1)0.3) graphregion( color(white)) 
+		graph export "${figures}/appendixB7A5.png", replace
+		graph export "${figures}\appendixB7A5.wmf", as(wmf) replace
+
+
+	
+		**e) First Aid: V-Dem electoral democracy index
+	xtreg  dummy_first_aid  c.v2x_polyarchy_1##c.lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1 lg_rgdpna_percap_1  openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t, fe cluster(cid)
+		margins, dydx(v2x_polyarchy_1) at(lg_rgdpna_percap_1=(5(1)13)) level(90)
+		marginsplot, xline($median_income) title(Democracy (Electoral Democracy)) ytitle("Broad definition") yscale(range(-0.2 0.3))  ytick(-0.2(0.1)0.3)  ylabel(-0.2(0.1)0.3) graphregion( color(white)) 
+		graph export "${figures}/appendixB7A6.png", replace
+		graph export "${figures}\appendixB7A6.wmf", as(wmf) replace
+
+
+	***b) Inst
+		**a)Original specification: First Institution
+	xtreg  dummy_inst  acemoglu_democ_1##c.lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1 lg_rgdpna_percap_1  openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t, fe cluster(cid)
+		margins, dydx(acemoglu_democ_1) at(lg_rgdpna_percap_1=(5(1)13)) level(90)
+		marginsplot, xline($median_income) title(Democracy (Baseline)) ytitle("Narrow definition") yscale(range(-0.2 0.3))  ytick(-0.2(0.1)0.3)  ylabel(-0.2(0.1)0.3) graphregion( color(white)) 
+		graph export "${figures}/appendixB7B1.png", replace
+		graph export "${figures}\appendixB7B1.wmf", as(wmf) replace
+
+
+		**b) First inst: Polity IV
+	xtreg  dummy_inst  c.polity2_1##c.lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1 lg_rgdpna_percap_1  openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t, fe cluster(cid)
+		margins, dydx(polity2_1) at(lg_rgdpna_percap_1=(5(1)13)) level(90)
+		marginsplot, xline($median_income) title(Democracy (Polity IV)) ytitle("Narrow definition") yscale(range(-0.2 0.3))  ytick(-0.2(0.1)0.3)  ylabel(-0.2(0.1)0.3) graphregion( color(white)) 
+		graph export "${figures}/appendixB7B2.png", replace
+		graph export "${figures}\appendixB7B2.wmf", as(wmf) replace
+
+
+		**c) First inst: Cheibob Democracy Dummy
+	xtreg  dummy_inst  Democ_dummy_1##c.lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1 lg_rgdpna_percap_1  openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t, fe cluster(cid)
+		margins, dydx(Democ_dummy_1) at(lg_rgdpna_percap_1=(5(1)13)) level(90)
+		marginsplot, xline($median_income) title(Democracy (DD)) ytitle("Narrow definition") yscale(range(-0.2 0.3))  ytick(-0.2(0.1)0.3)  ylabel(-0.2(0.1)0.3) graphregion( color(white)) 
+		graph export "${figures}/appendixB7B3.png", replace
+		graph export "${figures}\appendixB7B3.wmf", as(wmf) replace
+
+
+		**d) First inst: BdM W
+	xtreg  dummy_inst  c.W_BdM_1##c.lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1 lg_rgdpna_percap_1  openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t, fe cluster(cid)
+		margins, dydx(W_BdM_1) at(lg_rgdpna_percap_1=(5(1)13)) level(90)
+		marginsplot, xline($median_income) title(Democracy (Winning coalition)) ytitle("Narrow definition") yscale(range(-0.2 0.3))  ytick(-0.2(0.1)0.3)  ylabel(-0.2(0.1)0.3) graphregion( color(white)) 
+		graph export "${figures}/appendixB7B4.png", replace
+		graph export "${figures}\appendixB7B4.wmf", as(wmf) replace
+
+
+			**d) First inst:W_epr_1
+	xtreg  dummy_inst  c.W_epr_1##c.lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1 lg_rgdpna_percap_1  openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t, fe cluster(cid)
+		margins, dydx(W_epr_1) at(lg_rgdpna_percap_1=(5(1)13)) level(90)
+		marginsplot, xline($median_income) title(Democracy (Ethnic winning coalition)) ytitle("Narrow definition") yscale(range(-0.2 0.3))  ytick(-0.2(0.1)0.3)  ylabel(-0.2(0.1)0.3) graphregion( color(white)) 
+		graph export "${figures}/appendixB7B5.png", replace
+		graph export "${figures}\appendixB7B5.wmf", as(wmf) replace
+
+
+			**e) First inst: V-Dem electoral democracy index
+	xtreg  dummy_inst  c.v2x_polyarchy_1##c.lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1 lg_rgdpna_percap_1  openness_pwt_1 dummy_terr_conflict_1  d d2 d3 i.t, fe cluster(cid)
+		margins, dydx(v2x_polyarchy_1) at(lg_rgdpna_percap_1=(5(1)13)) level(90)
+		marginsplot, xline($median_income) title(Democracy (Electoral Democracy)) ytitle("Narrow definition") yscale(range(-0.2 0.3))  ytick(-0.2(0.1)0.3)  ylabel(-0.2(0.1)0.3) graphregion( color(white)) 
+		graph export "${figures}/appendixB7B6.png", replace
+		graph export "${figures}\appendixB7B6.wmf", as(wmf) replace
+
+
+
+********************************************************************************
+*** Appendix C2: Table 3 with broad definition ***********************************
+********************************************************************************
+	use "${outputdata}\new_donors_sample_firstaid", clear
+
+	** a) Russia ideal point
+
+** Panel D: Donor spatial lag
+
+		xtreg  dummy_first_aid  acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 kg_1 US_idealpoint_1  lgpop_1  openness_pwt_1 dummy_terr_conflict_1  SL_prox_aid_1 d d2 d3 i.t if sample==1, fe cluster(cid)
+			outreg2 using "${results}\appendixC2", tex noaster dec(4) nocons replace e(r2_w) label keep(acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 SL_prox_aid_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+		 xi: xtivreg2  dummy_first_aid lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  SL_prox_aid_1 (acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.t if sample==1, fe cluster(cid) first savefirst savefprefix(fstage_) 
+			outreg2 using "${results}\appendixC2", tex noaster dec(4) nocons label addstat("Kleibergen-Paap", e(widstat)) append keep(lg_rgdpna_percap_1 acemoglu_democ_1 democxgdp_1  SL_prox_aid_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+
+** Panel D2: Donor spatial lag but with peer groupe as democracy inst
+
+		xtreg  dummy_first_aid  acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 kg_1 US_idealpoint_1  lgpop_1  openness_pwt_1 dummy_terr_conflict_1 Z_dummy_first_aid_1 d d2 d3 i.t if sample == 1, fe cluster(cid)
+			outreg2 using "${results}\appendixC2", tex noaster dec(4) nocons append e(r2_w) label keep(acemoglu_democ_1 lg_rgdpna_percap_1  democxgdp_1 Z_dummy_first_aid_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+		 xi: xtivreg2  dummy_first_aid lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1  openness_pwt_1 dummy_terr_conflict_1 Z_dummy_first_aid_1 (acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.t if sample == 1, fe cluster(cid) first savefirst savefprefix(fstage_) 
+			outreg2 using "${results}\appendixC2", tex noaster dec(4) nocons label addstat("Kleibergen-Paap", e(widstat)) append keep(lg_rgdpna_percap_1 acemoglu_democ_1 democxgdp_1 Z_dummy_first_aid_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+
+			
+** Panel D: GDP spatial lag
+
+		xtreg  dummy_first_aid  acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1 lg_SL_prox_gdp_1 d d2 d3 i.t if sample==1, fe cluster(cid)
+			outreg2 using "${results}\appendixC2", tex noaster dec(4) nocons append e(r2_w) label keep(acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1  lg_SL_prox_gdp_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+		 xi: xtivreg2  dummy_first_aid lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  lg_SL_prox_gdp_1 (acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.t if sample == 1, fe cluster(cid) first savefirst savefprefix(fstage_) 
+			outreg2 using "${results}\appendixC2", tex noaster dec(4) nocons label addstat("Kleibergen-Paap", e(widstat)) append keep(lg_rgdpna_percap_1 acemoglu_democ_1 democxgdp_1  lg_SL_prox_gdp_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+
+** Panel D2: GDP spatial lag but with peer groupe as democracy inst
+
+		xtreg  dummy_first_aid  acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1 kg_1 US_idealpoint_1  lgpop_1  openness_pwt_1 dummy_terr_conflict_1 Z_lg_gdp_percap_1 d d2 d3 i.t if sample==1, fe cluster(cid)
+			outreg2 using "${results}\appendixC2", tex noaster dec(4) nocons append e(r2_w) label keep(acemoglu_democ_1 lg_rgdpna_percap_1 democxgdp_1  Z_lg_gdp_percap_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+		 xi: xtivreg2  dummy_first_aid lg_rgdpna_percap_1 kg_1 US_idealpoint_1  lgpop_1   openness_pwt_1 dummy_terr_conflict_1  Z_lg_gdp_percap_1 (acemoglu_democ_1 democxgdp_1=Z_democracy_2 Z_democxgdp_2) d d2 d3 i.t, fe cluster(cid) first savefirst savefprefix(fstage_) 
+			outreg2 using "${results}\appendixC2", tex noaster dec(4) nocons label addstat("Kleibergen-Paap", e(widstat)) append keep(lg_rgdpna_percap_1 acemoglu_democ_1 democxgdp_1  Z_lg_gdp_percap_1) addtext(Control variables, Yes, Country FE and year FE, Yes, Duration dependence, Yes)
+		
+********************************************************************************
+****Figure 2 *******************************************************************
+********************************************************************************
+
+********************************************************************************
+*** Bar graph donor-income by regime type
+
+*** NARROW DEFINITION
+use "${outputdata}\new_donors_MAIN", clear
+
+keep if dummy_inst == 1
+
+egen income_group = cut(lg_rgdpna_percap_1), at(6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12, 12.5)
+
+gen acemoglu_autoc = 1 if acemoglu_democ == 0
+replace acemoglu_democ = . if acemoglu_democ == 0
+
+graph bar (count) acemoglu_autoc acemoglu_democ, over(income_group) scheme(s1mono) ///
+legend(label(1 "Autocracies") label(2 "Democracies")) ///
+ytitle("First time donor (narrow definition)") ///
+title("") yscale(range(0 18)) ///
+saving("${figures}\figure2a.png", replace)
+	graph export "${figures}\figure2a.wmf", as(wmf) replace
+
+
+
+*** WIDE DEFINITION
+use "${outputdata}\new_donors_MAIN", clear
+
+keep if dummy_first_aid == 1
+
+egen income_group = cut(lg_rgdpna_percap_1), at(6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12, 12.5)
+
+gen acemoglu_autoc = 1 if acemoglu_democ == 0
+replace acemoglu_democ = . if acemoglu_democ == 0
+
+graph bar (count) acemoglu_autoc acemoglu_democ, over(income_group) scheme(s1mono) ///
+legend(label(1 "Autocracies") label(2 "Democracies")) ///
+ytitle("First time donor (wide definition)") ///
+title("") yscale(range(0 18)) ///
+saving("${figures}\figure2b.png", replace)
+	graph export "${figures}\figure2b.wmf", as(wmf) replace
+	
+********************************************************************************
+****Figure A3 ******************************************************************
+********************************************************************************
+
+* Convert shapefile
+shp2dta using "${inputdata}\cshapes_0.6\cshapes.shp" , database(hist_world) coordinates(worldcoord) genid(id) replace
+
+*** b) Maps Democracies vs autocracies
+	foreach num of numlist 1955 1985 2015 {
+		use "${outputdata}\acemoglu_democ.dta", clear
+		keep if t==`num'
+		keep country_i t acemoglu_democ
+		save "${tempdata}\democ_first_aid_`num'.dta", replace
+		
+		use "hist_world.dta", clear
+		ren ISO1AL3 country_i
+		replace country_i="ISR" if CNTRY_NAME=="Israel"
+		replace country_i="EGY" if CNTRY_NAME=="Egypt"
+		replace country_i="SYR" if CNTRY_NAME=="Syria"
+		replace country_i="IDN" if CNTRY_NAME=="Indonesia"
+		replace country_i="PAK" if CNTRY_NAME=="Pakistan"
+		replace country_i="BRA" if CNTRY_NAME=="Brazil"
+		replace country_i="CAN" if CNTRY_NAME=="Canada"
+		replace country_i="MAR" if CNTRY_NAME=="Morocco"
+		replace country_i="LBY" if CNTRY_NAME=="Libya"
+		replace country_i="TCD" if CNTRY_NAME=="Chad"
+		replace country_i="CHN" if CNTRY_NAME=="China"
+		replace country_i="EGY" if CNTRY_NAME=="Egypt (United Arab Republic)"
+		replace country_i="MYS" if CNTRY_NAME=="Malaysia"
+		replace country_i="MLI" if CNTRY_NAME=="Mali Federation"
+		replace country_i="CMR" if CNTRY_NAME=="Cameroon"
+		replace country_i="NGA" if CNTRY_NAME=="Nigeria"
+		replace country_i="IND" if CNTRY_NAME=="India"
+		replace country_i="TZA" if CNTRY_NAME=="Tanzania"
+		replace country_i="RUS" if country_i=="SUN"
+		drop if mi(country_i)
+		
+		replace country_i="Papua" if country_i=="IDN" & COWSYEAR==2002 & `num'==1955
+		replace country_i="Westsahara" if country_i=="MAR" & COWSYEAR==1976 & `num'==1955
+
+		replace COWSYEAR=1972 if country_i=="LBY" & COWSYEAR==1973
+		replace COWSYEAR=1972 if country_i=="TCD" & COWSYEAR==1973
+
+		
+		sort country_i COWSYEAR
+				
+		bysort country_i: gen begin=_n
+		replace COWSYEAR=1945 if begin==1	
+			keep if COWSYEAR<`num' & COWEYEAR>=`num'
+		
+		merge 1:1 country_i using "${tempdata}\democ_first_aid_`num'.dta", keep(master match) nogen
+
+		/* Generate maps for year of first aid */
+		spmap acemoglu_democ using worldcoord, id(id) clnumber(3) legtitle("Legend:") ndlabel("No data") ndocolor(gs8) ndfcolor(gs8) clmethod(unique) fcolor(white ebblue) ///
+		legend(size(medium) symysize(*2.5) symxsize(*2.5) forcesize) title("Democratic vs. autocratic donors: `num' ") legend(label(3 "Democracy") label(2 "Autocracy"))
+
+		graph export "${figures}\figureA3_`num'.png", as(png) replace width(1400) height(600)
+}
+
+********************************************************************************
+* Delete tempdata
+* NOTE: Remove this line if you want to keep temp files
+shell rmdir "${tempdata}" /s /q

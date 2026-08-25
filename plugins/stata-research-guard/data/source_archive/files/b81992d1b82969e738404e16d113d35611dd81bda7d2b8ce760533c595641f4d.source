@@ -1,0 +1,837 @@
+********************************************************************************
+/*
+This program constructs the final dataset for the electoral analysis:
+*    ${final_data_folder}/voting_data.dta (electoral)
+
+*/
+********************************************************************************
+**# 0. Setup
+********************************************************************************
+clear all
+
+********************************************************************************
+**# 1. Construction of voting dataset excluding municipalities 56 and 18
+********************************************************************************
+
+*==============================================================================*
+**## Base dataset: individual-level clientelism dataset 
+*==============================================================================*
+use "${final_data_folder}/clientelism_individual_data.dta", clear
+
+replace c_mun_id = mun_id
+
+
+** Drop respondents who did not vote in their assigned section and location
+drop if c_vote_here_ == 0
+
+** Drop municipalities (to be cleaned in next section)
+drop if inlist(c_mun_id, 56, 18)
+
+
+save "${gen_data_folder}/voting_data_unadjusted.dta", replace
+
+
+*==============================================================================*
+**## Merge TSE data 
+*==============================================================================*
+
+** 2012 Voting Section stats
+use "${source_data_folder}/electoral/tse_section_stats_2012.dta", clear
+sort c_mun_id c_voter_section_no_, stable
+
+
+** Merge 2012 Prefeito Candidate TSE Dataset
+merge 1:1 c_mun_id zone_number c_voter_section_no_ using "${source_data_folder}/electoral/tse_cand_stats_2012.dta"
+drop _merge
+sort c_mun_id c_voter_section_no_, stable
+
+
+** Merge 2008 Sections TSE Dataset
+merge 1:m c_mun_id zone_number c_voter_section_no_ using "${source_data_folder}/electoral/tse_section_stats_2008.dta"
+drop if _merge == 2
+drop _merge
+sort c_mun_id c_voter_section_no_, stable
+
+
+** Merge 2008 Prefeito Candidate TSE Dataset
+merge m:1 c_mun_id zone_number c_voter_section_no_ using "${source_data_folder}/electoral/tse_candidate_stats_2008.dta"
+drop if _merge == 2
+drop _merge
+sort c_mun_id c_voter_section_no_, stable
+
+
+** Drop municipalities 56 and 18 (to be cleaned in next section)
+drop if inlist(c_mun_id, 56, 18)
+
+
+** Merge to clientelism data
+sort c_mun_id c_voter_section_no_, stable                 
+duplicates drop c_mun_id c_voter_section_no_, force    
+
+
+* As of now, c_mun_id c_voter_section_no_ is a unique identifier for all municipalities 
+* Here, we drop individuals whose reported section number does not correspond to any in the TSE dataset
+sort c_mun_id c_voter_section_no_, stable
+merge 1:m c_mun_id c_voter_section_no_ using "${gen_data_folder}/voting_data_unadjusted.dta"
+drop if _merge == 2                                
+drop _merge
+
+
+/* 
+GENERATING LOCATION ID'S FOR PEOPLE VOTING IN DIFFERENT SECTIONS IN THE SAME LOCATION
+*/
+preserve 
+use "${source_data_folder}/electoral/TSE_LOCATIONS_SECTIONS_2012.dta", clear
+drop if inlist(c_mun_id, 56, 18)
+save "${gen_data_folder}/temp_2012_sections_data.dta", replace 
+restore
+
+sort c_mun_id c_voter_section_no_, stable
+merge m:1 c_mun_id c_voter_section_no_ using "${gen_data_folder}/temp_2012_sections_data.dta"
+keep if _merge == 3
+drop _merge
+
+
+** Keep all sections for our respondents' voting locations
+sort c_mun_id location_id c_voter_section_no_
+gen temp = location_id if treatment != .
+bysort location_id (temp): replace temp = temp[1]
+
+replace location_id = temp if temp != .
+drop if temp == .
+
+
+save "${gen_data_folder}/voting_data_unadjusted.dta", replace
+erase "${gen_data_folder}/temp_2012_sections_data.dta"
+
+
+********************************************************************************
+**# 2. Construction of voting dataset for municipality 56
+********************************************************************************
+
+use "${final_data_folder}/clientelism_individual_data.dta", clear
+
+replace c_mun_id = mun_id
+
+
+** Drop respondents who did not vote in their assigned section and location
+drop if c_vote_here_ == 0
+
+** Keep municipality 56
+keep if c_mun_id == 56
+
+*==============================================================================*
+**## Correct municipality 56 voting identifiers
+*==============================================================================*
+
+*------------------------------------------------------------------------------*
+** CORRECT THE WRONGLY REPORTED SECTION NUMBER.
+*------------------------------------------------------------------------------*
+
+replace c_voter_section_no_ = 232 if c_voter_section_no_ == 32
+replace c_voter_section_no_ = 234 if c_voter_section_no_ == 40 & c_vote_location_specified_ == "escola municipal Jose de Alencar"
+replace c_voter_section_no_ = 427 if c_voter_section_no_ == 42 
+replace c_voter_section_no_ = 356 if c_voter_section_no_ == 56 
+replace c_voter_section_no_ = 259 if c_voter_section_no_ == 59
+replace c_voter_section_no_ = 262 if c_voter_section_no_ == 62 & c_vote_location_specified_ == "escola maria leal"
+
+
+*------------------------------------------------------------------------------*
+** ASSIGN SECTIONS THE RIGHT CODE FOR THE LOCATION, ONCE DETERMINED WHICH PARTICULAR LOCATION THEY WENT TO BASED ON REPORTED LOCATION
+*------------------------------------------------------------------------------*
+gen location_id = 530 if c_voter_section_no_ == 232
+replace location_id = 506 if c_voter_section_no_ == 234
+replace location_id = 519 if c_voter_section_no_ == 427
+replace location_id = 489 if c_voter_section_no_ == 356
+replace location_id = 516 if c_voter_section_no_ == 259
+replace location_id = 517 if c_voter_section_no_ == 262
+replace location_id = 462 if c_voter_section_no_ == 65
+replace location_id = 522 if c_voter_section_no_ == 62
+replace location_id = 456 if c_voter_section_no_ == 136
+replace location_id = 456 if c_voter_section_no_ == 151
+replace location_id = 449 if c_voter_section_no_ == 164
+replace location_id = 456 if c_voter_section_no_ == 183
+replace location_id = 530 if c_voter_section_no_ == 231
+replace location_id = 507 if c_voter_section_no_ == 235
+replace location_id = 507 if c_voter_section_no_ == 237
+replace location_id = 507 if c_voter_section_no_ == 238
+replace location_id = 511 if c_voter_section_no_ == 244
+replace location_id = 512 if c_voter_section_no_ == 246
+replace location_id = 512 if c_voter_section_no_ == 247
+replace location_id = 783495 if c_voter_section_no_ == 249                 
+replace location_id = 783495 if c_voter_section_no_ == 250                 
+replace location_id = 513 if c_voter_section_no_ == 252 
+replace location_id = 513 if c_voter_section_no_ == 253
+replace location_id = 516 if c_voter_section_no_ == 259
+replace location_id = 517 if c_voter_section_no_ == 261
+replace location_id = 517 if c_voter_section_no_ == 263
+replace location_id = 519 if c_voter_section_no_ == 265
+replace location_id = 519 if c_voter_section_no_ == 266
+replace location_id = 522 if c_voter_section_no_ == 271
+replace location_id = 522 if c_voter_section_no_ == 272
+replace location_id = 496 if c_voter_section_no_ == 285
+replace location_id = 498 if c_voter_section_no_ == 292
+replace location_id = 498 if c_voter_section_no_ == 293
+replace location_id = 514 if c_voter_section_no_ == 309
+replace location_id = 512 if c_voter_section_no_ == 342
+replace location_id = 29903 if c_voter_section_no_ == 355                  
+replace location_id = 29903 if c_voter_section_no_ == 311                 
+replace location_id = 487 if c_voter_section_no_ == 372
+replace location_id = 56 if c_voter_section_no_ == 378
+replace location_id = 507 if c_voter_section_no_ == 383
+replace location_id = 513 if c_voter_section_no_ == 405
+replace location_id = 133 if c_voter_section_no_ == 411
+replace location_id = 489 if c_voter_section_no_ == 423
+replace location_id = 512 if c_voter_section_no_ == 424
+replace location_id = 464 if c_voter_section_no_ == 429
+replace location_id = 469 if c_voter_section_no_ == 435
+replace location_id = 521 if c_voter_section_no_ == 479
+replace location_id = 496 if c_voter_section_no_ == 507
+replace location_id = 522 if c_voter_section_no_ == 509
+replace location_id = 516 if c_voter_section_no_ == 523
+replace location_id = 1099 if c_voter_section_no_ == 535
+replace location_id = 1152 if c_voter_section_no_ == 542
+replace location_id = 507 if c_voter_section_no_ == 846
+
+
+*------------------------------------------------------------------------------*
+** ASSIGN SECTIONS THE RIGHT CODE FOR THE ZONE, ONCE DETERMINED WHICH PARTICULAR LOCATION THEY WENT TO BASED ON REPORTED LOCATION
+*------------------------------------------------------------------------------*
+gen zone_number = 40 if c_voter_section_no_ == 232
+replace zone_number = 40 if c_voter_section_no_ == 234
+replace zone_number = 40 if c_voter_section_no_ == 427
+replace zone_number = 40 if c_voter_section_no_ == 356
+replace zone_number = 40 if c_voter_section_no_ == 259
+replace zone_number = 40 if c_voter_section_no_ == 262
+replace zone_number = 41 if c_voter_section_no_ == 65
+replace zone_number = 41 if c_voter_section_no_ == 136
+replace zone_number = 41 if c_voter_section_no_ == 151
+replace zone_number = 41 if c_voter_section_no_ == 164
+replace zone_number = 41 if c_voter_section_no_ == 183
+replace zone_number = 40 if c_voter_section_no_ == 231
+replace zone_number = 40 if c_voter_section_no_ == 235
+replace zone_number = 40 if c_voter_section_no_ == 237
+replace zone_number = 40 if c_voter_section_no_ == 238
+replace zone_number = 40 if c_voter_section_no_ == 244
+replace zone_number = 40 if c_voter_section_no_ == 246
+replace zone_number = 40 if c_voter_section_no_ == 247
+replace zone_number = 40 if c_voter_section_no_ == 249
+replace zone_number = 40 if c_voter_section_no_ == 250
+replace zone_number = 40 if c_voter_section_no_ == 252
+replace zone_number = 40 if c_voter_section_no_ == 253
+replace zone_number = 40 if c_voter_section_no_ == 259
+replace zone_number = 40 if c_voter_section_no_ == 261
+replace zone_number = 40 if c_voter_section_no_ == 263
+replace zone_number = 40 if c_voter_section_no_ == 265
+replace zone_number = 40 if c_voter_section_no_ == 266
+replace zone_number = 40 if c_voter_section_no_ == 271
+replace zone_number = 40 if c_voter_section_no_ == 272
+replace zone_number = 40 if c_voter_section_no_ == 285
+replace zone_number = 40 if c_voter_section_no_ == 292
+replace zone_number = 40 if c_voter_section_no_ == 293
+replace zone_number = 40 if c_voter_section_no_ == 309
+replace zone_number = 40 if c_voter_section_no_ == 342
+replace zone_number = 40 if c_voter_section_no_ == 355
+replace zone_number = 40 if c_voter_section_no_ == 311
+replace zone_number = 40 if c_voter_section_no_ == 372
+replace zone_number = 40 if c_voter_section_no_ == 378
+replace zone_number = 40 if c_voter_section_no_ == 383
+replace zone_number = 40 if c_voter_section_no_ == 405
+replace zone_number = 40 if c_voter_section_no_ == 411
+replace zone_number = 40 if c_voter_section_no_ == 423
+replace zone_number = 40 if c_voter_section_no_ == 424
+replace zone_number = 40 if c_voter_section_no_ == 429
+replace zone_number = 40 if c_voter_section_no_ == 435
+replace zone_number = 40 if c_voter_section_no_ == 479
+replace zone_number = 40 if c_voter_section_no_ == 507
+replace zone_number = 40 if c_voter_section_no_ == 509
+replace zone_number = 40 if c_voter_section_no_ == 523
+replace zone_number = 40 if c_voter_section_no_ == 535
+replace zone_number = 40 if c_voter_section_no_ == 542
+replace zone_number = 40 if c_voter_section_no_ == 846
+replace zone_number = 40 if c_voter_section_no_ == 62
+
+
+*------------------------------------------------------------------------------*
+** DROPPING SECTIONS THAT ARE AMBIGUOUS, OR LOCATION NOT PROPERLY SPECIFIED, OR THE LOCATION TURNS OUT TO BE WRONG
+*------------------------------------------------------------------------------*
+
+drop if c_voter_section_no_ == 6  
+drop if c_voter_section_no_ == 40 & c_vote_location_specified_ == "ESCOLA MUNICIPAL RAFAEL ESPINDOLA" 
+drop if c_voter_section_no_ == 40 & c_vote_location_specified_ == "ESCOLA DE CACHOEIRA" 
+drop if c_voter_section_no_ == 72  
+drop if c_voter_section_no_ == 85 
+drop if c_voter_section_no_ == 88 
+drop if c_voter_section_no_ == 99 
+drop if c_voter_section_no_ == 222
+drop if c_voter_section_no_ == 223 
+
+
+save "${gen_data_folder}/vitoria_voting_data.dta", replace
+
+
+*==============================================================================*
+**## Merge TSE data 
+*==============================================================================*
+
+** Use 2012 Voting Section stats
+use "${source_data_folder}/electoral/vitoria_section_stats_2012.dta", clear
+
+
+** Merge 2012 Prefeito Candidate TSE Data
+merge 1:1 c_mun_id zone_number c_voter_section_no_ using "${source_data_folder}/electoral/vitoria_cand_stats_2012.dta"
+drop _merge
+
+
+** Merge 2008 Sections TSE Data
+merge 1:1 c_mun_id zone_number c_voter_section_no_ using "${source_data_folder}/electoral/vitoria_pref_tse_section_stats_2008.dta"
+drop if _merge == 2
+drop _merge
+
+
+** Merge 2008 Prefeito Candidate TSE Data
+merge 1:1 c_mun_id zone_number c_voter_section_no_ using "${source_data_folder}/electoral/vitoria_pref_tse_candidate_stats_2008.dta"
+drop if _merge == 2
+drop _merge
+
+
+** Merge to clientelism data
+merge 1:m c_mun_id zone_number c_voter_section_no_ using "${gen_data_folder}/vitoria_voting_data.dta"
+drop if _merge == 2
+drop _merge
+
+
+merge m:1 c_mun_id zone_number c_voter_section_no_ using "${source_data_folder}/electoral/vitoria_TSE_LOCATIONS_SECTIONS_2012.dta"
+keep if _merge == 3
+drop _merge 
+replace location_id = location_id_temp if location_id == .
+
+
+** Keep all sections for our respondents' voting locations
+sort c_mun_id location_id c_voter_section_no_
+gen temp = location_id if treatment != .
+bysort location_id (temp): replace temp = temp[1]
+
+replace location_id = temp if temp != .
+drop if temp == .
+
+
+** Append to main voting dataset 
+append using "${gen_data_folder}/voting_data_unadjusted.dta"
+save "${gen_data_folder}/voting_data_unadjusted.dta", replace 
+
+
+********************************************************************************
+**# 3. Construction of voting dataset for municipality 18
+********************************************************************************
+
+use "${final_data_folder}/clientelism_individual_data.dta", clear
+
+replace c_mun_id = mun_id
+
+
+** Drop respondents who did not vote in their assigned section and location
+drop if c_vote_here_ == 0
+
+** Keep municipality 18
+keep if c_mun_id == 18
+
+
+*==============================================================================*
+**## Correct municipality 18 voting identifiers
+*==============================================================================*
+
+*------------------------------------------------------------------------------*
+** DROPPING SECTIONS THAT ARE AMBIGUOUS, OR LOCATION NOT PROPERLY SPECIFIED, OR THE LOCATION TURNS OUT TO BE WRONG
+*------------------------------------------------------------------------------*
+
+drop if c_voter_section_no_ == 8 
+drop if c_voter_section_no_ == 41 & c_vote_location_specified_ == "ESCOLA MUNICIPAL LEONOR FELICIDADE DA CONCEIÇÃO"
+drop if c_voter_section_no_ == 57 
+drop if c_voter_section_no_ == 106 
+
+
+*------------------------------------------------------------------------------*
+** ASSIGN SECTIONS THE RIGHT CODE FOR THE LOCATION, ONCE DETERMINED WHICH PARTICULAR LOCATION THEY WENT TO BASED ON REPORTED LOCATION
+*------------------------------------------------------------------------------*
+gen location_id = 878 if c_voter_section_no_ == 3
+replace location_id = 885 if c_voter_section_no_ == 9
+replace location_id = 858 if c_voter_section_no_ == 27
+replace location_id = 869 if c_voter_section_no_ == 28
+replace location_id = 869 if c_voter_section_no_ == 29
+replace location_id = 870 if c_voter_section_no_ == 30
+replace location_id = 871 if c_voter_section_no_ == 31
+replace location_id = 868 if c_voter_section_no_ == 34
+replace location_id = 872 if c_voter_section_no_ == 36
+replace location_id = 872 if c_voter_section_no_ == 37
+replace location_id = 874 if c_voter_section_no_ == 40
+replace location_id = 875 if c_voter_section_no_ == 41
+replace location_id = 858 if c_voter_section_no_ == 44
+replace location_id = 864 if c_voter_section_no_ == 59
+replace location_id = 864 if c_voter_section_no_ == 60
+replace location_id = 877 if c_voter_section_no_ == 81
+replace location_id = 849 if c_voter_section_no_ == 82
+replace location_id = 870 if c_voter_section_no_ == 95
+replace location_id = 868 if c_voter_section_no_ == 96
+replace location_id = 1135 if c_voter_section_no_ == 109
+replace location_id = 870 if c_voter_section_no_ == 118
+
+
+*------------------------------------------------------------------------------*
+** ASSIGN SECTIONS THE RIGHT CODE FOR THE ZONE, ONCE DETERMINED WHICH PARTICULAR LOCATION THEY WENT TO BASED ON REPORTED LOCATION
+*------------------------------------------------------------------------------*
+gen zone_number = 41 if c_voter_section_no_ == 3
+replace zone_number = 41 if c_voter_section_no_ == 9
+replace zone_number = 41 if c_voter_section_no_ == 27
+replace zone_number = 41 if c_voter_section_no_ == 28
+replace zone_number = 41 if c_voter_section_no_ == 29
+replace zone_number = 41 if c_voter_section_no_ == 30
+replace zone_number = 41 if c_voter_section_no_ == 31
+replace zone_number = 41 if c_voter_section_no_ == 34
+replace zone_number = 41 if c_voter_section_no_ == 36
+replace zone_number = 41 if c_voter_section_no_ == 37
+replace zone_number = 41 if c_voter_section_no_ == 40
+replace zone_number = 41 if c_voter_section_no_ == 41
+replace zone_number = 41 if c_voter_section_no_ == 44
+replace zone_number = 41 if c_voter_section_no_ == 59
+replace zone_number = 41 if c_voter_section_no_ == 60
+replace zone_number = 41 if c_voter_section_no_ == 81
+replace zone_number = 41 if c_voter_section_no_ == 82
+replace zone_number = 41 if c_voter_section_no_ == 95
+replace zone_number = 41 if c_voter_section_no_ == 96
+replace zone_number = 41 if c_voter_section_no_ == 109
+replace zone_number = 41 if c_voter_section_no_ == 118
+
+
+save "${gen_data_folder}/caruaru_voting_data.dta", replace
+
+
+*==============================================================================*
+**## Merge TSE data 
+*==============================================================================*
+
+** Use 2012 Voting Section stats
+use "${source_data_folder}/electoral/caruaru_section_stats_2012.dta", clear
+
+
+** Merge 2012 Prefeito Candidate TSE data
+merge 1:1 c_mun_id zone_number c_voter_section_no_ using "${source_data_folder}/electoral/caruaru_cand_stats_2012.dta"
+drop _merge
+
+
+** Merge 2008 Sections TSE data
+merge 1:1 c_mun_id zone_number c_voter_section_no_ using "${source_data_folder}/electoral/caruaru_pref_tse_section_stats_2008.dta"
+drop if _merge == 2
+drop _merge
+
+
+** Merge 2008 Prefeito Candidate TSE data
+merge 1:1 c_mun_id zone_number c_voter_section_no_ using "${source_data_folder}/electoral/caruaru_pref_tse_candidate_stats_2008.dta"
+drop if _merge == 2
+drop _merge
+
+
+** Merge to clientelism data
+merge 1:m c_mun_id zone_number c_voter_section_no_ using "${gen_data_folder}/caruaru_voting_data.dta"
+drop if _merge == 2
+drop _merge
+
+
+** GENERATE LOCATION ID'S FOR PEOPLE VOTING IN DIFFERENT SECTIONS IN THE SAME LOCATION
+preserve 
+use "${source_data_folder}/electoral/caruaru_TSE_LOCATIONS_SECTIONS_2012.dta", clear
+keep if c_mun_id == 18
+save "${gen_data_folder}/temp_2012_sections_data.dta", replace 
+restore
+
+merge m:1 c_mun_id zone_number c_voter_section_no_ using "${gen_data_folder}/temp_2012_sections_data.dta"
+
+keep if _merge == 3
+drop _merge 
+replace location_id = location_id_temp if location_id == .
+
+
+** Keep all sections for our respondents' voting locations
+sort c_mun_id location_id c_voter_section_no_
+gen temp = location_id if treatment != .
+bysort location_id (temp): replace temp = temp[1]
+
+replace location_id = temp if temp != .
+drop if temp == .
+
+
+append using "${gen_data_folder}/voting_data_unadjusted.dta"
+save "${gen_data_folder}/voting_data_unadjusted.dta", replace 
+erase "${gen_data_folder}/temp_2012_sections_data.dta"
+
+
+cap drop temp
+
+
+** As of this point, c_mun_id - c_voter_section_no_ - num_dom - ind_id index unique observations 
+** We have missing values for num_dom and ind_id if no individual in our study voted in a particular mun_id-section.
+
+
+********************************************************************************
+**# 4. Generate Votes Variables 
+********************************************************************************
+
+** Generate Valid Votes
+gen valid_votes = turnout - blank - null
+label variable valid_votes "Valid Votes Cast in Section"
+
+
+*==============================================================================*
+**## Expanded definition of incumbent candidate in 2012 election 
+*==============================================================================*
+
+*..............................................................................*
+* 1. The candidate is an incumbent mayor (Name Match)
+*..............................................................................*
+gen incumbent_votes_section = candidate_a_votes_received_sectn if candidate_A_incumbent == 1 & c_voter_section_no_ != .
+replace incumbent_votes_section = candidate_b_votes_received_sectn if candidate_B_incumbent == 1 & c_voter_section_no_ != .
+replace incumbent_votes_section = candidate_c_votes_received_sectn if candidate_C_incumbent == 1 & c_voter_section_no_ != .
+
+*..............................................................................*
+* 2. The candidate was a vice mayor (Vice mayor match)
+*..............................................................................* 
+replace incumbent_votes_section = candidate_a_votes_received_sectn if candidate_A_incumbent_vp == 1 & c_voter_section_no_ != . 
+replace incumbent_votes_section = candidate_b_votes_received_sectn if candidate_B_incumbent_vp == 1 & c_voter_section_no_ != . 
+replace incumbent_votes_section = candidate_c_votes_received_sectn if candidate_C_incumbent_vp == 1 & c_voter_section_no_ != . 
+
+*..............................................................................*
+* 3. The candidate is from an incumbent party (Party Match)
+*..............................................................................*
+replace incumbent_votes_section = candidate_a_votes_received_sectn if candidate_A_incumbent_pty == 1 & c_voter_section_no_ != .
+replace incumbent_votes_section = candidate_b_votes_received_sectn if candidate_B_incumbent_pty == 1 & c_voter_section_no_ != .
+replace incumbent_votes_section = candidate_c_votes_received_sectn if candidate_C_incumbent_pty == 1 & c_voter_section_no_ != . 
+
+*..............................................................................*
+* 4. The incumbent party in 2008 is in the coalition in 2012 (Coalition Match).
+*..............................................................................*
+replace incumbent_votes_section = candidate_a_votes_received_sectn if candidate_A_incumbent_coalition == 1 & c_voter_section_no_ != . 
+replace incumbent_votes_section = candidate_b_votes_received_sectn if candidate_B_incumbent_coalition == 1 & c_voter_section_no_ != . 
+replace incumbent_votes_section = candidate_c_votes_received_sectn if candidate_C_incumbent_coalition == 1 & c_voter_section_no_ != .
+
+
+** COUNTING TOTAL VOTES FOR CHALLENGING CANDIDATES, AND TOTAL BLANK & NULL VOTES AT A MACHINE
+gen challenger_votes_section = valid_votes - incumbent_votes_section
+gen blank_null = blank + null
+
+
+** Generating Dummies that identify whether our incumbent identification is by name, by VP, by party, or by coalition 
+gen name_match = (candidate_A_incumbent == 1 | candidate_B_incumbent == 1 | candidate_C_incumbent == 1)
+gen vp_match = (candidate_A_incumbent_vp == 1 | candidate_B_incumbent_vp == 1 | candidate_C_incumbent_vp == 1)
+gen pty_match = (candidate_A_incumbent_pty == 1 | candidate_B_incumbent_pty == 1 | candidate_C_incumbent_pty == 1)
+gen coalition_match = (candidate_A_incumbent_coalition == 1 | candidate_B_incumbent_coalition == 1 | candidate_C_incumbent_coalition == 1)
+
+
+*==============================================================================*
+**## Votes by Candidate Political Affiliation
+*==============================================================================*
+
+** CREATING COUNT OF VOTES RECEIVED BY Right-leaning candidates
+gen right_leaning_votes = 0 
+replace right_leaning_votes = right_leaning_votes + candidate_a_votes_received_sectn if c_CR_A == 1 & candidate_a_votes_received_sectn != .
+replace right_leaning_votes = right_leaning_votes + candidate_b_votes_received_sectn if c_CR_B == 1 & candidate_b_votes_received_sectn != .
+replace right_leaning_votes = right_leaning_votes + candidate_c_votes_received_sectn if c_CR_C == 1 & candidate_c_votes_received_sectn != .
+
+label variable right_leaning_votes "Count of votes received by candidates with right-leaning candidates"
+
+
+** CREATING COUNT OF VOTES RECEIVED BY PRESIDENT'S PARTY
+gen PT_votes = 0 
+replace PT_votes = PT_votes + candidate_a_votes_received_sectn if c_PT_A == 1 & candidate_a_votes_received_sectn != .
+replace PT_votes = PT_votes + candidate_b_votes_received_sectn if c_PT_B == 1 & candidate_b_votes_received_sectn != .
+replace PT_votes = PT_votes + candidate_c_votes_received_sectn if c_PT_C == 1 & candidate_c_votes_received_sectn != .
+
+label variable PT_votes "Count of votes received by candidates co-partisan with the president"
+
+
+** CREATING COUNT OF VOTES RECEIVED BY PRESIDENT'S COALITIONS
+gen pres_coalition_votes = 0 
+
+replace pres_coalition_votes = pres_coalition_votes + candidate_a_votes_received_sectn ///
+if c_pre_coal_A == 1 & candidate_a_votes_received_sectn != .
+
+replace pres_coalition_votes = pres_coalition_votes + candidate_b_votes_received_sectn ///
+if c_pre_coal_B == 1 & candidate_b_votes_received_sectn != .
+
+replace pres_coalition_votes = pres_coalition_votes + candidate_c_votes_received_sectn ///
+if c_pre_coal_C == 1 & candidate_c_votes_received_sectn != .
+
+label variable pres_coalition_votes "Count of votes received by candidates in the president's coalition"
+
+
+** CREATING COUNT OF VOTES RECEIVED BY PRESIDENT'S COALITIONS
+gen gov_coalition_votes = 0 
+
+replace gov_coalition_votes = gov_coalition_votes + candidate_a_votes_received_sectn ///
+if c_gov_coal_A == 1 & candidate_a_votes_received_sectn != .
+
+replace gov_coalition_votes = gov_coalition_votes + candidate_b_votes_received_sectn ///
+if c_gov_coal_B == 1 & candidate_b_votes_received_sectn != .
+
+replace gov_coalition_votes = gov_coalition_votes + candidate_c_votes_received_sectn ///
+if c_gov_coal_C == 1 & candidate_c_votes_received_sectn != .
+
+label variable gov_coalition_votes "Count of votes received by candidates in the governor's coalition"
+
+
+*==============================================================================*
+**## Respondent characteristics by voter section 
+*==============================================================================*
+
+** Age of study participants 
+egen avg_age = mean(c_age_), by(c_mun_id c_voter_section_no_)
+egen avg_age_muni = mean(avg_age), by(c_mun_id)
+gen missing_age = (avg_age == .)
+replace avg_age = avg_age_muni if avg_age == .
+
+
+** Year of school of participants
+egen avg_school = mean(b_curr_grade), by(c_mun_id c_voter_section_no_)
+egen avg_school_muni = mean(avg_school), by(c_mun_id)
+gen missing_school = (avg_school == .)
+replace avg_school = avg_school_muni if avg_school == .
+
+
+** Female study participants 
+egen avg_gender = mean(resp_female), by(c_mun_id c_voter_section_no_)
+egen avg_gender_muni = mean(avg_gender), by(c_mun_id)
+gen missing_gender = (avg_gender == .)
+replace avg_gender = avg_gender_muni if avg_gender == .
+
+
+** Frequent interactors 
+egen avg_freq = mean(frequent_interactor), by(c_mun_id c_voter_section_no_)
+egen avg_freq_muni = mean(avg_freq), by(c_mun_id)
+gen missing_freq = (avg_freq == .)
+replace avg_freq = avg_freq_muni if avg_freq == .
+
+
+********************************************************************************
+**# 5. Treatment Variables 
+********************************************************************************
+
+*==============================================================================*
+**## Unadjusted Treatment Variables 
+*==============================================================================*
+
+** Counting number of treated people by section number
+egen tot_treatment_by_section_1 = total(treatment), by(c_mun_id c_voter_section_no_)
+label variable tot_treatment_by_section_1 "Treated Individuals"
+
+gen tot_study_temp = 1 if treatment == 0 | treatment == 1 
+egen tot_study_1 = total(tot_study_temp) if c_voter_section_no_ != ., by(c_mun_id c_voter_section_no_)
+label variable tot_study_1 "Respondents"
+
+gen tot_control_by_section_1 = tot_study_1 - tot_treatment_by_section_1
+
+
+** COUNTING NUMBER OF TREATED UNITS WITH CLIENTELIST RELATIONSHIP IN A GIVEN SECTION	
+gen treat_frequent = treatment * frequent_interactor
+label var treat_frequent "Treatment $\times$ Clientelist Relationship"
+						
+gen treat_talk_temp = 1 if frequent_interactor == 1 & treatment == 1
+egen tot_treat_talk_by_section_1 = total(treat_talk_temp), by(c_mun_id c_voter_section_no_)
+label variable tot_treat_talk_by_section_1 "Treated Individuals with Clientelist Relationship"
+
+drop treat_talk_temp
+
+
+** COUNTING NUMBER OF CTRL UNITS WITH CLIENTELIST RELATIONSHIP IN A GIVEN SECTION 
+gen ctrl_talk_temp = 1 if frequent_interactor == 1 & treatment == 0
+egen tot_ctrl_talk_by_section_1 = total(ctrl_talk_temp), by(c_mun_id c_voter_section_no_)
+label variable tot_ctrl_talk_by_section_1 "Number of Control People Interact Often with Politician"
+
+gen tot_study_frequent_1 = tot_treat_talk_by_section_1 + tot_ctrl_talk_by_section_1
+label variable tot_study_frequent_1 "Respondents with Clientelist Relationship"
+
+drop ctrl_talk_temp
+
+
+** COUNTING NUMBER OF TREATED UNITS WITHOUT A CLIENTELIST RELATIONSHIP IN A GIVEN SECTION
+gen treat_talk_temp = 1 if frequent_interactor == 0 & treatment == 1
+egen tot_treat_not_talk_by_section_1 = total(treat_talk_temp), by(c_mun_id c_voter_section_no_)
+label variable tot_treat_not_talk_by_section_1 "Treated Individuals without Clientelist Relationship"
+
+drop treat_talk_temp
+
+
+** COUNTING NUMBER OF CTRL UNITS WITHOUT A CLIENTELIST RELATIONSHIP IN A GIVEN SECTION
+gen ctrl_talk_temp = 1 if frequent_interactor == 0 & treatment == 0
+egen tot_ctrl_not_talk_by_section_1 = count(ctrl_talk_temp), by(c_mun_id c_voter_section_no_)
+label variable tot_ctrl_not_talk_by_section_1 "Number of Control People Not Interact Often with Politician"
+
+gen tot_study_infrequent_1 = tot_treat_not_talk_by_section_1 + tot_ctrl_not_talk_by_section_1
+label variable tot_study_infrequent_1 "Respondents without Clientelist Relationship"
+
+drop ctrl_talk_temp
+
+
+** As of now, the voting data includes unadjusted regressors, but not adjusted ones
+replace mun_id = c_mun_id
+save "${gen_data_folder}/voting_data_unadjusted.dta", replace
+ 
+
+********************************************************************************
+**# 6. Rescale regressors 
+********************************************************************************
+
+*==============================================================================*
+**## Individual-level dataset
+*==============================================================================*
+
+*------------------------------------------------------------------------------*
+* Calculate no. of non-interviewed voters who lived in one of our study clusters 
+*------------------------------------------------------------------------------*
+
+* No. of interviewed people per cluster
+by b_cluster, sort: gen interviewed_cluster = _N
+replace interviewed_cluster = . if missing(b_cluster)
+
+*------------------------------------------------------------------------------*
+* Estimate average no. of adults in a household, neighbors per cluster, and households per cluster
+*------------------------------------------------------------------------------*
+sort b_clusters num_dom 
+
+gen total_adults_temp = total_adults
+replace total_adults_temp = . if num_dom == num_dom[_n-1]
+egen median_adults_cluster = median(total_adults_temp), by(b_clusters)
+egen average_adults_cluster = mean(total_adults_temp), by(b_clusters)
+
+gen a_total_neighbors_temp = a_total_neighbors
+replace a_total_neighbors_temp = . if num_dom == num_dom[_n-1]
+egen median_neighbors_cluster = median(a_total_neighbors_temp), by(b_clusters)
+
+gen temp_num_dom = num_dom
+replace temp_num_dom = . if num_dom == num_dom[_n-1]
+egen households_per_cluster = count(temp_num_dom), by(b_clusters) 
+
+*------------------------------------------------------------------------------*
+* Define no. of voters in households we did not interview 
+*------------------------------------------------------------------------------*
+
+* Calculate the number of voters in each household in our sample at the cluster level
+gen total_adults_household = total_adults
+replace total_adults_household = . if num_dom == num_dom[_n-1]                  // avoid double-counting the total_adults variable at the household level 
+egen total_adults_cluster = total(total_adults_household), by(b_clusters)       
+replace total_adults_cluster = . if b_clusters == b_clusters[_n-1]
+
+
+* Define NI_ch_minus as the number of voters who were in households we did not interview. 
+* For each cluster, this is defined as the (median number of neighboring households - the number of interviewed households) X median no. of adults per household.
+* Define this variable at the cluster level.
+gen NI_ch_minus = (median_neighbors_cluster - households_per_cluster) * median_adults_cluster
+replace NI_ch_minus = 0 if NI_ch_minus < 0
+replace NI_ch_minus = . if b_clusters == b_clusters[_n-1]
+
+
+* Calculate the sum of both variables at the cluster level 
+gen total_voters = total_adults_cluster + NI_ch_minus       
+
+
+* Define the ratio of total voters to total voters interviewed at the cluster level
+gen voters_to_interviewed = total_voters / interviewed_cluster     
+
+
+*------------------------------------------------------------------------------*
+* Final rescaling of regressors
+*------------------------------------------------------------------------------*
+
+* Calculate the ratio of total voters to total voters interviewed at the aggregate level for the 21 municipalities 
+egen agg_ratio_21 = mean(voters_to_interviewed) if (name_match == 1)
+summarize agg_ratio_21                                                          // this is 11.3
+
+* Calculate the ratio of total voters to total voters interviewed at the aggregate level for the 39 municipalities 
+egen agg_ratio_39 = mean(voters_to_interviewed) if (name_match == 1 | vp_match == 1 | pty_match == 1 | coalition_match == 1)
+summarize agg_ratio_39                                                          // this is 9.96
+
+
+* Adjust regressors separately for 21-municipality sample and 39-municipality sample
+foreach sample in "21" "39" {
+	
+	* Regressors for aggregate electoral analysis
+	gen tot_study_2_`sample' = tot_study_1 * agg_ratio_`sample'
+	label var tot_study_2_`sample' "Respondents (rescaled, `sample' muns)"
+	
+	gen tot_treat_by_section_2_`sample' = tot_treatment_by_section_1 * agg_ratio_`sample'
+	label var tot_treat_by_section_2_`sample' "Treated Individuals (rescaled, `sample' muns)"
+	
+	* Regressors for electoral analysis by clientelist status 
+	gen tot_treat_by_section_2_freq_`sample' = tot_treat_talk_by_section_1 * agg_ratio_`sample' 
+	label var tot_treat_by_section_2_freq_`sample' "Treated Individuals with Clientelist Relationship (rescaled, `sample' muns)"
+	
+	gen tot_treat_by_section_2_infreq_`sample' = tot_treat_not_talk_by_section_1 * agg_ratio_`sample'
+	label var tot_treat_by_section_2_infreq_`sample' "Treated Individuals without Clientelist Relationship (rescaled, `sample' muns)"
+	
+	gen tot_study_2_freq_`sample' = tot_study_frequent_1 * agg_ratio_`sample' 
+	label var tot_study_2_freq_`sample' "Respondents with Clientelist Relationship (rescaled, `sample' muns)"
+	
+	gen tot_study_2_infreq_`sample' = tot_study_infrequent_1 * agg_ratio_`sample'
+	label var tot_study_2_infreq_`sample' "Respondents without Clientelist Relationship (rescaled, `sample' muns)"
+}
+
+
+*==============================================================================*
+**## Section-level Dataset
+*==============================================================================*
+
+** Collapse data at the voting section level
+drop if location_id == .
+sort location_id c_voter_section_no_ 
+drop if location_id == location_id[_n-1] & c_voter_section_no_ == c_voter_section_no_[_n-1] 
+
+
+*------------------------------------------------------------------------------*
+**## Final Treatment Variables 
+*------------------------------------------------------------------------------*
+
+rename tot_treatment_by_section_1 tot_treat_by_section_1
+
+
+** Keep only variables used in final analysis
+keep c_mun_id mun_id c_voter_section_no_ location_id c_vote_here_ b_clusters ///
+name_match vp_match pty_match coalition_match eligible_in_2008 ///
+incumbent_votes_section challenger_votes_section turnout blank_null PT_votes pres_coalition_votes gov_coalition_votes right_leaning_votes ///
+tot_treat_by_section_2* tot_study_2* eligible tot_treat_by_section_1 tot_study_1 ///
+tot_treat_talk_by_section_1 tot_treat_not_talk_by_section_1 tot_study_frequent_1 tot_study_infrequent_1 ///
+avg_age avg_school avg_gender missing_age missing_school missing_gender ///
+candidate_A_incumbent* candidate_B_incumbent* candidate_C_incumbent*
+
+
+** Variable labels
+label var c_voter_section_no_ "Voter section number"
+label var c_mun_id "Municipal ID"
+label var eligible "No. of registered voters"
+label var turnout "Turnout"
+label var eligible_in_2008 "No. of registered voters in 2008"
+
+foreach cand in "A" "B" "C" {
+	
+	label var candidate_`cand'_incumbent "Candidate `cand' is incumbent mayor"
+	label var candidate_`cand'_incumbent_vp "Candidate `cand' is incumbent vice-mayor"
+	label var candidate_`cand'_incumbent_pty "Candidate `cand' is from incumbent party"
+	label var candidate_`cand'_incumbent_coalition "Candidate `cand' is from incumbent coalition"
+}
+
+label var location_id "Voting location ID"
+label var incumbent_votes_section "Votes for incumbent mayor"
+label var challenger_votes_section "Votes for challenger candidate"
+label var blank_null "Blank and null votes"
+label var name_match "Incumbent mayor was cand A/B/C"
+label var vp_match "Incumbent vice-mayor was cand A/B/C"
+label var pty_match "Candidate from incumbent party was cand A/B/C"
+label var coalition_match "Candidate from incumbent coalition was cand A/B/C"
+label var avg_age "Respondent age (mean)"
+label var missing_age "Missing respondent age (mean, section)"
+label var avg_school "Respondent years of education (mean)"
+label var missing_school "Missing respondent years of education (mean, section)"
+label var avg_gender "Respondent is female (mean)"
+label var missing_gender "Missing respondent gender (mean, section)"
+
+
+** Save final electoral dataset for the overall sample
+quietly compress
+save "${final_data_folder}/voting_data.dta", replace

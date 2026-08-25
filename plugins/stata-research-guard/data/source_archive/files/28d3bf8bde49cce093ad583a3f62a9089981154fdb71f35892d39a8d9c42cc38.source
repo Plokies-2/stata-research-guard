@@ -1,0 +1,236 @@
+******************************************************************************************************************************
+******************************************************************************************************************************
+***
+*** Data preparation file
+*** Written by: Yoto Yotov and Arne Nagengast
+***
+******************************************************************************************************************************
+******************************************************************************************************************************
+
+**********************************************************************
+*1. Start with DGD Data, which will be used for the gravity variables* 
+*Download on Oct-22-2022: https://www.usitc.gov/data/gravity/dgd.htm *
+**********************************************************************
+**********************
+*a. Combine DGD files*
+**********************
+insheet using ${ext_data}\release_2.1_1948_1959.csv, clear
+gen agree_fta_new = substr(agree_fta,1,1)
+drop agree_fta
+destring agree_fta_new, gen(agree_fta)
+drop agree_fta_new
+save ${tmp_data}\itc_dgd_1, replace
+insheet using ${ext_data}\release_2.1_1960_1969.csv, clear
+save ${tmp_data}\itc_dgd_2, replace
+insheet using ${ext_data}\release_2.1_1970_1979.csv, clear
+save ${tmp_data}\itc_dgd_3, replace
+insheet using ${ext_data}\release_2.1_1980_1989.csv, clear
+save ${tmp_data}\itc_dgd_4, replace
+insheet using ${ext_data}\release_2.1_1990_1999.csv, clear
+save ${tmp_data}\itc_dgd_5, replace
+insheet using ${ext_data}\release_2.1_2000_2004.csv, clear
+save ${tmp_data}\itc_dgd_6, replace
+insheet using ${ext_data}\release_2.1_2005_2009.csv, clear
+save ${tmp_data}\itc_dgd_7, replace
+insheet using ${ext_data}\release_2.1_2010_2014.csv, clear
+save ${tmp_data}\itc_dgd_8, replace
+insheet using ${ext_data}\release_2.1_2015_2019.csv, clear
+save ${tmp_data}\itc_dgd_9, replace
+clear all
+forvalues i=1(1)9{
+	append using ${tmp_data}\itc_dgd_`i'.dta
+	erase ${tmp_data}\itc_dgd_`i'.dta
+}
+******************************************************
+*b. Create some additional variables and label others*
+******************************************************
+rename iso3_o exporter
+rename country_o exporter_name
+rename iso3_d importer
+rename country_d importer_name
+gen DIST=ln(distance)
+rename contiguity CNTG
+rename common_language LANG
+rename colony_ever CLNY
+rename member_eu_joint EU_DGD
+egen WTO_DGD=rowmax(member_gatt_joint member_wto_joint)
+egen RTA_DGD=rowmax(agree_pta_goods agree_pta_services agree_fta agree_eia agree_cu agree_psa agree_fta_eia agree_cu_eia agree_pta)
+rename agree_pta_goods PTA_GOODS_DGD
+rename agree_pta_services PTA_SERVS_DGD
+rename agree_fta FTA_DGD
+rename agree_eia EIA_DGD
+rename agree_cu CU_DGD
+rename agree_psa PSA_DGD
+rename agree_pta PTA_DGD
+rename member_eu_o eu_exp
+rename member_eu_d eu_imp
+**************************************************************
+*c. Adjust some names to facilitate combining with other data*
+**************************************************************
+replace exporter="BUR" if exporter=="MMR" & year<1989
+replace importer="BUR" if importer=="MMR" & year<1989
+duplicates list year exporter importer
+*********************************
+*NOTE: EUN appears as duplicates*
+*********************************
+drop if exporter=="EUN" | importer=="EUN"
+duplicates list year exporter importer
+*****************************
+*d. Keep only some variables*
+*****************************
+keep exporter importer year DIST CNTG LANG CLNY EU WTO RTA FTA gdp_pwt_cur_d gdp_pwt_cur_o
+compress
+save ${tmp_data}\dgd_sdid, replace
+
+*********************************************************************
+*2. Prepare manufacturing trade data from WTO. Download on Oct-23-22*
+* https://www.wto.org/english/res_e/reser_e/structural_gravity_e.htm*
+*********************************************************************
+use "${ext_data}\Structural.gravity.manufacturing.database.Ver1.dta", clear
+replace importer="ROU" if importer=="ROM"
+replace exporter="ROU" if exporter=="ROM"
+drop pair_id
+save ${tmp_data}\trade_wto, replace
+
+*********************
+*3. Combine the data*
+*********************
+******************************
+*a. Start with the trade data*
+******************************
+use ${tmp_data}\trade_wto, clear
+**************************
+*b. Add gravity variables*
+**************************
+joinby exporter importer year using ${tmp_data}\dgd_sdid, unmatched(master)
+tab _m
+********************************************************************************
+*NOTE: About 2.6% of the observations in the trade data are not matched in DGD.*
+*The reason is the coding of some countries in DGD, e.g., HKG is missing before* 
+*1997. Given the small percent of mismatched observations, we should be fine.  *
+********************************************************************************
+drop _m
+******************************************************************************************
+*c. Make sure all gravity covariates, except distance, are set to zero for domestic trade*
+******************************************************************************************
+local gravvars "CNTG LANG CLNY EU WTO RTA FTA" 
+foreach x of local gravvars{
+replace `x'=0 if exporter==importer
+}
+*************************
+*d. Check for duplicates*
+*************************
+duplicates list year exporter importer
+*************************************
+*e. Create some additional variables*
+*************************************	
+egen idt_ci = group(exporter year)
+egen idt_cj = group(importer year)
+egen id_ci_cj = group(exporter importer)
+compress
+save ${usr_data}\data_large, replace
+**************************
+*f. Create medium sample*
+**************************
+use ${usr_data}\data_large.dta, clear
+keep if exporter!=importer
+collapse (sum) trade, by(exporter)
+sort trade
+gen sum_trade_cum=sum(trade)
+egen sum_trade_all=sum(trade)
+gen ratio= sum_trade_cum/sum_trade_all
+drop if ratio<0.01
+keep exporter
+save ${tmp_data}\exp_small.dta, replace
+rename exporter importer
+save ${tmp_data}\imp_small.dta, replace
+use ${usr_data}\data_large.dta, clear
+joinby importer using ${tmp_data}\imp_small.dta
+joinby exporter using ${tmp_data}\exp_small.dta
+keep year exporter importer trade CLNY CNTG LANG DIST RTA_DGD WTO_DGD gdp_pwt_cur_d gdp_pwt_cur_o idt_ci idt_cj id_ci_cj
+save ${usr_data}\data_medium.dta, replace
+**************************
+*g. Create small sample*
+**************************
+use ${usr_data}\data_large.dta, clear
+keep if exporter!=importer
+collapse (sum) trade, by(exporter)
+sort trade
+gen sum_trade_cum=sum(trade)
+egen sum_trade_all=sum(trade)
+gen ratio= sum_trade_cum/sum_trade_all
+drop if ratio<0.02
+keep exporter
+save ${tmp_data}\exp_small.dta, replace
+rename exporter importer
+save ${tmp_data}\imp_small.dta, replace
+use ${usr_data}\data_large.dta, clear
+joinby importer using ${tmp_data}\imp_small.dta
+joinby exporter using ${tmp_data}\exp_small.dta
+keep year exporter importer trade CLNY CNTG LANG DIST RTA_DGD WTO_DGD gdp_pwt_cur_d gdp_pwt_cur_o idt_ci idt_cj id_ci_cj
+save ${usr_data}\data_small.dta, replace
+
+*********************************************************
+*4. Add additional data sources and transform variables *
+*********************************************************
+// loop over different data set sizes
+foreach dtaset in small medium large {
+
+	// load trade data
+	use ${usr_data}/data_`dtaset'.dta, clear
+	
+	* preliminary variable definitions
+	rename RTA_DGD RTA
+	egen id_ci = group(exporter)
+	egen id_cj = group(importer)
+
+	* set panel IDs
+	xtset id_ci_cj year, yearly
+
+	* determine treatment cohorts
+	egen first_treat=csgvar(RTA), tvar(year) ivar(id_ci_cj)
+
+	* shift RTA/WTO 3 years forward for anticipation effects
+	gen RTA_3 = F3.RTA
+	egen first_treat_3=csgvar(RTA_3), tvar(year) ivar(id_ci_cj)
+	gen WTO_3 = F3.WTO
+	
+	* define exclude dummy for three anticipation years
+	gen exclude = (first_treat-1==year | first_treat-2==year | first_treat-3==year)
+	
+	// drop always-treated units
+	drop if first_treat_3 == 1980
+
+	// drop exits
+	sort exporter importer year
+	gen D_RTA = 0
+	replace D_RTA = RTA-RTA[_n-1] if id_ci_cj==id_ci_cj[_n-1]
+	egen exit = min(D_RTA), by(id_ci_cj)
+	drop if exit==-1
+	drop exit D_RTA
+
+	// define 5-year interval
+	gen int_5yr = mod(year,5)
+	
+	// define border-time ID
+	gen brdr=1 if exporter!=importer
+	replace brdr=0 if brdr==.
+	egen brdr_time=group(brdr year)
+	
+	// define variables
+	gen lnDIST = ln(DIST)
+	gen lntrade = ln(trade)
+
+	// save data set
+	save ${usr_data}/data_sdid_`dtaset'.dta, replace
+
+}
+
+
+****************************
+*5. Delete temporary files *
+****************************
+erase ${tmp_data}\trade_wto.dta
+erase ${tmp_data}\dgd_sdid.dta
+erase ${tmp_data}\exp_small.dta
+erase ${tmp_data}\imp_small.dta

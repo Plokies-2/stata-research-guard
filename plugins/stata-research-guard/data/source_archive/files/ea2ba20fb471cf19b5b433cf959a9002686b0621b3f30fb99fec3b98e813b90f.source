@@ -1,0 +1,409 @@
+********************************************************************************
+********************************************************************************
+********************************************************************************
+/*
+CODE TO GET MOMENTS FOR STRUCTURAL ESTIMATION
+FOR MEGHIR, MOBARAK, MOMMAERTS, AND MORTEN
+*/
+********************************************************************************
+********************************************************************************
+********************************************************************************
+
+********************************************************************
+* Make the index for migration shares (which of 4/8 "types" the hh is)
+
+foreach type in r2r3r4 r2r4 {
+
+	clear
+	set obs 2
+
+	gen mig = 0 if _n == 1
+	replace mig = 1 if _n == 2
+
+	rename mig migrant_r2
+	gen migrant_r3 = migrant_r2
+	gen migrant_r4 = migrant_r2
+	gen migrant_r5 = migrant_r2
+
+	if "`type'" == "r2r3r4" {
+		local fillin_list migrant_r3 migrant_r4
+		}
+	else if "`type'" == "r2r4" {
+		local fillin_list migrant_r2 migrant_r4
+		}
+	
+	keep `fillin_list'
+
+	fillin `fillin_list' //this is the concorance between each migration behavior and type
+	gen type = _n 
+	drop _fillin 
+
+	save type_merge_`type'.dta, replace
+
+	}
+********************************************************************
+
+
+********************************
+cap program drop prog_momentboot
+program prog_momentboot, eclass
+
+	syntax [varlist], roundkeep(string) [scaled(string) r4control(string)]
+
+	* This is going to be the matrix we save results into
+	tempname ests
+
+	cap replace village=newvillageID
+	cap drop vr_fe
+	egen vr_fe=group(village round)
+	cap drop HHID
+	egen HHID=group(village oldHHID)
+
+	cap drop dum_round_keep
+	cap drop no_obs
+	cap drop dum_balanced_sample
+
+	if "`roundkeep'" == "r2r3r4" {
+		gen dum_round_keep = (inlist(round,3,4))
+		}
+	else if "`roundkeep'" == "r2r4" {
+		gen dum_round_keep = (inlist(round,2,4))
+		}
+
+	unique round if dum_round_keep == 1
+	local n_round = `r(unique)'
+	local n_group = 2^`n_round'
+
+	bys HHID: egen no_obs = count(migrant_r) if dum_round_keep == 1 /* we would drop years in which migrant_r == . */
+	gen dum_balanced_sample = (no_obs == `n_round') /*only the observations we have across all rounds we care about*/
+	bys HHID: egen temp = total(dum_balanced_sample)
+	replace dum_balanced_sample = (temp>0) //just so its not zero for round 2
+	drop temp
+
+	/* Start making moments */
+	if "`r4control'" != "" {
+		keep if treat_r4 == 0
+		keep if dum_balanced_sample == 1
+		}
+	
+	* migration rate moment
+	reg migrant_r treat if round == 2
+	mat `ests' = (_b[_cons], _b[treat])
+	local mat_lab `mat_lab' mig_r2_c mig_r2_te
+
+	reg migrant_r treat if round == 3 
+	mat `ests' = (`ests', _b[_cons], _b[treat])
+	local mat_lab `mat_lab' mig_r3_c mig_r3_te
+
+	reg migrant_r treat if round == 4 
+	mat `ests' = (`ests', _b[_cons], _b[treat])
+	local mat_lab `mat_lab' mig_r4_c mig_r4_te
+
+	sum migrant_r treat if inlist(round,2,3,4)
+	mat `ests' = (`ests',_b[_cons])
+	local mat_lab `mat_lab' mig_r234_c
+
+	*migration income control and treatment effect (logs)
+	reg logym`scaled' treat if migrant_r==1 & round==2
+	mat `ests' = (`ests', _b[_cons], _b[treat])
+	local mat_lab `mat_lab' logym_r2_c logym_r2_te
+
+	*risk sharing moment
+	areg logc c.logy`scaled' c.treat#c.logy`scaled' if inlist(round,4), absorb(vr_fe) cluster(village)
+	mat `ests'=(`ests', _b[c.logy`scaled'], _b[c.treat#c.logy`scaled'])
+	local mat_lab `mat_lab' rs_beta_r4_c rs_beta_r4_te
+
+	*risk sharing moment of nonmigrants
+	areg logc c.logy`scaled' c.treat#c.logy`scaled' if inlist(round,4) & migrant_r==0, absorb(vr_fe) cluster(village)
+	mat `ests'=(`ests', _b[c.logy`scaled'], _b[c.treat#c.logy`scaled'])
+	local mat_lab `mat_lab' rs_beta_r4_c_nonmig rs_beta_r4_te_nonmig
+
+	*mean and sd of total income of migrants/nonmigrants in round 4
+	sum logy`scaled' if migrant_r==1 & round==4 & treat==0
+	mat `ests' = (`ests',r(mean),r(sd))
+	local mat_lab `mat_lab' mean_log_inc_migrant_r4_c sd_log_inc_migrant_r4_c
+
+	sum logy`scaled' if migrant_r==0 & treat==0 & round==4
+	mat `ests' = (`ests',r(mean),r(sd))
+	local mat_lab `mat_lab' mean_log_inc_nonmig_r4_c sd_log_inc_nonmig_r4_c
+
+	*mean and sd of village income of migrants/nonmigrants in round 4
+	sum logyv`scaled' if migrant_r==1 & round==4 & treat==0
+	mat `ests' = (`ests',r(mean),r(sd))
+	local mat_lab `mat_lab' mean_log_inc_v_mig_r4_c sd_log_inc_v_mig_r4_c
+
+	sum logyv`scaled' if migrant_r==0 & round==4 & treat==0 
+	mat `ests' = (`ests',r(mean),r(sd))
+	local mat_lab `mat_lab' mean_log_inc_v_nonmig_r4_c sd_log_inc_v_nonmig_r4_c
+
+	* mean and sd of migration income for migrants in round 4
+	sum logym`scaled' if migrant_r==1 & round==4 & treat==0
+	mat `ests' = (`ests',r(mean),r(sd))
+	local mat_lab `mat_lab' mean_log_inc_m_mig_r4_c sd_log_inc_m_mig_r4_c
+
+	* Add on LM for migrant income
+	sum ym`scaled' if migrant_r==1 & round==4 & treat==0
+	mat `ests' = (`ests',log(r(mean)),log(r(sd)))
+	local mat_lab `mat_lab' lm_mean_inc_m_mig_r4_c lm_sd_inc_m_mig_r4_c
+
+	*migration shares + total income means + total income sds
+	preserve
+
+	keep HHID migrant_r round logy`scaled' logym`scaled' logyv`scaled' y`scaled' ym`scaled' yv`scaled' treat  //y_level
+	reshape wide migrant_r logy`scaled' logym`scaled' logyv`scaled' y`scaled' ym`scaled' yv`scaled', i(HHID treat) j(round)
+	cap reshape error
+
+	cap drop logy`scaled'3 logy`scaled'5
+	gen y_sd4=logy`scaled'4
+	gen ym_sd4 = logym`scaled'4
+	gen yv_sd4 = logyv`scaled'4
+
+	gen y_sd4_level=y`scaled'4
+	gen ym_sd4_level = ym`scaled'4
+	gen yv_sd4_level = yv`scaled'4
+
+	if "`roundkeep'" == "r2r3r4" {
+		drop if migrant_r3 ==. | migrant_r4 == .
+		merge m:1 migrant_r3 migrant_r4 using type_merge_`roundkeep'.dta //`type_merge'
+		}
+	else if "`roundkeep'" == "r2r4" {
+		drop if migrant_r2 ==. | migrant_r4 == .
+		merge m:1 migrant_r2 migrant_r4 using type_merge_`roundkeep'.dta //`type_merge'
+		}
+
+	assert _merge == 3
+	drop _merge
+
+	tabstat logyv`scaled'4 if treat==0, by(type) stat(mean sd)
+	tabstat logym`scaled'4 if treat==0, by(type) stat(mean sd)
+	tabstat logyv`scaled'4 if treat==1, by(type) stat(mean sd)
+	tabstat logym`scaled'4 if treat==1, by(type) stat(mean sd)
+
+	* Now save by type so have for matlab
+	gen count = 1
+	
+	collapse migrant_* y`scaled'4 ym`scaled'4 yv`scaled'4 logy`scaled'4 logym`scaled'4 logyv`scaled'4 (sd) y_sd4 ym_sd4 yv_sd4 y_sd4_level ym_sd4_level yv_sd4_level (sum) count, by(type treat)
+
+	bys treat: egen total_count = total(count)
+	gen share = count/total_count
+	drop count total_count
+
+	* compute log(mean) (already have mean(log))
+	foreach var in y`scaled'4 ym`scaled'4 yv`scaled'4 y_sd4_level ym_sd4_level yv_sd4_level {
+		replace `var' = log(`var')
+		}
+
+	sort treat type
+
+	matrix list `ests'
+	
+	foreach treat in 0 1 {
+		if `treat' == 0 {
+			local suffix _c
+			}
+		else {
+			local suffix _t
+			}
+
+		foreach var in share logy`scaled'4 logym`scaled'4 logyv`scaled'4 y_sd4 ym_sd4 yv_sd4 y`scaled'4 ym`scaled'4 yv`scaled'4 y_sd4_level ym_sd4_level yv_sd4_level {
+			forval x=1/`n_group' {
+
+				if `var'[4*`treat' + `x'] != . { //e.g. migration income is missing by definition for ppl who don't migrate this period, so don't include it in the matrix
+					mat `ests' = (`ests',`var'[4*`treat' + `x'])
+					if "`var'" == "share" {
+						local mat_lab `mat_lab' mig_g`x'`suffix'
+						}
+					else if "`var'" == "logy`scaled'4"  {
+						local mat_lab `mat_lab' income_g`x'`suffix'
+						}
+					else if "`var'" == "logyv`scaled'4" {
+						local mat_lab `mat_lab' income_v_g`x'`suffix'
+						}
+					else if "`var'" == "logym`scaled'4" {
+						local mat_lab `mat_lab' income_m_g`x'`suffix'
+						}
+					else if "`var'" == "y_sd4" {
+						local mat_lab `mat_lab' sd_income_g`x'`suffix'
+						}
+					else if "`var'" == "ym_sd4" {
+						local mat_lab `mat_lab' sd_income_m_g`x'`suffix'
+						}
+					else if "`var'" == "yv_sd4" {
+						local mat_lab `mat_lab' sd_income_v_g`x'`suffix'
+						} 
+					else if "`var'" == "y`scaled'4"  { /*ml suffix = mean log*/
+						local mat_lab `mat_lab' lm_income_g`x'`suffix'
+						}
+					else if "`var'" == "yv`scaled'4" {
+						local mat_lab `mat_lab' lm_income_v_g`x'`suffix'
+						}
+					else if "`var'" == "ym`scaled'4" {
+						local mat_lab `mat_lab' lm_income_m_g`x'`suffix'
+						}
+					else if "`var'" == "y_sd4_level" {
+						local mat_lab `mat_lab' lm_sd_income_g`x'`suffix'
+						}
+					else if "`var'" == "ym_sd4_level" {
+						local mat_lab `mat_lab' lm_sd_income_m_g`x'`suffix'
+						}
+					else if "`var'" == "yv_sd4_level" {
+						local mat_lab `mat_lab' lm_sd_income_v_g`x'`suffix'
+						}
+					}
+			
+				}
+
+			}
+		}
+
+	restore
+
+	foreach migtype in r2r4 r3r4 r2r3 {
+
+		preserve
+		
+		if "`migtype'" == "r2r4" {
+			keep if inlist(round,2,4)
+			}
+		else if "`migtype'" == "r3r4" {
+			keep if inlist(round,3,4)
+			}
+		else if "`migtype'" == "r2r3" {
+			keep if inlist(round,2,3)
+			}
+
+		keep migrant_r round HHID treat
+		reshape wide migrant_r, i(HHID treat) j(round)
+		foreach var of varlist migrant_r* {
+			drop if `var' == .
+			}
+		egen total_mig = rowtotal(migrant_r*)
+		gen count = 1
+		collapse (sum) count, by(total_mig treat)
+		bys treat: egen N = total(count)
+		gen share = count/N
+
+
+		reg share treat if total_mig == 0
+		mat `ests' = (`ests', _b[_cons], _b[treat])
+		local mat_lab `mat_lab' mig_zero_`migtype'_c mig_zero_`migtype'_te
+
+		reg share treat if total_mig == 1
+		mat `ests' = (`ests', _b[_cons], _b[treat])
+		local mat_lab `mat_lab' mig_one_`migtype'_c mig_one_`migtype'_te
+
+		reg share treat if total_mig == 2
+		mat `ests' = (`ests', _b[_cons], _b[treat])
+		local mat_lab `mat_lab' mig_two_`migtype'_c mig_two_`migtype'_te
+
+		restore
+
+		}
+	
+	mat list `ests'
+	di "`mat_lab'"
+
+	ereturn post `ests'
+	ereturn local mat_lab `mat_lab'
+end
+********************************
+
+*run program
+
+foreach r4control in "" {
+	
+	foreach scaled in _scaled {
+
+		foreach roundkeep in r2r3r4 {
+
+			use "$dropbox/data_RESTUD_MMMM2021.dta", clear
+			rename income_pc_r y_level
+			rename exp_total_pc_r c_level
+			gen oldHHID=HHID
+
+			gen logy_test = log(y_level)
+			assert logy == logy_test
+			drop logy_test
+			capture drop logy_scaled
+			gen logy_scaled = log(y_level/1000)
+
+			gen logc_test = log(c_level)
+			assert logc == logc_test
+			drop logc_test
+			capture drop logc_scaled
+			gen logc_scaled = log(c_level/1000)
+
+			gen logyv_test = log(income_village_pc_r)
+			assert logyv_test == logyv
+			drop logyv_test
+			capture drop logyv_scaled
+			gen logyv_scaled = log(income_village_pc_r/1000)
+
+			gen logym_test = log(migearnminustravel_pc_r)
+			assert logym_test == logym
+			drop logym_test
+			capture drop logym_scaled
+			gen logym_scaled = log(migearnminustravel_pc_r/1000)
+
+			* Note: income in village in log_yv and income migrating is log_ym
+			gen ym_scaled = migearnminustravel_pc_r/1000
+			gen ym =  migearnminustravel_pc_r
+			gen yv_scaled = income_village_pc_r/1000
+			gen yv = income_village_pc_r
+			gen y_scaled = y_level/1000
+			gen y = y_level
+	
+			gen logy_check = log(exp(logym) + exp(logyv))
+			compare logy_check logy
+
+			prog_momentboot, scaled(`scaled') r4control(`r4control') roundkeep(`roundkeep')
+			mat list e(b)
+			
+			*bootstrap
+			bootstrap _b, noisily reps(5) seed(712) cluster(village) idcluster(newvillageID): prog_momentboot, scaled(`scaled') r4control(`r4control') roundkeep(`roundkeep')
+			
+			mat estimates=e(b)'
+			mat vc_matrix=e(V)
+
+			mat list estimates
+			mat list vc_matrix
+
+			svmat estimates
+			rename estimates1 estimate
+			svmat vc_matrix
+
+			* count how many variables
+			ds vc_*
+			local n_var:  word count `r(varlist)'
+
+			gen variance=.
+			forval x=1/`n_var' {
+				replace variance=vc_matrix`x' if _n==`x'
+				}
+			drop if _n>`n_var'
+
+			keep estimate variance 
+			gen weight=1/variance
+
+			* Now want to transpose
+			xpose, clear
+
+			* Now label variables with what they are
+			* I've saved this in the e(mat_lab) local
+			tokenize `e(mat_lab)'
+
+			forvalues i = 1/`n_var' {
+				capture rename v`i' ``i'' //using the tokenized values
+				}
+
+			* Now: interpretation is row 1 = estimate, row 2 = variance, row 3 = weight
+		
+			outsheet using "$dropbox/moments_and_weights`scaled'`r4control'_`roundkeep'.csv", comma replace
+
+			}
+		}
+	}
+
+cap erase type_merge.dta
+erase type_merge_r2r4.dta
+erase type_merge_r2r3r4.dta

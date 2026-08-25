@@ -1,0 +1,291 @@
+
+******************************
+** TABLE 1: Summary Statistics
+******************************
+
+*Students
+use "Data/clean/panel_VAM_GPA_beforeReg.dta", clear
+keep if InSample == 1
+keep if DiffTeacher == 1
+
+global poly           		"L1gpa L1gpa2 L1gpa3 L1gpa_grado L1gpa2_grado L1gpa3_grado grado_*"
+global poly_class     		"meanL1gpa meanL1gpa2 meanL1gpa3 meanL1gpa_grado meanL1gpa2_grado meanL1gpa3_grado"
+global School_t    		    "matricula_total poor Dpoor low_income med_income high_income father_college mother_college" 
+global School_avg 			"mean_matricula_total mean_poor mean_Dpoor mean_low_income mean_med_income mean_high_income mean_father_college mean_mother_college Rural_s Voucher_s Private_s"
+global D_t					"t1 t2 t3 t4 t5 t6 mean_t1 mean_t2 mean_t3 mean_t4 mean_t5 mean_t6 Dselect"
+global X_t             		"age_stud Tenure"
+
+// Find LCS
+felsdvregdm F1gpa $poly $poly_class $School_t $School_avg $D_t $X_t, ivar(mrun) jvar(id_prin) reff(con) peff(fe_teacher) feff(fe_prin) mnum(Nmovers) feffse(se_fe_prin) xb(pred) res(res) mover(Dmover) pobs(Nobs) group(group) grouponly
+
+keep if group==1 // Keep LCS 
+
+gen gpa_math=raw_gpa if subject ==  "Math"
+gen gpa_lang=raw_gpa if subject ==  "Language"
+		
+gen test_score_math=raw_test if subject == "Math"
+gen test_score_lang=raw_test if subject == "Language"
+		
+merge n:1 rbd agno using  "Data/clean/MainPanelSchools.dta", keepusing(liquido_pago teacher_student porc_conc_estadisticas)
+drop if _merge == 2
+drop _merge
+
+g share_sep = porc_conc_estadisticas
+replace share_sep = 100*porc_conc_estadisticas if agno == 2010
+replace share_sep = 0 if share_sep == . & agno >= 2010
+
+g liquido_pago_mat = liquido_pago / matricula_total
+		
+collapse (mean) gpa_math gpa_lang test_score_math test_score_lang ///
+			matricula_total rural_rbd poor share_sep attendance liquido_pago_mat teacher_student ///	
+		 (max) ever_reprobado=reprobado rbd Public_s (firstnm) cod_com_rbd , by(mrun_student)
+		
+gen reprobado=ever_reprobado*100
+replace gpa_math=gpa_math/10 
+replace gpa_lang=gpa_lang/10
+
+// Sum stats	
+	estpost gtabstat gpa_math gpa_lang test_score_math test_score_lang reprobado , ///
+	statistics(mean sd median p10 p90 n) columns(statistics)		
+	esttab using "Tables/Table_1_Ai.tex", cell("mean(fmt(%9.1f)) sd(fmt(%9.1f)) median(fmt(%9.1f)) p10(fmt(%9.1f)) p90(fmt(%9.1f)) n(fmt(%9.0f))") label replace		
+		
+// Balance
+	balancetable (mean if Public_s == 1) (mean if Public_s == 0) (diff Public_s) ///
+				gpa_math gpa_lang test_score_math test_score_lang reprobado ///
+				using "Tables/Table_1_Aii.tex", replace varla pval ctitles("Public" "Private" "Difference") format(%9.2f)
+				
+
+** Schools
+
+use "Data/clean/MainPanelSchools.dta", clear
+
+cap drop share_sep
+g share_sep = porc_conc_estadisticas
+replace share_sep = 100*porc_conc_estadisticas if agno == 2010
+replace share_sep = 0 if share_sep == . & agno >= 2010
+
+replace rural_rbd = 100*rural_rbd
+
+// IPC 
+merge m:1 agno using "Data/raw/other/IPC_2008_2016.dta"
+keep if _merge==3
+drop _merge
+
+g aux = ipc if agno == 2016
+egen ipc_2016 = mean(aux)
+drop aux
+gen ipc2=ipc/ipc_2016 // 2016 as the base year
+
+g liquido_pago_student = (liquido_pago/(ipc2)) / matricula_total
+g liquido_pago_studentUSD = liquido_pago_student/676.83 /*Tipo de cambio anual 2016: 676.83;  Source: Banco Central*/
+
+rename agno year
+merge 1:1 rbd year using "Data/clean/Avg_CollegeAdmission_rbd_year.dta"
+drop if _merge==2
+drop _merge
+
+replace puntaje=puntaje/100
+label var puntaje	                "College Admission Score"
+label var liquido_pago_studentUSD 	"Annual subsidy per student (USD)"
+label var rural_rbd 				"Rural school"
+label var matricula_total 			"Enrollment"
+label var ShareAttend 				"School attendance"
+label var share_sep 				"Share of disadvantaged students"
+label var teacher_student			"Teachers per hundred students"
+
+// Sum stats	
+	estpost gtabstat puntaje matricula_total liquido_pago_studentUSD share_sep teacher_student rural_rbd ShareAttend , ///
+	statistics(mean sd median p10 p90 n) columns(statistics)		
+	esttab using "Tables/Table_1_Bi.tex", cell("mean sd median p10 p90 n") label replace		
+
+// Balance
+	balancetable (mean if Public == 1) (mean if Public == 0) (diff Public) ///
+				puntaje matricula_total	liquido_pago_studentUSD share_sep teacher_student rural_rbd ShareAttend  ///
+				using "Tables/Table_1_Bii.tex", replace varla pval ctitles("Public" "Private" "Difference") format(%9.2f)
+				
+
+** Principals
+
+use "Data/clean/panel_principals.dta", clear 
+keep if agno==2015|agno==2016|agno==2017
+
+preserve
+use "Data/clean/Panel_Wages.dta", clear
+rename mrun id_prin
+tempfile wage
+save `wage', replace
+restore
+
+merge 1:1 id_prin rbd agno using `wage'
+keep if _merge==3 
+drop _merge
+
+merge 1:1 rbd agno using "Data/clean/MainPanelSchools.dta", keepusing(cod_com_rbd)	
+keep if _merge==3
+drop _merge
+
+merge m:1 id_prin using "Data/clean/principal_TwoWay_felsdv_v3.dta"
+keep if _merge==3
+drop _merge		
+ 
+merge m:1 agno using "Data/raw/other/IPC_2008_2016.dta"
+keep if _merge==3
+drop _merge
+
+g aux = ipc if agno == 2016
+egen ipc_2016 = mean(aux)
+drop aux
+gen ipc2=ipc/ipc_2016 // price index adjustment, 2016 as the base year
+
+
+// Wage components	
+gen Other=HorasExtra+Zona+PagosLegales+OtrosNoRend+DFL1996
+global WageComp "All SueldoBase BonosAll Other"
+
+foreach var in SueldoBase BonosAll Other{
+	gen ShW_`var'=(`var'/All)*100
+}
+
+foreach var of global WageComp {
+	replace `var'	=`var'/ipc2
+	g `var'USD		=`var'/676.83
+	
+}
+
+
+label var AllUSD 			"Wage (USD)"
+label var ShW_SueldoBase 	"\% Base salary"
+label var ShW_BonosAll 		"\% Bonus"
+label var ShW_Other 		"\% Statutory"
+label var SenioritySystem 	"Tenure"
+label var Perm 				"Permanent contract"
+label var Edad 				"Age"
+label var Female 			"Female"
+
+replace Female = Female * 100
+replace Perm = Perm * 100
+
+// Sum stats	
+	estpost gtabstat AllUSD ShW_SueldoBase ShW_BonosAll ShW_Other Perm Edad Female , ///
+	statistics(mean sd median p10 p90 n) columns(statistics)		
+	esttab using "Tables/Table_1_Ci.tex", cell("mean(fmt(%9.1f)) sd(fmt(%9.1f)) median(fmt(%9.1f)) p10(fmt(%9.1f)) p90(fmt(%9.1f)) n(fmt(%9.0f))") label replace			
+
+// Balance
+	balancetable (mean if Public == 1) (mean if Public == 0) (diff Public) ///
+				AllUSD ShW_SueldoBase ShW_BonosAll ShW_Other Perm Edad Female ///
+				using "Tables/Table_1_Cii.tex", replace varla pval ctitles("Public" "Private" "Difference") format(%9.2f)
+
+				
+*****************
+** TABLE A.1: Descriptive Statistics in Different Samples
+*****************
+
+{
+    
+use "Data/clean/panel_VAM_GPA_beforeReg.dta", clear
+
+merge m:1 rbd agno using "Data/clean/SchoolAttendanceYearly.dta"
+drop if _merge==2
+drop _merge
+
+gen Primary=0
+replace Primary=1 if grado>=1 & grado<=8
+gen Secondary=0
+replace Secondary=1 if grado>=9
+gen Math=(subject=="Math")
+
+
+keep if InSample == 1
+
+estpost gtabstat Primary Secondary Math GPA ShareAttend Rural_s Public_s matricula_total, ///
+	statistics(mean sd n) columns(statistics)		
+	esttab using "Tables/Table_A1_a.tex", cell("mean(fmt(%9.1f)) sd(fmt(%9.1f)) n(fmt(%9.0f))") label replace	
+	
+
+keep if DiffTeacher == 1
+
+estpost gtabstat Primary Secondary Math GPA ShareAttend Rural_s Public_s matricula_total, ///
+	statistics(mean sd n) columns(statistics)		
+	esttab using "Tables/Table_A1_b.tex", cell("mean(fmt(%9.1f)) sd(fmt(%9.1f)) n(fmt(%9.0f))") label replace	
+
+	
+global poly           		"L1gpa L1gpa2 L1gpa3 L1gpa_grado L1gpa2_grado L1gpa3_grado grado_*"
+global poly_class     		"meanL1gpa meanL1gpa2 meanL1gpa3 meanL1gpa_grado meanL1gpa2_grado meanL1gpa3_grado"
+global School_t    		    "matricula_total poor Dpoor low_income med_income high_income father_college mother_college" 
+global School_avg 			"mean_matricula_total mean_poor mean_Dpoor mean_low_income mean_med_income mean_high_income mean_father_college mean_mother_college Rural_s Voucher_s Private_s"
+global D_t					"t1 t2 t3 t4 t5 t6 mean_t1 mean_t2 mean_t3 mean_t4 mean_t5 mean_t6 Dselect"
+global X_t             		"age_stud Tenure"
+
+felsdvregdm F1gpa $poly $poly_class $School_t $School_avg $D_t $X_t, ivar(mrun) jvar(id_prin) reff(con) peff(fe_teacher) feff(fe_prin) mnum(Nmovers) feffse(se_fe_prin) xb(pred) res(res) mover(Dmover) pobs(Nobs) group(group) grouponly
+gen LCS=(group==1)
+
+
+estpost gtabstat Primary Secondary Math GPA ShareAttend Rural_s Public_s matricula_total if LCS==1, ///
+	statistics(mean sd n) columns(statistics)		
+	esttab using "Tables/Table_A1_c.tex", cell("mean(fmt(%9.1f)) sd(fmt(%9.1f)) n(fmt(%9.0f))") label replace	
+
+}
+
+****************
+** FIGURE A.3: Course Grades and Test Scores
+***************
+
+** A.3. A
+
+use "Data/temp/psu_formC_weights.dta", clear
+keep if anio_proceso==2017
+
+gen accepted = (estado_preferencia == 24)
+
+foreach var in score_w ptje_nem{
+replace `var'=. if `var'==0
+sum `var' 
+gen sd_`var'=(`var'-`r(mean)')/`r(sd)'
+}
+
+reg sd_score_w sd_ptje_nem if accepted==1, r
+local b=string(_b[sd_ptje_nem], "%9.3f")
+local se=string(_se[sd_ptje_nem], "%9.3f")
+binscatter sd_score_w sd_ptje_nem if accepted==1, ///
+n(50) graphregion(color(white)) xtitle("Course Grade") /// 
+ytitle("College Admission Test Score") subtitle("Coef = `b'" "S.E. =  `se'", ring(0) pos(4)) 
+graph export "Figures/Figure_A3_A.pdf", replace
+
+** A.3. B
+
+use "Data/clean/panel_VAM_GPA_beforeReg.dta", clear
+
+keep if InSample == 1
+keep if DiffTeacher == 1
+	
+reg test_score gpa, r
+local b=string(_b[gpa], "%9.3f")
+local se=string(_se[gpa], "%9.3f")
+binscatter test_score gpa, n(50) graphregion(color(white)) xtitle("Course Grade") /// 
+								ytitle("Contemporaneous Test Score") subtitle("Coef = `b'" "S.E. =  `se'", ring(0) pos(4)) 
+graph export "Figures/Figure_A3_B.pdf", replace
+
+** Other Numbers in the paper
+
+*LCS given by principals switching schools
+
+use "Data/clean/panel_VAM_GPA_beforeReg.dta", clear
+
+keep if InSample == 1
+keep if DiffTeacher == 1
+
+global poly           		"L1gpa L1gpa2 L1gpa3 L1gpa_grado L1gpa2_grado L1gpa3_grado grado_*"
+global poly_class     		"meanL1gpa meanL1gpa2 meanL1gpa3 meanL1gpa_grado meanL1gpa2_grado meanL1gpa3_grado"
+global School_t    		    "matricula_total poor Dpoor low_income med_income high_income father_college mother_college" 
+global School_avg 			"mean_matricula_total mean_poor mean_Dpoor mean_low_income mean_med_income mean_high_income mean_father_college mean_mother_college Rural_s Voucher_s Private_s"
+global D_t					"t1 t2 t3 t4 t5 t6 mean_t1 mean_t2 mean_t3 mean_t4 mean_t5 mean_t6 Dselect"
+global X_t             		"age_stud Tenure"
+
+felsdvregdm F1gpa, ivar(id_prin) jvar(rbd) reff(con) peff(fe_p) feff(fe_s) mnum(Nmovers) xb(pred) res(res) mover(Dmover) pobs(Nobs) group(group) grouponly
+
+
+** Tracking numbers
+use "Data/clean/Sorting_Index_SchoolYear.dta", clear
+sum estimate
+use "Data/clean/Sorting_Index_SchoolYear_UpperBound.dta", clear
+sum estimate

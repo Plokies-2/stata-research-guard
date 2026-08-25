@@ -1,0 +1,84 @@
+* This file calculates the results reported in Table 6
+* The calcuations for the jackknife regression are done two ways:
+*   The first calculation uses the "jregress.ado" command written by the author.
+*   The second calculation uses the revised "regress" command using the "vce(hc3 clustervar, dfadjust hansen)" option. This calculation requires StataNow 19.5 or higher. If an older version of Stata is used, you can comment out the last command in each section (each "Column").
+
+* Column 1
+use Meng_1, clear
+drop if lgrain_pred_famdum5860 == .
+keep if year >= 1953
+keep if year <= 1982
+gen diff_pred = lgrain_pred_famdum5860 - lgrain_pred
+* CRVE1 regression
+regress ldeath_b lgrain_pred diff_pred ltotpop lurbpop i.year, cluster(prov)
+* CRVE2 regression
+regress ldeath_b lgrain_pred diff_pred ltotpop lurbpop i.year, vce(hc2 prov)
+* Jackknife regression using jregress
+jregress ldeath_b lgrain_pred diff_pred ltotpop lurbpop i.year, cluster(prov) dfdisplay
+* Jackknife regression using StataNow 19.5
+regress ldeath_b lgrain_pred diff_pred ltotpop lurbpop i.year, vce(hc3 prov, dfadjust hansen)
+
+* Column 2
+keep if year <= 1965
+* CRVE1 regression
+regress ldeath_b lgrain_pred diff_pred ltotpop lurbpop i.year, cluster(prov)
+* CRVE2 regression
+regress ldeath_b lgrain_pred diff_pred ltotpop lurbpop i.year, vce(hc2 prov)
+* Jackknife regression using jregress
+jregress ldeath_b lgrain_pred diff_pred ltotpop lurbpop i.year, cluster(prov) dfdisplay
+* Jackknife regression using StataNow 19.5
+regress ldeath_b lgrain_pred diff_pred ltotpop lurbpop i.year, vce(hc3 prov, dfadjust hansen)
+
+* Column 3
+use Meng_2, clear
+drop if lgrain_pred_famdum5860 == .
+keep if year >= 1953
+keep if year <= 1982
+gen diff_pred = lgrain_pred_famdum5860 - lgrain_pred
+gen diff = lgrain_famdum5860 - lgrain
+* CRVE1 regression
+regress ldeath_b lgrain_pred diff_pred ltotpop lurbpop i.year, cluster(prov)
+* CRVE2 regression
+regress ldeath_b lgrain_pred diff_pred ltotpop lurbpop i.year, vce(hc2 prov)
+* Jackknife regression using jregress
+jregress ldeath_b lgrain_pred diff_pred ltotpop lurbpop i.year, cluster(prov) dfdisplay
+* Jackknife regression using StataNow 19.5
+regress ldeath_b lgrain_pred diff_pred ltotpop lurbpop i.year, vce(hc3 prov, dfadjust hansen)
+
+* Column 4
+keep if year <= 1965
+* CRVE1 regression
+regress ldeath_b lgrain_pred diff_pred ltotpop lurbpop i.year, cluster(prov)
+* CRVE2 regression
+regress ldeath_b lgrain_pred diff_pred ltotpop lurbpop i.year, vce(hc2 prov)
+* Jackknife regression using jregress
+jregress ldeath_b lgrain_pred diff_pred ltotpop lurbpop i.year, cluster(prov) dfdisplay
+* Jackknife regression using StataNow 19.5
+regress ldeath_b lgrain_pred diff_pred ltotpop lurbpop i.year, vce(hc3 prov, dfadjust hansen)
+
+* Column 5
+use Meng_1, clear
+drop if lgrain_pred_famdum5860 == .
+keep if year >= 1953
+keep if year <= 1982
+gen diff_pred = lgrain_pred_famdum5860 - lgrain_pred
+gen diff = lgrain_famdum5860 - lgrain
+* CRVE1 regression
+regress ldeath_b lgrain diff ltotpop lurbpop i.year, cluster(prov)
+* CRVE2 regression
+regress ldeath_b lgrain diff ltotpop lurbpop i.year, vce(hc2 prov)
+* Jackknife regression using jregress
+jregress ldeath_b lgrain diff ltotpop lurbpop i.year, cluster(prov) dfdisplay
+* Jackknife regression using StataNow 19.5
+regress ldeath_b lgrain diff ltotpop lurbpop i.year, vce(hc3 prov, dfadjust hansen)
+
+* Column 6
+keep if year <= 1965
+* CRVE1 regression
+regress ldeath_b lgrain diff ltotpop lurbpop i.year, cluster(prov)
+* CRVE2 regression
+regress ldeath_b lgrain diff ltotpop lurbpop i.year, vce(hc2 prov)
+* Jackknife regression using jregress
+jregress ldeath_b lgrain diff ltotpop lurbpop i.year, cluster(prov) dfdisplay
+* Jackknife regression using StataNow 19.5
+regress ldeath_b lgrain diff ltotpop lurbpop i.year,vce(hc3 prov, dfadjust hansen)

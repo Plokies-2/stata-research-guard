@@ -1,0 +1,124 @@
+clear * 
+set more off
+adopath ++ "$Rep_information\_packages"
+	
+// !!! Note: This module requires the UnionPay data. 
+//     These data are not included in this repository. See README for more details.
+
+	use "$Rep_information/1_build/_confidential/regdata/proc/city_week.dta", clear
+	
+	gcollapse  (first) wave (mean) aod  N_card_cityyr temp prcp wspd [aw=N_card_cityyr], by(nbs6)
+	
+	* monitoring PM2.5
+	merge 1:1 nbs6 using "$Rep_information/1_build/pollution/pm25_nbs6_avg_2013_2015.dta", keep(match master) nogen
+	
+	* per cap GDP
+	merge 1:1 nbs6 using "$Rep_information/1_build/yearbook/pc_GDP_nbs6_avg_2011_2015.dta", keep(match master) nogen
+	
+	* population
+	merge 1:1 nbs6 using "$Rep_information/1_build/yearbook/population_nbs6_avg_2011_2015.dta", keep(match master) nogen
+		
+	* so2 emissions
+	merge 1:1 nbs6 using "$Rep_information/1_build/pollution/raw/so2_city_2006.dta", keep(match master) nogen
+	
+	* table data
+	forv i=1/3{
+		
+	// row 1: number of cities
+		count if wave==`i'
+		local num`i'=`r(N)'
+		
+	// row 2: population in million (original var in 1,000s)
+		cap gen _m_city_population= city_population / 1000
+		summ _m_city_population if wave == `i'
+		local pop_m`i' =string(`r(mean)',"%3.2f")
+		local pop_sd`i'=string(`r(sd)',"%3.2f")
+	
+	// row 3: gdp per cap
+		summ city_pc_GDP [aw=city_population] if wave==`i'
+		local gdp_m`i' =string(`r(mean)',"%5.0f")
+		local gdp_sd`i'=string(`r(sd)',"%5.0f")
+	
+	// row 4: aod 
+		summ aod if wave==`i'
+		local aod_m`i' =string(`r(mean)',"%4.3f")
+		local aod_sd`i'=string(`r(sd)',"%4.3f")
+	
+	// row 5: pm2.5 
+		summ pm2_5 if wave==`i'
+		local pm25_m`i' =string(`r(mean)',"%3.1f")
+		local pm25_sd`i'=string(`r(sd)',"%3.1f")
+		
+	// row 6: so2 emissions in ton (original var in kg)
+		cap gen _t_emit_so2=emit_so2/1000
+		summ _t_emit_so2 if wave==`i'
+		local so2_m`i' =string(`r(mean)',"%5.0f")
+		local so2_sd`i'=string(`r(sd)',"%5.0f")
+	
+	// row 7: temperature 
+		summ temp if wave==`i'
+		local temp_m`i' =string(`r(mean)',"%3.1f")
+		local temp_sd`i'=string(`r(sd)',"%3.1f")
+	
+	// row 8: precipitation (original var in weekly sum inches; times 365/7 to get annual total)
+		cap gen _d_prcp=prcp*365/7
+		summ _d_prcp if wave==`i'
+		local prcp_m`i' =string(`r(mean)',"%3.1f")
+		local prcp_sd`i'=string(`r(sd)',"%3.1f")
+	
+	// row 9: wind speed 
+		summ wspd if wave==`i'
+		local wspd_m`i' =string(`r(mean)',"%3.2f")
+		local wspd_sd`i'=string(`r(sd)',"%3.2f")
+	}
+	
+	* make table 
+	clear 
+	set obs 17 
+	gen var = ""
+	replace var = "Number of cities" if _n==1 
+	replace var = "Population (million)" if _n==2
+	replace var = "GDP per capita (yuan)" if _n==4
+	replace var = "AOD level" if _n==6
+	replace var = "PM2.5 level (ug/m3)" if _n==8
+	replace var = "Industrial SO2 emissions (ton)" if _n==10
+	replace var = "Average temperature (F)" if _n==12
+	replace var = "Total precipitation (inches)" if _n==14
+	replace var = "Average wind speed (m/s)" if _n==16
+	
+	gen wave1=""
+	gen wave2=""
+	gen wave3=""
+	forv i=1/3 {
+		replace wave`i'="`num`i''" if _n==1
+		
+		replace wave`i'="`pop_m`i''" if _n==2
+		replace wave`i'="[`pop_sd`i'']" if _n==3
+		
+		replace wave`i'="`gdp_m`i''" if _n==4
+		replace wave`i'="[`gdp_sd`i'']" if _n==5
+		
+		replace wave`i'="`aod_m`i''" if _n==6
+		replace wave`i'="[`aod_sd`i'']" if _n==7
+		
+		replace wave`i'="`pm25_m`i''" if _n==8
+		replace wave`i'="[`pm25_sd`i'']" if _n==9
+		
+		replace wave`i'="`so2_m`i''" if _n==10
+		replace wave`i'="[`so2_sd`i'']" if _n==11
+		
+		replace wave`i'="`temp_m`i''" if _n==12
+		replace wave`i'="[`temp_sd`i'']" if _n==13
+		
+		replace wave`i'="`prcp_m`i''" if _n==14
+		replace wave`i'="[`prcp_sd`i'']" if _n==15
+		
+		replace wave`i'="`wspd_m`i''" if _n==16
+		replace wave`i'="[`wspd_sd`i'']" if _n==17
+	}
+	
+	ingap 2 4 6 8 10 12 14 16 
+	list, sep(0)
+	
+	* save a dta copy 
+	saveold "$Rep_information/2_analysis/output_tables/appendix_table4.dta", replace
