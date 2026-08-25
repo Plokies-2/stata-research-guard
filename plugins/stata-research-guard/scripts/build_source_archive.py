@@ -10,6 +10,8 @@ import re
 import tempfile
 from pathlib import Path, PurePosixPath
 
+from build_labeled_checkpoints import expand_compact_package_templates
+
 
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 OWNED_ARCHIVE_RE = re.compile(r"^[0-9a-f]{64}\.source$")
@@ -133,11 +135,19 @@ def build() -> dict[str, int]:
     plugin_root = Path(__file__).resolve().parents[1]
     workspace_root = plugin_root.parents[1]
     annotation_path = plugin_root / "annotations" / "labeled_checkpoints.json"
+    compact_annotation_path = plugin_root / "annotations" / "package_first_atomic_templates.json"
+    rubric_path = plugin_root / "annotations" / "generality_rubric.json"
     runtime_path = plugin_root / "data" / "labeled_checkpoints.jsonl"
     archive_root = plugin_root / "data" / "source_archive"
     files_root = archive_root / "files"
 
-    annotation_rows = labels_by_id(read_json(annotation_path), annotation_path)
+    annotation_values = read_json(annotation_path)
+    if compact_annotation_path.exists():
+        compact_values = read_json(compact_annotation_path)
+        rubric = read_json(rubric_path)
+        hard_fail_rule_ids = [row["id"] for row in rubric["hard_fail_rules"]]
+        annotation_values.extend(expand_compact_package_templates(compact_values, hard_fail_rule_ids))
+    annotation_rows = labels_by_id(annotation_values, annotation_path)
     runtime_rows = labels_by_id(read_jsonl(runtime_path), runtime_path)
     cross_check_labels(annotation_rows, runtime_rows)
 

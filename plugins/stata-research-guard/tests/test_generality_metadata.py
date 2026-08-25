@@ -10,25 +10,28 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from build_labeled_checkpoints import enforce_reusable_block_safety
+from build_labeled_checkpoints import enforce_reusable_block_safety, expand_compact_package_templates
 
 
 class GeneralityMetadataTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.rows = json.loads((ROOT / "annotations/labeled_checkpoints.json").read_text(encoding="utf-8"))
+        compact = json.loads((ROOT / "annotations/package_first_atomic_templates.json").read_text(encoding="utf-8"))
+        rubric = json.loads((ROOT / "annotations/generality_rubric.json").read_text(encoding="utf-8"))
+        cls.rows.extend(expand_compact_package_templates(compact, [rule["id"] for rule in rubric["hard_fail_rules"]]))
 
     def test_all_labels_have_raw_source_generality_review(self) -> None:
-        self.assertEqual(len(self.rows), 130)
+        self.assertEqual(len(self.rows), 148)
         self.assertEqual(Counter(row["reuse_scope"] for row in self.rows), {
-            "general": 58,
-            "method_specific": 57,
+            "general": 73,
+            "method_specific": 60,
             "project_specific": 5,
             "negative": 10,
         })
         self.assertEqual(Counter(row["quality_rubric_review"]["classification"] for row in self.rows), {
             "preferred_candidate": 24,
-            "conditional_candidate": 39,
+            "conditional_candidate": 57,
             "reference_only": 57,
             "exclude": 10,
         })
@@ -198,7 +201,7 @@ class GeneralityMetadataTests(unittest.TestCase):
         self.assertEqual(sum(
             row["quality_rubric_review"]["classification"] in {"preferred_candidate", "conditional_candidate"}
             for row in self.rows
-        ), 63)
+        ), 81)
 
     def test_human_review_markdown_exposes_every_label(self) -> None:
         text = (ROOT / "review/generality_selection_review.md").read_text(encoding="utf-8")
@@ -220,7 +223,7 @@ class GeneralityMetadataTests(unittest.TestCase):
 
     def test_source_grounded_input_signatures_cover_every_label_without_inference(self) -> None:
         built = [json.loads(line) for line in (ROOT / "data/labeled_checkpoints.jsonl").read_text(encoding="utf-8").splitlines() if line]
-        self.assertEqual(len(built), 130)
+        self.assertEqual(len(built), 148)
         allowed_structures = {"cross_section", "panel", "repeated_cross_section", "time_series", "other", "unknown"}
         self.assertTrue(all(row["input_signature"]["data_structure"] in allowed_structures for row in built))
         self.assertTrue(all(row["input_signature"]["observation_unit"] for row in built))
@@ -241,7 +244,7 @@ class GeneralityMetadataTests(unittest.TestCase):
                 self.assertTrue(evidence["required_keys"])
             if signature["variable_characteristics"] != ["not_stated"]:
                 self.assertTrue(evidence["variable_characteristics"])
-        self.assertEqual(Counter(row["input_signature"]["data_structure"] for row in built), {"unknown": 93, "panel": 37})
+        self.assertEqual(Counter(row["input_signature"]["data_structure"] for row in built), {"unknown": 111, "panel": 37})
         cohort = next(row for row in built if row["label_id"] == "panel.cohort_anticipation_exit_filter.v1")
         self.assertEqual(cohort["input_signature"]["data_structure"], "panel")
         self.assertEqual(cohort["input_signature"]["required_keys"], ["id_ci_cj", "year"])
@@ -290,7 +293,7 @@ class GeneralityMetadataTests(unittest.TestCase):
         }
         self.assertTrue(expected.issubset(rows))
         profiled = [row for row in self.rows if row["decision"] != "drop"]
-        self.assertEqual(len(profiled), 120)
+        self.assertEqual(len(profiled), 138)
         required_profile_fields = {
             "data_structure", "record_unit", "required_keys", "source_basis",
             "time_structure", "variable_characteristics",

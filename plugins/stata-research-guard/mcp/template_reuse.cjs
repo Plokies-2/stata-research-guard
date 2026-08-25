@@ -323,6 +323,23 @@ function collectProjectGlobalEnvironment(projectContents, root) {
   return { resolved, ambiguous, evidence };
 }
 
+function collectFileMacroEnvironment(content, projectGlobals) {
+  const resolved = new Map(projectGlobals?.resolved || []);
+  const evidence = [];
+  for (const rawLine of activeLogicalLines(content)) {
+    const line = stripStataCommandPrefixes(rawLine).value;
+    const assignment = line.match(/^(global|local)\s+([a-z_][a-z0-9_]*)\s+(.+)$/i);
+    if (!assignment) continue;
+    const scope = assignment[1].toLowerCase();
+    const name = assignment[2].toLowerCase();
+    const literal = deterministicGlobalValue(assignment[3], resolved, "");
+    if (literal === null) continue;
+    resolved.set(`${scope}:${name}`, literal);
+    evidence.push({ scope, name, literal });
+  }
+  return { resolved, evidence };
+}
+
 function optionLiteral(command, name, projectGlobals) {
   const match = String(command).match(new RegExp(`\\b${name}\\s*\\(\\s*("[^"]*"|'[^']*'|[^)]*?)\\s*\\)`, "i"));
   if (!match) return { value: null, unresolved: true };
@@ -332,7 +349,7 @@ function optionLiteral(command, name, projectGlobals) {
   return { value: value.trim(), unresolved: false };
 }
 
-function canonicalOutreg2HelperMultiplicity(projectContents, projectGlobals) {
+function canonicalOutreg2HelperMultiplicity(projectContents, projectGlobals, projectComponentIds = new Map(), projectGlobalsByComponent = new Map()) {
   const sheets = new Set();
   const placements = new Set();
   const sheetsByWorkbook = new Map();
@@ -340,28 +357,92 @@ function canonicalOutreg2HelperMultiplicity(projectContents, projectGlobals) {
   let maximumEstimateCount = 0;
   let unresolvedEstimates = false;
   let unresolvedPlacement = false;
+  const allProducedEstimates = new Set();
+  const allDurableEstimates = new Set();
+  const producerEvidence = [];
+  const componentStates = new Map();
   for (const [file, content] of projectContents.entries()) {
-    for (const line of activeLogicalLines(content)) {
-      const command = stripStataCommandPrefixes(line).value;
+    const componentId = projectComponentIds.get(file) || "default";
+    if (!componentStates.has(componentId)) {
+      const baseGlobals = [...(projectGlobalsByComponent.get(componentId)?.resolved || projectGlobals?.resolved || [])]
+        .filter(([key]) => String(key).startsWith("global:"));
+      componentStates.set(componentId, {
+        producedEstimates: new Set(),
+        durableEstimates: new Set(),
+        globalEnvironment: new Map(baseGlobals),
+      });
+    }
+    const { producedEstimates, durableEstimates, globalEnvironment } = componentStates.get(componentId);
+    const resolved = new Map(globalEnvironment);
+    for (const [index, line] of activeLogicalLines(content).entries()) {
+      const stripped = stripStataCommandPrefixes(line).value;
+      const assignment = stripped.match(/^(global|local)\s+([a-z_][a-z0-9_]*)\s+(.+)$/i);
+      if (assignment) {
+        const scope = assignment[1].toLowerCase();
+        const name = assignment[2].toLowerCase();
+        const literal = deterministicGlobalValue(assignment[3], resolved, "");
+        if (literal !== null) {
+          resolved.set(`${scope}:${name}`, literal);
+          if (scope === "global") globalEnvironment.set(`global:${name}`, literal);
+        }
+        continue;
+      }
+      const command = expandDeterministicMacros(stripped, resolved);
+      if (/^estimates?\s+clear\b/i.test(command)) producedEstimates.clear();
+      const dropped = command.match(/^estimates?\s+drop\s+([a-z_][a-z0-9_]*)\b/i);
+      if (dropped) producedEstimates.delete(dropped[1].toLowerCase());
+      const stored = command.match(/^estimates?\s+store\s+([a-z_][a-z0-9_]*)\b/i);
+      if (stored) {
+        const estimateName = stored[1].toLowerCase();
+        producedEstimates.add(estimateName);
+        allProducedEstimates.add(estimateName);
+        producerEvidence.push({ file, component_id: componentId, logical_line: index + 1, estimate_name: estimateName, command: "estimates store" });
+      }
+      const saved = command.match(/^estimates?\s+save\s+(?:"([^"]+\.ster)"|'([^']+\.ster)'|([^\s,]+\.ster))/i);
+      if (saved) {
+        const sterPath = saved[1] || saved[2] || saved[3];
+        const estimateName = path.basename(sterPath, path.extname(sterPath)).toLowerCase();
+        durableEstimates.add(estimateName);
+        allDurableEstimates.add(estimateName);
+        producerEvidence.push({ file, component_id: componentId, logical_line: index + 1, estimate_name: estimateName, command: "estimates save", state: "durable_ster" });
+      }
       if (!/^outreg2_xlsx\s*,/i.test(command)) continue;
-      const estimates = optionLiteral(command, "estimates", projectGlobals);
-      const sheet = optionLiteral(command, "sheet", projectGlobals);
-      const workbook = optionLiteral(command, "workbook", projectGlobals);
+      const environment = { resolved };
+      const estimates = optionLiteral(command, "estimates", environment);
+      const sheet = optionLiteral(command, "sheet", environment);
+      const workbook = optionLiteral(command, "workbook", environment);
       unresolvedEstimates ||= estimates.unresolved;
       unresolvedPlacement ||= sheet.unresolved || workbook.unresolved;
-      const estimateCount = estimates.value ? estimates.value.split(/\s+/).filter(Boolean).length : 0;
+      const estimateNames = estimates.value ? estimates.value.split(/\s+/).filter(Boolean) : [];
+      const estimateCount = estimateNames.length;
       maximumEstimateCount = Math.max(maximumEstimateCount, estimateCount);
       if (sheet.value) sheets.add(sheet.value.toLowerCase());
       if (sheet.value && workbook.value) {
         const workbookKey = workbook.value.replace(/\\/g, "/").toLowerCase();
-        placements.add(`${workbookKey}::${sheet.value.toLowerCase()}`);
-        if (!sheetsByWorkbook.has(workbookKey)) sheetsByWorkbook.set(workbookKey, new Set());
-        sheetsByWorkbook.get(workbookKey).add(sheet.value.toLowerCase());
+        const componentWorkbookKey = `${componentId}::${workbookKey}`;
+        placements.add(`${componentWorkbookKey}::${sheet.value.toLowerCase()}`);
+        if (!sheetsByWorkbook.has(componentWorkbookKey)) sheetsByWorkbook.set(componentWorkbookKey, new Set());
+        sheetsByWorkbook.get(componentWorkbookKey).add(sheet.value.toLowerCase());
       }
-      calls.push({ file, estimates: estimates.value, estimate_count: estimateCount, sheet: sheet.value, workbook: workbook.value });
+      calls.push({
+        file,
+        component_id: componentId,
+        logical_line: index + 1,
+        estimates: estimates.value,
+        estimate_names: estimateNames,
+        estimate_count: estimateCount,
+        unresolved_estimate_names: estimateNames.filter((name) => !producedEstimates.has(name.toLowerCase())),
+        durable_only_estimate_names: estimateNames.filter((name) => !producedEstimates.has(name.toLowerCase()) && durableEstimates.has(name.toLowerCase())),
+        sheet: sheet.value,
+        workbook: workbook.value,
+      });
     }
   }
   const maximumSheetCountPerWorkbook = Math.max(0, ...[...sheetsByWorkbook.values()].map((rows) => rows.size));
+  const unresolvedProducerNames = [...new Set(calls.flatMap((row) => row.unresolved_estimate_names))].sort();
+  const durableOnlyProducerNames = [...new Set(calls.flatMap((row) => row.durable_only_estimate_names))].sort();
+  const missingProducerNames = [...new Set(calls.flatMap((row) => row.unresolved_estimate_names
+    .filter((name) => !row.durable_only_estimate_names.includes(name))))].sort();
   return {
     calls,
     call_count: calls.length,
@@ -372,6 +453,16 @@ function canonicalOutreg2HelperMultiplicity(projectContents, projectGlobals) {
     unresolved: unresolvedEstimates || unresolvedPlacement,
     unresolved_estimates: unresolvedEstimates,
     unresolved_placement: unresolvedPlacement,
+    produced_estimates: [...allProducedEstimates].sort(),
+    durable_estimates: [...allDurableEstimates].sort(),
+    producer_evidence: producerEvidence,
+    unresolved_producer_names: unresolvedProducerNames,
+    durable_only_producer_names: durableOnlyProducerNames,
+    missing_producer_names: missingProducerNames,
+    producer_consumer_status: unresolvedEstimates
+      ? "context_pending"
+      : missingProducerNames.length ? "missing_active_producer"
+        : durableOnlyProducerNames.length ? "durable_state_requires_load_or_store" : "confirmed",
     necessary: !unresolvedPlacement && calls.length > 0 && maximumSheetCountPerWorkbook >= 2,
   };
 }

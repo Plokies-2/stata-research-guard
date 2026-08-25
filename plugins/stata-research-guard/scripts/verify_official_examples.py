@@ -16,6 +16,9 @@ def find_stata(explicit: str | None) -> Path:
     candidates = [
         explicit,
         os.environ.get("STATA_EXE"),
+        r"C:\Program Files\Stata19\StataMP-64.exe",
+        r"C:\Program Files\Stata18\StataMP-64.exe",
+        r"C:\Program Files\Stata17\StataMP-64.exe",
     ]
     for candidate in candidates:
         if candidate and Path(candidate).is_file():

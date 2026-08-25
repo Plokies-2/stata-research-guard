@@ -7,7 +7,7 @@
   "assembly_snapshot": "annotations/source_snapshots/default_style_outreg2_xlsx.do",
   "assembly_snapshot_sha256": "e98c97dfd21e7e4cffd8a0b0520de256afd36dceae8437cbf8a774a2f2b1a473",
   "runtime_log": "tests/runtime/outreg2_excel/outreg2_excel_runtime.log",
-  "runtime_log_sha256": "7d3079ee7b6057af3d2615179e3cdd7224372f7051c029f2cbb299a88a9618a7",
+  "runtime_log_sha256": "305eae435d486a67767ac1590477812757f147b0c08294bd3aeebc716c0ee2b9",
   "output_workbook": "tests/runtime/outreg2_excel/tables/all.xlsx",
   "output_workbook_sha256": "e8d7091efeef7a22c19b1d63a6abce0dee86e6d586cdebe3962fd6b60b26b669",
   "workbook_bytes": 6863,

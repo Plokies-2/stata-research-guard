@@ -7,6 +7,9 @@
   "pruned_workflow_files": 163,
   "max_indexed_loop_depth": 2,
   "packages": 35,
+  "command_families": 39,
+  "indexed_commands": 97,
+  "command_families_observed_in_corpus": 30,
   "stage_counts": {
     "cleaning_labels": 1485,
     "descriptives_balance_sample_flow": 942,
@@ -14,10 +17,10 @@
     "exports": 1298,
     "integrity_audit": 892,
     "merge_reshape": 1075,
-    "figures": 660,
-    "estimation": 516,
+    "figures": 653,
+    "estimation": 513,
     "import": 537,
-    "panel_construction": 678,
+    "panel_construction": 624,
     "master_orchestration": 48
   }
 }

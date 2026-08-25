@@ -281,6 +281,11 @@
       "bytes": 373,
       "sha256": "a5c779dea5020bf619a1c150499462ab4dd776878a696c119a9999a56c89cb98"
     },
+    "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do": {
+      "archive_path": "data/source_archive/files/9c7aeada71e4653da6c004eeb1a5cede2d431a55c55cd9fb1f9946e905c82af0.source",
+      "bytes": 1170,
+      "sha256": "9c7aeada71e4653da6c004eeb1a5cede2d431a55c55cd9fb1f9946e905c82af0"
+    },
     "plugins/stata-research-guard/annotations/source_snapshots/research_practice_event_plot_flat_loops.do": {
       "archive_path": "data/source_archive/files/a455fbb3406c0fbab443650e1a400d5289cf6c71eeeb6b2615c20bb72e0f1abe.source",
       "bytes": 3147,

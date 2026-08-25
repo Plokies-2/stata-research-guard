@@ -953,7 +953,6 @@
             "integrity_audit",
             "cleaning_labels",
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "figures",
             "exports"
@@ -3545,7 +3544,6 @@
             "import",
             "integrity_audit",
             "merge_reshape",
-            "panel_construction",
             "exports"
           ],
           "calls": [],
@@ -8812,7 +8810,6 @@
           "stages": [
             "cleaning_labels",
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "figures",
             "exports"
@@ -8827,7 +8824,6 @@
           "role": "analysis_or_output",
           "stages": [
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "figures",
             "exports"
@@ -8844,7 +8840,6 @@
             "import",
             "cleaning_labels",
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "figures",
             "exports"
@@ -8876,7 +8871,6 @@
           "stages": [
             "cleaning_labels",
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "figures",
             "exports"
@@ -8891,7 +8885,6 @@
           "role": "analysis_or_output",
           "stages": [
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "figures",
             "exports"
@@ -8908,7 +8901,6 @@
             "import",
             "cleaning_labels",
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "figures",
             "exports"
@@ -8924,7 +8916,6 @@
           "stages": [
             "import",
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "figures",
             "exports"
@@ -8940,7 +8931,6 @@
           "stages": [
             "cleaning_labels",
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "figures",
             "exports"
@@ -8955,7 +8945,6 @@
           "role": "analysis_or_output",
           "stages": [
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "figures",
             "exports"
@@ -8971,7 +8960,6 @@
           "stages": [
             "cleaning_labels",
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "figures",
             "exports"
@@ -8987,7 +8975,6 @@
           "stages": [
             "cleaning_labels",
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "figures",
             "exports"
@@ -9016,7 +9003,6 @@
           "role": "analysis_or_output",
           "stages": [
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "figures",
             "exports"
@@ -9031,7 +9017,6 @@
           "role": "analysis_or_output",
           "stages": [
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "figures",
             "exports"
@@ -9047,7 +9032,6 @@
           "stages": [
             "cleaning_labels",
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "figures",
             "exports"
@@ -9062,7 +9046,6 @@
           "role": "analysis_or_output",
           "stages": [
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "figures",
             "exports"
@@ -9078,7 +9061,6 @@
           "stages": [
             "cleaning_labels",
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "figures",
             "exports"
@@ -9093,7 +9075,6 @@
           "role": "analysis_or_output",
           "stages": [
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "figures",
             "exports"
@@ -9109,7 +9090,6 @@
           "stages": [
             "cleaning_labels",
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "figures",
             "exports"
@@ -9124,7 +9104,6 @@
           "role": "analysis_or_output",
           "stages": [
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "figures",
             "exports"
@@ -9585,7 +9564,6 @@
             "integrity_audit",
             "cleaning_labels",
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "figures",
             "exports"
@@ -9656,7 +9634,6 @@
             "integrity_audit",
             "cleaning_labels",
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "figures",
             "exports"
@@ -9705,7 +9682,6 @@
             "import",
             "cleaning_labels",
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "estimation",
             "robustness",
@@ -9862,7 +9838,6 @@
             "integrity_audit",
             "cleaning_labels",
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow"
           ],
           "calls": [],
@@ -10464,7 +10439,6 @@
             "import",
             "integrity_audit",
             "cleaning_labels",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "exports"
           ],
@@ -10480,7 +10454,6 @@
             "import",
             "integrity_audit",
             "cleaning_labels",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "exports"
           ],
@@ -11600,7 +11573,6 @@
           "role": "entrypoint",
           "stages": [
             "merge_reshape",
-            "panel_construction",
             "descriptives_balance_sample_flow",
             "estimation",
             "figures",
@@ -11847,7 +11819,6 @@
           "role": "other",
           "stages": [
             "cleaning_labels",
-            "panel_construction",
             "estimation",
             "exports"
           ],
@@ -11861,7 +11832,6 @@
           "role": "other",
           "stages": [
             "cleaning_labels",
-            "panel_construction",
             "estimation",
             "figures",
             "exports"
@@ -11876,7 +11846,6 @@
           "role": "other",
           "stages": [
             "cleaning_labels",
-            "panel_construction",
             "estimation",
             "exports"
           ],
@@ -11890,7 +11859,6 @@
           "role": "other",
           "stages": [
             "cleaning_labels",
-            "panel_construction",
             "estimation",
             "exports"
           ],
@@ -11904,7 +11872,6 @@
           "role": "other",
           "stages": [
             "cleaning_labels",
-            "panel_construction",
             "estimation",
             "exports"
           ],

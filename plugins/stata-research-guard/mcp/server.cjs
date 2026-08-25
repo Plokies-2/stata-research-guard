@@ -108,10 +108,11 @@ const INSTRUCTIONS = [
   "Use this server whenever generating or revising Stata research code.",
   "For every atomic implementation step, write only the statements required by the current concrete input-to-output contract. Do not design for future outcomes, sheets, callers, options, or reuse. Do not add unused syntax options, one-item loops, one-use programs, registries, dispatchers, optional branches, or generic interfaces. Repetition is abstracted only when that repetition exists in the current request and a direct block cannot provide the required interface.",
   "Reserve globals for intentional cross-do-file contracts. Keep shared directory roots such as project, data, table, figures, and ster in setup when multiple stages consume them. Do not hoist a leaf filename such as summary_excel = $table/file.xlsx into setup when only one child do-file consumes it; declare it as a local in that child near its first use, or write the literal directly when it appears once and is clearer. A leaf file binding may remain global only when two or more do-files intentionally share that exact producer-consumer artifact contract. Put repeated regression-specific controls, sample restrictions, event-study RHS terms, fixed effects, clustering choices, and other single-consumer specification bindings in local macros inside the do-file that consumes them, close to the estimation block; keep a one-use list explicit in the command when clearer. Put same-file event selectors, display order, reference position, and notes in locals as well. Fingerprinted macro names are evidence to classify their scope, not a reason to preserve private or single-consumer globals. Format long variable, outcome, estimate, or option lists as meaningfully grouped multiline blocks: use whitespace to align comparable entries, indent continuation lines, and keep short lists on one line. Never align or reflow quoted labels, paths, or other text where whitespace is data. Use /// only when the command continues on the immediately following physical line, indent continuation lines beyond the command start, and omit /// from the final physical line.",
-  "First decide whether the request needs code. Review, audit, diagnosis, and explanation-only requests load no writable code. If code is needed, classify its state-transition footprint and resolve only that bounded footprint using bilingual aliases, exact command anchors, input/output state, and target input signature. Search the labeled dictionary first for substantive reusable transitions. Preserve the ordinary template-first path: when a genuinely close complete block exists, select one variant and change only permitted bindings. When no suitable block exists or the selected block proves wrong under inspection, lint, runtime, or output evidence, enter general-rule fallback, inject the search-ranked nearest inspected candidate only as a nonbinding hint, write the narrow transition, and lint it immediately. Ask the user only when a substantive research choice remains unresolved.",
+  "First decide whether the request needs code. Korean or English review, audit, inspection, assessment, diagnosis, analysis, explanation, and explicit no-change requests are review_only and load no writable code; caller checkpoints cannot override that write boundary. A separate unnegated write clause authorizes only its stated mutation scope. If code is needed, classify its state-transition footprint and resolve only that bounded footprint using bilingual aliases, exact command anchors, input/output state, and target input signature. Search the labeled dictionary first for substantive reusable transitions. Preserve the ordinary template-first path: when a genuinely close complete block exists, select one variant and change only permitted bindings. When no suitable block exists or the selected block proves wrong under inspection, lint, runtime, or output evidence, enter general-rule fallback, inject the search-ranked nearest inspected candidate only as a nonbinding hint, write the narrow transition, and lint it immediately. Ask the user only when a substantive research choice remains unresolved.",
   "For every non-template substantive transition, apply the general-rule fallback reference. Inject the highest-ranked writable candidate, or the highest-ranked reference candidate when none is writable, as a nonbinding hint. State explicitly that nearest-by-ranking may still be absolutely distant or incompatible. Record nearest_template_hint=<label_id|none>, fallback_trigger=<no_suitable_template|wrong_selection>, and hint_used=<borrowed command, ordering, state handling, or output idiom|none>. Do not require a claim that fallback code is better. It implements only an already-declared atomic contract and never supplies an unresolved sample, estimand, merge key, treatment rule, model, event axis, sheet group, or output placement. Keep one readable final path and shallow indentation. Prefer one active loop; permit exactly two active loop levels only when both axes are plain named lists or numeric ranges, the same mechanical body is repeated, the reduction is substantial, and sample, estimand, specification, grouping, and output placement remain visible at the loop site. Loop depth three is always blocked. Do not use a registry, dispatcher, positional job string, one-use program, unused interface, dependency probe, manual event dummy, or coefficient reconstruction.",
   "Iteration is allowed; judge the final frozen source, not the number of drafts. Revise only from concrete lint, runtime, or output evidence. For a binding-only failure inside declared minimal edits, delete the affected span and cleanly re-render it from the same selected block. If frame, algorithm, control flow, interface, or output contract must change, discard that span and reselect a complete variant. Never stack patches, wrappers, compatibility branches, fallback residue, or dead helpers on already modified generated code. Before freezing, leave exactly one final implementation path per atomic transition.",
   "Inspect the project structure read-only before planning any write. Preserve a compatible existing layout; use the default-style tree only for an explicitly new first build.",
+  "Audit scope defaults to scope.mode reachable from scope.entrypoints or the selected top-level master. Only active files are fully linted and contribute to blocking status; inactive files are listed as informational discoveries until scope.mode all or project-relative scope.include_paths promotes them. Multiple plausible top-level masters produce a review finding asking for explicit scope.entrypoints.",
   "Before creating or modifying any project file or folder, show the exact folders to create, files to create, modify, move, rename, delete, or overwrite, and the entrypoint and execution command, then wait for explicit user approval.",
   "For an overhaul, present a display-ready proposed file tree, every new persistent analysis variable with its reader-facing description, and whether the root README.md will be created or amended. Put the approved tree and variable dictionary in that root README. If there are no new persistent variables, say so explicitly. Do not write until the user approves this preview, and show a revised preview if the plan changes.",
   "For each substantive reusable state transition call search_labeled_checkpoints before broader corpus search. Harmless setup, declared input loading, inspection, assertion, naming, logging, and other direct primitives do not need a checkpoint, ledger row, or template. Compare the target with a candidate's six-field template_input_profile before copying; a known contradiction blocks template-mode reuse but may leave that search-ranked candidate available to fallback only as a nonbinding hint. A variant_group contains alternatives for the same transition, while distinct sequential groups may be composed in order. Treat preparation, validation, estimation, and post-estimation blocks as equal sources of useful patterns rather than mandatory coverage quotas.",
@@ -124,17 +125,19 @@ const INSTRUCTIONS = [
   "When a checkpoint has multiple researcher variants, treat an explicitly requested method or state as a compatibility gate before ranking. Select one whose input contract and selection conditions match. Do not average, splice, or merge variants by default; never copy a drop variant.",
   "Use the typed named-sample-flow postfile block only when the researcher supplies the checkpoint meanings and order; close it with postclose and never reuse it to reconstruct coefficients. Treat .ster replace seed, append, numbered load, readable store, and restore as distinct estimate-lifecycle transitions, selecting only the transitions the actual handoff requires.",
   "Before making a reusable label a generation default, require its external-evidence quality_rubric_review. Auto-select only preferred_candidate or conditional_candidate; reference_only is retained for gap diagnosis. Treat isolated variable, key, file, and data-shape bindings as expected adaptation fields rather than project defects. Prefer the cleanest compatible general-purpose transition; hide harmful project-specific assembly unless it is an explicit user-approved canonical exception.",
+  "Derived canonical and template material remains implementation evidence but has independent_support false and must never be counted as independent external support. Deposited external packages are reported as external evidence; this tool does not perform target-relative package-lineage comparison, so independent_support must not be read as proof of target-lineage independence.",
   "Final Excel must preserve the complete raw outreg2 coefficient, standard-error, omitted/base, and note rows and may add only adjusted R-squared and the e(sample)-derived dependent-variable mean. Do not filter, relabel, or reconstruct rows. A workbook with one sheet uses direct outreg2 replace/append code with an explicit .xls target and without a program: quietly summarize the dependent variable if e(sample), meanonly, bind r(mean) to a local, and use only adjr2 addstat(Dep. variable mean, that local). Use the canonical outreg2_xlsx formatter with .xlsx only when one workbook requires two or more sheets. Apply the same sheet-cardinality rule to separately grouped 2SLS first-stage results, without extra diagnostic rows.",
   "Before final Excel assembly, trace outcome meaning, unit, transform, sample, estimand, estimate handoff, and specification order. Define semantic sheet_groups from reader-facing evidence, then give every sheet_plan placement an ordered readable estimate_names list. Do not create a helper for a one-sheet workbook: keep regressions and direct outreg2 replace/append calls visible, compute each mean on e(sample), save the active estimate directly when only one durable result is needed, and avoid unnecessary globals, store/restore cycles, scratch import/export, Mata formatting, and one-use programs. The canonical outreg2_xlsx formatter is reserved for two or more sheets in the same workbook.",
   "Treat event-study axis_groups independently from Excel sheet_groups. Automatic vertical axes are the default. Use one fixed common vertical range only for a declared group of genuinely close, directly comparable outcomes with the same specification, sample comparison, coefficient unit, and transform. Keep the omitted base out of keep(), retain it as exactly one blank display-order slot, and derive the explicit x labels, zero reference position, and base-to-post policy boundary from that slot. For exactly one outcome use the direct no-loop figure variant; for two or more outcomes use one flat outcome loop. Put the comparison/sample legend below the axis, put the raw outcome variable name alone at the top, and export each PDF immediately after its graph.",
   "A mixed event-study axis loop is an opt-in exception: rendering_mode single_flat_mixed_axis_loop requires exactly one evidenced fixed_group, one or more automatic groups, complete expected_plots coverage, and one explicit mixed_loop_binding. Select only a label carrying the same event_axis_pattern. Keep one flat outcome loop, clear the bound axis-options local on every iteration, set it only under direct fixed-outcome membership, and use that local in the graph. Never replace this with plot_jobs, a generic dispatcher, or positional research-spec strings.",
-  "When the caller has already approved one master log path and the exact ordered do-file paths, write only log using, flat direct do calls in that exact order, log close, and optionally the exact approved completion display. Immediately above every individual do call, write one Korean comment sentence that states the called do-file's project-local role. This prompt-only shell uses no template, ledger, provenance or fallback marker. Do not infer stages, paths, or order; do not add loops, programs, registries, dispatchers, conditionals, positional strings, dependency probes, captured stage-failure handling, or alternate setup. Every approved do target must already exist. Lint a newly created master with lint_do_file role master. Existing master labels remain reference-only.",
-  "Prefer explicit sequential blocks or one flat loop. Use a two-level loop only for plainly declared repeated axes when it materially removes an otherwise duplicated mechanical block without hiding a research choice. Reject loop depth three, deep structural nesting, and strings that encode outcome, sample, specification, or graph jobs for later positional word parsing; a longer directly readable block is preferable to hidden research-spec dispatch.",
-  "After any Stata code creation or revision, create or update project-root report.md. Record every selected template and every general_rule_fallback as a separate row with mode, project-relative .do target, actual one-based inclusive lines, checkpoint, template label_id or fallback -, and reason. Every fallback reason must contain nearest_template_hint=<label_id|none>, fallback_trigger=<no_suitable_template|wrong_selection>, and hint_used=<borrowed idea|none>. Harmless primitives are not rows. If neither mode was used, state No template or general-rule fallback spans. Call audit_stata_project with require_report true.",
-  "For a new project call workflow_blueprint with project_mode new, then search_labeled_checkpoints and search_approved_patterns for every relevant stage, lint each authored do-file, create report.md, and audit the project with require_report true.",
-  "When execution verification is requested, run the approved entrypoint from a clean generated-results state and call research_output_check with the exact contracted output patterns and counts, the actual main log, mandatory report.md, and the approved README tree and variable documentation when applicable. For every persistent variable preserve its reader description, raw source unit plus exact formula or threshold, output unit and observation level, and a nearby label variable statement; never translate a numeric threshold into another unit unless the conversion is explicit and correct.",
+  "When the caller has already approved one master log path and the exact ordered do-file paths, write only log using, flat direct do calls in that exact order, log close, and optionally the exact approved completion display. Immediately above every individual do call, write one Korean comment sentence that states the called do-file's project-local role. This prompt-only shell uses no template, ledger, provenance or fallback marker. Do not infer stages, paths, or order; do not add loops, programs, registries, dispatchers, conditionals, positional strings, dependency probes, captured stage-failure handling, or alternate setup. Every approved do target must already exist. Lint a newly created master with lint_do_file role master and authoring_state new; modified master omissions are warnings and existing audits are not retroactively blocked. Existing master labels remain reference-only.",
+  "Prefer explicit sequential blocks or one flat loop. Use a two-level loop only for plainly declared repeated axes when it materially removes an otherwise duplicated mechanical block without hiding a research choice. Block active loop depth three and positional strings that encode outcome, sample, specification, or graph jobs for later word parsing. Report braced structural depth four as a complexity warning on its separate scale; a longer directly readable block remains preferable to hidden research-spec dispatch.",
+  "After Stata code creation or revision, apply report_policy required, optional, or disabled. Required records every selected template and general_rule_fallback in project-root report.md and passes authored_spans so confidently substantive changed lines are coverage-checked. Optional permits omission. Disabled, including an explicit no-report request, forbids creating or modifying report.md. require_report true is only a compatibility alias for required. Harmless primitives and untouched legacy code do not gain provenance requirements.",
+  "For a new project call workflow_blueprint with project_mode new, then search_labeled_checkpoints and search_approved_patterns for every relevant stage, lint each authored do-file, apply the selected report_policy, and audit the active reachable workflow.",
+  "When execution verification is requested, run the approved entrypoint from a clean generated-results state and call research_output_check with the exact contracted output patterns and counts, the actual main log, the selected report_policy, and the approved README tree and variable documentation when applicable. Keep runtime success, static audit, and substantive validity separate. For every persistent variable preserve its reader description, raw source unit plus exact formula or threshold, output unit and observation level, and a nearby label variable statement; never translate a numeric threshold into another unit unless the conversion is explicit and correct.",
   "For blind workflow validation, treat the natural-language contract as the only task input. Never expose the source do-file, earlier outputs, or example code as an answer key; use workflow_reproduction_check for semantic stage, lineage, and deliverable checks.",
   "For a source-isolated blind trial, use only the staged inputs, contract, installed plugin local data/manual/archive, and exposed stataResearchGuard calls. Do not use Browser, web search, external URLs, shell retrieval, external connectors, prior generated code, or evaluator answer assets. Source isolation protects evidence boundaries; it does not require template-only code. After local template and manual checks, harmless primitives and narrow fallback implementations are allowed from the declared contract, with the rank-relative nearest inspected candidate injected only as a nonbinding hint and never presumed compatible. Stop only when a substantive research choice is unresolved, required input or execution capability is unavailable, or a hard safety/output contract would be violated.",
+  "Native Stata python script with one declared .py path and optional args() is an explicit embedded-script integration, not a shell, winexec, bang, or inline Python process escape. Do not block it solely as process_escape, but verify its runtime exit evidence and concrete output effects separately. Continue to block arbitrary shell, winexec, Unix, bang, Java, Rscript, and inline Python escapes.",
   "For grouped summary statistics used by both a table and a figure, search descriptives.summary_dataset, exports.descriptive_excel_sheet, and figures.descriptive_bar first. Compose only source-backed deposited-paper atoms whose producer-consumer states connect, build one named canonical summary dataset with the complete declared statistic set, and make both consumers read it. A one-off summarize or tabstat used only for inspection is harmless; a saved summary dataset, paper workbook, or figure is substantive. If mixed statistics, formatting, or target semantics exceed the source spans, use the closest summary atom as a sequencing scaffold and record the narrow fallback comparison.",
   "Never manually generate treat_y2015, _y2015, or similar treatment-by-year event variables. For a conventional event-study RHS with a declared window, omit the design reference and list every nonreference level as a native level-specific no-base term such as 2015bn.time#1.treatment 2016bn.time#1.treatment; do not use plain i(<levels>), the invalid ibn(<levels>) form, or ## there. This does not prohibit a justified year##c.control heterogeneous slope inside absorb(). Runtime verification must find every declared nonreference level under the exact raw e(b) token Stata returns, including a retained first-term bn marker or an estimator-created o marker. Treat outreg2 output as the raw source of record and preserve native coefficient, standard-error, omitted/base, and note rows; if outreg2 emits 2024o.year#1o.treat2019, keep that exact row. Final Excel may only arrange placement and add adjusted R-squared plus dependent-variable mean. Event-study selectors must target native coefficient names.",
   "When an existing Dropbox or replication output is the declared baseline, compare every contracted outcome, sample, and specification for coefficient, standard error, and base/omitted status. A representative regression is only a smoke test. Keep the baseline immutable and write comparison evidence separately.",
@@ -175,6 +178,9 @@ const WORKFLOW_DICTIONARY = loadJson("workflow_block_dictionary.json");
 const PACKAGE_COVERAGE = fs.existsSync(path.join(DATA, "package_checkpoint_coverage.json"))
   ? loadJson("package_checkpoint_coverage.json")
   : null;
+const PACKAGE_COMMAND_CATALOG = fs.existsSync(path.join(DATA, "package_command_catalog.json"))
+  ? loadJson("package_command_catalog.json")
+  : { families: [] };
 const CHECKPOINTS = unique(LABELED_CHECKPOINTS.map((row) => row.checkpoint)).sort();
 const DICTIONARY_BY_HEADWORD = new Map(WORKFLOW_DICTIONARY.entries.map((row) => [row.headword, row]));
 const PACKAGE_COVERAGE_BY_ID = new Map((PACKAGE_COVERAGE?.packages || []).map((row) => [row.package_id, row]));
@@ -839,12 +845,13 @@ function danglingLineContinuationFindings(content) {
       && !/=/.test(next);
     const coefplotOptionContinues = /^(?:(?:capture|cap|quietly|qui|noisily|noi)\s+)*coefplot\b/i.test(commandContext)
       && /^(?:keep|order)\s*\(/i.test(next);
+    const indentedOptionContinues = /,\s*$/.test(commandContext) && nextIndent > rootIndent;
     const alignedUnknownCommand = !commandStart.test(next)
       && /^[A-Za-z_][A-Za-z0-9_]*(?:\s|,|\()/i.test(next)
       && nextIndent <= rootIndent;
     if (next && next !== "}" && !/^end\b/i.test(next)
       && !alignedUnknownCommand
-      && (qualifierContinues || outreg2OptionContinues || coefplotOptionContinues || !commandStart.test(next))) continue;
+      && (qualifierContinues || outreg2OptionContinues || coefplotOptionContinues || indentedOptionContinues || !commandStart.test(next))) continue;
     findings.push(finding(
       "error",
       "dangling_line_continuation",
@@ -882,6 +889,28 @@ function eventStudyPresentationFindings(content) {
     if (!next || !/^graph\s+export\b/i.test(next.text) || !/\.pdf(?:["']|\s|,|$)/i.test(next.text)) {
       findings.push(finding("error", "event_study_pdf_not_immediate", row.line, "event-study graph 직후 PDF export가 없습니다.", "graph 다음 문장으로 graph export ...pdf, replace를 실행하세요. outcome이 하나면 loop 없이, 둘 이상이면 하나의 flat loop 안에서 처리합니다.", "researcher_style_reference"));
     }
+  }
+  return findings;
+}
+
+function estimabilityRiskFindings(content) {
+  const findings = [];
+  const estimationPattern = /^(?:reg|regress|areg|xtreg|reghdfe|ivreg2|ivreghdfe|ppmlhdfe|poisson)\b/i;
+  for (const statement of logicalStatements(content)) {
+    const command = normalizeCommand(statement.text);
+    if (!estimationPattern.test(command)) continue;
+    const hasEntityTrend = /(?:absorb\s*\([^)]*|\s)(?:i\.)?[A-Za-z_][A-Za-z0-9_]*(?:##|#)c\.[A-Za-z_][A-Za-z0-9_]*/i.test(command);
+    const hasDynamicFactorFamily = /(?:^|\s)\d+(?:bn|b|o)?\.[A-Za-z_][A-Za-z0-9_]*#\d+(?:bn|b|o)?\.[A-Za-z_][A-Za-z0-9_]*/i.test(command)
+      || /(?:^|\s)(?:i\.)?[A-Za-z_][A-Za-z0-9_]*#(?:i\.)?[A-Za-z_][A-Za-z0-9_]*/i.test(command);
+    if (!hasEntityTrend || !hasDynamicFactorFamily) continue;
+    findings.push(finding(
+      "warning",
+      "estimability_runtime_required",
+      statement.line,
+      "entity-specific linear trend와 dynamic factor family가 같은 추정식에 있어 일부 event coefficient의 추정 가능성은 정적으로 확정할 수 없습니다.",
+      "실행 후 model별 matrix e(b)의 exact colfullnames를 readback하고 선언한 nonreference term의 estimated, omitted, missing 상태를 확인하세요.",
+      "substantive_validity",
+    ));
   }
   return findings;
 }
@@ -925,8 +954,9 @@ function finding(severity, rule, line, message, suggestion, basis = "replication
   return { severity, rule, line, message, suggestion, basis, source };
 }
 
-function masterCallRoleCommentAudit(content, role) {
+function masterCallRoleCommentAudit(content, role, authoringState = "existing_audit") {
   if (!/^(?:master|entrypoint|new_master)$/i.test(String(role || ""))) return { findings: [], valid_lines: new Set() };
+  if (authoringState === "existing_audit") return { findings: [], valid_lines: new Set() };
   const physicalLines = String(content || "").split(/\r?\n/);
   const findings = [];
   const validLines = new Set();
@@ -939,18 +969,20 @@ function masterCallRoleCommentAudit(content, role) {
     const pathOnly = /^(?:do\s+)?["']?[^"']+\.do["']?\.?$/i.test(body);
     if (!body || pathOnly) {
       findings.push(finding(
-        "error",
+        authoringState === "new" ? "error" : "warning",
         "master_call_role_comment_missing",
         entry.line,
-        "새 master do-file의 개별 do 호출 바로 위에 호출 파일의 역할을 설명하는 한 문장 주석이 없습니다.",
+        `${authoringState === "new" ? "새" : "수정 중인"} master do-file의 개별 do 호출 바로 위에 호출 파일의 역할을 설명하는 한 문장 주석이 없습니다.`,
         "do 호출의 바로 앞 물리적 줄에 `* 원자료를 정리해 분석용 자료를 만든다.`처럼 프로젝트 안에서의 역할을 한 문장으로 쓰세요.",
+        "researcher_style_reference",
       ));
     } else validLines.add(entry.line);
   }
   return { findings, valid_lines: validLines };
 }
 
-function lintContent(content, role = "auto", source = "inline") {
+function lintContent(content, role = "auto", source = "inline", authoringState = null) {
+  const resolvedAuthoringState = authoringState || (/^new_master$/i.test(String(role || "")) ? "new" : "existing_audit");
   const active = stripComments(content);
   const logicalByStartLine = new Map(activeLogicalEntries(content).map((entry) => [entry.line, entry.text]));
   const activeText = active.map((row) => normalizeCommand(row.trimmed)).join("\n");
@@ -980,7 +1012,7 @@ function lintContent(content, role = "auto", source = "inline") {
     && (outreg2Multiplicity.call_count === 0 || outreg2Multiplicity.unresolved);
   const findings = [];
   const strengths = [];
-  const masterCallComments = masterCallRoleCommentAudit(content, role);
+  const masterCallComments = masterCallRoleCommentAudit(content, role, resolvedAuthoringState);
   findings.push(...masterCallComments.findings);
   const mergeLines = [];
   const programStack = [];
@@ -1002,6 +1034,7 @@ function lintContent(content, role = "auto", source = "inline") {
   findings.push(...directFallbackMarkerFindings(content));
   findings.push(...danglingLineContinuationFindings(content));
   findings.push(...eventStudyPresentationFindings(content));
+  findings.push(...estimabilityRiskFindings(content));
   if (scratchContract.applies && !scratchContract.valid) {
     findings.push(finding(
       "error",
@@ -1037,9 +1070,11 @@ function lintContent(content, role = "auto", source = "inline") {
     if (/^if\s+0\s*\{/i.test(command)) {
       findings.push(finding("error", "disabled_if_zero", entry.line, "분석 코드가 if 0 블록으로 비활성화되어 있습니다.", "실행 가능한 master 흐름으로 옮기거나 설명된 선택 옵션으로 바꾸세요."));
     }
-    if (/^(?:shell|winexec|unix|python|rscript|java|!)\b/i.test(command)) {
+    const nativePythonScript = /^python\s+script\s+(?:"[^"]+\.py"|'[^']+\.py'|[^\s,]+\.py)(?:\s*,\s*args\s*\([\s\S]*\))?\s*$/i.test(logicalCommand);
+    if (/^(?:shell|winexec|unix|rscript|java|!)\b/i.test(logicalCommand) || (/^python\b/i.test(logicalCommand) && !nativePythonScript)) {
       findings.push(finding("error", "process_escape", entry.line, "외부 프로세스를 직접 호출해 이식성과 재현성이 낮아집니다.", "필수 외부 단계는 별도 스크립트와 README 계약으로 분리하세요."));
     }
+    if (nativePythonScript) strengths.push({ rule: "stata_native_python_script", line: entry.line, runtime_verification: "required" });
     if (/^(?:erase|rm|del)\b/i.test(command) && !approvedScratchErase) {
       findings.push(finding("error", "destructive_delete", entry.line, "do-file이 파일을 직접 삭제합니다.", "선언된 scratch 산출물만 정리하고 원본과 중간 산출물은 보존하세요."));
     }
@@ -1080,7 +1115,7 @@ function lintContent(content, role = "auto", source = "inline") {
       const directExcelTarget = /\bexcel\b/i.test(logicalCommand) || /\.(?:xml|xlsx?)$/i.test(outreg2Target);
       if (directExcelTarget && !canonicalScratchTarget && !/\.xls$/i.test(outreg2Target)) {
         findings.push(finding(
-          "error",
+          "warning",
           "direct_outreg2_requires_xls",
           entry.line,
           "program을 쓰지 않는 direct outreg2 Excel 산출물은 명시적 .xls 경로여야 합니다.",
@@ -1145,7 +1180,7 @@ function lintContent(content, role = "auto", source = "inline") {
       maxStructuralDepth = Math.max(maxStructuralDepth, structuralDepth);
       if (structuralDepth === 4) {
         const deepFinding = finding(
-          "error",
+          "warning",
           "deep_structural_nesting",
           entry.line,
           "block 중첩 깊이 4가 감지되어 연구 사양과 실행 순서를 읽기 어렵습니다.",
@@ -1198,9 +1233,9 @@ function lintContent(content, role = "auto", source = "inline") {
       const program = programStack.pop();
       if (program.researchLogic && !program.approvedException) findings.push(finding("warning", "program_wrapped_research_logic", program.line, "program 안의 연구 로직은 선별 research-practice reference에도 존재하므로 자동 block할 수 없습니다. 동일 목적의 reference와 비교가 필요합니다.", "반복되는 명확한 연구 작업인지 확인하고, 과도한 추상화일 때만 직접 코드로 펼치세요.", "researcher_style_reference", ["corpus/packages/173341/dofiles/4. Main_Tables.do", "corpus/packages/173341/dofiles/5. Appendix_Tables.do"]));
     }
-    const mergeMatch = command.match(/^merge\s+(1:1|1:m|m:1|m:m)\b/i);
+    const mergeMatch = logicalCommand.match(/^merge\s+(1:1|1:m|m:1|m:m)\b/i);
     if (mergeMatch) {
-      const declaredStatePolicy = /,.*\bkeep\s*\(\s*(?:master|match|matched|using|[123])(?:\s+(?:master|match|matched|using|[123]))*\s*\)/i.test(command);
+      const declaredStatePolicy = /,.*(?:\bkeep\s*\(\s*(?:master|match|matched|using|[123])(?:\s+(?:master|match|matched|using|[123]))*\s*\)|\bassert\s*\([^)]*\))/i.test(logicalCommand);
       mergeLines.push({ index, line: entry.line, cardinality: mergeMatch[1].toLowerCase(), declaredStatePolicy });
       if (declaredStatePolicy) strengths.push({ rule: "merge_state_policy", line: entry.line, source: "https://www.stata.com/manuals/dmerge.pdf" });
     }
@@ -1252,8 +1287,20 @@ function lintContent(content, role = "auto", source = "inline") {
   return {
     source,
     role,
+    authoring_state: resolvedAuthoringState,
     status: errors ? "blocked" : warnings ? "needs_review" : "static_clean",
-    summary: { errors, warnings, strengths: unique(strengths.map((row) => row.rule)).length, active_lines: active.length, max_loop_depth: maxLoopDepth, max_structural_depth: maxStructuralDepth, program_definitions: programDefinitions, approved_program_exceptions: approvedProgramExceptions },
+    summary: {
+      errors,
+      warnings,
+      strengths: unique(strengths.map((row) => row.rule)).length,
+      active_lines: active.length,
+      max_loop_depth: maxLoopDepth,
+      max_structural_depth: maxStructuralDepth,
+      max_active_loop_depth: { observed: maxLoopDepth, blocking_threshold: 3, definition: "simultaneously active foreach, forvalues, or while loops" },
+      max_braced_structural_depth: { observed: maxStructuralDepth, review_threshold: 4, definition: "all simultaneously active braced blocks, including loops and conditionals" },
+      program_definitions: programDefinitions,
+      approved_program_exceptions: approvedProgramExceptions,
+    },
     syntax_status: "not_validated",
     researcher_style_status: styleFindings.length ? "context_review" : "no_static_conflict",
     replication_status: replicationFindings.some((row) => row.severity === "error") ? "blocked" : replicationFindings.some((row) => row.severity === "warning") ? "needs_review" : "static_clean",
@@ -1276,6 +1323,9 @@ function readDoInput(args) {
 
 function canonicalReferenceCommand(value) {
   const command = String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
+  if (/^import_(?:excel|delimited)$/.test(command)) return "import";
+  if (/^export_excel$/.test(command)) return "export excel";
+  if (/^(?:graph_|twoway$)/.test(command)) return "graph";
   if (/^import\s+(?:excel|delimited)\b/.test(command)) return "import";
   if (/^reshape\s+(?:long|wide)\b/.test(command)) return "reshape";
   if (/^merge(?:\s|$)/.test(command)) return "merge";
@@ -1707,7 +1757,8 @@ function generalRuleFallbackPolicy(args, context = {}) {
     hard_stop_reasons: hardStopReasons,
     hard_stop_rule: "Fallback never supplies a missing substantive research choice and never bypasses event-axis, raw-table, sheet-cardinality, merge-key, sample, estimator, or output contracts.",
     rules: GENERAL_RULE_FALLBACK_RULES,
-    report_required: true,
+    report_policy: context.reportPolicy || "caller_selected",
+    report_required: context.reportPolicy ? context.reportPolicy === "required" : null,
     report_path: "report.md",
   };
 }
@@ -1716,9 +1767,15 @@ function sourcePackageReview(row) {
   const packageId = packageIdFromSourcePath(row.source_path);
   if (!packageId) {
     const derived = row.derivation_provenance && typeof row.derivation_provenance === "object";
+    const sourceKind = row.source_kind || "unclassified_non_corpus_source";
+    const derivedCanonical = derived || /derived|canonical/i.test(sourceKind);
+    const lineageBasis = String(row.derivation_provenance?.based_on_source_path || row.source_path || row.source_file_sha256 || sourceKind);
     return {
       review_level: "not_applicable_source_snapshot",
-      source_kind: row.source_kind || "unclassified_non_corpus_source",
+      source_kind: sourceKind,
+      evidence_class: derivedCanonical ? "derived_canonical" : "declared_source_snapshot",
+      lineage_id: `${derivedCanonical ? "derived" : "snapshot"}:${crypto.createHash("sha256").update(lineageBasis).digest("hex").slice(0, 16)}`,
+      independent_support: false,
       source_path: row.source_path,
       source_file_sha256: row.source_file_sha256,
       derivation_provenance: derived ? row.derivation_provenance : null,
@@ -1736,6 +1793,9 @@ function sourcePackageReview(row) {
     journal: packageMetadata.journal || null,
     repository_doi: packageMetadata.repository_doi || null,
     article_doi: packageMetadata.article_doi || null,
+    evidence_class: "external_research_source",
+    lineage_id: `repository:${packageMetadata.repository_doi || packageId}`,
+    independent_support: true,
     review_level: coverage.review_level,
     review_accounting: coverage.review_accounting,
     stage_review: coverage.stages[row.stage] || null,
@@ -1786,6 +1846,7 @@ function scoreLabeledCheckpoint(row, args) {
   if (rubricClassification(row) === "preferred_candidate") score += 20;
   if (rubricClassification(row) === "conditional_candidate") score += 10;
   if (rubricClassification(row) === "reference_only") score -= 20;
+  if (row.derivation_provenance?.independent_support === false) score -= 15;
   return score;
 }
 
@@ -2337,14 +2398,16 @@ function compareTemplateInputProfile(templateProfile, targetProfile) {
   };
 }
 
-function scanProjectForDictionary(root) {
-  const projectFiles = listProjectFiles(root);
-  const discovered = listDoFiles(root);
-  const records = discovered.files.map((file) => {
+function scanProjectForDictionary(root, scopeInput = {}) {
+  const includePaths = (scopeInput.include_paths || []).map((value) => normalizeRelativePath(value, "scope.include_paths").replace(/\/$/, ""));
+  const excludePaths = (scopeInput.exclude_paths || []).map((value) => normalizeRelativePath(value, "scope.exclude_paths").replace(/\/$/, ""));
+  const projectFiles = listProjectFiles(root, { includePaths, excludePaths });
+  const records = projectFiles.filter((file) => /\.do$/i.test(file)).map((relative) => {
+    const file = resolveInside(root, relative, "scoped project file").target;
     const content = fs.readFileSync(file, "utf8");
     const active = stripComments(content).map((row) => normalizeCommand(row.trimmed)).join("\n");
     return {
-      path: path.relative(root, file).replaceAll("\\", "/"),
+      path: relative,
       content,
       active,
       stages: detectStagesFromContent(file, content),
@@ -2494,6 +2557,7 @@ function scanProjectForDictionary(root) {
     evidence: targetSignatureEvidence,
   };
   return {
+    scan_scope: { include_paths: includePaths, exclude_paths: excludePaths },
     files: projectFiles,
     do_files: records.map((row) => row.path),
     extension_counts: extensionCounts,
@@ -2532,6 +2596,169 @@ function scanProjectForDictionary(root) {
   };
 }
 
+const SOURCE_REUSE_TEMPLATE_IDS = {
+  clone_then_edit: "existing_do_file.clone_then_apply_declared_edits.v1",
+  modify_in_place: "existing_do_file.modify_in_place_with_staged_exact_diff.v1",
+  block_extract_insert: "existing_do_file.extract_block_then_insert_with_exact_diff.v1",
+};
+
+function countLiteral(value, needle) {
+  if (!needle) return 0;
+  return String(value).split(needle).length - 1;
+}
+
+function firstDifference(expected, actual) {
+  const limit = Math.min(expected.length, actual.length);
+  let offset = 0;
+  while (offset < limit && expected[offset] === actual[offset]) offset += 1;
+  if (offset === expected.length && offset === actual.length) return null;
+  return {
+    offset,
+    line: expected.slice(0, offset).split(/\r?\n/).length,
+    expected_excerpt: expected.slice(offset, offset + 80),
+    actual_excerpt: actual.slice(offset, offset + 80),
+  };
+}
+
+function applyDeclaredLiteralChanges(value, changes, fieldPrefix = "source_reuse.allowed_changes") {
+  let expectedText = String(value);
+  const appliedChanges = changes.map((change, index) => {
+    const operation = String(change.operation || "");
+    const match = String(change.match || "");
+    const expectedOccurrences = Number(change.expected_occurrences);
+    if (!match) throw new Error(`${fieldPrefix}[${index}].match가 필요합니다.`);
+    if (!Number.isInteger(expectedOccurrences) || expectedOccurrences < 1) throw new Error(`${fieldPrefix}[${index}].expected_occurrences는 1 이상의 정수여야 합니다.`);
+    const observedOccurrences = countLiteral(expectedText, match);
+    if (observedOccurrences !== expectedOccurrences) {
+      throw new Error(`${fieldPrefix}[${index}] match 개수가 다릅니다: expected ${expectedOccurrences}, observed ${observedOccurrences}.`);
+    }
+    let replacement;
+    if (operation === "replace_literal") replacement = String(change.replacement ?? "");
+    else if (operation === "delete_literal") replacement = "";
+    else if (operation === "insert_after_literal") replacement = `${match}${String(change.text ?? "")}`;
+    else throw new Error(`지원하지 않는 source_reuse operation입니다: ${operation}`);
+    expectedText = expectedText.split(match).join(replacement);
+    return { operation, match, expected_occurrences: expectedOccurrences, observed_occurrences: observedOccurrences };
+  });
+  return { expectedText, appliedChanges };
+}
+
+function extractDeclaredSourceBlock(sourceText, sourceBlock) {
+  if (!sourceBlock) throw new Error("block_extract_insert mode에는 source_reuse.source_block이 필요합니다.");
+  const startLiteral = String(sourceBlock.start_literal || "");
+  const endLiteral = String(sourceBlock.end_literal || "");
+  if (!startLiteral || !endLiteral) throw new Error("source_reuse.source_block에는 start_literal과 end_literal이 필요합니다.");
+  if (countLiteral(sourceText, startLiteral) !== 1 || countLiteral(sourceText, endLiteral) !== 1) {
+    throw new Error("source_reuse.source_block의 start_literal과 end_literal은 canonical_source에서 각각 정확히 한 번 나타나야 합니다.");
+  }
+  const start = sourceText.indexOf(startLiteral);
+  const endStart = sourceText.indexOf(endLiteral, start + startLiteral.length);
+  if (endStart < 0) throw new Error("source_reuse.source_block end_literal은 start_literal 뒤에 있어야 합니다.");
+  const includeBoundaries = sourceBlock.include_boundaries !== false;
+  const from = includeBoundaries ? start : start + startLiteral.length;
+  const to = includeBoundaries ? endStart + endLiteral.length : endStart;
+  return {
+    text: sourceText.slice(from, to),
+    source_offsets: { start: from, end: to },
+    include_boundaries: includeBoundaries,
+  };
+}
+
+function buildSourceReusePlan(root, request, contract) {
+  const requested = /(?:(?:기존|원본|정본|canonical|existing|source)[\s\S]{0,80}(?:복제|복사|재사용|그대로|제자리|블록|clone|copy|reuse|in[- ]place|block)[\s\S]{0,80}(?:수정|치환|변경|삽입|adapt|edit|change|insert)|(?:복제|복사|clone|copy)[\s\S]{0,80}(?:기존|원본|정본|canonical|existing|source))/i.test(String(request || ""));
+  if (!contract) {
+    if (!requested) return null;
+    return {
+      template_id: SOURCE_REUSE_TEMPLATE_IDS.clone_then_edit,
+      status: "needs_declared_reuse_contract",
+      direct_generation_allowed: false,
+      required_fields: ["mode", "canonical_source", "destination or modify_in_place", "allowed_changes"],
+      rule: "Declare the canonical source and every permitted literal edit before writing. Do not synthesize a replacement from an estimator-specific detector or a generic fallback.",
+    };
+  }
+
+  const mode = String(contract.mode || "clone_then_edit");
+  if (!Object.hasOwn(SOURCE_REUSE_TEMPLATE_IDS, mode)) throw new Error(`지원하지 않는 source_reuse mode입니다: ${mode}`);
+  const source = resolveInside(root, contract.canonical_source, "source_reuse.canonical_source");
+  if (!fs.existsSync(source.target) || !fs.statSync(source.target).isFile()) throw new Error("source_reuse canonical_source는 존재하는 파일이어야 합니다.");
+  const destinationValue = mode === "modify_in_place" ? (contract.destination || contract.canonical_source) : contract.destination;
+  if (!destinationValue) throw new Error(`${mode} mode에는 source_reuse.destination이 필요합니다.`);
+  const destination = resolveInside(root, destinationValue, "source_reuse.destination");
+  const sameFile = source.target.toLowerCase() === destination.target.toLowerCase();
+  if (mode === "clone_then_edit" && sameFile) throw new Error("clone_then_edit mode의 destination은 canonical_source와 달라야 합니다.");
+  if (mode === "modify_in_place" && !sameFile) throw new Error("modify_in_place mode의 destination은 canonical_source와 같아야 합니다.");
+  const changes = Array.isArray(contract.allowed_changes) ? contract.allowed_changes : [];
+  if (!changes.length) throw new Error("source_reuse.allowed_changes를 하나 이상 선언해야 합니다.");
+
+  const sourceText = fs.readFileSync(source.target, "utf8");
+  let expectedText;
+  let appliedChanges;
+  let blockContract = null;
+  if (mode === "block_extract_insert") {
+    if (!fs.existsSync(destination.target) || !fs.statSync(destination.target).isFile()) throw new Error("block_extract_insert destination은 기존 파일이어야 합니다.");
+    const extracted = extractDeclaredSourceBlock(sourceText, contract.source_block);
+    const changed = applyDeclaredLiteralChanges(extracted.text, changes);
+    const destinationText = fs.readFileSync(destination.target, "utf8");
+    const anchor = String(contract.insertion_anchor?.match || "");
+    const expectedOccurrences = Number(contract.insertion_anchor?.expected_occurrences);
+    const position = String(contract.insertion_anchor?.position || "after");
+    if (!anchor) throw new Error("block_extract_insert mode에는 source_reuse.insertion_anchor.match가 필요합니다.");
+    if (!Number.isInteger(expectedOccurrences) || expectedOccurrences < 1 || countLiteral(destinationText, anchor) !== expectedOccurrences) {
+      throw new Error(`source_reuse.insertion_anchor match 개수가 다릅니다: expected ${expectedOccurrences}, observed ${countLiteral(destinationText, anchor)}.`);
+    }
+    const inserted = changed.expectedText;
+    let replacement;
+    if (position === "after") replacement = `${anchor}${inserted}`;
+    else if (position === "before") replacement = `${inserted}${anchor}`;
+    else if (position === "replace") replacement = inserted;
+    else throw new Error(`지원하지 않는 insertion_anchor position입니다: ${position}`);
+    expectedText = destinationText.split(anchor).join(replacement);
+    appliedChanges = changed.appliedChanges;
+    blockContract = {
+      source_block: { ...extracted.source_offsets, include_boundaries: extracted.include_boundaries },
+      insertion_anchor: { match: anchor, expected_occurrences: expectedOccurrences, position },
+    };
+  } else {
+    ({ expectedText, appliedChanges } = applyDeclaredLiteralChanges(sourceText, changes));
+  }
+
+  const expectedBytes = Buffer.from(expectedText, "utf8");
+  let candidateVerification = { status: "not_supplied", rule: "Write only the deterministic expected candidate, then call the planner again with candidate_path before treating the adaptation as verified." };
+  if (contract.candidate_path) {
+    const candidate = resolveInside(root, contract.candidate_path, "source_reuse.candidate_path");
+    if (!fs.existsSync(candidate.target) || !fs.statSync(candidate.target).isFile()) throw new Error("source_reuse candidate_path는 존재하는 파일이어야 합니다.");
+    const actualText = fs.readFileSync(candidate.target, "utf8");
+    const matchesExpected = actualText === expectedText;
+    candidateVerification = {
+      status: matchesExpected ? "verified_exact" : "blocked_undeclared_change",
+      candidate_path: candidate.relative,
+      sha256: sha256File(candidate.target),
+      exact_match: matchesExpected,
+      first_difference: firstDifference(expectedText, actualText),
+    };
+  }
+
+  return {
+    template_id: SOURCE_REUSE_TEMPLATE_IDS[mode],
+    mode,
+    status: candidateVerification.status === "blocked_undeclared_change" ? "blocked" : candidateVerification.status === "verified_exact" ? "verified" : "ready_for_clone",
+    direct_generation_allowed: false,
+    canonical_source: { path: source.relative, bytes: fs.statSync(source.target).size, sha256: sha256File(source.target) },
+    destination: destination.relative,
+    same_file_destination: sameFile,
+    block_contract: blockContract,
+    allowed_changes: appliedChanges,
+    expected_candidate: { bytes: expectedBytes.length, sha256: crypto.createHash("sha256").update(expectedBytes).digest("hex").toUpperCase() },
+    candidate_verification: candidateVerification,
+    steps: mode === "block_extract_insert"
+      ? ["extract only the declared canonical source block", "apply only declared edits to that block", "insert it at the exact destination anchor", "compare candidate_path to expected_candidate exactly", "stop on any undeclared difference"]
+      : mode === "modify_in_place"
+        ? ["stage the deterministic in-place candidate without overwriting canonical_source", "apply only the declared literal edits in order", "compare candidate_path to expected_candidate exactly", "replace the same file only after exact verification", "stop on any undeclared difference"]
+        : ["copy canonical_source to destination without rewriting it", "apply only the declared literal edits in order", "compare candidate_path to expected_candidate exactly", "stop on any undeclared difference"],
+    rule: "This template is estimator-agnostic. A new estimator name must not be added to detection logic merely to preserve an existing source file.",
+  };
+}
+
 const HEADWORD_SEQUENCE = [
   "project_setup.paths",
   "workflow_orchestration.master",
@@ -2550,6 +2777,7 @@ const HEADWORD_SEQUENCE = [
   "dataset.finalize_keep_label_save",
   "integrity.adjacency_dedup",
   "panel.stack_waves",
+  "panel.materialize_time_grid",
   "panel.treatment_cohort",
   "panel.turnover_event_time",
   "estimation.conventional",
@@ -2558,15 +2786,26 @@ const HEADWORD_SEQUENCE = [
   "scale.standardize_esample",
   "descriptives.sample_mean",
   "postest.persist_estimate",
+  "postest.margins",
   "postest.export_sample_keys",
   "postest.estimator_comparison_unsafe",
   "robustness.placebo",
   "robustness.heterogeneity",
+  "robustness.bootstrap_inference",
   "robustness.jackknife",
   "descriptives.entity_collapse",
+  "descriptives.sample_flow",
+  "descriptives.summary_dataset",
+  "descriptives.estpost_active_result",
+  "exports.descriptive_excel_sheet",
+  "exports.estimate_text_table",
+  "exports.matrix_excel",
+  "figures.descriptive_bar",
   "figures.descriptive_scatter",
   "figures.event_study",
+  "figures.marginsplot",
   "figures.coefplot_named_estimates",
+  "figures.named_graph_combine",
   "figures.export_pdf",
   "final_excel_assembly",
   "cleanup",
@@ -2615,6 +2854,51 @@ function requestInferenceContext(request) {
   return { full, actionable: actionable.join(" "), preserved: preserved.join(" ") };
 }
 
+function classifyRequestIntent(request, requestedIntent = "auto", mode = "partial", targetEvidence = {}) {
+  const context = requestInferenceContext(request);
+  const full = String(context.full || "");
+  const actionable = String(context.actionable || "");
+  const reviewPattern = /(?:검토|검사|점검|평가|감사|진단|분석|설명|발전\s*가능성)|\b(?:review|audit|inspect|assess|evaluate|diagnose|analy[sz]e|explain)\b/i;
+  const writePattern = /(?:추가|수정|고쳐|고치|작성|만들|짜|구축|실행|돌려|내보|생성|구현|재작성|업데이트)|\b(?:add|fix|edit|modify|change|write|create|build|implement|run|export|rewrite|refactor|update)\b/i;
+  const modifyPattern = /(?:수정|고쳐|고치|편집|변경|바꾸|재작성|업데이트)|\b(?:fix|edit|modify|change|rewrite|refactor|update)\b/i;
+  const prohibitionPattern = /(?:수정|변경|편집|고치|건드리|손대|바꾸|재작성|실행|생성|만들)[^.!?;\n]{0,28}(?:하지\s*마|하지\s*않|말아|말고|않는다|않습니다|금지)|(?:변경|수정)\s*없이|\b(?:review\s+only|audit\s+only|inspection\s+only|make\s+no\s+changes?|no\s+changes?|without\s+(?:modifying|editing|changing)|do\s+not\s+(?:modify|edit|change|write|create|run))\b/i;
+  const reviewActions = unique((full.match(new RegExp(reviewPattern.source, "gi")) || []).map((value) => value.toLowerCase()));
+  const unnegatedWriteActions = unique((actionable.match(new RegExp(writePattern.source, "gi")) || []).map((value) => value.toLowerCase()));
+  const explicitNoChange = prohibitionPattern.test(full);
+  const reviewOnly = (reviewActions.length > 0 || explicitNoChange) && unnegatedWriteActions.length === 0;
+  let inferred = reviewOnly
+    ? "review_only"
+    : mode === "overhaul"
+      ? "overhaul"
+      : modifyPattern.test(actionable) || targetEvidence.existing_do_target ? "modify_existing" : "add_feature";
+  let conflict = false;
+  if (requestedIntent && requestedIntent !== "auto") {
+    if (requestedIntent === "review_only" && unnegatedWriteActions.length > 0) {
+      inferred = "review_only";
+      conflict = true;
+    } else if (reviewOnly && requestedIntent !== "review_only") {
+      inferred = "review_only";
+      conflict = true;
+    } else inferred = requestedIntent;
+  }
+  return {
+    intent: inferred,
+    context,
+    write_authorization: {
+      status: conflict ? "conflict" : inferred === "review_only" ? "not_requested" : "requested",
+      decisive_evidence: [
+        ...(explicitNoChange ? ["explicit_no_change_clause"] : []),
+        ...(reviewActions.length ? ["review_action"] : []),
+        ...(unnegatedWriteActions.length ? ["unnegated_write_action"] : []),
+        ...(targetEvidence.existing_do_target ? ["explicit_existing_do_target"] : []),
+      ],
+      review_actions: reviewActions,
+      unnegated_write_actions: unnegatedWriteActions,
+      rule: "Explicit no-change and review-only intent cannot be overridden by planner checkpoints or caller write modes. A separate unnegated write clause authorizes only its stated mutation scope.",
+    },
+  };
+}
+
 function explicitlyRequestsEstimateConsumer(value) {
   return /\bestimates?\s+(?:use|store)\b|\bconsume\b[^.!?;\n]{0,60}\b(?:numbered\s+)?\.ster\b|\b(?:numbered\s+)?\.ster\b[^.!?;\n]{0,60}\bconsume\b|(?:기존|저장된|numbered)?\s*\.ster[^.!?;\n]{0,60}(?:소비|불러오|사용)|(?:소비|불러오|사용)[^.!?;\n]{0,60}\.ster/i.test(String(value || ""));
 }
@@ -2622,8 +2906,21 @@ function explicitlyRequestsEstimateConsumer(value) {
 function inferDictionaryHeadwords(request, explicit, mode) {
   const selected = new Set(explicit || []);
   const value = String(request || "").toLowerCase();
+  if (!selected.size && isDocumentationOnlyCommandMention(value)) return [];
   const add = (...items) => items.forEach((item) => selected.add(item));
-  if (/excel|xlsx|회귀표|표.*내보|outreg2/.test(value)) add("final_excel_assembly");
+  const summaryRequested = /summary|descriptive|기초통계|요약통계/.test(value);
+  const descriptiveExcelRequested = summaryRequested && /excel|xlsx|workbook|엑셀|표.*내보|export/.test(value);
+  const descriptiveFigureRequested = summaryRequested && /figure|graph|plot|그림|그래프|막대/.test(value);
+  const exactExportOnly = requestCommandAnchors(value).some((anchor) => {
+    const routes = [...(AUTO_LABEL_COMMAND_CHECKPOINTS.get(normalizedCommandAnchor(anchor)) || [])];
+    return routes.length > 0 && routes.every((checkpoint) => checkpoint.startsWith("exports."));
+  });
+  const exactFigureOnly = requestCommandAnchors(value).some((anchor) => {
+    const routes = [...(AUTO_LABEL_COMMAND_CHECKPOINTS.get(normalizedCommandAnchor(anchor)) || [])];
+    return routes.length > 0 && routes.every((checkpoint) => checkpoint.startsWith("figures."));
+  });
+  if (((/excel|xlsx|회귀표|표.*내보|outreg2/.test(value) && !descriptiveExcelRequested && !exactExportOnly)
+    || /regression.*(?:excel|xlsx|workbook)|회귀.*(?:excel|xlsx|엑셀)/.test(value))) add("final_excel_assembly");
   if (/\bster\b|\.ster\b|estimates?\s+(?:save|use|store)|추정결과.*(?:저장|불러오|소비)/.test(value)) add("postest.persist_estimate");
   const inputLoadValue = value.replace(/\bestimates?\s+use\b/g, "");
   if (/\bsysuse\b|\buse\b|\bimport\s+(?:delimited|excel)\b|불러오|원자료.*(?:읽|로드)/.test(inputLoadValue)) add("input_load.single_source");
@@ -2631,9 +2928,11 @@ function inferDictionaryHeadwords(request, explicit, mode) {
   if (/event.?study|이벤트.?스터디|pretrend|사전추세/.test(value)) add("figures.event_study");
   if (/\bcoefplot\b|\bcoefficient\s*(?:plot|figure|graph|pdf|gph)\b|\bnamed\s+estimates?\b[^.!?;\n]{0,40}\b(?:plot|figure|graph)\b|(?:회귀\s*)?계수[^.!?;\n]{0,40}(?:그림|그래프|plot|pdf|gph)/.test(value)) add("figures.coefplot_named_estimates");
   if (/pdf|graph\s+export|figure\s+export|그림.*내보|figure.*내보/.test(value)) add("figures.export_pdf");
-  else if (/figure|graph|plot|그림|그래프/.test(value)) add("figures.descriptive_scatter");
+  if (descriptiveFigureRequested) add("figures.descriptive_bar");
+  else if (/figure|graph|plot|그림|그래프/.test(value) && !exactFigureOnly && !/pdf|graph\s+export|figure\s+export|그림.*내보|figure.*내보/.test(value)) add("figures.descriptive_scatter");
   const estimationValue = value.replace(/regression\s+(?:excel|workbook|table)|회귀표/g, "");
-  if (/staggered|시차.?도입|jwdid|csdid/.test(value)) add("panel.treatment_cohort", "estimation.staggered_did");
+  if (/staggered|시차.?도입|jwdid|csdid/.test(value)) add("estimation.staggered_did");
+  if (/cohort|처치.*(?:시점|코호트)|도입.*시점|treatment.?timing/.test(value)) add("panel.treatment_cohort");
   else if (/regression|regress|회귀|추정/.test(estimationValue)) add("estimation.conventional");
   if (/e\(sample\)|dependent.?variable mean|종속변수.*평균|estadd\s+ysumm|\bymean\b/.test(value)) add("descriptives.sample_mean");
   if (/merge|병합|결합/.test(value)) add("integrity.audit", "merge_reshape.integration");
@@ -2652,7 +2951,8 @@ function inferDictionaryHeadwords(request, explicit, mode) {
   if (/e\(sample\).*키|추정표본.*키|sample.*key.*dta/.test(value)) add("postest.export_sample_keys");
   if (/jackknife|잭나이프/.test(value)) add("robustness.jackknife");
   if (/cleanup|임시파일.*정리/.test(value)) add("cleanup");
-  if (/summary|descriptive|기초통계/.test(value)) add("descriptives.entity_collapse");
+  if (summaryRequested) add("descriptives.summary_dataset");
+  if (descriptiveExcelRequested) add("exports.descriptive_excel_sheet");
   if (/master|runall|전체.*실행/.test(value)) add("workflow_orchestration.master");
   if (mode === "overhaul" && selected.size === 0) {
     [
@@ -2663,16 +2963,28 @@ function inferDictionaryHeadwords(request, explicit, mode) {
       "final_excel_assembly",
     ].forEach((item) => selected.add(item));
   }
+  const dynamicRoutes = dynamicallyRoutedCheckpoints(request);
+  if (looksLikeSingleStataCommand(value) && dynamicRoutes.length === 1) {
+    return unique([...(explicit || []), dynamicRoutes[0]]).filter((item) => CHECKPOINTS.includes(item));
+  }
+  for (const checkpoint of dynamicRoutes) selected.add(checkpoint);
   return [...selected].filter((item) => CHECKPOINTS.includes(item));
 }
 
 function looksLikeStataCommand(value) {
-  return /^(?:(?:quietly|qui|noisily|noi|capture|cap)\s+)*(?:sysuse|use|import|append|merge|reshape|gen|generate|replace|recode|egen|collapse|confirm|assert|describe|codebook|count|sum|summarize|tabstat|isid|xtset|poisson|reg|regress|areg|xtreg|reghdfe|ivreg2|ivreghdfe|rdrobust|csdid|did_imputation|eventstudyinteract|estadd|estimates|outreg2|putexcel|collect|coefplot|event_plot|csdid_plot|graph|twoway|marginsplot|save|log)\b/i.test(String(value || "").trim());
+  const normalized = normalizeCommand(String(value || "").trim());
+  const firstToken = normalized.match(/^([A-Za-z_][A-Za-z0-9_]*)/)?.[1]?.toLowerCase();
+  if (!firstToken) return false;
+  return KNOWN_COMMAND_ANCHORS.some((anchor) => anchor === firstToken || anchor.startsWith(`${firstToken} `));
 }
 
 function looksLikeSingleStataCommand(request) {
   const lines = String(request || "").split(/[\r\n;]+/).map((value) => value.trim()).filter(Boolean);
-  return lines.length === 1 && looksLikeStataCommand(lines[0]);
+  if (lines.length !== 1 || !looksLikeStataCommand(lines[0])) return false;
+  const value = lines[0];
+  if (/[.!?]\s+(?:[A-Z가-힣]|$)/.test(value)) return false;
+  if (/\b(?:please|existing|unchanged|then\s+create|do\s+not\s+modify)\b/i.test(value)) return false;
+  return true;
 }
 
 function looksLikeStataCommandSequence(request) {
@@ -2680,41 +2992,135 @@ function looksLikeStataCommandSequence(request) {
   return lines.length > 1 && lines.filter(looksLikeStataCommand).length >= 2;
 }
 
-const REQUEST_COMMAND_HINTS = [
-  { anchor: "sysuse", pattern: /\bsysuse\b/i },
-  { anchor: "use", pattern: /\buse\b/i },
-  { anchor: "import delimited", pattern: /\bimport\s+delimited\b/i },
-  { anchor: "append", pattern: /\bappend\b/i },
-  { anchor: "merge", pattern: /\bmerge\b/i },
-  { anchor: "reshape", pattern: /\breshape\b/i },
-  { anchor: "generate", pattern: /\b(?:gen|generate)\b/i },
-  { anchor: "replace", pattern: /\breplace\b/i },
-  { anchor: "egen", pattern: /\begen\b/i },
-  { anchor: "collapse", pattern: /\bcollapse\b/i },
-  { anchor: "poisson", pattern: /\bpoisson\b/i },
-  { anchor: "regress", pattern: /\b(?:reg|regress)\b/i },
-  { anchor: "estadd", pattern: /\bestadd\b/i },
-  { anchor: "reghdfe", pattern: /\breghdfe\b/i },
-  { anchor: "jwdid", pattern: /\bjwdid\b/i },
-  { anchor: "csdid", pattern: /\bcsdid\b/i },
-  { anchor: "did_imputation", pattern: /\bdid_imputation\b/i },
-  { anchor: "eventstudyinteract", pattern: /\beventstudyinteract\b/i },
-  { anchor: "estimates save", pattern: /\bestimates?\s+save\b/i },
-  { anchor: "estimates use", pattern: /\bestimates?\s+use\b/i },
-  { anchor: "estimates store", pattern: /\bestimates?\s+store\b/i },
-  { anchor: "outreg2", pattern: /\boutreg2\b/i },
-  { anchor: "collect export", pattern: /\bcollect\s+export\b/i },
-  { anchor: "putexcel", pattern: /\bputexcel\b/i },
-  { anchor: "coefplot", pattern: /\bcoefplot\b/i },
-  { anchor: "event_plot", pattern: /\bevent_plot\b/i },
-  { anchor: "csdid_plot", pattern: /\bcsdid_plot\b/i },
-  { anchor: "graph export", pattern: /\bgraph\s+export\b/i },
-  { anchor: "graph save", pattern: /\bgraph\s+save\b/i },
-];
+function normalizedCommandAnchor(value) {
+  return String(value || "").toLowerCase().trim().replace(/\s+/g, " ");
+}
+
+function commandAnchorPattern(anchor) {
+  const parts = normalizedCommandAnchor(anchor).split(" ").filter(Boolean).map((part) => part.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  return parts.length ? new RegExp(`(?<![A-Za-z0-9_])${parts.join("\\s+")}(?![A-Za-z0-9_])`, "i") : null;
+}
+
+const DYNAMIC_COMMAND_CHECKPOINTS = (() => {
+  const mapping = new Map();
+  const add = (anchor, checkpoint) => {
+    const key = normalizedCommandAnchor(anchor);
+    if (!key || !CHECKPOINTS.includes(checkpoint)) return;
+    if (!mapping.has(key)) mapping.set(key, new Set());
+    mapping.get(key).add(checkpoint);
+  };
+  for (const [anchor, checkpoints] of Object.entries(WORKFLOW_DICTIONARY.command_index || {})) {
+    for (const checkpoint of checkpoints || []) add(anchor, checkpoint);
+  }
+  for (const row of LABELED_CHECKPOINTS) for (const anchor of row.command_anchors || []) add(anchor, row.checkpoint);
+  return mapping;
+})();
+
+const AUTO_LABEL_COMMAND_CHECKPOINTS = (() => {
+  const mapping = new Map();
+  for (const row of LABELED_CHECKPOINTS) {
+    if (!rubricAutoSelectable(row) || row.decision === "drop") continue;
+    for (const anchor of row.command_anchors || []) {
+      const key = normalizedCommandAnchor(anchor);
+      if (!mapping.has(key)) mapping.set(key, new Set());
+      mapping.get(key).add(row.checkpoint);
+    }
+  }
+  return mapping;
+})();
+
+const REGISTERED_COMMAND_ANCHORS = unique((PACKAGE_COMMAND_CATALOG.families || []).flatMap((family) =>
+  (family.commands || []).flatMap((item) => {
+    const command = typeof item === "string" ? item : item.command;
+    const normalized = normalizedCommandAnchor(command);
+    return unique([normalized, normalized.replaceAll("_", " ")]);
+  })));
+const KNOWN_COMMAND_ANCHORS = unique([...DYNAMIC_COMMAND_CHECKPOINTS.keys(), ...REGISTERED_COMMAND_ANCHORS]);
+
+function isDocumentationOnlyCommandMention(request) {
+  const value = String(request || "");
+  const englishDocumentation = /\b(?:add|write|update|edit|revise)\b[^.!?\n]{0,50}\b(?:note|comment|documentation|readme|description|explanation)\b[^.!?\n]{0,140}\b(?:about|on|for)\b/i.test(value)
+    || /\b(?:mention|document|describe|explain)\b[^.!?\n]{0,140}\b(?:command|syntax)\b/i.test(value);
+  const koreanDocumentation = /(?:주석|문서|readme|설명|메모|노트)[^.!?\n]{0,120}(?:추가|작성|수정|보충|언급|설명|업데이트|검토)/i.test(value)
+    || /(?:추가|작성|수정|보충|언급|설명|업데이트|검토)[^.!?\n]{0,120}(?:주석|문서|readme|설명|메모|노트)/i.test(value);
+  const separateExecutionClause = /(?:[.!?;\n]|\b(?:and|then)\b)[^.!?;\n]{0,80}\b(?:use|run|execute|implement|create|export)\b|(?:그리고|그다음|이후)[^.!?;\n]{0,80}(?:사용|실행|구현|생성|내보)/i.test(value);
+  return (englishDocumentation || koreanDocumentation) && !separateExecutionClause;
+}
 
 function requestCommandAnchors(request) {
   const value = String(request || "");
-  return unique(REQUEST_COMMAND_HINTS.filter((row) => row.pattern.test(value)).map((row) => row.anchor));
+  if (isDocumentationOnlyCommandMention(value)) return [];
+  const statements = value.split(/[;\r\n]+/).map((item) => item.trim()).filter(Boolean);
+  const singleFirstToken = statements.length === 1
+    ? normalizeCommand(statements[0]).match(/^([A-Za-z_][A-Za-z0-9_]*)/)?.[1]?.toLowerCase()
+    : null;
+  const singleLooksLikeCode = statements.length === 1
+    && !/[.!?]\s+(?:[A-Z가-힣]|$)/.test(statements[0])
+    && !/\b(?:please|existing|unchanged|then\s+create|do\s+not\s+modify)\b/i.test(statements[0]);
+  if (singleLooksLikeCode) {
+    const normalizedStatement = normalizeCommand(statements[0]);
+    const firstToken = normalizedStatement.match(/^([A-Za-z_][A-Za-z0-9_]*)/)?.[1]?.toLowerCase();
+    if (firstToken) {
+      const leading = KNOWN_COMMAND_ANCHORS
+        .filter((anchor) => (anchor === firstToken || anchor.startsWith(`${firstToken} `))
+          && new RegExp(`^${anchor.split(" ").map((part) => part.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("\\s+")}(?:\\s|,|$)`, "i").test(normalizedStatement))
+        .sort((a, b) => b.length - a.length);
+      if (leading.length) return [leading[0]];
+    }
+  }
+  const rawMatched = KNOWN_COMMAND_ANCHORS
+    .sort((a, b) => b.length - a.length)
+    .filter((anchor) => anchor.length >= 4
+      && (singleLooksLikeCode || anchor !== singleFirstToken)
+      && value.includes(anchor)
+      && commandAnchorPattern(anchor)?.test(value));
+  const matched = rawMatched.filter((anchor) => !rawMatched.some((other) => other !== anchor
+    && (other.endsWith(` ${anchor}`) || other.startsWith(`${anchor} `))));
+  for (const statement of (statements.length > 1 || singleLooksLikeCode ? statements : [])) {
+    const normalized = normalizeCommand(statement.trim());
+    if (!looksLikeStataCommand(normalized)) continue;
+    const command = normalized.match(/^([A-Za-z_][A-Za-z0-9_]*)/)?.[1]?.toLowerCase();
+    if (command) matched.push(command);
+  }
+  return unique(matched);
+}
+
+function dynamicallyRoutedCheckpoints(request) {
+  const value = String(request || "");
+  const summaryContext = /summary|descriptive|기초통계|요약통계/.test(value);
+  const figureContext = /figure|graph|plot|그림|그래프|pdf/.test(value);
+  const exportContext = /export|excel|xlsx|workbook|내보|엑셀/.test(value);
+  const routed = [];
+  for (const anchor of requestCommandAnchors(value)) {
+    const key = normalizedCommandAnchor(anchor);
+    const autoLabelRoutes = [...(AUTO_LABEL_COMMAND_CHECKPOINTS.get(key) || [])];
+    let checkpoints = autoLabelRoutes.length
+      ? autoLabelRoutes
+      : [...(DYNAMIC_COMMAND_CHECKPOINTS.get(key) || [])];
+    if (!checkpoints.length) continue;
+    if (autoLabelRoutes.length === 1) {
+      checkpoints = autoLabelRoutes;
+    } else if (summaryContext) {
+      const contextual = checkpoints.filter((checkpoint) => checkpoint === "descriptives.summary_dataset"
+        || checkpoint === "descriptives.estpost_active_result"
+        || exportContext && checkpoint === "exports.descriptive_excel_sheet"
+        || figureContext && checkpoint === "figures.descriptive_bar");
+      if (contextual.length) checkpoints = contextual;
+      else checkpoints = [];
+    } else if (figureContext) {
+      const contextual = checkpoints.filter((checkpoint) => checkpoint.startsWith("figures."));
+      const hasNonFigureMeaning = checkpoints.some((checkpoint) => !checkpoint.startsWith("figures."));
+      checkpoints = contextual.length && !hasNonFigureMeaning ? contextual : [];
+    } else if (exportContext) {
+      const contextual = checkpoints.filter((checkpoint) => checkpoint.startsWith("exports.") || checkpoint === "final_excel_assembly");
+      checkpoints = contextual;
+    } else {
+      const estimation = checkpoints.filter((checkpoint) => checkpoint.startsWith("estimation."));
+      checkpoints = estimation;
+    }
+    for (const checkpoint of checkpoints) if (!routed.includes(checkpoint)) routed.push(checkpoint);
+  }
+  return routed;
 }
 
 function requestStateAnchors(request) {
@@ -2783,14 +3189,15 @@ function buildScaleKeywordBundle(request, inferredHeadwords, requestedSubsteps, 
   };
 }
 
-function inferImplementationFootprint(request, mode, explicitHeadwords, requestedSubsteps, inferredHeadwords) {
+function inferImplementationFootprint(request, mode, explicitHeadwords, requestedSubsteps, inferredHeadwords, intentClassification) {
   const value = String(request || "");
   const exactCommand = looksLikeSingleStataCommand(value);
   const commandSequence = looksLikeStataCommandSequence(value);
-  const explicitReadOnly = /(?:검토|감사|설명|진단)(?:만|해\s*주세요|해줘|하세요)|\b(?:audit|review|inspect|explain|diagnose)(?:\s+only)?\b/i.test(value);
-  const writeSignal = /(?:추가|수정|고쳐|고치|작성|만들|짜|구축|실행|돌려|내보|생성)|\b(?:add|fix|edit|modify|change|write|create|build|implement|run|export)\b/i.test(value);
+  const writeSignal = /(?:추가|수정|고쳐|고치|작성|만들|짜|구축|실행|돌려|내보|생성|업데이트)|\b(?:add|fix|edit|modify|change|write|create|build|implement|run|export|update)\b/i.test(value);
   const userOverride = explicitHeadwords.length > 0 || requestedSubsteps.length > 0;
-  const codeRequired = mode === "overhaul" || userOverride || exactCommand || commandSequence || (writeSignal && !explicitReadOnly);
+  const explicitReadOnly = intentClassification?.intent === "review_only";
+  const writeAuthorized = !explicitReadOnly;
+  const codeRequired = writeAuthorized && (mode === "overhaul" || userOverride || exactCommand || commandSequence || writeSignal);
   let scale = "no_write";
   if (codeRequired) {
     if (mode === "overhaul") scale = "overhaul";
@@ -2935,6 +3342,10 @@ function rankVariantForObservedState(row, observed, request, availableState) {
   if (rubricClassification(row) === "preferred_candidate") score += 20;
   if (rubricClassification(row) === "conditional_candidate") score += 10;
   if (rubricClassification(row) === "reference_only") score -= 20;
+  if (row.derivation_provenance?.independent_support === false) {
+    score -= 15;
+    reasons.push("derived canonical template is non-independent implementation evidence");
+  }
   const haystack = `${row.variant_id} ${row.research_situations.join(" ")} ${row.selection_conditions.join(" ")} ${JSON.stringify(row.state_signature || {})} ${row.code}`.toLowerCase();
   for (const term of tokenize(request || "")) if (haystack.includes(term)) score += 2;
   const stateText = JSON.stringify(availableState || {}).toLowerCase();
@@ -3076,12 +3487,44 @@ function overhaulPrewriteProposal(args, observed, mode) {
   };
 }
 
+function normalizeSummaryArtifactInterface(root, value) {
+  if (!value) return null;
+  const producer = normalizeRelativePath(value.producer, "summary_artifact_interface.producer");
+  const consumers = unique((value.consumers || []).map((item) => normalizeRelativePath(item, "summary_artifact_interface.consumers")));
+  const artifactPath = normalizeRelativePath(value.path, "summary_artifact_interface.path");
+  const requiredVariables = unique((value.required_variables || []).map((item) => String(item || "").trim()).filter(Boolean));
+  const requiredStatistics = unique((value.required_statistics || []).map((item) => String(item || "").trim()).filter(Boolean));
+  if (!producer.toLowerCase().endsWith(".do")) throw new Error("summary_artifact_interface.producer는 .do 파일이어야 합니다.");
+  if (!consumers.length || consumers.some((item) => !item.toLowerCase().endsWith(".do"))) throw new Error("summary_artifact_interface.consumers에는 하나 이상의 .do 파일이 필요합니다.");
+  if (!artifactPath.toLowerCase().endsWith(".dta")) throw new Error("summary_artifact_interface.path는 .dta 파일이어야 합니다.");
+  if (!requiredVariables.length || !requiredStatistics.length) throw new Error("summary_artifact_interface에는 required_variables와 required_statistics가 필요합니다.");
+  for (const relative of [producer, ...consumers, artifactPath]) resolveInside(root, relative, "summary_artifact_interface path");
+  return {
+    status: "declared_immutable",
+    producer,
+    consumers,
+    path: artifactPath,
+    required_variables: requiredVariables,
+    required_statistics: requiredStatistics,
+    immutable_fields: ["producer", "consumers", "path", "required_variables", "required_statistics"],
+    rule: "The producer writes exactly one named canonical summary dataset at path. Every table or figure consumer reads that same path and may use only the declared variables and complete statistic set; no consumer may recompute a parallel summary.",
+  };
+}
+
 function planDictionaryRepairs(args) {
   if (!args.path) throw new Error("프로젝트 path가 필요합니다.");
   const root = path.resolve(String(args.path));
   if (!fs.existsSync(root) || !fs.statSync(root).isDirectory()) throw new Error("path는 디렉터리여야 합니다.");
   const requestText = String(args.request || "");
+  const reportDisabledByRequest = /report\.md[^.!?\n]{0,40}(?:만들지|작성하지|수정하지|쓰지|삭제하고|삭제해|불필요|금지)|(?:do\s+not|don't|dont|never)\s+(?:create|write|modify|use)[^.!?\n]{0,30}report\.md|\bno\s+report\.md\b/i.test(requestText);
+  const reportPolicy = args.report_policy || (reportDisabledByRequest ? "disabled" : "required");
   const requestedMode = args.repair_mode || "auto";
+  const targetFiles = (args.target_files || []).map((value) => normalizeRelativePath(value, "target_files"));
+  const existingDoTarget = targetFiles.some((relative) => {
+    if (!relative.toLowerCase().endsWith(".do")) return false;
+    const resolved = resolveInside(root, relative, "target_files");
+    return fs.existsSync(resolved.target) && fs.statSync(resolved.target).isFile();
+  });
   const overhaulSignal = /(?:전면(?:적인)?\s*(?:개편|재작성|재구축)|처음부터\s*(?:다시|새로)|(?:전체|전면|완전한?)\s*오버홀|오버홀(?:을)?\s*(?:해|하|진행|요청|부탁|합시다)|full\s+rebuild|complete\s+rewrite|\boverhaul\s+(?:(?:this|the|my)\s+)?(?:project|workflow|codebase|analysis)\b)/i.test(requestText.trim());
   const negatedOverhaul = /(?:오버홀|전면(?:적인)?\s*(?:개편|재작성|재구축)|처음부터\s*(?:다시|새로)|full\s+rebuild|complete\s+rewrite)[^.!?\n]{0,24}(?:말고|하지\s*말|아니|불필요|제외)/i.test(requestText);
   const inferredOverhaul = overhaulSignal && !negatedOverhaul;
@@ -3094,25 +3537,31 @@ function planDictionaryRepairs(args) {
   if ((requestedMode === "overhaul" || args.intent_mode === "overhaul") && mode !== "overhaul") {
     scopeWarnings.push("caller arguments requested overhaul, but the natural-language request and evidence do not authorize it; partial repair was retained");
   }
-  const requestContext = requestInferenceContext(args.request);
-  const inferredIntent = mode === "overhaul"
-    ? "overhaul"
-    : /수정|고쳐|고치|fix|edit|modify|refactor|change/i.test(requestContext.actionable)
-      ? "modify_existing"
-      : "add_feature";
-  const requestedIntent = args.intent_mode && args.intent_mode !== "auto" ? args.intent_mode : inferredIntent;
-  const intent = requestedIntent === "overhaul" && mode !== "overhaul" ? inferredIntent : requestedIntent;
-  const observed = scanProjectForDictionary(root);
-  const overhaulProposal = overhaulPrewriteProposal(args, observed, mode);
+  const intentClassification = classifyRequestIntent(
+    args.request,
+    args.intent_mode === "overhaul" && mode !== "overhaul" ? "auto" : (args.intent_mode || "auto"),
+    mode,
+    { existing_do_target: existingDoTarget },
+  );
+  const requestContext = intentClassification.context;
+  const intent = intentClassification.intent;
+  const planningMode = intent === "review_only" ? "partial" : mode;
+  if (intent === "review_only" && mode === "overhaul") scopeWarnings.push("review-only/no-change intent overrides overhaul signals and retains a no-write partial inspection");
+  const sourceReusePlan = buildSourceReusePlan(root, args.request, args.source_reuse);
+  const summaryArtifactInterface = normalizeSummaryArtifactInterface(root, args.summary_artifact_interface);
+  const observed = scanProjectForDictionary(root, args.scope || {});
+  const overhaulProposal = overhaulPrewriteProposal(args, observed, planningMode);
   const outputFlowProfile = buildOutputFlowProfile(observed, args.available_state || {});
   const eventStudyAxisProfile = analyzeEventStudyAxisProfile(args.available_state?.event_study_axis_profile || {});
   const completedHeadwords = inferCompletedHeadwords(observed);
   const requestedSubsteps = Array.isArray(args.requested_substeps) ? args.requested_substeps : [];
   const explicitHeadwords = unique([...(args.requested_checkpoints || []), ...requestedSubsteps.map((row) => row.checkpoint).filter(Boolean)]);
-  let headwords = inferDictionaryHeadwords(args.request, explicitHeadwords, mode);
+  let headwords = inferDictionaryHeadwords(args.request, explicitHeadwords, planningMode);
+  if (summaryArtifactInterface) headwords = headwords.filter((checkpoint) => checkpoint !== "descriptives.estpost_active_result");
+  const exactCommandAnchors = requestCommandAnchors(args.request);
   const explicitSet = new Set(explicitHeadwords);
-  const actionableSet = new Set(inferDictionaryHeadwords(requestContext.actionable, [], mode));
-  const preservedSet = new Set(inferDictionaryHeadwords(requestContext.preserved, [], mode));
+  const actionableSet = new Set(inferDictionaryHeadwords(requestContext.actionable, [], planningMode));
+  const preservedSet = new Set(inferDictionaryHeadwords(requestContext.preserved, [], planningMode));
   const estimateConsumerRequested = explicitlyRequestsEstimateConsumer(requestContext.actionable || requestContext.full);
   headwords = headwords.filter((item) => explicitSet.has(item)
     || item === "postest.persist_estimate" && estimateConsumerRequested
@@ -3133,12 +3582,13 @@ function planDictionaryRepairs(args) {
     const contextualUpstream = new Set(["clean.id_normalize", "clean.derive_variables", "treatment.arm_mapping", "outlier.winsorize", "scale.standardize_esample", "sample.trade_share_threshold", "sample.arm_response_eligibility", "panel.treatment_cohort", "panel.turnover_event_time", "estimation.conventional", "estimation.staggered_did"]);
     headwords = headwords.filter((item) => !contextualUpstream.has(item) || explicitlyRequested.has(item));
   }
-  const retrievalPlan = inferImplementationFootprint(args.request, mode, explicitHeadwords, requestedSubsteps, headwords);
+  const retrievalPlan = inferImplementationFootprint(args.request, planningMode, explicitHeadwords, requestedSubsteps, headwords, intentClassification);
   if (!retrievalPlan.code_required) headwords = [];
   const dictionaryUnmapped = retrievalPlan.code_required && !headwords.length;
 
   const interventions = headwords.map((checkpoint) => {
     const checkpointLabels = LABELED_CHECKPOINTS.filter((row) => row.checkpoint === checkpoint);
+    const checkpointCommandAnchors = exactCommandAnchors.filter((anchor) => DYNAMIC_COMMAND_CHECKPOINTS.get(normalizedCommandAnchor(anchor))?.has(checkpoint));
     const finalExcelFlow = checkpoint === "final_excel_assembly"
       ? buildOutputFlowProfile(observed, args.available_state || {})
       : null;
@@ -3155,7 +3605,8 @@ function planDictionaryRepairs(args) {
     const eventCardinality = eventOutcomeCardinalityFromText(args.request || "");
     const autoSelectableCandidates = evaluatedCandidates.filter((item) => rubricAutoSelectable(item.row)
       && eventStudyAxisPatternCompatible(item.row, axisDecision, eventCardinality)
-      && (checkpoint !== "final_excel_assembly" || item.row.label_id === "export.regression_excel.from_ster_default_style.v1"));
+      && (checkpoint !== "final_excel_assembly" || item.row.label_id === "export.regression_excel.from_ster_default_style.v1")
+      && (!checkpointCommandAnchors.length || (item.row.command_anchors || []).some((anchor) => checkpointCommandAnchors.includes(normalizedCommandAnchor(anchor)))));
     const compatibleBeforeSpecificity = autoSelectableCandidates.filter((item) => item.compatibility.compatible);
     const specificityGate = gateByExplicitMethodContract(
       compatibleBeforeSpecificity.map((item) => item.row),
@@ -3257,6 +3708,7 @@ function planDictionaryRepairs(args) {
         axisPatternSelection: eventStudyAxisPatternSelection(axisDecision, eventCardinality),
         requestedFlow: finalExcelFlow,
         writableCandidateCount: candidates.length,
+        reportPolicy,
       }),
       evidence_progress: {
         labeled_checked: true,
@@ -3280,6 +3732,11 @@ function planDictionaryRepairs(args) {
           failures: item.compatibility.failures,
         })),
         specificity_gate: publicSpecificityGate(specificityGate),
+        command_anchor_gate: {
+          active: checkpointCommandAnchors.length > 0,
+          requested_anchors: checkpointCommandAnchors,
+          rule: "When the request names an exact dictionary/package command, candidates without that command anchor are excluded before ranking.",
+        },
         method_mismatch_labeled_variants: specificityExcludedCandidates.map((item) => ({
           label_id: item.row.label_id,
           variant_id: item.row.variant_id,
@@ -3346,7 +3803,6 @@ function planDictionaryRepairs(args) {
     const position = HEADWORD_SEQUENCE.indexOf(item);
     return intent === "add_feature" ? position >= 0 && position < firstRequestedPosition : !headwords.includes(item);
   });
-  const targetFiles = (args.target_files || []).map((value) => normalizeRelativePath(value, "target_files"));
   const mutableExistingFiles = intent === "modify_existing" ? targetFiles : [];
   const callSites = observed.interface_fingerprint.call_sites;
   const producerCandidates = unique([
@@ -3357,14 +3813,15 @@ function planDictionaryRepairs(args) {
 
   return {
     root,
-    mode,
+    mode: planningMode,
     intent,
+    write_authorization: intentClassification.write_authorization,
     scope_decision: {
       requested_repair_mode: requestedMode,
       requested_intent_mode: args.intent_mode || "auto",
       explicit_overhaul_in_request: inferredOverhaul,
       evidenced_workflow_incompatibility: evidencedIncompatibility,
-      accepted_mode: mode,
+      accepted_mode: planningMode,
       warnings: scopeWarnings,
     },
     request: args.request,
@@ -3372,9 +3829,11 @@ function planDictionaryRepairs(args) {
     dictionary_unmapped_request: dictionaryUnmapped,
     dictionary_unmapped_policy: dictionaryUnmapped
       ? {
-        direct_implementation_allowed: true,
+        direct_implementation_allowed: !sourceReusePlan,
         user_decision_required: false,
-        rule: "No dictionary headword maps this code request. Use general-rule fallback, inject the rank-relative nearest inspected candidate if one exists only as a nonbinding hint, implement the declared transition with the shortest readable Stata statements, then lint and verify it. Ranking does not establish compatibility. Ask the user only if a substantive research choice remains unresolved.",
+        rule: sourceReusePlan
+          ? "The request is governed by source_reuse_plan. Clone the canonical source and apply only declared edits; dictionary fallback and fresh synthesis are disabled."
+          : "No dictionary headword maps this code request. Use general-rule fallback, inject the rank-relative nearest inspected candidate if one exists only as a nonbinding hint, implement the declared transition with the shortest readable Stata statements, then lint and verify it. Ranking does not establish compatibility. Ask the user only if a substantive research choice remains unresolved.",
       }
       : null,
     retrieval_plan: { ...retrievalPlan, selected_headwords: headwords, headword_budget: headwords.length },
@@ -3389,6 +3848,7 @@ function planDictionaryRepairs(args) {
       output_flow_evidence: observed.output_flow_evidence,
       output_flow_profile: outputFlowProfile,
       event_study_axis_profile: eventStudyAxisProfile,
+      scan_scope: observed.scan_scope,
     },
     completion_map: {
       completed_headwords: completedHeadwords,
@@ -3400,9 +3860,11 @@ function planDictionaryRepairs(args) {
     },
     preserved_scope: preservedStages,
     interventions,
+    source_reuse_plan: sourceReusePlan,
     overhaul_prewrite_proposal: overhaulProposal,
     required_interface_changes: missingState,
     compatibility_contract: {
+      summary_artifact_interface: summaryArtifactInterface,
       immutable_interfaces: {
         existing_input_bindings: observed.interface_fingerprint.input_bindings,
         existing_output_bindings: observed.interface_fingerprint.output_bindings,
@@ -3457,14 +3919,17 @@ function planDictionaryRepairs(args) {
       event_study_axis_rule: "Axis grouping is independent of sheet grouping. Use a fixed common range only for declared close, directly comparable outcomes in the same specification and sample comparison; otherwise keep automatic axes.",
     },
     work_report_contract: {
-      required_after_code_write: true,
+      report_policy: reportPolicy,
+      required_after_code_write: reportPolicy === "required",
       path: "report.md",
       table_header: "| mode | target | lines | checkpoint | label_id | reason |",
       modes: ["template", "general_rule_fallback"],
-      rule: "After creating or revising Stata code, record each selected template and each general-rule fallback as a separate row with the actual project-relative .do path and one-based inclusive line range. Use - as the fallback label_id and record nearest_template_hint=<label_id|none>; fallback_trigger=<no_suitable_template|wrong_selection>; hint_used=<borrowed idea|none>. Keep provenance out of the .do source.",
+      rule: reportPolicy === "disabled"
+        ? "The user explicitly disabled report.md. Do not create or modify it; retain template and fallback evidence in the session only."
+        : "After creating or revising Stata code, record each selected template and each general-rule fallback as a separate row with the actual project-relative .do path and one-based inclusive line range. Use - as the fallback label_id and record nearest_template_hint=<label_id|none>; fallback_trigger=<no_suitable_template|wrong_selection>; hint_used=<borrowed idea|none>. Keep provenance out of the .do source.",
     },
     user_summary: {
-      decision: mode,
+      decision: intent === "review_only" ? "review_only" : planningMode,
       requested_changes: headwords.slice(0, 8),
       preserved_stage_count: preservedStages.length,
       confirmations_required: [
@@ -3479,11 +3944,11 @@ function planDictionaryRepairs(args) {
     },
     scope_rule: !retrievalPlan.code_required
       ? "Read-only request: preserve every stage and do not create a code intervention."
-      : mode === "partial"
+      : planningMode === "partial"
         ? "Preserve every nonrequested stage. Change only chosen dictionary blocks and directly required interface transitions. Never convert a partial repair into an overhaul automatically."
         : "Overhaul may replace multiple dictionary blocks, but each replacement still requires an explicit headword, compatible state contract, and minimal-edit variant selection.",
     write_rule: retrievalPlan.code_required
-      ? mode === "overhaul"
+      ? planningMode === "overhaul"
         ? "This is a read-only overhaul plan. Show overhaul_prewrite_proposal.tree_markdown and its planned_variables table to the user, record whether README.md is created or amended, and wait for explicit approval before writing. A material plan change requires a revised preview and renewed approval."
         : "This is a read-only intervention plan. Before writing, bind each intervention to exact existing files or proposed new files and apply the project's approval rule."
       : "No code write is authorized or needed by this plan.",
@@ -3563,7 +4028,7 @@ function workflowBlueprint(args) {
       verdicts: ["verified only after the requested static, log, README, and output checks pass", "needs_revision with explicit blockers otherwise"],
     },
     observed_structure_references: structures,
-    next_actions: ["현재 폴더와 파일 구조를 읽기 전용으로 조사", "생성할 폴더, 생성 및 수정할 파일, 이동, 이름변경, 삭제, 덮어쓰기 대상을 정확히 제시", "사용자의 명시적 승인을 기다림", "승인 후 각 단계에 대해 search_labeled_checkpoints 호출", "승인된 범위에서 연구 workflow 생성 또는 수정", "작성한 각 do-file을 lint_do_file로 검사", "root report.md에 template과 fallback의 실제 line range를 기록", "프로젝트 전체를 audit_stata_project(require_report=true)로 검사", "요청 시 entrypoint clean run", "research_output_check에 계약된 산출물 이름과 정확한 개수를 전달해 직접 hash 증거와 함께 검증"],
+    next_actions: ["현재 폴더와 파일 구조를 읽기 전용으로 조사", "생성할 폴더, 생성 및 수정할 파일, 이동, 이름변경, 삭제, 덮어쓰기 대상을 정확히 제시", "사용자의 명시적 승인을 기다림", "승인 후 각 단계에 대해 search_labeled_checkpoints 호출", "승인된 범위에서 연구 workflow 생성 또는 수정", "작성한 각 do-file을 lint_do_file로 검사", "report_policy가 required일 때만 root report.md에 template과 fallback의 실제 line range를 기록", "선택한 report_policy와 scope 계약으로 프로젝트 전체를 audit_stata_project에서 검사", "요청 시 entrypoint clean run", "research_output_check에 계약된 산출물 이름과 정확한 개수를 전달해 직접 hash 증거와 함께 검증"],
     claim_boundary: "이 계획은 연구자가 읽고 실행할 Stata workflow를 정리한다. 배포, dependency 관리, 제출 패키지 또는 저널 인증을 판정하지 않는다.",
   };
 }
@@ -3588,6 +4053,7 @@ const WORK_REPORT_MODES = new Set(["template", "general_rule_fallback"]);
 
 function validateWorkReport(root, options = {}) {
   const required = options.required === true;
+  const authoredSpans = Array.isArray(options.authored_spans) ? options.authored_spans : [];
   const reportPath = path.join(root, "report.md");
   const formatContract = {
     path: "report.md",
@@ -3603,6 +4069,7 @@ function validateWorkReport(root, options = {}) {
       path: "report.md",
       entries: [],
       errors: required ? ["report.md is required after a workflow creates or revises Stata code"] : [],
+      coverage: { status: "not_checked", authored_spans: authoredSpans, reportable: [], covered: [], uncovered: [] },
       format_contract: formatContract,
     };
   }
@@ -3711,6 +4178,53 @@ function validateWorkReport(root, options = {}) {
       }
     }
   }
+  const reportable = [];
+  const covered = [];
+  const uncovered = [];
+  const reportablePattern = /^(?:merge|append|reshape|collapse|keep\b.*\bif\b|drop\b.*\bif\b|gen(?:erate)?|replace|recode|egen|xtset|tsset|reg|regress|areg|xtreg|reghdfe|ivreg2|ivreghdfe|rdrobust|csdid|did_imputation|eventstudyinteract|estimates?\s+(?:save|use|store|restore)|outreg2|putexcel|collect\s+export|export\s+excel|graph\s+(?:export|save|bar)|twoway|coefplot|marginsplot|save\b.*\.dta)/i;
+  for (const declared of authoredSpans) {
+    let resolved;
+    const rangeMatch = String(declared?.lines || "").match(/^(\d+)-(\d+)$/);
+    try {
+      resolved = resolveInside(root, declared?.target, "authored_spans target");
+    } catch (error) {
+      errors.push(error.message);
+      continue;
+    }
+    if (!rangeMatch || !/\.do$/i.test(resolved.relative) || !fs.existsSync(resolved.target)) {
+      errors.push(`authored_spans ${declared?.target || "<missing>"}: target and one-based start-end lines are required`);
+      continue;
+    }
+    const start = Number(rangeMatch[1]);
+    const end = Number(rangeMatch[2]);
+    const targetLines = fs.readFileSync(resolved.target, "utf8").split(/\r?\n/);
+    if (start < 1 || end < start || end > targetLines.length) {
+      errors.push(`authored_spans ${resolved.relative}: invalid range ${declared.lines}`);
+      continue;
+    }
+    for (const entry of activeLogicalEntries(targetLines.slice(start - 1, end).join("\n"))) {
+      const line = start + entry.line - 1;
+      const command = normalizeCommand(entry.text.trim());
+      if (!reportablePattern.test(command) || isSafeBindingStatement(command)) continue;
+      const candidate = { target: resolved.relative, line, command };
+      reportable.push(candidate);
+      const row = entries.find((item) => item.target === resolved.relative
+        && Array.isArray(item.target_span)
+        && item.target_span[0] <= line
+        && item.target_span[1] >= line);
+      if (row) covered.push({ ...candidate, report_line: row.report_line });
+      else uncovered.push(candidate);
+    }
+  }
+  for (const item of uncovered) errors.push(`report.md does not cover authored substantive transition ${item.target}:${item.line}`);
+  const coverage = {
+    status: !authoredSpans.length ? "not_declared" : uncovered.length ? "incomplete" : "complete",
+    authored_spans: authoredSpans,
+    reportable,
+    covered,
+    uncovered,
+    boundary: "Only caller-declared authored spans and statically certain substantive transitions are checked; untouched legacy code and harmless primitives are not assigned provenance.",
+  };
   return {
     required,
     status: errors.length ? "invalid" : "valid",
@@ -3718,23 +4232,49 @@ function validateWorkReport(root, options = {}) {
     sha256: sha256File(reportPath),
     entries,
     errors,
+    coverage,
     format_contract: formatContract,
   };
 }
 
-function listProjectFiles(root) {
+function listProjectFiles(root, options = {}) {
   const results = [];
+  const seenFiles = new Set();
+  const seenDirectories = new Set();
   const ignored = new Set([".git", "node_modules"]);
+  const includePaths = options.includePaths || [];
+  const excludePaths = options.excludePaths || [];
+  const excluded = (relative) => excludePaths.some((value) => relative === value || relative.startsWith(`${value}/`));
+  const addFile = (full) => {
+    const relative = path.relative(root, full).replaceAll("\\", "/");
+    if (excluded(relative) || seenFiles.has(relative)) return;
+    seenFiles.add(relative);
+    results.push(relative);
+    if (results.length > 50000) throw new Error("프로젝트 파일이 50,000개를 넘어 제출준비 검사 범위를 초과했습니다. scope.include_paths 또는 scope.exclude_paths로 범위를 줄이세요.");
+  };
   function walk(dir) {
+    const resolved = path.resolve(dir);
+    if (seenDirectories.has(resolved)) return;
+    seenDirectories.add(resolved);
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       if (entry.isDirectory() && ignored.has(entry.name.toLowerCase())) continue;
       const full = path.join(dir, entry.name);
+      const relative = path.relative(root, full).replaceAll("\\", "/");
+      if (excluded(relative)) continue;
       if (entry.isDirectory()) walk(full);
-      else if (entry.isFile()) results.push(path.relative(root, full).replaceAll("\\", "/"));
-      if (results.length > 50000) throw new Error("프로젝트 파일이 50,000개를 넘어 제출준비 검사 범위를 초과했습니다.");
+      else if (entry.isFile()) addFile(full);
     }
   }
-  walk(root);
+  const starts = includePaths.length
+    ? includePaths.map((value) => resolveInside(root, value, "scope.include_paths").target)
+    : [root];
+  for (const start of starts) {
+    if (!fs.existsSync(start)) throw new Error(`scope.include_paths 대상을 찾을 수 없습니다: ${path.relative(root, start).replaceAll("\\", "/")}`);
+    const relative = path.relative(root, start).replaceAll("\\", "/");
+    if (excluded(relative)) throw new Error(`scope.include_paths 대상이 exclude_paths에 포함됩니다: ${relative}`);
+    if (fs.statSync(start).isDirectory()) walk(start);
+    else if (fs.statSync(start).isFile()) addFile(start);
+  }
   return results.sort();
 }
 
@@ -3764,7 +4304,8 @@ function researchOutputCheck(args) {
   if (!fs.statSync(root).isDirectory()) throw new Error("path는 디렉터리여야 합니다.");
   const expectedStages = args.expected_stages?.length ? unique(args.expected_stages) : STAGES;
   const strictStructure = args.strict_structure === true;
-  const audit = auditProject({ path: root, expected_stages: expectedStages, strict_structure: strictStructure, require_report: true });
+  const reportPolicy = args.report_policy || "required";
+  const audit = auditProject({ path: root, expected_stages: expectedStages, strict_structure: strictStructure, report_policy: reportPolicy, authored_spans: args.authored_spans, scope: args.scope, estimability_readback: args.estimability_readback });
   const checks = [];
   const blockers = [];
   const evidence = [];
@@ -3773,13 +4314,25 @@ function researchOutputCheck(args) {
     if (!pass) blockers.push({ check: name, message: blocker });
   };
 
-  addCheck("static_project_audit", audit.status === "static_clean", `audit_stata_project status: ${audit.status}`, "정적 lint와 workflow 오류를 먼저 해결하세요.");
+  const staticBlocked = audit.static_status === "blocked" || audit.status === "blocked";
+  checks.push({
+    name: "static_project_audit",
+    status: staticBlocked ? "fail" : audit.static_status === "needs_review" ? "review" : "pass",
+    detail: `audit_stata_project static_status: ${audit.static_status || audit.status}`,
+  });
+  if (staticBlocked) blockers.push({ check: "static_project_audit", message: "정적 lint와 workflow의 blocking 오류를 먼저 해결하세요." });
   addCheck("entrypoint", Boolean(audit.summary.top_master), audit.summary.top_master || "entrypoint 없음", "연구 workflow의 실행 entrypoint가 필요합니다.");
   addCheck(
     "work_report",
-    audit.work_report?.status === "valid",
-    audit.work_report?.status === "valid" ? `${audit.work_report.path}: ${audit.work_report.entries.length} implementation rows` : (audit.work_report?.errors || ["report.md validation failed"]).join("; "),
-    "작성·수정한 workflow의 root report.md에 template과 general_rule_fallback 구간을 실제 .do 파일의 1-based line range로 기록하세요. 둘 다 없으면 그 사실을 명시하세요.",
+    reportPolicy === "disabled" || audit.work_report?.status === "valid" || (reportPolicy === "optional" && audit.work_report?.status === "not_present"),
+    reportPolicy === "disabled"
+      ? "report disabled by explicit contract"
+      : audit.work_report?.status === "valid"
+        ? `${audit.work_report.path}: ${audit.work_report.entries.length} implementation rows`
+        : reportPolicy === "optional" && audit.work_report?.status === "not_present"
+          ? "optional report not present"
+          : (audit.work_report?.errors || ["report.md validation failed"]).join("; "),
+    "report_policy가 required이면 작성·수정한 workflow의 root report.md에 template과 general_rule_fallback 구간을 기록하세요. 사용자가 명시적으로 금지했다면 disabled를 사용하세요.",
   );
 
   const plannedVariables = normalizePlannedVariables(args.planned_variables || []);
@@ -3876,27 +4429,37 @@ function researchOutputCheck(args) {
     root,
     status: blockers.length ? "needs_revision" : "verified",
     verification_level: "research_workflow_output_check",
+    runtime_status: blockers.some((row) => row.check === "main_log" || row.check === "main_log_no_stata_error" || row.check === "completion_marker" || row.check === "deliverable_contract" || row.check.startsWith("deliverable_"))
+      ? "failed"
+      : args.main_log ? "verified" : "not_checked",
+    static_status: audit.static_status,
+    substantive_validity: audit.substantive_validity,
     checks,
     blockers,
     evidence,
     static_audit: audit,
-    claim_boundary: "This verifies the approved researcher-facing structure, variable documentation, static workflow, log, and exact local outputs. It is not deployment, dependency, submission, or journal certification.",
+    claim_boundary: "Runtime outputs, static audit, and substantive validity are reported separately. Local artifact and log verification is not deployment, dependency, submission, journal certification, or proof of substantive validity.",
   };
 }
-function listDoFiles(root) {
+function listDoFiles(root, options = {}) {
   const files = [];
   const excludedDirectories = [];
   const ignored = new Set([".git", "node_modules", "vendor", "ado", "_packages", "raw"]);
+  const excludedPaths = (options.excludePaths || []).map((value) => String(value).replaceAll("\\", "/").replace(/^\.\//, "").replace(/\/$/, ""));
+  const isExcluded = (full) => {
+    const relative = path.relative(root, full).replaceAll("\\", "/");
+    return excludedPaths.some((value) => relative === value || relative.startsWith(`${value}/`));
+  };
   function walk(dir) {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-      if (entry.isDirectory() && ignored.has(entry.name.toLowerCase())) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory() && (ignored.has(entry.name.toLowerCase()) || isExcluded(full))) {
         excludedDirectories.push(path.relative(root, path.join(dir, entry.name)).replaceAll("\\", "/"));
         continue;
       }
-      const full = path.join(dir, entry.name);
       if (entry.isDirectory()) walk(full);
-      else if (entry.isFile() && path.extname(entry.name).toLowerCase() === ".do") files.push(full);
-      if (files.length > 1000) throw new Error("do-file이 1000개를 넘어 audit 범위를 초과했습니다.");
+      else if (entry.isFile() && path.extname(entry.name).toLowerCase() === ".do" && !isExcluded(full)) files.push(full);
+      if (files.length > 10000) throw new Error("do-file discovery가 10000개를 넘어 audit 범위를 초과했습니다. scope entrypoint 또는 별도 project root로 범위를 줄이세요.");
     }
   }
   walk(root);
@@ -3911,9 +4474,15 @@ function detectExternalOrchestrators(root, records) {
     values.findIndex((other) => other.toLowerCase() === file.toLowerCase()) === index);
   const byExact = new Map(records.map((record) => [record.path.toLowerCase(), record]));
   const byBase = new Map();
+  const bySuffix = new Map();
   for (const record of records) {
     const base = path.posix.basename(record.path).toLowerCase();
     byBase.set(base, [...(byBase.get(base) || []), record]);
+    const segments = record.path.toLowerCase().split("/");
+    for (let index = 0; index < segments.length; index += 1) {
+      const suffix = segments.slice(index).join("/");
+      bySuffix.set(suffix, [...(bySuffix.get(suffix) || []), record]);
+    }
   }
   const orchestrators = [];
   for (const file of candidates) {
@@ -3927,7 +4496,7 @@ function detectExternalOrchestrators(root, records) {
         const target = match[1] || match[2] || match[3];
         let normalized = target.replaceAll("\\", "/").replace(/^\.\//, "");
         const exact = byExact.get(normalized.toLowerCase());
-        const suffix = records.filter((candidate) => candidate.path.toLowerCase().endsWith(`/${normalized.toLowerCase()}`));
+        const suffix = bySuffix.get(normalized.toLowerCase()) || [];
         const baseMatches = byBase.get(path.posix.basename(normalized).toLowerCase()) || [];
         const resolvedMatches = exact ? [exact] : suffix.length ? suffix : baseMatches;
         const resolved = resolvedMatches.length === 1 ? resolvedMatches[0].path : null;
@@ -4011,72 +4580,97 @@ function scopedGlobalFindings(records) {
   });
 }
 
+function conceptualFactorTerm(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/(^|#)(-?\d+)(?:bn|b|o)\./g, "$1$2.")
+    .replace(/\s+/g, "");
+}
+
+function omittedFactorTerm(value) {
+  return /(?:^|#)-?\d+o\./i.test(String(value || ""));
+}
+
+function assessEstimabilityReadback(readback, staticFindings = []) {
+  const models = Array.isArray(readback?.models) ? readback.models : [];
+  const staticRisk = staticFindings.some((row) => row.rule === "estimability_runtime_required");
+  if (!models.length) {
+    return {
+      runtime_estimability: { status: staticRisk ? "required" : "not_provided", models: [], boundary: "Static analysis cannot establish coefficient survival in e(b)." },
+      substantive_validity: { status: staticRisk ? "not_determined" : "not_assessed", issues: [], boundary: "Runtime success and static cleanliness do not establish substantive validity." },
+    };
+  }
+  const modelResults = models.map((model) => {
+    const observed = (model.observed_eb_terms || []).map(String);
+    const declaredTerms = (model.declared_nonreference_terms || []).map(String).filter(Boolean);
+    const terms = declaredTerms.map((declared) => {
+      const exact = observed.find((item) => item === declared);
+      const conceptual = observed.find((item) => conceptualFactorTerm(item) === conceptualFactorTerm(declared));
+      const matched = exact || conceptual || null;
+      return {
+        declared,
+        observed: matched,
+        status: !matched ? "missing" : omittedFactorTerm(matched) ? "omitted" : "estimated",
+        exact_raw_match: Boolean(exact),
+      };
+    });
+    return {
+      model_id: String(model.model_id || "unnamed_model"),
+      declaration_status: declaredTerms.length ? "declared" : "missing_nonreference_contract",
+      terms,
+      declared_reference_terms: (model.declared_reference_terms || []).map(String),
+      observed_eb_terms: observed,
+    };
+  });
+  const issues = modelResults.flatMap((model) => [
+    ...(model.declaration_status === "missing_nonreference_contract"
+      ? [{ model_id: model.model_id, status: "undeclared", message: "declared_nonreference_terms must contain at least one expected nonreference coefficient" }]
+      : []),
+    ...model.terms
+      .filter((term) => term.status !== "estimated")
+      .map((term) => ({ model_id: model.model_id, ...term })),
+  ]);
+  const missing = issues.some((row) => row.status === "missing" || row.status === "undeclared");
+  return {
+    runtime_estimability: {
+      status: missing ? "incomplete" : "complete",
+      models: modelResults,
+      boundary: "This consumes caller-supplied exact e(b) colfullnames; it does not claim that Stata execution or model interpretation passed unless separately evidenced.",
+    },
+    substantive_validity: {
+      status: issues.length ? "needs_review" : "supported_by_readback",
+      issues,
+      boundary: "Unexpected omitted or missing nonreference terms change interpretation even when the Stata run exits successfully.",
+    },
+  };
+}
+
 function auditProject(args) {
   if (!args.path) throw new Error("프로젝트 path가 필요합니다.");
   const root = path.resolve(String(args.path));
   if (!fs.statSync(root).isDirectory()) throw new Error("path는 디렉터리여야 합니다.");
   const strictStructure = args.strict_structure === true;
-  const requireReport = args.require_report === true;
+  const reportPolicy = args.report_policy || (args.require_report === true ? "required" : "optional");
+  const requireReport = reportPolicy === "required";
+  const scopeInput = args.scope && typeof args.scope === "object" ? args.scope : {};
+  const scopeMode = scopeInput.mode || "reachable";
+  const requestedEntrypoints = (scopeInput.entrypoints || []).map((value) => normalizeRelativePath(value, "scope.entrypoints"));
+  const includePaths = (scopeInput.include_paths || []).map((value) => normalizeRelativePath(value, "scope.include_paths").replace(/\/$/, ""));
+  const excludePaths = (scopeInput.exclude_paths || []).map((value) => normalizeRelativePath(value, "scope.exclude_paths").replace(/\/$/, ""));
+  const pathMatches = (candidate, values) => values.some((value) => candidate === value || candidate.startsWith(`${value}/`));
   const requestedStages = args.expected_stages?.length ? unique(args.expected_stages) : STAGES;
   if (requestedStages.some((stage) => !STAGES.includes(stage))) throw new Error("expected_stages에 알 수 없는 단계가 있습니다.");
-  const discovered = listDoFiles(root);
+  const discovered = listDoFiles(root, { excludePaths });
   const files = discovered.files;
   const records = files.map((file) => {
     const content = fs.readFileSync(file, "utf8");
-    const lint = lintContent(content, "auto", file);
     const calls = stripComments(content).flatMap((row) => {
       const match = row.trimmed.match(/^(?:do|run|include)\s+(?:"([^"]+)"|([^\s,]+))/i);
       return match ? [{ line: row.line, target: match[1] || match[2] }] : [];
     });
-    return { path: path.relative(root, file).replaceAll("\\", "/"), absolute_path: file, content, stages: detectStagesFromContent(file, content), calls, lint };
+    return { path: path.relative(root, file).replaceAll("\\", "/"), absolute_path: file, content, stages: detectStagesFromContent(file, content), calls, lint: null };
   });
-  const projectContents = new Map(records.map((record) => [record.absolute_path, record.content]));
-  const projectGlobals = collectProjectGlobalEnvironment(projectContents, root);
-  const outreg2HelperMultiplicity = canonicalOutreg2HelperMultiplicity(projectContents, projectGlobals);
-  for (const record of records) {
-    const formatterLine = activeLogicalEntries(record.content)
-      .find((entry) => /^program\s+define\s+outreg2_xlsx\b/i.test(normalizeCommand(entry.text.trim())))?.line;
-    if (!formatterLine) continue;
-    record.lint.strengths = record.lint.strengths.filter((row) => row.rule !== "outreg2_sheet_program_project_context_pending");
-    if (outreg2HelperMultiplicity.necessary) {
-      record.lint.findings = record.lint.findings.filter((row) => row.rule !== "unnecessary_outreg2_program");
-      if (!record.lint.strengths.some((row) => row.rule === "necessary_outreg2_sheet_program_project_context")) record.lint.strengths.push({
-        rule: "necessary_outreg2_sheet_program_project_context",
-        line: formatterLine,
-        multiplicity: outreg2HelperMultiplicity,
-      });
-      record.lint.summary.approved_program_exceptions = Math.max(1, record.lint.summary.approved_program_exceptions);
-    } else if (outreg2HelperMultiplicity.unresolved_placement) {
-      record.lint.findings = record.lint.findings.filter((row) => row.rule !== "unnecessary_outreg2_program");
-      record.lint.strengths.push({
-        rule: "outreg2_sheet_program_project_context_pending",
-        line: formatterLine,
-        multiplicity: outreg2HelperMultiplicity,
-      });
-      record.lint.summary.approved_program_exceptions = 0;
-    } else if (!record.lint.findings.some((row) => row.rule === "unnecessary_outreg2_program")) {
-      record.lint.findings.push(finding(
-        "error",
-        "unnecessary_outreg2_program",
-        formatterLine,
-        "canonical outreg2_xlsx는 project-wide 확인에서 같은 workbook의 두 개 이상 resolved sheet() 배치를 충족하지 않습니다.",
-        "한 sheet workbook은 직접 outreg2 replace/append를 사용하고, 여러 sheet가 필요하면 literal 또는 project global binding으로 workbook과 sheet 배치를 확인 가능하게 하세요.",
-      ));
-      record.lint.summary.approved_program_exceptions = 0;
-    }
-      const errors = record.lint.findings.filter((row) => row.severity === "error").length;
-      const warnings = record.lint.findings.filter((row) => row.severity === "warning").length;
-      record.lint.summary.errors = errors;
-      record.lint.summary.warnings = warnings;
-      record.lint.summary.strengths = record.lint.strengths.length;
-      record.lint.status = errors ? "blocked" : warnings ? "needs_review" : "static_clean";
-      record.lint.replication_status = record.lint.findings.some((row) => row.basis !== "researcher_style_reference" && row.severity === "error")
-        ? "blocked"
-        : record.lint.findings.some((row) => row.basis !== "researcher_style_reference" && row.severity === "warning") ? "needs_review" : "static_clean";
-  }
-  let allFindings = records.flatMap((record) => record.lint.findings.map((row) => ({ file: record.path, ...row })));
   const structural = [];
-  structural.push(...scopedGlobalFindings(records));
   const masters = records.filter((record) => {
     const named = /master|runall|run_all|run-all/i.test(path.basename(record.path));
     const rootDispatcher = !record.path.includes("/") && record.calls.length >= 2;
@@ -4085,12 +4679,17 @@ function auditProject(args) {
 
   const byExact = new Map(records.map((record) => [record.path.toLowerCase(), record]));
   const byBase = new Map();
+  const bySuffix = new Map();
   for (const record of records) {
     const base = path.posix.basename(record.path).toLowerCase();
     byBase.set(base, [...(byBase.get(base) || []), record]);
+    const segments = record.path.toLowerCase().split("/");
+    for (let index = 0; index < segments.length; index += 1) {
+      const suffix = segments.slice(index).join("/");
+      bySuffix.set(suffix, [...(bySuffix.get(suffix) || []), record]);
+    }
   }
   const externalOrchestrators = detectExternalOrchestrators(root, records);
-  if (files.length > 1 && !masters.length && !externalOrchestrators.length) structural.push({ severity: "error", rule: "missing_master", message: "여러 do-file을 순서대로 호출하는 master 또는 외부 orchestrator가 없습니다." });
   const callGraph = externalOrchestrators.flatMap((orchestrator) => orchestrator.calls);
   for (const record of records) {
     const seen = new Set();
@@ -4098,7 +4697,7 @@ function auditProject(args) {
       let normalized = call.target.replaceAll("\\", "/").replace(/^\.\//, "");
       normalized = normalized.replace(/^(?:(?:\$\{?[A-Za-z_][A-Za-z0-9_]*\}?|`[A-Za-z_][A-Za-z0-9_]*')\/)+/, "");
       const exact = byExact.get(normalized.toLowerCase());
-      const suffix = records.filter((candidate) => candidate.path.toLowerCase().endsWith(`/${normalized.toLowerCase()}`));
+      const suffix = bySuffix.get(normalized.toLowerCase()) || [];
       const baseMatches = byBase.get(path.posix.basename(normalized).toLowerCase()) || [];
       const matches = exact ? [exact] : suffix.length ? suffix : baseMatches;
       const resolved = matches.length === 1 ? matches[0].path : null;
@@ -4117,19 +4716,32 @@ function auditProject(args) {
     return rootA - rootB || b.calls.length - a.calls.length || a.path.localeCompare(b.path);
   })[0] || null;
   const standaloneEntrypoint = records.length === 1 && !namedTopMaster && !externalOrchestrators.length ? records[0] : null;
-  const topMaster = namedTopMaster || standaloneEntrypoint;
-  if (masters.length && !topMaster) structural.push({ severity: "error", rule: "missing_top_master", message: "정본 top-level master를 결정할 수 없습니다." });
-  if (namedTopMaster) {
-    const topEdges = callGraph.filter((edge) => edge.from === topMaster.path && edge.resolved);
+  const explicitEntrypoints = requestedEntrypoints.map((entrypoint) => {
+    const record = byExact.get(entrypoint.toLowerCase());
+    if (!record) throw new Error(`scope entrypoint ${entrypoint}을 찾을 수 없습니다.`);
+    if (pathMatches(record.path, excludePaths)) throw new Error(`scope entrypoint ${entrypoint}은 exclude_paths에 포함될 수 없습니다.`);
+    return record;
+  });
+  const topLevelMasterCandidates = masters.filter((record) => !record.path.includes("/"));
+  const ambiguousDefaultEntrypoint = scopeMode === "reachable" && !explicitEntrypoints.length && topLevelMasterCandidates.length > 1;
+  const topMaster = explicitEntrypoints[0] || (!ambiguousDefaultEntrypoint ? namedTopMaster : null) || standaloneEntrypoint;
+  if (masters.length && !topMaster && !ambiguousDefaultEntrypoint) structural.push({ severity: "error", rule: "missing_top_master", message: "정본 top-level master를 결정할 수 없습니다." });
+  if (ambiguousDefaultEntrypoint) {
+    structural.push({ severity: "warning", rule: "entrypoint_selection_ambiguous", message: `top-level entrypoint 후보가 ${topLevelMasterCandidates.length}개입니다. active workflow 판정이 중요하면 scope.entrypoints를 명시하세요.` });
+  }
+  const masterPolicyTarget = explicitEntrypoints.find((record) => masters.includes(record)) || (!ambiguousDefaultEntrypoint ? namedTopMaster : null);
+  if (masterPolicyTarget) {
+    masterPolicyTarget.lint = lintContent(masterPolicyTarget.content, "auto", masterPolicyTarget.absolute_path);
+    const topEdges = callGraph.filter((edge) => edge.from === masterPolicyTarget.path && edge.resolved);
     const prepIndex = topEdges.findIndex((edge) => /prep|clean|build/i.test(edge.resolved));
     const analysisIndex = topEdges.findIndex((edge) => /analysis|table|figure|result/i.test(edge.resolved));
-    if (strictStructure && (prepIndex < 0 || analysisIndex < 0)) structural.push({ severity: "warning", rule: "prep_analysis_split", file: topMaster.path, message: "새 프로젝트 표준 구조의 top master에서 전처리 master와 분석 master 호출이 모두 확인되지 않습니다." });
-    else if (prepIndex >= 0 && analysisIndex >= 0 && prepIndex > analysisIndex) structural.push({ severity: "error", rule: "master_order", file: topMaster.path, message: "분석 master가 전처리 master보다 먼저 호출됩니다." });
-    const strengthNames = new Set(topMaster.lint.strengths.map((row) => row.rule));
-    if (!strengthNames.has("stata_version")) structural.push({ severity: "warning", rule: "missing_version", file: topMaster.path, message: "top master에 Stata version 선언이 없습니다." });
-    if (!strengthNames.has("single_project_root")) structural.push({ severity: "warning", rule: "missing_project_root", file: topMaster.path, message: "top master에 단일 프로젝트 root 설정이 없습니다." });
+    if (strictStructure && (prepIndex < 0 || analysisIndex < 0)) structural.push({ severity: "warning", rule: "prep_analysis_split", file: masterPolicyTarget.path, message: "새 프로젝트 표준 구조의 top master에서 전처리 master와 분석 master 호출이 모두 확인되지 않습니다." });
+    else if (prepIndex >= 0 && analysisIndex >= 0 && prepIndex > analysisIndex) structural.push({ severity: "error", rule: "master_order", file: masterPolicyTarget.path, message: "분석 master가 전처리 master보다 먼저 호출됩니다." });
+    const strengthNames = new Set(masterPolicyTarget.lint.strengths.map((row) => row.rule));
+    if (!strengthNames.has("stata_version")) structural.push({ severity: "warning", rule: "missing_version", file: masterPolicyTarget.path, message: "top master에 Stata version 선언이 없습니다." });
+    if (!strengthNames.has("single_project_root")) structural.push({ severity: "warning", rule: "missing_project_root", file: masterPolicyTarget.path, message: "top master에 단일 프로젝트 root 설정이 없습니다." });
     if (strictStructure) {
-      const pathContractRecords = [topMaster];
+      const pathContractRecords = [masterPolicyTarget];
       for (const edge of topEdges) {
         if (!/(?:config|paths?|setup)/i.test(path.posix.basename(edge.resolved))) continue;
         const called = byExact.get(edge.resolved.toLowerCase());
@@ -4137,7 +4749,7 @@ function auditProject(args) {
       }
       const lower = pathContractRecords.map((record) => record.content).join("\n").toLowerCase();
       for (const tier of ["raw", "generated", "final", "ster", "table", "figures", "log"]) {
-        if (!lower.includes(tier)) structural.push({ severity: "warning", rule: `missing_path_${tier}`, file: topMaster.path, message: `새 프로젝트 표준 구조의 ${tier} 경로 계약이 top master 또는 직접 호출된 config에서 확인되지 않습니다.` });
+        if (!lower.includes(tier)) structural.push({ severity: "warning", rule: `missing_path_${tier}`, file: masterPolicyTarget.path, message: `새 프로젝트 표준 구조의 ${tier} 경로 계약이 top master 또는 직접 호출된 config에서 확인되지 않습니다.` });
       }
     }
   }
@@ -4159,9 +4771,109 @@ function auditProject(args) {
     nextTrail.add(node);
     for (const target of adjacency.get(node) || []) visit(target, nextTrail);
   }
-  if (topMaster) visit(topMaster.path);
-  for (const record of records) {
-    if (topMaster && !reachable.has(record.path)) structural.push({ severity: "warning", rule: "unreachable_do_file", file: record.path, message: "top master에서 이 do-file로 이어지는 호출 경로가 없습니다." });
+  const traversalRoots = explicitEntrypoints.length ? explicitEntrypoints.map((row) => row.path) : topMaster ? [topMaster.path] : [];
+  for (const entrypoint of traversalRoots) visit(entrypoint);
+  for (const included of records.filter((record) => pathMatches(record.path, includePaths))) visit(included.path);
+  let activeSet = scopeMode === "all"
+    ? new Set(records.map((record) => record.path))
+    : ambiguousDefaultEntrypoint
+      ? reachable
+      : !traversalRoots.length ? new Set(records.map((record) => record.path)) : reachable;
+  activeSet = new Set([...activeSet].filter((value) => !pathMatches(value, excludePaths)));
+  for (const edge of callGraph) {
+    if (activeSet.has(edge.from) && edge.resolved && !activeSet.has(edge.resolved)) {
+      structural.push({ severity: "error", rule: "active_call_excluded", file: edge.from, line: edge.line, message: `active workflow 호출 대상 ${edge.resolved}이 scope에서 제외되었습니다.` });
+    }
+  }
+  const activeRecords = records.filter((record) => activeSet.has(record.path));
+  const inactiveRecords = records.filter((record) => !activeSet.has(record.path));
+  for (const record of activeRecords) {
+    if (!record.lint) record.lint = lintContent(record.content, "auto", record.absolute_path);
+  }
+  if (!traversalRoots.length && activeRecords.length > 1 && !externalOrchestrators.length && !ambiguousDefaultEntrypoint) {
+    structural.push({ severity: "error", rule: "missing_master", message: "active scope의 여러 do-file을 순서대로 호출하는 master 또는 외부 orchestrator가 없습니다." });
+  }
+  const activeByPath = new Map(activeRecords.map((record) => [record.path, record]));
+  const reachableOrder = [...reachable].filter((recordPath) => activeSet.has(recordPath));
+  const executionOrder = [
+    ...reachableOrder,
+    ...activeRecords.map((record) => record.path).filter((recordPath) => !reachableOrder.includes(recordPath)),
+  ];
+  const projectContents = new Map(executionOrder
+    .map((recordPath) => activeByPath.get(recordPath))
+    .filter(Boolean)
+    .map((record) => [record.absolute_path, record.content]));
+  const projectGlobals = collectProjectGlobalEnvironment(projectContents, root);
+  const undirected = new Map(activeRecords.map((record) => [record.path, new Set()]));
+  for (const edge of callGraph) {
+    if (!edge.resolved || !undirected.has(edge.resolved)) continue;
+    if (undirected.has(edge.from)) {
+      undirected.get(edge.from).add(edge.resolved);
+      undirected.get(edge.resolved).add(edge.from);
+    }
+  }
+  for (const orchestrator of externalOrchestrators) {
+    const targets = orchestrator.resolved_do_files.filter((recordPath) => undirected.has(recordPath));
+    for (let index = 1; index < targets.length; index += 1) {
+      undirected.get(targets[0]).add(targets[index]);
+      undirected.get(targets[index]).add(targets[0]);
+    }
+  }
+  const componentByPath = new Map();
+  let componentIndex = 0;
+  for (const record of activeRecords) {
+    if (componentByPath.has(record.path)) continue;
+    const componentId = `component:${componentIndex += 1}`;
+    const pending = [record.path];
+    while (pending.length) {
+      const current = pending.pop();
+      if (componentByPath.has(current)) continue;
+      componentByPath.set(current, componentId);
+      for (const neighbor of undirected.get(current) || []) pending.push(neighbor);
+    }
+  }
+  const componentIdsByAbsolute = new Map(activeRecords.map((record) => [record.absolute_path, componentByPath.get(record.path)]));
+  const projectGlobalsByComponent = new Map();
+  for (const componentId of new Set(componentByPath.values())) {
+    const componentContents = new Map([...projectContents.entries()]
+      .filter(([absolutePath]) => componentIdsByAbsolute.get(absolutePath) === componentId));
+    projectGlobalsByComponent.set(componentId, collectProjectGlobalEnvironment(componentContents, root));
+  }
+  const outreg2HelperMultiplicity = canonicalOutreg2HelperMultiplicity(projectContents, projectGlobals, componentIdsByAbsolute, projectGlobalsByComponent);
+  for (const record of activeRecords) {
+    const formatterLine = activeLogicalEntries(record.content)
+      .find((entry) => /^program\s+define\s+outreg2_xlsx\b/i.test(normalizeCommand(entry.text.trim())))?.line;
+    if (!formatterLine) continue;
+    record.lint.strengths = record.lint.strengths.filter((row) => row.rule !== "outreg2_sheet_program_project_context_pending");
+    if (outreg2HelperMultiplicity.necessary) {
+      record.lint.findings = record.lint.findings.filter((row) => row.rule !== "unnecessary_outreg2_program");
+      record.lint.strengths.push({ rule: "necessary_outreg2_sheet_program_project_context", line: formatterLine, multiplicity: outreg2HelperMultiplicity });
+      record.lint.summary.approved_program_exceptions = Math.max(1, record.lint.summary.approved_program_exceptions);
+    } else if (outreg2HelperMultiplicity.unresolved_placement) {
+      record.lint.findings = record.lint.findings.filter((row) => row.rule !== "unnecessary_outreg2_program");
+      record.lint.strengths.push({ rule: "outreg2_sheet_program_project_context_pending", line: formatterLine, multiplicity: outreg2HelperMultiplicity });
+      record.lint.summary.approved_program_exceptions = 0;
+    } else if (!record.lint.findings.some((row) => row.rule === "unnecessary_outreg2_program")) {
+      record.lint.findings.push(finding("error", "unnecessary_outreg2_program", formatterLine, "canonical outreg2_xlsx는 active project scope에서 같은 workbook의 두 개 이상 resolved sheet() 배치를 충족하지 않습니다.", "한 sheet workbook은 직접 outreg2 replace/append를 사용하고, 여러 sheet가 필요하면 active producer-consumer flow에서 workbook과 sheet 배치를 확인 가능하게 하세요."));
+      record.lint.summary.approved_program_exceptions = 0;
+    }
+    const errors = record.lint.findings.filter((row) => row.severity === "error").length;
+    const warnings = record.lint.findings.filter((row) => row.severity === "warning").length;
+    record.lint.summary.errors = errors;
+    record.lint.summary.warnings = warnings;
+    record.lint.summary.strengths = record.lint.strengths.length;
+    record.lint.status = errors ? "blocked" : warnings ? "needs_review" : "static_clean";
+  }
+  structural.push(...scopedGlobalFindings(activeRecords));
+  const allFindings = activeRecords.flatMap((record) => record.lint.findings.map((row) => ({ file: record.path, ...row })));
+  let inactiveFindings = inactiveRecords.map((record) => ({
+    file: record.path,
+    severity: "info",
+    rule: "inactive_file_outside_scope",
+    message: "reachable active workflow 밖에서 발견되어 full lint를 실행하지 않았습니다. 전체 repository 검사가 필요하면 scope.mode=all 또는 include_paths를 사용하세요.",
+    scope_reason: "outside_active_workflow",
+  }));
+  for (const record of activeRecords) {
     const active = stripComments(record.content).map((row) => ({ line: row.line, command: normalizeCommand(row.trimmed) }));
     for (const row of active) {
       if (/^(?:save|export\s+delimited|export\s+excel)\b/i.test(row.command) && /(?:\$\{?[^}]*raw|\/raw\/|\\raw\\)/i.test(row.command)) {
@@ -4170,44 +4882,74 @@ function auditProject(args) {
     }
   }
 
+  const activeStructural = structural.filter((row) => !row.file || row.file === "report.md" || activeSet.has(row.file));
+  inactiveFindings = inactiveFindings.concat(structural
+    .filter((row) => row.file && row.file !== "report.md" && !activeSet.has(row.file))
+    .map((row) => ({ ...row, original_severity: row.severity, severity: "info", scope_reason: "outside_active_workflow" })));
   const stageCoverage = STAGES.map((stage) => {
-    const stageFiles = records.filter((record) => record.stages.includes(stage)).map((record) => record.path);
+    const stageFiles = activeRecords.filter((record) => record.stages.includes(stage)).map((record) => record.path);
     if (stage === "master_orchestration") stageFiles.push(...externalOrchestrators.map((row) => row.path));
     const expected = requestedStages.includes(stage);
     return { stage, expected, status: stageFiles.length ? "present" : expected ? "missing" : "not_expected", files: stageFiles };
   });
   for (const row of stageCoverage) {
-    if (row.status === "missing") structural.push({ severity: row.stage === "master_orchestration" && files.length > 1 ? "error" : "warning", rule: `missing_${row.stage}`, message: `${row.stage} 단계의 증거가 없습니다.` });
+    if (row.status === "missing") activeStructural.push({ severity: row.stage === "master_orchestration" && activeRecords.length > 1 ? "error" : "warning", rule: `missing_${row.stage}`, message: `${row.stage} 단계의 증거가 없습니다.` });
   }
-  const sampleFlowEvidence = records.flatMap((record) => stripComments(record.content).flatMap((row) => {
+  const sampleFlowEvidence = activeRecords.flatMap((record) => stripComments(record.content).flatMap((row) => {
     const command = normalizeCommand(row.trimmed);
     return /^(?:count|sum|summarize|tab|tabulate|tabstat|isid|assert|merge|keep|drop)\b/i.test(command) ? [{ file: record.path, line: row.line, command }] : [];
   }));
-  const workReport = validateWorkReport(root, { required: requireReport });
+  const workReport = reportPolicy === "disabled"
+    ? {
+      required: false,
+      status: "disabled",
+      path: "report.md",
+      entries: [],
+      errors: [],
+      coverage: { status: "not_checked", authored_spans: [], reportable: [], covered: [], uncovered: [] },
+      policy: "disabled_by_explicit_user_contract",
+    }
+    : validateWorkReport(root, { required: requireReport, authored_spans: args.authored_spans });
   if (requireReport && workReport.status !== "valid") {
-    for (const message of workReport.errors) structural.push({ severity: "error", rule: "work_report_invalid", file: "report.md", message });
+    for (const message of workReport.errors) activeStructural.push({ severity: "error", rule: "work_report_invalid", file: "report.md", message });
   }
-  const errors = allFindings.filter((row) => row.severity === "error").length + structural.filter((row) => row.severity === "error").length;
-  const warnings = allFindings.filter((row) => row.severity === "warning").length + structural.filter((row) => row.severity === "warning").length;
+  const errors = allFindings.filter((row) => row.severity === "error").length + activeStructural.filter((row) => row.severity === "error").length;
+  const warnings = allFindings.filter((row) => row.severity === "warning").length + activeStructural.filter((row) => row.severity === "warning").length;
+  const staticStatus = errors ? "blocked" : warnings ? "needs_review" : "static_clean";
+  const estimability = assessEstimabilityReadback(args.estimability_readback, allFindings);
   return {
     root,
-    status: errors ? "blocked" : warnings ? "needs_review" : "static_clean",
+    status: staticStatus,
+    static_status: staticStatus,
+    runtime_estimability: estimability.runtime_estimability,
+    substantive_validity: estimability.substantive_validity,
     verification_level: "static_workflow_audit",
     structure_mode: strictStructure ? "standard_new_project" : "preserve_existing_project",
-    summary: { do_files: files.length, top_master: topMaster?.path || externalOrchestrators[0]?.path || null, master_candidates: [...masters.map((row) => row.path), ...externalOrchestrators.map((row) => row.path)], errors, warnings },
+    summary: { do_files: activeRecords.length, discovered_do_files: files.length, inactive_do_files: inactiveRecords.length, top_master: topMaster?.path || externalOrchestrators[0]?.path || null, master_candidates: [...masters.map((row) => row.path), ...externalOrchestrators.map((row) => row.path)], errors, warnings },
+    scope: {
+      mode: scopeMode,
+      entrypoints: traversalRoots,
+      include_paths: includePaths,
+      exclude_paths: excludePaths,
+      active_files: activeRecords.map((row) => row.path),
+      inactive_files: inactiveRecords.map((row) => row.path),
+      rule: "Only active files contribute to blocking status. Inactive discoveries retain informational findings and can be promoted with mode=all or explicit include_paths.",
+    },
     stage_coverage: stageCoverage,
     call_graph: callGraph,
     sample_flow: { observed_counts: null, static_evidence: sampleFlowEvidence },
     work_report: workReport,
+    report_policy: reportPolicy,
     program_policy: {
       outreg2_helper_multiplicity: outreg2HelperMultiplicity,
       project_globals: projectGlobals.evidence,
     },
     orchestration: { stata_masters: masters.map((row) => row.path), external: externalOrchestrators.map(({ calls, ...row }) => row) },
     excluded_directories: discovered.excludedDirectories,
-    structural_findings: structural,
+    structural_findings: activeStructural,
     file_findings: allFindings,
-    files: records.map((record) => ({ path: record.path, stages: record.stages, calls: record.calls, status: record.lint.status })),
+    inactive_findings: inactiveFindings,
+    files: activeRecords.map((record) => ({ path: record.path, stages: record.stages, calls: record.calls, status: record.lint.status })),
     claim_boundary: "프로젝트 구조와 정적 패턴 검사이며 실제 데이터로 모든 결과를 재실행한 인증은 아닙니다.",
   };
 }
@@ -4423,13 +5165,82 @@ const TOOLS = [
       path: { type: "string" },
       request: { type: "string", minLength: 1 },
       repair_mode: { type: "string", enum: ["auto", "partial", "overhaul"] },
-      intent_mode: { type: "string", enum: ["auto", "add_feature", "modify_existing", "overhaul"] },
+      intent_mode: { type: "string", enum: ["auto", "review_only", "add_feature", "modify_existing", "overhaul"] },
+      report_policy: { type: "string", enum: ["required", "optional", "disabled"] },
       target_layout: { type: "string", enum: ["new_first_build", "preserve_existing", "rebuild_existing"] },
       proposed_folders: { type: "array", items: { type: "string" }, uniqueItems: true, maxItems: 100 },
       proposed_files: { type: "array", items: { type: "string" }, uniqueItems: true, maxItems: 200 },
       planned_variables: { type: "array", items: PLANNED_VARIABLE_SCHEMA, uniqueItems: true, maxItems: 500 },
       no_new_persistent_variables: { type: "boolean" },
       target_files: { type: "array", items: { type: "string" }, uniqueItems: true, maxItems: 30 },
+      scope: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          include_paths: { type: "array", items: { type: "string" }, uniqueItems: true, maxItems: 100, description: "Project-relative files or directories scanned by the planner." },
+          exclude_paths: { type: "array", items: { type: "string" }, uniqueItems: true, maxItems: 100, description: "Project-relative files or directories pruned before the planner file-count limit." },
+        },
+      },
+      source_reuse: {
+        type: "object",
+        additionalProperties: false,
+        required: ["canonical_source", "allowed_changes"],
+        properties: {
+          mode: { type: "string", enum: ["clone_then_edit", "modify_in_place", "block_extract_insert"], default: "clone_then_edit" },
+          canonical_source: { type: "string", description: "Project-relative existing .do file that must be cloned rather than regenerated." },
+          destination: { type: "string", description: "Project-relative destination. Required for clone_then_edit and block_extract_insert; omitted or identical to canonical_source for modify_in_place." },
+          candidate_path: { type: "string", description: "Optional existing candidate to compare exactly against the deterministic clone-and-edit result." },
+          source_block: {
+            type: "object",
+            additionalProperties: false,
+            required: ["start_literal", "end_literal"],
+            properties: {
+              start_literal: { type: "string", minLength: 1 },
+              end_literal: { type: "string", minLength: 1 },
+              include_boundaries: { type: "boolean", default: true },
+            },
+          },
+          insertion_anchor: {
+            type: "object",
+            additionalProperties: false,
+            required: ["match", "expected_occurrences"],
+            properties: {
+              match: { type: "string", minLength: 1 },
+              expected_occurrences: { type: "integer", minimum: 1 },
+              position: { type: "string", enum: ["before", "after", "replace"], default: "after" },
+            },
+          },
+          allowed_changes: {
+            type: "array",
+            minItems: 1,
+            maxItems: 100,
+            items: {
+              type: "object",
+              additionalProperties: false,
+              required: ["operation", "match", "expected_occurrences"],
+              properties: {
+                operation: { type: "string", enum: ["replace_literal", "delete_literal", "insert_after_literal"] },
+                match: { type: "string", minLength: 1 },
+                replacement: { type: "string" },
+                text: { type: "string" },
+                expected_occurrences: { type: "integer", minimum: 1 },
+              },
+            },
+          },
+        },
+      },
+      summary_artifact_interface: {
+        type: "object",
+        additionalProperties: false,
+        required: ["producer", "consumers", "path", "required_variables", "required_statistics"],
+        properties: {
+          producer: { type: "string", description: "Project-relative .do file that exclusively produces the canonical summary dataset." },
+          consumers: { type: "array", items: { type: "string" }, uniqueItems: true, minItems: 1, maxItems: 30, description: "Project-relative table and figure .do files that all read the same summary dataset." },
+          path: { type: "string", description: "Project-relative canonical .dta artifact path shared by every consumer." },
+          required_variables: { type: "array", items: { type: "string", minLength: 1 }, uniqueItems: true, minItems: 1, maxItems: 500 },
+          required_statistics: { type: "array", items: { type: "string", minLength: 1 }, uniqueItems: true, minItems: 1, maxItems: 100 },
+        },
+      },
       requested_checkpoints: { type: "array", items: { type: "string", enum: CHECKPOINTS }, uniqueItems: true, maxItems: 30 },
       requested_substeps: { type: "array", maxItems: 100, items: { type: "object", additionalProperties: false, required: ["checkpoint", "substep_id", "match"], properties: {
         checkpoint: { type: "string", enum: CHECKPOINTS },
@@ -4485,15 +5296,72 @@ const TOOLS = [
   },
   {
     name: "lint_do_file",
-    description: "Statically lint one Stata do-file or inline code for unsafe replication patterns and positive research-workflow evidence.",
-    inputSchema: { type: "object", additionalProperties: false, properties: { path: { type: "string" }, content: { type: "string" }, role: { type: "string" } }, anyOf: [{ required: ["path"] }, { required: ["content"] }] },
+    description: "Statically lint one Stata do-file or inline code. role describes the file; authoring_state controls whether new-master readability is blocking, modified-master readability is advisory, or existing code is audited without retroactive comment enforcement.",
+    inputSchema: { type: "object", additionalProperties: false, properties: { path: { type: "string" }, content: { type: "string" }, role: { type: "string" }, authoring_state: { type: "string", enum: ["new", "modified", "existing_audit"] } }, anyOf: [{ required: ["path"] }, { required: ["content"] }] },
     outputSchema: { type: "object", additionalProperties: true },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   },
   {
     name: "audit_stata_project",
-    description: "Audit a local Stata project across do-files for master structure, stage coverage, call graph evidence, and unsafe code patterns. Existing structure is preserved by default; strict standard-tree checks are opt-in for new projects. After this plugin creates or revises code, call with require_report=true so root report.md is validated against actual one-based .do-file ranges.",
-    inputSchema: { type: "object", additionalProperties: false, required: ["path"], properties: { path: { type: "string" }, strict_structure: { type: "boolean" }, require_report: { type: "boolean" }, expected_stages: { type: "array", items: { type: "string", enum: STAGES }, uniqueItems: true } } },
+    description: "Audit the active reachable Stata workflow by default, keeping inactive discoveries informational. Use scope.mode=all for an explicit repository-wide audit. Static findings, optional e(b) estimability readback, and substantive-validity status remain separate. report_policy can be required, optional, or explicitly disabled.",
+    inputSchema: {
+      type: "object",
+      additionalProperties: false,
+      required: ["path"],
+      properties: {
+        path: { type: "string" },
+        strict_structure: { type: "boolean" },
+        require_report: { type: "boolean", description: "Legacy alias for report_policy=required." },
+        report_policy: { type: "string", enum: ["required", "optional", "disabled"] },
+        expected_stages: { type: "array", items: { type: "string", enum: STAGES }, uniqueItems: true },
+        scope: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            mode: { type: "string", enum: ["reachable", "all"], description: "reachable is the active-workflow default; all explicitly promotes every discovered non-excluded do-file." },
+            entrypoints: { type: "array", items: { type: "string" }, uniqueItems: true, maxItems: 20, description: "Project-relative explicit roots. Required to select an active workflow when multiple top-level masters are plausible." },
+            include_paths: { type: "array", items: { type: "string" }, uniqueItems: true, maxItems: 100, description: "Project-relative files or directories promoted into reachable scope." },
+            exclude_paths: { type: "array", items: { type: "string" }, uniqueItems: true, maxItems: 100, description: "Project-relative files or directories pruned before discovery limits and call-graph construction." },
+          },
+        },
+        authored_spans: {
+          type: "array",
+          uniqueItems: true,
+          maxItems: 200,
+          items: {
+            type: "object",
+            additionalProperties: false,
+            required: ["target", "lines"],
+            properties: {
+              target: { type: "string" },
+              lines: { type: "string", pattern: "^[1-9][0-9]*-[1-9][0-9]*$" },
+            },
+          },
+        },
+        estimability_readback: {
+          type: "object",
+          additionalProperties: false,
+          required: ["models"],
+          properties: {
+            models: {
+              type: "array",
+              maxItems: 500,
+              items: {
+                type: "object",
+                additionalProperties: false,
+                required: ["model_id", "declared_nonreference_terms", "observed_eb_terms"],
+                properties: {
+                  model_id: { type: "string" },
+                  declared_nonreference_terms: { type: "array", minItems: 1, items: { type: "string" }, uniqueItems: true },
+                  declared_reference_terms: { type: "array", items: { type: "string" }, uniqueItems: true },
+                  observed_eb_terms: { type: "array", items: { type: "string" }, uniqueItems: true },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
     outputSchema: { type: "object", additionalProperties: true },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   },
@@ -4509,15 +5377,62 @@ const TOOLS = [
   },
   {
     name: "research_output_check",
-    description: "Verify an approved Stata research workflow's mandatory root report.md, static audit, entrypoint, optional researcher-facing README tree and variable descriptions, actual log, exact deliverable counts, JSON validity, and direct SHA-256 evidence. report.md must map each template and general-rule fallback to actual one-based .do-file ranges, or explicitly state that neither was used. It does not manage dependencies or assess deployment or submission packaging.",
-    inputSchema: { type: "object", additionalProperties: false, required: ["path", "deliverables"], properties: {
-      path: { type: "string" },
-      deliverables: { type: "array", minItems: 1, maxItems: 100, items: { type: "object", additionalProperties: false, required: ["pattern", "expected_count"], properties: { pattern: { type: "string" }, expected_count: { type: "integer", minimum: 0 }, description: { type: "string" } } } },
-      main_log: { type: "string" }, completion_marker: { type: "string" }, strict_structure: { type: "boolean" },
-      expected_stages: { type: "array", items: { type: "string", enum: STAGES }, uniqueItems: true },
-      planned_variables: { type: "array", items: PLANNED_VARIABLE_SCHEMA, uniqueItems: true, maxItems: 500 },
-      expected_tree_paths: { type: "array", items: { type: "string" }, uniqueItems: true, maxItems: 300 },
-    } },
+    description: "Verify an approved Stata research workflow's selected report_policy, static audit, entrypoint, optional researcher-facing README tree and variable descriptions, actual log when supplied, exact deliverable counts, JSON validity, and direct SHA-256 evidence. Under report_policy=required, report.md maps each template and general-rule fallback to actual one-based .do-file ranges or explicitly states that neither was used; optional permits omission and disabled forbids creating or modifying it. Runtime, static, and substantive statuses remain separate. It does not manage dependencies or assess deployment or submission packaging.",
+    inputSchema: {
+      type: "object",
+      additionalProperties: false,
+      required: ["path", "deliverables"],
+      properties: {
+        path: { type: "string" },
+        deliverables: {
+          type: "array",
+          minItems: 1,
+          maxItems: 100,
+          items: {
+            type: "object",
+            additionalProperties: false,
+            required: ["pattern", "expected_count"],
+            properties: {
+              pattern: { type: "string" },
+              expected_count: { type: "integer", minimum: 0 },
+              description: { type: "string" },
+            },
+          },
+        },
+        main_log: { type: "string" },
+        completion_marker: { type: "string" },
+        strict_structure: { type: "boolean" },
+        report_policy: { type: "string", enum: ["required", "optional", "disabled"] },
+        scope: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            mode: { type: "string", enum: ["reachable", "all"], description: "reachable is the active-workflow default; all explicitly promotes every discovered non-excluded do-file." },
+            entrypoints: { type: "array", items: { type: "string" }, uniqueItems: true, description: "Project-relative explicit roots. Required to select an active workflow when multiple top-level masters are plausible." },
+            include_paths: { type: "array", items: { type: "string" }, uniqueItems: true, description: "Project-relative files or directories promoted into reachable scope." },
+            exclude_paths: { type: "array", items: { type: "string" }, uniqueItems: true, description: "Project-relative files or directories pruned before discovery limits and call-graph construction." },
+          },
+        },
+        authored_spans: {
+          type: "array",
+          uniqueItems: true,
+          maxItems: 200,
+          items: {
+            type: "object",
+            additionalProperties: false,
+            required: ["target", "lines"],
+            properties: {
+              target: { type: "string" },
+              lines: { type: "string", pattern: "^[1-9][0-9]*-[1-9][0-9]*$" },
+            },
+          },
+        },
+        estimability_readback: { type: "object", additionalProperties: true },
+        expected_stages: { type: "array", items: { type: "string", enum: STAGES }, uniqueItems: true },
+        planned_variables: { type: "array", items: PLANNED_VARIABLE_SCHEMA, uniqueItems: true, maxItems: 500 },
+        expected_tree_paths: { type: "array", items: { type: "string" }, uniqueItems: true, maxItems: 300 },
+      },
+    },
     outputSchema: { type: "object", additionalProperties: true },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   },
@@ -4546,7 +5461,7 @@ async function dispatch(method, params) {
       if (name === "workflow_blueprint") return workflowBlueprint(args);
       if (name === "lint_do_file") {
         const input = readDoInput(args);
-        return lintContent(input.content, args.role || "auto", input.source);
+        return lintContent(input.content, args.role || "auto", input.source, args.authoring_state || null);
       }
       if (name === "audit_stata_project") return auditProject(args);
       if (name === "workflow_reproduction_check") return workflowReproductionCheck(args);

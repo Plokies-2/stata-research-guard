@@ -5732,6 +5732,765 @@
       ]
     },
     {
+      "headword": "descriptives.estpost_active_result",
+      "name_ko": "활성 estpost 요약결과",
+      "name_en": "Active estpost summary result",
+      "purpose_ko": "선언된 표본과 변수에 대한 요약·집단비교 결과를 estpost 호환 활성 상태로 만든다.",
+      "maturity": "comparative",
+      "auto_selectable_count": 4,
+      "reference_only_count": 0,
+      "aliases": [
+        "estpost summarize",
+        "estpost tabstat",
+        "estpost ttest",
+        "active estpost result",
+        "estpost 요약결과"
+      ],
+      "unit_kind": "preparation_validation",
+      "input_contract": [
+        "analysis sample and variables already fixed",
+        "declared statistic or two-group comparison",
+        "an explicitly estpost-compatible downstream consumer"
+      ],
+      "output_contract": [
+        "one active estpost result with the declared statistics",
+        "no claim that a durable shared summary dataset was created"
+      ],
+      "common_commands": [
+        "estpost"
+      ],
+      "retrieval_features": [
+        "preparation_validation",
+        "analysis sample and variables already fixed",
+        "declared statistic or two-group comparison",
+        "an explicitly estpost-compatible downstream consumer",
+        "one active estpost result with the declared statistics",
+        "no claim that a durable shared summary dataset was created",
+        "estpost summarize",
+        "estpost tabstat",
+        "estpost ttest",
+        "active estpost result",
+        "estpost 요약결과"
+      ],
+      "composition": {
+        "can_follow": [
+          "dataset.finalize_keep_label_save",
+          "sample.trade_share_threshold",
+          "sample.arm_response_eligibility",
+          "panel.stack_waves"
+        ],
+        "can_precede": [
+          "postest.persist_estimate",
+          "exports.estimate_text_table"
+        ],
+        "incompatible_with": [
+          "a table and figure required to share a named summary .dta",
+          "an undeclared statistic or group",
+          "treating active estimation state as a durable artifact"
+        ]
+      },
+      "variants": [
+        {
+          "label_id": "descriptives.estpost_summarize_active.v1",
+          "variant_id": "estpost_summarize_active_result",
+          "decision": "conditional_keep",
+          "selection_conditions": [
+            "the analysis sample and variable list are already fixed",
+            "a downstream esttab consumer explicitly accepts an active estpost result rather than a shared .dta summary artifact"
+          ],
+          "tradeoffs": [
+            "keeps the statistic source in an active result",
+            "does not create the named summary .dta required when a table and figure must share a durable dataset"
+          ],
+          "relationships": {
+            "alternatives": [],
+            "duplicates": [],
+            "supersedes": []
+          },
+          "method_family": null,
+          "specification_facet": null,
+          "state_signature": {
+            "requires": [
+              "fixed analysis sample",
+              "declared numeric variable list"
+            ],
+            "observable_signals": [
+              "estpost",
+              "summarize"
+            ],
+            "produces": [
+              "one active estpost summary result"
+            ]
+          },
+          "input_signature": {
+            "data_structure": "unknown",
+            "observation_unit": "not_stated",
+            "time_structure": "not_stated",
+            "required_keys": [],
+            "variable_characteristics": [
+              "not_stated"
+            ],
+            "field_evidence": {
+              "data_structure": [],
+              "observation_unit": [],
+              "time_structure": [],
+              "required_keys": [],
+              "variable_characteristics": []
+            },
+            "evidence": {
+              "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+              "source_spans": [
+                [
+                  2,
+                  2
+                ]
+              ],
+              "context_radius_lines": 120,
+              "basis": "bounded source context around exact labeled source spans"
+            }
+          },
+          "command_anchors": [
+            "estpost"
+          ],
+          "required_signals": [
+            "estpost",
+            "summarize"
+          ],
+          "forbidden_signals": [
+            "nested_loop",
+            "tex_output"
+          ],
+          "canonical_default": false,
+          "state_confidence": "strong",
+          "reuse_scope": "general",
+          "readability_score": 5,
+          "portability_score": 4,
+          "source_specific_elements": [
+            "outcome and control placeholder names"
+          ],
+          "reusable_core": "선언된 변수 목록의 summarize 결과를 active estpost 상태로 남긴다.",
+          "preferred_within_checkpoint": false,
+          "explicit_canonical_exception": false,
+          "quality_rubric_review": {
+            "status": "external_evidence_rubric_reviewed",
+            "version": "1.1",
+            "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46",
+            "source_verification": {
+              "source_file_sha256_match": true,
+              "code_sha256_match": true,
+              "context_read": true
+            },
+            "hard_fails": [
+              {
+                "rule_id": "decision_not_generatable",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "provenance_incomplete",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "input_contract_mismatch",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "minimal_adaptation_undefined",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "machine_bound_default",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "merge_contract_absent",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "nested_loop",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "opaque_research_program",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              }
+            ],
+            "applicable_dimensions": [
+              "state_visibility",
+              "input_output_contract",
+              "portability",
+              "readability",
+              "sample_estimand_visibility",
+              "loop_program_abstraction",
+              "reproducibility",
+              "project_specific_coupling",
+              "minimal_adaptation"
+            ],
+            "dimension_scores": {
+              "state_visibility": 5,
+              "input_output_contract": 5,
+              "portability": 4,
+              "readability": 5,
+              "sample_estimand_visibility": 4,
+              "loop_program_abstraction": 5,
+              "reproducibility": 4,
+              "project_specific_coupling": 4,
+              "minimal_adaptation": 5
+            },
+            "weighted_score": 84,
+            "classification": "conditional_candidate",
+            "reviewer_classification": "conditional_candidate",
+            "classification_calibration_override": null,
+            "preferred_eligible": false,
+            "reviewer_notes_ko": "독립 연구 코드라고 주장하지 않는 derived package atom이다. 명령 선택, 입력 상태, 출력 경계와 수정 가능한 binding을 각각 확인한다.",
+            "uncertainty": "패키지 설치 상태와 연구 설계의 타당성은 별도 target runtime 및 설계 검토가 필요하다.",
+            "current_vs_recommended_changes": [],
+            "canonical_exception_override": null
+          },
+          "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+          "source_spans": [
+            [
+              2,
+              2
+            ]
+          ],
+          "source_file_sha256": "9c7aeada71e4653da6c004eeb1a5cede2d431a55c55cd9fb1f9946e905c82af0",
+          "code_sha256": "442662f0183bed07f1313ee6180cbe3bb8c49cac31b266dd9908c092c8d12652"
+        },
+        {
+          "label_id": "descriptives.estpost_detail_active.v1",
+          "variant_id": "estpost_summarize_detail_active_result",
+          "decision": "conditional_keep",
+          "selection_conditions": [
+            "the analysis sample, variables, and need for detailed statistics are declared",
+            "a downstream consumer is explicitly compatible with the active estpost result"
+          ],
+          "tradeoffs": [
+            "adds detailed distribution statistics",
+            "has a wider result surface than a basic mean/sd/count table"
+          ],
+          "relationships": {
+            "alternatives": [],
+            "duplicates": [],
+            "supersedes": []
+          },
+          "method_family": null,
+          "specification_facet": null,
+          "state_signature": {
+            "requires": [
+              "fixed analysis sample",
+              "declared numeric variable list",
+              "declared need for detailed statistics"
+            ],
+            "observable_signals": [
+              "estpost",
+              "summarize"
+            ],
+            "produces": [
+              "one active detailed estpost summary result"
+            ]
+          },
+          "input_signature": {
+            "data_structure": "unknown",
+            "observation_unit": "not_stated",
+            "time_structure": "not_stated",
+            "required_keys": [],
+            "variable_characteristics": [
+              "not_stated"
+            ],
+            "field_evidence": {
+              "data_structure": [],
+              "observation_unit": [],
+              "time_structure": [],
+              "required_keys": [],
+              "variable_characteristics": []
+            },
+            "evidence": {
+              "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+              "source_spans": [
+                [
+                  4,
+                  4
+                ]
+              ],
+              "context_radius_lines": 120,
+              "basis": "bounded source context around exact labeled source spans"
+            }
+          },
+          "command_anchors": [
+            "estpost"
+          ],
+          "required_signals": [
+            "estpost",
+            "summarize"
+          ],
+          "forbidden_signals": [
+            "nested_loop",
+            "tex_output"
+          ],
+          "canonical_default": false,
+          "state_confidence": "strong",
+          "reuse_scope": "general",
+          "readability_score": 5,
+          "portability_score": 4,
+          "source_specific_elements": [
+            "outcome and control placeholder names"
+          ],
+          "reusable_core": "detail 옵션의 estpost summarize 결과를 active 상태로 남긴다.",
+          "preferred_within_checkpoint": false,
+          "explicit_canonical_exception": false,
+          "quality_rubric_review": {
+            "status": "external_evidence_rubric_reviewed",
+            "version": "1.1",
+            "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46",
+            "source_verification": {
+              "source_file_sha256_match": true,
+              "code_sha256_match": true,
+              "context_read": true
+            },
+            "hard_fails": [
+              {
+                "rule_id": "decision_not_generatable",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "provenance_incomplete",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "input_contract_mismatch",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "minimal_adaptation_undefined",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "machine_bound_default",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "merge_contract_absent",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "nested_loop",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "opaque_research_program",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              }
+            ],
+            "applicable_dimensions": [
+              "state_visibility",
+              "input_output_contract",
+              "portability",
+              "readability",
+              "sample_estimand_visibility",
+              "loop_program_abstraction",
+              "reproducibility",
+              "project_specific_coupling",
+              "minimal_adaptation"
+            ],
+            "dimension_scores": {
+              "state_visibility": 5,
+              "input_output_contract": 5,
+              "portability": 4,
+              "readability": 5,
+              "sample_estimand_visibility": 4,
+              "loop_program_abstraction": 5,
+              "reproducibility": 4,
+              "project_specific_coupling": 4,
+              "minimal_adaptation": 5
+            },
+            "weighted_score": 84,
+            "classification": "conditional_candidate",
+            "reviewer_classification": "conditional_candidate",
+            "classification_calibration_override": null,
+            "preferred_eligible": false,
+            "reviewer_notes_ko": "독립 연구 코드라고 주장하지 않는 derived package atom이다. 명령 선택, 입력 상태, 출력 경계와 수정 가능한 binding을 각각 확인한다.",
+            "uncertainty": "패키지 설치 상태와 연구 설계의 타당성은 별도 target runtime 및 설계 검토가 필요하다.",
+            "current_vs_recommended_changes": [],
+            "canonical_exception_override": null
+          },
+          "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+          "source_spans": [
+            [
+              4,
+              4
+            ]
+          ],
+          "source_file_sha256": "9c7aeada71e4653da6c004eeb1a5cede2d431a55c55cd9fb1f9946e905c82af0",
+          "code_sha256": "76b6d559a4961cd91e5731cadadcaa31d94b725a3bb9df7e0edd019eea5b15ef"
+        },
+        {
+          "label_id": "descriptives.estpost_tabstat_active.v1",
+          "variant_id": "estpost_tabstat_count_mean_sd",
+          "decision": "conditional_keep",
+          "selection_conditions": [
+            "the statistic set count/mean/sd is declared",
+            "a downstream esttab consumer is requested and no shared summary .dta is required"
+          ],
+          "tradeoffs": [
+            "makes the table statistic layout explicit",
+            "cannot silently add groups, weights, or a durable dataset"
+          ],
+          "relationships": {
+            "alternatives": [],
+            "duplicates": [],
+            "supersedes": []
+          },
+          "method_family": null,
+          "specification_facet": null,
+          "state_signature": {
+            "requires": [
+              "fixed analysis sample",
+              "declared variable list and statistics"
+            ],
+            "observable_signals": [
+              "estpost",
+              "tabstat"
+            ],
+            "produces": [
+              "one active estpost tabstat result"
+            ]
+          },
+          "input_signature": {
+            "data_structure": "unknown",
+            "observation_unit": "not_stated",
+            "time_structure": "not_stated",
+            "required_keys": [],
+            "variable_characteristics": [
+              "not_stated"
+            ],
+            "field_evidence": {
+              "data_structure": [],
+              "observation_unit": [],
+              "time_structure": [],
+              "required_keys": [],
+              "variable_characteristics": []
+            },
+            "evidence": {
+              "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+              "source_spans": [
+                [
+                  6,
+                  6
+                ]
+              ],
+              "context_radius_lines": 120,
+              "basis": "bounded source context around exact labeled source spans"
+            }
+          },
+          "command_anchors": [
+            "estpost"
+          ],
+          "required_signals": [
+            "estpost",
+            "tabstat"
+          ],
+          "forbidden_signals": [
+            "nested_loop",
+            "tex_output"
+          ],
+          "canonical_default": false,
+          "state_confidence": "strong",
+          "reuse_scope": "general",
+          "readability_score": 5,
+          "portability_score": 4,
+          "source_specific_elements": [
+            "outcome and control placeholder names"
+          ],
+          "reusable_core": "count·mean·sd를 columns(statistics) 배열의 estpost tabstat 결과로 남긴다.",
+          "preferred_within_checkpoint": false,
+          "explicit_canonical_exception": false,
+          "quality_rubric_review": {
+            "status": "external_evidence_rubric_reviewed",
+            "version": "1.1",
+            "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46",
+            "source_verification": {
+              "source_file_sha256_match": true,
+              "code_sha256_match": true,
+              "context_read": true
+            },
+            "hard_fails": [
+              {
+                "rule_id": "decision_not_generatable",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "provenance_incomplete",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "input_contract_mismatch",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "minimal_adaptation_undefined",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "machine_bound_default",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "merge_contract_absent",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "nested_loop",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "opaque_research_program",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              }
+            ],
+            "applicable_dimensions": [
+              "state_visibility",
+              "input_output_contract",
+              "portability",
+              "readability",
+              "sample_estimand_visibility",
+              "loop_program_abstraction",
+              "reproducibility",
+              "project_specific_coupling",
+              "minimal_adaptation"
+            ],
+            "dimension_scores": {
+              "state_visibility": 5,
+              "input_output_contract": 5,
+              "portability": 4,
+              "readability": 5,
+              "sample_estimand_visibility": 4,
+              "loop_program_abstraction": 5,
+              "reproducibility": 4,
+              "project_specific_coupling": 4,
+              "minimal_adaptation": 5
+            },
+            "weighted_score": 84,
+            "classification": "conditional_candidate",
+            "reviewer_classification": "conditional_candidate",
+            "classification_calibration_override": null,
+            "preferred_eligible": false,
+            "reviewer_notes_ko": "독립 연구 코드라고 주장하지 않는 derived package atom이다. 명령 선택, 입력 상태, 출력 경계와 수정 가능한 binding을 각각 확인한다.",
+            "uncertainty": "패키지 설치 상태와 연구 설계의 타당성은 별도 target runtime 및 설계 검토가 필요하다.",
+            "current_vs_recommended_changes": [],
+            "canonical_exception_override": null
+          },
+          "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+          "source_spans": [
+            [
+              6,
+              6
+            ]
+          ],
+          "source_file_sha256": "9c7aeada71e4653da6c004eeb1a5cede2d431a55c55cd9fb1f9946e905c82af0",
+          "code_sha256": "9c56dcd6c712d868d734b5def68ba95ff7d58116551325aa814d0503ee416eba"
+        },
+        {
+          "label_id": "descriptives.estpost_ttest_by_active.v1",
+          "variant_id": "estpost_ttest_declared_binary_group",
+          "decision": "conditional_keep",
+          "selection_conditions": [
+            "the outcome and a genuinely two-valued grouping variable are declared",
+            "the group comparison is descriptive and a compatible estpost consumer is requested"
+          ],
+          "tradeoffs": [
+            "keeps the two-group comparison explicit",
+            "does not validate causal comparability or support more than two groups"
+          ],
+          "relationships": {
+            "alternatives": [],
+            "duplicates": [],
+            "supersedes": []
+          },
+          "method_family": null,
+          "specification_facet": null,
+          "state_signature": {
+            "requires": [
+              "fixed analysis sample",
+              "numeric outcome",
+              "declared two-valued group"
+            ],
+            "observable_signals": [
+              "estpost",
+              "ttest"
+            ],
+            "produces": [
+              "one active estpost two-group comparison result"
+            ]
+          },
+          "input_signature": {
+            "data_structure": "unknown",
+            "observation_unit": "not_stated",
+            "time_structure": "not_stated",
+            "required_keys": [],
+            "variable_characteristics": [
+              "not_stated"
+            ],
+            "field_evidence": {
+              "data_structure": [],
+              "observation_unit": [],
+              "time_structure": [],
+              "required_keys": [],
+              "variable_characteristics": []
+            },
+            "evidence": {
+              "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+              "source_spans": [
+                [
+                  8,
+                  8
+                ]
+              ],
+              "context_radius_lines": 120,
+              "basis": "bounded source context around exact labeled source spans"
+            }
+          },
+          "command_anchors": [
+            "estpost"
+          ],
+          "required_signals": [
+            "estpost",
+            "ttest"
+          ],
+          "forbidden_signals": [
+            "nested_loop",
+            "tex_output"
+          ],
+          "canonical_default": false,
+          "state_confidence": "strong",
+          "reuse_scope": "general",
+          "readability_score": 5,
+          "portability_score": 4,
+          "source_specific_elements": [
+            "outcome and treatment_group placeholders"
+          ],
+          "reusable_core": "명시한 두 집단 간 outcome 평균 비교를 active estpost 결과로 남긴다.",
+          "preferred_within_checkpoint": false,
+          "explicit_canonical_exception": false,
+          "quality_rubric_review": {
+            "status": "external_evidence_rubric_reviewed",
+            "version": "1.1",
+            "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46",
+            "source_verification": {
+              "source_file_sha256_match": true,
+              "code_sha256_match": true,
+              "context_read": true
+            },
+            "hard_fails": [
+              {
+                "rule_id": "decision_not_generatable",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "provenance_incomplete",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "input_contract_mismatch",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "minimal_adaptation_undefined",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "machine_bound_default",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "merge_contract_absent",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "nested_loop",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "opaque_research_program",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              }
+            ],
+            "applicable_dimensions": [
+              "state_visibility",
+              "input_output_contract",
+              "portability",
+              "readability",
+              "sample_estimand_visibility",
+              "loop_program_abstraction",
+              "reproducibility",
+              "project_specific_coupling",
+              "minimal_adaptation"
+            ],
+            "dimension_scores": {
+              "state_visibility": 5,
+              "input_output_contract": 5,
+              "portability": 4,
+              "readability": 5,
+              "sample_estimand_visibility": 4,
+              "loop_program_abstraction": 5,
+              "reproducibility": 4,
+              "project_specific_coupling": 4,
+              "minimal_adaptation": 5
+            },
+            "weighted_score": 84,
+            "classification": "conditional_candidate",
+            "reviewer_classification": "conditional_candidate",
+            "classification_calibration_override": null,
+            "preferred_eligible": false,
+            "reviewer_notes_ko": "독립 연구 코드라고 주장하지 않는 derived package atom이다. 명령 선택, 입력 상태, 출력 경계와 수정 가능한 binding을 각각 확인한다.",
+            "uncertainty": "패키지 설치 상태와 연구 설계의 타당성은 별도 target runtime 및 설계 검토가 필요하다.",
+            "current_vs_recommended_changes": [],
+            "canonical_exception_override": null
+          },
+          "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+          "source_spans": [
+            [
+              8,
+              8
+            ]
+          ],
+          "source_file_sha256": "9c7aeada71e4653da6c004eeb1a5cede2d431a55c55cd9fb1f9946e905c82af0",
+          "code_sha256": "70acd7150cb11f554668b00d454e50a83849d55f4f80138acbf7e46148eb847c"
+        }
+      ]
+    },
+    {
       "headword": "descriptives.sample_flow",
       "name_ko": "표본 흐름 자료",
       "name_en": "Named sample-flow dataset",
@@ -7724,7 +8483,7 @@
       "name_en": "Conventional regression estimation",
       "purpose_ko": "결과변수·처치·통제·고정효과·군집을 드러낸 표준 회귀를 실행한다.",
       "maturity": "comparative",
-      "auto_selectable_count": 5,
+      "auto_selectable_count": 8,
       "reference_only_count": 2,
       "aliases": [
         "회귀",
@@ -7753,7 +8512,10 @@
         "cgmreg",
         "eststo",
         "test",
-        "estadd"
+        "estadd",
+        "areg",
+        "ivregress",
+        "ivreg2"
       ],
       "retrieval_features": [
         "estimation",
@@ -9327,6 +10089,539 @@
           ],
           "source_file_sha256": "73ce29302c2faa23659c1e6bf7e18a6ea688613c6743b5576d2e42124963d5e0",
           "code_sha256": "aef26b70e9ec164d1de92d7201b6667e4af35140838c7e6ef5cb22dbbf471e73"
+        },
+        {
+          "label_id": "estimation.areg_absorb_clustered.v1",
+          "variant_id": "areg_absorb_one_fe_clustered",
+          "decision": "conditional_keep",
+          "selection_conditions": [
+            "outcome, treatment, controls, absorbed identifier, and cluster identifier are declared",
+            "the intended estimator is a one-absorbed-effect linear model"
+          ],
+          "tradeoffs": [
+            "keeps the absorbed effect and cluster visible",
+            "does not establish whether the chosen FE or cluster level is substantively valid"
+          ],
+          "relationships": {
+            "alternatives": [],
+            "duplicates": [],
+            "supersedes": []
+          },
+          "method_family": null,
+          "specification_facet": null,
+          "state_signature": {
+            "requires": [
+              "fixed analysis sample",
+              "declared outcome treatment controls absorbed effect and cluster"
+            ],
+            "observable_signals": [
+              "areg",
+              "absorb",
+              "vce"
+            ],
+            "produces": [
+              "one active e-class absorbed-FE linear estimate",
+              "active e(sample)"
+            ]
+          },
+          "input_signature": {
+            "data_structure": "unknown",
+            "observation_unit": "not_stated",
+            "time_structure": "not_stated",
+            "required_keys": [],
+            "variable_characteristics": [
+              "not_stated"
+            ],
+            "field_evidence": {
+              "data_structure": [],
+              "observation_unit": [],
+              "time_structure": [],
+              "required_keys": [],
+              "variable_characteristics": []
+            },
+            "evidence": {
+              "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+              "source_spans": [
+                [
+                  22,
+                  22
+                ]
+              ],
+              "context_radius_lines": 120,
+              "basis": "bounded source context around exact labeled source spans"
+            }
+          },
+          "command_anchors": [
+            "areg"
+          ],
+          "required_signals": [
+            "areg",
+            "absorb",
+            "vce",
+            "runs an estimation command"
+          ],
+          "forbidden_signals": [
+            "nested_loop",
+            "tex_output"
+          ],
+          "canonical_default": false,
+          "state_confidence": "strong",
+          "reuse_scope": "general",
+          "readability_score": 5,
+          "portability_score": 4,
+          "source_specific_elements": [
+            "outcome treatment controls entity_id cluster_id placeholders"
+          ],
+          "reusable_core": "한 absorbed fixed effect와 명시 cluster를 포함한 areg 추정을 실행한다.",
+          "preferred_within_checkpoint": false,
+          "explicit_canonical_exception": false,
+          "quality_rubric_review": {
+            "status": "external_evidence_rubric_reviewed",
+            "version": "1.1",
+            "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46",
+            "source_verification": {
+              "source_file_sha256_match": true,
+              "code_sha256_match": true,
+              "context_read": true
+            },
+            "hard_fails": [
+              {
+                "rule_id": "decision_not_generatable",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "provenance_incomplete",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "input_contract_mismatch",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "minimal_adaptation_undefined",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "machine_bound_default",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "merge_contract_absent",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "nested_loop",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "opaque_research_program",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              }
+            ],
+            "applicable_dimensions": [
+              "state_visibility",
+              "input_output_contract",
+              "portability",
+              "readability",
+              "sample_estimand_visibility",
+              "loop_program_abstraction",
+              "reproducibility",
+              "project_specific_coupling",
+              "minimal_adaptation"
+            ],
+            "dimension_scores": {
+              "state_visibility": 5,
+              "input_output_contract": 5,
+              "portability": 4,
+              "readability": 5,
+              "sample_estimand_visibility": 4,
+              "loop_program_abstraction": 5,
+              "reproducibility": 4,
+              "project_specific_coupling": 4,
+              "minimal_adaptation": 5
+            },
+            "weighted_score": 84,
+            "classification": "conditional_candidate",
+            "reviewer_classification": "conditional_candidate",
+            "classification_calibration_override": null,
+            "preferred_eligible": false,
+            "reviewer_notes_ko": "독립 연구 코드라고 주장하지 않는 derived package atom이다. 명령 선택, 입력 상태, 출력 경계와 수정 가능한 binding을 각각 확인한다.",
+            "uncertainty": "패키지 설치 상태와 연구 설계의 타당성은 별도 target runtime 및 설계 검토가 필요하다.",
+            "current_vs_recommended_changes": [],
+            "canonical_exception_override": null
+          },
+          "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+          "source_spans": [
+            [
+              22,
+              22
+            ]
+          ],
+          "source_file_sha256": "9c7aeada71e4653da6c004eeb1a5cede2d431a55c55cd9fb1f9946e905c82af0",
+          "code_sha256": "2d0c7c192328af484709a6bf51f65dc43860837211e59acd6dedd90d5c541049"
+        },
+        {
+          "label_id": "estimation.ivregress_2sls_clustered.v1",
+          "variant_id": "ivregress_2sls_one_endogenous_clustered",
+          "decision": "conditional_keep",
+          "selection_conditions": [
+            "outcome, endogenous treatment, excluded instrument, controls, and cluster are declared",
+            "the IV identifying assumptions have been separately justified"
+          ],
+          "tradeoffs": [
+            "uses Stata's official IV command with the first-stage relation visible",
+            "syntax cannot establish relevance, exclusion, or weak-IV robustness"
+          ],
+          "relationships": {
+            "alternatives": [],
+            "duplicates": [],
+            "supersedes": []
+          },
+          "method_family": "ivregress_2sls",
+          "specification_facet": null,
+          "state_signature": {
+            "requires": [
+              "fixed IV analysis sample",
+              "declared outcome endogenous treatment instrument controls and cluster"
+            ],
+            "observable_signals": [
+              "ivregress",
+              "2sls",
+              "vce"
+            ],
+            "produces": [
+              "one active 2SLS e-class estimate",
+              "active e(sample)"
+            ]
+          },
+          "input_signature": {
+            "data_structure": "unknown",
+            "observation_unit": "not_stated",
+            "time_structure": "not_stated",
+            "required_keys": [],
+            "variable_characteristics": [
+              "not_stated"
+            ],
+            "field_evidence": {
+              "data_structure": [],
+              "observation_unit": [],
+              "time_structure": [],
+              "required_keys": [],
+              "variable_characteristics": []
+            },
+            "evidence": {
+              "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+              "source_spans": [
+                [
+                  24,
+                  24
+                ]
+              ],
+              "context_radius_lines": 120,
+              "basis": "bounded source context around exact labeled source spans"
+            }
+          },
+          "command_anchors": [
+            "ivregress"
+          ],
+          "required_signals": [
+            "ivregress",
+            "2sls",
+            "vce"
+          ],
+          "forbidden_signals": [
+            "nested_loop",
+            "tex_output"
+          ],
+          "canonical_default": false,
+          "state_confidence": "strong",
+          "reuse_scope": "method_specific",
+          "readability_score": 5,
+          "portability_score": 4,
+          "source_specific_elements": [
+            "outcome treatment instrument controls cluster placeholders"
+          ],
+          "reusable_core": "한 endogenous treatment와 instrument를 명시한 ivregress 2sls를 실행한다.",
+          "preferred_within_checkpoint": false,
+          "explicit_canonical_exception": false,
+          "quality_rubric_review": {
+            "status": "external_evidence_rubric_reviewed",
+            "version": "1.1",
+            "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46",
+            "source_verification": {
+              "source_file_sha256_match": true,
+              "code_sha256_match": true,
+              "context_read": true
+            },
+            "hard_fails": [
+              {
+                "rule_id": "decision_not_generatable",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "provenance_incomplete",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "input_contract_mismatch",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "minimal_adaptation_undefined",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "machine_bound_default",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "merge_contract_absent",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "nested_loop",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "opaque_research_program",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              }
+            ],
+            "applicable_dimensions": [
+              "state_visibility",
+              "input_output_contract",
+              "portability",
+              "readability",
+              "sample_estimand_visibility",
+              "loop_program_abstraction",
+              "reproducibility",
+              "project_specific_coupling",
+              "minimal_adaptation"
+            ],
+            "dimension_scores": {
+              "state_visibility": 5,
+              "input_output_contract": 5,
+              "portability": 4,
+              "readability": 5,
+              "sample_estimand_visibility": 4,
+              "loop_program_abstraction": 5,
+              "reproducibility": 4,
+              "project_specific_coupling": 4,
+              "minimal_adaptation": 5
+            },
+            "weighted_score": 84,
+            "classification": "conditional_candidate",
+            "reviewer_classification": "conditional_candidate",
+            "classification_calibration_override": null,
+            "preferred_eligible": false,
+            "reviewer_notes_ko": "독립 연구 코드라고 주장하지 않는 derived package atom이다. 명령 선택, 입력 상태, 출력 경계와 수정 가능한 binding을 각각 확인한다.",
+            "uncertainty": "패키지 설치 상태와 연구 설계의 타당성은 별도 target runtime 및 설계 검토가 필요하다.",
+            "current_vs_recommended_changes": [],
+            "canonical_exception_override": null
+          },
+          "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+          "source_spans": [
+            [
+              24,
+              24
+            ]
+          ],
+          "source_file_sha256": "9c7aeada71e4653da6c004eeb1a5cede2d431a55c55cd9fb1f9946e905c82af0",
+          "code_sha256": "b3885d28cc09bb11615009bd40024254836b05352f0860f292be9a8804305592"
+        },
+        {
+          "label_id": "estimation.ivreg2_first_clustered.v1",
+          "variant_id": "ivreg2_clustered_first_stage",
+          "decision": "conditional_keep",
+          "selection_conditions": [
+            "ivreg2 is explicitly selected",
+            "outcome, endogenous treatment, instrument, controls, and cluster are declared"
+          ],
+          "tradeoffs": [
+            "requests the package's first-stage reporting",
+            "requires installed ivreg2 and does not establish IV validity"
+          ],
+          "relationships": {
+            "alternatives": [],
+            "duplicates": [],
+            "supersedes": []
+          },
+          "method_family": "ivreg2",
+          "specification_facet": null,
+          "state_signature": {
+            "requires": [
+              "fixed IV analysis sample",
+              "declared ivreg2 method and IV roles"
+            ],
+            "observable_signals": [
+              "ivreg2",
+              "cluster",
+              "first"
+            ],
+            "produces": [
+              "one active ivreg2 e-class estimate with requested first-stage output",
+              "active e(sample)"
+            ]
+          },
+          "input_signature": {
+            "data_structure": "unknown",
+            "observation_unit": "not_stated",
+            "time_structure": "not_stated",
+            "required_keys": [],
+            "variable_characteristics": [
+              "not_stated"
+            ],
+            "field_evidence": {
+              "data_structure": [],
+              "observation_unit": [],
+              "time_structure": [],
+              "required_keys": [],
+              "variable_characteristics": []
+            },
+            "evidence": {
+              "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+              "source_spans": [
+                [
+                  26,
+                  26
+                ]
+              ],
+              "context_radius_lines": 120,
+              "basis": "bounded source context around exact labeled source spans"
+            }
+          },
+          "command_anchors": [
+            "ivreg2"
+          ],
+          "required_signals": [
+            "ivreg2",
+            "cluster",
+            "first",
+            "runs an estimation command"
+          ],
+          "forbidden_signals": [
+            "nested_loop",
+            "tex_output"
+          ],
+          "canonical_default": false,
+          "state_confidence": "strong",
+          "reuse_scope": "method_specific",
+          "readability_score": 5,
+          "portability_score": 4,
+          "source_specific_elements": [
+            "outcome treatment instrument controls cluster placeholders"
+          ],
+          "reusable_core": "ivreg2의 first-stage 표시와 cluster를 명시한 한 개 IV 추정을 실행한다.",
+          "preferred_within_checkpoint": false,
+          "explicit_canonical_exception": false,
+          "quality_rubric_review": {
+            "status": "external_evidence_rubric_reviewed",
+            "version": "1.1",
+            "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46",
+            "source_verification": {
+              "source_file_sha256_match": true,
+              "code_sha256_match": true,
+              "context_read": true
+            },
+            "hard_fails": [
+              {
+                "rule_id": "decision_not_generatable",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "provenance_incomplete",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "input_contract_mismatch",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "minimal_adaptation_undefined",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "machine_bound_default",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "merge_contract_absent",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "nested_loop",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "opaque_research_program",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              }
+            ],
+            "applicable_dimensions": [
+              "state_visibility",
+              "input_output_contract",
+              "portability",
+              "readability",
+              "sample_estimand_visibility",
+              "loop_program_abstraction",
+              "reproducibility",
+              "project_specific_coupling",
+              "minimal_adaptation"
+            ],
+            "dimension_scores": {
+              "state_visibility": 5,
+              "input_output_contract": 5,
+              "portability": 4,
+              "readability": 5,
+              "sample_estimand_visibility": 4,
+              "loop_program_abstraction": 5,
+              "reproducibility": 4,
+              "project_specific_coupling": 4,
+              "minimal_adaptation": 5
+            },
+            "weighted_score": 84,
+            "classification": "conditional_candidate",
+            "reviewer_classification": "conditional_candidate",
+            "classification_calibration_override": null,
+            "preferred_eligible": false,
+            "reviewer_notes_ko": "독립 연구 코드라고 주장하지 않는 derived package atom이다. 명령 선택, 입력 상태, 출력 경계와 수정 가능한 binding을 각각 확인한다.",
+            "uncertainty": "패키지 설치 상태와 연구 설계의 타당성은 별도 target runtime 및 설계 검토가 필요하다.",
+            "current_vs_recommended_changes": [],
+            "canonical_exception_override": null
+          },
+          "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+          "source_spans": [
+            [
+              26,
+              26
+            ]
+          ],
+          "source_file_sha256": "9c7aeada71e4653da6c004eeb1a5cede2d431a55c55cd9fb1f9946e905c82af0",
+          "code_sha256": "a51765a879c2c3c833d205460f68068aecf6d74ae36ced09c66ed8e5a3eaf3a8"
         }
       ]
     },
@@ -12552,6 +13847,649 @@
           ],
           "source_file_sha256": "322f78ecc0217dc24d7f0c69da680510bfe91a4703d11964dbde18619f69a419",
           "code_sha256": "67eccae6d00a9e90beee02e080356db73105e23ca8bdf46722ae17d27098402f"
+        }
+      ]
+    },
+    {
+      "headword": "exports.estimate_text_table",
+      "name_ko": "추정치 CSV 표",
+      "name_en": "Estimate CSV table",
+      "purpose_ko": "이미 명명된 추정치를 사람이 읽을 수 있는 CSV 표로 내보낸다.",
+      "maturity": "prototype",
+      "auto_selectable_count": 1,
+      "reference_only_count": 0,
+      "aliases": [
+        "esttab",
+        "estout",
+        "estpost table",
+        "CSV regression table",
+        "추정치 CSV",
+        "non-TeX estimate table"
+      ],
+      "unit_kind": "post_estimation_export",
+      "input_contract": [
+        "one or more named compatible estimates",
+        "declared CSV output path and overwrite role",
+        "declared statistic and standard-error presentation"
+      ],
+      "output_contract": [
+        "one reproducible CSV estimate table",
+        "no TeX artifact"
+      ],
+      "common_commands": [
+        "esttab"
+      ],
+      "retrieval_features": [
+        "post_estimation_export",
+        "one or more named compatible estimates",
+        "declared CSV output path and overwrite role",
+        "declared statistic and standard-error presentation",
+        "one reproducible CSV estimate table",
+        "no TeX artifact",
+        "esttab",
+        "estout",
+        "estpost table",
+        "CSV regression table",
+        "추정치 CSV",
+        "non-TeX estimate table"
+      ],
+      "composition": {
+        "can_follow": [
+          "estimation.conventional",
+          "estimation.staggered_did",
+          "postest.persist_estimate"
+        ],
+        "can_precede": [
+          "cleanup"
+        ],
+        "incompatible_with": [
+          "TeX output",
+          "unnamed active estimate when a named estimate list is required",
+          "manual coefficient reconstruction"
+        ]
+      },
+      "variants": [
+        {
+          "label_id": "export.esttab_named_csv_nontex.v1",
+          "variant_id": "esttab_named_models_csv_se",
+          "decision": "conditional_keep",
+          "selection_conditions": [
+            "the ordered estimate names, CSV path, replace role, and standard-error presentation are declared",
+            "the request explicitly permits CSV rather than the project's final Excel outreg2 assembly"
+          ],
+          "tradeoffs": [
+            "provides an inspectable non-TeX package export",
+            "is not the final xlsx/outreg2 contract and does not reconstruct coefficients"
+          ],
+          "relationships": {
+            "alternatives": [],
+            "duplicates": [],
+            "supersedes": []
+          },
+          "method_family": null,
+          "specification_facet": null,
+          "state_signature": {
+            "requires": [
+              "named compatible estimates",
+              "declared CSV destination"
+            ],
+            "observable_signals": [
+              "esttab",
+              "csv"
+            ],
+            "produces": [
+              "one CSV estimate table"
+            ]
+          },
+          "input_signature": {
+            "data_structure": "unknown",
+            "observation_unit": "not_stated",
+            "time_structure": "not_stated",
+            "required_keys": [],
+            "variable_characteristics": [
+              "not_stated"
+            ],
+            "field_evidence": {
+              "data_structure": [],
+              "observation_unit": [],
+              "time_structure": [],
+              "required_keys": [],
+              "variable_characteristics": []
+            },
+            "evidence": {
+              "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+              "source_spans": [
+                [
+                  12,
+                  12
+                ]
+              ],
+              "context_radius_lines": 120,
+              "basis": "bounded source context around exact labeled source spans"
+            }
+          },
+          "command_anchors": [
+            "esttab"
+          ],
+          "required_signals": [
+            "esttab",
+            "csv"
+          ],
+          "forbidden_signals": [
+            "nested_loop",
+            "tex_output"
+          ],
+          "canonical_default": false,
+          "state_confidence": "strong",
+          "reuse_scope": "general",
+          "readability_score": 5,
+          "portability_score": 4,
+          "source_specific_elements": [
+            "model names and results path placeholders"
+          ],
+          "reusable_core": "명명된 추정치 목록을 standard-error 포함 CSV esttab으로 내보낸다.",
+          "preferred_within_checkpoint": false,
+          "explicit_canonical_exception": false,
+          "quality_rubric_review": {
+            "status": "external_evidence_rubric_reviewed",
+            "version": "1.1",
+            "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46",
+            "source_verification": {
+              "source_file_sha256_match": true,
+              "code_sha256_match": true,
+              "context_read": true
+            },
+            "hard_fails": [
+              {
+                "rule_id": "decision_not_generatable",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "provenance_incomplete",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "input_contract_mismatch",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "minimal_adaptation_undefined",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "machine_bound_default",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "merge_contract_absent",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "nested_loop",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "opaque_research_program",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              }
+            ],
+            "applicable_dimensions": [
+              "state_visibility",
+              "input_output_contract",
+              "portability",
+              "readability",
+              "sample_estimand_visibility",
+              "loop_program_abstraction",
+              "reproducibility",
+              "project_specific_coupling",
+              "minimal_adaptation"
+            ],
+            "dimension_scores": {
+              "state_visibility": 5,
+              "input_output_contract": 5,
+              "portability": 4,
+              "readability": 5,
+              "sample_estimand_visibility": 4,
+              "loop_program_abstraction": 5,
+              "reproducibility": 4,
+              "project_specific_coupling": 4,
+              "minimal_adaptation": 5
+            },
+            "weighted_score": 84,
+            "classification": "conditional_candidate",
+            "reviewer_classification": "conditional_candidate",
+            "classification_calibration_override": null,
+            "preferred_eligible": false,
+            "reviewer_notes_ko": "독립 연구 코드라고 주장하지 않는 derived package atom이다. 명령 선택, 입력 상태, 출력 경계와 수정 가능한 binding을 각각 확인한다.",
+            "uncertainty": "패키지 설치 상태와 연구 설계의 타당성은 별도 target runtime 및 설계 검토가 필요하다.",
+            "current_vs_recommended_changes": [],
+            "canonical_exception_override": null
+          },
+          "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+          "source_spans": [
+            [
+              12,
+              12
+            ]
+          ],
+          "source_file_sha256": "9c7aeada71e4653da6c004eeb1a5cede2d431a55c55cd9fb1f9946e905c82af0",
+          "code_sha256": "401adcbf71ea2b6620155aa3cbac2ff19a24a444782adca4ea1be64444bf1486"
+        }
+      ]
+    },
+    {
+      "headword": "exports.matrix_excel",
+      "name_ko": "행렬·collection Excel 내보내기",
+      "name_en": "Matrix or collection Excel export",
+      "purpose_ko": "명시된 Stata matrix 또는 collect 결과를 하나의 선언된 Excel 산출물로 내보낸다.",
+      "maturity": "comparative",
+      "auto_selectable_count": 2,
+      "reference_only_count": 0,
+      "aliases": [
+        "putexcel",
+        "collect export",
+        "matrix Excel",
+        "collect xlsx",
+        "행렬 Excel",
+        "collection Excel"
+      ],
+      "unit_kind": "post_estimation_export",
+      "input_contract": [
+        "a named matrix or an already populated Stata collection",
+        "declared workbook path, sheet role, and overwrite semantics"
+      ],
+      "output_contract": [
+        "one declared xlsx workbook or worksheet with the existing matrix or collection content"
+      ],
+      "common_commands": [
+        "putexcel",
+        "collect export"
+      ],
+      "retrieval_features": [
+        "post_estimation_export",
+        "a named matrix or an already populated Stata collection",
+        "declared workbook path, sheet role, and overwrite semantics",
+        "one declared xlsx workbook or worksheet with the existing matrix or collection content",
+        "putexcel",
+        "collect export",
+        "matrix Excel",
+        "collect xlsx",
+        "행렬 Excel",
+        "collection Excel"
+      ],
+      "composition": {
+        "can_follow": [
+          "descriptives.summary_dataset",
+          "estimation.conventional",
+          "estimation.staggered_did",
+          "postest.margins"
+        ],
+        "can_precede": [
+          "cleanup"
+        ],
+        "incompatible_with": [
+          "a nonexistent matrix or empty collection",
+          "undeclared workbook overwrite",
+          "TeX export"
+        ]
+      },
+      "variants": [
+        {
+          "label_id": "export.putexcel_matrix_named_sheet.v1",
+          "variant_id": "putexcel_matrix_names_replace",
+          "decision": "conditional_keep",
+          "selection_conditions": [
+            "the matrix exists",
+            "workbook path, sheet name, and replace role are declared"
+          ],
+          "tradeoffs": [
+            "preserves matrix row and column names",
+            "does not create a matrix or safely append to an undeclared existing sheet"
+          ],
+          "relationships": {
+            "alternatives": [],
+            "duplicates": [],
+            "supersedes": []
+          },
+          "method_family": null,
+          "specification_facet": null,
+          "state_signature": {
+            "requires": [
+              "named existing Stata matrix",
+              "declared workbook and sheet role"
+            ],
+            "observable_signals": [
+              "putexcel",
+              "matrix",
+              "names"
+            ],
+            "produces": [
+              "one declared Excel sheet containing the named matrix"
+            ]
+          },
+          "input_signature": {
+            "data_structure": "unknown",
+            "observation_unit": "not_stated",
+            "time_structure": "not_stated",
+            "required_keys": [],
+            "variable_characteristics": [
+              "not_stated"
+            ],
+            "field_evidence": {
+              "data_structure": [],
+              "observation_unit": [],
+              "time_structure": [],
+              "required_keys": [],
+              "variable_characteristics": []
+            },
+            "evidence": {
+              "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+              "source_spans": [
+                [
+                  34,
+                  35
+                ]
+              ],
+              "context_radius_lines": 120,
+              "basis": "bounded source context around exact labeled source spans"
+            }
+          },
+          "command_anchors": [
+            "putexcel"
+          ],
+          "required_signals": [
+            "putexcel",
+            "matrix",
+            "names",
+            "exports Excel output"
+          ],
+          "forbidden_signals": [
+            "nested_loop",
+            "tex_output"
+          ],
+          "canonical_default": false,
+          "state_confidence": "strong",
+          "reuse_scope": "general",
+          "readability_score": 5,
+          "portability_score": 4,
+          "source_specific_elements": [
+            "results path Summary sheet and summary_matrix placeholders"
+          ],
+          "reusable_core": "명명된 matrix를 names와 함께 선언한 Excel sheet에 putexcel로 쓴다.",
+          "preferred_within_checkpoint": false,
+          "explicit_canonical_exception": false,
+          "quality_rubric_review": {
+            "status": "external_evidence_rubric_reviewed",
+            "version": "1.1",
+            "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46",
+            "source_verification": {
+              "source_file_sha256_match": true,
+              "code_sha256_match": true,
+              "context_read": true
+            },
+            "hard_fails": [
+              {
+                "rule_id": "decision_not_generatable",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "provenance_incomplete",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "input_contract_mismatch",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "minimal_adaptation_undefined",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "machine_bound_default",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "merge_contract_absent",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "nested_loop",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "opaque_research_program",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              }
+            ],
+            "applicable_dimensions": [
+              "state_visibility",
+              "input_output_contract",
+              "portability",
+              "readability",
+              "sample_estimand_visibility",
+              "loop_program_abstraction",
+              "reproducibility",
+              "project_specific_coupling",
+              "minimal_adaptation"
+            ],
+            "dimension_scores": {
+              "state_visibility": 5,
+              "input_output_contract": 5,
+              "portability": 4,
+              "readability": 5,
+              "sample_estimand_visibility": 4,
+              "loop_program_abstraction": 5,
+              "reproducibility": 4,
+              "project_specific_coupling": 4,
+              "minimal_adaptation": 5
+            },
+            "weighted_score": 84,
+            "classification": "conditional_candidate",
+            "reviewer_classification": "conditional_candidate",
+            "classification_calibration_override": null,
+            "preferred_eligible": false,
+            "reviewer_notes_ko": "독립 연구 코드라고 주장하지 않는 derived package atom이다. 명령 선택, 입력 상태, 출력 경계와 수정 가능한 binding을 각각 확인한다.",
+            "uncertainty": "패키지 설치 상태와 연구 설계의 타당성은 별도 target runtime 및 설계 검토가 필요하다.",
+            "current_vs_recommended_changes": [],
+            "canonical_exception_override": null
+          },
+          "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+          "source_spans": [
+            [
+              34,
+              35
+            ]
+          ],
+          "source_file_sha256": "9c7aeada71e4653da6c004eeb1a5cede2d431a55c55cd9fb1f9946e905c82af0",
+          "code_sha256": "ef54c028bf959b52b9dafe0530c37377b61cdb3b92447523161c47d4c013b698"
+        },
+        {
+          "label_id": "export.collect_existing_xlsx.v1",
+          "variant_id": "collect_existing_export_xlsx",
+          "decision": "conditional_keep",
+          "selection_conditions": [
+            "a nonempty compatible Stata collection is already active",
+            "the workbook path and replace role are declared"
+          ],
+          "tradeoffs": [
+            "uses Stata's existing collection without manual row reconstruction",
+            "does not build or style a collection"
+          ],
+          "relationships": {
+            "alternatives": [],
+            "duplicates": [],
+            "supersedes": []
+          },
+          "method_family": null,
+          "specification_facet": null,
+          "state_signature": {
+            "requires": [
+              "already populated compatible Stata collection",
+              "declared xlsx destination"
+            ],
+            "observable_signals": [
+              "collect export"
+            ],
+            "produces": [
+              "one xlsx export of the active collection"
+            ]
+          },
+          "input_signature": {
+            "data_structure": "unknown",
+            "observation_unit": "not_stated",
+            "time_structure": "not_stated",
+            "required_keys": [],
+            "variable_characteristics": [
+              "not_stated"
+            ],
+            "field_evidence": {
+              "data_structure": [],
+              "observation_unit": [],
+              "time_structure": [],
+              "required_keys": [],
+              "variable_characteristics": []
+            },
+            "evidence": {
+              "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+              "source_spans": [
+                [
+                  37,
+                  37
+                ]
+              ],
+              "context_radius_lines": 120,
+              "basis": "bounded source context around exact labeled source spans"
+            }
+          },
+          "command_anchors": [
+            "collect export"
+          ],
+          "required_signals": [
+            "collect export"
+          ],
+          "forbidden_signals": [
+            "nested_loop",
+            "tex_output"
+          ],
+          "canonical_default": false,
+          "state_confidence": "strong",
+          "reuse_scope": "general",
+          "readability_score": 5,
+          "portability_score": 4,
+          "source_specific_elements": [
+            "results path placeholder"
+          ],
+          "reusable_core": "이미 채워진 Stata collection을 선언한 xlsx 경로로 collect export한다.",
+          "preferred_within_checkpoint": false,
+          "explicit_canonical_exception": false,
+          "quality_rubric_review": {
+            "status": "external_evidence_rubric_reviewed",
+            "version": "1.1",
+            "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46",
+            "source_verification": {
+              "source_file_sha256_match": true,
+              "code_sha256_match": true,
+              "context_read": true
+            },
+            "hard_fails": [
+              {
+                "rule_id": "decision_not_generatable",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "provenance_incomplete",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "input_contract_mismatch",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "minimal_adaptation_undefined",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "machine_bound_default",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "merge_contract_absent",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "nested_loop",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "opaque_research_program",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              }
+            ],
+            "applicable_dimensions": [
+              "state_visibility",
+              "input_output_contract",
+              "portability",
+              "readability",
+              "sample_estimand_visibility",
+              "loop_program_abstraction",
+              "reproducibility",
+              "project_specific_coupling",
+              "minimal_adaptation"
+            ],
+            "dimension_scores": {
+              "state_visibility": 5,
+              "input_output_contract": 5,
+              "portability": 4,
+              "readability": 5,
+              "sample_estimand_visibility": 4,
+              "loop_program_abstraction": 5,
+              "reproducibility": 4,
+              "project_specific_coupling": 4,
+              "minimal_adaptation": 5
+            },
+            "weighted_score": 84,
+            "classification": "conditional_candidate",
+            "reviewer_classification": "conditional_candidate",
+            "classification_calibration_override": null,
+            "preferred_eligible": false,
+            "reviewer_notes_ko": "독립 연구 코드라고 주장하지 않는 derived package atom이다. 명령 선택, 입력 상태, 출력 경계와 수정 가능한 binding을 각각 확인한다.",
+            "uncertainty": "패키지 설치 상태와 연구 설계의 타당성은 별도 target runtime 및 설계 검토가 필요하다.",
+            "current_vs_recommended_changes": [],
+            "canonical_exception_override": null
+          },
+          "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+          "source_spans": [
+            [
+              37,
+              37
+            ]
+          ],
+          "source_file_sha256": "9c7aeada71e4653da6c004eeb1a5cede2d431a55c55cd9fb1f9946e905c82af0",
+          "code_sha256": "282eea5f8d40212f2581421fa59f958516e1b1bcdbba267e15b69676b387e09d"
         }
       ]
     },
@@ -16917,6 +18855,235 @@
       ]
     },
     {
+      "headword": "figures.marginsplot",
+      "name_ko": "한계효과 그림",
+      "name_en": "Margins plot",
+      "purpose_ko": "직전 margins 결과를 활성 신뢰구간 그림으로 변환한다.",
+      "maturity": "prototype",
+      "auto_selectable_count": 1,
+      "reference_only_count": 0,
+      "aliases": [
+        "marginsplot",
+        "margins plot",
+        "marginal-effects plot",
+        "한계효과 그림"
+      ],
+      "unit_kind": "post_estimation_export",
+      "input_contract": [
+        "active margins result",
+        "declared figure geometry and confidence-interval style"
+      ],
+      "output_contract": [
+        "one active margins graph",
+        "PDF export remains a separate figures.export_pdf transition"
+      ],
+      "common_commands": [
+        "marginsplot"
+      ],
+      "retrieval_features": [
+        "post_estimation_export",
+        "active margins result",
+        "declared figure geometry and confidence-interval style",
+        "one active margins graph",
+        "PDF export remains a separate figures.export_pdf transition",
+        "marginsplot",
+        "margins plot",
+        "marginal-effects plot",
+        "한계효과 그림"
+      ],
+      "composition": {
+        "can_follow": [
+          "postest.margins"
+        ],
+        "can_precede": [
+          "figures.export_pdf",
+          "figures.named_graph_combine"
+        ],
+        "incompatible_with": [
+          "marginsplot without immediately preceding compatible margins",
+          "manual graph editing",
+          "bundled PDF export"
+        ]
+      },
+      "variants": [
+        {
+          "label_id": "figure.marginsplot_line_rarea_active.v1",
+          "variant_id": "marginsplot_line_rarea_active_graph",
+          "decision": "conditional_keep",
+          "selection_conditions": [
+            "a compatible margins result is immediately active",
+            "line and confidence-area geometry are requested"
+          ],
+          "tradeoffs": [
+            "keeps point and confidence rendering explicit",
+            "does not export a file or establish labels and axes not declared here"
+          ],
+          "relationships": {
+            "alternatives": [],
+            "duplicates": [],
+            "supersedes": []
+          },
+          "method_family": null,
+          "specification_facet": null,
+          "state_signature": {
+            "requires": [
+              "active compatible margins result"
+            ],
+            "observable_signals": [
+              "marginsplot",
+              "recast",
+              "recastci"
+            ],
+            "produces": [
+              "one active margins graph"
+            ]
+          },
+          "input_signature": {
+            "data_structure": "unknown",
+            "observation_unit": "not_stated",
+            "time_structure": "not_stated",
+            "required_keys": [],
+            "variable_characteristics": [
+              "not_stated"
+            ],
+            "field_evidence": {
+              "data_structure": [],
+              "observation_unit": [],
+              "time_structure": [],
+              "required_keys": [],
+              "variable_characteristics": []
+            },
+            "evidence": {
+              "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+              "source_spans": [
+                [
+                  30,
+                  30
+                ]
+              ],
+              "context_radius_lines": 120,
+              "basis": "bounded source context around exact labeled source spans"
+            }
+          },
+          "command_anchors": [
+            "marginsplot"
+          ],
+          "required_signals": [
+            "marginsplot",
+            "recast",
+            "recastci"
+          ],
+          "forbidden_signals": [
+            "nested_loop",
+            "tex_output"
+          ],
+          "canonical_default": false,
+          "state_confidence": "strong",
+          "reuse_scope": "general",
+          "readability_score": 5,
+          "portability_score": 4,
+          "source_specific_elements": [
+            "line and rarea rendering choice"
+          ],
+          "reusable_core": "active margins 결과를 line과 rarea 신뢰구간의 active graph로 그린다.",
+          "preferred_within_checkpoint": false,
+          "explicit_canonical_exception": false,
+          "quality_rubric_review": {
+            "status": "external_evidence_rubric_reviewed",
+            "version": "1.1",
+            "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46",
+            "source_verification": {
+              "source_file_sha256_match": true,
+              "code_sha256_match": true,
+              "context_read": true
+            },
+            "hard_fails": [
+              {
+                "rule_id": "decision_not_generatable",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "provenance_incomplete",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "input_contract_mismatch",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "minimal_adaptation_undefined",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "machine_bound_default",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "merge_contract_absent",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "nested_loop",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "opaque_research_program",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              }
+            ],
+            "applicable_dimensions": [
+              "state_visibility",
+              "input_output_contract",
+              "portability",
+              "readability",
+              "sample_estimand_visibility",
+              "loop_program_abstraction",
+              "reproducibility",
+              "project_specific_coupling",
+              "minimal_adaptation"
+            ],
+            "dimension_scores": {
+              "state_visibility": 5,
+              "input_output_contract": 5,
+              "portability": 4,
+              "readability": 5,
+              "sample_estimand_visibility": 4,
+              "loop_program_abstraction": 5,
+              "reproducibility": 4,
+              "project_specific_coupling": 4,
+              "minimal_adaptation": 5
+            },
+            "weighted_score": 84,
+            "classification": "conditional_candidate",
+            "reviewer_classification": "conditional_candidate",
+            "classification_calibration_override": null,
+            "preferred_eligible": false,
+            "reviewer_notes_ko": "독립 연구 코드라고 주장하지 않는 derived package atom이다. 명령 선택, 입력 상태, 출력 경계와 수정 가능한 binding을 각각 확인한다.",
+            "uncertainty": "패키지 설치 상태와 연구 설계의 타당성은 별도 target runtime 및 설계 검토가 필요하다.",
+            "current_vs_recommended_changes": [],
+            "canonical_exception_override": null
+          },
+          "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+          "source_spans": [
+            [
+              30,
+              30
+            ]
+          ],
+          "source_file_sha256": "9c7aeada71e4653da6c004eeb1a5cede2d431a55c55cd9fb1f9946e905c82af0",
+          "code_sha256": "be2da555942db4a4d89cdda98e7b0b6bae2a19a0f1e0ac94b8dc6eb22fc75bc7"
+        }
+      ]
+    },
+    {
       "headword": "figures.named_graph_combine",
       "name_ko": "명명된 그림 결합",
       "name_en": "Named graph composition",
@@ -18401,8 +20568,8 @@
       "name_ko": "다중 원자료 결합",
       "name_en": "Multi-source input combination",
       "purpose_ko": "동일 구조의 원자료를 읽어 출처를 보존하며 하나로 결합한다.",
-      "maturity": "prototype",
-      "auto_selectable_count": 0,
+      "maturity": "comparative",
+      "auto_selectable_count": 1,
       "reference_only_count": 1,
       "aliases": [
         "불러오기",
@@ -18420,13 +20587,13 @@
         "source provenance variable when sources differ"
       ],
       "common_commands": [
+        "append",
         "insheet",
         "generate",
         "drop",
         "destring",
         "save",
-        "clear",
-        "append"
+        "clear"
       ],
       "retrieval_features": [
         "preparation",
@@ -18734,6 +20901,182 @@
           ],
           "source_file_sha256": "28d3bf8bde49cce093ad583a3f62a9089981154fdb71f35892d39a8d9c42cc38",
           "code_sha256": "d78968aea3e1517e64d34baa4d979d4aa30f141db1f3482e0a72ad090880518d"
+        },
+        {
+          "label_id": "input.append_schema_source_id.v1",
+          "variant_id": "append_using_generate_source_id",
+          "decision": "conditional_keep",
+          "selection_conditions": [
+            "master and using data have documented compatible variables and units",
+            "the append order and source-id meaning are declared"
+          ],
+          "tradeoffs": [
+            "retains a source indicator",
+            "does not establish schema compatibility or key uniqueness by itself"
+          ],
+          "relationships": {
+            "alternatives": [],
+            "duplicates": [],
+            "supersedes": []
+          },
+          "method_family": null,
+          "specification_facet": null,
+          "state_signature": {
+            "requires": [
+              "active master dataset",
+              "one declared using dataset with verified shared schema",
+              "declared source-id semantics"
+            ],
+            "observable_signals": [
+              "append",
+              "generate"
+            ],
+            "produces": [
+              "one combined active dataset with source-id indicator"
+            ]
+          },
+          "input_signature": {
+            "data_structure": "unknown",
+            "observation_unit": "not_stated",
+            "time_structure": "not_stated",
+            "required_keys": [],
+            "variable_characteristics": [
+              "not_stated"
+            ],
+            "field_evidence": {
+              "data_structure": [],
+              "observation_unit": [],
+              "time_structure": [],
+              "required_keys": [],
+              "variable_characteristics": []
+            },
+            "evidence": {
+              "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+              "source_spans": [
+                [
+                  14,
+                  14
+                ]
+              ],
+              "context_radius_lines": 120,
+              "basis": "bounded source context around exact labeled source spans"
+            }
+          },
+          "command_anchors": [
+            "append"
+          ],
+          "required_signals": [
+            "append",
+            "generate",
+            "appends source rows"
+          ],
+          "forbidden_signals": [
+            "nested_loop",
+            "tex_output"
+          ],
+          "canonical_default": false,
+          "state_confidence": "strong",
+          "reuse_scope": "general",
+          "readability_score": 5,
+          "portability_score": 4,
+          "source_specific_elements": [
+            "temporary using path and source_id placeholders"
+          ],
+          "reusable_core": "검증된 동일 schema의 using 자료를 append하고 source-id 변수를 생성한다.",
+          "preferred_within_checkpoint": false,
+          "explicit_canonical_exception": false,
+          "quality_rubric_review": {
+            "status": "external_evidence_rubric_reviewed",
+            "version": "1.1",
+            "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46",
+            "source_verification": {
+              "source_file_sha256_match": true,
+              "code_sha256_match": true,
+              "context_read": true
+            },
+            "hard_fails": [
+              {
+                "rule_id": "decision_not_generatable",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "provenance_incomplete",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "input_contract_mismatch",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "minimal_adaptation_undefined",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "machine_bound_default",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "merge_contract_absent",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "nested_loop",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "opaque_research_program",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              }
+            ],
+            "applicable_dimensions": [
+              "state_visibility",
+              "input_output_contract",
+              "portability",
+              "readability",
+              "sample_estimand_visibility",
+              "loop_program_abstraction",
+              "reproducibility",
+              "project_specific_coupling",
+              "minimal_adaptation"
+            ],
+            "dimension_scores": {
+              "state_visibility": 5,
+              "input_output_contract": 5,
+              "portability": 4,
+              "readability": 5,
+              "sample_estimand_visibility": 4,
+              "loop_program_abstraction": 5,
+              "reproducibility": 4,
+              "project_specific_coupling": 4,
+              "minimal_adaptation": 5
+            },
+            "weighted_score": 84,
+            "classification": "conditional_candidate",
+            "reviewer_classification": "conditional_candidate",
+            "classification_calibration_override": null,
+            "preferred_eligible": false,
+            "reviewer_notes_ko": "독립 연구 코드라고 주장하지 않는 derived package atom이다. 명령 선택, 입력 상태, 출력 경계와 수정 가능한 binding을 각각 확인한다.",
+            "uncertainty": "패키지 설치 상태와 연구 설계의 타당성은 별도 target runtime 및 설계 검토가 필요하다.",
+            "current_vs_recommended_changes": [],
+            "canonical_exception_override": null
+          },
+          "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+          "source_spans": [
+            [
+              14,
+              14
+            ]
+          ],
+          "source_file_sha256": "9c7aeada71e4653da6c004eeb1a5cede2d431a55c55cd9fb1f9946e905c82af0",
+          "code_sha256": "cbe3c70abbcac95633df8fbe19f1b87650ac87dc108dd1a72ba6605312bc38ce"
         }
       ]
     },
@@ -20103,7 +22446,7 @@
       "name_en": "Integrity audit",
       "purpose_ko": "키·중복·결측·범위를 진단하고 변경 전 데이터 가정을 검증한다.",
       "maturity": "comparative",
-      "auto_selectable_count": 3,
+      "auto_selectable_count": 6,
       "reference_only_count": 3,
       "aliases": [
         "키 검사",
@@ -20129,6 +22472,7 @@
         "assert",
         "drop",
         "isid",
+        "tabulate",
         "use",
         "keep",
         "rename",
@@ -20137,7 +22481,8 @@
         "generate",
         "egen",
         "count",
-        "xtset"
+        "xtset",
+        "misstable"
       ],
       "retrieval_features": [
         "validation",
@@ -22369,6 +24714,529 @@
           ],
           "source_file_sha256": "28d3bf8bde49cce093ad583a3f62a9089981154fdb71f35892d39a8d9c42cc38",
           "code_sha256": "e2b11dccc71e9d05f32609242d596b4f2d78aef8f670e7ba89e2c984882583bc"
+        },
+        {
+          "label_id": "integrity.tabulate_oneway_missing_audit.v1",
+          "variant_id": "tabulate_oneway_include_missing",
+          "decision": "conditional_keep",
+          "selection_conditions": [
+            "the categorical variable and the reason for inspecting missingness are declared"
+          ],
+          "tradeoffs": [
+            "keeps missing values visible",
+            "is a diagnostic display and does not repair or drop observations"
+          ],
+          "relationships": {
+            "alternatives": [],
+            "duplicates": [],
+            "supersedes": []
+          },
+          "method_family": null,
+          "specification_facet": null,
+          "state_signature": {
+            "requires": [
+              "active data",
+              "declared categorical variable"
+            ],
+            "observable_signals": [
+              "tabulate",
+              "missing"
+            ],
+            "produces": [
+              "one visible one-way frequency audit"
+            ]
+          },
+          "input_signature": {
+            "data_structure": "unknown",
+            "observation_unit": "not_stated",
+            "time_structure": "not_stated",
+            "required_keys": [],
+            "variable_characteristics": [
+              "not_stated"
+            ],
+            "field_evidence": {
+              "data_structure": [],
+              "observation_unit": [],
+              "time_structure": [],
+              "required_keys": [],
+              "variable_characteristics": []
+            },
+            "evidence": {
+              "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+              "source_spans": [
+                [
+                  16,
+                  16
+                ]
+              ],
+              "context_radius_lines": 120,
+              "basis": "bounded source context around exact labeled source spans"
+            }
+          },
+          "command_anchors": [
+            "tabulate"
+          ],
+          "required_signals": [
+            "tabulate",
+            "missing"
+          ],
+          "forbidden_signals": [
+            "nested_loop",
+            "tex_output"
+          ],
+          "canonical_default": false,
+          "state_confidence": "strong",
+          "reuse_scope": "general",
+          "readability_score": 5,
+          "portability_score": 4,
+          "source_specific_elements": [
+            "group placeholder"
+          ],
+          "reusable_core": "missing을 포함해 하나의 범주형 변수 분포를 tabulate로 진단한다.",
+          "preferred_within_checkpoint": false,
+          "explicit_canonical_exception": false,
+          "quality_rubric_review": {
+            "status": "external_evidence_rubric_reviewed",
+            "version": "1.1",
+            "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46",
+            "source_verification": {
+              "source_file_sha256_match": true,
+              "code_sha256_match": true,
+              "context_read": true
+            },
+            "hard_fails": [
+              {
+                "rule_id": "decision_not_generatable",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "provenance_incomplete",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "input_contract_mismatch",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "minimal_adaptation_undefined",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "machine_bound_default",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "merge_contract_absent",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "nested_loop",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "opaque_research_program",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              }
+            ],
+            "applicable_dimensions": [
+              "state_visibility",
+              "input_output_contract",
+              "portability",
+              "readability",
+              "sample_estimand_visibility",
+              "loop_program_abstraction",
+              "reproducibility",
+              "project_specific_coupling",
+              "minimal_adaptation"
+            ],
+            "dimension_scores": {
+              "state_visibility": 5,
+              "input_output_contract": 5,
+              "portability": 4,
+              "readability": 5,
+              "sample_estimand_visibility": 4,
+              "loop_program_abstraction": 5,
+              "reproducibility": 4,
+              "project_specific_coupling": 4,
+              "minimal_adaptation": 5
+            },
+            "weighted_score": 84,
+            "classification": "conditional_candidate",
+            "reviewer_classification": "conditional_candidate",
+            "classification_calibration_override": null,
+            "preferred_eligible": false,
+            "reviewer_notes_ko": "독립 연구 코드라고 주장하지 않는 derived package atom이다. 명령 선택, 입력 상태, 출력 경계와 수정 가능한 binding을 각각 확인한다.",
+            "uncertainty": "패키지 설치 상태와 연구 설계의 타당성은 별도 target runtime 및 설계 검토가 필요하다.",
+            "current_vs_recommended_changes": [],
+            "canonical_exception_override": null
+          },
+          "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+          "source_spans": [
+            [
+              16,
+              16
+            ]
+          ],
+          "source_file_sha256": "9c7aeada71e4653da6c004eeb1a5cede2d431a55c55cd9fb1f9946e905c82af0",
+          "code_sha256": "41ce89254001890e17e812ff8278648fcda3f31a236410f90dc0f92d729669bb"
+        },
+        {
+          "label_id": "integrity.tabulate_twoway_row_audit.v1",
+          "variant_id": "tabulate_twoway_row_chi2",
+          "decision": "conditional_keep",
+          "selection_conditions": [
+            "both categorical variables and the diagnostic purpose are declared",
+            "cell support will be inspected before any chi-square interpretation",
+            "a chi-square display is requested as descriptive evidence rather than causal proof"
+          ],
+          "tradeoffs": [
+            "makes row composition visible",
+            "does not substitute for a model or validate sparse-cell assumptions"
+          ],
+          "relationships": {
+            "alternatives": [],
+            "duplicates": [],
+            "supersedes": []
+          },
+          "method_family": null,
+          "specification_facet": null,
+          "state_signature": {
+            "requires": [
+              "active data",
+              "two declared categorical variables"
+            ],
+            "observable_signals": [
+              "tabulate",
+              "row",
+              "chi2"
+            ],
+            "produces": [
+              "one visible two-way row-percentage audit"
+            ]
+          },
+          "input_signature": {
+            "data_structure": "unknown",
+            "observation_unit": "not_stated",
+            "time_structure": "not_stated",
+            "required_keys": [],
+            "variable_characteristics": [
+              "not_stated"
+            ],
+            "field_evidence": {
+              "data_structure": [],
+              "observation_unit": [],
+              "time_structure": [],
+              "required_keys": [],
+              "variable_characteristics": []
+            },
+            "evidence": {
+              "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+              "source_spans": [
+                [
+                  18,
+                  18
+                ]
+              ],
+              "context_radius_lines": 120,
+              "basis": "bounded source context around exact labeled source spans"
+            }
+          },
+          "command_anchors": [
+            "tabulate"
+          ],
+          "required_signals": [
+            "tabulate",
+            "row",
+            "chi2"
+          ],
+          "forbidden_signals": [
+            "nested_loop",
+            "tex_output"
+          ],
+          "canonical_default": false,
+          "state_confidence": "strong",
+          "reuse_scope": "general",
+          "readability_score": 5,
+          "portability_score": 4,
+          "source_specific_elements": [
+            "group and treatment placeholders"
+          ],
+          "reusable_core": "두 범주형 변수의 row percentage와 chi-square 진단을 표시한다.",
+          "preferred_within_checkpoint": false,
+          "explicit_canonical_exception": false,
+          "quality_rubric_review": {
+            "status": "external_evidence_rubric_reviewed",
+            "version": "1.1",
+            "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46",
+            "source_verification": {
+              "source_file_sha256_match": true,
+              "code_sha256_match": true,
+              "context_read": true
+            },
+            "hard_fails": [
+              {
+                "rule_id": "decision_not_generatable",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "provenance_incomplete",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "input_contract_mismatch",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "minimal_adaptation_undefined",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "machine_bound_default",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "merge_contract_absent",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "nested_loop",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "opaque_research_program",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              }
+            ],
+            "applicable_dimensions": [
+              "state_visibility",
+              "input_output_contract",
+              "portability",
+              "readability",
+              "sample_estimand_visibility",
+              "loop_program_abstraction",
+              "reproducibility",
+              "project_specific_coupling",
+              "minimal_adaptation"
+            ],
+            "dimension_scores": {
+              "state_visibility": 5,
+              "input_output_contract": 5,
+              "portability": 4,
+              "readability": 5,
+              "sample_estimand_visibility": 4,
+              "loop_program_abstraction": 5,
+              "reproducibility": 4,
+              "project_specific_coupling": 4,
+              "minimal_adaptation": 5
+            },
+            "weighted_score": 84,
+            "classification": "conditional_candidate",
+            "reviewer_classification": "conditional_candidate",
+            "classification_calibration_override": null,
+            "preferred_eligible": false,
+            "reviewer_notes_ko": "독립 연구 코드라고 주장하지 않는 derived package atom이다. 명령 선택, 입력 상태, 출력 경계와 수정 가능한 binding을 각각 확인한다.",
+            "uncertainty": "패키지 설치 상태와 연구 설계의 타당성은 별도 target runtime 및 설계 검토가 필요하다.",
+            "current_vs_recommended_changes": [],
+            "canonical_exception_override": null
+          },
+          "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+          "source_spans": [
+            [
+              18,
+              18
+            ]
+          ],
+          "source_file_sha256": "9c7aeada71e4653da6c004eeb1a5cede2d431a55c55cd9fb1f9946e905c82af0",
+          "code_sha256": "032373056b8f511458897628aad5141986079b6d015f28cfd253e0cf579a3363"
+        },
+        {
+          "label_id": "integrity.misstable_summary_audit.v1",
+          "variant_id": "misstable_summarize_declared_vars",
+          "decision": "conditional_keep",
+          "selection_conditions": [
+            "the variable list is declared and no imputation or deletion action is requested"
+          ],
+          "tradeoffs": [
+            "surfaces missingness without changing data",
+            "does not diagnose the missing-data mechanism"
+          ],
+          "relationships": {
+            "alternatives": [],
+            "duplicates": [],
+            "supersedes": []
+          },
+          "method_family": null,
+          "specification_facet": null,
+          "state_signature": {
+            "requires": [
+              "active data",
+              "declared variable list"
+            ],
+            "observable_signals": [
+              "misstable",
+              "summarize"
+            ],
+            "produces": [
+              "one visible missingness audit"
+            ]
+          },
+          "input_signature": {
+            "data_structure": "unknown",
+            "observation_unit": "not_stated",
+            "time_structure": "not_stated",
+            "required_keys": [],
+            "variable_characteristics": [
+              "not_stated"
+            ],
+            "field_evidence": {
+              "data_structure": [],
+              "observation_unit": [],
+              "time_structure": [],
+              "required_keys": [],
+              "variable_characteristics": []
+            },
+            "evidence": {
+              "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+              "source_spans": [
+                [
+                  20,
+                  20
+                ]
+              ],
+              "context_radius_lines": 120,
+              "basis": "bounded source context around exact labeled source spans"
+            }
+          },
+          "command_anchors": [
+            "misstable"
+          ],
+          "required_signals": [
+            "misstable",
+            "summarize"
+          ],
+          "forbidden_signals": [
+            "nested_loop",
+            "tex_output"
+          ],
+          "canonical_default": false,
+          "state_confidence": "strong",
+          "reuse_scope": "general",
+          "readability_score": 5,
+          "portability_score": 4,
+          "source_specific_elements": [
+            "outcome treatment and control placeholders"
+          ],
+          "reusable_core": "선언된 분석변수의 결측 현황을 misstable summarize로 진단한다.",
+          "preferred_within_checkpoint": false,
+          "explicit_canonical_exception": false,
+          "quality_rubric_review": {
+            "status": "external_evidence_rubric_reviewed",
+            "version": "1.1",
+            "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46",
+            "source_verification": {
+              "source_file_sha256_match": true,
+              "code_sha256_match": true,
+              "context_read": true
+            },
+            "hard_fails": [
+              {
+                "rule_id": "decision_not_generatable",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "provenance_incomplete",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "input_contract_mismatch",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "minimal_adaptation_undefined",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "machine_bound_default",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "merge_contract_absent",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "nested_loop",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "opaque_research_program",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              }
+            ],
+            "applicable_dimensions": [
+              "state_visibility",
+              "input_output_contract",
+              "portability",
+              "readability",
+              "sample_estimand_visibility",
+              "loop_program_abstraction",
+              "reproducibility",
+              "project_specific_coupling",
+              "minimal_adaptation"
+            ],
+            "dimension_scores": {
+              "state_visibility": 5,
+              "input_output_contract": 5,
+              "portability": 4,
+              "readability": 5,
+              "sample_estimand_visibility": 4,
+              "loop_program_abstraction": 5,
+              "reproducibility": 4,
+              "project_specific_coupling": 4,
+              "minimal_adaptation": 5
+            },
+            "weighted_score": 84,
+            "classification": "conditional_candidate",
+            "reviewer_classification": "conditional_candidate",
+            "classification_calibration_override": null,
+            "preferred_eligible": false,
+            "reviewer_notes_ko": "독립 연구 코드라고 주장하지 않는 derived package atom이다. 명령 선택, 입력 상태, 출력 경계와 수정 가능한 binding을 각각 확인한다.",
+            "uncertainty": "패키지 설치 상태와 연구 설계의 타당성은 별도 target runtime 및 설계 검토가 필요하다.",
+            "current_vs_recommended_changes": [],
+            "canonical_exception_override": null
+          },
+          "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+          "source_spans": [
+            [
+              20,
+              20
+            ]
+          ],
+          "source_file_sha256": "9c7aeada71e4653da6c004eeb1a5cede2d431a55c55cd9fb1f9946e905c82af0",
+          "code_sha256": "f6d4d052976f5fac63cb30a500c69206bce8efe04bc8a93bab870d1a262d3e11"
         }
       ]
     },
@@ -30062,12 +32930,241 @@
       ]
     },
     {
+      "headword": "postest.margins",
+      "name_ko": "사후 예측·한계효과",
+      "name_en": "Post-estimation margins",
+      "purpose_ko": "직전 활성 추정치에서 선언한 예측값 또는 한계효과를 계산한다.",
+      "maturity": "prototype",
+      "auto_selectable_count": 1,
+      "reference_only_count": 0,
+      "aliases": [
+        "margins",
+        "marginal effects",
+        "predicted margins",
+        "한계효과",
+        "사후 예측"
+      ],
+      "unit_kind": "post_estimation",
+      "input_contract": [
+        "a compatible active estimation result",
+        "declared focal variable and requested values or contrasts"
+      ],
+      "output_contract": [
+        "active margins result corresponding to the declared focal values"
+      ],
+      "common_commands": [
+        "margins"
+      ],
+      "retrieval_features": [
+        "post_estimation",
+        "a compatible active estimation result",
+        "declared focal variable and requested values or contrasts",
+        "active margins result corresponding to the declared focal values",
+        "margins",
+        "marginal effects",
+        "predicted margins",
+        "한계효과",
+        "사후 예측"
+      ],
+      "composition": {
+        "can_follow": [
+          "estimation.conventional",
+          "estimation.staggered_did"
+        ],
+        "can_precede": [
+          "figures.marginsplot",
+          "exports.matrix_excel"
+        ],
+        "incompatible_with": [
+          "margins after an incompatible non-estimation command",
+          "undeclared focal-variable values",
+          "interpretation without the originating estimator"
+        ]
+      },
+      "variants": [
+        {
+          "label_id": "postest.margins_declared_at.v1",
+          "variant_id": "margins_focal_at_values",
+          "decision": "conditional_keep",
+          "selection_conditions": [
+            "a compatible active estimation result exists",
+            "the focal variable and all requested values are declared"
+          ],
+          "tradeoffs": [
+            "preserves the requested comparison grid",
+            "interpretation depends on the immediately preceding estimator and covariate handling"
+          ],
+          "relationships": {
+            "alternatives": [],
+            "duplicates": [],
+            "supersedes": []
+          },
+          "method_family": null,
+          "specification_facet": null,
+          "state_signature": {
+            "requires": [
+              "active compatible e-class estimate",
+              "declared focal variable and values"
+            ],
+            "observable_signals": [
+              "margins",
+              "at"
+            ],
+            "produces": [
+              "one active margins result"
+            ]
+          },
+          "input_signature": {
+            "data_structure": "unknown",
+            "observation_unit": "not_stated",
+            "time_structure": "not_stated",
+            "required_keys": [],
+            "variable_characteristics": [
+              "not_stated"
+            ],
+            "field_evidence": {
+              "data_structure": [],
+              "observation_unit": [],
+              "time_structure": [],
+              "required_keys": [],
+              "variable_characteristics": []
+            },
+            "evidence": {
+              "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+              "source_spans": [
+                [
+                  28,
+                  28
+                ]
+              ],
+              "context_radius_lines": 120,
+              "basis": "bounded source context around exact labeled source spans"
+            }
+          },
+          "command_anchors": [
+            "margins"
+          ],
+          "required_signals": [
+            "margins",
+            "at"
+          ],
+          "forbidden_signals": [
+            "nested_loop",
+            "tex_output"
+          ],
+          "canonical_default": false,
+          "state_confidence": "strong",
+          "reuse_scope": "general",
+          "readability_score": 5,
+          "portability_score": 4,
+          "source_specific_elements": [
+            "treatment and time placeholder values"
+          ],
+          "reusable_core": "active model에서 선언한 focal variable 값에 대한 margins를 계산한다.",
+          "preferred_within_checkpoint": false,
+          "explicit_canonical_exception": false,
+          "quality_rubric_review": {
+            "status": "external_evidence_rubric_reviewed",
+            "version": "1.1",
+            "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46",
+            "source_verification": {
+              "source_file_sha256_match": true,
+              "code_sha256_match": true,
+              "context_read": true
+            },
+            "hard_fails": [
+              {
+                "rule_id": "decision_not_generatable",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "provenance_incomplete",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "input_contract_mismatch",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "minimal_adaptation_undefined",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "machine_bound_default",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "merge_contract_absent",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "nested_loop",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "opaque_research_program",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              }
+            ],
+            "applicable_dimensions": [
+              "state_visibility",
+              "input_output_contract",
+              "portability",
+              "readability",
+              "sample_estimand_visibility",
+              "loop_program_abstraction",
+              "reproducibility",
+              "project_specific_coupling",
+              "minimal_adaptation"
+            ],
+            "dimension_scores": {
+              "state_visibility": 5,
+              "input_output_contract": 5,
+              "portability": 4,
+              "readability": 5,
+              "sample_estimand_visibility": 4,
+              "loop_program_abstraction": 5,
+              "reproducibility": 4,
+              "project_specific_coupling": 4,
+              "minimal_adaptation": 5
+            },
+            "weighted_score": 84,
+            "classification": "conditional_candidate",
+            "reviewer_classification": "conditional_candidate",
+            "classification_calibration_override": null,
+            "preferred_eligible": false,
+            "reviewer_notes_ko": "독립 연구 코드라고 주장하지 않는 derived package atom이다. 명령 선택, 입력 상태, 출력 경계와 수정 가능한 binding을 각각 확인한다.",
+            "uncertainty": "패키지 설치 상태와 연구 설계의 타당성은 별도 target runtime 및 설계 검토가 필요하다.",
+            "current_vs_recommended_changes": [],
+            "canonical_exception_override": null
+          },
+          "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+          "source_spans": [
+            [
+              28,
+              28
+            ]
+          ],
+          "source_file_sha256": "9c7aeada71e4653da6c004eeb1a5cede2d431a55c55cd9fb1f9946e905c82af0",
+          "code_sha256": "177ee8a46979d1e42af3e2cd5dd2305c5a546bad975261afa4a3f778814dd6b4"
+        }
+      ]
+    },
+    {
       "headword": "postest.persist_estimate",
       "name_ko": "추정결과 영구 저장",
       "name_en": "Persist estimation result",
       "purpose_ko": "활성 추정결과를 이름이나 ordered .ster state로 보존하고, 후속 표·그림이 필요한 state만 명시적으로 복원한다.",
       "maturity": "comparative",
-      "auto_selectable_count": 6,
+      "auto_selectable_count": 7,
       "reference_only_count": 2,
       "aliases": [
         "estimate persistence",
@@ -30103,7 +33200,8 @@
         "estimates store",
         "xtivreg2",
         "estadd",
-        "estimates esample"
+        "estimates esample",
+        "eststo"
       ],
       "retrieval_features": [
         "post_estimation",
@@ -31954,6 +35052,178 @@
           ],
           "source_file_sha256": "c0b2a114d145cf34a49c123d0194db349fa914275ea11ccba60fb0b8cd3c0030",
           "code_sha256": "c67590131f1fd010516c0c0223f882105fe7c41d1a65c601624a5577c2d04444"
+        },
+        {
+          "label_id": "postest.eststo_active_named.v1",
+          "variant_id": "eststo_active_eclass_named",
+          "decision": "conditional_keep",
+          "selection_conditions": [
+            "a compatible active e-class estimate exists",
+            "the estimate name and its later table role are declared"
+          ],
+          "tradeoffs": [
+            "keeps table handoff name visible",
+            "is session-local and not a durable .ster save"
+          ],
+          "relationships": {
+            "alternatives": [],
+            "duplicates": [],
+            "supersedes": []
+          },
+          "method_family": null,
+          "specification_facet": null,
+          "state_signature": {
+            "requires": [
+              "active e-class estimate",
+              "declared unique estimate name"
+            ],
+            "observable_signals": [
+              "eststo"
+            ],
+            "produces": [
+              "one named in-memory eststo estimate"
+            ]
+          },
+          "input_signature": {
+            "data_structure": "unknown",
+            "observation_unit": "not_stated",
+            "time_structure": "not_stated",
+            "required_keys": [],
+            "variable_characteristics": [
+              "not_stated"
+            ],
+            "field_evidence": {
+              "data_structure": [],
+              "observation_unit": [],
+              "time_structure": [],
+              "required_keys": [],
+              "variable_characteristics": []
+            },
+            "evidence": {
+              "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+              "source_spans": [
+                [
+                  10,
+                  10
+                ]
+              ],
+              "context_radius_lines": 120,
+              "basis": "bounded source context around exact labeled source spans"
+            }
+          },
+          "command_anchors": [
+            "eststo"
+          ],
+          "required_signals": [
+            "eststo"
+          ],
+          "forbidden_signals": [
+            "nested_loop",
+            "tex_output"
+          ],
+          "canonical_default": false,
+          "state_confidence": "strong",
+          "reuse_scope": "general",
+          "readability_score": 5,
+          "portability_score": 4,
+          "source_specific_elements": [
+            "model_name placeholder"
+          ],
+          "reusable_core": "active e-class 추정치를 선언한 eststo 이름으로 보관한다.",
+          "preferred_within_checkpoint": false,
+          "explicit_canonical_exception": false,
+          "quality_rubric_review": {
+            "status": "external_evidence_rubric_reviewed",
+            "version": "1.1",
+            "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46",
+            "source_verification": {
+              "source_file_sha256_match": true,
+              "code_sha256_match": true,
+              "context_read": true
+            },
+            "hard_fails": [
+              {
+                "rule_id": "decision_not_generatable",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "provenance_incomplete",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "input_contract_mismatch",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "minimal_adaptation_undefined",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "machine_bound_default",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "merge_contract_absent",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "nested_loop",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "opaque_research_program",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              }
+            ],
+            "applicable_dimensions": [
+              "state_visibility",
+              "input_output_contract",
+              "portability",
+              "readability",
+              "sample_estimand_visibility",
+              "loop_program_abstraction",
+              "reproducibility",
+              "project_specific_coupling",
+              "minimal_adaptation"
+            ],
+            "dimension_scores": {
+              "state_visibility": 5,
+              "input_output_contract": 5,
+              "portability": 4,
+              "readability": 5,
+              "sample_estimand_visibility": 4,
+              "loop_program_abstraction": 5,
+              "reproducibility": 4,
+              "project_specific_coupling": 4,
+              "minimal_adaptation": 5
+            },
+            "weighted_score": 84,
+            "classification": "conditional_candidate",
+            "reviewer_classification": "conditional_candidate",
+            "classification_calibration_override": null,
+            "preferred_eligible": false,
+            "reviewer_notes_ko": "독립 연구 코드라고 주장하지 않는 derived package atom이다. 명령 선택, 입력 상태, 출력 경계와 수정 가능한 binding을 각각 확인한다.",
+            "uncertainty": "패키지 설치 상태와 연구 설계의 타당성은 별도 target runtime 및 설계 검토가 필요하다.",
+            "current_vs_recommended_changes": [],
+            "canonical_exception_override": null
+          },
+          "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+          "source_spans": [
+            [
+              10,
+              10
+            ]
+          ],
+          "source_file_sha256": "9c7aeada71e4653da6c004eeb1a5cede2d431a55c55cd9fb1f9946e905c82af0",
+          "code_sha256": "b00d41a13fde21d5bf33f08a29a2ea9b6276377bee03536dea334b6da68a6eee"
         }
       ]
     },
@@ -33485,6 +36755,246 @@
           ],
           "source_file_sha256": "d45a08fe76967098fe7125752ef36719dd1f09b7d8edaace03115db8ed05f410",
           "code_sha256": "d4d86efd88dbecb57bf4e9a3fed7554e35c371ad1804518d94a82fdb88184e7c"
+        }
+      ]
+    },
+    {
+      "headword": "robustness.bootstrap_inference",
+      "name_ko": "부트스트랩 추론",
+      "name_en": "Bootstrap inference",
+      "purpose_ko": "활성 추정치의 명시된 계수와 귀무가설에 대해 재현 가능한 bootstrap 추론을 수행한다.",
+      "maturity": "prototype",
+      "auto_selectable_count": 1,
+      "reference_only_count": 0,
+      "aliases": [
+        "boottest",
+        "wild bootstrap",
+        "bootstrap inference",
+        "부트스트랩 추론",
+        "wild cluster bootstrap"
+      ],
+      "unit_kind": "post_estimation",
+      "input_contract": [
+        "compatible active estimate",
+        "declared target coefficient and null hypothesis",
+        "declared cluster, replications, and random seed"
+      ],
+      "output_contract": [
+        "one bootstrap inference result for the declared coefficient and null",
+        "cluster, replications, and seed visible in the command"
+      ],
+      "common_commands": [
+        "boottest"
+      ],
+      "retrieval_features": [
+        "post_estimation",
+        "compatible active estimate",
+        "declared target coefficient and null hypothesis",
+        "declared cluster, replications, and random seed",
+        "one bootstrap inference result for the declared coefficient and null",
+        "cluster, replications, and seed visible in the command",
+        "boottest",
+        "wild bootstrap",
+        "bootstrap inference",
+        "부트스트랩 추론",
+        "wild cluster bootstrap"
+      ],
+      "composition": {
+        "can_follow": [
+          "estimation.conventional",
+          "estimation.staggered_did"
+        ],
+        "can_precede": [
+          "final_excel_assembly"
+        ],
+        "incompatible_with": [
+          "post-hoc null selection",
+          "implicit cluster or random seed",
+          "treating bootstrap inference as subgroup heterogeneity"
+        ]
+      },
+      "variants": [
+        {
+          "label_id": "robustness.boottest_cluster_seeded.v1",
+          "variant_id": "boottest_one_coefficient_cluster_seed",
+          "decision": "conditional_keep",
+          "selection_conditions": [
+            "boottest is explicitly selected",
+            "the active compatible estimate, tested null, coefficient, cluster, replications, and seed are declared"
+          ],
+          "tradeoffs": [
+            "makes simulation reproducibility visible",
+            "does not establish that the bootstrap design is appropriate"
+          ],
+          "relationships": {
+            "alternatives": [],
+            "duplicates": [],
+            "supersedes": []
+          },
+          "method_family": "boottest",
+          "specification_facet": null,
+          "state_signature": {
+            "requires": [
+              "active compatible estimate",
+              "declared coefficient null cluster replications and seed"
+            ],
+            "observable_signals": [
+              "boottest",
+              "null",
+              "cluster",
+              "reps",
+              "seed"
+            ],
+            "produces": [
+              "one boottest inference result for the declared coefficient and null"
+            ]
+          },
+          "input_signature": {
+            "data_structure": "unknown",
+            "observation_unit": "not_stated",
+            "time_structure": "not_stated",
+            "required_keys": [],
+            "variable_characteristics": [
+              "not_stated"
+            ],
+            "field_evidence": {
+              "data_structure": [],
+              "observation_unit": [],
+              "time_structure": [],
+              "required_keys": [],
+              "variable_characteristics": []
+            },
+            "evidence": {
+              "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+              "source_spans": [
+                [
+                  32,
+                  32
+                ]
+              ],
+              "context_radius_lines": 120,
+              "basis": "bounded source context around exact labeled source spans"
+            }
+          },
+          "command_anchors": [
+            "boottest"
+          ],
+          "required_signals": [
+            "boottest",
+            "null",
+            "cluster",
+            "reps",
+            "seed"
+          ],
+          "forbidden_signals": [
+            "nested_loop",
+            "tex_output"
+          ],
+          "canonical_default": false,
+          "state_confidence": "strong",
+          "reuse_scope": "method_specific",
+          "readability_score": 5,
+          "portability_score": 4,
+          "source_specific_elements": [
+            "treatment and cluster placeholders",
+            "null(0)",
+            "9999 and 12345 demonstration values"
+          ],
+          "reusable_core": "명시한 coefficient에 대해 cluster·reps·seed를 공개한 boottest를 실행한다.",
+          "preferred_within_checkpoint": false,
+          "explicit_canonical_exception": false,
+          "quality_rubric_review": {
+            "status": "external_evidence_rubric_reviewed",
+            "version": "1.1",
+            "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46",
+            "source_verification": {
+              "source_file_sha256_match": true,
+              "code_sha256_match": true,
+              "context_read": true
+            },
+            "hard_fails": [
+              {
+                "rule_id": "decision_not_generatable",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "provenance_incomplete",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "input_contract_mismatch",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "minimal_adaptation_undefined",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "machine_bound_default",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "merge_contract_absent",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "nested_loop",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              },
+              {
+                "rule_id": "opaque_research_program",
+                "triggered": false,
+                "evidence": "This compact package template has a bounded exact snapshot span; selection requires its declared state contract and edit fields."
+              }
+            ],
+            "applicable_dimensions": [
+              "state_visibility",
+              "input_output_contract",
+              "portability",
+              "readability",
+              "sample_estimand_visibility",
+              "loop_program_abstraction",
+              "reproducibility",
+              "project_specific_coupling",
+              "minimal_adaptation"
+            ],
+            "dimension_scores": {
+              "state_visibility": 5,
+              "input_output_contract": 5,
+              "portability": 4,
+              "readability": 5,
+              "sample_estimand_visibility": 4,
+              "loop_program_abstraction": 5,
+              "reproducibility": 4,
+              "project_specific_coupling": 4,
+              "minimal_adaptation": 5
+            },
+            "weighted_score": 84,
+            "classification": "conditional_candidate",
+            "reviewer_classification": "conditional_candidate",
+            "classification_calibration_override": null,
+            "preferred_eligible": false,
+            "reviewer_notes_ko": "독립 연구 코드라고 주장하지 않는 derived package atom이다. 명령 선택, 입력 상태, 출력 경계와 수정 가능한 binding을 각각 확인한다.",
+            "uncertainty": "패키지 설치 상태와 연구 설계의 타당성은 별도 target runtime 및 설계 검토가 필요하다.",
+            "current_vs_recommended_changes": [],
+            "canonical_exception_override": null
+          },
+          "source_path": "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
+          "source_spans": [
+            [
+              32,
+              32
+            ]
+          ],
+          "source_file_sha256": "9c7aeada71e4653da6c004eeb1a5cede2d431a55c55cd9fb1f9946e905c82af0",
+          "code_sha256": "49ae5529cd27c37f73950f710f83bb6617aba48e04beca5c504f6578e11035de"
         }
       ]
     },
@@ -38352,6 +41862,9 @@
       "panel.stack_waves",
       "postest.estimator_comparison_unsafe"
     ],
+    "areg": [
+      "estimation.conventional"
+    ],
     "assert": [
       "final_excel_assembly",
       "integrity.audit",
@@ -38360,6 +41873,9 @@
     ],
     "book": [
       "final_excel_assembly"
+    ],
+    "boottest": [
+      "robustness.bootstrap_inference"
     ],
     "cgmreg": [
       "estimation.conventional",
@@ -38390,6 +41906,9 @@
       "merge_reshape.integration",
       "outlier.winsorize",
       "sample.trade_share_threshold"
+    ],
+    "collect export": [
+      "exports.matrix_excel"
     ],
     "compress": [
       "clean.derive_variables",
@@ -38533,9 +42052,16 @@
       "final_excel_assembly",
       "postest.persist_estimate"
     ],
+    "estpost": [
+      "descriptives.estpost_active_result"
+    ],
     "eststo": [
       "estimation.conventional",
-      "estimation.staggered_did"
+      "estimation.staggered_did",
+      "postest.persist_estimate"
+    ],
+    "esttab": [
+      "exports.estimate_text_table"
     ],
     "event_plot": [
       "figures.event_study"
@@ -38612,6 +42138,12 @@
     "isid": [
       "integrity.audit"
     ],
+    "ivreg2": [
+      "estimation.conventional"
+    ],
+    "ivregress": [
+      "estimation.conventional"
+    ],
     "joinby": [
       "merge_reshape.integration",
       "sample.trade_share_threshold"
@@ -38687,7 +42219,11 @@
       "workflow_orchestration.master"
     ],
     "margins": [
-      "postest.estimator_comparison_unsafe"
+      "postest.estimator_comparison_unsafe",
+      "postest.margins"
+    ],
+    "marginsplot": [
+      "figures.marginsplot"
     ],
     "mat": [
       "descriptives.summary_dataset",
@@ -38704,6 +42240,9 @@
       "integrity.audit",
       "merge_reshape.integration",
       "postest.estimator_comparison_unsafe"
+    ],
+    "misstable": [
+      "integrity.audit"
     ],
     "mkdir": [
       "project_setup.paths"
@@ -38742,6 +42281,9 @@
     ],
     "program": [
       "final_excel_assembly"
+    ],
+    "putexcel": [
+      "exports.matrix_excel"
     ],
     "recode": [
       "panel.stack_waves"
@@ -38852,6 +42394,9 @@
     "tabstat": [
       "descriptives.summary_dataset"
     ],
+    "tabulate": [
+      "integrity.audit"
+    ],
     "tempfile": [
       "descriptives.summary_dataset",
       "merge_reshape.integration",
@@ -38930,6 +42475,9 @@
     "1단계 추정치": [
       "postest.persist_estimate"
     ],
+    "CSV regression table": [
+      "exports.estimate_text_table"
+    ],
     "Excel assembly": [
       "final_excel_assembly"
     ],
@@ -38950,6 +42498,9 @@
     ],
     "TWFE": [
       "estimation.staggered_did"
+    ],
+    "active estpost result": [
+      "descriptives.estpost_active_result"
     ],
     "active graph export": [
       "figures.export_pdf"
@@ -38987,6 +42538,12 @@
     "bar chart": [
       "figures.descriptive_bar"
     ],
+    "bootstrap inference": [
+      "robustness.bootstrap_inference"
+    ],
+    "boottest": [
+      "robustness.bootstrap_inference"
+    ],
     "cleaning": [
       "clean.derive_variables"
     ],
@@ -39010,6 +42567,15 @@
     ],
     "collapse reshape long": [
       "descriptives.summary_dataset"
+    ],
+    "collect export": [
+      "exports.matrix_excel"
+    ],
+    "collect xlsx": [
+      "exports.matrix_excel"
+    ],
+    "collection Excel": [
+      "exports.matrix_excel"
     ],
     "combine panels": [
       "figures.named_graph_combine"
@@ -39086,6 +42652,27 @@
     ],
     "estimates use number": [
       "postest.persist_estimate"
+    ],
+    "estout": [
+      "exports.estimate_text_table"
+    ],
+    "estpost summarize": [
+      "descriptives.estpost_active_result"
+    ],
+    "estpost table": [
+      "exports.estimate_text_table"
+    ],
+    "estpost tabstat": [
+      "descriptives.estpost_active_result"
+    ],
+    "estpost ttest": [
+      "descriptives.estpost_active_result"
+    ],
+    "estpost 요약결과": [
+      "descriptives.estpost_active_result"
+    ],
+    "esttab": [
+      "exports.estimate_text_table"
     ],
     "event study estimation": [
       "estimation.staggered_did"
@@ -39217,11 +42804,29 @@
     "lincom": [
       "robustness.heterogeneity"
     ],
+    "marginal effects": [
+      "postest.margins"
+    ],
+    "marginal-effects plot": [
+      "figures.marginsplot"
+    ],
+    "margins": [
+      "postest.margins"
+    ],
+    "margins plot": [
+      "figures.marginsplot"
+    ],
+    "marginsplot": [
+      "figures.marginsplot"
+    ],
     "master do-file": [
       "workflow_orchestration.master"
     ],
     "materialize panel grid": [
       "panel.materialize_time_grid"
+    ],
+    "matrix Excel": [
+      "exports.matrix_excel"
     ],
     "mean sd count sum percentile": [
       "descriptives.summary_dataset"
@@ -39240,6 +42845,9 @@
     ],
     "named graph combine": [
       "figures.named_graph_combine"
+    ],
+    "non-TeX estimate table": [
+      "exports.estimate_text_table"
     ],
     "orchestration": [
       "workflow_orchestration.master"
@@ -39271,8 +42879,14 @@
     "postfile count dataset": [
       "descriptives.sample_flow"
     ],
+    "predicted margins": [
+      "postest.margins"
+    ],
     "pretrend plot": [
       "figures.event_study"
+    ],
+    "putexcel": [
+      "exports.matrix_excel"
     ],
     "recode": [
       "clean.derive_variables"
@@ -39406,6 +43020,12 @@
     "wave stacking": [
       "panel.stack_waves"
     ],
+    "wild bootstrap": [
+      "robustness.bootstrap_inference"
+    ],
+    "wild cluster bootstrap": [
+      "robustness.bootstrap_inference"
+    ],
     "winsor": [
       "outlier.winsorize"
     ],
@@ -39482,11 +43102,17 @@
     "변수 생성": [
       "clean.derive_variables"
     ],
+    "부트스트랩 추론": [
+      "robustness.bootstrap_inference"
+    ],
     "분석자료 저장": [
       "dataset.finalize_keep_label_save"
     ],
     "불러오기": [
       "input_load.combine"
+    ],
+    "사후 예측": [
+      "postest.margins"
     ],
     "시점 쌓기": [
       "panel.stack_waves"
@@ -39548,6 +43174,9 @@
     "추정량 비교 경고": [
       "postest.estimator_comparison_unsafe"
     ],
+    "추정치 CSV": [
+      "exports.estimate_text_table"
+    ],
     "추정치 복원": [
       "postest.persist_estimate"
     ],
@@ -39586,6 +43215,15 @@
     ],
     "프로젝트 루트": [
       "project_setup.paths"
+    ],
+    "한계효과": [
+      "postest.margins"
+    ],
+    "한계효과 그림": [
+      "figures.marginsplot"
+    ],
+    "행렬 Excel": [
+      "exports.matrix_excel"
     ],
     "회귀": [
       "estimation.conventional"

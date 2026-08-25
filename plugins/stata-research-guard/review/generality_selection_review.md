@@ -2,17 +2,17 @@
 
 > 각 원문 source span과 주변 문맥을 읽은 뒤 범용성, 가독성, 이식성을 별도로 판정한 전수표입니다. `project_specific`은 명시적 canonical 예외가 아니면 기본 생성 검색에서 제외됩니다.
 
-- general: 58
-- method_specific: 57
+- general: 73
+- method_specific: 60
 - project_specific: 5
 - negative: 10
 - preferred-within-checkpoint flags: 41
-- input_signature coverage: 130/130
-- input data structure unknown: 93/130
-- input observation unit not stated: 93/130
-- input time structure not stated: 93/130
-- input required keys observed: 57/130
-- input variable characteristics not stated: 36/130
+- input_signature coverage: 148/148
+- input data structure unknown: 111/148
+- input observation unit not stated: 111/148
+- input time structure not stated: 111/148
+- input required keys observed: 57/148
+- input variable characteristics not stated: 54/148
 
 | 한글 단계 | English stage | label_id | 범용성 / Scope | 심사등급 | 점수 | 가독성 | 이식성 | 기본 우선 | 범용 핵심 | 프로젝트 특수 요소 | 판정 근거 | 원문 |
 |---|---|---|---|---|---:|---:|---:|---|---|---|---|---|
@@ -146,6 +146,24 @@
 | 기초통계 Excel 시트 | Descriptive-statistics Excel sheet | `export.descriptive_excel.first_sheet.v1` | general | conditional_candidate | 100 | 5 | 5 | yes | preserve한 자료를 집계해 새 workbook의 첫 sheet로 export한 뒤 원자료를 복원한다. | pours_over_rain; Country; table_4 path and sheet | first sheet의 replace 역할이 명시되고 집계식·키·경로·sheet만 대체한다. | `corpus/packages/209484/tables_2_to_6.do:55-58` |
 | 기초통계 Excel 시트 | Descriptive-statistics Excel sheet | `export.descriptive_excel.additional_sheet.v1` | general | conditional_candidate | 100 | 5 | 5 | yes | 기존 workbook에 집계한 추가 summary sheet를 sheetmod로 넣고 원자료를 복원한다. | d_ln_x; emde and year; 2003-2008 filter; Table_6 path and comexp sheet | 첫 sheet 이후라는 상태 계약을 분리해 workbook replace를 피하고 추가 sheet 동작만 재사용한다. | `corpus/packages/209484/tables_2_to_6.do:68-72` |
 | 기초통계 막대그림 | Descriptive bar chart | `figure.descriptive_grouped_bar.v1` | general | conditional_candidate | 95 | 5 | 4 | yes | long summary 값에서 두 over() 범주와 series를 직접 드러내는 grouped bar active graph를 만든다. | v; type and moment; hard-coded text coordinates; maroon and navy styles; Moment Value title | 집계는 앞 단계에 두고 graph bar의 값·범주·series·표시만 최소 대체하며 PDF export도 별도 원자로 유지한다. | `corpus/packages/196012/Do/Figure6.do:24-29` |
+| 활성 estpost 요약결과 | Active estpost summary result | `descriptives.estpost_summarize_active.v1` | general | conditional_candidate | 84 | 5 | 4 | no | 선언된 변수 목록의 summarize 결과를 active estpost 상태로 남긴다. | outcome and control placeholder names | 표본과 변수 목록만 바꾸는 단일 명령이며, durable summary dataset을 요구하는 작업과 명확히 분리한다. | `plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do:2-2` |
+| 활성 estpost 요약결과 | Active estpost summary result | `descriptives.estpost_detail_active.v1` | general | conditional_candidate | 84 | 5 | 4 | no | detail 옵션의 estpost summarize 결과를 active 상태로 남긴다. | outcome and control placeholder names | 분포 통계가 명시된 경우에만 같은 최소 상태 전이를 제공한다. | `plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do:4-4` |
+| 활성 estpost 요약결과 | Active estpost summary result | `descriptives.estpost_tabstat_active.v1` | general | conditional_candidate | 84 | 5 | 4 | no | count·mean·sd를 columns(statistics) 배열의 estpost tabstat 결과로 남긴다. | outcome and control placeholder names | 통계와 배열을 명시하므로 esttab 형식화 전에 통계 계약을 좁게 고정한다. | `plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do:6-6` |
+| 활성 estpost 요약결과 | Active estpost summary result | `descriptives.estpost_ttest_by_active.v1` | general | conditional_candidate | 84 | 5 | 4 | no | 명시한 두 집단 간 outcome 평균 비교를 active estpost 결과로 남긴다. | outcome and treatment_group placeholders | 두 집단이라는 전제와 출력 상태를 숨기지 않는 원자 명령이다. | `plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do:8-8` |
+| 추정결과 영구 저장 | Persist estimation result | `postest.eststo_active_named.v1` | general | conditional_candidate | 84 | 5 | 4 | no | active e-class 추정치를 선언한 eststo 이름으로 보관한다. | model_name placeholder | 명명만 수행하는 상태 전이로, 추정과 표 export를 결합하지 않는다. | `plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do:10-10` |
+| 추정치 CSV 표 | Estimate CSV table | `export.esttab_named_csv_nontex.v1` | general | conditional_candidate | 84 | 5 | 4 | no | 명명된 추정치 목록을 standard-error 포함 CSV esttab으로 내보낸다. | model names and results path placeholders | TeX 없이 명명된 estimate와 CSV 경로만 대체하는 표 export 원자다. | `plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do:12-12` |
+| 다중 원자료 결합 | Multi-source input combination | `input.append_schema_source_id.v1` | general | conditional_candidate | 84 | 5 | 4 | no | 검증된 동일 schema의 using 자료를 append하고 source-id 변수를 생성한다. | temporary using path and source_id placeholders | 한 source append와 출처 표지만 수행하며 schema·key 검증을 별도 선행조건으로 보존한다. | `plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do:14-14` |
+| 무결성 진단 | Integrity audit | `integrity.tabulate_oneway_missing_audit.v1` | general | conditional_candidate | 84 | 5 | 4 | no | missing을 포함해 하나의 범주형 변수 분포를 tabulate로 진단한다. | group placeholder | 데이터 변경 없이 한 변수의 범주와 결측을 보이는 최소 진단이다. | `plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do:16-16` |
+| 무결성 진단 | Integrity audit | `integrity.tabulate_twoway_row_audit.v1` | general | conditional_candidate | 84 | 5 | 4 | no | 두 범주형 변수의 row percentage와 chi-square 진단을 표시한다. | group and treatment placeholders | 두 변수와 표시 방식만 명시적으로 바꾸는 비파괴적 진단이다. | `plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do:18-18` |
+| 무결성 진단 | Integrity audit | `integrity.misstable_summary_audit.v1` | general | conditional_candidate | 84 | 5 | 4 | no | 선언된 분석변수의 결측 현황을 misstable summarize로 진단한다. | outcome treatment and control placeholders | 변수 목록 이외의 변경이 없고 자료를 변형하지 않는 결측 진단이다. | `plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do:20-20` |
+| 표준 회귀 추정 | Conventional regression estimation | `estimation.areg_absorb_clustered.v1` | general | conditional_candidate | 84 | 5 | 4 | no | 한 absorbed fixed effect와 명시 cluster를 포함한 areg 추정을 실행한다. | outcome treatment controls entity_id cluster_id placeholders | 추정식 핵심 구성요소를 모두 드러내며 표 저장·export는 분리한다. | `plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do:22-22` |
+| 표준 회귀 추정 | Conventional regression estimation | `estimation.ivregress_2sls_clustered.v1` | method_specific | conditional_candidate | 84 | 5 | 4 | no | 한 endogenous treatment와 instrument를 명시한 ivregress 2sls를 실행한다. | outcome treatment instrument controls cluster placeholders | IV 역할을 괄호 안에 그대로 보존하고 식별 가정은 선택 조건으로 분리한다. | `plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do:24-24` |
+| 표준 회귀 추정 | Conventional regression estimation | `estimation.ivreg2_first_clustered.v1` | method_specific | conditional_candidate | 84 | 5 | 4 | no | ivreg2의 first-stage 표시와 cluster를 명시한 한 개 IV 추정을 실행한다. | outcome treatment instrument controls cluster placeholders | ivreg2를 명시적으로 요청한 경우에만 official ivregress 대안과 분리해 선택한다. | `plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do:26-26` |
+| 사후 예측·한계효과 | Post-estimation margins | `postest.margins_declared_at.v1` | general | conditional_candidate | 84 | 5 | 4 | no | active model에서 선언한 focal variable 값에 대한 margins를 계산한다. | treatment and time placeholder values | 모형 다음의 한 상태 전이로만 사용하며 comparison grid를 숨기지 않는다. | `plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do:28-28` |
+| 한계효과 그림 | Margins plot | `figure.marginsplot_line_rarea_active.v1` | general | conditional_candidate | 84 | 5 | 4 | no | active margins 결과를 line과 rarea 신뢰구간의 active graph로 그린다. | line and rarea rendering choice | margins result를 즉시 소비하는 graph 상태 전이이며 PDF export를 별도 계약으로 남긴다. | `plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do:30-30` |
+| 부트스트랩 추론 | Bootstrap inference | `robustness.boottest_cluster_seeded.v1` | method_specific | conditional_candidate | 84 | 5 | 4 | no | 명시한 coefficient에 대해 cluster·reps·seed를 공개한 boottest를 실행한다. | treatment and cluster placeholders; null(0); 9999 and 12345 demonstration values | bootstrap method를 명시 요청한 경우에만 필요한 재현성 binding을 모두 드러낸다. | `plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do:32-32` |
+| 행렬·collection Excel 내보내기 | Matrix or collection Excel export | `export.putexcel_matrix_named_sheet.v1` | general | conditional_candidate | 84 | 5 | 4 | no | 명명된 matrix를 names와 함께 선언한 Excel sheet에 putexcel로 쓴다. | results path Summary sheet and summary_matrix placeholders | matrix 생성과 workbook ownership을 분리해 명시된 matrix export만 수행한다. | `plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do:34-35` |
+| 행렬·collection Excel 내보내기 | Matrix or collection Excel export | `export.collect_existing_xlsx.v1` | general | conditional_candidate | 84 | 5 | 4 | no | 이미 채워진 Stata collection을 선언한 xlsx 경로로 collect export한다. | results path placeholder | collection 조립과 export를 분리해 빈 collection 또는 자동 formatting을 만들지 않는다. | `plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do:37-37` |
 
 ## 검색 원칙 / Retrieval policy
 

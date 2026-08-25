@@ -1,0 +1,1362 @@
+{
+  "schema_version": "1.0",
+  "title": "Stata command and package family registry",
+  "scope": "Common official Stata command families and widely used community packages. This is a retrieval and coverage index, not an endorsement of every command use or a dependency installer.",
+  "global_template_policy": {
+    "selection_rule": "Add a command index entry and a small state-compatible atomic template; do not add estimator-specific detector branches merely because a new estimator appears.",
+    "outputs": [
+      "Excel",
+      "PDF",
+      ".ster"
+    ],
+    "forbidden_output": [
+      "TeX"
+    ],
+    "forbidden_runtime_behavior": [
+      "dependency installation",
+      "package presence probes"
+    ],
+    "quarantine": [
+      "manual coefficient or standard-error reconstruction",
+      "manual result transfer into final tables"
+    ]
+  },
+  "summary": {
+    "families": 39,
+    "indexed_commands": 97,
+    "families_observed_in_corpus": 30,
+    "commands_observed_in_corpus": 70
+  },
+  "families": [
+    {
+      "family_id": "official_data_io",
+      "display_name": "Official data import and export",
+      "ownership": "StataCorp official",
+      "category": "data_io",
+      "priority": "P0",
+      "commands": [
+        {
+          "command": "sysuse",
+          "stages": [
+            "import"
+          ],
+          "corpus_chunk_count": 2
+        },
+        {
+          "command": "import",
+          "stages": [
+            "import"
+          ],
+          "corpus_chunk_count": 143
+        },
+        {
+          "command": "import_excel",
+          "stages": [
+            "import"
+          ],
+          "corpus_chunk_count": 76
+        },
+        {
+          "command": "import_delimited",
+          "stages": [
+            "import"
+          ],
+          "corpus_chunk_count": 74
+        },
+        {
+          "command": "export_excel",
+          "stages": [
+            "exports"
+          ],
+          "corpus_chunk_count": 10
+        },
+        {
+          "command": "use",
+          "stages": [
+            "import"
+          ],
+          "corpus_chunk_count": 1199
+        },
+        {
+          "command": "save",
+          "stages": [
+            "exports"
+          ],
+          "corpus_chunk_count": 1016
+        }
+      ],
+      "evidence": "StataCorp data-management manuals",
+      "template_policy": "atomic_template_candidate",
+      "notes": "Use declared file paths and schema contracts; sysuse and a plain declared use/save are harmless primitives.",
+      "corpus_observed_commands": [
+        "sysuse",
+        "import",
+        "import_excel",
+        "import_delimited",
+        "export_excel",
+        "use",
+        "save"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "official_data_management",
+      "display_name": "Official data management",
+      "ownership": "StataCorp official",
+      "category": "data_management",
+      "priority": "P0",
+      "commands": [
+        {
+          "command": "append",
+          "stages": [
+            "merge_reshape"
+          ],
+          "corpus_chunk_count": 339
+        },
+        {
+          "command": "merge",
+          "stages": [
+            "merge_reshape"
+          ],
+          "corpus_chunk_count": 622
+        },
+        {
+          "command": "reshape",
+          "stages": [
+            "merge_reshape"
+          ],
+          "corpus_chunk_count": 211
+        },
+        {
+          "command": "collapse",
+          "stages": [
+            "merge_reshape",
+            "descriptives_balance_sample_flow"
+          ],
+          "corpus_chunk_count": 279
+        },
+        {
+          "command": "contract",
+          "stages": [
+            "merge_reshape"
+          ],
+          "corpus_chunk_count": 0
+        }
+      ],
+      "evidence": "StataCorp data-management manuals",
+      "template_policy": "atomic_template_candidate",
+      "notes": "Retained merge states and collapse output schemas are template-level contracts.",
+      "corpus_observed_commands": [
+        "append",
+        "merge",
+        "reshape",
+        "collapse"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "official_integrity",
+      "display_name": "Official integrity diagnostics",
+      "ownership": "StataCorp official",
+      "category": "integrity",
+      "priority": "P0",
+      "commands": [
+        {
+          "command": "isid",
+          "stages": [
+            "integrity_audit"
+          ],
+          "corpus_chunk_count": 3
+        },
+        {
+          "command": "duplicates",
+          "stages": [
+            "integrity_audit"
+          ],
+          "corpus_chunk_count": 268
+        },
+        {
+          "command": "assert",
+          "stages": [
+            "integrity_audit"
+          ],
+          "corpus_chunk_count": 26
+        },
+        {
+          "command": "codebook",
+          "stages": [
+            "integrity_audit"
+          ],
+          "corpus_chunk_count": 3
+        },
+        {
+          "command": "misstable",
+          "stages": [
+            "integrity_audit"
+          ],
+          "corpus_chunk_count": 2
+        }
+      ],
+      "evidence": "StataCorp data-management manuals",
+      "template_policy": "direct_primitive_or_atomic_contract",
+      "notes": "Do not force templates for isolated diagnostics; bind consequential checks to the transition they protect.",
+      "corpus_observed_commands": [
+        "isid",
+        "duplicates",
+        "assert",
+        "codebook",
+        "misstable"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "official_transformation_labels",
+      "display_name": "Official variable construction and labels",
+      "ownership": "StataCorp official",
+      "category": "transformation",
+      "priority": "P0",
+      "commands": [
+        {
+          "command": "egen",
+          "stages": [
+            "cleaning_labels"
+          ],
+          "corpus_chunk_count": 403
+        },
+        {
+          "command": "generate",
+          "stages": [
+            "cleaning_labels"
+          ],
+          "corpus_chunk_count": 1803
+        },
+        {
+          "command": "replace",
+          "stages": [
+            "cleaning_labels"
+          ],
+          "corpus_chunk_count": 1615
+        },
+        {
+          "command": "recode",
+          "stages": [
+            "cleaning_labels"
+          ],
+          "corpus_chunk_count": 27
+        },
+        {
+          "command": "encode",
+          "stages": [
+            "cleaning_labels"
+          ],
+          "corpus_chunk_count": 20
+        },
+        {
+          "command": "label",
+          "stages": [
+            "cleaning_labels"
+          ],
+          "corpus_chunk_count": 579
+        }
+      ],
+      "evidence": "StataCorp data-management manuals",
+      "template_policy": "atomic_template_candidate",
+      "notes": "New persistent variables require nearby meaning and label evidence.",
+      "corpus_observed_commands": [
+        "egen",
+        "generate",
+        "replace",
+        "recode",
+        "encode",
+        "label"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "official_panel_timeseries",
+      "display_name": "Official panel and time-series",
+      "ownership": "StataCorp official",
+      "category": "panel",
+      "priority": "P0",
+      "commands": [
+        {
+          "command": "xtset",
+          "stages": [
+            "panel_construction"
+          ],
+          "corpus_chunk_count": 228
+        },
+        {
+          "command": "tsset",
+          "stages": [
+            "panel_construction"
+          ],
+          "corpus_chunk_count": 61
+        },
+        {
+          "command": "xtreg",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 47
+        },
+        {
+          "command": "xtivreg",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 1
+        },
+        {
+          "command": "tsfill",
+          "stages": [
+            "panel_construction"
+          ],
+          "corpus_chunk_count": 36
+        }
+      ],
+      "evidence": "StataCorp longitudinal-data manuals",
+      "template_policy": "atomic_template_candidate",
+      "notes": "Panel-key declaration and model specification remain separate transitions.",
+      "corpus_observed_commands": [
+        "xtset",
+        "tsset",
+        "xtreg",
+        "xtivreg",
+        "tsfill"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "official_descriptives",
+      "display_name": "Official descriptive statistics",
+      "ownership": "StataCorp official",
+      "category": "descriptives",
+      "priority": "P0",
+      "commands": [
+        {
+          "command": "summarize",
+          "stages": [
+            "descriptives_balance_sample_flow"
+          ],
+          "corpus_chunk_count": 331
+        },
+        {
+          "command": "tabstat",
+          "stages": [
+            "descriptives_balance_sample_flow"
+          ],
+          "corpus_chunk_count": 14
+        },
+        {
+          "command": "tabulate",
+          "stages": [
+            "descriptives_balance_sample_flow"
+          ],
+          "corpus_chunk_count": 306
+        },
+        {
+          "command": "table",
+          "stages": [
+            "descriptives_balance_sample_flow",
+            "exports"
+          ],
+          "corpus_chunk_count": 5
+        },
+        {
+          "command": "dtable",
+          "stages": [
+            "descriptives_balance_sample_flow",
+            "exports"
+          ],
+          "corpus_chunk_count": 0
+        },
+        {
+          "command": "ttest",
+          "stages": [
+            "descriptives_balance_sample_flow"
+          ],
+          "corpus_chunk_count": 5
+        }
+      ],
+      "evidence": "StataCorp reporting and table manuals",
+      "template_policy": "atomic_template_candidate",
+      "notes": "Plain summarize/tabstat is direct; grouped materialization and shared summary data are atomic templates.",
+      "corpus_observed_commands": [
+        "summarize",
+        "tabstat",
+        "tabulate",
+        "table",
+        "ttest"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "official_table_collect",
+      "display_name": "Official table and collect framework",
+      "ownership": "StataCorp official",
+      "category": "exports",
+      "priority": "P1",
+      "commands": [
+        {
+          "command": "etable",
+          "stages": [
+            "exports"
+          ],
+          "corpus_chunk_count": 0
+        },
+        {
+          "command": "collect_get",
+          "stages": [
+            "exports"
+          ],
+          "corpus_chunk_count": 0
+        },
+        {
+          "command": "collect_style",
+          "stages": [
+            "exports"
+          ],
+          "corpus_chunk_count": 0
+        },
+        {
+          "command": "collect_export",
+          "stages": [
+            "exports"
+          ],
+          "corpus_chunk_count": 0
+        },
+        {
+          "command": "putexcel",
+          "stages": [
+            "exports"
+          ],
+          "corpus_chunk_count": 3
+        }
+      ],
+      "evidence": "StataCorp table, collect, and putexcel manuals",
+      "template_policy": "atomic_template_candidate",
+      "notes": "Excel export is allowed; TeX export is not.",
+      "corpus_observed_commands": [
+        "putexcel"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "official_postestimation",
+      "display_name": "Official postestimation",
+      "ownership": "StataCorp official",
+      "category": "postestimation",
+      "priority": "P1",
+      "commands": [
+        {
+          "command": "margins",
+          "stages": [
+            "postestimation"
+          ],
+          "corpus_chunk_count": 62
+        },
+        {
+          "command": "marginsplot",
+          "stages": [
+            "figures"
+          ],
+          "corpus_chunk_count": 3
+        },
+        {
+          "command": "lincom",
+          "stages": [
+            "postestimation"
+          ],
+          "corpus_chunk_count": 6
+        },
+        {
+          "command": "testparm",
+          "stages": [
+            "postestimation"
+          ],
+          "corpus_chunk_count": 0
+        },
+        {
+          "command": "predict",
+          "stages": [
+            "postestimation"
+          ],
+          "corpus_chunk_count": 67
+        }
+      ],
+      "evidence": "StataCorp postestimation manuals",
+      "template_policy": "atomic_template_candidate",
+      "notes": "Only template an explicit estimand-to-output transition.",
+      "corpus_observed_commands": [
+        "margins",
+        "marginsplot",
+        "lincom",
+        "predict"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "official_graphics",
+      "display_name": "Official graphics",
+      "ownership": "StataCorp official",
+      "category": "figures",
+      "priority": "P1",
+      "commands": [
+        {
+          "command": "graph",
+          "stages": [
+            "figures"
+          ],
+          "corpus_chunk_count": 381
+        },
+        {
+          "command": "twoway",
+          "stages": [
+            "figures"
+          ],
+          "corpus_chunk_count": 186
+        },
+        {
+          "command": "graph_bar",
+          "stages": [
+            "figures"
+          ],
+          "corpus_chunk_count": 16
+        },
+        {
+          "command": "histogram",
+          "stages": [
+            "figures"
+          ],
+          "corpus_chunk_count": 2
+        }
+      ],
+      "evidence": "StataCorp graphics manuals",
+      "template_policy": "atomic_template_candidate",
+      "notes": "Final figures are PDF; graph styling is not a generic estimator detector.",
+      "corpus_observed_commands": [
+        "graph",
+        "twoway",
+        "graph_bar",
+        "histogram"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "official_linear_models",
+      "display_name": "Official linear models",
+      "ownership": "StataCorp official",
+      "category": "estimation",
+      "priority": "P0",
+      "commands": [
+        {
+          "command": "regress",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 194
+        },
+        {
+          "command": "areg",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 16
+        }
+      ],
+      "evidence": "StataCorp regression manuals",
+      "template_policy": "atomic_template_candidate",
+      "notes": "Visible specification, fixed effects, and inference form the reusable atom.",
+      "corpus_observed_commands": [
+        "regress",
+        "areg"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "official_iv",
+      "display_name": "Official instrumental variables",
+      "ownership": "StataCorp official",
+      "category": "estimation",
+      "priority": "P1",
+      "commands": [
+        {
+          "command": "ivregress",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 13
+        }
+      ],
+      "evidence": "StataCorp IV regression manuals",
+      "template_policy": "atomic_template_candidate",
+      "notes": "Identification choices must be declared; never manually reconstruct first-stage coefficients.",
+      "corpus_observed_commands": [
+        "ivregress"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "official_glm",
+      "display_name": "Official nonlinear count and binary models",
+      "ownership": "StataCorp official",
+      "category": "estimation",
+      "priority": "P2",
+      "commands": [
+        {
+          "command": "logit",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 3
+        },
+        {
+          "command": "probit",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 1
+        },
+        {
+          "command": "poisson",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 0
+        },
+        {
+          "command": "nbreg",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 0
+        }
+      ],
+      "evidence": "StataCorp base-reference manuals",
+      "template_policy": "atomic_template_candidate",
+      "notes": "Method-specific input and estimand contracts are required.",
+      "corpus_observed_commands": [
+        "logit",
+        "probit"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "official_survival",
+      "display_name": "Official survival analysis",
+      "ownership": "StataCorp official",
+      "category": "estimation",
+      "priority": "P2",
+      "commands": [
+        {
+          "command": "stset",
+          "stages": [
+            "panel_construction"
+          ],
+          "corpus_chunk_count": 0
+        },
+        {
+          "command": "stcox",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 0
+        }
+      ],
+      "evidence": "StataCorp survival-analysis manuals",
+      "template_policy": "reference_until_contract",
+      "notes": "Index for discovery; add templates only with explicit failure, time, and censoring contracts.",
+      "corpus_observed_commands": [],
+      "corpus_observed": false
+    },
+    {
+      "family_id": "estout",
+      "display_name": "estout / esttab / estpost / eststo",
+      "ownership": "Community (Ben Jann)",
+      "category": "exports",
+      "priority": "P0",
+      "commands": [
+        {
+          "command": "estpost",
+          "stages": [
+            "descriptives_balance_sample_flow",
+            "exports"
+          ],
+          "corpus_chunk_count": 2
+        },
+        {
+          "command": "eststo",
+          "stages": [
+            "estimation",
+            "postestimation"
+          ],
+          "corpus_chunk_count": 37
+        },
+        {
+          "command": "estadd",
+          "stages": [
+            "postestimation"
+          ],
+          "corpus_chunk_count": 56
+        },
+        {
+          "command": "esttab",
+          "stages": [
+            "exports"
+          ],
+          "corpus_chunk_count": 33
+        },
+        {
+          "command": "estout",
+          "stages": [
+            "exports"
+          ],
+          "corpus_chunk_count": 0
+        }
+      ],
+      "evidence": "Maintainer documentation and SSC/RePEc package record",
+      "template_policy": "atomic_template_candidate",
+      "notes": "Separate summary-statistics storage from table export; do not emit TeX.",
+      "corpus_observed_commands": [
+        "estpost",
+        "eststo",
+        "estadd",
+        "esttab"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "outreg2",
+      "display_name": "outreg2",
+      "ownership": "Community (Roy Wada)",
+      "category": "exports",
+      "priority": "P0",
+      "commands": [
+        {
+          "command": "outreg2",
+          "stages": [
+            "exports"
+          ],
+          "corpus_chunk_count": 40
+        }
+      ],
+      "evidence": "Maintainer documentation and SSC/RePEc package record",
+      "template_policy": "atomic_template_candidate",
+      "notes": "Preserve raw coefficient, standard-error, and omitted/base rows; manual reconstruction is quarantined.",
+      "corpus_observed_commands": [
+        "outreg2"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "reghdfe",
+      "display_name": "reghdfe",
+      "ownership": "Community (Sergio Correia)",
+      "category": "estimation",
+      "priority": "P0",
+      "commands": [
+        {
+          "command": "reghdfe",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 221
+        }
+      ],
+      "evidence": "Maintainer documentation and deposited research code",
+      "template_policy": "atomic_template_candidate",
+      "notes": "Absorbed fixed effects and clustered inference are explicit bindings.",
+      "corpus_observed_commands": [
+        "reghdfe"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "ppmlhdfe",
+      "display_name": "ppmlhdfe",
+      "ownership": "Community (Sergio Correia and coauthors)",
+      "category": "estimation",
+      "priority": "P1",
+      "commands": [
+        {
+          "command": "ppmlhdfe",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 11
+        }
+      ],
+      "evidence": "Maintainer documentation and deposited research code",
+      "template_policy": "atomic_template_candidate",
+      "notes": "Template only when the count-model estimand and separation handling are declared.",
+      "corpus_observed_commands": [
+        "ppmlhdfe"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "ivreg2",
+      "display_name": "ivreg2",
+      "ownership": "Community (Baum, Schaffer, Stillman)",
+      "category": "estimation",
+      "priority": "P1",
+      "commands": [
+        {
+          "command": "ivreg2",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 0
+        }
+      ],
+      "evidence": "Maintainer documentation and SSC/RePEc package record",
+      "template_policy": "atomic_template_candidate",
+      "notes": "Kept distinct from ivreghdfe because their fixed-effect and dependency contracts differ.",
+      "corpus_observed_commands": [],
+      "corpus_observed": false
+    },
+    {
+      "family_id": "ivreghdfe",
+      "display_name": "ivreghdfe",
+      "ownership": "Community (Correia)",
+      "category": "estimation",
+      "priority": "P1",
+      "commands": [
+        {
+          "command": "ivreghdfe",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 3
+        }
+      ],
+      "evidence": "Maintainer documentation and package repository",
+      "template_policy": "atomic_template_candidate",
+      "notes": "Kept distinct from ivreg2; require declared absorbed effects and clustered inference.",
+      "corpus_observed_commands": [
+        "ivreghdfe"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "cgmreg",
+      "display_name": "cgmreg",
+      "ownership": "Community",
+      "category": "estimation",
+      "priority": "P2",
+      "commands": [
+        {
+          "command": "cgmreg",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 17
+        }
+      ],
+      "evidence": "Package documentation and deposited research code",
+      "template_policy": "atomic_template_candidate",
+      "notes": "Use only for an explicitly justified multiway-cluster specification.",
+      "corpus_observed_commands": [
+        "cgmreg"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "acreg",
+      "display_name": "acreg",
+      "ownership": "Community",
+      "category": "estimation",
+      "priority": "P2",
+      "commands": [
+        {
+          "command": "acreg",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 0
+        }
+      ],
+      "evidence": "Package documentation and deposited research code",
+      "template_policy": "atomic_template_candidate",
+      "notes": "Require an explicit spatial or serial correlation contract.",
+      "corpus_observed_commands": [],
+      "corpus_observed": false
+    },
+    {
+      "family_id": "boottest",
+      "display_name": "boottest",
+      "ownership": "Community (Roodman et al.)",
+      "category": "robustness",
+      "priority": "P1",
+      "commands": [
+        {
+          "command": "boottest",
+          "stages": [
+            "robustness"
+          ],
+          "corpus_chunk_count": 13
+        }
+      ],
+      "evidence": "Maintainer documentation and SSC/RePEc package record",
+      "template_policy": "atomic_template_candidate",
+      "notes": "Resampling seed, null, cluster level, and inference target must be declared.",
+      "corpus_observed_commands": [
+        "boottest"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "coefplot",
+      "display_name": "coefplot",
+      "ownership": "Community (Ben Jann)",
+      "category": "figures",
+      "priority": "P1",
+      "commands": [
+        {
+          "command": "coefplot",
+          "stages": [
+            "figures"
+          ],
+          "corpus_chunk_count": 43
+        }
+      ],
+      "evidence": "Maintainer documentation and SSC/RePEc package record",
+      "template_policy": "atomic_template_candidate",
+      "notes": "Use raw e(b) coefficient identities; no hand-built coefficient vectors.",
+      "corpus_observed_commands": [
+        "coefplot"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "csdid",
+      "display_name": "csdid",
+      "ownership": "Community (Fernando Rios-Avila)",
+      "category": "staggered_did",
+      "priority": "P1",
+      "commands": [
+        {
+          "command": "csdid",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 2
+        },
+        {
+          "command": "csdid_estat",
+          "stages": [
+            "postestimation"
+          ],
+          "corpus_chunk_count": 6
+        }
+      ],
+      "evidence": "Maintainer documentation and deposited research code",
+      "template_policy": "method_specific_atomic_template",
+      "notes": "Require cohort, time, treatment, comparison, aggregation, and inference contracts.",
+      "corpus_observed_commands": [
+        "csdid",
+        "csdid_estat"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "did_imputation",
+      "display_name": "did_imputation",
+      "ownership": "Community (Borusyak, Jaravel, Spiess)",
+      "category": "staggered_did",
+      "priority": "P1",
+      "commands": [
+        {
+          "command": "did_imputation",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 2
+        }
+      ],
+      "evidence": "Author package documentation and deposited research code",
+      "template_policy": "method_specific_atomic_template",
+      "notes": "Require timing, untreated comparison, horizon, and pretrend conventions.",
+      "corpus_observed_commands": [
+        "did_imputation"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "did_multiplegt_dyn",
+      "display_name": "did_multiplegt_dyn",
+      "ownership": "Community (de Chaisemartin and D'Haultfoeuille)",
+      "category": "staggered_did",
+      "priority": "P1",
+      "commands": [
+        {
+          "command": "did_multiplegt_dyn",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 2
+        }
+      ],
+      "evidence": "Author package documentation",
+      "template_policy": "method_specific_atomic_template",
+      "notes": "Indexed as a template family rather than an ever-growing estimator detector list.",
+      "corpus_observed_commands": [
+        "did_multiplegt_dyn"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "eventstudyinteract",
+      "display_name": "eventstudyinteract",
+      "ownership": "Community (Sun and Abraham)",
+      "category": "staggered_did",
+      "priority": "P1",
+      "commands": [
+        {
+          "command": "eventstudyinteract",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 1
+        }
+      ],
+      "evidence": "Author package documentation and deposited research code",
+      "template_policy": "method_specific_atomic_template",
+      "notes": "Require cohort interactions, control cohort, reference period, and raw e(b) output contract.",
+      "corpus_observed_commands": [
+        "eventstudyinteract"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "eventdd",
+      "display_name": "eventdd",
+      "ownership": "Community",
+      "category": "staggered_did",
+      "priority": "P2",
+      "commands": [
+        {
+          "command": "eventdd",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 0
+        }
+      ],
+      "evidence": "Package documentation",
+      "template_policy": "method_specific_atomic_template",
+      "notes": "Event-time construction and reference period are substantive inputs.",
+      "corpus_observed_commands": [],
+      "corpus_observed": false
+    },
+    {
+      "family_id": "event_plot",
+      "display_name": "event_plot",
+      "ownership": "Community",
+      "category": "figures",
+      "priority": "P2",
+      "commands": [
+        {
+          "command": "event_plot",
+          "stages": [
+            "figures"
+          ],
+          "corpus_chunk_count": 3
+        }
+      ],
+      "evidence": "Package documentation and deposited research code",
+      "template_policy": "method_specific_atomic_template",
+      "notes": "Plot raw event-study estimates without hand-built coefficient vectors.",
+      "corpus_observed_commands": [
+        "event_plot"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "jwdid",
+      "display_name": "jwdid and jwdidstacked",
+      "ownership": "Community",
+      "category": "staggered_did",
+      "priority": "P2",
+      "commands": [
+        {
+          "command": "jwdid",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 13
+        },
+        {
+          "command": "jwdidstacked",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 4
+        }
+      ],
+      "evidence": "Package documentation and deposited research code",
+      "template_policy": "method_specific_atomic_template",
+      "notes": "Keep stacked and nonstacked designs as separate variants.",
+      "corpus_observed_commands": [
+        "jwdid",
+        "jwdidstacked"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "jregress",
+      "display_name": "jregress",
+      "ownership": "Community",
+      "category": "estimation",
+      "priority": "P2",
+      "commands": [
+        {
+          "command": "jregress",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 3
+        }
+      ],
+      "evidence": "Package documentation and deposited research code",
+      "template_policy": "method_specific_atomic_template",
+      "notes": "Require a declared joint-estimation and inference contract.",
+      "corpus_observed_commands": [
+        "jregress"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "sdid",
+      "display_name": "sdid",
+      "ownership": "Community (Arkhangelsky et al.)",
+      "category": "synthetic_did",
+      "priority": "P2",
+      "commands": [
+        {
+          "command": "sdid",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 0
+        }
+      ],
+      "evidence": "Author package documentation",
+      "template_policy": "method_specific_atomic_template",
+      "notes": "Require unit, time, treatment adoption, and bootstrap/inference contracts.",
+      "corpus_observed_commands": [],
+      "corpus_observed": false
+    },
+    {
+      "family_id": "stackedev",
+      "display_name": "stackedev",
+      "ownership": "Community",
+      "category": "staggered_did",
+      "priority": "P2",
+      "commands": [
+        {
+          "command": "stackedev",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 0
+        }
+      ],
+      "evidence": "Package documentation",
+      "template_policy": "method_specific_atomic_template",
+      "notes": "Stack construction and cohort windows are explicit method choices.",
+      "corpus_observed_commands": [],
+      "corpus_observed": false
+    },
+    {
+      "family_id": "rdrobust",
+      "display_name": "rdrobust suite",
+      "ownership": "Community (Cattaneo, Idrobo, Titiunik)",
+      "category": "regression_discontinuity",
+      "priority": "P1",
+      "commands": [
+        {
+          "command": "rdrobust",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 14
+        },
+        {
+          "command": "rdbwselect",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 0
+        },
+        {
+          "command": "rdplot",
+          "stages": [
+            "figures"
+          ],
+          "corpus_chunk_count": 0
+        }
+      ],
+      "evidence": "Author documentation and SSC/RePEc package record",
+      "template_policy": "method_specific_atomic_template",
+      "notes": "Cutoff, running variable, bandwidth, kernel, and inference must be declared.",
+      "corpus_observed_commands": [
+        "rdrobust"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "ritest",
+      "display_name": "ritest",
+      "ownership": "Community",
+      "category": "robustness",
+      "priority": "P2",
+      "commands": [
+        {
+          "command": "ritest",
+          "stages": [
+            "robustness"
+          ],
+          "corpus_chunk_count": 0
+        }
+      ],
+      "evidence": "Package documentation and deposited research code",
+      "template_policy": "method_specific_atomic_template",
+      "notes": "Randomization mechanism, null, repetitions, and seed are required.",
+      "corpus_observed_commands": [],
+      "corpus_observed": false
+    },
+    {
+      "family_id": "gtools",
+      "display_name": "gtools",
+      "ownership": "Community",
+      "category": "data_management",
+      "priority": "P2",
+      "commands": [
+        {
+          "command": "gegen",
+          "stages": [
+            "cleaning_labels"
+          ],
+          "corpus_chunk_count": 5
+        },
+        {
+          "command": "gcollapse",
+          "stages": [
+            "merge_reshape"
+          ],
+          "corpus_chunk_count": 6
+        },
+        {
+          "command": "greshape",
+          "stages": [
+            "merge_reshape"
+          ],
+          "corpus_chunk_count": 0
+        },
+        {
+          "command": "gstats",
+          "stages": [
+            "descriptives_balance_sample_flow"
+          ],
+          "corpus_chunk_count": 0
+        },
+        {
+          "command": "gquantiles",
+          "stages": [
+            "cleaning_labels"
+          ],
+          "corpus_chunk_count": 0
+        }
+      ],
+      "evidence": "Maintainer documentation",
+      "template_policy": "atomic_template_candidate",
+      "notes": "Keep the same input/output schema as the official data-management counterpart.",
+      "corpus_observed_commands": [
+        "gegen",
+        "gcollapse"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "winsor2",
+      "display_name": "winsor2",
+      "ownership": "Community",
+      "category": "transformation",
+      "priority": "P2",
+      "commands": [
+        {
+          "command": "winsor2",
+          "stages": [
+            "cleaning_labels"
+          ],
+          "corpus_chunk_count": 59
+        }
+      ],
+      "evidence": "Package documentation and deposited research code",
+      "template_policy": "method_specific_atomic_template",
+      "notes": "Tail rule and overwrite/new-variable choice must be explicit.",
+      "corpus_observed_commands": [
+        "winsor2"
+      ],
+      "corpus_observed": true
+    },
+    {
+      "family_id": "rangestat",
+      "display_name": "rangestat",
+      "ownership": "Community",
+      "category": "data_management",
+      "priority": "P2",
+      "commands": [
+        {
+          "command": "rangestat",
+          "stages": [
+            "merge_reshape"
+          ],
+          "corpus_chunk_count": 0
+        }
+      ],
+      "evidence": "Package documentation",
+      "template_policy": "method_specific_atomic_template",
+      "notes": "Window endpoints and panel-key conditions are required.",
+      "corpus_observed_commands": [],
+      "corpus_observed": false
+    },
+    {
+      "family_id": "ddml",
+      "display_name": "ddml / qddml",
+      "ownership": "Community",
+      "category": "machine_learning",
+      "priority": "P2",
+      "commands": [
+        {
+          "command": "ddml",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 0
+        },
+        {
+          "command": "qddml",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 0
+        },
+        {
+          "command": "crossfit",
+          "stages": [
+            "estimation"
+          ],
+          "corpus_chunk_count": 0
+        }
+      ],
+      "evidence": "Maintainer documentation",
+      "template_policy": "reference_until_contract",
+      "notes": "Index for discovery; add writable templates only with explicit learners, folds, seed, and estimand contracts.",
+      "corpus_observed_commands": [],
+      "corpus_observed": false
+    }
+  ]
+}

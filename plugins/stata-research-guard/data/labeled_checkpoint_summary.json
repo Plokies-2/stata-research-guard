@@ -1,10 +1,10 @@
 {
   "schema_version": "1.2",
-  "labels": 130,
-  "checkpoints": 43,
+  "labels": 148,
+  "checkpoints": 49,
   "decision_counts": {
     "keep": 15,
-    "conditional_keep": 105,
+    "conditional_keep": 123,
     "drop": 10
   },
   "stage_counts": {
@@ -15,49 +15,51 @@
     "merge_reshape": 11,
     "descriptives_balance_sample_flow": 14,
     "panel_construction": 6,
-    "estimation": 18,
-    "robustness": 8,
-    "exports": 9,
-    "figures": 17,
-    "post_estimation": 6,
-    "descriptives": 4
+    "estimation": 21,
+    "robustness": 9,
+    "exports": 12,
+    "figures": 18,
+    "post_estimation": 8,
+    "descriptives": 8,
+    "preparation": 1,
+    "validation": 3
   },
   "unit_kind_counts": {
     "setup": 3,
     "orchestration": 3,
-    "preparation": 45,
-    "validation": 9,
-    "estimation": 17,
-    "post_estimation": 22,
-    "post_estimation_export": 24,
+    "preparation": 46,
+    "validation": 12,
+    "estimation": 20,
+    "post_estimation": 25,
+    "post_estimation_export": 28,
     "cleanup": 2,
-    "preparation_validation": 5
+    "preparation_validation": 9
   },
   "reuse_scope_counts": {
     "project_specific": 5,
-    "general": 58,
+    "general": 73,
     "negative": 10,
-    "method_specific": 57
+    "method_specific": 60
   },
   "rubric_classification_counts": {
-    "conditional_candidate": 39,
+    "conditional_candidate": 57,
     "reference_only": 57,
     "exclude": 10,
     "preferred_candidate": 24
   },
   "input_signature_summary": {
-    "labels_with_signature": 130,
-    "labels_with_template_input_profile": 120,
-    "labels_with_known_source_structure_or_template_profile": 124,
+    "labels_with_signature": 148,
+    "labels_with_template_input_profile": 138,
+    "labels_with_known_source_structure_or_template_profile": 142,
     "data_structure_counts": {
-      "unknown": 93,
+      "unknown": 111,
       "panel": 37
     },
-    "observation_unit_not_stated": 93,
-    "time_structure_not_stated": 93,
+    "observation_unit_not_stated": 111,
+    "time_structure_not_stated": 111,
     "labels_with_required_keys": 57,
-    "variable_characteristics_not_stated": 36,
-    "unknown_data_structure": 93,
+    "variable_characteristics_not_stated": 54,
+    "unknown_data_structure": 111,
     "confirmed_field_counts": {
       "data_structure": 37,
       "observation_unit": 37,
@@ -139,7 +141,19 @@
     "descriptives.summary_long_structure": 1,
     "exports.descriptive_excel_first_sheet": 1,
     "exports.descriptive_excel_additional_sheet": 1,
-    "figures.descriptive_bar_from_summary": 1
+    "figures.descriptive_bar_from_summary": 1,
+    "descriptives.summary_estpost": 4,
+    "postest.named_in_memory_estimate": 1,
+    "exports.estimate_text_table_format": 1,
+    "input_load.append_one_source": 1,
+    "integrity.categorical_distribution": 2,
+    "integrity.missingness": 1,
+    "estimation.conventional_fe": 1,
+    "estimation.conventional_iv": 2,
+    "postest.margins_active_estimate": 1,
+    "figures.marginsplot_active_result": 1,
+    "robustness.bootstrap_inference": 1,
+    "exports.matrix_excel_format": 2
   },
   "variant_policy": "A variant_group contains alternatives for the same atomic transition: select at most one complete compatible variant and never splice fragments. Distinct groups may be composed only in the actual producer-to-consumer order. Drop variants remain visible only for comparison.",
   "source": "human-reviewed annotations with exact source spans"

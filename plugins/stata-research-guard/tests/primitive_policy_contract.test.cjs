@@ -161,7 +161,7 @@ test("an already-declared direct master shell stays prompt-only and unmarked", a
     'do "$do/20_analyze.do"',
     "log close",
   ].join("\n");
-  const linted = await client.tool("lint_do_file", { content: shell, role: "master" });
+  const linted = await client.tool("lint_do_file", { content: shell, role: "master", authoring_state: "new" });
   assert.equal(linted.findings.some((row) => /fallback|nested_loop|opaque_program/.test(row.rule)), false, JSON.stringify(linted.findings));
   assert.equal(linted.findings.some((row) => row.rule === "master_call_role_comment_missing"), false, JSON.stringify(linted.findings));
   assert.equal(linted.strengths.filter((row) => row.rule === "master_call_role_comment").length, 2);
@@ -175,6 +175,7 @@ test("an already-declared direct master shell stays prompt-only and unmarked", a
       "log close",
     ].join("\n"),
     role: "master",
+    authoring_state: "new",
   });
   assert.equal(missingComment.status, "blocked");
   assert.deepEqual(
@@ -308,4 +309,65 @@ test("generated tool schemas retain researcher documentation without packaging r
     blueprint.write_approval_contract.proposal_must_list.some((value) => /dependenc|deploy|submission|packag/i.test(value)),
     false,
   );
+});
+
+test("master role-comment severity depends on authoring state, not the file role alone", async (t) => {
+  const client = new McpClient();
+  t.after(() => client.close());
+  const missingRoleComment = 'do "code/10_prepare.do"';
+
+  const newlyAuthored = await client.tool("lint_do_file", {
+    content: missingRoleComment,
+    role: "master",
+    authoring_state: "new",
+  });
+  const modified = await client.tool("lint_do_file", {
+    content: missingRoleComment,
+    role: "master",
+    authoring_state: "modified",
+  });
+  const existingAudit = await client.tool("lint_do_file", {
+    content: missingRoleComment,
+    role: "master",
+    authoring_state: "existing_audit",
+  });
+
+  const newFinding = newlyAuthored.findings.find((row) => row.rule === "master_call_role_comment_missing");
+  const modifiedFinding = modified.findings.find((row) => row.rule === "master_call_role_comment_missing");
+  assert.equal(newFinding.severity, "error");
+  assert.equal(modifiedFinding.severity, "warning");
+  assert.equal(existingAudit.findings.some((row) => row.rule === "master_call_role_comment_missing"), false);
+});
+
+test("depth summary keeps loop nesting distinct from general structural nesting", async (t) => {
+  const client = new McpClient();
+  t.after(() => client.close());
+  const structuralOnly = await client.tool("lint_do_file", { content: [
+    "if ready == 1 {",
+    "    if eligible == 1 {",
+    "        if period >= 0 {",
+    "            foreach model in base extended {",
+    "                summarize response",
+    "            }",
+    "        }",
+    "    }",
+    "}",
+  ].join("\n") });
+  const structuralFinding = structuralOnly.findings.find((row) => row.rule === "deep_structural_nesting");
+  assert.equal(structuralOnly.status, "needs_review", JSON.stringify(structuralOnly.findings));
+  assert.equal(structuralOnly.summary.max_loop_depth, 1);
+  assert.equal(structuralOnly.summary.max_structural_depth, 4);
+  assert.equal(structuralFinding.severity, "warning");
+  assert.equal(structuralFinding.structural_depth, 4);
+  assert.equal(structuralFinding.allowed_structural_depth, 3);
+  assert.deepEqual(structuralOnly.summary.max_active_loop_depth, {
+    observed: 1,
+    blocking_threshold: 3,
+    definition: "simultaneously active foreach, forvalues, or while loops",
+  });
+  assert.deepEqual(structuralOnly.summary.max_braced_structural_depth, {
+    observed: 4,
+    review_threshold: 4,
+    definition: "all simultaneously active braced blocks, including loops and conditionals",
+  });
 });

@@ -43,11 +43,12 @@ def main() -> None:
         "--source",
         type=Path,
         required=True,
+        help="Directory containing the declared official and community reference PDFs.",
     )
     parser.add_argument(
         "--supplemental-source",
         type=Path,
-        required=True,
+        default=Path(__file__).resolve().parents[3] / "work" / "template_harvest_v1",
     )
     parser.add_argument("--output", type=Path, default=Path(__file__).resolve().parents[1] / "data")
     args = parser.parse_args()

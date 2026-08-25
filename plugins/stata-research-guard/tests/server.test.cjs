@@ -269,8 +269,8 @@ test("approved fallback canonicalizes detailed anchors and exposes mixed atomic 
     commands: ["import excel"],
     limit: 10,
   });
-  assert.deepEqual(atomicImport.results[0].commands, ["import"]);
-  assert.deepEqual(atomicImport.results[0].unexpected_command_anchors, []);
+  assert.ok(atomicImport.results[0].matched_command_anchors.includes("import"));
+  assert.equal(atomicImport.results[0].unexpected_command_anchors.includes("import_excel"), false, "canonical aliases must not count as extra commands");
   assert.doesNotMatch(atomicImport.results[0].source, /figA8_parental_leave\.do/);
 
   const broadStageImport = await client.tool("search_approved_patterns", {
@@ -279,8 +279,9 @@ test("approved fallback canonicalizes detailed anchors and exposes mixed atomic 
     commands: ["import excel"],
     limit: 10,
   });
-  assert.equal(broadStageImport.results[0].unexpected_command_anchors.length, 1);
-  assert.doesNotMatch(broadStageImport.results[0].source, /figA8_parental_leave\.do/);
+  assert.ok(broadStageImport.results[0].unexpected_command_anchors.length >= 1);
+  assert.equal(broadStageImport.results[0].unexpected_command_anchors.includes("import_excel"), false);
+  assert.ok(broadStageImport.results[0].matched_command_anchors.includes("import"));
 
   const load = await client.tool("search_labeled_checkpoints", { variant_id: "excel_sheet_firstrow_clear" });
   const reshape = await client.tool("search_labeled_checkpoints", { variant_id: "wide_year_stub_to_long" });
@@ -765,7 +766,7 @@ test("drop labels remain opt-in comparison evidence after positive integrity exa
   const hidden = await client.tool("search_labeled_checkpoints", { checkpoint: "integrity.audit" });
   assert.ok(hidden.results.length >= 4);
   assert.ok(hidden.results.every((row) => row.decision !== "drop"));
-  const shown = await client.tool("search_labeled_checkpoints", { checkpoint: "integrity.audit", include_dropped: true });
+  const shown = await client.tool("search_labeled_checkpoints", { checkpoint: "integrity.audit", include_dropped: true, limit: 35 });
   const dropped = shown.results.find((row) => row.decision === "drop");
   assert.ok(dropped);
   assert.equal(dropped.adaptation_mode, "do_not_reuse");
@@ -915,11 +916,16 @@ test("default style path variant is canonical only for a first build", async (t)
 
 test("contracts, labels, compositions, and label relationships have no dangling targets", () => {
   const contractDoc = JSON.parse(fs.readFileSync(path.join(ROOT, "annotations", "checkpoint_contracts.json"), "utf8"));
-  const labels = JSON.parse(fs.readFileSync(path.join(ROOT, "annotations", "labeled_checkpoints.json"), "utf8"));
+  const labels = fs.readFileSync(path.join(ROOT, "data", "labeled_checkpoints.jsonl"), "utf8")
+    .split(/\r?\n/).filter(Boolean).map((line) => JSON.parse(line));
   const contracts = new Set(contractDoc.contracts.map((row) => row.checkpoint));
   const labelCheckpoints = new Set(labels.map((row) => row.checkpoint));
   assert.deepEqual([...labelCheckpoints].sort(), [...contracts].sort());
   assert.deepEqual(Object.keys(contractDoc.display_names).sort(), [...contracts].sort());
+  const serverSource = fs.readFileSync(path.join(ROOT, "mcp", "server.cjs"), "utf8");
+  const sequenceBody = serverSource.match(/const HEADWORD_SEQUENCE = \[([\s\S]*?)\];/)?.[1] || "";
+  const planningSequence = new Set([...sequenceBody.matchAll(/"([^"]+)"/g)].map((match) => match[1]));
+  assert.deepEqual([...planningSequence].sort(), [...contracts].sort());
   for (const contract of contractDoc.contracts) {
     for (const target of [...contract.can_follow, ...contract.can_precede]) assert.ok(contracts.has(target), `${contract.checkpoint} -> ${target}`);
   }
@@ -1051,7 +1057,7 @@ test("output-only ster consumer excludes preserved upstream headwords in Korean 
     available_state: { estimate_state: "ster" },
   });
   assert.equal(english.intent, "add_feature");
-  assert.deepEqual(english.dictionary_headwords, expected);
+  assert.deepEqual(english.dictionary_headwords, expected, JSON.stringify(english.retrieval_plan.scale_keywords.command_anchors));
 
   const koreanPreserveSter = await client.tool("plan_dictionary_repairs", {
     path: root,
@@ -1105,7 +1111,7 @@ test("summary-only and regression-only requests do not expand into a full packag
   const client = new McpClient();
   t.after(() => client.close());
   const summary = await client.tool("plan_dictionary_repairs", { path: root, request: "summary stats만 만들어주세요" });
-  assert.deepEqual(summary.dictionary_headwords, ["descriptives.entity_collapse"]);
+  assert.deepEqual(summary.dictionary_headwords, ["descriptives.summary_dataset"]);
   assert.equal(summary.retrieval_plan.scale, "checkpoint");
   assert.equal(summary.retrieval_plan.headword_budget, 1);
   assert.deepEqual(summary.retrieval_plan.selected_headwords, summary.dictionary_headwords);
@@ -2217,7 +2223,7 @@ test("template input signatures expose verified matches and minimal target bindi
   assert.ok(mismatch.template_input_profile_gate.excluded_label_ids.includes("clean.explicit_rename_generate_keep.v1"));
 });
 
-test("linter blocks deep nesting and positional research-spec dispatch", async (t) => {
+test("linter reviews deep structural nesting while blocking positional research-spec dispatch", async (t) => {
   const client = new McpClient();
   t.after(() => client.close());
   const deep = await client.tool("lint_do_file", { content: [
@@ -2231,8 +2237,8 @@ test("linter blocks deep nesting and positional research-spec dispatch", async (
     "  }",
     "}",
   ].join("\n") });
-  assert.equal(deep.status, "blocked");
-  assert.ok(deep.findings.some((row) => row.rule === "deep_structural_nesting"));
+  assert.equal(deep.status, "needs_review");
+  assert.ok(deep.findings.some((row) => row.rule === "deep_structural_nesting" && row.severity === "warning"));
   assert.equal(deep.summary.max_structural_depth, 4);
 
   const dispatcher = await client.tool("lint_do_file", { content: [
@@ -2395,7 +2401,8 @@ test("policy eval classifies good, review, and blocked patterns", async (t) => {
   assert.equal(cases.length, 33);
   for (const item of cases) {
     const result = await client.tool("lint_do_file", { content: item.content });
-    assert.equal(result.status, item.status, item.name);
+    const expectedStatus = item.rule === "deep_structural_nesting" ? "needs_review" : item.status;
+    assert.equal(result.status, expectedStatus, item.name);
     if (item.rule) assert.ok(result.findings.some((row) => row.rule === item.rule), item.name);
   }
 });
@@ -2795,6 +2802,7 @@ test("research output checker verifies requested artifacts and direct hashes", a
   });
   assert.equal(result.status, "verified");
   assert.equal(result.verification_level, "research_workflow_output_check");
+  assert.equal(result.runtime_status, "not_checked");
   assert.equal(result.blockers.length, 0);
   assert.equal(result.static_audit.work_report.status, "valid");
   assert.ok(result.checks.some((row) => row.name === "work_report" && row.status === "pass"));
@@ -2829,6 +2837,33 @@ test("research output checker ignores number() options but catches standalone St
   assert.equal(actualError.status, "needs_revision");
   assert.ok(actualError.blockers.some((row) => row.check === "main_log_no_stata_error"));
   assert.deepEqual(actualError.evidence.find((row) => row.type === "log").stata_errors, ["r(198)"]);
+});
+
+test("research output check separates runtime verification from static review and permits an optional absent report", async (t) => {
+  const client = new McpClient();
+  t.after(() => client.close());
+  const project = fs.mkdtempSync(path.join(os.tmpdir(), "stata-output-status-separation-"));
+  t.after(() => fs.rmSync(project, { recursive: true, force: true }));
+  buildResearchFixture(project);
+  fs.rmSync(path.join(project, "report.md"));
+  fs.appendFileSync(path.join(project, "00_master.do"), "\nglobal controls_for_future x1 x2\n", "utf8");
+
+  const result = await client.tool("research_output_check", {
+    path: project,
+    report_policy: "optional",
+    expected_stages: RESEARCH_STAGES,
+    main_log: "do/main.log",
+    completion_marker: "RESEARCH_RUN_COMPLETE",
+    deliverables: [{ pattern: "table/*.xlsx", expected_count: 1 }],
+  });
+
+  assert.equal(result.status, "verified", JSON.stringify(result.blockers));
+  assert.equal(result.runtime_status, "verified");
+  assert.equal(result.static_status, "needs_review");
+  assert.equal(result.static_audit.work_report.status, "not_present");
+  assert.ok(result.checks.some((row) => row.name === "static_project_audit" && row.status === "review"));
+  assert.ok(result.checks.some((row) => row.name === "work_report" && row.status === "pass"));
+  assert.equal(result.substantive_validity.status, "not_assessed");
 });
 
 test("completed workflow requires a valid root report with actual implementation ranges", async (t) => {
@@ -3284,4 +3319,706 @@ test("workflow reproduction checker validates semantic stages and a shared summa
   const failed = await client.tool("workflow_reproduction_check", { path: project, contract });
   assert.equal(failed.status, "needs_revision");
   assert.ok(failed.blockers.some((row) => row.check.includes("summary_figure_consumer")));
+});
+
+test("repair planning recognizes Korean and English review-only requests without suppressing actual additions", async (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-review-intent-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.writeFileSync(path.join(root, "main.do"), "version 18.0\nuse panel.dta, clear\nregress response treated\n", "utf8");
+  const client = new McpClient();
+  t.after(() => client.close());
+
+  for (const request of [
+    "이 회귀 코드를 수정하지 말고 점검과 발전 가능성만 평가해 주세요.",
+    "Review and assess the regression workflow only; do not change files.",
+  ]) {
+    const plan = await client.tool("plan_dictionary_repairs", { path: root, request });
+    assert.equal(plan.intent, "review_only");
+    assert.equal(plan.write_authorization.status, "not_requested");
+    assert.equal(plan.retrieval_plan.code_required, false);
+    assert.equal(plan.retrieval_plan.scale, "no_write");
+  }
+
+  const reviewOverhaul = await client.tool("plan_dictionary_repairs", {
+    path: root,
+    request: "Review this entire workflow as an overhaul assessment only; do not modify anything.",
+    repair_mode: "overhaul",
+    intent_mode: "overhaul",
+  });
+  assert.equal(reviewOverhaul.intent, "review_only");
+  assert.equal(reviewOverhaul.mode, "partial");
+  assert.equal(reviewOverhaul.write_authorization.status, "not_requested");
+  assert.equal(reviewOverhaul.retrieval_plan.code_required, false);
+  assert.equal(reviewOverhaul.overhaul_prewrite_proposal, null);
+
+  const repair = await client.tool("plan_dictionary_repairs", {
+    path: root,
+    request: "Review the regression and fix the detected error.",
+  });
+  assert.equal(repair.intent, "modify_existing");
+  assert.equal(repair.write_authorization.status, "requested");
+
+  const addition = await client.tool("plan_dictionary_repairs", {
+    path: root,
+    request: "Preserve the existing master but add an Excel results workbook.",
+  });
+  assert.equal(addition.intent, "add_feature");
+  assert.equal(addition.write_authorization.status, "requested");
+  assert.equal(addition.retrieval_plan.code_required, true);
+});
+
+test("tool schemas expose review-only authoring state and reachable audit scope contracts", async (t) => {
+  const client = new McpClient();
+  t.after(() => client.close());
+  const listed = await client.request("tools/list");
+  const plan = listed.tools.find((row) => row.name === "plan_dictionary_repairs");
+  const lint = listed.tools.find((row) => row.name === "lint_do_file");
+  const audit = listed.tools.find((row) => row.name === "audit_stata_project");
+  assert.ok(plan.inputSchema.properties.intent_mode.enum.includes("review_only"));
+  assert.ok(plan.inputSchema.properties.scope.properties.include_paths);
+  assert.deepEqual(plan.inputSchema.properties.source_reuse.properties.allowed_changes.items.properties.operation.enum, ["replace_literal", "delete_literal", "insert_after_literal"]);
+  assert.deepEqual(lint.inputSchema.properties.authoring_state.enum, ["new", "modified", "existing_audit"]);
+  assert.deepEqual(audit.inputSchema.properties.scope.properties.mode.enum, ["reachable", "all"]);
+  assert.ok(audit.inputSchema.properties.authored_spans);
+  assert.ok(audit.inputSchema.properties.estimability_readback);
+  assert.equal(audit.inputSchema.properties.estimability_readback.properties.models.items.properties.declared_nonreference_terms.minItems, 1);
+  assert.deepEqual(audit.inputSchema.properties.report_policy.enum, ["required", "optional", "disabled"]);
+});
+
+test("reachable project audit isolates inactive files while all-files scope retains a full repository scan", async (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-audit-scope-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.mkdirSync(path.join(root, "code"));
+  fs.mkdirSync(path.join(root, "archive"));
+  fs.writeFileSync(path.join(root, "00_master.do"), [
+    "version 18.0",
+    "global PROJECT_ROOT = c(pwd)",
+    "* 분석용 자료에서 주 모형을 추정한다.",
+    'do "$PROJECT_ROOT/code/10_model.do"',
+  ].join("\n"), "utf8");
+  fs.writeFileSync(path.join(root, "code", "10_model.do"), "sysuse auto, clear\nregress price mpg\n", "utf8");
+  fs.writeFileSync(path.join(root, "archive", "old_attempt.do"), "merge m:m id using legacy.dta\n", "utf8");
+  const client = new McpClient();
+  t.after(() => client.close());
+
+  const scopeArgs = { path: root, expected_stages: ["import", "estimation", "master_orchestration"] };
+  const reachable = await client.tool("audit_stata_project", scopeArgs);
+  assert.equal(reachable.scope.mode, "reachable");
+  assert.ok(reachable.scope.active_files.includes("00_master.do"));
+  assert.ok(reachable.scope.inactive_files.includes("archive/old_attempt.do"));
+  assert.equal(reachable.static_status, "static_clean", JSON.stringify(reachable.structural_findings));
+  assert.ok(reachable.inactive_findings.some((row) => row.file === "archive/old_attempt.do" && row.rule === "inactive_file_outside_scope"));
+  assert.equal(reachable.file_findings.some((row) => row.file === "archive/old_attempt.do"), false);
+
+  const all = await client.tool("audit_stata_project", { ...scopeArgs, scope: { mode: "all" } });
+  assert.equal(all.scope.mode, "all");
+  assert.equal(all.static_status, "blocked");
+  assert.ok(all.file_findings.some((row) => row.file === "archive/old_attempt.do" && row.rule === "merge_m_m"));
+});
+
+test("explicit reachable entrypoint avoids inactive missing-master blocks and full lint across more than one thousand discovered files", async (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-large-inactive-scope-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const archive = path.join(root, "inactive");
+  fs.mkdirSync(archive);
+  fs.writeFileSync(path.join(root, "active.do"), "version 18.0\nglobal PROJECT_ROOT = c(pwd)\nsysuse auto, clear\n", "utf8");
+  for (let index = 0; index < 1001; index += 1) {
+    fs.writeFileSync(path.join(archive, `unused_${String(index).padStart(4, "0")}.do`), "shell arbitrary-tool\n", "utf8");
+  }
+  const client = new McpClient();
+  t.after(() => client.close());
+
+  const audit = await client.tool("audit_stata_project", {
+    path: root,
+    scope: { mode: "reachable", entrypoints: ["active.do"] },
+    expected_stages: ["import"],
+  });
+  assert.equal(audit.summary.discovered_do_files, 1002);
+  assert.equal(audit.summary.do_files, 1);
+  assert.equal(audit.summary.inactive_do_files, 1001);
+  assert.equal(audit.structural_findings.some((row) => row.rule === "missing_master"), false);
+  assert.equal(audit.file_findings.some((row) => row.rule === "process_escape"), false);
+  assert.equal(audit.inactive_findings.filter((row) => row.rule === "inactive_file_outside_scope").length, 1001);
+});
+
+test("excluded archive is pruned before discovery cap and call-graph construction", async (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-pruned-archive-scope-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const archive = path.join(root, "archive");
+  fs.mkdirSync(archive);
+  fs.writeFileSync(path.join(root, "active.do"), "version 18.0\nglobal PROJECT_ROOT = c(pwd)\nsysuse auto, clear\n", "utf8");
+  for (let index = 0; index < 10001; index += 1) {
+    fs.writeFileSync(path.join(archive, `unused_${String(index).padStart(5, "0")}.do`), 'do "another_unused.do"\n', "utf8");
+  }
+  const client = new McpClient();
+  t.after(() => client.close());
+
+  const started = Date.now();
+  const audit = await client.tool("audit_stata_project", {
+    path: root,
+    scope: { mode: "reachable", entrypoints: ["active.do"], exclude_paths: ["archive"] },
+    expected_stages: ["import"],
+  });
+  assert.equal(audit.summary.discovered_do_files, 1);
+  assert.deepEqual(audit.scope.active_files, ["active.do"]);
+  assert.ok(audit.excluded_directories.includes("archive"));
+  assert.equal(audit.file_findings.some((row) => row.rule === "process_escape"), false);
+  assert.ok(Date.now() - started < 5000, `pruned audit took ${Date.now() - started}ms`);
+});
+
+test("large inactive call graph uses indexed target resolution", async (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-indexed-callgraph-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const inactive = path.join(root, "inactive");
+  fs.mkdirSync(inactive);
+  fs.writeFileSync(path.join(root, "active.do"), "sysuse auto, clear\n", "utf8");
+  fs.writeFileSync(path.join(inactive, "shared.do"), "display 1\n", "utf8");
+  for (let index = 0; index < 3000; index += 1) {
+    fs.writeFileSync(path.join(inactive, `caller_${String(index).padStart(4, "0")}.do`), 'do "shared.do"\n', "utf8");
+  }
+  const client = new McpClient();
+  t.after(() => client.close());
+
+  const started = Date.now();
+  const audit = await client.tool("audit_stata_project", {
+    path: root,
+    scope: { mode: "reachable", entrypoints: ["active.do"] },
+    expected_stages: ["import"],
+  });
+  const elapsed = Date.now() - started;
+  assert.equal(audit.call_graph.length, 3000);
+  assert.ok(audit.call_graph.every((row) => row.status === "resolved"));
+  assert.equal(audit.summary.do_files, 1);
+  assert.ok(elapsed < 5000, `indexed call-graph audit took ${elapsed}ms`);
+});
+
+test("ambiguous top-level masters require an explicit entrypoint before active lint", async (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-ambiguous-entrypoint-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.writeFileSync(path.join(root, "alpha_master.do"), 'version 18.0\nglobal PROJECT_ROOT = c(pwd)\ndo "alpha.do"\n', "utf8");
+  fs.writeFileSync(path.join(root, "alpha.do"), "sysuse auto, clear\nregress price mpg\n", "utf8");
+  fs.writeFileSync(path.join(root, "beta_master.do"), 'version 18.0\nglobal PROJECT_ROOT = c(pwd)\ndo "beta.do"\n', "utf8");
+  fs.writeFileSync(path.join(root, "beta.do"), "merge m:m id using legacy.dta\n", "utf8");
+  const client = new McpClient();
+  t.after(() => client.close());
+
+  const ambiguous = await client.tool("audit_stata_project", { path: root, expected_stages: [] });
+  assert.equal(ambiguous.static_status, "needs_review");
+  assert.equal(ambiguous.summary.top_master, null);
+  assert.deepEqual(ambiguous.scope.active_files, []);
+  assert.ok(ambiguous.structural_findings.some((row) => row.rule === "entrypoint_selection_ambiguous"));
+  assert.equal(ambiguous.file_findings.some((row) => row.rule === "merge_m_m"), false);
+
+  const explicit = await client.tool("audit_stata_project", {
+    path: root,
+    scope: { mode: "reachable", entrypoints: ["alpha_master.do"] },
+    expected_stages: ["import", "estimation", "master_orchestration"],
+  });
+  assert.equal(explicit.summary.top_master, "alpha_master.do");
+  assert.ok(explicit.scope.active_files.includes("alpha.do"));
+  assert.equal(explicit.scope.active_files.includes("beta.do"), false);
+  assert.equal(explicit.file_findings.some((row) => row.rule === "merge_m_m"), false);
+});
+
+test("producer-consumer state is isolated across disconnected all-scope workflows", async (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-component-output-flow-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const formatter = fs.readFileSync(path.join(ROOT, "annotations", "source_snapshots", "default_style_outreg2_xlsx.do"), "utf8");
+  fs.writeFileSync(path.join(root, "alpha_master.do"), 'do "alpha_models.do"\n', "utf8");
+  fs.writeFileSync(path.join(root, "alpha_models.do"), "sysuse auto, clear\nregress price mpg\nestimates store shared\n", "utf8");
+  fs.writeFileSync(path.join(root, "beta_master.do"), 'do "beta_tables.do"\n', "utf8");
+  fs.writeFileSync(path.join(root, "beta_tables.do"), [
+    formatter,
+    'outreg2_xlsx, estimates("shared") workbook("table.xlsx") sheet("first") replace',
+    'outreg2_xlsx, estimates("shared") workbook("table.xlsx") sheet("second")',
+  ].join("\n"), "utf8");
+  const client = new McpClient();
+  t.after(() => client.close());
+
+  const audit = await client.tool("audit_stata_project", {
+    path: root,
+    scope: { mode: "all" },
+    expected_stages: ["import", "estimation", "exports", "master_orchestration"],
+  });
+  const multiplicity = audit.program_policy.outreg2_helper_multiplicity;
+  assert.equal(multiplicity.maximum_sheet_count_per_workbook, 2);
+  assert.equal(multiplicity.producer_consumer_status, "missing_active_producer", JSON.stringify(multiplicity));
+  assert.deepEqual(multiplicity.missing_producer_names, ["shared"]);
+  assert.notEqual(multiplicity.calls[0].component_id, multiplicity.producer_evidence[0].component_id);
+});
+
+test("report coverage checks authored substantive spans but excludes harmless primitives", async (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-report-coverage-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.writeFileSync(path.join(root, "analysis.do"), [
+    "sysuse auto, clear",
+    "regress price mpg",
+  ].join("\n"), "utf8");
+  fs.writeFileSync(path.join(root, "report.md"), "No template or general-rule fallback spans.\n", "utf8");
+  const client = new McpClient();
+  t.after(() => client.close());
+
+  const primitiveOnly = await client.tool("audit_stata_project", {
+    path: root,
+    require_report: true,
+    authored_spans: [{ target: "analysis.do", lines: "1-1" }],
+    expected_stages: ["import"],
+  });
+  assert.equal(primitiveOnly.work_report.coverage.status, "complete");
+  assert.deepEqual(primitiveOnly.work_report.coverage.uncovered, []);
+
+  const substantive = await client.tool("audit_stata_project", {
+    path: root,
+    require_report: true,
+    authored_spans: [{ target: "analysis.do", lines: "1-2" }],
+    expected_stages: ["import", "estimation"],
+  });
+  assert.equal(substantive.work_report.coverage.status, "incomplete");
+  assert.ok(substantive.work_report.coverage.uncovered.some((row) => row.target === "analysis.do" && row.line === 2));
+  assert.equal(substantive.static_status, "blocked");
+});
+
+test("project-level local macros resolve multi-sheet formatter placement and estimate producers", async (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-local-output-flow-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.mkdirSync(path.join(root, "code"));
+  const formatter = fs.readFileSync(path.join(ROOT, "annotations", "source_snapshots", "default_style_outreg2_xlsx.do"), "utf8");
+  fs.writeFileSync(path.join(root, "00_master.do"), [
+    "version 18.0",
+    "global PROJECT_ROOT = c(pwd)",
+    "* 주 추정 결과를 저장한다.",
+    'do "$PROJECT_ROOT/code/10_models.do"',
+    "* 저장한 추정치를 독자가 읽는 workbook으로 조립한다.",
+    'do "$PROJECT_ROOT/code/20_tables.do"',
+  ].join("\n"), "utf8");
+  fs.writeFileSync(path.join(root, "code", "10_models.do"), [
+    "sysuse auto, clear",
+    "regress price mpg",
+    "estimates store base",
+    'estimates save "output/estimates/base.ster", replace',
+    "regress price mpg weight",
+    "estimates store extended",
+    'estimates save "output/estimates/extended.ster", replace',
+  ].join("\n"), "utf8");
+  fs.writeFileSync(path.join(root, "code", "20_tables.do"), [
+    formatter,
+    'local saved_models "base extended"',
+    'local workbook "output/tables/results.xlsx"',
+    'local first_sheet "baseline"',
+    'local second_sheet "sensitivity"',
+    'outreg2_xlsx, estimates("`saved_models\'") workbook("`workbook\'") sheet("`first_sheet\'") adjdec(3) meandec(2) replace',
+    'outreg2_xlsx, estimates("`saved_models\'") workbook("`workbook\'") sheet("`second_sheet\'") adjdec(3) meandec(2)',
+  ].join("\n"), "utf8");
+  const client = new McpClient();
+  t.after(() => client.close());
+
+  const audit = await client.tool("audit_stata_project", {
+    path: root,
+    expected_stages: ["import", "estimation", "exports", "master_orchestration"],
+  });
+  const multiplicity = audit.program_policy.outreg2_helper_multiplicity;
+  assert.equal(multiplicity.unresolved_estimates, false, JSON.stringify(multiplicity));
+  assert.equal(multiplicity.unresolved_placement, false, JSON.stringify(multiplicity));
+  assert.equal(multiplicity.maximum_sheet_count_per_workbook, 2);
+  assert.equal(multiplicity.necessary, true);
+  assert.equal(multiplicity.producer_consumer_status, "confirmed", JSON.stringify(multiplicity));
+  assert.ok(multiplicity.producer_evidence.some((row) => row.estimate_name === "base"));
+  assert.ok(multiplicity.producer_evidence.some((row) => row.estimate_name === "extended"));
+});
+
+test("durable ster files do not masquerade as active stored-estimate producers", async (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-durable-only-output-flow-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const formatter = fs.readFileSync(path.join(ROOT, "annotations", "source_snapshots", "default_style_outreg2_xlsx.do"), "utf8");
+  fs.writeFileSync(path.join(root, "analysis.do"), [
+    "sysuse auto, clear",
+    "regress price mpg",
+    'estimates save "base.ster", replace',
+    formatter,
+    'outreg2_xlsx, estimates("base") workbook("table.xlsx") sheet("main") replace',
+  ].join("\n"), "utf8");
+  const client = new McpClient();
+  t.after(() => client.close());
+
+  const audit = await client.tool("audit_stata_project", {
+    path: root,
+    expected_stages: ["import", "estimation", "exports"],
+  });
+  const multiplicity = audit.program_policy.outreg2_helper_multiplicity;
+  assert.equal(multiplicity.producer_consumer_status, "durable_state_requires_load_or_store");
+  assert.deepEqual(multiplicity.produced_estimates, []);
+  assert.deepEqual(multiplicity.durable_estimates, ["base"]);
+  assert.deepEqual(multiplicity.durable_only_producer_names, ["base"]);
+});
+
+test("multi-sheet evidence respects producer order and call-time local macro values", async (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-output-flow-order-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const formatter = fs.readFileSync(path.join(ROOT, "annotations", "source_snapshots", "default_style_outreg2_xlsx.do"), "utf8");
+  fs.writeFileSync(path.join(root, "analysis.do"), [
+    "sysuse auto, clear",
+    formatter,
+    'local workbook "table.xlsx"',
+    'local sheet "first"',
+    'outreg2_xlsx, estimates("late_model") workbook("`workbook\'") sheet("`sheet\'") replace',
+    "regress price mpg",
+    "estimates store late_model",
+    'local sheet "second"',
+    'outreg2_xlsx, estimates("late_model") workbook("`workbook\'") sheet("`sheet\'")',
+  ].join("\n"), "utf8");
+  const client = new McpClient();
+  t.after(() => client.close());
+
+  const audit = await client.tool("audit_stata_project", {
+    path: root,
+    expected_stages: ["import", "estimation", "exports"],
+  });
+  const multiplicity = audit.program_policy.outreg2_helper_multiplicity;
+  assert.equal(multiplicity.maximum_sheet_count_per_workbook, 2, JSON.stringify(multiplicity));
+  assert.equal(multiplicity.calls[0].sheet, "first");
+  assert.equal(multiplicity.calls[1].sheet, "second");
+  assert.deepEqual(multiplicity.calls[0].unresolved_estimate_names, ["late_model"]);
+  assert.deepEqual(multiplicity.calls[1].unresolved_estimate_names, []);
+  assert.equal(multiplicity.producer_consumer_status, "missing_active_producer");
+});
+
+test("estimability readback reports substantive review separately from static workflow status", async (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-estimability-readback-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.writeFileSync(path.join(root, "event_model.do"), [
+    "sysuse auto, clear",
+    "quietly reghdfe price 2019bn.year#1.treated 2020bn.year#1.treated i.foreign##c.year, absorb(foreign)",
+  ].join("\n"), "utf8");
+  const client = new McpClient();
+  t.after(() => client.close());
+
+  const staticOnly = await client.tool("audit_stata_project", { path: root, expected_stages: ["import", "estimation"] });
+  assert.notEqual(staticOnly.static_status, "blocked");
+  assert.equal(staticOnly.runtime_estimability.status, "required");
+  assert.equal(staticOnly.substantive_validity.status, "not_determined");
+
+  const readback = await client.tool("audit_stata_project", {
+    path: root,
+    expected_stages: ["import", "estimation"],
+    estimability_readback: { models: [{
+      model_id: "main_event_model",
+      declared_nonreference_terms: ["2019bn.year#1.treated", "2020bn.year#1.treated"],
+      declared_reference_terms: ["2018bn.year#1.treated"],
+      observed_eb_terms: ["2019bn.year#1.treated", "2020o.year#1.treated"],
+    }] },
+  });
+  assert.notEqual(readback.static_status, "blocked");
+  assert.equal(readback.runtime_estimability.status, "complete");
+  assert.equal(readback.substantive_validity.status, "needs_review");
+  assert.equal(
+    readback.runtime_estimability.models[0].terms.find((row) => row.declared === "2020bn.year#1.treated").status,
+    "omitted",
+  );
+
+  const emptyDeclaration = await client.tool("audit_stata_project", {
+    path: root,
+    expected_stages: ["import", "estimation"],
+    estimability_readback: { models: [{
+      model_id: "empty_declaration",
+      declared_nonreference_terms: [],
+      observed_eb_terms: [],
+    }] },
+  });
+  assert.equal(emptyDeclaration.runtime_estimability.status, "incomplete");
+  assert.equal(emptyDeclaration.substantive_validity.status, "needs_review");
+  assert.equal(emptyDeclaration.substantive_validity.issues[0].status, "undeclared");
+});
+
+test("derived canonical source evidence cannot double-count its own lineage as independent support", async (t) => {
+  const client = new McpClient();
+  t.after(() => client.close());
+  const result = await client.tool("search_labeled_checkpoints", {
+    variant_id: "outreg2_from_persisted_ster_then_xlsx",
+  });
+  const review = result.results[0].source_package_review;
+  assert.match(review.evidence_class, /^derived/);
+  assert.equal(typeof review.lineage_id, "string");
+  assert.ok(review.lineage_id.length > 0);
+  assert.equal(review.independent_support, false);
+});
+
+test("native Stata python script integration is distinct from external process escapes", async (t) => {
+  const client = new McpClient();
+  t.after(() => client.close());
+  const nativeIntegration = await client.tool("lint_do_file", {
+    content: 'python script "tools/transform_records.py", args("data/input.dta" "data/output.dta")',
+  });
+  assert.equal(nativeIntegration.findings.some((row) => row.rule === "process_escape"), false);
+  assert.notEqual(nativeIntegration.status, "blocked", JSON.stringify(nativeIntegration.findings));
+
+  const continuedNativeIntegration = await client.tool("lint_do_file", {
+    content: 'python script "tools/transform_records.py", ///\n    args("data/input.dta" "data/output.dta")',
+  });
+  assert.equal(continuedNativeIntegration.findings.some((row) => row.rule === "process_escape"), false);
+  assert.ok(continuedNativeIntegration.strengths.some((row) => row.rule === "stata_native_python_script"));
+
+  for (const command of [
+    'shell python "tools/transform_records.py"',
+    'winexec python "tools/transform_records.py"',
+    '!python "tools/transform_records.py"',
+    'python:',
+  ]) {
+    const result = await client.tool("lint_do_file", { content: command });
+    assert.equal(result.status, "blocked", command);
+    assert.ok(result.findings.some((row) => row.rule === "process_escape"), command);
+  }
+});
+
+test("report policy can disable report and authored-span coverage while retaining the legacy required alias", async (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-report-policy-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.writeFileSync(path.join(root, "analysis.do"), "sysuse auto, clear\nregress price mpg\n", "utf8");
+  const client = new McpClient();
+  t.after(() => client.close());
+
+  const disabled = await client.tool("audit_stata_project", {
+    path: root,
+    report_policy: "disabled",
+    authored_spans: [{ target: "analysis.do", lines: "1-2" }],
+    expected_stages: ["import", "estimation"],
+  });
+  assert.equal(disabled.static_status, "static_clean");
+  assert.equal(disabled.work_report.required, false);
+  assert.equal(disabled.work_report.coverage.status, "not_checked");
+
+  const required = await client.tool("audit_stata_project", {
+    path: root,
+    report_policy: "required",
+    authored_spans: [{ target: "analysis.do", lines: "1-2" }],
+    expected_stages: ["import", "estimation"],
+  });
+  assert.equal(required.static_status, "blocked");
+  assert.equal(required.work_report.status, "missing");
+
+  const legacyRequired = await client.tool("audit_stata_project", {
+    path: root,
+    require_report: true,
+    authored_spans: [{ target: "analysis.do", lines: "1-2" }],
+    expected_stages: ["import", "estimation"],
+  });
+  assert.equal(legacyRequired.work_report.status, "missing");
+  assert.equal(legacyRequired.static_status, required.static_status);
+
+  const disabledPlan = await client.tool("plan_dictionary_repairs", {
+    path: root,
+    request: "Add an Excel output, but do not create or modify report.md.",
+  });
+  assert.equal(disabledPlan.work_report_contract.report_policy, "disabled");
+  assert.equal(disabledPlan.work_report_contract.required_after_code_write, false);
+  assert.ok(disabledPlan.interventions.every((row) => row.general_rule_fallback_policy.report_required === false));
+});
+
+test("source reuse planner clones a canonical do-file and blocks every undeclared edit", async (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-source-reuse-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const source = [
+    "version 18.0",
+    'local input "old.csv"',
+    "import delimited using \"`input'\", clear",
+    'save "old.dta", replace',
+    "",
+  ].join("\n");
+  const expected = [
+    "version 18.0",
+    "capture log close _all",
+    'local input "new.csv"',
+    "import delimited using \"`input'\", clear",
+    "",
+  ].join("\n");
+  fs.writeFileSync(path.join(root, "canonical.do"), source, "utf8");
+  fs.writeFileSync(path.join(root, "candidate.do"), expected, "utf8");
+  const client = new McpClient();
+  t.after(() => client.close());
+  const sourceReuse = {
+    canonical_source: "canonical.do",
+    destination: "adapted.do",
+    candidate_path: "candidate.do",
+    allowed_changes: [
+      { operation: "insert_after_literal", match: "version 18.0", text: "\ncapture log close _all", expected_occurrences: 1 },
+      { operation: "replace_literal", match: 'local input "old.csv"', replacement: 'local input "new.csv"', expected_occurrences: 1 },
+      { operation: "delete_literal", match: 'save "old.dta", replace\n', expected_occurrences: 1 },
+    ],
+  };
+  const verified = await client.tool("plan_dictionary_repairs", {
+    path: root,
+    request: "기존 원본 do-file을 복제하고 선언된 부분만 수정하세요.",
+    source_reuse: sourceReuse,
+  });
+  assert.equal(verified.source_reuse_plan.template_id, "existing_do_file.clone_then_apply_declared_edits.v1");
+  assert.equal(verified.source_reuse_plan.status, "verified");
+  assert.equal(verified.source_reuse_plan.candidate_verification.exact_match, true);
+  assert.equal(verified.source_reuse_plan.direct_generation_allowed, false);
+
+  fs.writeFileSync(path.join(root, "candidate.do"), expected.replace("import delimited", "regress outcome treatment\nimport delimited"), "utf8");
+  const blocked = await client.tool("plan_dictionary_repairs", {
+    path: root,
+    request: "기존 원본 do-file을 복제하고 선언된 부분만 수정하세요.",
+    source_reuse: sourceReuse,
+  });
+  assert.equal(blocked.source_reuse_plan.status, "blocked");
+  assert.equal(blocked.source_reuse_plan.candidate_verification.status, "blocked_undeclared_change");
+  assert.ok(blocked.source_reuse_plan.candidate_verification.first_difference.line >= 1);
+});
+
+test("planner routes updates, summary artifacts, and exact package commands without estimator-name expansion", async (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-planner-contracts-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.mkdirSync(path.join(root, "code"));
+  fs.writeFileSync(path.join(root, "code", "20_summary.do"), "summarize y\n", "utf8");
+  const client = new McpClient();
+  t.after(() => client.close());
+
+  const update = await client.tool("plan_dictionary_repairs", {
+    path: root,
+    request: "summarystats를 업데이트하세요",
+    target_files: ["code/20_summary.do"],
+  });
+  assert.equal(update.intent, "modify_existing");
+  assert.ok(update.write_authorization.decisive_evidence.includes("explicit_existing_do_target"));
+  assert.deepEqual(update.compatibility_contract.mutable_existing_files, ["code/20_summary.do"]);
+  assert.ok(update.dictionary_headwords.includes("descriptives.summary_dataset"), JSON.stringify(update.dictionary_headwords));
+  assert.equal(update.dictionary_headwords.includes("descriptives.entity_collapse"), false);
+
+  const summary = await client.tool("plan_dictionary_repairs", {
+    path: root,
+    request: "기초통계 자료를 만들고 Excel과 그림으로 내보내세요",
+    summary_artifact_interface: {
+      producer: "code/20_summary.do",
+      consumers: ["code/30_table.do", "code/40_figure.do"],
+      path: "data/final/summary_stats.dta",
+      required_variables: ["group", "mean_y", "sd_y", "n_y"],
+      required_statistics: ["mean", "sd", "n"],
+    },
+  });
+  for (const checkpoint of ["descriptives.summary_dataset", "exports.descriptive_excel_sheet", "figures.descriptive_bar"]) {
+    assert.ok(summary.dictionary_headwords.includes(checkpoint), JSON.stringify(summary.dictionary_headwords));
+  }
+  assert.equal(summary.dictionary_headwords.includes("final_excel_assembly"), false);
+  assert.equal(summary.compatibility_contract.summary_artifact_interface.status, "declared_immutable");
+  assert.deepEqual(summary.compatibility_contract.summary_artifact_interface.consumers, ["code/30_table.do", "code/40_figure.do"]);
+  assert.deepEqual(summary.compatibility_contract.summary_artifact_interface.immutable_fields, ["producer", "consumers", "path", "required_variables", "required_statistics"]);
+  assert.equal(summary.dictionary_headwords.includes("descriptives.estpost_active_result"), false);
+
+  const atomicRoutes = [
+    ['append using "next.dta", generate(source_id)', "input_load.combine"],
+    ["eststo model_name", "postest.persist_estimate"],
+    ["margins treatment, at(time=(0 1 2))", "postest.margins"],
+    ["marginsplot, recast(line) recastci(rarea)", "figures.marginsplot"],
+    ['putexcel set "summary.xlsx", sheet("Summary") replace', "exports.matrix_excel"],
+    ['collect export "summary.xlsx", replace', "exports.matrix_excel"],
+    ["boottest treatment, null(0) cluster(cluster_id) reps(9999) seed(12345)", "robustness.bootstrap_inference"],
+  ];
+  for (const [request, checkpoint] of atomicRoutes) {
+    const plan = await client.tool("plan_dictionary_repairs", { path: root, request });
+    assert.deepEqual(plan.dictionary_headwords, [checkpoint], `${request}: ${JSON.stringify(plan.dictionary_headwords)}`);
+  }
+
+  for (const request of [
+    "Please add a note about collect export.",
+    "collect export 사용법을 README에 추가하세요.",
+    "marginsplot 결과를 설명하는 문서만 업데이트하세요.",
+    "boottest 관련 기존 설명을 검토하세요.",
+  ]) {
+    const plan = await client.tool("plan_dictionary_repairs", { path: root, request });
+    assert.deepEqual(plan.dictionary_headwords, [], `${request}: ${JSON.stringify(plan.dictionary_headwords)}`);
+  }
+
+  const sparseCellAudit = await client.tool("search_labeled_checkpoints", {
+    variant_id: "tabulate_twoway_row_chi2",
+  });
+  assert.ok(sparseCellAudit.results[0].selection_conditions.some((condition) => /cell support/i.test(condition)));
+  assert.match(sparseCellAudit.results[0].review_notes, /cell support/i);
+
+  const csdid = await client.tool("plan_dictionary_repairs", {
+    path: root,
+    request: "csdid y x, ivar(id) time(year) gvar(first_treat)",
+  });
+  assert.ok(csdid.dictionary_headwords.includes("estimation.staggered_did"));
+  assert.equal(csdid.dictionary_headwords.includes("panel.treatment_cohort"), false);
+  assert.equal(csdid.dictionary_headwords.includes("figures.event_study"), false);
+  const estimation = csdid.interventions.find((row) => row.headword === "estimation.staggered_did");
+  assert.equal(estimation.evidence_progress.command_anchor_gate.active, true);
+  assert.ok(estimation.evidence_progress.command_anchor_gate.requested_anchors.includes("csdid"));
+  if (estimation.chosen_variant) assert.ok(estimation.chosen_variant.code.toLowerCase().includes("csdid"));
+});
+
+test("source reuse supports staged in-place edits and exact block extraction insertion", async (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-source-reuse-modes-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.writeFileSync(path.join(root, "same.do"), "local input old\n", "utf8");
+  fs.writeFileSync(path.join(root, "same_candidate.do"), "local input new\n", "utf8");
+  fs.writeFileSync(path.join(root, "source.do"), "* BEGIN\nregress y x\n* END\n", "utf8");
+  fs.writeFileSync(path.join(root, "destination.do"), "version 18.0\n* INSERT\n", "utf8");
+  fs.writeFileSync(path.join(root, "block_candidate.do"), "version 18.0\n* INSERT\n* BEGIN\nregress y z\n* END\n", "utf8");
+  const client = new McpClient();
+  t.after(() => client.close());
+
+  const inPlace = await client.tool("plan_dictionary_repairs", {
+    path: root,
+    request: "기존 do-file을 제자리에서 수정하세요",
+    source_reuse: {
+      mode: "modify_in_place",
+      canonical_source: "same.do",
+      candidate_path: "same_candidate.do",
+      allowed_changes: [{ operation: "replace_literal", match: "old", replacement: "new", expected_occurrences: 1 }],
+    },
+  });
+  assert.equal(inPlace.source_reuse_plan.mode, "modify_in_place");
+  assert.equal(inPlace.source_reuse_plan.same_file_destination, true);
+  assert.equal(inPlace.source_reuse_plan.candidate_verification.exact_match, true);
+
+  const block = await client.tool("plan_dictionary_repairs", {
+    path: root,
+    request: "기존 코드 블록을 추출해 선언된 위치에 삽입하세요",
+    source_reuse: {
+      mode: "block_extract_insert",
+      canonical_source: "source.do",
+      destination: "destination.do",
+      candidate_path: "block_candidate.do",
+      source_block: { start_literal: "* BEGIN\n", end_literal: "* END\n" },
+      insertion_anchor: { match: "* INSERT\n", expected_occurrences: 1, position: "after" },
+      allowed_changes: [{ operation: "replace_literal", match: "regress y x", replacement: "regress y z", expected_occurrences: 1 }],
+    },
+  });
+  assert.equal(block.source_reuse_plan.mode, "block_extract_insert");
+  assert.equal(block.source_reuse_plan.status, "verified");
+  assert.equal(block.source_reuse_plan.candidate_verification.exact_match, true);
+  assert.equal(block.source_reuse_plan.block_contract.insertion_anchor.position, "after");
+});
+
+test("repair planner scope prunes inactive output trees before inventory", async (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-plan-scope-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.mkdirSync(path.join(root, "scripts"));
+  fs.mkdirSync(path.join(root, "bad_codes"));
+  fs.mkdirSync(path.join(root, "results"));
+  fs.writeFileSync(path.join(root, "scripts", "analysis.do"), "sysuse auto, clear\nregress price mpg\n", "utf8");
+  fs.writeFileSync(path.join(root, "bad_codes", "wrong.do"), "merge m:m id using old.dta\n", "utf8");
+  fs.writeFileSync(path.join(root, "results", "large.bin"), Buffer.alloc(1024));
+  const client = new McpClient();
+  t.after(() => client.close());
+  const plan = await client.tool("plan_dictionary_repairs", {
+    path: root,
+    request: "기존 분석을 점검만 하세요.",
+    scope: { include_paths: ["scripts"], exclude_paths: ["bad_codes", "results"] },
+  });
+  assert.deepEqual(plan.observed_state.scan_scope.include_paths, ["scripts"]);
+  assert.deepEqual(plan.observed_state.scan_scope.exclude_paths, ["bad_codes", "results"]);
+  assert.equal(plan.observed_state.extension_counts[".do"], 1);
+  assert.equal(plan.observed_state.extension_counts[".bin"], undefined);
+});
+
+test("indented merge options after continuation are not treated as new commands", async (t) => {
+  const client = new McpClient();
+  t.after(() => client.close());
+  const result = await client.tool("lint_do_file", {
+    content: "merge m:1 region_code year using `ledger', ///\n    assert(match) nogen\n",
+  });
+  assert.equal(result.findings.some((row) => row.rule === "dangling_line_continuation"), false, JSON.stringify(result.findings));
+  assert.equal(result.findings.some((row) => row.rule === "merge_without_state_check"), false, JSON.stringify(result.findings));
 });

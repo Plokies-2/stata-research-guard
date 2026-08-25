@@ -2,9 +2,9 @@
 
 연구자가 읽을 수 있는 Stata 코드를 만들고, 재현성을 해치는 실수를 작업 전반에서 막아 주는 Codex 플러그인입니다.
 
-단순한 코드 조각 모음이 아닙니다. 사람이 선별하고 검토한 연구 코드를 130개 labeled block으로 정리해 두었고, 현재 데이터 구조와 작업 상태에 맞는지 비교한 뒤 가져옵니다. 가까운 template이 있으면 필요한 부분만 바꾸고, 맞는 template이 없으면 억지로 끼워 맞추지 않고 좁은 범위의 fallback으로 전환합니다.
+단순한 코드 조각 모음이 아닙니다. 사람이 선별하고 검토한 연구 코드를 148개 labeled block으로 정리해 두었고, 현재 데이터 구조와 작업 상태에 맞는지 비교한 뒤 가져옵니다. 가까운 template이 있으면 필요한 부분만 바꾸고, 맞는 template이 없으면 억지로 끼워 맞추지 않고 좁은 범위의 fallback으로 전환합니다.
 
-현재 배포 버전은 `0.2.0+codex.20260824221905`입니다.
+현재 배포 버전은 `0.2.0+codex.20260825210135`입니다.
 
 ## 무엇이 좋은가
 
@@ -57,6 +57,7 @@ fallback은 즉흥적으로 코드를 만드는 우회로가 아닙니다. 플�
 ### 회귀 앞뒤의 연구 workflow도 다룹니다
 
 - StataCorp 공식 manual을 페이지 단위로 찾고, 실제 실행으로 확인한 official example과 code hash를 별도 증거로 제공합니다.
+- 공식 명령과 주요 community package를 39개 명령군·97개 canonical command anchor로 관리하며, 개별 estimator 이름을 끝없이 탐지기에 추가하지 않고 상태 호환 원자 template으로 확장합니다.
 - import, integrity check, cleaning·label, merge·reshape, panel 구성, descriptive statistics, sample flow, estimation·robustness, figure·table export와 master orchestration을 한 흐름으로 점검합니다.
 - summary 작업은 평균·표준편차·관측치 수를 하나의 named dataset에 저장하고, Excel 표와 PDF 그림이 같은 자료를 읽도록 설계할 수 있습니다.
 - 기존 프로젝트에서는 `plan_dictionary_repairs`가 call graph, 산출물과 estimate handoff를 살핀 뒤 요청 범위 밖 단계는 `preserve`로 남깁니다.
@@ -143,9 +144,9 @@ node plugins/stata-research-guard/scripts/verify_plugin_bundle.cjs `
 
 현재 배포본의 검증 상태는 다음과 같습니다.
 
-- bundle manifest: 191개 파일, 통과
-- Node test: 226/226 통과
-- Python test: 15/15 통과
+- bundle manifest: 199개 파일, 통과
+- Node test: 250/250 통과
+- Python test: 19/19 통과
 - plugin validator와 skill validator: 통과
 - private GitHub 원격 clean clone 재검증: 통과
 - 이번 README와 toy example 신규 파일의 개인 절대경로·비밀정보 pattern: 0건

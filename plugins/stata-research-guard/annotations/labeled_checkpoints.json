@@ -3546,7 +3546,7 @@
     "source_kind": "derived_canonical_implementation",
     "derivation_provenance": {
       "kind": "user_directed_canonical_derivation",
-      "based_on_source_path": "external-source/femaleboard_2020.do",
+      "based_on_source_path": "private-source://canonical-parent/default-style-workflow.do",
       "based_on_source_spans": [
         [
           384,
@@ -16927,7 +16927,7 @@
     "source_kind": "derived_canonical_implementation",
     "derivation_provenance": {
       "kind": "user_directed_canonical_derivation",
-      "based_on_source_path": "external-source/femaleboard_2020.do",
+      "based_on_source_path": "private-source://canonical-parent/default-style-workflow.do",
       "based_on_source_spans": [[356, 361], [372, 377]],
       "raw_source_bytes_claimed": false,
       "preserved_fact": "active estimates are appended in declared specification order"
@@ -16996,7 +16996,7 @@
     "source_kind": "derived_canonical_implementation",
     "derivation_provenance": {
       "kind": "user_directed_canonical_derivation",
-      "based_on_source_path": "external-source/femaleboard_2020.do",
+      "based_on_source_path": "private-source://canonical-parent/default-style-workflow.do",
       "based_on_source_spans": [[395, 413], [654, 657]],
       "raw_source_bytes_claimed": false,
       "preserved_fact": "number(#) selects one declared state from an ordered .ster collection"
@@ -19693,7 +19693,7 @@
     "source_kind": "derived_canonical_implementation",
     "derivation_provenance": {
       "kind": "research_practice_control_flow_derivation",
-      "based_on_source_path": "external-source/femaleboard_2020.do",
+      "based_on_source_path": "private-source://canonical-parent/default-style-workflow.do",
       "based_on_source_spans": [[617, 685]],
       "based_on_source_sha256": "678b67b0643c800b1618953607040689029854d9b0f7b73c4c10a8b82e7ca859",
       "additional_reviewed_basis": "plugins/stata-research-guard/annotations/source_snapshots/research_practice_event_plot_flat_loops.do:3-67",

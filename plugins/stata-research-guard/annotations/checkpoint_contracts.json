@@ -33,13 +33,19 @@
     "descriptives.entity_collapse": {"ko": "개체단위 기초통계 집계", "en": "Entity-level descriptive collapse"},
     "descriptives.sample_flow": {"ko": "표본 흐름 자료", "en": "Named sample-flow dataset"},
     "descriptives.summary_dataset": {"ko": "기초통계 정본 자료", "en": "Canonical summary-statistics dataset"},
+    "descriptives.estpost_active_result": {"ko": "활성 estpost 요약결과", "en": "Active estpost summary result"},
     "exports.descriptive_excel_sheet": {"ko": "기초통계 Excel 시트", "en": "Descriptive-statistics Excel sheet"},
+    "exports.estimate_text_table": {"ko": "추정치 CSV 표", "en": "Estimate CSV table"},
+    "exports.matrix_excel": {"ko": "행렬·collection Excel 내보내기", "en": "Matrix or collection Excel export"},
+    "postest.margins": {"ko": "사후 예측·한계효과", "en": "Post-estimation margins"},
     "robustness.placebo": {"ko": "위약 검정", "en": "Placebo test"},
     "robustness.heterogeneity": {"ko": "이질성 분석", "en": "Heterogeneity analysis"},
+    "robustness.bootstrap_inference": {"ko": "부트스트랩 추론", "en": "Bootstrap inference"},
     "robustness.jackknife": {"ko": "잭나이프 검정", "en": "Jackknife analysis"},
     "figures.event_study": {"ko": "이벤트 스터디 그림", "en": "Event-study figure"},
     "figures.descriptive_scatter": {"ko": "기초통계 산점도", "en": "Descriptive scatter plot"},
     "figures.descriptive_bar": {"ko": "기초통계 막대그림", "en": "Descriptive bar chart"},
+    "figures.marginsplot": {"ko": "한계효과 그림", "en": "Margins plot"},
     "figures.coefplot_named_estimates": {"ko": "명명된 추정치 계수 그림", "en": "Named-estimate coefficient plot"},
     "figures.named_graph_combine": {"ko": "명명된 그림 결합", "en": "Named graph composition"},
     "figures.export_pdf": {"ko": "PDF 그림 내보내기", "en": "Figure PDF export"},
@@ -258,6 +264,17 @@
       "incompatible_with": ["unlabeled replacement of the baseline estimand"]
     },
     {
+      "checkpoint": "robustness.bootstrap_inference",
+      "unit_kind": "post_estimation",
+      "purpose_ko": "활성 추정치의 명시된 계수와 귀무가설에 대해 재현 가능한 bootstrap 추론을 수행한다.",
+      "aliases": ["boottest", "wild bootstrap", "bootstrap inference", "부트스트랩 추론", "wild cluster bootstrap"],
+      "input_contract": ["compatible active estimate", "declared target coefficient and null hypothesis", "declared cluster, replications, and random seed"],
+      "output_contract": ["one bootstrap inference result for the declared coefficient and null", "cluster, replications, and seed visible in the command"],
+      "can_follow": ["estimation.conventional", "estimation.staggered_did"],
+      "can_precede": ["final_excel_assembly"],
+      "incompatible_with": ["post-hoc null selection", "implicit cluster or random seed", "treating bootstrap inference as subgroup heterogeneity"]
+    },
+    {
       "checkpoint": "input_load.single_source",
       "unit_kind": "preparation",
       "purpose_ko": "하나의 원자료를 읽고 출처별 최소 스키마 정리만 한 뒤 이름 있는 중간자료로 저장한다.",
@@ -445,6 +462,17 @@
       "incompatible_with": ["inventing a sample, grouping key, weight, or statistic", "silently pooling substantively different observation units", "source-specific formulas copied without a declared target meaning"]
     },
     {
+      "checkpoint": "descriptives.estpost_active_result",
+      "unit_kind": "preparation_validation",
+      "purpose_ko": "선언된 표본과 변수에 대한 요약·집단비교 결과를 estpost 호환 활성 상태로 만든다.",
+      "aliases": ["estpost summarize", "estpost tabstat", "estpost ttest", "active estpost result", "estpost 요약결과"],
+      "input_contract": ["analysis sample and variables already fixed", "declared statistic or two-group comparison", "an explicitly estpost-compatible downstream consumer"],
+      "output_contract": ["one active estpost result with the declared statistics", "no claim that a durable shared summary dataset was created"],
+      "can_follow": ["dataset.finalize_keep_label_save", "sample.trade_share_threshold", "sample.arm_response_eligibility", "panel.stack_waves"],
+      "can_precede": ["postest.persist_estimate", "exports.estimate_text_table"],
+      "incompatible_with": ["a table and figure required to share a named summary .dta", "an undeclared statistic or group", "treating active estimation state as a durable artifact"]
+    },
+    {
       "checkpoint": "exports.descriptive_excel_sheet",
       "unit_kind": "post_estimation_export",
       "purpose_ko": "메모리의 확정된 기초통계 상태를 선언한 workbook과 sheet에 내보낸다.",
@@ -498,6 +526,50 @@
       "can_follow": ["estimation.conventional", "estimation.staggered_did", "descriptives.sample_mean", "robustness.placebo", "robustness.heterogeneity"],
       "can_precede": [],
       "incompatible_with": ["long-form audit dataset used as the final paper table", "packaging-only coefficient filtering or reconstruction", "additional statistic rows beyond adjusted R-squared and dependent-variable mean", "manual treat_yYYYY or _yYYYY substitutes for factor-variable coefficient rows", "renaming factor-variable interaction coefficient rows before Excel export", "TeX export", "forcing a particular upstream estimate-storage method"]
+    },
+    {
+      "checkpoint": "exports.estimate_text_table",
+      "unit_kind": "post_estimation_export",
+      "purpose_ko": "이미 명명된 추정치를 사람이 읽을 수 있는 CSV 표로 내보낸다.",
+      "aliases": ["esttab", "estout", "estpost table", "CSV regression table", "추정치 CSV", "non-TeX estimate table"],
+      "input_contract": ["one or more named compatible estimates", "declared CSV output path and overwrite role", "declared statistic and standard-error presentation"],
+      "output_contract": ["one reproducible CSV estimate table", "no TeX artifact"],
+      "can_follow": ["estimation.conventional", "estimation.staggered_did", "postest.persist_estimate"],
+      "can_precede": ["cleanup"],
+      "incompatible_with": ["TeX output", "unnamed active estimate when a named estimate list is required", "manual coefficient reconstruction"]
+    },
+    {
+      "checkpoint": "exports.matrix_excel",
+      "unit_kind": "post_estimation_export",
+      "purpose_ko": "명시된 Stata matrix 또는 collect 결과를 하나의 선언된 Excel 산출물로 내보낸다.",
+      "aliases": ["putexcel", "collect export", "matrix Excel", "collect xlsx", "행렬 Excel", "collection Excel"],
+      "input_contract": ["a named matrix or an already populated Stata collection", "declared workbook path, sheet role, and overwrite semantics"],
+      "output_contract": ["one declared xlsx workbook or worksheet with the existing matrix or collection content"],
+      "can_follow": ["descriptives.summary_dataset", "estimation.conventional", "estimation.staggered_did", "postest.margins"],
+      "can_precede": ["cleanup"],
+      "incompatible_with": ["a nonexistent matrix or empty collection", "undeclared workbook overwrite", "TeX export"]
+    },
+    {
+      "checkpoint": "postest.margins",
+      "unit_kind": "post_estimation",
+      "purpose_ko": "직전 활성 추정치에서 선언한 예측값 또는 한계효과를 계산한다.",
+      "aliases": ["margins", "marginal effects", "predicted margins", "한계효과", "사후 예측"],
+      "input_contract": ["a compatible active estimation result", "declared focal variable and requested values or contrasts"],
+      "output_contract": ["active margins result corresponding to the declared focal values"],
+      "can_follow": ["estimation.conventional", "estimation.staggered_did"],
+      "can_precede": ["figures.marginsplot", "exports.matrix_excel"],
+      "incompatible_with": ["margins after an incompatible non-estimation command", "undeclared focal-variable values", "interpretation without the originating estimator"]
+    },
+    {
+      "checkpoint": "figures.marginsplot",
+      "unit_kind": "post_estimation_export",
+      "purpose_ko": "직전 margins 결과를 활성 신뢰구간 그림으로 변환한다.",
+      "aliases": ["marginsplot", "margins plot", "marginal-effects plot", "한계효과 그림"],
+      "input_contract": ["active margins result", "declared figure geometry and confidence-interval style"],
+      "output_contract": ["one active margins graph", "PDF export remains a separate figures.export_pdf transition"],
+      "can_follow": ["postest.margins"],
+      "can_precede": ["figures.export_pdf", "figures.named_graph_combine"],
+      "incompatible_with": ["marginsplot without immediately preceding compatible margins", "manual graph editing", "bundled PDF export"]
     },
     {
       "checkpoint": "cleanup",

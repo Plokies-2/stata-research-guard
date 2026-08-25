@@ -9,6 +9,8 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 
+REGISTRY_PATH = Path(__file__).resolve().parents[1] / "annotations" / "package_command_registry.json"
+
 STAGES = (
     "import",
     "integrity_audit",
@@ -157,53 +159,49 @@ CURATED_FILE_EXCLUSIONS = {
     "corpus/packages/202444/code/pathnames.do": "stale_machine_specific_path_configuration",
 }
 
+def load_command_registry(path: Path = REGISTRY_PATH) -> dict:
+    """Load the single command-family source of truth and reject drift early."""
+    registry = json.loads(path.read_text(encoding="utf-8"))
+    if registry.get("schema_version") != "1.0":
+        raise ValueError("package command registry requires schema_version 1.0")
+    families = registry.get("families")
+    command_index = registry.get("command_index")
+    if not isinstance(families, list) or not isinstance(command_index, list):
+        raise ValueError("package command registry requires families and command_index lists")
+    family_ids = [row.get("family_id") for row in families]
+    if len(family_ids) < 25 or any(not isinstance(value, str) or not value for value in family_ids):
+        raise ValueError("package command registry requires at least 25 named families")
+    if len(set(family_ids)) != len(family_ids):
+        raise ValueError("package command registry family_id values must be unique")
+    commands = [row.get("command") for row in command_index]
+    if len(set(commands)) != len(commands) or any(not isinstance(value, str) or not value for value in commands):
+        raise ValueError("package command registry command values must be unique and nonempty")
+    indexed_by_family: dict[str, set[str]] = defaultdict(set)
+    for row in command_index:
+        family_id = row.get("family_id")
+        if family_id not in family_ids:
+            raise ValueError(f"package command {row.get('command')} has unknown family_id {family_id}")
+        if not isinstance(row.get("pattern"), str) or not isinstance(row.get("stages"), list):
+            raise ValueError(f"package command {row.get('command')} requires pattern and stages")
+        try:
+            re.compile(row["pattern"])
+        except re.error as error:
+            raise ValueError(f"package command {row.get('command')} has invalid pattern: {error}") from error
+        indexed_by_family[family_id].add(row["command"])
+    for family in families:
+        declared = family.get("commands")
+        if not isinstance(declared, list) or not declared or set(declared) != indexed_by_family[family["family_id"]]:
+            raise ValueError(f"package family {family.get('family_id')} commands must exactly match command_index")
+        required = ("display_name", "ownership", "category", "priority", "evidence", "template_policy", "notes")
+        if any(not isinstance(family.get(field), str) or not family[field] for field in required):
+            raise ValueError(f"package family {family['family_id']} is missing required metadata")
+    return registry
+
+
+COMMAND_REGISTRY = load_command_registry()
 COMMAND_PATTERNS = {
-    "acreg": re.compile(r"(?im)^\s*acreg\b"),
-    "append": re.compile(r"(?im)^\s*append\b"),
-    "areg": re.compile(r"(?im)^\s*areg\b"),
-    "assert": re.compile(r"(?im)^\s*assert\b"),
-    "codebook": re.compile(r"(?im)^\s*codebook\b"),
-    "collapse": re.compile(r"(?im)^\s*collapse\b"),
-    "coefplot": re.compile(r"(?im)^\s*coefplot\b"),
-    "collect_export": re.compile(r"(?im)^\s*collect\s+export\b"),
-    "collect_get": re.compile(r"(?im)^\s*collect\s+get\b"),
-    "boottest": re.compile(r"(?im)^\s*boottest\b"),
-    "csdid": re.compile(r"(?im)^\s*csdid\b"),
-    "cgmreg": re.compile(r"(?im)^\s*cgmreg\b"),
-    "did_imputation": re.compile(r"(?im)^\s*did_imputation\b"),
-    "duplicates": re.compile(r"(?im)^\s*duplicates\b"),
-    "egen": re.compile(r"(?im)^\s*egen\b"),
-    "esttab": re.compile(r"(?im)^\s*esttab\b"),
-    "estout": re.compile(r"(?im)^\s*estout\b"),
-    "event_plot": re.compile(r"(?im)^\s*event_plot\b"),
-    "eventstudyinteract": re.compile(r"(?im)^\s*eventstudyinteract\b"),
-    "export_excel": re.compile(r"(?im)^\s*export\s+excel\b"),
-    "graph": re.compile(r"(?im)^\s*(?:graph|twoway)\b"),
-    "import": re.compile(r"(?im)^\s*import\b"),
-    "isid": re.compile(r"(?im)^\s*isid\b"),
-    "ivreg2": re.compile(r"(?im)^\s*(?:ivreg2|ivreghdfe)\b"),
-    "ivregress": re.compile(r"(?im)^\s*ivregress\b"),
-    "jwdid": re.compile(r"(?im)^\s*jwdid\b"),
-    "jwdidstacked": re.compile(r"(?im)^\s*jwdidstacked\b"),
-    "jregress": re.compile(r"(?im)^\s*jregress\b"),
-    "label": re.compile(r"(?im)^\s*label\b"),
-    "marginsplot": re.compile(r"(?im)^\s*marginsplot\b"),
-    "merge": re.compile(r"(?im)^\s*merge\b"),
-    "outreg2": re.compile(r"(?im)^\s*outreg2\b"),
-    "putexcel": re.compile(r"(?im)^\s*putexcel\b"),
-    "ppmlhdfe": re.compile(r"(?im)^\s*ppmlhdfe\b"),
-    "rdrobust": re.compile(r"(?im)^\s*rdrobust\b"),
-    "reghdfe": re.compile(r"(?im)^\s*reghdfe\b"),
-    "regress": re.compile(r"(?im)^\s*(?:reg|regress)\b"),
-    "reshape": re.compile(r"(?im)^\s*reshape\b"),
-    "ritest": re.compile(r"(?im)^\s*ritest\b"),
-    "summarize": re.compile(r"(?im)^\s*(?:sum|summarize)\b"),
-    "tabstat": re.compile(r"(?im)^\s*tabstat\b"),
-    "tabulate": re.compile(r"(?im)^\s*(?:tab|tabulate)\b"),
-    "ttest": re.compile(r"(?im)^\s*ttest\b"),
-    "xtreg": re.compile(r"(?im)^\s*xtreg\b"),
-    "xtivreg": re.compile(r"(?im)^\s*xtivreg\b"),
-    "xtset": re.compile(r"(?im)^\s*(?:xtset|tsset)\b"),
+    row["command"]: re.compile(row["pattern"])
+    for row in COMMAND_REGISTRY["command_index"]
 }
 
 
@@ -308,20 +306,64 @@ def has_tex_output(text: str) -> bool:
 
 def normalize_command_prefixes(text: str) -> str:
     text = re.sub(
-        r"(?im)^(\s*)eststo(?:\s+[^:\s]+)?\s*:\s*",
+        r"(?im)^(\s*)(?:(?:capture|cap|quietly|qui|noisily|noi)\s+)+",
         r"\1",
         text,
     )
     return re.sub(
-        r"(?im)^(\s*)(?:(?:capture|cap|quietly|qui|noisily|noi)\s+)+",
+        r"(?im)^(\s*)eststo(?:\s+[^:\s]+)?\s*:\s*",
         r"\1",
         text,
     )
 
 
 def detect_commands(text: str) -> list[str]:
-    active = normalize_command_prefixes(active_text(text))
-    return sorted(name for name, pattern in COMMAND_PATTERNS.items() if pattern.search(active))
+    active = active_text(text)
+    normalized = normalize_command_prefixes(active)
+    return sorted(
+        name
+        for name, pattern in COMMAND_PATTERNS.items()
+        if pattern.search(active) or pattern.search(normalized)
+    )
+
+
+def build_command_catalog(registry: dict, curated: list[dict]) -> dict:
+    """Enrich the static registry with observed corpus coverage without changing policy."""
+    command_counts = Counter(command for row in curated for command in row["commands"])
+    indexed = {row["command"]: row for row in registry["command_index"]}
+    families = []
+    for family in registry["families"]:
+        commands = []
+        for command in family["commands"]:
+            command_row = indexed[command]
+            commands.append(
+                {
+                    "command": command,
+                    "stages": command_row["stages"],
+                    "corpus_chunk_count": command_counts[command],
+                }
+            )
+        families.append(
+            {
+                **family,
+                "commands": commands,
+                "corpus_observed_commands": [row["command"] for row in commands if row["corpus_chunk_count"]],
+                "corpus_observed": any(row["corpus_chunk_count"] for row in commands),
+            }
+        )
+    return {
+        "schema_version": registry["schema_version"],
+        "title": registry["title"],
+        "scope": registry["scope"],
+        "global_template_policy": registry["global_template_policy"],
+        "summary": {
+            "families": len(families),
+            "indexed_commands": len(indexed),
+            "families_observed_in_corpus": sum(family["corpus_observed"] for family in families),
+            "commands_observed_in_corpus": sum(count > 0 for count in command_counts.values()),
+        },
+        "families": families,
+    }
 
 
 def detect_flags(text: str, max_loop_depth: int | None = None) -> tuple[list[str], list[str]]:
@@ -585,6 +627,10 @@ def main() -> None:
     (output / "reference_packages.json").write_text(
         json.dumps(package_records, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n"
     )
+    command_catalog = build_command_catalog(COMMAND_REGISTRY, curated)
+    (output / "package_command_catalog.json").write_text(
+        json.dumps(command_catalog, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n"
+    )
 
     summary = {
         "chunks": len(curated),
@@ -595,6 +641,9 @@ def main() -> None:
         "pruned_workflow_files": pruned_workflow_files,
         "max_indexed_loop_depth": max((row["max_loop_depth"] for row in curated), default=0),
         "packages": len(workflow_packages),
+        "command_families": command_catalog["summary"]["families"],
+        "indexed_commands": command_catalog["summary"]["indexed_commands"],
+        "command_families_observed_in_corpus": command_catalog["summary"]["families_observed_in_corpus"],
         "stage_counts": dict(Counter(stage for row in curated for stage in row["stages"])),
     }
     (output / "reference_build_summary.json").write_text(

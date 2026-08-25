@@ -2,6 +2,16 @@
 
 Use this reference for a new end-to-end build, a blind reproduction, or any task where the user asks whether the generated code actually reuses the labeled researcher corpus. The quality rubric is a filter for selecting blocks; passing the rubric is not the final outcome.
 
+## Existing-file clone template
+
+When a requested `.do` file is explicitly a lightly changed sibling of a verified existing `.do` file, the existing file is the canonical template. Call `plan_dictionary_repairs` with `source_reuse.canonical_source`, `destination`, and an ordered `allowed_changes` list. Each change must be a literal replacement, deletion, or insertion after an exact anchor and must declare the expected occurrence count. The planner deterministically computes the only permitted candidate and, when `candidate_path` is supplied, compares it exactly. `blocked_undeclared_change` means discard the candidate and clone again; do not patch around the mismatch.
+
+This path precedes dictionary fallback because the user has already identified the compatible whole-file frame. It does not turn the source into a universal estimator template, and it must not be implemented by adding each newly encountered estimator name to detection regexes. Use planner include/exclude scope to keep unrelated raw data, generated results, archives, and quarantined bad code outside inventory limits. Source reuse does not authorize changing the research file before the normal pre-write approval gate.
+
+## Package-first expansion
+
+Use `data/package_command_catalog.json` to identify the canonical command family before proposing a reusable block. Add coverage by registering the command family and labeling one small input-to-output atom; do not add a detector branch for each estimator spelling. `estpost`/`eststo`/`esttab` and `ivreg2`/`ivreghdfe` remain distinct because they have different state and dependency contracts. A registry entry is discovery evidence only until the source-backed template and identifying input contract are reviewed. Templates may generate Excel, PDF, or a necessary `.ster`; no template installs or probes packages, emits TeX, or manually reconstructs coefficients, standard errors, or final result rows. Preserve the latter as quarantined negative evidence.
+
 ## Atomic implementation ledger
 
 Before authoring, identify the smallest substantive state transitions needed for readable code. Record ledger rows only when the user or evaluator requests a persistent template-reuse audit; harmless direct statements and the declared master shell never need rows.
