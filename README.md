@@ -2,7 +2,7 @@
 
 연구자가 읽을 수 있는 Stata 코드를 만들고, 재현성을 해치는 실수를 작업 전반에서 막아 주는 Codex 플러그인입니다.
 
-단순한 코드 조각 모음이 아닙니다. 사람이 선별하고 검토한 연구 코드를 130개 checkpoint로 정리해 두었고, 현재 데이터 구조와 작업 상태에 맞는지 비교한 뒤 가져옵니다. 가까운 template이 있으면 필요한 부분만 바꾸고, 맞는 template이 없으면 억지로 끼워 맞추지 않고 좁은 범위의 fallback으로 전환합니다.
+단순한 코드 조각 모음이 아닙니다. 사람이 선별하고 검토한 연구 코드를 130개 labeled block으로 정리해 두었고, 현재 데이터 구조와 작업 상태에 맞는지 비교한 뒤 가져옵니다. 가까운 template이 있으면 필요한 부분만 바꾸고, 맞는 template이 없으면 억지로 끼워 맞추지 않고 좁은 범위의 fallback으로 전환합니다.
 
 현재 배포 버전은 `0.2.0+codex.20260824221905`입니다.
 
@@ -29,12 +29,39 @@
 - 가장 가까운 후보라도 실제로 맞지 않으면 nonbinding hint로만 참고합니다.
 - template 선택과 fallback 사용 구간을 `report.md`에 남겨 나중에 판단 근거를 확인할 수 있습니다.
 
+### 좁은 범위 fallback은 무엇을 따르나
+
+fallback은 즉흥적으로 코드를 만드는 우회로가 아닙니다. 플러그인에 포함된 [`general-rule-fallback.md`](plugins/stata-research-guard/skills/stata-replication-workflow/references/general-rule-fallback.md)를 지침으로 삼습니다.
+
+1. 먼저 현재 입력 구조와 작업 상태에 맞는 template을 dictionary와 승인된 corpus에서 찾습니다.
+2. 적합한 template이 없거나, 선택한 template이 lint·실행·산출물 증거에서 맞지 않는다고 확인된 경우에만 fallback으로 전환합니다.
+3. 검색 순위상 가장 가까운 후보는 명령 순서나 상태 처리 방식을 참고하는 nonbinding hint일 뿐, 호환성을 보장하지 않습니다.
+4. fallback은 이미 정해진 하나의 입력→출력 전이만 가장 짧고 읽기 쉬운 Stata 코드로 구현합니다.
+5. 표본, estimand, merge key, treatment rule, model, event-study axis, sheet 구성과 출력 위치가 정해지지 않았다면 추측하지 않고 멈춥니다.
+
+완성된 fallback 구간은 `report.md`에 실제 파일과 줄 범위, 가장 가까운 후보, 전환 이유와 빌린 아이디어를 기록합니다. 연구 코드 안에는 내부 provenance marker를 넣지 않습니다. 깊이 3 이상의 loop, registry·dispatcher, positional job string, 한 번만 쓰는 program, 수동 event dummy와 coefficient 재조립도 허용하지 않습니다.
+
+### 명시적인 overhaul도 통제합니다
+
+기본 동작은 partial repair입니다. overhaul은 사용자가 명시적으로 요청했거나, 기존 interface로 목표를 달성할 수 없다는 구체적인 증거가 있을 때만 시작합니다.
+
+쓰기 전에는 생성·수정·이동·이름 변경·삭제 대상을 모두 담은 파일 tree를 보여 줍니다. 새 persistent analysis variable이 있다면 정의, 원천 또는 계산식, 단위와 관측 수준, 생성 파일, 기간·지역, coding·missing rule과 사용처까지 함께 제시합니다. 프로젝트 README 반영 계획도 밝힌 뒤 승인을 기다립니다. 기존 프로젝트에서는 호환되는 구조와 interface를 보존하며, 새 프로젝트용 폴더 구성을 자동으로 덮어씌우지 않습니다.
+
 ### 코드 생성 이후까지 점검합니다
 
 - 개별 do-file lint와 여러 파일에 걸친 프로젝트 audit을 제공합니다.
 - master call, estimate handoff, Excel sheet 구성과 event-study axis 계약을 함께 검사합니다.
 - static lint 결과를 실행 성공으로 포장하지 않습니다.
 - 요청한 log, 산출물 개수와 실제 파일 hash를 확인해야 최종 검증으로 인정합니다.
+
+### 회귀 앞뒤의 연구 workflow도 다룹니다
+
+- StataCorp 공식 manual을 페이지 단위로 찾고, 실제 실행으로 확인한 official example과 code hash를 별도 증거로 제공합니다.
+- import, integrity check, cleaning·label, merge·reshape, panel 구성, descriptive statistics, sample flow, estimation·robustness, figure·table export와 master orchestration을 한 흐름으로 점검합니다.
+- summary 작업은 평균·표준편차·관측치 수를 하나의 named dataset에 저장하고, Excel 표와 PDF 그림이 같은 자료를 읽도록 설계할 수 있습니다.
+- 기존 프로젝트에서는 `plan_dictionary_repairs`가 call graph, 산출물과 estimate handoff를 살핀 뒤 요청 범위 밖 단계는 `preserve`로 남깁니다.
+- `workflow_reproduction_check`와 `research_output_check`는 의미상 workflow 계약, log, 정확한 산출물 수와 직접 계산한 hash를 나누어 확인합니다.
+- 한 sheet workbook은 눈에 보이는 direct `outreg2` 흐름을, 여러 sheet workbook은 정해진 canonical formatter를 사용합니다. 어느 쪽이든 raw model·coefficient·standard-error·omitted/base·note 행을 다시 만들거나 걸러내지 않습니다.
 
 ## 특히 잘 맞는 작업
 
@@ -44,6 +71,25 @@
 - factor-variable 기반 event study와 raw coefficient selector 검증
 - 2SLS first stage를 포함한 여러 sheet의 Excel 결과 정리
 - summary dataset, descriptive Excel과 PDF figure 사이의 일관성 점검
+
+## Toy example: 자동차 가격 robust 회귀
+
+[`examples/auto-price-robust/`](examples/auto-price-robust/)에는 Stata 내장 `auto` 자료로 실행하는 작은 예시를 두었습니다. `price`를 결과변수로 놓고 설명변수를 단계적으로 추가한 네 개의 OLS 사양을 `vce(robust)`로 비교합니다.
+
+이 예시는 다음 흐름을 짧게 보여 줍니다.
+
+```text
+내장 자료 로드 → key·결측 점검 → 네 개 사양 추정
+→ 각 e(sample)의 종속변수 평균 계산 → 한 sheet Excel 표 조립
+```
+
+Stata의 현재 작업 폴더를 예시 폴더로 맞춘 뒤 실행합니다.
+
+```stata
+do price_models.do
+```
+
+실행하면 `price_robust_models.xls`가 생성됩니다. 예시에 포함된 [`report.md`](examples/auto-price-robust/report.md)에서는 어느 줄이 template이고 어느 줄이 좁은 fallback인지 확인할 수 있습니다. 이 toy workflow는 기능과 코드 구조를 보여 주기 위한 것이며, 실증 결과의 일반성이나 학술적 타당성을 주장하지 않습니다.
 
 ## 설치
 
@@ -82,6 +128,12 @@ standard error와 omitted/base 상태를 빠짐없이 보존하는지 audit해 �
 표의 raw row와 figure selector가 같은 e(b) 이름을 쓰는지 검사해 주세요.
 ```
 
+```text
+이 기존 Stata workflow를 overhaul해 주세요. 코드를 쓰기 전에 바뀌는 파일 tree와
+새 persistent analysis variable의 정의·산식·단위·생성 위치·결측 규칙을 보여 주고
+제 승인을 기다리세요. 호환되는 기존 interface는 보존하세요.
+```
+
 ## 배포본 검증
 
 ```powershell
@@ -96,7 +148,7 @@ node plugins/stata-research-guard/scripts/verify_plugin_bundle.cjs `
 - Python test: 15/15 통과
 - plugin validator와 skill validator: 통과
 - private GitHub 원격 clean clone 재검증: 통과
-- tracked 개인 절대경로와 비밀정보 pattern: 0건
+- 이번 README와 toy example 신규 파일의 개인 절대경로·비밀정보 pattern: 0건
 
 MCP launcher는 `CODEX_MCP_NODE_PATH`, Codex에 포함된 Node.js, `PATH`의 `node.exe` 순서로 실행 파일을 찾습니다.
 
