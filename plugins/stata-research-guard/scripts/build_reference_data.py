@@ -10,6 +10,7 @@ from pathlib import Path
 
 
 REGISTRY_PATH = Path(__file__).resolve().parents[1] / "annotations" / "package_command_registry.json"
+REQUIREMENTS_PATH = Path(__file__).resolve().parents[1] / "annotations" / "command_template_requirements.json"
 
 STAGES = (
     "import",
@@ -162,8 +163,8 @@ CURATED_FILE_EXCLUSIONS = {
 def load_command_registry(path: Path = REGISTRY_PATH) -> dict:
     """Load the single command-family source of truth and reject drift early."""
     registry = json.loads(path.read_text(encoding="utf-8"))
-    if registry.get("schema_version") != "1.0":
-        raise ValueError("package command registry requires schema_version 1.0")
+    if registry.get("schema_version") != "2.0":
+        raise ValueError("package command registry requires schema_version 2.0")
     families = registry.get("families")
     command_index = registry.get("command_index")
     if not isinstance(families, list) or not isinstance(command_index, list):
@@ -195,6 +196,54 @@ def load_command_registry(path: Path = REGISTRY_PATH) -> dict:
         required = ("display_name", "ownership", "category", "priority", "evidence", "template_policy", "notes")
         if any(not isinstance(family.get(field), str) or not family[field] for field in required):
             raise ValueError(f"package family {family['family_id']} is missing required metadata")
+    coverage = registry.get("top100_coverage")
+    if not isinstance(coverage, dict):
+        raise ValueError("package command registry requires top100_coverage")
+    detector_index = coverage.get("detector_index")
+    coverage_groups = coverage.get("groups")
+    if not isinstance(detector_index, list) or not isinstance(coverage_groups, list):
+        raise ValueError("top100_coverage requires detector_index and groups lists")
+    detector_tokens = [row.get("command") for row in detector_index]
+    if len(detector_tokens) != len(set(detector_tokens)) or set(detector_tokens) & set(commands):
+        raise ValueError("Top-100 detector tokens must be unique and separate from package command_index")
+    for row in detector_index:
+        if not isinstance(row.get("command"), str) or not isinstance(row.get("pattern"), str):
+            raise ValueError("Top-100 detector index records require command and pattern")
+        try:
+            re.compile(row["pattern"])
+        except re.error as error:
+            raise ValueError(f"Top-100 detector {row.get('command')} has invalid pattern: {error}") from error
+    if [row.get("rank") for row in coverage_groups] != list(range(1, 101)):
+        raise ValueError("Top-100 registry coverage ranks must be contiguous")
+    known_tokens = set(commands) | set(detector_tokens)
+    for row in coverage_groups:
+        source_commands = row.get("commands")
+        mappings = row.get("command_mappings")
+        exemptions = row.get("language_element_exemptions")
+        if not isinstance(source_commands, list) or not isinstance(mappings, list) or not isinstance(exemptions, list):
+            raise ValueError("Top-100 registry coverage records require commands, mappings, and exemptions")
+        mapped_source = [item.get("source_command") for item in mappings]
+        exempt_source = [item.get("source_command") for item in exemptions]
+        if sorted(mapped_source + exempt_source) != sorted(source_commands) or len(set(mapped_source + exempt_source)) != len(source_commands):
+            raise ValueError(f"Top-100 registry coverage must bind or exempt every command: {row.get('group_id')}")
+        for item in mappings:
+            if item.get("registry_token") not in known_tokens:
+                raise ValueError(f"Top-100 registry mapping has unknown detector token: {item}")
+        for item in exemptions:
+            if not isinstance(item.get("reason"), str) or not item["reason"].strip():
+                raise ValueError(f"Top-100 registry exemption needs a reason: {item}")
+    if path == REGISTRY_PATH and REQUIREMENTS_PATH.exists():
+        requirements = json.loads(REQUIREMENTS_PATH.read_text(encoding="utf-8"))
+        requirement_bytes = json.dumps(requirements, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        if coverage.get("requirements_sha256") != hashlib.sha256(requirement_bytes).hexdigest():
+            raise ValueError("Top-100 registry coverage requirements SHA-256 does not match requirements")
+        ranked = requirements.get("ranked_groups")
+        if not isinstance(ranked, list) or len(ranked) != 100:
+            raise ValueError("Top-100 registry requires a schema-v2 requirements file")
+        expectation = [(row["rank"], row["group_id"], row["commands"]) for row in ranked]
+        observed = [(row["rank"], row["group_id"], row["commands"]) for row in coverage_groups]
+        if observed != expectation:
+            raise ValueError("Top-100 registry coverage must exactly match requirements ranks, group IDs, and commands")
     return registry
 
 
@@ -203,6 +252,10 @@ COMMAND_PATTERNS = {
     row["command"]: re.compile(row["pattern"])
     for row in COMMAND_REGISTRY["command_index"]
 }
+COMMAND_PATTERNS.update({
+    row["command"]: re.compile(row["pattern"])
+    for row in COMMAND_REGISTRY["top100_coverage"]["detector_index"]
+})
 
 
 def active_text(text: str) -> str:

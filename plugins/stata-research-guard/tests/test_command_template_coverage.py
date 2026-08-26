@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 import sys
 import unittest
@@ -10,7 +11,11 @@ from pathlib import Path
 PLUGIN = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PLUGIN / "scripts"))
 
-from build_command_template_coverage import build_coverage, validate_requirements  # noqa: E402
+from build_command_template_coverage import (  # noqa: E402
+    build_coverage,
+    validate_ranked_atomic_contract_coverage,
+    validate_requirements,
+)
 
 
 class CommandTemplateCoverageTests(unittest.TestCase):
@@ -22,29 +27,51 @@ class CommandTemplateCoverageTests(unittest.TestCase):
         cls.audit = json.loads(
             (PLUGIN / "annotations" / "template_promotion_audit.json").read_text(encoding="utf-8")
         )
+        cls.top100_atomic_records = [
+            record
+            for path in sorted((PLUGIN / "annotations" / "atomic_template_sets").glob("top100_*.json"))
+            for record in json.loads(path.read_text(encoding="utf-8"))
+        ]
 
-    def test_top50_contract_is_exact_and_variant_complete(self) -> None:
+    def test_top100_contract_freezes_the_top50_prefix_and_uses_complexity_weighting(self) -> None:
         validate_requirements(self.requirements)
-        groups = self.requirements["top50_groups"]
-        self.assertEqual(len(groups), 50)
-        self.assertEqual([row["rank"] for row in groups], list(range(1, 51)))
-        self.assertEqual(sum(len(row["required_variants"]) for row in groups), 203)
+        groups = self.requirements["ranked_groups"]
+        self.assertEqual(len(groups), 100)
+        self.assertEqual([row["rank"] for row in groups], list(range(1, 101)))
+        self.assertEqual(sum(len(row["required_variants"]) for row in groups), 381)
         self.assertEqual(
-            sum(len(row["required_variants"]) for row in [*groups, *self.requirements["additional_user_written_groups"]]),
-            251,
+            sum(len(row["required_variants"]) for row in [*groups, *self.requirements["supplemental_groups"]]),
+            429,
         )
-        self.assertIn("reghdfe", {row["group_id"] for row in groups})
+        self.assertEqual(sum(len(row["required_variants"]) for row in groups[:50]), 203)
+        self.assertTrue(self.requirements["ranking_contract"]["top50_prefix_frozen"])
+        self.assertTrue(self.requirements["complexity_weighted_sufficiency"]["fixed_per_command_quota_forbidden"])
+        self.assertEqual(next(row for row in groups if row["group_id"] == "format")["required_variants"], ["format_numeric_currency"])
+        self.assertGreater(len(next(row for row in groups if row["group_id"] == "teffects")["required_variants"]), 1)
+        self.assertIn("reghdfe", {row["group_id"] for row in groups[:50]})
         self.assertTrue(next(row for row in groups if row["group_id"] == "outreg2")["user_written_guide_required"])
+
+    def test_public_rank_research_appendix_is_release_owned_and_hash_locked(self) -> None:
+        contract = self.requirements["ranking_contract"]
+        relative = Path(contract["rank_research_path"])
+        self.assertEqual(relative.parts[:2], ("plugins", "stata-research-guard"))
+        source = PLUGIN.parents[1] / relative
+        self.assertTrue(source.is_file())
+        self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(), contract["rank_research_sha256"])
+
+    def test_new_ranked_contracts_and_pre_audit_guide_atoms_are_exactly_bijective(self) -> None:
+        validate_ranked_atomic_contract_coverage(self.requirements, self.top100_atomic_records)
+        self.assertEqual(len(self.top100_atomic_records), 178)
 
     def test_coverage_keeps_direct_primitives_distinct_from_reference_guides(self) -> None:
         coverage = build_coverage(self.requirements, self.audit)
-        self.assertEqual(coverage["summary"]["top50_groups"], 50)
-        self.assertEqual(coverage["summary"]["top50_required_variants"], 203)
-        self.assertEqual(coverage["summary"]["all_required_variants_including_additional_user_written"], 251)
+        self.assertEqual(coverage["summary"]["ranked_groups"], 100)
+        self.assertEqual(coverage["summary"]["ranked_required_variants"], 381)
+        self.assertEqual(coverage["summary"]["all_required_variants"], 429)
         statuses = coverage["summary"]["status_counts"]
-        self.assertEqual(statuses["direct_primitive_policy"], 19)
-        self.assertEqual(statuses["reference_only"], 184)
-        self.assertEqual(statuses.get("uncovered", 0), 0)
+        top50_statuses = coverage["summary"]["top50_prefix_status_counts"]
+        self.assertEqual(top50_statuses["direct_primitive_policy"], 19)
+        self.assertEqual(top50_statuses["reference_only"], 184)
         reghdfe = next(row for row in coverage["groups"] if row["group_id"] == "reghdfe")
         self.assertTrue(all(row["status"] == "reference_only" for row in reghdfe["variants"]))
         diagnostics = next(row for row in coverage["groups"] if row["group_id"] == "describe_codebook")
@@ -55,7 +82,7 @@ class CommandTemplateCoverageTests(unittest.TestCase):
 
     def test_rank_gap_is_rejected(self) -> None:
         broken = copy.deepcopy(self.requirements)
-        broken["top50_groups"][49]["rank"] = 51
+        broken["ranked_groups"][99]["rank"] = 101
         with self.assertRaisesRegex(ValueError, "contiguous"):
             validate_requirements(broken)
 

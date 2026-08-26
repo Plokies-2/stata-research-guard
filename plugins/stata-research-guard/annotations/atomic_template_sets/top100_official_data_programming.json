@@ -1,0 +1,5116 @@
+[
+  {
+    "label_id": "guide.by_bysort.by_group_sorted_sequence.v1",
+    "contract_ids": [
+      "by_bysort.by_group_sorted_sequence"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "preparation.by_group",
+    "variant_group": "guide.by_bysort",
+    "variant_id": "by_group_sorted_sequence",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        3,
+        3
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/pby.pdf"
+    ],
+    "research_situations": [
+      "연구자가 by, bysort의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 by, bysort 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not imply an arbitrary order; include (sortvars) when order matters",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "by",
+        "bysort"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [
+        "declared key or identifier"
+      ],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/pby.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "by id (time): gen seq = _n",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 by id (time): gen seq = _n의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[by_group_sorted_sequence] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 51 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.by_bysort.bysort_group_count.v1",
+    "contract_ids": [
+      "by_bysort.bysort_group_count"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "preparation.by_group",
+    "variant_group": "guide.by_bysort",
+    "variant_id": "bysort_group_count",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        4,
+        4
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/pby.pdf"
+    ],
+    "research_situations": [
+      "연구자가 by, bysort의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 by, bysort 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not imply an arbitrary order; include (sortvars) when order matters",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "by",
+        "bysort"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [
+        "declared key or identifier"
+      ],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/pby.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "bysort id (time): gen n_id = _N",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 bysort id (time): gen n_id = _N의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[bysort_group_count] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 51 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.by_bysort.by_group_replace_condition.v1",
+    "contract_ids": [
+      "by_bysort.by_group_replace_condition"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "preparation.by_group",
+    "variant_group": "guide.by_bysort",
+    "variant_id": "by_group_replace_condition",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        5,
+        5
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/pby.pdf"
+    ],
+    "research_situations": [
+      "연구자가 by, bysort의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 by, bysort 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not imply an arbitrary order; include (sortvars) when order matters",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "by",
+        "bysort"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [
+        "declared key or identifier"
+      ],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/pby.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "by id: replace flag = 1 if condition",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 by id: replace flag = 1 if condition의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[by_group_replace_condition] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 51 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.if_in_qualifiers.if_qualifier_nonmissing_summary.v1",
+    "contract_ids": [
+      "if_in_qualifiers.if_qualifier_nonmissing_summary"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "sample.restriction",
+    "variant_group": "guide.if_in_qualifiers",
+    "variant_id": "if_qualifier_nonmissing_summary",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        6,
+        6
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/pifin.pdf"
+    ],
+    "research_situations": [
+      "연구자가 if, in의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 if, in 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not treat in 1/20 as a random/sample selection",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "if",
+        "in"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/pifin.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "summarize x if !missing(x)",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 summarize x if !missing(x)의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[if_qualifier_nonmissing_summary] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 52 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.if_in_qualifiers.in_qualifier_observation_range.v1",
+    "contract_ids": [
+      "if_in_qualifiers.in_qualifier_observation_range"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "sample.restriction",
+    "variant_group": "guide.if_in_qualifiers",
+    "variant_id": "in_qualifier_observation_range",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        7,
+        7
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/pifin.pdf"
+    ],
+    "research_situations": [
+      "연구자가 if, in의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 if, in 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not treat in 1/20 as a random/sample selection",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "if",
+        "in"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/pifin.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "list id x in 1/20",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 list id x in 1/20의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[in_qualifier_observation_range] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 52 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.if_in_qualifiers.if_qualifier_missing_replace.v1",
+    "contract_ids": [
+      "if_in_qualifiers.if_qualifier_missing_replace"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "sample.restriction",
+    "variant_group": "guide.if_in_qualifiers",
+    "variant_id": "if_qualifier_missing_replace",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        8,
+        8
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/fnmissing.pdf"
+    ],
+    "research_situations": [
+      "연구자가 if, in의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 if, in 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not treat in 1/20 as a random/sample selection",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "if",
+        "in"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/fnmissing.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "replace y = . if missing(x, z)",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 replace y = . if missing(x, z)의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[if_qualifier_missing_replace] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 52 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.recode.recode_generate_ranges.v1",
+    "contract_ids": [
+      "recode.recode_generate_ranges"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "clean.derive_variables",
+    "variant_group": "guide.recode",
+    "variant_id": "recode_generate_ranges",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        9,
+        9
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/drecode.pdf"
+    ],
+    "research_situations": [
+      "연구자가 recode의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 recode 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "exclude unparenthesized rules and in-place overwrite from safe guide atoms",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "recode"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/drecode.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "recode x (1/5=1) (6/10=2), gen(x_cat)",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 recode x (1/5=1) (6/10=2), gen(x_cat)의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[recode_generate_ranges] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 53 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.recode.recode_generate_binary_test.v1",
+    "contract_ids": [
+      "recode.recode_generate_binary_test"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "clean.derive_variables",
+    "variant_group": "guide.recode",
+    "variant_id": "recode_generate_binary_test",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        10,
+        10
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/drecode.pdf"
+    ],
+    "research_situations": [
+      "연구자가 recode의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 recode 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "exclude unparenthesized rules and in-place overwrite from safe guide atoms",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "recode"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/drecode.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "recode x (1=0) (2=1), generate(x_new) test",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 recode x (1=0) (2=1), generate(x_new) test의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[recode_generate_binary_test] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 53 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.missing_mi.missing_function_indicator.v1",
+    "contract_ids": [
+      "missing_mi.missing_function_indicator"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "integrity.missing_data",
+    "variant_group": "guide.missing_mi",
+    "variant_id": "missing_function_indicator",
+    "stage": "validation",
+    "source_spans": [
+      [
+        11,
+        11
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/fnmissing.pdf"
+    ],
+    "research_situations": [
+      "연구자가 missing(), mi, mi_misstable, mi_register의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 missing(), mi, mi_misstable, mi_register 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not register passive variables without their deterministic-generating expression",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "missing()",
+        "mi",
+        "mi_misstable"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/fnmissing.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "gen anymiss = missing(x1, x2, x3)",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 gen anymiss = missing(x1, x2, x3)의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[missing_function_indicator] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 54 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.missing_mi.mi_set_mlong.v1",
+    "contract_ids": [
+      "missing_mi.mi_set_mlong"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "integrity.missing_data",
+    "variant_group": "guide.missing_mi",
+    "variant_id": "mi_set_mlong",
+    "stage": "validation",
+    "source_spans": [
+      [
+        12,
+        12
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/mi.pdf"
+    ],
+    "research_situations": [
+      "연구자가 missing(), mi, mi_misstable, mi_register의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 missing(), mi, mi_misstable, mi_register 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not register passive variables without their deterministic-generating expression",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "missing()",
+        "mi",
+        "mi_misstable"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/mi.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "mi set mlong",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 mi set mlong의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[mi_set_mlong] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 54 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.missing_mi.mi_register_and_misstable.v1",
+    "contract_ids": [
+      "missing_mi.mi_register_and_misstable"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "integrity.missing_data",
+    "variant_group": "guide.missing_mi",
+    "variant_id": "mi_register_and_misstable",
+    "stage": "validation",
+    "source_spans": [
+      [
+        70,
+        72
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/miregister.pdf"
+    ],
+    "research_situations": [
+      "연구자가 missing(), mi, mi_misstable, mi_register의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 missing(), mi, mi_misstable, mi_register 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not register passive variables without their deterministic-generating expression",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "missing()",
+        "mi",
+        "mi_misstable"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/miregister.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "mi register imputed x1 x2\nmi register passive x3\nmi misstable summarize x1 x2",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 mi register imputed x1 x2\nmi register passive x3\nmi misstable summarize x1 x2의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[mi_register_and_misstable] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 54 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.clonevar_recast_compress.clonevar_preserve_metadata.v1",
+    "contract_ids": [
+      "clonevar_recast_compress.clonevar_preserve_metadata"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "preparation.storage_metadata",
+    "variant_group": "guide.clonevar_recast_compress",
+    "variant_id": "clonevar_preserve_metadata",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        14,
+        14
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/dclonevar.pdf"
+    ],
+    "research_situations": [
+      "연구자가 clonevar, recast, compress의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 clonevar, recast, compress 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "never recast/compress identifier or precision-sensitive variables without a guard/readback",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "clonevar",
+        "recast",
+        "compress"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/dclonevar.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "clonevar x_original = x",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 clonevar x_original = x의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[clonevar_preserve_metadata] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 55 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.clonevar_recast_compress.recast_declared_storage.v1",
+    "contract_ids": [
+      "clonevar_recast_compress.recast_declared_storage"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "preparation.storage_metadata",
+    "variant_group": "guide.clonevar_recast_compress",
+    "variant_id": "recast_declared_storage",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        15,
+        15
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/drecast.pdf"
+    ],
+    "research_situations": [
+      "연구자가 clonevar, recast, compress의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 clonevar, recast, compress 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "never recast/compress identifier or precision-sensitive variables without a guard/readback",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "clonevar",
+        "recast",
+        "compress"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/drecast.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "recast double x",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 recast double x의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[recast_declared_storage] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 55 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.clonevar_recast_compress.compress_declared_dataset.v1",
+    "contract_ids": [
+      "clonevar_recast_compress.compress_declared_dataset"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "preparation.storage_metadata",
+    "variant_group": "guide.clonevar_recast_compress",
+    "variant_id": "compress_declared_dataset",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        16,
+        16
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/dcompress.pdf"
+    ],
+    "research_situations": [
+      "연구자가 clonevar, recast, compress의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 clonevar, recast, compress 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "never recast/compress identifier or precision-sensitive variables without a guard/readback",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "clonevar",
+        "recast",
+        "compress"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/dcompress.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "compress",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 compress의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[compress_declared_dataset] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 55 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.format.format_numeric_currency.v1",
+    "contract_ids": [
+      "format.format_numeric_currency"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "preparation.display_metadata",
+    "variant_group": "guide.format",
+    "variant_id": "format_numeric_currency",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        17,
+        17
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/dformat.pdf"
+    ],
+    "research_situations": [
+      "연구자가 format의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 format 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not present format as a date/string conversion",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "format"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/dformat.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "format amount %12.2fc",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 format amount %12.2fc의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[format_numeric_currency] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 56 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.ds_unab.ds_numeric_wildcard.v1",
+    "contract_ids": [
+      "ds_unab.ds_numeric_wildcard"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "preparation.varlist_resolution",
+    "variant_group": "guide.ds_unab",
+    "variant_id": "ds_numeric_wildcard",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        74,
+        75
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/dds.pdf"
+    ],
+    "research_situations": [
+      "연구자가 ds, unab의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 ds, unab 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not silently proceed with an empty/absent required varlist",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "ds",
+        "unab"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/dds.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "ds x*, has(type numeric)\nlocal nums `r(varlist)'",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 ds x*, has(type numeric)\nlocal nums `r(varlist)'의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[ds_numeric_wildcard] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 57 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.ds_unab.unab_declared_controls.v1",
+    "contract_ids": [
+      "ds_unab.unab_declared_controls"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "preparation.varlist_resolution",
+    "variant_group": "guide.ds_unab",
+    "variant_id": "unab_declared_controls",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        19,
+        19
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/punab.pdf"
+    ],
+    "research_situations": [
+      "연구자가 ds, unab의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 ds, unab 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not silently proceed with an empty/absent required varlist",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "ds",
+        "unab"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/punab.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "unab controls : x1-x5",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 unab controls : x1-x5의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[unab_declared_controls] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 57 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.temp_objects.tempfile_intermediate.v1",
+    "contract_ids": [
+      "temp_objects.tempfile_intermediate"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "preparation.temporary_state",
+    "variant_group": "guide.temp_objects",
+    "variant_id": "tempfile_intermediate",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        77,
+        78
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/pmacro.pdf"
+    ],
+    "research_situations": [
+      "연구자가 tempfile, tempvar, tempname의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 tempfile, tempvar, tempname 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not export/persist a tempfile path as a durable artifact",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "tempfile",
+        "tempvar",
+        "tempname"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/pmacro.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "tempfile stage\nsave `stage'",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 tempfile stage\nsave `stage'의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[tempfile_intermediate] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 58 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.temp_objects.tempvar_flag.v1",
+    "contract_ids": [
+      "temp_objects.tempvar_flag"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "preparation.temporary_state",
+    "variant_group": "guide.temp_objects",
+    "variant_id": "tempvar_flag",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        80,
+        81
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/pmacro.pdf"
+    ],
+    "research_situations": [
+      "연구자가 tempfile, tempvar, tempname의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 tempfile, tempvar, tempname 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not export/persist a tempfile path as a durable artifact",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "tempfile",
+        "tempvar",
+        "tempname"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/pmacro.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "tempvar flag\ngen byte `flag' = condition",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 tempvar flag\ngen byte `flag' = condition의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[tempvar_flag] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 58 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.temp_objects.tempname_matrix.v1",
+    "contract_ids": [
+      "temp_objects.tempname_matrix"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "preparation.temporary_state",
+    "variant_group": "guide.temp_objects",
+    "variant_id": "tempname_matrix",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        83,
+        84
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/pmacro.pdf"
+    ],
+    "research_situations": [
+      "연구자가 tempfile, tempvar, tempname의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 tempfile, tempvar, tempname 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not export/persist a tempfile path as a durable artifact",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "tempfile",
+        "tempvar",
+        "tempname"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/pmacro.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "tempname B\nmatrix `B' = I(2)",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 tempname B\nmatrix `B' = I(2)의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[tempname_matrix] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 58 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.capture_confirm.capture_confirm_variable.v1",
+    "contract_ids": [
+      "capture_confirm.capture_confirm_variable"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "integrity.audit",
+    "variant_group": "guide.capture_confirm",
+    "variant_id": "capture_confirm_variable",
+    "stage": "validation",
+    "source_spans": [
+      [
+        86,
+        89
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/pcapture.pdf"
+    ],
+    "research_situations": [
+      "연구자가 capture, confirm의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 capture, confirm 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "exclude capture around estimation, merge, save, output generation, or package-install detection",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "capture",
+        "confirm"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/pcapture.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "capture confirm variable x\nif _rc {\n    exit 111\n}",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 capture confirm variable x\nif _rc {\n    exit 111\n}의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[capture_confirm_variable] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 59 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.capture_confirm.capture_confirm_file.v1",
+    "contract_ids": [
+      "capture_confirm.capture_confirm_file"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "integrity.audit",
+    "variant_group": "guide.capture_confirm",
+    "variant_id": "capture_confirm_file",
+    "stage": "validation",
+    "source_spans": [
+      [
+        91,
+        94
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/pconfirm.pdf"
+    ],
+    "research_situations": [
+      "연구자가 capture, confirm의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 capture, confirm 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "exclude capture around estimation, merge, save, output generation, or package-install detection",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "capture",
+        "confirm"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/pconfirm.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "capture confirm file `\"input.dta\"'\nif _rc {\n    exit 601\n}",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 capture confirm file `\"input.dta\"'\nif _rc {\n    exit 601\n}의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[capture_confirm_file] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 59 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.capture_confirm.capture_confirm_new_variable.v1",
+    "contract_ids": [
+      "capture_confirm.capture_confirm_new_variable"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "integrity.audit",
+    "variant_group": "guide.capture_confirm",
+    "variant_id": "capture_confirm_new_variable",
+    "stage": "validation",
+    "source_spans": [
+      [
+        96,
+        99
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/pconfirm.pdf"
+    ],
+    "research_situations": [
+      "연구자가 capture, confirm의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 capture, confirm 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "exclude capture around estimation, merge, save, output generation, or package-install detection",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "capture",
+        "confirm"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/pconfirm.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "capture confirm new variable output\nif !_rc {\n    exit 110\n}",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 capture confirm new variable output\nif !_rc {\n    exit 110\n}의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[capture_confirm_new_variable] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 59 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.quietly_noisily.quietly_summary_return.v1",
+    "contract_ids": [
+      "quietly_noisily.quietly_summary_return"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "diagnostics.display",
+    "variant_group": "guide.quietly_noisily",
+    "variant_id": "quietly_summary_return",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        101,
+        102
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/pquietly.pdf"
+    ],
+    "research_situations": [
+      "연구자가 quietly, noisily의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 quietly, noisily 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not quiet an entire workflow without explicit diagnostic/output checkpoints",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "quietly",
+        "noisily"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/pquietly.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "quietly summarize x\nlocal mean = r(mean)",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 quietly summarize x\nlocal mean = r(mean)의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[quietly_summary_return] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 60 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.quietly_noisily.noisily_detail_summary.v1",
+    "contract_ids": [
+      "quietly_noisily.noisily_detail_summary"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "diagnostics.display",
+    "variant_group": "guide.quietly_noisily",
+    "variant_id": "noisily_detail_summary",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        27,
+        27
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/pquietly.pdf"
+    ],
+    "research_situations": [
+      "연구자가 quietly, noisily의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 quietly, noisily 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not quiet an entire workflow without explicit diagnostic/output checkpoints",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "quietly",
+        "noisily"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/pquietly.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "noisily summarize x, detail",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 noisily summarize x, detail의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[noisily_detail_summary] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 60 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.do_include.do_declared_file.v1",
+    "contract_ids": [
+      "do_include.do_declared_file"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "workflow_orchestration.file_execution",
+    "variant_group": "guide.do_include",
+    "variant_id": "do_declared_file",
+    "stage": "orchestration",
+    "source_spans": [
+      [
+        28,
+        28
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/pdo.pdf"
+    ],
+    "research_situations": [
+      "연구자가 do, include, run의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 do, include, run 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not use include as an independent top-level workflow stage",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "declared source file"
+      ],
+      "observable_signals": [
+        "do",
+        "include",
+        "run"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/pdo.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "do `\"code/01_prepare.do\"'",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 do `\"code/01_prepare.do\"'의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[do_declared_file] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 61 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.do_include.include_declared_source.v1",
+    "contract_ids": [
+      "do_include.include_declared_source"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "workflow_orchestration.file_execution",
+    "variant_group": "guide.do_include",
+    "variant_id": "include_declared_source",
+    "stage": "orchestration",
+    "source_spans": [
+      [
+        29,
+        29
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/pinclude.pdf"
+    ],
+    "research_situations": [
+      "연구자가 do, include, run의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 do, include, run 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not use include as an independent top-level workflow stage",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "declared source file"
+      ],
+      "observable_signals": [
+        "do",
+        "include",
+        "run"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/pinclude.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "include `\"config.do\"'",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 include `\"config.do\"'의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[include_declared_source] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 61 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.postfile_post.postfile_typed_results.v1",
+    "contract_ids": [
+      "postfile_post.postfile_typed_results"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "descriptives.sample_flow",
+    "variant_group": "guide.postfile_post",
+    "variant_id": "postfile_typed_results",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        104,
+        106
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/ppostfile.pdf"
+    ],
+    "research_situations": [
+      "연구자가 postfile, post, postclose의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 postfile, post, postclose 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not use unparenthesized expressions that can be parsed ambiguously",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "postfile",
+        "post",
+        "postclose"
+      ],
+      "produces": [
+        "declared results dataset or result state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset_plus_declared_result_state",
+      "record_unit": "one named result row",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/ppostfile.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "tempname h\ntempfile results\npostfile `h' str20 id double b se using `results'",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 tempname h\ntempfile results\npostfile `h' str20 id double b se using `results'의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[postfile_typed_results] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 62 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.postfile_post.post_named_result_row.v1",
+    "contract_ids": [
+      "postfile_post.post_named_result_row"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "descriptives.sample_flow",
+    "variant_group": "guide.postfile_post",
+    "variant_id": "post_named_result_row",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        31,
+        31
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/ppost.pdf"
+    ],
+    "research_situations": [
+      "연구자가 postfile, post, postclose의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 postfile, post, postclose 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not use unparenthesized expressions that can be parsed ambiguously",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "postfile",
+        "post",
+        "postclose"
+      ],
+      "produces": [
+        "declared results dataset or result state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset_plus_declared_result_state",
+      "record_unit": "one named result row",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/ppost.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "post `h' (`\"firm1\"') (b) (se)",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 post `h' (`\"firm1\"') (b) (se)의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[post_named_result_row] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 62 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.postfile_post.postclose_consumer.v1",
+    "contract_ids": [
+      "postfile_post.postclose_consumer"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "descriptives.sample_flow",
+    "variant_group": "guide.postfile_post",
+    "variant_id": "postclose_consumer",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        108,
+        109
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/ppostfile.pdf"
+    ],
+    "research_situations": [
+      "연구자가 postfile, post, postclose의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 postfile, post, postclose 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not use unparenthesized expressions that can be parsed ambiguously",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "postfile",
+        "post",
+        "postclose"
+      ],
+      "produces": [
+        "declared results dataset or result state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset_plus_declared_result_state",
+      "record_unit": "one named result row",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/ppostfile.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "postclose `h'\nuse `results', clear",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 postclose `h'\nuse `results', clear의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[postclose_consumer] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 62 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.contract.contract_frequency.v1",
+    "contract_ids": [
+      "contract.contract_frequency"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "descriptives.command_result",
+    "variant_group": "guide.contract",
+    "variant_id": "contract_frequency",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        33,
+        33
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/dcontract.pdf"
+    ],
+    "research_situations": [
+      "연구자가 contract의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 contract 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not run without preserving/reloading a needed microdata state",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "contract"
+      ],
+      "produces": [
+        "updated active data layout or materialized rows"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/dcontract.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "contract category, freq(n)",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 contract category, freq(n)의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[contract_frequency] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 63 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.contract.contract_frequency_percent_cumulative.v1",
+    "contract_ids": [
+      "contract.contract_frequency_percent_cumulative"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "descriptives.command_result",
+    "variant_group": "guide.contract",
+    "variant_id": "contract_frequency_percent_cumulative",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        34,
+        34
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/dcontract.pdf"
+    ],
+    "research_situations": [
+      "연구자가 contract의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 contract 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not run without preserving/reloading a needed microdata state",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "contract"
+      ],
+      "produces": [
+        "updated active data layout or materialized rows"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/dcontract.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "contract category, freq(n) percent(pct) cfreq(cum_n) cpercent(cum_pct)",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 contract category, freq(n) percent(pct) cfreq(cum_n) cpercent(cum_pct)의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[contract_frequency_percent_cumulative] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 63 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.contract.contract_zero_nomiss.v1",
+    "contract_ids": [
+      "contract.contract_zero_nomiss"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "descriptives.command_result",
+    "variant_group": "guide.contract",
+    "variant_id": "contract_zero_nomiss",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        35,
+        35
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/dcontract.pdf"
+    ],
+    "research_situations": [
+      "연구자가 contract의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 contract 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not run without preserving/reloading a needed microdata state",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "contract"
+      ],
+      "produces": [
+        "updated active data layout or materialized rows"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/dcontract.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "contract category, zero nomiss",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 contract category, zero nomiss의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[contract_zero_nomiss] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 63 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.cross_joinby.cross_cartesian_product.v1",
+    "contract_ids": [
+      "cross_joinby.cross_cartesian_product"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "merge_reshape.integration",
+    "variant_group": "guide.cross_joinby",
+    "variant_id": "cross_cartesian_product",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        36,
+        36
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/dcross.pdf"
+    ],
+    "research_situations": [
+      "연구자가 cross, joinby의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 cross, joinby 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "require an expected row-count check; never substitute joinby for uniqueness-validated merge",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "cross",
+        "joinby"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one row sharing a declared key",
+      "required_keys": [
+        "declared key or identifier"
+      ],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/dcross.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "cross using `\"lookup.dta\"'",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 cross using `\"lookup.dta\"'의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[cross_cartesian_product] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 64 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.cross_joinby.joinby_declared_key.v1",
+    "contract_ids": [
+      "cross_joinby.joinby_declared_key"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "merge_reshape.integration",
+    "variant_group": "guide.cross_joinby",
+    "variant_id": "joinby_declared_key",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        37,
+        37
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/djoinby.pdf"
+    ],
+    "research_situations": [
+      "연구자가 cross, joinby의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 cross, joinby 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "require an expected row-count check; never substitute joinby for uniqueness-validated merge",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "cross",
+        "joinby"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one row sharing a declared key",
+      "required_keys": [
+        "declared key or identifier"
+      ],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/djoinby.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "joinby id using `\"many.dta\"'",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 joinby id using `\"many.dta\"'의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[joinby_declared_key] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 64 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.cross_joinby.joinby_keep_unmatched.v1",
+    "contract_ids": [
+      "cross_joinby.joinby_keep_unmatched"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "merge_reshape.integration",
+    "variant_group": "guide.cross_joinby",
+    "variant_id": "joinby_keep_unmatched",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        38,
+        38
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/djoinby.pdf"
+    ],
+    "research_situations": [
+      "연구자가 cross, joinby의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 cross, joinby 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "require an expected row-count check; never substitute joinby for uniqueness-validated merge",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "cross",
+        "joinby"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one row sharing a declared key",
+      "required_keys": [
+        "declared key or identifier"
+      ],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/djoinby.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "joinby id using `\"many.dta\"', unmatched(master)",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 joinby id using `\"many.dta\"', unmatched(master)의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[joinby_keep_unmatched] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 64 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.frames.frame_create_named.v1",
+    "contract_ids": [
+      "frames.frame_create_named"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "merge_reshape.integration",
+    "variant_group": "guide.frames",
+    "variant_id": "frame_create_named",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        39,
+        39
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/dframe_create.pdf"
+    ],
+    "research_situations": [
+      "연구자가 frame create, frame change, frame put, frame post의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 frame create, frame change, frame put, frame post 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not rely on implicit current-frame switching or unnamed target",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "frame create",
+        "frame change",
+        "frame put"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "multi_frame_Stata_state",
+      "record_unit": "one declared observation",
+      "required_keys": [
+        "declared key or identifier"
+      ],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/dframe_create.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "frame create aux",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 frame create aux의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[frame_create_named] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 65 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.frames.frame_put_selected.v1",
+    "contract_ids": [
+      "frames.frame_put_selected"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "merge_reshape.integration",
+    "variant_group": "guide.frames",
+    "variant_id": "frame_put_selected",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        40,
+        40
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/dframe_put.pdf"
+    ],
+    "research_situations": [
+      "연구자가 frame create, frame change, frame put, frame post의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 frame create, frame change, frame put, frame post 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not rely on implicit current-frame switching or unnamed target",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "frame create",
+        "frame change",
+        "frame put"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "multi_frame_Stata_state",
+      "record_unit": "one declared observation",
+      "required_keys": [
+        "declared key or identifier"
+      ],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/dframe_put.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "frame put id x if sample, into(aux)",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 frame put id x if sample, into(aux)의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[frame_put_selected] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 65 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.frames.frame_post_to_target.v1",
+    "contract_ids": [
+      "frames.frame_post_to_target"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "merge_reshape.integration",
+    "variant_group": "guide.frames",
+    "variant_id": "frame_post_to_target",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        41,
+        41
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/dframe_post.pdf"
+    ],
+    "research_situations": [
+      "연구자가 frame create, frame change, frame put, frame post의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 frame create, frame change, frame put, frame post 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not rely on implicit current-frame switching or unnamed target",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "frame create",
+        "frame change",
+        "frame put"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "multi_frame_Stata_state",
+      "record_unit": "one declared observation",
+      "required_keys": [
+        "declared key or identifier"
+      ],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/dframe_post.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "frame aux: frame post target (id) (x)",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 frame aux: frame post target (id) (x)의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[frame_post_to_target] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 65 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.frlink_frget.frlink_one_to_one.v1",
+    "contract_ids": [
+      "frlink_frget.frlink_one_to_one"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "merge_reshape.integration",
+    "variant_group": "guide.frlink_frget",
+    "variant_id": "frlink_one_to_one",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        42,
+        42
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/dfrlink.pdf"
+    ],
+    "research_situations": [
+      "연구자가 frlink, frget, fralias add의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 frlink, frget, fralias add 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not use linked values without checking unmatched link codes",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "frlink",
+        "frget",
+        "fralias add"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "multi_frame_Stata_state",
+      "record_unit": "one row sharing a declared key",
+      "required_keys": [
+        "declared key or identifier"
+      ],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/dfrlink.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "frlink 1:1 id, frame(lookup) generate(lk)",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 frlink 1:1 id, frame(lookup) generate(lk)의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[frlink_one_to_one] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 66 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.frlink_frget.frlink_many_to_one.v1",
+    "contract_ids": [
+      "frlink_frget.frlink_many_to_one"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "merge_reshape.integration",
+    "variant_group": "guide.frlink_frget",
+    "variant_id": "frlink_many_to_one",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        43,
+        43
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/dfrlink.pdf"
+    ],
+    "research_situations": [
+      "연구자가 frlink, frget, fralias add의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 frlink, frget, fralias add 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not use linked values without checking unmatched link codes",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "frlink",
+        "frget",
+        "fralias add"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "multi_frame_Stata_state",
+      "record_unit": "one row sharing a declared key",
+      "required_keys": [
+        "declared key or identifier"
+      ],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/dfrlink.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "frlink m:1 id, frame(lookup) generate(lk)",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 frlink m:1 id, frame(lookup) generate(lk)의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[frlink_many_to_one] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 66 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.frlink_frget.frget_or_fralias_lookup.v1",
+    "contract_ids": [
+      "frlink_frget.frget_or_fralias_lookup"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "merge_reshape.integration",
+    "variant_group": "guide.frlink_frget",
+    "variant_id": "frget_or_fralias_lookup",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        111,
+        112
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/dfrget.pdf"
+    ],
+    "research_situations": [
+      "연구자가 frlink, frget, fralias add의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 frlink, frget, fralias add 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not use linked values without checking unmatched link codes",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "frlink",
+        "frget",
+        "fralias add"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "multi_frame_Stata_state",
+      "record_unit": "one row sharing a declared key",
+      "required_keys": [
+        "declared key or identifier"
+      ],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/dfrget.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "frget value, from(lookup)\nfralias add label, from(lookup)",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 frget value, from(lookup)\nfralias add label, from(lookup)의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[frget_or_fralias_lookup] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 66 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.import_other_formats.import_sas_file.v1",
+    "contract_ids": [
+      "import_other_formats.import_sas_file"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "input_load.single_source",
+    "variant_group": "guide.import_other_formats",
+    "variant_id": "import_sas_file",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        45,
+        45
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/dimport.pdf"
+    ],
+    "research_situations": [
+      "연구자가 import sas, import spss, import stata, import fred의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 import sas, import spss, import stata, import fred 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not omit source filename/series identifier and observed import date from provenance",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "import sas",
+        "import spss",
+        "import stata"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "external_format_or_remote_series",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/dimport.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "import sas using `\"source.sas7bdat\"', clear",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 import sas using `\"source.sas7bdat\"', clear의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[import_sas_file] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 67 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.import_other_formats.import_fred_series.v1",
+    "contract_ids": [
+      "import_other_formats.import_fred_series"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "input_load.single_source",
+    "variant_group": "guide.import_other_formats",
+    "variant_id": "import_fred_series",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        46,
+        46
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/dimport_fred.pdf"
+    ],
+    "research_situations": [
+      "연구자가 import sas, import spss, import stata, import fred의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 import sas, import spss, import stata, import fred 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not omit source filename/series identifier and observed import date from provenance",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "import sas",
+        "import spss",
+        "import stata"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "external_format_or_remote_series",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/dimport_fred.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "import fred SERIES_ID, clear",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 import fred SERIES_ID, clear의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[import_fred_series] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 67 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.xpose_stack_separate.xpose_clear_varname.v1",
+    "contract_ids": [
+      "xpose_stack_separate.xpose_clear_varname"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "merge_reshape.integration",
+    "variant_group": "guide.xpose_stack_separate",
+    "variant_id": "xpose_clear_varname",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        47,
+        47
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/dxpose.pdf"
+    ],
+    "research_situations": [
+      "연구자가 xpose, stack, separate의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 xpose, stack, separate 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not transpose/stack without preserving identifier and source-variable semantics",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "xpose",
+        "stack",
+        "separate"
+      ],
+      "produces": [
+        "updated active data layout or materialized rows"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/dxpose.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "xpose, clear varname",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 xpose, clear varname의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[xpose_clear_varname] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 68 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.xpose_stack_separate.stack_into_value.v1",
+    "contract_ids": [
+      "xpose_stack_separate.stack_into_value"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "merge_reshape.integration",
+    "variant_group": "guide.xpose_stack_separate",
+    "variant_id": "stack_into_value",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        48,
+        48
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/dstack.pdf"
+    ],
+    "research_situations": [
+      "연구자가 xpose, stack, separate의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 xpose, stack, separate 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not transpose/stack without preserving identifier and source-variable semantics",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "xpose",
+        "stack",
+        "separate"
+      ],
+      "produces": [
+        "updated active data layout or materialized rows"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/dstack.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "stack x1 x2, into(value) clear",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 stack x1 x2, into(value) clear의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[stack_into_value] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 68 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.xpose_stack_separate.separate_by_group.v1",
+    "contract_ids": [
+      "xpose_stack_separate.separate_by_group"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "merge_reshape.integration",
+    "variant_group": "guide.xpose_stack_separate",
+    "variant_id": "separate_by_group",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        49,
+        49
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/dseparate.pdf"
+    ],
+    "research_situations": [
+      "연구자가 xpose, stack, separate의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 xpose, stack, separate 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not transpose/stack without preserving identifier and source-variable semantics",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "xpose",
+        "stack",
+        "separate"
+      ],
+      "produces": [
+        "updated active data layout or materialized rows"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/dseparate.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "separate y, by(group) generate(y_g)",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 separate y, by(group) generate(y_g)의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[separate_by_group] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 68 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.tsfill.tsfill_gap_rows.v1",
+    "contract_ids": [
+      "tsfill.tsfill_gap_rows"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "panel.materialize_time_grid",
+    "variant_group": "guide.tsfill",
+    "variant_id": "tsfill_gap_rows",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        114,
+        115
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/tstsfill.pdf"
+    ],
+    "research_situations": [
+      "연구자가 tsfill의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 tsfill 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not treat inserted observations as observed values; inspect generated-missing policy",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "tsfill"
+      ],
+      "produces": [
+        "updated active data layout or materialized rows"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "panel_or_time_series_data",
+      "record_unit": "one declared observation",
+      "required_keys": [
+        "declared key or identifier"
+      ],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/tstsfill.pdf)",
+      "time_structure": "declared time/window structure",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "tsset id time\ntsfill",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 tsset id time\ntsfill의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[tsfill_gap_rows] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 69 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.tsfill.tsfill_full_panel.v1",
+    "contract_ids": [
+      "tsfill.tsfill_full_panel"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "panel.materialize_time_grid",
+    "variant_group": "guide.tsfill",
+    "variant_id": "tsfill_full_panel",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        117,
+        118
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/tstsfill.pdf"
+    ],
+    "research_situations": [
+      "연구자가 tsfill의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 tsfill 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not treat inserted observations as observed values; inspect generated-missing policy",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "tsfill"
+      ],
+      "produces": [
+        "updated active data layout or materialized rows"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "panel_or_time_series_data",
+      "record_unit": "one declared observation",
+      "required_keys": [
+        "declared key or identifier"
+      ],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/tstsfill.pdf)",
+      "time_structure": "declared time/window structure",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "tsset id time\ntsfill, full",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 tsset id time\ntsfill, full의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[tsfill_full_panel] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 69 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.time_series_operators.lag_operator_generate.v1",
+    "contract_ids": [
+      "time_series_operators.lag_operator_generate"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "panel.time_operator",
+    "variant_group": "guide.time_series_operators",
+    "variant_id": "lag_operator_generate",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        120,
+        121
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/tsvarlist.pdf"
+    ],
+    "research_situations": [
+      "연구자가 L., F., D., S.의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 L., F., D., S. 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not manually synthesize lag/interactions where factor/TS notation preserves estimation names",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "L.",
+        "F.",
+        "D."
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "panel_or_time_series_data",
+      "record_unit": "one declared observation",
+      "required_keys": [
+        "declared key or identifier"
+      ],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/tsvarlist.pdf)",
+      "time_structure": "declared time/window structure",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "tsset id time\ngen lag_x = L.x",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 tsset id time\ngen lag_x = L.x의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[lag_operator_generate] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 70 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.time_series_operators.difference_operator_generate.v1",
+    "contract_ids": [
+      "time_series_operators.difference_operator_generate"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "panel.time_operator",
+    "variant_group": "guide.time_series_operators",
+    "variant_id": "difference_operator_generate",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        53,
+        53
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/tsvarlist.pdf"
+    ],
+    "research_situations": [
+      "연구자가 L., F., D., S.의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 L., F., D., S. 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not manually synthesize lag/interactions where factor/TS notation preserves estimation names",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "L.",
+        "F.",
+        "D."
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "panel_or_time_series_data",
+      "record_unit": "one declared observation",
+      "required_keys": [
+        "declared key or identifier"
+      ],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/tsvarlist.pdf)",
+      "time_structure": "declared time/window structure",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "generate dx = D.x",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 generate dx = D.x의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[difference_operator_generate] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 70 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.time_series_operators.lag_interaction_estimate.v1",
+    "contract_ids": [
+      "time_series_operators.lag_interaction_estimate"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "panel.time_operator",
+    "variant_group": "guide.time_series_operators",
+    "variant_id": "lag_interaction_estimate",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        54,
+        54
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/tsvarlist.pdf"
+    ],
+    "research_situations": [
+      "연구자가 L., F., D., S.의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 L., F., D., S. 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not manually synthesize lag/interactions where factor/TS notation preserves estimation names",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "L.",
+        "F.",
+        "D."
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "panel_or_time_series_data",
+      "record_unit": "one declared observation",
+      "required_keys": [
+        "declared key or identifier"
+      ],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/tsvarlist.pdf)",
+      "time_structure": "declared time/window structure",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "regress y c.L.x##i.treat",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 regress y c.L.x##i.treat의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[lag_interaction_estimate] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 70 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.rolling_statsby.rolling_summary_window.v1",
+    "contract_ids": [
+      "rolling_statsby.rolling_summary_window"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "descriptives.command_result",
+    "variant_group": "guide.rolling_statsby",
+    "variant_id": "rolling_summary_window",
+    "stage": "post_estimation",
+    "source_spans": [
+      [
+        55,
+        55
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/tsrolling.pdf"
+    ],
+    "research_situations": [
+      "연구자가 rolling, statsby의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 rolling, statsby 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not mix r() and e() expressions without matching them to the wrapped command",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "rolling",
+        "statsby"
+      ],
+      "produces": [
+        "declared results dataset or result state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset_plus_declared_result_state",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/tsrolling.pdf)",
+      "time_structure": "declared time/window structure",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "rolling mean=r(mean), window(12): summarize y",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 rolling mean=r(mean), window(12): summarize y의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[rolling_summary_window] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 71 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.rolling_statsby.rolling_saved_estimates.v1",
+    "contract_ids": [
+      "rolling_statsby.rolling_saved_estimates"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "descriptives.command_result",
+    "variant_group": "guide.rolling_statsby",
+    "variant_id": "rolling_saved_estimates",
+    "stage": "post_estimation",
+    "source_spans": [
+      [
+        56,
+        56
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/tsrolling.pdf"
+    ],
+    "research_situations": [
+      "연구자가 rolling, statsby의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 rolling, statsby 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not mix r() and e() expressions without matching them to the wrapped command",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "rolling",
+        "statsby"
+      ],
+      "produces": [
+        "declared results dataset or result state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset_plus_declared_result_state",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/tsrolling.pdf)",
+      "time_structure": "declared time/window structure",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "rolling _b[x], window(24) saving(`\"roll.dta\"', replace): regress y x",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 rolling _b[x], window(24) saving(`\"roll.dta\"', replace): regress y x의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[rolling_saved_estimates] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 71 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.rolling_statsby.statsby_saved_results.v1",
+    "contract_ids": [
+      "rolling_statsby.statsby_saved_results"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "descriptives.command_result",
+    "variant_group": "guide.rolling_statsby",
+    "variant_id": "statsby_saved_results",
+    "stage": "post_estimation",
+    "source_spans": [
+      [
+        57,
+        57
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rstatsby.pdf"
+    ],
+    "research_situations": [
+      "연구자가 rolling, statsby의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 rolling, statsby 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not mix r() and e() expressions without matching them to the wrapped command",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "rolling",
+        "statsby"
+      ],
+      "produces": [
+        "declared results dataset or result state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset_plus_declared_result_state",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/rstatsby.pdf)",
+      "time_structure": "declared time/window structure",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "statsby b=_b[x] N=e(N), saving(`\"stats.dta\"', replace): regress y x",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 statsby b=_b[x] N=e(N), saving(`\"stats.dta\"', replace): regress y x의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[statsby_saved_results] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 71 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.bootstrap_jackknife.bootstrap_summary_mean.v1",
+    "contract_ids": [
+      "bootstrap_jackknife.bootstrap_summary_mean"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "robustness.bootstrap_inference",
+    "variant_group": "guide.bootstrap_jackknife",
+    "variant_id": "bootstrap_summary_mean",
+    "stage": "post_estimation",
+    "source_spans": [
+      [
+        58,
+        58
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rbootstrap.pdf"
+    ],
+    "research_situations": [
+      "연구자가 bootstrap, jackknife의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 bootstrap, jackknife 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not supply a seed as a substitute for a declared resampling design",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "bootstrap",
+        "jackknife"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset_plus_declared_result_state",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/rbootstrap.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "bootstrap r(mean), reps(500) seed(12345): summarize y",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 bootstrap r(mean), reps(500) seed(12345): summarize y의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[bootstrap_summary_mean] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 72 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.bootstrap_jackknife.bootstrap_clustered_regression.v1",
+    "contract_ids": [
+      "bootstrap_jackknife.bootstrap_clustered_regression"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "robustness.bootstrap_inference",
+    "variant_group": "guide.bootstrap_jackknife",
+    "variant_id": "bootstrap_clustered_regression",
+    "stage": "post_estimation",
+    "source_spans": [
+      [
+        59,
+        59
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rbootstrap.pdf"
+    ],
+    "research_situations": [
+      "연구자가 bootstrap, jackknife의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 bootstrap, jackknife 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not supply a seed as a substitute for a declared resampling design",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "bootstrap",
+        "jackknife"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset_plus_declared_result_state",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/rbootstrap.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "bootstrap _b[x], reps(500) cluster(id) strata(strata): regress y x",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 bootstrap _b[x], reps(500) cluster(id) strata(strata): regress y x의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[bootstrap_clustered_regression] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 72 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.bootstrap_jackknife.jackknife_clustered_regression.v1",
+    "contract_ids": [
+      "bootstrap_jackknife.jackknife_clustered_regression"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "robustness.bootstrap_inference",
+    "variant_group": "guide.bootstrap_jackknife",
+    "variant_id": "jackknife_clustered_regression",
+    "stage": "post_estimation",
+    "source_spans": [
+      [
+        60,
+        60
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rjackknife.pdf"
+    ],
+    "research_situations": [
+      "연구자가 bootstrap, jackknife의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 bootstrap, jackknife 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not supply a seed as a substitute for a declared resampling design",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "bootstrap",
+        "jackknife"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset_plus_declared_result_state",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/rjackknife.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "jackknife _b[x], cluster(id): regress y x",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 jackknife _b[x], cluster(id): regress y x의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[jackknife_clustered_regression] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 72 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.simulate_permute.simulate_regression_coefficient.v1",
+    "contract_ids": [
+      "simulate_permute.simulate_regression_coefficient"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "robustness.resampling_simulation",
+    "variant_group": "guide.simulate_permute",
+    "variant_id": "simulate_regression_coefficient",
+    "stage": "post_estimation",
+    "source_spans": [
+      [
+        61,
+        61
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rsimulate.pdf"
+    ],
+    "research_situations": [
+      "연구자가 simulate, permute의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 simulate, permute 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not permute treatment without a declared exchangeability/strata contract",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "simulate",
+        "permute"
+      ],
+      "produces": [
+        "declared results dataset or result state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset_plus_declared_result_state",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/rsimulate.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "simulate b=_b[x], reps(500) seed(12345): regress y x",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 simulate b=_b[x], reps(500) seed(12345): regress y x의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[simulate_regression_coefficient] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 73 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.simulate_permute.simulate_summary_mean.v1",
+    "contract_ids": [
+      "simulate_permute.simulate_summary_mean"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "robustness.resampling_simulation",
+    "variant_group": "guide.simulate_permute",
+    "variant_id": "simulate_summary_mean",
+    "stage": "post_estimation",
+    "source_spans": [
+      [
+        62,
+        62
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rsimulate.pdf"
+    ],
+    "research_situations": [
+      "연구자가 simulate, permute의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 simulate, permute 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not permute treatment without a declared exchangeability/strata contract",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "simulate",
+        "permute"
+      ],
+      "produces": [
+        "declared results dataset or result state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset_plus_declared_result_state",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/rsimulate.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "simulate mean=r(mean), reps(500): summarize y",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 simulate mean=r(mean), reps(500): summarize y의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[simulate_summary_mean] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 73 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.simulate_permute.permute_stratified_regression.v1",
+    "contract_ids": [
+      "simulate_permute.permute_stratified_regression"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "robustness.resampling_simulation",
+    "variant_group": "guide.simulate_permute",
+    "variant_id": "permute_stratified_regression",
+    "stage": "post_estimation",
+    "source_spans": [
+      [
+        63,
+        63
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rpermute.pdf"
+    ],
+    "research_situations": [
+      "연구자가 simulate, permute의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 simulate, permute 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not permute treatment without a declared exchangeability/strata contract",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared inputs and state contract"
+      ],
+      "observable_signals": [
+        "simulate",
+        "permute"
+      ],
+      "produces": [
+        "declared results dataset or result state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset_plus_declared_result_state",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/rpermute.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "permute treat _b[treat], reps(500) seed(12345) strata(block): regress y treat x",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 permute treat _b[treat], reps(500) seed(12345) strata(block): regress y treat x의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[permute_stratified_regression] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 73 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.svyset_svy.svyset_psu_weight_strata.v1",
+    "contract_ids": [
+      "svyset_svy.svyset_psu_weight_strata"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.survey_design",
+    "variant_group": "guide.svyset_svy",
+    "variant_id": "svyset_psu_weight_strata",
+    "stage": "estimation",
+    "source_spans": [
+      [
+        64,
+        64
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/svysvyset.pdf"
+    ],
+    "research_situations": [
+      "연구자가 svyset, svy:의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 svyset, svy: 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not replace subpop() with if when estimating a subpopulation",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "declared survey design",
+        "active svyset state when svy: is used"
+      ],
+      "observable_signals": [
+        "svyset",
+        "svy:"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "survey_data",
+      "record_unit": "one declared observation",
+      "required_keys": [
+        "declared key or identifier"
+      ],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/svysvyset.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "svyset psu [pweight=wt], strata(strata)",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 svyset psu [pweight=wt], strata(strata)의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[svyset_psu_weight_strata] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 74 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.svyset_svy.svy_subpopulation_mean.v1",
+    "contract_ids": [
+      "svyset_svy.svy_subpopulation_mean"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.survey_design",
+    "variant_group": "guide.svyset_svy",
+    "variant_id": "svy_subpopulation_mean",
+    "stage": "estimation",
+    "source_spans": [
+      [
+        65,
+        65
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/svysvy.pdf"
+    ],
+    "research_situations": [
+      "연구자가 svyset, svy:의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 svyset, svy: 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not replace subpop() with if when estimating a subpopulation",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "declared survey design",
+        "active svyset state when svy: is used"
+      ],
+      "observable_signals": [
+        "svyset",
+        "svy:"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "survey_data",
+      "record_unit": "one declared observation",
+      "required_keys": [
+        "declared key or identifier"
+      ],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/svysvy.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "svy, subpop(if eligible): mean outcome",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 svy, subpop(if eligible): mean outcome의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[svy_subpopulation_mean] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 74 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.svyset_svy.svyset_replicate_weights.v1",
+    "contract_ids": [
+      "svyset_svy.svyset_replicate_weights"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.survey_design",
+    "variant_group": "guide.svyset_svy",
+    "variant_id": "svyset_replicate_weights",
+    "stage": "estimation",
+    "source_spans": [
+      [
+        66,
+        66
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/svysvyset.pdf"
+    ],
+    "research_situations": [
+      "연구자가 svyset, svy:의 구문과 상태 전이를 이미 선언한 경우"
+    ],
+    "selection_conditions": [
+      "자료 구조, 입력·키, 표본과 후속 소비 상태를 호출자가 선언했다",
+      "해당 Stata release에서 svyset, svy: 구문이 지원된다"
+    ],
+    "required_changes": [
+      "선언된 입력·키·옵션·출력 대상만 교체한다"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options and output target",
+      "declared sample or design when applicable"
+    ],
+    "tradeoffs": [
+      "do not replace subpop() with if when estimating a subpopulation",
+      "guide는 표본·추정량·식별·출력 배치를 선택하지 않는다"
+    ],
+    "state_signature": {
+      "requires": [
+        "declared survey design",
+        "active svyset state when svy: is used"
+      ],
+      "observable_signals": [
+        "svyset",
+        "svy:"
+      ],
+      "produces": [
+        "bounded command result or updated state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "survey_data",
+      "record_unit": "one declared observation",
+      "required_keys": [
+        "declared key or identifier"
+      ],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/svysvyset.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "svyset psu [pweight=wt], brrweight(w1-w80) vce(brr)",
+      "official manual URL"
+    ],
+    "reusable_core": "선언된 입력과 상태 조건에서 svyset psu [pweight=wt], brrweight(w1-w80) vce(brr)의 공식 mechanics만 사용한다.",
+    "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
+    "variant_distinction": "[svyset_replicate_weights] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 74 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  }
+]

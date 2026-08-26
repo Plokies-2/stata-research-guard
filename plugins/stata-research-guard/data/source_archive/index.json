@@ -366,6 +366,21 @@
       "bytes": 548,
       "sha256": "f573f4962bf0904a7ab52c170232ab4b5ea356ddd8c2f299b0a82d7901aef984"
     },
+    "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do": {
+      "archive_path": "data/source_archive/files/818c8bab29f083cf67104dab2ddff050acb348bf885f7728367b545502e8bbe8.source",
+      "bytes": 4431,
+      "sha256": "818c8bab29f083cf67104dab2ddff050acb348bf885f7728367b545502e8bbe8"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/top100_official_data_programming_guide_templates.do": {
+      "archive_path": "data/source_archive/files/c6b172ccd5d7fc529496cf0e51f22ff46a04ea4acd9e18b97b4edf5989b91a5c.source",
+      "bytes": 4848,
+      "sha256": "c6b172ccd5d7fc529496cf0e51f22ff46a04ea4acd9e18b97b4edf5989b91a5c"
+    },
+    "plugins/stata-research-guard/annotations/source_snapshots/top100_official_models_guide_templates.do": {
+      "archive_path": "data/source_archive/files/861dd0d0dbfd4e58b348a6351fa9ad7748b09876fb839eedc0f6ae97e110392f.source",
+      "bytes": 5258,
+      "sha256": "861dd0d0dbfd4e58b348a6351fa9ad7748b09876fb839eedc0f6ae97e110392f"
+    },
     "plugins/stata-research-guard/annotations/source_snapshots/top50_model_gap_fill_guide_templates.do": {
       "archive_path": "data/source_archive/files/cbe0302de967afd514ed5e69670e7f350c9b524d270ae15c56324acf5b1d3613.source",
       "bytes": 1726,

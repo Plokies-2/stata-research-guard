@@ -3,679 +3,2655 @@
   "design": "Atomic Stata workflow blocks are reusable state transitions. Estimation is one block among many; preparation and post-estimation blocks receive the same retrieval priority.",
   "variant_policy": "A variant_group contains alternatives for the same atomic transition: select at most one complete compatible variant and never splice fragments. Distinct groups may be composed only in the actual producer-to-consumer order. Drop variants remain visible only for comparison.",
   "display_names": {
-    "project_setup.paths": {"ko": "프로젝트 경로 설정", "en": "Project path setup"},
-    "workflow_orchestration.master": {"ko": "마스터 실행 흐름", "en": "Master workflow orchestration"},
-    "input_load.combine": {"ko": "다중 원자료 결합", "en": "Multi-source input combination"},
-    "input_load.single_source": {"ko": "단일 원자료 불러오기", "en": "Single-source input loading"},
-    "clean.id_normalize": {"ko": "식별자 정규화", "en": "Identifier normalization"},
-    "clean.derive_variables": {"ko": "분석변수 생성·재코딩", "en": "Analysis-variable derivation and recoding"},
-    "treatment.arm_mapping": {"ko": "처치군 매핑", "en": "Treatment-arm mapping"},
-    "outlier.winsorize": {"ko": "이상치 윈저화", "en": "Outlier winsorization"},
-    "scale.standardize_esample": {"ko": "추정표본 기준 표준화", "en": "Estimation-sample standardization"},
-    "integrity.audit": {"ko": "무결성 진단", "en": "Integrity audit"},
-    "integrity.adjacency_dedup": {"ko": "인접행 중복 제거", "en": "Adjacency-based deduplication"},
-    "merge_reshape.integration": {"ko": "자료 병합·형태 변환", "en": "Data integration and reshape"},
-    "sample.trade_share_threshold": {"ko": "무역비중 임계값 표본", "en": "Trade-share threshold sample"},
-    "sample.arm_response_eligibility": {"ko": "처치군·응답 적격 표본", "en": "Arm and response eligibility sample"},
-    "panel.treatment_cohort": {"ko": "패널 처치 코호트", "en": "Panel treatment cohort"},
-    "panel.turnover_event_time": {"ko": "교체 사건시점", "en": "Turnover event timing"},
-    "panel.stack_waves": {"ko": "조사시점 적층", "en": "Survey-wave stacking"},
-    "feature.aggregate_household": {"ko": "가구단위 집계변수", "en": "Household-level aggregate features"},
-    "feature.aggregate_section_exposure": {"ko": "구역단위 노출 집계", "en": "Section-level exposure aggregation"},
-    "dataset.finalize_keep_label_save": {"ko": "분석자료 확정·라벨·저장", "en": "Finalize, label, and save analysis data"},
-    "estimation.conventional": {"ko": "표준 회귀 추정", "en": "Conventional regression estimation"},
-    "estimation.staggered_did": {"ko": "시차 도입 DID 추정", "en": "Staggered-adoption DID estimation"},
-    "postest.sample_flag": {"ko": "추정표본 표시자 고정", "en": "Estimation-sample flag capture"},
-    "postest.persist_estimate": {"ko": "추정결과 영구 저장", "en": "Persist estimation result"},
-    "postest.export_sample_keys": {"ko": "추정표본 키 내보내기", "en": "Export estimation-sample keys"},
-    "postest.estimator_comparison_unsafe": {"ko": "미검증 추정량 비교", "en": "Unsafe estimator comparison"},
-    "descriptives.sample_mean": {"ko": "추정표본 종속변수 평균", "en": "Estimation-sample dependent-variable mean"},
-    "descriptives.entity_collapse": {"ko": "개체단위 기초통계 집계", "en": "Entity-level descriptive collapse"},
-    "descriptives.sample_flow": {"ko": "표본 흐름 자료", "en": "Named sample-flow dataset"},
-    "descriptives.summary_dataset": {"ko": "기초통계 정본 자료", "en": "Canonical summary-statistics dataset"},
-    "descriptives.estpost_active_result": {"ko": "활성 estpost 요약결과", "en": "Active estpost summary result"},
-    "exports.descriptive_excel_sheet": {"ko": "기초통계 Excel 시트", "en": "Descriptive-statistics Excel sheet"},
-    "exports.estimate_text_table": {"ko": "추정치 CSV 표", "en": "Estimate CSV table"},
-    "exports.matrix_excel": {"ko": "행렬·collection Excel 내보내기", "en": "Matrix or collection Excel export"},
-    "postest.margins": {"ko": "사후 예측·한계효과", "en": "Post-estimation margins"},
-    "robustness.placebo": {"ko": "위약 검정", "en": "Placebo test"},
-    "robustness.heterogeneity": {"ko": "이질성 분석", "en": "Heterogeneity analysis"},
-    "robustness.bootstrap_inference": {"ko": "부트스트랩 추론", "en": "Bootstrap inference"},
-    "robustness.jackknife": {"ko": "잭나이프 검정", "en": "Jackknife analysis"},
-    "figures.event_study": {"ko": "이벤트 스터디 그림", "en": "Event-study figure"},
-    "figures.descriptive_scatter": {"ko": "기초통계 산점도", "en": "Descriptive scatter plot"},
-    "figures.descriptive_bar": {"ko": "기초통계 막대그림", "en": "Descriptive bar chart"},
-    "figures.marginsplot": {"ko": "한계효과 그림", "en": "Margins plot"},
-    "figures.coefplot_named_estimates": {"ko": "명명된 추정치 계수 그림", "en": "Named-estimate coefficient plot"},
-    "figures.named_graph_combine": {"ko": "명명된 그림 결합", "en": "Named graph composition"},
-    "figures.export_pdf": {"ko": "PDF 그림 내보내기", "en": "Figure PDF export"},
-    "final_excel_assembly": {"ko": "최종 Excel 회귀표 조립", "en": "Final Excel regression-table assembly"},
-    "cleanup": {"ko": "임시파일 정리", "en": "Temporary-file cleanup"},
-    "panel.materialize_time_grid": {"ko": "패널 시점 격자 생성", "en": "Panel time-grid materialization"},
-    "preparation.transform": {"ko": "일반 자료 변환", "en": "General data transformation"},
-    "sample.restriction": {"ko": "명시적 표본 제한", "en": "Declared sample restriction"},
-    "descriptives.command_result": {"ko": "기초통계 명령 결과", "en": "Descriptive command result"},
-    "postest.command_result": {"ko": "사후추정 명령 결과", "en": "Post-estimation command result"},
-    "figures.descriptive_graph": {"ko": "일반 기초통계 그림", "en": "General descriptive graph"},
-    "exports.dataset_file": {"ko": "자료 파일 내보내기", "en": "Dataset-file export"},
-    "tables.collection_result": {"ko": "표 collection 결과", "en": "Table collection result"}
+    "project_setup.paths": {
+      "ko": "프로젝트 경로 설정",
+      "en": "Project path setup"
+    },
+    "workflow_orchestration.master": {
+      "ko": "마스터 실행 흐름",
+      "en": "Master workflow orchestration"
+    },
+    "input_load.combine": {
+      "ko": "다중 원자료 결합",
+      "en": "Multi-source input combination"
+    },
+    "input_load.single_source": {
+      "ko": "단일 원자료 불러오기",
+      "en": "Single-source input loading"
+    },
+    "clean.id_normalize": {
+      "ko": "식별자 정규화",
+      "en": "Identifier normalization"
+    },
+    "clean.derive_variables": {
+      "ko": "분석변수 생성·재코딩",
+      "en": "Analysis-variable derivation and recoding"
+    },
+    "treatment.arm_mapping": {
+      "ko": "처치군 매핑",
+      "en": "Treatment-arm mapping"
+    },
+    "outlier.winsorize": {
+      "ko": "이상치 윈저화",
+      "en": "Outlier winsorization"
+    },
+    "scale.standardize_esample": {
+      "ko": "추정표본 기준 표준화",
+      "en": "Estimation-sample standardization"
+    },
+    "integrity.audit": {
+      "ko": "무결성 진단",
+      "en": "Integrity audit"
+    },
+    "integrity.adjacency_dedup": {
+      "ko": "인접행 중복 제거",
+      "en": "Adjacency-based deduplication"
+    },
+    "merge_reshape.integration": {
+      "ko": "자료 병합·형태 변환",
+      "en": "Data integration and reshape"
+    },
+    "sample.trade_share_threshold": {
+      "ko": "무역비중 임계값 표본",
+      "en": "Trade-share threshold sample"
+    },
+    "sample.arm_response_eligibility": {
+      "ko": "처치군·응답 적격 표본",
+      "en": "Arm and response eligibility sample"
+    },
+    "panel.treatment_cohort": {
+      "ko": "패널 처치 코호트",
+      "en": "Panel treatment cohort"
+    },
+    "panel.turnover_event_time": {
+      "ko": "교체 사건시점",
+      "en": "Turnover event timing"
+    },
+    "panel.stack_waves": {
+      "ko": "조사시점 적층",
+      "en": "Survey-wave stacking"
+    },
+    "feature.aggregate_household": {
+      "ko": "가구단위 집계변수",
+      "en": "Household-level aggregate features"
+    },
+    "feature.aggregate_section_exposure": {
+      "ko": "구역단위 노출 집계",
+      "en": "Section-level exposure aggregation"
+    },
+    "dataset.finalize_keep_label_save": {
+      "ko": "분석자료 확정·라벨·저장",
+      "en": "Finalize, label, and save analysis data"
+    },
+    "estimation.conventional": {
+      "ko": "표준 회귀 추정",
+      "en": "Conventional regression estimation"
+    },
+    "estimation.staggered_did": {
+      "ko": "시차 도입 DID 추정",
+      "en": "Staggered-adoption DID estimation"
+    },
+    "postest.sample_flag": {
+      "ko": "추정표본 표시자 고정",
+      "en": "Estimation-sample flag capture"
+    },
+    "postest.persist_estimate": {
+      "ko": "추정결과 영구 저장",
+      "en": "Persist estimation result"
+    },
+    "postest.export_sample_keys": {
+      "ko": "추정표본 키 내보내기",
+      "en": "Export estimation-sample keys"
+    },
+    "postest.estimator_comparison_unsafe": {
+      "ko": "미검증 추정량 비교",
+      "en": "Unsafe estimator comparison"
+    },
+    "descriptives.sample_mean": {
+      "ko": "추정표본 종속변수 평균",
+      "en": "Estimation-sample dependent-variable mean"
+    },
+    "descriptives.entity_collapse": {
+      "ko": "개체단위 기초통계 집계",
+      "en": "Entity-level descriptive collapse"
+    },
+    "descriptives.sample_flow": {
+      "ko": "표본 흐름 자료",
+      "en": "Named sample-flow dataset"
+    },
+    "descriptives.summary_dataset": {
+      "ko": "기초통계 정본 자료",
+      "en": "Canonical summary-statistics dataset"
+    },
+    "descriptives.estpost_active_result": {
+      "ko": "활성 estpost 요약결과",
+      "en": "Active estpost summary result"
+    },
+    "exports.descriptive_excel_sheet": {
+      "ko": "기초통계 Excel 시트",
+      "en": "Descriptive-statistics Excel sheet"
+    },
+    "exports.estimate_text_table": {
+      "ko": "추정치 CSV 표",
+      "en": "Estimate CSV table"
+    },
+    "exports.matrix_excel": {
+      "ko": "행렬·collection Excel 내보내기",
+      "en": "Matrix or collection Excel export"
+    },
+    "postest.margins": {
+      "ko": "사후 예측·한계효과",
+      "en": "Post-estimation margins"
+    },
+    "robustness.placebo": {
+      "ko": "위약 검정",
+      "en": "Placebo test"
+    },
+    "robustness.heterogeneity": {
+      "ko": "이질성 분석",
+      "en": "Heterogeneity analysis"
+    },
+    "robustness.bootstrap_inference": {
+      "ko": "부트스트랩 추론",
+      "en": "Bootstrap inference"
+    },
+    "robustness.jackknife": {
+      "ko": "잭나이프 검정",
+      "en": "Jackknife analysis"
+    },
+    "figures.event_study": {
+      "ko": "이벤트 스터디 그림",
+      "en": "Event-study figure"
+    },
+    "figures.descriptive_scatter": {
+      "ko": "기초통계 산점도",
+      "en": "Descriptive scatter plot"
+    },
+    "figures.descriptive_bar": {
+      "ko": "기초통계 막대그림",
+      "en": "Descriptive bar chart"
+    },
+    "figures.marginsplot": {
+      "ko": "한계효과 그림",
+      "en": "Margins plot"
+    },
+    "figures.coefplot_named_estimates": {
+      "ko": "명명된 추정치 계수 그림",
+      "en": "Named-estimate coefficient plot"
+    },
+    "figures.named_graph_combine": {
+      "ko": "명명된 그림 결합",
+      "en": "Named graph composition"
+    },
+    "figures.export_pdf": {
+      "ko": "PDF 그림 내보내기",
+      "en": "Figure PDF export"
+    },
+    "final_excel_assembly": {
+      "ko": "최종 Excel 회귀표 조립",
+      "en": "Final Excel regression-table assembly"
+    },
+    "cleanup": {
+      "ko": "임시파일 정리",
+      "en": "Temporary-file cleanup"
+    },
+    "panel.materialize_time_grid": {
+      "ko": "패널 시점 격자 생성",
+      "en": "Panel time-grid materialization"
+    },
+    "preparation.transform": {
+      "ko": "일반 자료 변환",
+      "en": "General data transformation"
+    },
+    "sample.restriction": {
+      "ko": "명시적 표본 제한",
+      "en": "Declared sample restriction"
+    },
+    "descriptives.command_result": {
+      "ko": "기초통계 명령 결과",
+      "en": "Descriptive command result"
+    },
+    "postest.command_result": {
+      "ko": "사후추정 명령 결과",
+      "en": "Post-estimation command result"
+    },
+    "figures.descriptive_graph": {
+      "ko": "일반 기초통계 그림",
+      "en": "General descriptive graph"
+    },
+    "exports.dataset_file": {
+      "ko": "자료 파일 내보내기",
+      "en": "Dataset-file export"
+    },
+    "tables.collection_result": {
+      "ko": "표 collection 결과",
+      "en": "Table collection result"
+    },
+    "diagnostics.display": {
+      "ko": "표시 제어 진단",
+      "en": "Display-control diagnostics"
+    },
+    "estimation.difference_in_differences": {
+      "ko": "차분의 차분 추정",
+      "en": "Difference-in-differences estimation"
+    },
+    "estimation.rdrobust_suite": {
+      "ko": "회귀불연속 추정",
+      "en": "Regression-discontinuity estimation"
+    },
+    "estimation.survey_design": {
+      "ko": "복합표본 설계",
+      "en": "Survey-design declaration and estimation"
+    },
+    "estimation.synthetic_control": {
+      "ko": "합성통제 추정",
+      "en": "Synthetic-control estimation"
+    },
+    "figures.binned_scatter": {
+      "ko": "구간 산점도",
+      "en": "Binned scatter plot"
+    },
+    "integrity.missing_data": {
+      "ko": "결측자료 점검과 MI 상태",
+      "en": "Missing-data and MI state"
+    },
+    "panel.time_operator": {
+      "ko": "시계열 연산자",
+      "en": "Time-series operator state"
+    },
+    "preparation.by_group": {
+      "ko": "그룹별 처리",
+      "en": "By-group processing"
+    },
+    "preparation.display_metadata": {
+      "ko": "표시 형식 메타데이터",
+      "en": "Display-format metadata"
+    },
+    "preparation.storage_metadata": {
+      "ko": "저장형식 메타데이터",
+      "en": "Storage-type metadata"
+    },
+    "preparation.temporary_state": {
+      "ko": "임시 객체 상태",
+      "en": "Temporary-object state"
+    },
+    "preparation.varlist_resolution": {
+      "ko": "변수목록 해석",
+      "en": "Varlist resolution"
+    },
+    "robustness.multiple_testing": {
+      "ko": "다중검정 보정",
+      "en": "Multiple-testing adjustment"
+    },
+    "robustness.resampling_simulation": {
+      "ko": "재표본·시뮬레이션",
+      "en": "Resampling and simulation"
+    },
+    "workflow_orchestration.file_execution": {
+      "ko": "선언된 파일 실행",
+      "en": "Declared file execution"
+    }
   },
   "contracts": [
     {
       "checkpoint": "project_setup.paths",
       "unit_kind": "setup",
       "purpose_ko": "신규 구축에서는 default style 역할명으로 경로를 만들고, 기존 프로젝트에서는 관측된 경로 인터페이스를 보존한다.",
-      "aliases": ["경로 설정", "프로젝트 루트", "path setup", "root globals", "global project", "global data", "global dofiles", "global ster", "global table", "global log", "global figures"],
-      "input_contract": ["known project root or a user-approved root placeholder", "observed existing folder layout"],
-      "output_contract": ["default style role globals for a new project, or preserved role-based path macros for an existing project"],
+      "aliases": [
+        "경로 설정",
+        "프로젝트 루트",
+        "path setup",
+        "root globals",
+        "global project",
+        "global data",
+        "global dofiles",
+        "global ster",
+        "global table",
+        "global log",
+        "global figures"
+      ],
+      "input_contract": [
+        "known project root or a user-approved root placeholder",
+        "observed existing folder layout"
+      ],
+      "output_contract": [
+        "default style role globals for a new project, or preserved role-based path macros for an existing project"
+      ],
       "can_follow": [],
-      "can_precede": ["workflow_orchestration.master", "input_load.combine"],
-      "incompatible_with": ["a second competing root convention"]
+      "can_precede": [
+        "workflow_orchestration.master",
+        "input_load.combine"
+      ],
+      "incompatible_with": [
+        "a second competing root convention"
+      ]
     },
     {
       "checkpoint": "workflow_orchestration.master",
       "unit_kind": "orchestration",
       "purpose_ko": "분석 단계를 한 진입점에서 순서대로 실행하고 로그를 남긴다.",
-      "aliases": ["master do-file", "runall", "단계 실행", "orchestration"],
-      "input_contract": ["resolved role paths", "ordered list of workflow stages", "for a prompt-only direct shell, an already approved master-log path and exact ordered do-file paths"],
-      "output_contract": ["one inspectable top-level execution order", "stage logs or one master log", "a direct shell limited to one log using, flat ordered do calls, and one log close when that interface is predeclared"],
-      "can_follow": ["project_setup.paths"],
-      "can_precede": ["input_load.combine", "clean.derive_variables", "estimation.conventional", "estimation.staggered_did", "final_excel_assembly"],
-      "incompatible_with": ["a second master that independently changes paths or stage order", "a generated loop, dispatcher, conditional, path inference, dependency probe, or captured stage failure around an already declared direct-call order"]
+      "aliases": [
+        "master do-file",
+        "runall",
+        "단계 실행",
+        "orchestration"
+      ],
+      "input_contract": [
+        "resolved role paths",
+        "ordered list of workflow stages",
+        "for a prompt-only direct shell, an already approved master-log path and exact ordered do-file paths"
+      ],
+      "output_contract": [
+        "one inspectable top-level execution order",
+        "stage logs or one master log",
+        "a direct shell limited to one log using, flat ordered do calls, and one log close when that interface is predeclared"
+      ],
+      "can_follow": [
+        "project_setup.paths"
+      ],
+      "can_precede": [
+        "input_load.combine",
+        "clean.derive_variables",
+        "estimation.conventional",
+        "estimation.staggered_did",
+        "final_excel_assembly"
+      ],
+      "incompatible_with": [
+        "a second master that independently changes paths or stage order",
+        "a generated loop, dispatcher, conditional, path inference, dependency probe, or captured stage failure around an already declared direct-call order"
+      ]
     },
     {
       "checkpoint": "input_load.combine",
       "unit_kind": "preparation",
       "purpose_ko": "동일 구조의 원자료를 읽어 출처를 보존하며 하나로 결합한다.",
-      "aliases": ["불러오기", "append", "원자료 결합", "import combine"],
-      "input_contract": ["source files with a stable shared schema", "documented source order"],
-      "output_contract": ["one combined dataset", "source provenance variable when sources differ"],
-      "can_follow": ["project_setup.paths"],
-      "can_precede": ["clean.id_normalize", "clean.derive_variables", "integrity.audit", "merge_reshape.integration"],
-      "incompatible_with": ["silent append of schema-incompatible sources"]
+      "aliases": [
+        "불러오기",
+        "append",
+        "원자료 결합",
+        "import combine"
+      ],
+      "input_contract": [
+        "source files with a stable shared schema",
+        "documented source order"
+      ],
+      "output_contract": [
+        "one combined dataset",
+        "source provenance variable when sources differ"
+      ],
+      "can_follow": [
+        "project_setup.paths"
+      ],
+      "can_precede": [
+        "clean.id_normalize",
+        "clean.derive_variables",
+        "integrity.audit",
+        "merge_reshape.integration"
+      ],
+      "incompatible_with": [
+        "silent append of schema-incompatible sources"
+      ]
     },
     {
       "checkpoint": "clean.derive_variables",
       "unit_kind": "preparation",
       "purpose_ko": "원변수를 명시적으로 재코딩하고 분석 변수를 생성·라벨링한다.",
-      "aliases": ["전처리", "recode", "변수 생성", "cleaning", "labels"],
-      "input_contract": ["loaded data", "substantive variable definitions and missing-value rules"],
-      "output_contract": ["analysis-ready variables with nearby definitions", "labels for newly generated variables"],
-      "can_follow": ["input_load.combine", "merge_reshape.integration"],
-      "can_precede": ["integrity.audit", "sample.trade_share_threshold", "sample.arm_response_eligibility", "panel.treatment_cohort", "estimation.conventional"],
-      "incompatible_with": ["undocumented recodes copied from another study", "manual treat_yYYYY or _yYYYY variables that substitute for a factor-variable event interaction"]
+      "aliases": [
+        "전처리",
+        "recode",
+        "변수 생성",
+        "cleaning",
+        "labels"
+      ],
+      "input_contract": [
+        "loaded data",
+        "substantive variable definitions and missing-value rules"
+      ],
+      "output_contract": [
+        "analysis-ready variables with nearby definitions",
+        "labels for newly generated variables"
+      ],
+      "can_follow": [
+        "input_load.combine",
+        "merge_reshape.integration"
+      ],
+      "can_precede": [
+        "integrity.audit",
+        "sample.trade_share_threshold",
+        "sample.arm_response_eligibility",
+        "panel.treatment_cohort",
+        "estimation.conventional"
+      ],
+      "incompatible_with": [
+        "undocumented recodes copied from another study",
+        "manual treat_yYYYY or _yYYYY variables that substitute for a factor-variable event interaction"
+      ]
     },
     {
       "checkpoint": "clean.id_normalize",
       "unit_kind": "preparation",
       "purpose_ko": "원자료 식별자를 의미를 보존한 채 분석·병합에 맞는 형식으로 정규화한다.",
-      "aliases": ["ID 정리", "identifier normalization", "destring id", "key format"],
-      "input_contract": ["loaded identifier field", "documented identifier semantics including leading zeros"],
-      "output_contract": ["normalized identifier with unchanged entity meaning"],
-      "can_follow": ["input_load.combine", "input_load.single_source"],
-      "can_precede": ["integrity.audit", "merge_reshape.integration", "clean.derive_variables"],
-      "incompatible_with": ["numeric conversion that changes identifier meaning"]
+      "aliases": [
+        "ID 정리",
+        "identifier normalization",
+        "destring id",
+        "key format"
+      ],
+      "input_contract": [
+        "loaded identifier field",
+        "documented identifier semantics including leading zeros"
+      ],
+      "output_contract": [
+        "normalized identifier with unchanged entity meaning"
+      ],
+      "can_follow": [
+        "input_load.combine",
+        "input_load.single_source"
+      ],
+      "can_precede": [
+        "integrity.audit",
+        "merge_reshape.integration",
+        "clean.derive_variables"
+      ],
+      "incompatible_with": [
+        "numeric conversion that changes identifier meaning"
+      ]
     },
     {
       "checkpoint": "treatment.arm_mapping",
       "unit_kind": "preparation",
       "purpose_ko": "원 처치배정군을 분석의 처치 대비와 표본 규칙에 맞게 명시적으로 매핑한다.",
-      "aliases": ["처치군 재코딩", "treatment mapping", "multi-arm contrast"],
-      "input_contract": ["documented randomized or observational treatment arms", "declared estimand and comparison group"],
-      "output_contract": ["named treatment contrast with explicit missing or excluded arms"],
-      "can_follow": ["clean.id_normalize", "clean.derive_variables"],
-      "can_precede": ["sample.arm_response_eligibility", "estimation.conventional"],
-      "incompatible_with": ["silent arm exclusion that changes the estimand"]
+      "aliases": [
+        "처치군 재코딩",
+        "treatment mapping",
+        "multi-arm contrast"
+      ],
+      "input_contract": [
+        "documented randomized or observational treatment arms",
+        "declared estimand and comparison group"
+      ],
+      "output_contract": [
+        "named treatment contrast with explicit missing or excluded arms"
+      ],
+      "can_follow": [
+        "clean.id_normalize",
+        "clean.derive_variables"
+      ],
+      "can_precede": [
+        "sample.arm_response_eligibility",
+        "estimation.conventional"
+      ],
+      "incompatible_with": [
+        "silent arm exclusion that changes the estimand"
+      ]
     },
     {
       "checkpoint": "outlier.winsorize",
       "unit_kind": "preparation",
       "purpose_ko": "사전 지정한 꼬리 기준으로 연속변수의 이상치를 윈저화한다.",
-      "aliases": ["winsor", "winsorize", "이상치 처리", "tail cap"],
-      "input_contract": ["continuous variable", "pre-specified tail cutoff and overwrite policy"],
-      "output_contract": ["named winsorized variable or documented replacement"],
-      "can_follow": ["clean.derive_variables"],
-      "can_precede": ["scale.standardize_esample", "estimation.conventional"],
-      "incompatible_with": ["outcome-informed cutoff selection"]
+      "aliases": [
+        "winsor",
+        "winsorize",
+        "이상치 처리",
+        "tail cap"
+      ],
+      "input_contract": [
+        "continuous variable",
+        "pre-specified tail cutoff and overwrite policy"
+      ],
+      "output_contract": [
+        "named winsorized variable or documented replacement"
+      ],
+      "can_follow": [
+        "clean.derive_variables"
+      ],
+      "can_precede": [
+        "scale.standardize_esample",
+        "estimation.conventional"
+      ],
+      "incompatible_with": [
+        "outcome-informed cutoff selection"
+      ]
     },
     {
       "checkpoint": "scale.standardize_esample",
       "unit_kind": "preparation",
       "purpose_ko": "이름 있는 추정표본에서 변수 또는 지수 구성요소를 표준화한다.",
-      "aliases": ["standardize", "z-score", "표준화", "common sample index"],
-      "input_contract": ["named estimation-sample flag", "declared components and missing-component rule"],
-      "output_contract": ["standardized components or index tied to the declared sample"],
-      "can_follow": ["postest.sample_flag", "outlier.winsorize", "clean.derive_variables"],
-      "can_precede": ["estimation.conventional", "descriptives.sample_mean"],
-      "incompatible_with": ["hidden zero-standard-deviation or missing-component behavior"]
+      "aliases": [
+        "standardize",
+        "z-score",
+        "표준화",
+        "common sample index"
+      ],
+      "input_contract": [
+        "named estimation-sample flag",
+        "declared components and missing-component rule"
+      ],
+      "output_contract": [
+        "standardized components or index tied to the declared sample"
+      ],
+      "can_follow": [
+        "postest.sample_flag",
+        "outlier.winsorize",
+        "clean.derive_variables"
+      ],
+      "can_precede": [
+        "estimation.conventional",
+        "descriptives.sample_mean"
+      ],
+      "incompatible_with": [
+        "hidden zero-standard-deviation or missing-component behavior"
+      ]
     },
     {
       "checkpoint": "integrity.audit",
       "unit_kind": "validation",
       "purpose_ko": "키·중복·결측·범위를 진단하고 변경 전 데이터 가정을 검증한다.",
-      "aliases": ["키 검사", "고유키 검사", "중복 검사", "isid", "unique key assertion", "xtset", "패널 선언", "panel declaration", "assert", "integrity check"],
-      "input_contract": ["candidate key and expected ranges or code values"],
-      "output_contract": ["explicit pass or diagnostic evidence without silently changing observations"],
-      "can_follow": ["input_load.combine", "clean.derive_variables", "merge_reshape.integration"],
-      "can_precede": ["merge_reshape.integration", "sample.trade_share_threshold", "sample.arm_response_eligibility", "estimation.conventional", "estimation.staggered_did"],
-      "incompatible_with": ["dropping duplicates before diagnosing the key failure"]
+      "aliases": [
+        "키 검사",
+        "고유키 검사",
+        "중복 검사",
+        "isid",
+        "unique key assertion",
+        "xtset",
+        "패널 선언",
+        "panel declaration",
+        "assert",
+        "integrity check"
+      ],
+      "input_contract": [
+        "candidate key and expected ranges or code values"
+      ],
+      "output_contract": [
+        "explicit pass or diagnostic evidence without silently changing observations"
+      ],
+      "can_follow": [
+        "input_load.combine",
+        "clean.derive_variables",
+        "merge_reshape.integration"
+      ],
+      "can_precede": [
+        "merge_reshape.integration",
+        "sample.trade_share_threshold",
+        "sample.arm_response_eligibility",
+        "estimation.conventional",
+        "estimation.staggered_did"
+      ],
+      "incompatible_with": [
+        "dropping duplicates before diagnosing the key failure"
+      ]
     },
     {
       "checkpoint": "merge_reshape.integration",
       "unit_kind": "preparation",
       "purpose_ko": "검증된 키와 보존 규칙으로 자료를 병합하거나 형태를 바꾼다.",
-      "aliases": ["merge", "reshape", "자료 통합", "매칭 상태", "keep(match)", "일치행 보존"],
-      "input_contract": ["merge branch: validated keys on every input, with declared join cardinality and unmatched-row policy", "reshape branch: declared i() and j() identifiers whose combination is unique, explicit stub/suffix topology, and the required wide or long downstream state"],
-      "output_contract": ["merge branch: integrated data with checked merge-state evidence before marker cleanup", "reshape branch: data in the required wide or long topology with the declared i()/j() identity preserved"],
-      "can_follow": ["integrity.audit", "clean.derive_variables"],
-      "can_precede": ["sample.trade_share_threshold", "sample.arm_response_eligibility", "panel.treatment_cohort", "panel.turnover_event_time", "estimation.conventional"],
-      "incompatible_with": ["merge branch: an alternative join whose cardinality implies a different estimand", "reshape branch: nonunique i()/j() identity, incompatible stub/suffix mapping, or a resulting topology that cannot satisfy the declared downstream state"]
+      "aliases": [
+        "merge",
+        "reshape",
+        "자료 통합",
+        "매칭 상태",
+        "keep(match)",
+        "일치행 보존"
+      ],
+      "input_contract": [
+        "merge branch: validated keys on every input, with declared join cardinality and unmatched-row policy",
+        "reshape branch: declared i() and j() identifiers whose combination is unique, explicit stub/suffix topology, and the required wide or long downstream state"
+      ],
+      "output_contract": [
+        "merge branch: integrated data with checked merge-state evidence before marker cleanup",
+        "reshape branch: data in the required wide or long topology with the declared i()/j() identity preserved"
+      ],
+      "can_follow": [
+        "integrity.audit",
+        "clean.derive_variables"
+      ],
+      "can_precede": [
+        "sample.trade_share_threshold",
+        "sample.arm_response_eligibility",
+        "panel.treatment_cohort",
+        "panel.turnover_event_time",
+        "estimation.conventional"
+      ],
+      "incompatible_with": [
+        "merge branch: an alternative join whose cardinality implies a different estimand",
+        "reshape branch: nonunique i()/j() identity, incompatible stub/suffix mapping, or a resulting topology that cannot satisfy the declared downstream state"
+      ]
     },
     {
       "checkpoint": "sample.trade_share_threshold",
       "unit_kind": "preparation",
       "purpose_ko": "사전 지정한 누적 무역비중 임계값으로 계산·분석 표본을 만든다.",
-      "aliases": ["무역표본", "trade share threshold", "gravity sample", "coverage cutoff"],
-      "input_contract": ["integrated trade data", "pre-specified cumulative share threshold and country roles"],
-      "output_contract": ["named threshold sample", "auditable exporter and importer exclusions"],
-      "can_follow": ["clean.derive_variables", "integrity.audit", "merge_reshape.integration"],
-      "can_precede": ["panel.treatment_cohort", "estimation.conventional", "estimation.staggered_did"],
-      "incompatible_with": ["a competing sample rule not represented as a named robustness variant"]
+      "aliases": [
+        "무역표본",
+        "trade share threshold",
+        "gravity sample",
+        "coverage cutoff"
+      ],
+      "input_contract": [
+        "integrated trade data",
+        "pre-specified cumulative share threshold and country roles"
+      ],
+      "output_contract": [
+        "named threshold sample",
+        "auditable exporter and importer exclusions"
+      ],
+      "can_follow": [
+        "clean.derive_variables",
+        "integrity.audit",
+        "merge_reshape.integration"
+      ],
+      "can_precede": [
+        "panel.treatment_cohort",
+        "estimation.conventional",
+        "estimation.staggered_did"
+      ],
+      "incompatible_with": [
+        "a competing sample rule not represented as a named robustness variant"
+      ]
     },
     {
       "checkpoint": "sample.arm_response_eligibility",
       "unit_kind": "preparation",
       "purpose_ko": "처치군, 응답상태, 식별자 완결성 등 연구대상 적격 규칙으로 분석 표본을 만든다.",
-      "aliases": ["적격 표본", "study eligibility", "response sample", "arm restriction"],
-      "input_contract": ["cleaned respondent or unit data", "declared arm and response eligibility rules"],
-      "output_contract": ["named eligible analysis sample", "auditable exclusions by rule"],
-      "can_follow": ["treatment.arm_mapping", "clean.derive_variables", "integrity.audit", "merge_reshape.integration"],
-      "can_precede": ["panel.stack_waves", "estimation.conventional", "estimation.staggered_did"],
-      "incompatible_with": ["blanket missing-value deletion without variable-level rules"]
+      "aliases": [
+        "적격 표본",
+        "study eligibility",
+        "response sample",
+        "arm restriction"
+      ],
+      "input_contract": [
+        "cleaned respondent or unit data",
+        "declared arm and response eligibility rules"
+      ],
+      "output_contract": [
+        "named eligible analysis sample",
+        "auditable exclusions by rule"
+      ],
+      "can_follow": [
+        "treatment.arm_mapping",
+        "clean.derive_variables",
+        "integrity.audit",
+        "merge_reshape.integration"
+      ],
+      "can_precede": [
+        "panel.stack_waves",
+        "estimation.conventional",
+        "estimation.staggered_did"
+      ],
+      "incompatible_with": [
+        "blanket missing-value deletion without variable-level rules"
+      ]
     },
     {
       "checkpoint": "panel.treatment_cohort",
       "unit_kind": "preparation",
       "purpose_ko": "패널 단위와 시간, 최초 처치시점, event time을 구성하고 검증한다.",
-      "aliases": ["패널 구축", "cohort", "treatment timing", "event time", "staggered adoption"],
-      "input_contract": ["unit-time panel", "treatment timing definition", "anticipation and exit rules"],
-      "output_contract": ["cohort or first-treatment variable", "event-time or treatment-status variables", "validated unit-time support"],
-      "can_follow": ["sample.trade_share_threshold", "sample.arm_response_eligibility", "integrity.audit"],
-      "can_precede": ["estimation.staggered_did", "robustness.placebo", "descriptives.sample_mean"],
-      "incompatible_with": ["another timing convention unless it is an explicit alternative specification"]
+      "aliases": [
+        "패널 구축",
+        "cohort",
+        "treatment timing",
+        "event time",
+        "staggered adoption"
+      ],
+      "input_contract": [
+        "unit-time panel",
+        "treatment timing definition",
+        "anticipation and exit rules"
+      ],
+      "output_contract": [
+        "cohort or first-treatment variable",
+        "event-time or treatment-status variables",
+        "validated unit-time support"
+      ],
+      "can_follow": [
+        "sample.trade_share_threshold",
+        "sample.arm_response_eligibility",
+        "integrity.audit"
+      ],
+      "can_precede": [
+        "estimation.staggered_did",
+        "robustness.placebo",
+        "descriptives.sample_mean"
+      ],
+      "incompatible_with": [
+        "another timing convention unless it is an explicit alternative specification"
+      ]
     },
     {
       "checkpoint": "panel.turnover_event_time",
       "unit_kind": "preparation",
       "purpose_ko": "단위별 최초 교체 사건과 상대시점을 시간 간격 검증과 함께 구성한다.",
-      "aliases": ["turnover", "first event", "relative time", "교체 시점"],
-      "input_contract": ["validated unit-time panel", "leader or state identifier", "declared gap and first-event rules"],
-      "output_contract": ["first-event date and relative event time", "documented eligibility window"],
-      "can_follow": ["integrity.audit", "panel.stack_waves"],
-      "can_precede": ["estimation.staggered_did", "figures.event_study"],
-      "incompatible_with": ["lag comparisons across unexamined time gaps"]
+      "aliases": [
+        "turnover",
+        "first event",
+        "relative time",
+        "교체 시점"
+      ],
+      "input_contract": [
+        "validated unit-time panel",
+        "leader or state identifier",
+        "declared gap and first-event rules"
+      ],
+      "output_contract": [
+        "first-event date and relative event time",
+        "documented eligibility window"
+      ],
+      "can_follow": [
+        "integrity.audit",
+        "panel.stack_waves"
+      ],
+      "can_precede": [
+        "estimation.staggered_did",
+        "figures.event_study"
+      ],
+      "incompatible_with": [
+        "lag comparisons across unexamined time gaps"
+      ]
     },
     {
       "checkpoint": "estimation.conventional",
       "unit_kind": "estimation",
       "purpose_ko": "결과변수·처치·통제·고정효과·군집을 드러낸 표준 회귀를 실행한다.",
-      "aliases": ["회귀", "OLS", "fixed effects", "cluster", "conventional estimation"],
-      "input_contract": ["analysis sample", "visible outcome, treatment, controls, fixed effects, and clustering choices"],
-      "output_contract": ["inspectable estimation results", "e(sample) or equivalent sample lineage"],
-      "can_follow": ["sample.trade_share_threshold", "sample.arm_response_eligibility", "integrity.audit"],
-      "can_precede": ["descriptives.sample_mean", "robustness.heterogeneity", "final_excel_assembly"],
-      "incompatible_with": ["another estimator presented as the same specification without an explicit variant label"]
+      "aliases": [
+        "회귀",
+        "OLS",
+        "fixed effects",
+        "cluster",
+        "conventional estimation"
+      ],
+      "input_contract": [
+        "analysis sample",
+        "visible outcome, treatment, controls, fixed effects, and clustering choices"
+      ],
+      "output_contract": [
+        "inspectable estimation results",
+        "e(sample) or equivalent sample lineage"
+      ],
+      "can_follow": [
+        "sample.trade_share_threshold",
+        "sample.arm_response_eligibility",
+        "integrity.audit"
+      ],
+      "can_precede": [
+        "descriptives.sample_mean",
+        "robustness.heterogeneity",
+        "final_excel_assembly"
+      ],
+      "incompatible_with": [
+        "another estimator presented as the same specification without an explicit variant label"
+      ]
     },
     {
       "checkpoint": "estimation.staggered_did",
       "unit_kind": "estimation",
       "purpose_ko": "시차 도입 처치에 맞는 DID 또는 비교 TWFE 사양을 추정한다.",
-      "aliases": ["staggered DID", "jwdid", "TWFE", "event study estimation"],
-      "input_contract": ["validated panel", "cohort or first-treatment variable", "identified comparison group and fixed-effects design"],
-      "output_contract": ["staggered-adoption or TWFE estimate with visible method choice", "estimation sample lineage"],
-      "can_follow": ["panel.treatment_cohort", "panel.turnover_event_time", "integrity.audit"],
-      "can_precede": ["descriptives.sample_mean", "robustness.placebo", "final_excel_assembly"],
-      "incompatible_with": ["combining method-specific coefficients into one model without an explicit comparison design"]
+      "aliases": [
+        "staggered DID",
+        "jwdid",
+        "TWFE",
+        "event study estimation"
+      ],
+      "input_contract": [
+        "validated panel",
+        "cohort or first-treatment variable",
+        "identified comparison group and fixed-effects design"
+      ],
+      "output_contract": [
+        "staggered-adoption or TWFE estimate with visible method choice",
+        "estimation sample lineage"
+      ],
+      "can_follow": [
+        "panel.treatment_cohort",
+        "panel.turnover_event_time",
+        "integrity.audit"
+      ],
+      "can_precede": [
+        "descriptives.sample_mean",
+        "robustness.placebo",
+        "final_excel_assembly"
+      ],
+      "incompatible_with": [
+        "combining method-specific coefficients into one model without an explicit comparison design"
+      ]
     },
     {
       "checkpoint": "descriptives.sample_mean",
       "unit_kind": "post_estimation",
       "purpose_ko": "정확한 추정 표본에서 종속변수 평균을 계산해 표 조립에 넘긴다.",
-      "aliases": ["종속변수 평균", "e(sample)", "dependent variable mean", "summary statistic"],
-      "input_contract": ["active or restored estimation result", "dependent variable available in the estimation data"],
-      "output_contract": ["dependent-variable mean computed on the exact estimation sample"],
-      "can_follow": ["estimation.conventional", "estimation.staggered_did"],
-      "can_precede": ["final_excel_assembly", "figures.descriptive_scatter"],
-      "incompatible_with": ["full-sample mean mislabeled as an estimation-sample mean"]
+      "aliases": [
+        "종속변수 평균",
+        "e(sample)",
+        "dependent variable mean",
+        "summary statistic"
+      ],
+      "input_contract": [
+        "active or restored estimation result",
+        "dependent variable available in the estimation data"
+      ],
+      "output_contract": [
+        "dependent-variable mean computed on the exact estimation sample"
+      ],
+      "can_follow": [
+        "estimation.conventional",
+        "estimation.staggered_did"
+      ],
+      "can_precede": [
+        "final_excel_assembly",
+        "figures.descriptive_scatter"
+      ],
+      "incompatible_with": [
+        "full-sample mean mislabeled as an estimation-sample mean"
+      ]
     },
     {
       "checkpoint": "robustness.placebo",
       "unit_kind": "post_estimation",
       "purpose_ko": "기준 사양과 직접 비교되는 사전 지정 placebo 검정을 실행한다.",
-      "aliases": ["placebo", "위약 검정", "falsification", "alternative timing"],
-      "input_contract": ["baseline design", "pre-specified placebo treatment, timing, or outcome"],
-      "output_contract": ["placebo estimate directly comparable with the baseline specification"],
-      "can_follow": ["estimation.conventional", "estimation.staggered_did"],
-      "can_precede": ["final_excel_assembly"],
-      "incompatible_with": ["post-hoc placebo selection based on favorable results"]
+      "aliases": [
+        "placebo",
+        "위약 검정",
+        "falsification",
+        "alternative timing"
+      ],
+      "input_contract": [
+        "baseline design",
+        "pre-specified placebo treatment, timing, or outcome"
+      ],
+      "output_contract": [
+        "placebo estimate directly comparable with the baseline specification"
+      ],
+      "can_follow": [
+        "estimation.conventional",
+        "estimation.staggered_did"
+      ],
+      "can_precede": [
+        "final_excel_assembly"
+      ],
+      "incompatible_with": [
+        "post-hoc placebo selection based on favorable results"
+      ]
     },
     {
       "checkpoint": "robustness.heterogeneity",
       "unit_kind": "post_estimation",
       "purpose_ko": "사전 지정한 집단·상호작용별 이질적 효과와 필요한 대비를 계산한다.",
-      "aliases": ["heterogeneity", "이질성", "interaction", "lincom", "subgroup"],
-      "input_contract": ["baseline design", "pre-specified subgroup or interaction variable"],
-      "output_contract": ["interaction or subgroup estimates", "explicit linear combinations when the reported contrast requires them"],
-      "can_follow": ["estimation.conventional", "estimation.staggered_did"],
-      "can_precede": ["final_excel_assembly"],
-      "incompatible_with": ["unlabeled replacement of the baseline estimand"]
+      "aliases": [
+        "heterogeneity",
+        "이질성",
+        "interaction",
+        "lincom",
+        "subgroup"
+      ],
+      "input_contract": [
+        "baseline design",
+        "pre-specified subgroup or interaction variable"
+      ],
+      "output_contract": [
+        "interaction or subgroup estimates",
+        "explicit linear combinations when the reported contrast requires them"
+      ],
+      "can_follow": [
+        "estimation.conventional",
+        "estimation.staggered_did"
+      ],
+      "can_precede": [
+        "final_excel_assembly"
+      ],
+      "incompatible_with": [
+        "unlabeled replacement of the baseline estimand"
+      ]
     },
     {
       "checkpoint": "robustness.bootstrap_inference",
       "unit_kind": "post_estimation",
       "purpose_ko": "활성 추정치의 명시된 계수와 귀무가설에 대해 재현 가능한 bootstrap 추론을 수행한다.",
-      "aliases": ["boottest", "wild bootstrap", "bootstrap inference", "부트스트랩 추론", "wild cluster bootstrap"],
-      "input_contract": ["compatible active estimate", "declared target coefficient and null hypothesis", "declared cluster, replications, and random seed"],
-      "output_contract": ["one bootstrap inference result for the declared coefficient and null", "cluster, replications, and seed visible in the command"],
-      "can_follow": ["estimation.conventional", "estimation.staggered_did"],
-      "can_precede": ["final_excel_assembly"],
-      "incompatible_with": ["post-hoc null selection", "implicit cluster or random seed", "treating bootstrap inference as subgroup heterogeneity"]
+      "aliases": [
+        "boottest",
+        "wild bootstrap",
+        "bootstrap inference",
+        "부트스트랩 추론",
+        "wild cluster bootstrap"
+      ],
+      "input_contract": [
+        "compatible active estimate",
+        "declared target coefficient and null hypothesis",
+        "declared cluster, replications, and random seed"
+      ],
+      "output_contract": [
+        "one bootstrap inference result for the declared coefficient and null",
+        "cluster, replications, and seed visible in the command"
+      ],
+      "can_follow": [
+        "estimation.conventional",
+        "estimation.staggered_did"
+      ],
+      "can_precede": [
+        "final_excel_assembly"
+      ],
+      "incompatible_with": [
+        "post-hoc null selection",
+        "implicit cluster or random seed",
+        "treating bootstrap inference as subgroup heterogeneity"
+      ]
     },
     {
       "checkpoint": "input_load.single_source",
       "unit_kind": "preparation",
       "purpose_ko": "하나의 원자료를 읽고 출처별 최소 스키마 정리만 한 뒤 이름 있는 중간자료로 저장한다.",
-      "aliases": ["single source import", "원자료 불러오기", "source harmonization", "intermediate save"],
-      "input_contract": ["documented source file", "source-specific codebook or crosswalk"],
-      "output_contract": ["named source-level intermediate data", "documented minimal source harmonization"],
-      "can_follow": ["project_setup.paths"],
-      "can_precede": ["integrity.audit", "merge_reshape.integration", "clean.id_normalize", "clean.derive_variables"],
-      "incompatible_with": ["undocumented substantive transformations disguised as import"]
+      "aliases": [
+        "single source import",
+        "원자료 불러오기",
+        "source harmonization",
+        "intermediate save"
+      ],
+      "input_contract": [
+        "documented source file",
+        "source-specific codebook or crosswalk"
+      ],
+      "output_contract": [
+        "named source-level intermediate data",
+        "documented minimal source harmonization"
+      ],
+      "can_follow": [
+        "project_setup.paths"
+      ],
+      "can_precede": [
+        "integrity.audit",
+        "merge_reshape.integration",
+        "clean.id_normalize",
+        "clean.derive_variables"
+      ],
+      "incompatible_with": [
+        "undocumented substantive transformations disguised as import"
+      ]
     },
     {
       "checkpoint": "postest.sample_flag",
       "unit_kind": "post_estimation",
       "purpose_ko": "직전 핵심 사양의 e(sample)을 이름 있는 공통표본 표시자로 고정한다.",
-      "aliases": ["e(sample) flag", "공통 추정표본", "sample indicator", "fixed sample"],
-      "input_contract": ["active main e-class estimation result", "data used by that estimate still in memory"],
-      "output_contract": ["named binary estimation-sample flag"],
-      "can_follow": ["estimation.conventional", "estimation.staggered_did"],
-      "can_precede": ["scale.standardize_esample", "descriptives.sample_mean", "postest.persist_estimate", "postest.export_sample_keys", "final_excel_assembly"],
-      "incompatible_with": ["calling an r-class or another e-class command before capturing e(sample)"]
+      "aliases": [
+        "e(sample) flag",
+        "공통 추정표본",
+        "sample indicator",
+        "fixed sample"
+      ],
+      "input_contract": [
+        "active main e-class estimation result",
+        "data used by that estimate still in memory"
+      ],
+      "output_contract": [
+        "named binary estimation-sample flag"
+      ],
+      "can_follow": [
+        "estimation.conventional",
+        "estimation.staggered_did"
+      ],
+      "can_precede": [
+        "scale.standardize_esample",
+        "descriptives.sample_mean",
+        "postest.persist_estimate",
+        "postest.export_sample_keys",
+        "final_excel_assembly"
+      ],
+      "incompatible_with": [
+        "calling an r-class or another e-class command before capturing e(sample)"
+      ]
     },
     {
       "checkpoint": "postest.persist_estimate",
       "unit_kind": "post_estimation",
       "purpose_ko": "활성 추정결과를 이름이나 ordered .ster state로 보존하고, 후속 표·그림이 필요한 state만 명시적으로 복원한다.",
-      "aliases": ["estimate persistence", "ster", "stored estimate", "estimates save", "estimates save append", "estimates use", "estimates use number", "estimates store", "estimates restore", "first stage restore", "savefirst", "savefprefix", "추정치 저장", "추정치 이어 저장", "번호 추정치 불러오기", "추정치 복원", "1단계 추정치"],
-      "input_contract": ["active e-class estimation result or a declared named or numbered stored result", "declared downstream consumer, result path, and state order when a collection is used"],
-      "output_contract": ["one visible atomic estimate-state transition: named in-memory state, seeded or appended .ster state, or restored active e() state"],
-      "can_follow": ["estimation.conventional", "estimation.staggered_did"],
-      "can_precede": ["descriptives.sample_mean", "figures.event_study", "final_excel_assembly"],
-      "incompatible_with": ["forcing persistence when downstream code already consumes a compatible live result", "appending without a declared existing collection and state order", "loading a numbered state by an inferred rather than declared position"]
+      "aliases": [
+        "estimate persistence",
+        "ster",
+        "stored estimate",
+        "estimates save",
+        "estimates save append",
+        "estimates use",
+        "estimates use number",
+        "estimates store",
+        "estimates restore",
+        "first stage restore",
+        "savefirst",
+        "savefprefix",
+        "추정치 저장",
+        "추정치 이어 저장",
+        "번호 추정치 불러오기",
+        "추정치 복원",
+        "1단계 추정치"
+      ],
+      "input_contract": [
+        "active e-class estimation result or a declared named or numbered stored result",
+        "declared downstream consumer, result path, and state order when a collection is used"
+      ],
+      "output_contract": [
+        "one visible atomic estimate-state transition: named in-memory state, seeded or appended .ster state, or restored active e() state"
+      ],
+      "can_follow": [
+        "estimation.conventional",
+        "estimation.staggered_did"
+      ],
+      "can_precede": [
+        "descriptives.sample_mean",
+        "figures.event_study",
+        "final_excel_assembly"
+      ],
+      "incompatible_with": [
+        "forcing persistence when downstream code already consumes a compatible live result",
+        "appending without a declared existing collection and state order",
+        "loading a numbered state by an inferred rather than declared position"
+      ]
     },
     {
       "checkpoint": "postest.export_sample_keys",
       "unit_kind": "post_estimation",
       "purpose_ko": "정확한 추정표본을 검증된 관측 키와 함께 작은 자료파일로 보존한다.",
-      "aliases": ["sample dta", "e(sample) keys", "추정표본 저장", "keyed sample handoff"],
-      "input_contract": ["named estimation-sample flag", "validated unique observation keys"],
-      "output_contract": ["small keyed estimation-sample dataset"],
-      "can_follow": ["postest.sample_flag", "integrity.audit"],
-      "can_precede": ["estimation.staggered_did", "robustness.placebo"],
-      "incompatible_with": ["unverified or nonunique handoff keys"]
+      "aliases": [
+        "sample dta",
+        "e(sample) keys",
+        "추정표본 저장",
+        "keyed sample handoff"
+      ],
+      "input_contract": [
+        "named estimation-sample flag",
+        "validated unique observation keys"
+      ],
+      "output_contract": [
+        "small keyed estimation-sample dataset"
+      ],
+      "can_follow": [
+        "postest.sample_flag",
+        "integrity.audit"
+      ],
+      "can_precede": [
+        "estimation.staggered_did",
+        "robustness.placebo"
+      ],
+      "incompatible_with": [
+        "unverified or nonunique handoff keys"
+      ]
     },
     {
       "checkpoint": "postest.estimator_comparison_unsafe",
       "unit_kind": "validation",
       "purpose_ko": "표본·키 검증 없이 추정량을 병합·비교하는 위험 패턴을 재사용 금지 사례로 기록한다.",
-      "aliases": ["unchecked estimator merge", "unsafe comparison", "추정량 비교 경고"],
-      "input_contract": ["multiple estimator outputs with uncertain sample alignment"],
-      "output_contract": ["comparison-only warning, never a reusable implementation"],
-      "can_follow": ["postest.export_sample_keys"],
+      "aliases": [
+        "unchecked estimator merge",
+        "unsafe comparison",
+        "추정량 비교 경고"
+      ],
+      "input_contract": [
+        "multiple estimator outputs with uncertain sample alignment"
+      ],
+      "output_contract": [
+        "comparison-only warning, never a reusable implementation"
+      ],
+      "can_follow": [
+        "postest.export_sample_keys"
+      ],
       "can_precede": [],
-      "incompatible_with": ["production reuse"]
+      "incompatible_with": [
+        "production reuse"
+      ]
     },
     {
       "checkpoint": "descriptives.entity_collapse",
       "unit_kind": "preparation",
       "purpose_ko": "반복 하위 관측치를 연구자가 선언한 연산자로 분석 단위 한 행으로 집계한다.",
-      "aliases": ["collapse", "개체 단위 집계", "entity-level descriptives", "aggregation"],
-      "input_contract": ["validated lower-level data", "declared entity key", "one aggregation operator per variable"],
-      "output_contract": ["one-row-per-entity descriptive data", "auditable aggregation rules"],
-      "can_follow": ["integrity.audit", "clean.derive_variables", "merge_reshape.integration"],
-      "can_precede": ["dataset.finalize_keep_label_save", "figures.descriptive_scatter", "estimation.conventional"],
-      "incompatible_with": ["using mean or max without a substantive variable-level rule", "later need for discarded within-entity variation"]
+      "aliases": [
+        "collapse",
+        "개체 단위 집계",
+        "entity-level descriptives",
+        "aggregation"
+      ],
+      "input_contract": [
+        "validated lower-level data",
+        "declared entity key",
+        "one aggregation operator per variable"
+      ],
+      "output_contract": [
+        "one-row-per-entity descriptive data",
+        "auditable aggregation rules"
+      ],
+      "can_follow": [
+        "integrity.audit",
+        "clean.derive_variables",
+        "merge_reshape.integration"
+      ],
+      "can_precede": [
+        "dataset.finalize_keep_label_save",
+        "figures.descriptive_scatter",
+        "estimation.conventional"
+      ],
+      "incompatible_with": [
+        "using mean or max without a substantive variable-level rule",
+        "later need for discarded within-entity variation"
+      ]
     },
     {
       "checkpoint": "figures.event_study",
       "unit_kind": "post_estimation_export",
       "purpose_ko": "event-time 계수와 신뢰구간, 기준기간을 명시해 동태효과 PDF를 만든다.",
-      "aliases": ["event study figure", "계수 그림", "pretrend plot", "confidence interval PDF"],
-      "input_contract": ["named event-time coefficients with one declared design reference", "validated event window and estimation sample", "native Stata coefficient names retained; a conventional treatment-time RHS writes one flat <level>bn.time#1.treatment term for every nonreference level, keeps the design reference absent, verifies every declared term in e(b), and retains any estimator-created actual omission as its raw token", "sheet_group declared independently from axis_group", "an axis_group with fixed range and ticks only when directly comparing closely related outcomes; automatic axis otherwise"],
-      "output_contract": ["PDF event-study figure with English-only presentation text", "explicit zero reference point and confidence intervals", "keep/order or native stub mapping that targets raw coefficient names rather than _yYYYY aliases", "raw outcome variable name alone at the top and comparison/sample legend below the axis", "PDF exported immediately inside one flat outcome loop", "fixed range and ticks when a close-related direct-comparison axis_group is declared; automatic axis otherwise", "in a mixed-axis loop, one visibly declared fixed subset, one per-iteration empty axis-option reset, and no second per-outcome branch"],
-      "can_follow": ["panel.treatment_cohort", "panel.turnover_event_time", "estimation.staggered_did", "postest.persist_estimate"],
+      "aliases": [
+        "event study figure",
+        "계수 그림",
+        "pretrend plot",
+        "confidence interval PDF"
+      ],
+      "input_contract": [
+        "named event-time coefficients with one declared design reference",
+        "validated event window and estimation sample",
+        "native Stata coefficient names retained; a conventional treatment-time RHS writes one flat <level>bn.time#1.treatment term for every nonreference level, keeps the design reference absent, verifies every declared term in e(b), and retains any estimator-created actual omission as its raw token",
+        "sheet_group declared independently from axis_group",
+        "an axis_group with fixed range and ticks only when directly comparing closely related outcomes; automatic axis otherwise"
+      ],
+      "output_contract": [
+        "PDF event-study figure with English-only presentation text",
+        "explicit zero reference point and confidence intervals",
+        "keep/order or native stub mapping that targets raw coefficient names rather than _yYYYY aliases",
+        "raw outcome variable name alone at the top and comparison/sample legend below the axis",
+        "PDF exported immediately inside one flat outcome loop",
+        "fixed range and ticks when a close-related direct-comparison axis_group is declared; automatic axis otherwise",
+        "in a mixed-axis loop, one visibly declared fixed subset, one per-iteration empty axis-option reset, and no second per-outcome branch"
+      ],
+      "can_follow": [
+        "panel.treatment_cohort",
+        "panel.turnover_event_time",
+        "estimation.staggered_did",
+        "postest.persist_estimate"
+      ],
       "can_precede": [],
-      "incompatible_with": ["filtering coefficients by row number instead of coefficient name", "manually generated treat_yYYYY or _yYYYY substitutes for a factor-variable event interaction", "conventional event-study treatment-time RHS written with ##", "renaming a factor-variable interaction coefficient to a synthetic _yYYYY alias", "Korean presentation text in an event-study graph", "manual coefficient transfer", "fixed event-study axes without a declared close-related direct-comparison axis_group", "using sheet_group as the axis_group", "encoded dispatcher that selects axis settings", "more than one fixed group or a second per-outcome decision inside a mixed-axis loop", "legend hidden or placed away from the bottom", "decorative title replacing the raw outcome name", "PDF export outside the outcome loop"]
+      "incompatible_with": [
+        "filtering coefficients by row number instead of coefficient name",
+        "manually generated treat_yYYYY or _yYYYY substitutes for a factor-variable event interaction",
+        "conventional event-study treatment-time RHS written with ##",
+        "renaming a factor-variable interaction coefficient to a synthetic _yYYYY alias",
+        "Korean presentation text in an event-study graph",
+        "manual coefficient transfer",
+        "fixed event-study axes without a declared close-related direct-comparison axis_group",
+        "using sheet_group as the axis_group",
+        "encoded dispatcher that selects axis settings",
+        "more than one fixed group or a second per-outcome decision inside a mixed-axis loop",
+        "legend hidden or placed away from the bottom",
+        "decorative title replacing the raw outcome name",
+        "PDF export outside the outcome loop"
+      ]
     },
     {
       "checkpoint": "panel.stack_waves",
       "unit_kind": "preparation",
       "purpose_ko": "서로 다른 조사시점의 wide 변수를 공통 이름으로 맞춰 person-period 자료로 쌓는다.",
-      "aliases": ["wave stacking", "시점 쌓기", "append waves", "person-period"],
-      "input_contract": ["one-row-per-unit wide data with wave-specific variables", "explicit cross-wave variable mapping"],
-      "output_contract": ["stacked unit-period data", "wave indicators and common analysis variable names"],
-      "can_follow": ["clean.derive_variables", "sample.arm_response_eligibility", "dataset.finalize_keep_label_save"],
-      "can_precede": ["integrity.audit", "panel.treatment_cohort", "panel.turnover_event_time", "estimation.conventional", "figures.descriptive_scatter"],
-      "incompatible_with": ["waves whose units or variable meanings cannot be harmonized"]
+      "aliases": [
+        "wave stacking",
+        "시점 쌓기",
+        "append waves",
+        "person-period"
+      ],
+      "input_contract": [
+        "one-row-per-unit wide data with wave-specific variables",
+        "explicit cross-wave variable mapping"
+      ],
+      "output_contract": [
+        "stacked unit-period data",
+        "wave indicators and common analysis variable names"
+      ],
+      "can_follow": [
+        "clean.derive_variables",
+        "sample.arm_response_eligibility",
+        "dataset.finalize_keep_label_save"
+      ],
+      "can_precede": [
+        "integrity.audit",
+        "panel.treatment_cohort",
+        "panel.turnover_event_time",
+        "estimation.conventional",
+        "figures.descriptive_scatter"
+      ],
+      "incompatible_with": [
+        "waves whose units or variable meanings cannot be harmonized"
+      ]
     },
     {
       "checkpoint": "dataset.finalize_keep_label_save",
       "unit_kind": "preparation",
       "purpose_ko": "후속 분석에 필요한 변수만 남기고 새 변수 라벨과 저장 위치를 확정한다.",
-      "aliases": ["분석자료 저장", "final dataset", "keep list", "compress save"],
-      "input_contract": ["completed variable construction", "known downstream variable requirements"],
-      "output_contract": ["narrow named analysis dataset", "labels on newly created variables"],
-      "can_follow": ["clean.derive_variables", "merge_reshape.integration", "sample.trade_share_threshold", "sample.arm_response_eligibility", "feature.aggregate_household", "feature.aggregate_section_exposure"],
-      "can_precede": ["integrity.audit", "panel.stack_waves", "estimation.conventional", "estimation.staggered_did", "figures.descriptive_scatter"],
-      "incompatible_with": ["overwriting a wider source that later stages still require"]
+      "aliases": [
+        "분석자료 저장",
+        "final dataset",
+        "keep list",
+        "compress save"
+      ],
+      "input_contract": [
+        "completed variable construction",
+        "known downstream variable requirements"
+      ],
+      "output_contract": [
+        "narrow named analysis dataset",
+        "labels on newly created variables"
+      ],
+      "can_follow": [
+        "clean.derive_variables",
+        "merge_reshape.integration",
+        "sample.trade_share_threshold",
+        "sample.arm_response_eligibility",
+        "feature.aggregate_household",
+        "feature.aggregate_section_exposure"
+      ],
+      "can_precede": [
+        "integrity.audit",
+        "panel.stack_waves",
+        "estimation.conventional",
+        "estimation.staggered_did",
+        "figures.descriptive_scatter"
+      ],
+      "incompatible_with": [
+        "overwriting a wider source that later stages still require"
+      ]
     },
     {
       "checkpoint": "feature.aggregate_household",
       "unit_kind": "preparation",
       "purpose_ko": "개인 관측치에서 검증된 가구키별 가구 구성·합계 변수를 만든다.",
-      "aliases": ["household aggregate", "가구별 합계", "egen total", "adult count"],
-      "input_contract": ["validated household key", "person-level member definitions"],
-      "output_contract": ["household-level aggregate features attached to person rows or one-row-per-household data"],
-      "can_follow": ["clean.derive_variables", "merge_reshape.integration", "sample.arm_response_eligibility"],
-      "can_precede": ["dataset.finalize_keep_label_save", "estimation.conventional"],
-      "incompatible_with": ["nondeterministic household representative-row selection"]
+      "aliases": [
+        "household aggregate",
+        "가구별 합계",
+        "egen total",
+        "adult count"
+      ],
+      "input_contract": [
+        "validated household key",
+        "person-level member definitions"
+      ],
+      "output_contract": [
+        "household-level aggregate features attached to person rows or one-row-per-household data"
+      ],
+      "can_follow": [
+        "clean.derive_variables",
+        "merge_reshape.integration",
+        "sample.arm_response_eligibility"
+      ],
+      "can_precede": [
+        "dataset.finalize_keep_label_save",
+        "estimation.conventional"
+      ],
+      "incompatible_with": [
+        "nondeterministic household representative-row selection"
+      ]
     },
     {
       "checkpoint": "feature.aggregate_section_exposure",
       "unit_kind": "preparation",
       "purpose_ko": "개인 처치·하위집단 지표를 검증된 구역키별 노출 합계로 집계한다.",
-      "aliases": ["section exposure", "구역별 노출", "egen total", "voting section aggregate"],
-      "input_contract": ["validated section key", "person-level treatment and subgroup indicators", "declared missing-value semantics"],
-      "output_contract": ["section-level exposure totals attached to observations or one-row-per-section data"],
-      "can_follow": ["clean.derive_variables", "merge_reshape.integration", "sample.arm_response_eligibility"],
-      "can_precede": ["dataset.finalize_keep_label_save", "estimation.conventional", "figures.descriptive_scatter"],
-      "incompatible_with": ["unexamined mixing of count and total operators"]
+      "aliases": [
+        "section exposure",
+        "구역별 노출",
+        "egen total",
+        "voting section aggregate"
+      ],
+      "input_contract": [
+        "validated section key",
+        "person-level treatment and subgroup indicators",
+        "declared missing-value semantics"
+      ],
+      "output_contract": [
+        "section-level exposure totals attached to observations or one-row-per-section data"
+      ],
+      "can_follow": [
+        "clean.derive_variables",
+        "merge_reshape.integration",
+        "sample.arm_response_eligibility"
+      ],
+      "can_precede": [
+        "dataset.finalize_keep_label_save",
+        "estimation.conventional",
+        "figures.descriptive_scatter"
+      ],
+      "incompatible_with": [
+        "unexamined mixing of count and total operators"
+      ]
     },
     {
       "checkpoint": "integrity.adjacency_dedup",
       "unit_kind": "validation",
       "purpose_ko": "정렬 후 인접행을 임의 삭제하는 중복 제거 패턴을 재사용 금지 사례로 기록한다.",
-      "aliases": ["adjacent duplicate drop", "인접행 삭제", "unsafe dedup"],
-      "input_contract": ["repeated lower-level observations with unproven within-group equality"],
-      "output_contract": ["comparison-only warning, never a finalized dataset"],
-      "can_follow": ["integrity.audit"],
+      "aliases": [
+        "adjacent duplicate drop",
+        "인접행 삭제",
+        "unsafe dedup"
+      ],
+      "input_contract": [
+        "repeated lower-level observations with unproven within-group equality"
+      ],
+      "output_contract": [
+        "comparison-only warning, never a finalized dataset"
+      ],
+      "can_follow": [
+        "integrity.audit"
+      ],
       "can_precede": [],
-      "incompatible_with": ["production reuse", "claiming one-row-per-group validity without isid"]
+      "incompatible_with": [
+        "production reuse",
+        "claiming one-row-per-group validity without isid"
+      ]
     },
     {
       "checkpoint": "figures.descriptive_scatter",
       "unit_kind": "post_estimation_export",
       "purpose_ko": "명시한 집계 단위에서 두 변수의 관계를 그려 PDF로 내보낸다.",
-      "aliases": ["scatter plot", "기초통계 그림", "graph export PDF", "municipality-year"],
-      "input_contract": ["named analysis dataset", "declared plotting unit and variable units"],
-      "output_contract": ["reproducible PDF figure with labeled axes and legend", "Malgun Gothic fixed when graph presentation text contains Korean"],
-      "can_follow": ["panel.stack_waves", "dataset.finalize_keep_label_save", "feature.aggregate_section_exposure"],
+      "aliases": [
+        "scatter plot",
+        "기초통계 그림",
+        "graph export PDF",
+        "municipality-year"
+      ],
+      "input_contract": [
+        "named analysis dataset",
+        "declared plotting unit and variable units"
+      ],
+      "output_contract": [
+        "reproducible PDF figure with labeled axes and legend",
+        "Malgun Gothic fixed when graph presentation text contains Korean"
+      ],
+      "can_follow": [
+        "panel.stack_waves",
+        "dataset.finalize_keep_label_save",
+        "feature.aggregate_section_exposure"
+      ],
       "can_precede": [],
-      "incompatible_with": ["individual-level interpretation of an ecological aggregate plot", "manual graph editing"]
+      "incompatible_with": [
+        "individual-level interpretation of an ecological aggregate plot",
+        "manual graph editing"
+      ]
     },
     {
       "checkpoint": "figures.coefplot_named_estimates",
       "unit_kind": "post_estimation_export",
       "purpose_ko": "명명된 저장 추정치의 선언된 계수만 동일 척도의 신뢰구간 그림으로 묶어 PDF로 내보낸다.",
-      "aliases": ["coefplot", "stored estimates plot", "named estimates", "coefficient plot", "계수 그림", "신뢰구간 그림", "keep order coeflabels", "graph export PDF GPH"],
-      "input_contract": ["named stored estimates compatible with coefplot", "declared coefficient keep/order mapping and display labels", "native Stata coefficient names retained when plotted terms come from # or ## factor-variable interactions", "pre-specified axis scale, confidence-interval styling, and output paths"],
-      "output_contract": ["reproducible PDF coefficient plot", "raw interaction coefficient names used by keep/order rather than synthetic _yYYYY aliases", "English-only presentation text when the plot is an event study", "active graph retained in memory", "editable GPH only when an explicit graph save path is declared"],
-      "can_follow": ["estimation.conventional", "estimation.staggered_did", "postest.persist_estimate"],
+      "aliases": [
+        "coefplot",
+        "stored estimates plot",
+        "named estimates",
+        "coefficient plot",
+        "계수 그림",
+        "신뢰구간 그림",
+        "keep order coeflabels",
+        "graph export PDF GPH"
+      ],
+      "input_contract": [
+        "named stored estimates compatible with coefplot",
+        "declared coefficient keep/order mapping and display labels",
+        "native Stata coefficient names retained when plotted terms come from # or ## factor-variable interactions",
+        "pre-specified axis scale, confidence-interval styling, and output paths"
+      ],
+      "output_contract": [
+        "reproducible PDF coefficient plot",
+        "raw interaction coefficient names used by keep/order rather than synthetic _yYYYY aliases",
+        "English-only presentation text when the plot is an event study",
+        "active graph retained in memory",
+        "editable GPH only when an explicit graph save path is declared"
+      ],
+      "can_follow": [
+        "estimation.conventional",
+        "estimation.staggered_did",
+        "postest.persist_estimate"
+      ],
       "can_precede": [],
-      "incompatible_with": ["unnamed or incompatible stored estimates", "coefficient selection by result-row position", "manually generated treat_yYYYY or _yYYYY substitutes for a factor-variable event interaction", "renaming a factor-variable interaction coefficient to a synthetic _yYYYY alias", "Korean presentation text in an event-study graph", "undeclared axis scale or confidence level", "assuming PDF export also creates a GPH file"]
+      "incompatible_with": [
+        "unnamed or incompatible stored estimates",
+        "coefficient selection by result-row position",
+        "manually generated treat_yYYYY or _yYYYY substitutes for a factor-variable event interaction",
+        "renaming a factor-variable interaction coefficient to a synthetic _yYYYY alias",
+        "Korean presentation text in an event-study graph",
+        "undeclared axis scale or confidence level",
+        "assuming PDF export also creates a GPH file"
+      ]
     },
     {
       "checkpoint": "figures.export_pdf",
       "unit_kind": "post_estimation_export",
       "purpose_ko": "메모리에 이미 있는 Stata graph를 선언한 PDF 경로로 한 줄에서 내보낸다.",
-      "aliases": ["graph export", "graph export PDF", "PDF figure export", "active graph export", "PDF 그림 내보내기", "그림 PDF"],
-      "input_contract": ["active Stata graph exists in memory", "PDF output is requested"],
-      "output_contract": ["PDF figure written at the declared output path"],
-      "can_follow": ["figures.descriptive_scatter", "figures.event_study", "figures.coefplot_named_estimates", "figures.named_graph_combine"],
+      "aliases": [
+        "graph export",
+        "graph export PDF",
+        "PDF figure export",
+        "active graph export",
+        "PDF 그림 내보내기",
+        "그림 PDF"
+      ],
+      "input_contract": [
+        "active Stata graph exists in memory",
+        "PDF output is requested"
+      ],
+      "output_contract": [
+        "PDF figure written at the declared output path"
+      ],
+      "can_follow": [
+        "figures.descriptive_scatter",
+        "figures.event_study",
+        "figures.coefplot_named_estimates",
+        "figures.named_graph_combine"
+      ],
       "can_precede": [],
-      "incompatible_with": ["no active graph in memory", "non-PDF output request", "manual graph editing"]
+      "incompatible_with": [
+        "no active graph in memory",
+        "non-PDF output request",
+        "manual graph editing"
+      ]
     },
     {
       "checkpoint": "descriptives.sample_flow",
       "unit_kind": "preparation_validation",
       "purpose_ko": "연구자가 선언한 표본 전환마다 남은 관측치 수를 이름 있는 Stata 자료로 기록한다.",
-      "aliases": ["sample flow", "sample-flow dataset", "표본 흐름", "표본 수 기록", "관측치 흐름", "postfile count dataset", "post postclose"],
-      "input_contract": ["ordered sample transitions already declared by the study", "one readable checkpoint name and current observation count at each transition", "declared persistent output path"],
-      "output_contract": ["typed Stata dataset with one checkpoint row and one observation-count field per declared sample transition", "current analysis data remains in memory"],
-      "can_follow": ["input_load.combine", "input_load.single_source", "merge_reshape.integration", "sample.trade_share_threshold", "sample.arm_response_eligibility", "panel.materialize_time_grid"],
-      "can_precede": ["estimation.conventional", "estimation.staggered_did", "final_excel_assembly"],
-      "incompatible_with": ["coefficient or standard-error reconstruction", "checkpoint names or sample rules inferred from another project", "an unclosed postfile"]
+      "aliases": [
+        "sample flow",
+        "sample-flow dataset",
+        "표본 흐름",
+        "표본 수 기록",
+        "관측치 흐름",
+        "postfile count dataset",
+        "post postclose"
+      ],
+      "input_contract": [
+        "ordered sample transitions already declared by the study",
+        "one readable checkpoint name and current observation count at each transition",
+        "declared persistent output path"
+      ],
+      "output_contract": [
+        "typed Stata dataset with one checkpoint row and one observation-count field per declared sample transition",
+        "current analysis data remains in memory"
+      ],
+      "can_follow": [
+        "input_load.combine",
+        "input_load.single_source",
+        "merge_reshape.integration",
+        "sample.trade_share_threshold",
+        "sample.arm_response_eligibility",
+        "panel.materialize_time_grid"
+      ],
+      "can_precede": [
+        "estimation.conventional",
+        "estimation.staggered_did",
+        "final_excel_assembly"
+      ],
+      "incompatible_with": [
+        "coefficient or standard-error reconstruction",
+        "checkpoint names or sample rules inferred from another project",
+        "an unclosed postfile"
+      ]
     },
     {
       "checkpoint": "descriptives.summary_dataset",
       "unit_kind": "preparation_validation",
       "purpose_ko": "선언된 표본·집단·변수에 대해 필요한 기초통계만 계산해 표와 그림이 함께 읽는 명명된 Stata 자료로 만든다.",
-      "aliases": ["summary statistics", "descriptive statistics", "summary dataset", "기초통계", "요약통계", "mean sd count sum percentile", "tabstat matrix", "collapse reshape long"],
-      "input_contract": ["analysis sample and observation unit already fixed", "declared grouping keys, variables, and statistics", "declared persistent output path when downstream consumers share the result"],
-      "output_contract": ["one inspectable summary state with only the declared statistics", "grouping keys and variable or statistic identity retained", "named Stata dataset when table and figure consumers share the result"],
-      "can_follow": ["dataset.finalize_keep_label_save", "sample.trade_share_threshold", "sample.arm_response_eligibility", "panel.stack_waves"],
-      "can_precede": ["exports.descriptive_excel_sheet", "figures.descriptive_bar", "figures.named_graph_combine", "figures.export_pdf"],
-      "incompatible_with": ["inventing a sample, grouping key, weight, or statistic", "silently pooling substantively different observation units", "source-specific formulas copied without a declared target meaning"]
+      "aliases": [
+        "summary statistics",
+        "descriptive statistics",
+        "summary dataset",
+        "기초통계",
+        "요약통계",
+        "mean sd count sum percentile",
+        "tabstat matrix",
+        "collapse reshape long"
+      ],
+      "input_contract": [
+        "analysis sample and observation unit already fixed",
+        "declared grouping keys, variables, and statistics",
+        "declared persistent output path when downstream consumers share the result"
+      ],
+      "output_contract": [
+        "one inspectable summary state with only the declared statistics",
+        "grouping keys and variable or statistic identity retained",
+        "named Stata dataset when table and figure consumers share the result"
+      ],
+      "can_follow": [
+        "dataset.finalize_keep_label_save",
+        "sample.trade_share_threshold",
+        "sample.arm_response_eligibility",
+        "panel.stack_waves"
+      ],
+      "can_precede": [
+        "exports.descriptive_excel_sheet",
+        "figures.descriptive_bar",
+        "figures.named_graph_combine",
+        "figures.export_pdf"
+      ],
+      "incompatible_with": [
+        "inventing a sample, grouping key, weight, or statistic",
+        "silently pooling substantively different observation units",
+        "source-specific formulas copied without a declared target meaning"
+      ]
     },
     {
       "checkpoint": "descriptives.estpost_active_result",
       "unit_kind": "preparation_validation",
       "purpose_ko": "선언된 표본과 변수에 대한 요약·집단비교 결과를 estpost 호환 활성 상태로 만든다.",
-      "aliases": ["estpost summarize", "estpost tabstat", "estpost ttest", "active estpost result", "estpost 요약결과"],
-      "input_contract": ["analysis sample and variables already fixed", "declared statistic or two-group comparison", "an explicitly estpost-compatible downstream consumer"],
-      "output_contract": ["one active estpost result with the declared statistics", "no claim that a durable shared summary dataset was created"],
-      "can_follow": ["dataset.finalize_keep_label_save", "sample.trade_share_threshold", "sample.arm_response_eligibility", "panel.stack_waves"],
-      "can_precede": ["postest.persist_estimate", "exports.estimate_text_table"],
-      "incompatible_with": ["a table and figure required to share a named summary .dta", "an undeclared statistic or group", "treating active estimation state as a durable artifact"]
+      "aliases": [
+        "estpost summarize",
+        "estpost tabstat",
+        "estpost ttest",
+        "active estpost result",
+        "estpost 요약결과"
+      ],
+      "input_contract": [
+        "analysis sample and variables already fixed",
+        "declared statistic or two-group comparison",
+        "an explicitly estpost-compatible downstream consumer"
+      ],
+      "output_contract": [
+        "one active estpost result with the declared statistics",
+        "no claim that a durable shared summary dataset was created"
+      ],
+      "can_follow": [
+        "dataset.finalize_keep_label_save",
+        "sample.trade_share_threshold",
+        "sample.arm_response_eligibility",
+        "panel.stack_waves"
+      ],
+      "can_precede": [
+        "postest.persist_estimate",
+        "exports.estimate_text_table"
+      ],
+      "incompatible_with": [
+        "a table and figure required to share a named summary .dta",
+        "an undeclared statistic or group",
+        "treating active estimation state as a durable artifact"
+      ]
     },
     {
       "checkpoint": "exports.descriptive_excel_sheet",
       "unit_kind": "post_estimation_export",
       "purpose_ko": "메모리의 확정된 기초통계 상태를 선언한 workbook과 sheet에 내보낸다.",
-      "aliases": ["descriptive Excel", "summary statistics workbook", "기초통계 Excel", "export excel sheet", "first sheet", "additional sheet"],
-      "input_contract": ["finalized in-memory descriptive table at the intended row unit", "declared workbook path and sheet name", "explicit first-sheet versus additional-sheet role"],
-      "output_contract": ["one named worksheet containing the current descriptive table", "replace only for the declared first sheet or new workbook", "sheetmod only for a declared additional sheet in an existing workbook"],
-      "can_follow": ["descriptives.summary_dataset", "descriptives.entity_collapse"],
-      "can_precede": ["cleanup"],
-      "incompatible_with": ["using sheetmod for a workbook whose first sheet has not been created", "replacing a workbook when adding a declared later sheet", "claiming source-backed formatting not present in the source span"]
+      "aliases": [
+        "descriptive Excel",
+        "summary statistics workbook",
+        "기초통계 Excel",
+        "export excel sheet",
+        "first sheet",
+        "additional sheet"
+      ],
+      "input_contract": [
+        "finalized in-memory descriptive table at the intended row unit",
+        "declared workbook path and sheet name",
+        "explicit first-sheet versus additional-sheet role"
+      ],
+      "output_contract": [
+        "one named worksheet containing the current descriptive table",
+        "replace only for the declared first sheet or new workbook",
+        "sheetmod only for a declared additional sheet in an existing workbook"
+      ],
+      "can_follow": [
+        "descriptives.summary_dataset",
+        "descriptives.entity_collapse"
+      ],
+      "can_precede": [
+        "cleanup"
+      ],
+      "incompatible_with": [
+        "using sheetmod for a workbook whose first sheet has not been created",
+        "replacing a workbook when adding a declared later sheet",
+        "claiming source-backed formatting not present in the source span"
+      ]
     },
     {
       "checkpoint": "figures.descriptive_bar",
       "unit_kind": "post_estimation_export",
       "purpose_ko": "확정된 long 또는 grouped summary 상태에서 선언된 값과 범주를 막대그림으로 만든다.",
-      "aliases": ["graph bar", "bar chart", "summary bar", "기초통계 막대그림", "grouped descriptive bar", "over() asyvars"],
-      "input_contract": ["precomputed descriptive values at a declared category or group unit", "declared value, category, and optional series variables", "reader-facing labels and units already fixed"],
-      "output_contract": ["one active descriptive bar graph", "category and value semantics visible in over(), axis title, and legend", "PDF composed separately through figures.export_pdf when requested"],
-      "can_follow": ["descriptives.summary_dataset", "descriptives.entity_collapse"],
-      "can_precede": ["figures.named_graph_combine", "figures.export_pdf"],
-      "incompatible_with": ["causal interpretation of descriptive bars", "graph-time aggregation that hides the declared summary unit", "bundled PDF export that duplicates figures.export_pdf"]
+      "aliases": [
+        "graph bar",
+        "bar chart",
+        "summary bar",
+        "기초통계 막대그림",
+        "grouped descriptive bar",
+        "over() asyvars"
+      ],
+      "input_contract": [
+        "precomputed descriptive values at a declared category or group unit",
+        "declared value, category, and optional series variables",
+        "reader-facing labels and units already fixed"
+      ],
+      "output_contract": [
+        "one active descriptive bar graph",
+        "category and value semantics visible in over(), axis title, and legend",
+        "PDF composed separately through figures.export_pdf when requested"
+      ],
+      "can_follow": [
+        "descriptives.summary_dataset",
+        "descriptives.entity_collapse"
+      ],
+      "can_precede": [
+        "figures.named_graph_combine",
+        "figures.export_pdf"
+      ],
+      "incompatible_with": [
+        "causal interpretation of descriptive bars",
+        "graph-time aggregation that hides the declared summary unit",
+        "bundled PDF export that duplicates figures.export_pdf"
+      ]
     },
     {
       "checkpoint": "panel.materialize_time_grid",
       "unit_kind": "preparation",
       "purpose_ko": "선언된 entity-time panel의 관측 범위 안에서 빠진 시점을 실제 행으로 만든다.",
-      "aliases": ["tsfill", "panel time grid", "balanced time rows", "패널 시점 채우기", "결손 시점 행 생성", "materialize panel grid"],
-      "input_contract": ["unique entity-time data already declared with xtset or tsset", "explicit decision to create rows for internal missing time points"],
-      "output_contract": ["one materialized row for each internal missing time point within each entity's observed range", "newly created non-key fields remain missing until a separate declared rule handles them"],
-      "can_follow": ["integrity.audit", "merge_reshape.integration", "panel.stack_waves", "panel.treatment_cohort"],
-      "can_precede": ["clean.derive_variables", "descriptives.sample_flow", "estimation.conventional", "estimation.staggered_did"],
-      "incompatible_with": ["tsfill, full without a separately declared common support policy", "automatic forward filling or imputation bundled with row creation"]
+      "aliases": [
+        "tsfill",
+        "panel time grid",
+        "balanced time rows",
+        "패널 시점 채우기",
+        "결손 시점 행 생성",
+        "materialize panel grid"
+      ],
+      "input_contract": [
+        "unique entity-time data already declared with xtset or tsset",
+        "explicit decision to create rows for internal missing time points"
+      ],
+      "output_contract": [
+        "one materialized row for each internal missing time point within each entity's observed range",
+        "newly created non-key fields remain missing until a separate declared rule handles them"
+      ],
+      "can_follow": [
+        "integrity.audit",
+        "merge_reshape.integration",
+        "panel.stack_waves",
+        "panel.treatment_cohort"
+      ],
+      "can_precede": [
+        "clean.derive_variables",
+        "descriptives.sample_flow",
+        "estimation.conventional",
+        "estimation.staggered_did"
+      ],
+      "incompatible_with": [
+        "tsfill, full without a separately declared common support policy",
+        "automatic forward filling or imputation bundled with row creation"
+      ]
     },
     {
       "checkpoint": "figures.named_graph_combine",
       "unit_kind": "post_estimation_export",
       "purpose_ko": "이미 만든 named graph를 선언한 순서와 panel 배치로 하나의 named graph에 결합한다.",
-      "aliases": ["graph combine", "named graph combine", "combine panels", "그림 결합", "패널 그림", "composite graph"],
-      "input_contract": ["two or more named graphs already in memory", "declared component order and rows or columns", "explicit common-axis evidence when xcommon or ycommon is requested"],
-      "output_contract": ["one named composite graph retained as the active graph"],
-      "can_follow": ["figures.descriptive_scatter", "figures.event_study", "figures.coefplot_named_estimates"],
-      "can_precede": ["figures.export_pdf"],
-      "incompatible_with": ["implicit component order", "xcommon or ycommon without matching units and scales", "bundled PDF export that duplicates figures.export_pdf"]
+      "aliases": [
+        "graph combine",
+        "named graph combine",
+        "combine panels",
+        "그림 결합",
+        "패널 그림",
+        "composite graph"
+      ],
+      "input_contract": [
+        "two or more named graphs already in memory",
+        "declared component order and rows or columns",
+        "explicit common-axis evidence when xcommon or ycommon is requested"
+      ],
+      "output_contract": [
+        "one named composite graph retained as the active graph"
+      ],
+      "can_follow": [
+        "figures.descriptive_scatter",
+        "figures.event_study",
+        "figures.coefplot_named_estimates"
+      ],
+      "can_precede": [
+        "figures.export_pdf"
+      ],
+      "incompatible_with": [
+        "implicit component order",
+        "xcommon or ycommon without matching units and scales",
+        "bundled PDF export that duplicates figures.export_pdf"
+      ]
     },
     {
       "checkpoint": "final_excel_assembly",
       "unit_kind": "post_estimation_export",
       "purpose_ko": "회귀 결과를 outcome·통제사양별 열로 배치해 최종 Excel 표를 조립한다.",
-      "aliases": ["최종 회귀표", "outreg2", "Excel assembly", "R-squared", "dependent-variable mean"],
-      "input_contract": ["approved .ster states restored under readable in-memory estimate names, including explicitly identified 2SLS first-stage model-role results when requested", "each sheet_plan placement lists ordered estimate_names matching the declared outcomes and specification_order", "dependent-variable mean computed on e(sample) and retained with every estimate", "declared display precision for adjusted R-squared and the dependent-variable mean", "semantic variable groups defined from reader-facing evidence and a separate workbook-sheet-sample placement plan"],
-      "output_contract": ["xlsx workbook whose complete raw model headers, dependent-variable headers, coefficient rows, standard-error rows, omitted/base rows, and notes are generated by outreg2", "outreg2 headers and rows preserved without keep, drop, filtering, synthesis, relabeling, or coefficient reconstruction", "native Stata coefficient names retained for interaction rows without _yYYYY aliases", "columns retain the caller-declared estimate order without a fixed outcome or specification count", "adjusted R-squared when defined and dependent-variable mean separately assembled at their declared display precision as the only additional statistic rows", "2SLS first-stage results passed through the same formatter rather than a second table system", "semantic variable groups placed flexibly in one or more declared workbook-sheet-sample contexts", "readable worksheet widths and no retained disposable outreg2 scratch file"],
-      "can_follow": ["estimation.conventional", "estimation.staggered_did", "descriptives.sample_mean", "robustness.placebo", "robustness.heterogeneity"],
+      "aliases": [
+        "최종 회귀표",
+        "outreg2",
+        "Excel assembly",
+        "R-squared",
+        "dependent-variable mean"
+      ],
+      "input_contract": [
+        "approved .ster states restored under readable in-memory estimate names, including explicitly identified 2SLS first-stage model-role results when requested",
+        "each sheet_plan placement lists ordered estimate_names matching the declared outcomes and specification_order",
+        "dependent-variable mean computed on e(sample) and retained with every estimate",
+        "declared display precision for adjusted R-squared and the dependent-variable mean",
+        "semantic variable groups defined from reader-facing evidence and a separate workbook-sheet-sample placement plan"
+      ],
+      "output_contract": [
+        "xlsx workbook whose complete raw model headers, dependent-variable headers, coefficient rows, standard-error rows, omitted/base rows, and notes are generated by outreg2",
+        "outreg2 headers and rows preserved without keep, drop, filtering, synthesis, relabeling, or coefficient reconstruction",
+        "native Stata coefficient names retained for interaction rows without _yYYYY aliases",
+        "columns retain the caller-declared estimate order without a fixed outcome or specification count",
+        "adjusted R-squared when defined and dependent-variable mean separately assembled at their declared display precision as the only additional statistic rows",
+        "2SLS first-stage results passed through the same formatter rather than a second table system",
+        "semantic variable groups placed flexibly in one or more declared workbook-sheet-sample contexts",
+        "readable worksheet widths and no retained disposable outreg2 scratch file"
+      ],
+      "can_follow": [
+        "estimation.conventional",
+        "estimation.staggered_did",
+        "descriptives.sample_mean",
+        "robustness.placebo",
+        "robustness.heterogeneity"
+      ],
       "can_precede": [],
-      "incompatible_with": ["long-form audit dataset used as the final paper table", "packaging-only coefficient filtering or reconstruction", "additional statistic rows beyond adjusted R-squared and dependent-variable mean", "manual treat_yYYYY or _yYYYY substitutes for factor-variable coefficient rows", "renaming factor-variable interaction coefficient rows before Excel export", "TeX export", "forcing a particular upstream estimate-storage method"]
+      "incompatible_with": [
+        "long-form audit dataset used as the final paper table",
+        "packaging-only coefficient filtering or reconstruction",
+        "additional statistic rows beyond adjusted R-squared and dependent-variable mean",
+        "manual treat_yYYYY or _yYYYY substitutes for factor-variable coefficient rows",
+        "renaming factor-variable interaction coefficient rows before Excel export",
+        "TeX export",
+        "forcing a particular upstream estimate-storage method"
+      ]
     },
     {
       "checkpoint": "exports.estimate_text_table",
       "unit_kind": "post_estimation_export",
       "purpose_ko": "이미 명명된 추정치를 사람이 읽을 수 있는 CSV 표로 내보낸다.",
-      "aliases": ["esttab", "estout", "estpost table", "CSV regression table", "추정치 CSV", "non-TeX estimate table"],
-      "input_contract": ["one or more named compatible estimates", "declared CSV output path and overwrite role", "declared statistic and standard-error presentation"],
-      "output_contract": ["one reproducible CSV estimate table", "no TeX artifact"],
-      "can_follow": ["estimation.conventional", "estimation.staggered_did", "postest.persist_estimate"],
-      "can_precede": ["cleanup"],
-      "incompatible_with": ["TeX output", "unnamed active estimate when a named estimate list is required", "manual coefficient reconstruction"]
+      "aliases": [
+        "esttab",
+        "estout",
+        "estpost table",
+        "CSV regression table",
+        "추정치 CSV",
+        "non-TeX estimate table"
+      ],
+      "input_contract": [
+        "one or more named compatible estimates",
+        "declared CSV output path and overwrite role",
+        "declared statistic and standard-error presentation"
+      ],
+      "output_contract": [
+        "one reproducible CSV estimate table",
+        "no TeX artifact"
+      ],
+      "can_follow": [
+        "estimation.conventional",
+        "estimation.staggered_did",
+        "postest.persist_estimate"
+      ],
+      "can_precede": [
+        "cleanup"
+      ],
+      "incompatible_with": [
+        "TeX output",
+        "unnamed active estimate when a named estimate list is required",
+        "manual coefficient reconstruction"
+      ]
     },
     {
       "checkpoint": "exports.matrix_excel",
       "unit_kind": "post_estimation_export",
       "purpose_ko": "명시된 Stata matrix 또는 collect 결과를 하나의 선언된 Excel 산출물로 내보낸다.",
-      "aliases": ["putexcel", "collect export", "matrix Excel", "collect xlsx", "행렬 Excel", "collection Excel"],
-      "input_contract": ["a named matrix or an already populated Stata collection", "declared workbook path, sheet role, and overwrite semantics"],
-      "output_contract": ["one declared xlsx workbook or worksheet with the existing matrix or collection content"],
-      "can_follow": ["descriptives.summary_dataset", "estimation.conventional", "estimation.staggered_did", "postest.margins"],
-      "can_precede": ["cleanup"],
-      "incompatible_with": ["a nonexistent matrix or empty collection", "undeclared workbook overwrite", "TeX export"]
+      "aliases": [
+        "putexcel",
+        "collect export",
+        "matrix Excel",
+        "collect xlsx",
+        "행렬 Excel",
+        "collection Excel"
+      ],
+      "input_contract": [
+        "a named matrix or an already populated Stata collection",
+        "declared workbook path, sheet role, and overwrite semantics"
+      ],
+      "output_contract": [
+        "one declared xlsx workbook or worksheet with the existing matrix or collection content"
+      ],
+      "can_follow": [
+        "descriptives.summary_dataset",
+        "estimation.conventional",
+        "estimation.staggered_did",
+        "postest.margins"
+      ],
+      "can_precede": [
+        "cleanup"
+      ],
+      "incompatible_with": [
+        "a nonexistent matrix or empty collection",
+        "undeclared workbook overwrite",
+        "TeX export"
+      ]
     },
     {
       "checkpoint": "postest.margins",
       "unit_kind": "post_estimation",
       "purpose_ko": "직전 활성 추정치에서 선언한 예측값 또는 한계효과를 계산한다.",
-      "aliases": ["margins", "marginal effects", "predicted margins", "한계효과", "사후 예측"],
-      "input_contract": ["a compatible active estimation result", "declared focal variable and requested values or contrasts"],
-      "output_contract": ["active margins result corresponding to the declared focal values"],
-      "can_follow": ["estimation.conventional", "estimation.staggered_did"],
-      "can_precede": ["figures.marginsplot", "exports.matrix_excel"],
-      "incompatible_with": ["margins after an incompatible non-estimation command", "undeclared focal-variable values", "interpretation without the originating estimator"]
+      "aliases": [
+        "margins",
+        "marginal effects",
+        "predicted margins",
+        "한계효과",
+        "사후 예측"
+      ],
+      "input_contract": [
+        "a compatible active estimation result",
+        "declared focal variable and requested values or contrasts"
+      ],
+      "output_contract": [
+        "active margins result corresponding to the declared focal values"
+      ],
+      "can_follow": [
+        "estimation.conventional",
+        "estimation.staggered_did"
+      ],
+      "can_precede": [
+        "figures.marginsplot",
+        "exports.matrix_excel"
+      ],
+      "incompatible_with": [
+        "margins after an incompatible non-estimation command",
+        "undeclared focal-variable values",
+        "interpretation without the originating estimator"
+      ]
     },
     {
       "checkpoint": "figures.marginsplot",
       "unit_kind": "post_estimation_export",
       "purpose_ko": "직전 margins 결과를 활성 신뢰구간 그림으로 변환한다.",
-      "aliases": ["marginsplot", "margins plot", "marginal-effects plot", "한계효과 그림"],
-      "input_contract": ["active margins result", "declared figure geometry and confidence-interval style"],
-      "output_contract": ["one active margins graph", "PDF export remains a separate figures.export_pdf transition"],
-      "can_follow": ["postest.margins"],
-      "can_precede": ["figures.export_pdf", "figures.named_graph_combine"],
-      "incompatible_with": ["marginsplot without immediately preceding compatible margins", "manual graph editing", "bundled PDF export"]
+      "aliases": [
+        "marginsplot",
+        "margins plot",
+        "marginal-effects plot",
+        "한계효과 그림"
+      ],
+      "input_contract": [
+        "active margins result",
+        "declared figure geometry and confidence-interval style"
+      ],
+      "output_contract": [
+        "one active margins graph",
+        "PDF export remains a separate figures.export_pdf transition"
+      ],
+      "can_follow": [
+        "postest.margins"
+      ],
+      "can_precede": [
+        "figures.export_pdf",
+        "figures.named_graph_combine"
+      ],
+      "incompatible_with": [
+        "marginsplot without immediately preceding compatible margins",
+        "manual graph editing",
+        "bundled PDF export"
+      ]
     },
     {
       "checkpoint": "cleanup",
       "unit_kind": "cleanup",
       "purpose_ko": "소유권이 확인된 일회성 중간파일만 안전하게 정리한다.",
-      "aliases": ["cleanup", "임시파일 정리", "erase", "temporary files"],
-      "input_contract": ["known project-owned temporary files"],
-      "output_contract": ["only disposable task-created intermediates removed"],
-      "can_follow": ["final_excel_assembly"],
+      "aliases": [
+        "cleanup",
+        "임시파일 정리",
+        "erase",
+        "temporary files"
+      ],
+      "input_contract": [
+        "known project-owned temporary files"
+      ],
+      "output_contract": [
+        "only disposable task-created intermediates removed"
+      ],
+      "can_follow": [
+        "final_excel_assembly"
+      ],
       "can_precede": [],
-      "incompatible_with": ["unscoped erase commands", "deleting raw data or durable checkpoints"]
+      "incompatible_with": [
+        "unscoped erase commands",
+        "deleting raw data or durable checkpoints"
+      ]
     },
     {
       "checkpoint": "robustness.jackknife",
       "unit_kind": "post_estimation",
       "purpose_ko": "재표집 단위와 seed를 명시한 jackknife 또는 반복 추정을 수행한다.",
-      "aliases": ["jackknife", "재표집", "resampling", "leave-one-out"],
-      "input_contract": ["baseline design", "declared resampling unit and seed"],
-      "output_contract": ["reproducible resampling estimates without nested active loops"],
-      "can_follow": ["estimation.conventional", "estimation.staggered_did"],
-      "can_precede": ["final_excel_assembly"],
-      "incompatible_with": ["two or more nested active loops"]
+      "aliases": [
+        "jackknife",
+        "재표집",
+        "resampling",
+        "leave-one-out"
+      ],
+      "input_contract": [
+        "baseline design",
+        "declared resampling unit and seed"
+      ],
+      "output_contract": [
+        "reproducible resampling estimates without nested active loops"
+      ],
+      "can_follow": [
+        "estimation.conventional",
+        "estimation.staggered_did"
+      ],
+      "can_precede": [
+        "final_excel_assembly"
+      ],
+      "incompatible_with": [
+        "two or more nested active loops"
+      ]
     },
     {
       "checkpoint": "preparation.transform",
       "unit_kind": "preparation",
       "purpose_ko": "호출자가 선언한 식·형식·라벨·순서 규칙으로 자료를 한 단계 변환한다.",
-      "aliases": ["자료 변환", "type conversion", "labels", "order", "egen", "generate", "replace"],
-      "input_contract": ["active data", "caller-declared variables and transformation semantics"],
-      "output_contract": ["one inspectable transformed data state with original meaning preserved where required"],
-      "can_follow": ["input_load.single_source", "input_load.combine", "merge_reshape.integration"],
-      "can_precede": ["integrity.audit", "sample.restriction", "estimation.conventional"],
-      "incompatible_with": ["undeclared recode, missing-value rule, overwrite, or category mapping"]
+      "aliases": [
+        "자료 변환",
+        "type conversion",
+        "labels",
+        "order",
+        "egen",
+        "generate",
+        "replace"
+      ],
+      "input_contract": [
+        "active data",
+        "caller-declared variables and transformation semantics"
+      ],
+      "output_contract": [
+        "one inspectable transformed data state with original meaning preserved where required"
+      ],
+      "can_follow": [
+        "input_load.single_source",
+        "input_load.combine",
+        "merge_reshape.integration"
+      ],
+      "can_precede": [
+        "integrity.audit",
+        "sample.restriction",
+        "estimation.conventional"
+      ],
+      "incompatible_with": [
+        "undeclared recode, missing-value rule, overwrite, or category mapping"
+      ]
     },
     {
       "checkpoint": "sample.restriction",
       "unit_kind": "preparation",
       "purpose_ko": "연구자가 미리 선언한 적격성·기간·결측 규칙으로 이름 있는 분석 표본을 만든다.",
-      "aliases": ["표본 제한", "sample restriction", "eligibility", "time window", "required missing exclusion"],
-      "input_contract": ["active data", "caller-declared eligibility, time-window, or required-variable rule"],
-      "output_contract": ["one auditable restricted sample whose exclusion rule remains visible"],
-      "can_follow": ["preparation.transform", "integrity.audit", "merge_reshape.integration"],
-      "can_precede": ["estimation.conventional", "estimation.staggered_did", "descriptives.command_result"],
-      "incompatible_with": ["outcome-informed or source-inferred sample restriction"]
+      "aliases": [
+        "표본 제한",
+        "sample restriction",
+        "eligibility",
+        "time window",
+        "required missing exclusion"
+      ],
+      "input_contract": [
+        "active data",
+        "caller-declared eligibility, time-window, or required-variable rule"
+      ],
+      "output_contract": [
+        "one auditable restricted sample whose exclusion rule remains visible"
+      ],
+      "can_follow": [
+        "preparation.transform",
+        "integrity.audit",
+        "merge_reshape.integration"
+      ],
+      "can_precede": [
+        "estimation.conventional",
+        "estimation.staggered_did",
+        "descriptives.command_result"
+      ],
+      "incompatible_with": [
+        "outcome-informed or source-inferred sample restriction"
+      ]
     },
     {
       "checkpoint": "descriptives.command_result",
       "unit_kind": "preparation_validation",
       "purpose_ko": "선언한 변수·집단·가중치에 대한 상관·분위수·집단 요약 결과를 만든다.",
-      "aliases": ["correlation", "pwcorr", "quantiles", "group summary", "기초통계 결과"],
-      "input_contract": ["fixed analysis sample", "declared variables, groups, weights, and statistics"],
-      "output_contract": ["one active or materialized descriptive result with declared statistics only"],
-      "can_follow": ["sample.restriction", "dataset.finalize_keep_label_save", "preparation.transform"],
-      "can_precede": ["exports.descriptive_excel_sheet", "figures.descriptive_graph"],
-      "incompatible_with": ["undeclared statistic, weight, group, or observation unit"]
+      "aliases": [
+        "correlation",
+        "pwcorr",
+        "quantiles",
+        "group summary",
+        "기초통계 결과"
+      ],
+      "input_contract": [
+        "fixed analysis sample",
+        "declared variables, groups, weights, and statistics"
+      ],
+      "output_contract": [
+        "one active or materialized descriptive result with declared statistics only"
+      ],
+      "can_follow": [
+        "sample.restriction",
+        "dataset.finalize_keep_label_save",
+        "preparation.transform"
+      ],
+      "can_precede": [
+        "exports.descriptive_excel_sheet",
+        "figures.descriptive_graph"
+      ],
+      "incompatible_with": [
+        "undeclared statistic, weight, group, or observation unit"
+      ]
     },
     {
       "checkpoint": "postest.command_result",
       "unit_kind": "post_estimation",
       "purpose_ko": "호환되는 활성 추정치에서 예측·검정·집계 등 하나의 사후추정 상태 전이를 수행한다.",
-      "aliases": ["predict", "test", "lincom", "estat", "postestimation"],
-      "input_contract": ["compatible active estimation state", "caller-declared post-estimation target"],
-      "output_contract": ["one command-specific post-estimation result or generated variable"],
-      "can_follow": ["estimation.conventional", "estimation.staggered_did"],
-      "can_precede": ["figures.event_study", "figures.descriptive_graph", "exports.matrix_excel"],
-      "incompatible_with": ["incompatible active estimate", "manual coefficient or standard-error reconstruction"]
+      "aliases": [
+        "predict",
+        "test",
+        "lincom",
+        "estat",
+        "postestimation"
+      ],
+      "input_contract": [
+        "compatible active estimation state",
+        "caller-declared post-estimation target"
+      ],
+      "output_contract": [
+        "one command-specific post-estimation result or generated variable"
+      ],
+      "can_follow": [
+        "estimation.conventional",
+        "estimation.staggered_did"
+      ],
+      "can_precede": [
+        "figures.event_study",
+        "figures.descriptive_graph",
+        "exports.matrix_excel"
+      ],
+      "incompatible_with": [
+        "incompatible active estimate",
+        "manual coefficient or standard-error reconstruction"
+      ]
     },
     {
       "checkpoint": "figures.descriptive_graph",
       "unit_kind": "post_estimation_export",
       "purpose_ko": "선언한 변수·표본·축 의미로 하나의 Stata graph를 만들고 활성 상태로 남긴다.",
-      "aliases": ["twoway", "histogram", "line", "scatter", "confidence band", "descriptive graph"],
-      "input_contract": ["active data or compatible post-estimation result", "declared plot variables, sample, geometry, and axis meaning"],
-      "output_contract": ["one active reproducible Stata graph; PDF export remains separate"],
-      "can_follow": ["descriptives.command_result", "postest.command_result", "estimation.conventional"],
-      "can_precede": ["figures.named_graph_combine", "figures.export_pdf"],
-      "incompatible_with": ["undeclared axis or sample choice", "manual graph editing", "bundled non-PDF final output"]
+      "aliases": [
+        "twoway",
+        "histogram",
+        "line",
+        "scatter",
+        "confidence band",
+        "descriptive graph"
+      ],
+      "input_contract": [
+        "active data or compatible post-estimation result",
+        "declared plot variables, sample, geometry, and axis meaning"
+      ],
+      "output_contract": [
+        "one active reproducible Stata graph; PDF export remains separate"
+      ],
+      "can_follow": [
+        "descriptives.command_result",
+        "postest.command_result",
+        "estimation.conventional"
+      ],
+      "can_precede": [
+        "figures.named_graph_combine",
+        "figures.export_pdf"
+      ],
+      "incompatible_with": [
+        "undeclared axis or sample choice",
+        "manual graph editing",
+        "bundled non-PDF final output"
+      ]
     },
     {
       "checkpoint": "exports.dataset_file",
       "unit_kind": "post_estimation_export",
       "purpose_ko": "확정된 자료 상태를 선언한 delimited 또는 Excel 파일 계약으로 내보낸다.",
-      "aliases": ["export delimited", "export excel", "dataset export", "자료 파일 내보내기"],
-      "input_contract": ["active finalized dataset", "declared variable schema, destination, and overwrite role"],
-      "output_contract": ["one declared external data file with auditable row and column schema"],
-      "can_follow": ["dataset.finalize_keep_label_save", "preparation.transform", "descriptives.command_result"],
-      "can_precede": ["cleanup"],
-      "incompatible_with": ["undeclared overwrite", "silent variable or observation filtering"]
+      "aliases": [
+        "export delimited",
+        "export excel",
+        "dataset export",
+        "자료 파일 내보내기"
+      ],
+      "input_contract": [
+        "active finalized dataset",
+        "declared variable schema, destination, and overwrite role"
+      ],
+      "output_contract": [
+        "one declared external data file with auditable row and column schema"
+      ],
+      "can_follow": [
+        "dataset.finalize_keep_label_save",
+        "preparation.transform",
+        "descriptives.command_result"
+      ],
+      "can_precede": [
+        "cleanup"
+      ],
+      "incompatible_with": [
+        "undeclared overwrite",
+        "silent variable or observation filtering"
+      ]
     },
     {
       "checkpoint": "tables.collection_result",
       "unit_kind": "post_estimation_export",
       "purpose_ko": "table·dtable·etable·collect 명령으로 하나의 명시된 collection 상태를 만든다.",
-      "aliases": ["table", "dtable", "etable", "collect get", "collect style", "collection result"],
-      "input_contract": ["active data or compatible estimation result", "declared rows, columns, statistics, model set, and Stata-version interface"],
-      "output_contract": ["one populated and inspectable Stata collection; Excel export remains a separate transition"],
-      "can_follow": ["descriptives.command_result", "estimation.conventional", "postest.command_result"],
-      "can_precede": ["exports.matrix_excel"],
-      "incompatible_with": ["legacy table syntax without a version contract", "manual coefficient or standard-error bridge"]
+      "aliases": [
+        "table",
+        "dtable",
+        "etable",
+        "collect get",
+        "collect style",
+        "collection result"
+      ],
+      "input_contract": [
+        "active data or compatible estimation result",
+        "declared rows, columns, statistics, model set, and Stata-version interface"
+      ],
+      "output_contract": [
+        "one populated and inspectable Stata collection; Excel export remains a separate transition"
+      ],
+      "can_follow": [
+        "descriptives.command_result",
+        "estimation.conventional",
+        "postest.command_result"
+      ],
+      "can_precede": [
+        "exports.matrix_excel"
+      ],
+      "incompatible_with": [
+        "legacy table syntax without a version contract",
+        "manual coefficient or standard-error bridge"
+      ]
+    },
+    {
+      "checkpoint": "diagnostics.display",
+      "unit_kind": "diagnostic",
+      "purpose_ko": "quietly/noisily처럼 결과 표시와 반환값 확인의 경계를 명시하는 참고용 진단 단위다.",
+      "aliases": [
+        "quietly",
+        "noisily",
+        "display control",
+        "반환값 확인"
+      ],
+      "input_contract": [
+        "active data or an active result",
+        "a declared command whose display behavior is relevant"
+      ],
+      "output_contract": [
+        "bounded displayed or suppressed command output without changing the underlying analytic state"
+      ],
+      "can_follow": [
+        "input_load.single_source",
+        "input_load.combine",
+        "clean.derive_variables",
+        "estimation.conventional"
+      ],
+      "can_precede": [],
+      "incompatible_with": [
+        "using suppressed output as evidence that a required integrity or estimation check was performed"
+      ]
+    },
+    {
+      "checkpoint": "estimation.difference_in_differences",
+      "unit_kind": "estimation",
+      "purpose_ko": "반복횡단면 또는 패널 DID의 자료 형태, 처리·집단·시간 정의와 목표 효과를 명시하는 참고용 추정 단위다.",
+      "aliases": [
+        "DID",
+        "didregress",
+        "xtdidregress",
+        "hdidregress",
+        "xthdidregress"
+      ],
+      "input_contract": [
+        "declared outcome, treatment, group and time variables",
+        "declared panel or repeated-cross-section form",
+        "pre-specified target effect and comparison design"
+      ],
+      "output_contract": [
+        "DID e-class result and declared postestimation state"
+      ],
+      "can_follow": [
+        "integrity.audit",
+        "sample.restriction",
+        "panel.treatment_cohort",
+        "panel.time_operator"
+      ],
+      "can_precede": [
+        "postest.command_result",
+        "postest.persist_estimate",
+        "robustness.placebo"
+      ],
+      "incompatible_with": [
+        "inferring treatment cohorts, comparison groups, or estimands from a guide example"
+      ]
+    },
+    {
+      "checkpoint": "estimation.rdrobust_suite",
+      "unit_kind": "estimation",
+      "purpose_ko": "running variable, cutoff, bandwidth·추론 선택을 사용자가 선언할 때만 RD 명령 mechanics를 보여 주는 참고용 추정 단위다.",
+      "aliases": [
+        "RD",
+        "rdrobust",
+        "rdbwselect",
+        "rdplot",
+        "regression discontinuity"
+      ],
+      "input_contract": [
+        "declared outcome and running variable",
+        "declared cutoff",
+        "declared bandwidth, covariate, cluster, and graph choices when applicable"
+      ],
+      "output_contract": [
+        "bounded RD estimate, bandwidth result, or graph state"
+      ],
+      "can_follow": [
+        "integrity.audit",
+        "clean.derive_variables",
+        "sample.restriction"
+      ],
+      "can_precede": [
+        "postest.command_result",
+        "figures.export_pdf"
+      ],
+      "incompatible_with": [
+        "choosing the cutoff, bandwidth, covariates, or identification design from a guide example"
+      ]
+    },
+    {
+      "checkpoint": "estimation.survey_design",
+      "unit_kind": "estimation",
+      "purpose_ko": "PSU·가중치·층화 또는 복제 가중치가 이미 선언된 경우 svyset/svy mechanics를 보조하는 참고용 단위다.",
+      "aliases": [
+        "survey design",
+        "svyset",
+        "svy",
+        "PSU",
+        "replicate weights"
+      ],
+      "input_contract": [
+        "declared survey design variables and weight semantics",
+        "a stated subpopulation or estimation target when used"
+      ],
+      "output_contract": [
+        "active survey-design state or survey-adjusted command result"
+      ],
+      "can_follow": [
+        "input_load.single_source",
+        "integrity.audit",
+        "preparation.varlist_resolution"
+      ],
+      "can_precede": [
+        "estimation.conventional",
+        "postest.command_result"
+      ],
+      "incompatible_with": [
+        "treating an ordinary analytic weight as a survey design without a declared design"
+      ]
+    },
+    {
+      "checkpoint": "estimation.synthetic_control",
+      "unit_kind": "estimation",
+      "purpose_ko": "처리 단위·시점·패널 식별자·예측변수 집합이 선언된 경우 synth mechanics를 보조하는 참고용 단위다.",
+      "aliases": [
+        "synthetic control",
+        "synth",
+        "treated unit",
+        "predictor path"
+      ],
+      "input_contract": [
+        "declared unit and time identity",
+        "declared treated unit and treatment period",
+        "pre-treatment predictor and outcome history choices"
+      ],
+      "output_contract": [
+        "synthetic-control fit, weights, or declared saved result"
+      ],
+      "can_follow": [
+        "integrity.audit",
+        "panel.treatment_cohort",
+        "panel.time_operator"
+      ],
+      "can_precede": [
+        "postest.command_result",
+        "figures.export_pdf"
+      ],
+      "incompatible_with": [
+        "selecting treated units, treatment timing, predictors, or placebo design from a guide example"
+      ]
+    },
+    {
+      "checkpoint": "figures.binned_scatter",
+      "unit_kind": "figure",
+      "purpose_ko": "표본·x/y·통제·bin 규칙이 선언된 경우 binscatter mechanics를 보조하는 참고용 그림 단위다.",
+      "aliases": [
+        "binscatter",
+        "binned scatter",
+        "bin plot",
+        "precomputed bins"
+      ],
+      "input_contract": [
+        "declared analysis sample and x/y variables",
+        "declared bin count or compatible precomputed bin identifier when used",
+        "declared controls or group comparison when used"
+      ],
+      "output_contract": [
+        "active binned-scatter graph or named bin identifier"
+      ],
+      "can_follow": [
+        "clean.derive_variables",
+        "sample.restriction",
+        "estimation.conventional"
+      ],
+      "can_precede": [
+        "figures.export_pdf"
+      ],
+      "incompatible_with": [
+        "choosing bin count, residualization controls, groups, or display scale from a guide example"
+      ]
+    },
+    {
+      "checkpoint": "integrity.missing_data",
+      "unit_kind": "validation",
+      "purpose_ko": "결측 규칙과 MI 등록 범위가 선언된 경우 missing()/mi mechanics를 점검하는 참고용 무결성 단위다.",
+      "aliases": [
+        "missing data",
+        "missing()",
+        "mi set",
+        "mi register",
+        "mi misstable"
+      ],
+      "input_contract": [
+        "declared missing-value semantics",
+        "declared imputation scope and variables when MI is used"
+      ],
+      "output_contract": [
+        "visible missingness diagnostic or declared MI data-management state"
+      ],
+      "can_follow": [
+        "input_load.single_source",
+        "input_load.combine",
+        "clean.derive_variables"
+      ],
+      "can_precede": [
+        "sample.restriction",
+        "estimation.conventional"
+      ],
+      "incompatible_with": [
+        "silently redefining substantive missing values or imputing variables not declared by the analysis plan"
+      ]
+    },
+    {
+      "checkpoint": "panel.time_operator",
+      "unit_kind": "preparation",
+      "purpose_ko": "정렬되고 선언된 시간 또는 패널 시간이 있을 때 lag·lead·difference operator의 mechanics를 보조하는 참고용 단위다.",
+      "aliases": [
+        "time operator",
+        "lag",
+        "lead",
+        "difference",
+        "L.",
+        "F.",
+        "D."
+      ],
+      "input_contract": [
+        "declared tsset or xtset-compatible time ordering",
+        "declared variable and boundary treatment"
+      ],
+      "output_contract": [
+        "derived time-series expression or an estimation expression tied to the declared time state"
+      ],
+      "can_follow": [
+        "integrity.audit",
+        "panel.treatment_cohort",
+        "panel.materialize_time_grid"
+      ],
+      "can_precede": [
+        "estimation.conventional",
+        "estimation.difference_in_differences"
+      ],
+      "incompatible_with": [
+        "using time operators before a valid temporal declaration or silently bridging gaps"
+      ]
+    },
+    {
+      "checkpoint": "preparation.by_group",
+      "unit_kind": "preparation",
+      "purpose_ko": "그룹 키·정렬·그룹 내 연산의 의미가 선언된 경우 by/bysort mechanics를 보조하는 참고용 준비 단위다.",
+      "aliases": [
+        "by",
+        "bysort",
+        "group-wise",
+        "within group"
+      ],
+      "input_contract": [
+        "active data",
+        "declared group key and required ordering",
+        "declared within-group operation"
+      ],
+      "output_contract": [
+        "bounded group-wise result or updated values"
+      ],
+      "can_follow": [
+        "input_load.single_source",
+        "input_load.combine",
+        "integrity.audit"
+      ],
+      "can_precede": [
+        "clean.derive_variables",
+        "preparation.transform",
+        "estimation.conventional"
+      ],
+      "incompatible_with": [
+        "treating incidental current sort order as the required analytic ordering"
+      ]
+    },
+    {
+      "checkpoint": "preparation.display_metadata",
+      "unit_kind": "preparation",
+      "purpose_ko": "이미 정의된 값의 표시 형식만 명시적으로 바꾸는 참고용 메타데이터 단위다.",
+      "aliases": [
+        "format",
+        "display format",
+        "currency format",
+        "date format"
+      ],
+      "input_contract": [
+        "active variable with unchanged substantive meaning",
+        "declared display format"
+      ],
+      "output_contract": [
+        "updated display metadata without changing stored values"
+      ],
+      "can_follow": [
+        "input_load.single_source",
+        "clean.derive_variables",
+        "preparation.storage_metadata"
+      ],
+      "can_precede": [
+        "exports.dataset_file",
+        "figures.descriptive_graph"
+      ],
+      "incompatible_with": [
+        "using display formats to conceal a unit, scale, or stored-value change"
+      ]
+    },
+    {
+      "checkpoint": "preparation.storage_metadata",
+      "unit_kind": "preparation",
+      "purpose_ko": "변수 복제·저장형식 변경·압축의 정보 보존 조건을 명시하는 참고용 메타데이터 단위다.",
+      "aliases": [
+        "clonevar",
+        "recast",
+        "compress",
+        "storage type"
+      ],
+      "input_contract": [
+        "active data",
+        "declared variable meaning and required precision",
+        "declared overwrite or clone policy"
+      ],
+      "output_contract": [
+        "declared storage representation with preserved or explicitly changed metadata"
+      ],
+      "can_follow": [
+        "input_load.single_source",
+        "input_load.combine",
+        "clean.derive_variables"
+      ],
+      "can_precede": [
+        "preparation.display_metadata",
+        "preparation.transform",
+        "dataset.finalize_keep_label_save"
+      ],
+      "incompatible_with": [
+        "compression or recasting that loses identifiers, precision, labels, or value semantics"
+      ]
+    },
+    {
+      "checkpoint": "preparation.temporary_state",
+      "unit_kind": "preparation",
+      "purpose_ko": "임시 파일·변수·이름이 현재 블록 안에서만 소비될 때 그 수명과 연결을 보조하는 참고용 단위다.",
+      "aliases": [
+        "tempfile",
+        "tempvar",
+        "tempname",
+        "temporary state"
+      ],
+      "input_contract": [
+        "active Stata session",
+        "declared immediate consumer for each temporary object"
+      ],
+      "output_contract": [
+        "session-scoped temporary object bound to its declared consumer"
+      ],
+      "can_follow": [
+        "input_load.single_source",
+        "preparation.transform",
+        "preparation.by_group"
+      ],
+      "can_precede": [
+        "merge_reshape.integration",
+        "descriptives.command_result"
+      ],
+      "incompatible_with": [
+        "persisting a temporary name as a project interface or relying on it after its producing session"
+      ]
+    },
+    {
+      "checkpoint": "preparation.varlist_resolution",
+      "unit_kind": "preparation",
+      "purpose_ko": "현재 자료에서 변수목록을 점검·해석하고 즉시 소비할 때 ds/unab mechanics를 보조하는 참고용 단위다.",
+      "aliases": [
+        "ds",
+        "unab",
+        "varlist",
+        "wildcard",
+        "control list"
+      ],
+      "input_contract": [
+        "active dataset",
+        "declared variable-selection rule or explicit varlist"
+      ],
+      "output_contract": [
+        "resolved local varlist for an immediate declared consumer"
+      ],
+      "can_follow": [
+        "input_load.single_source",
+        "input_load.combine",
+        "integrity.audit"
+      ],
+      "can_precede": [
+        "clean.derive_variables",
+        "estimation.conventional",
+        "estimation.survey_design"
+      ],
+      "incompatible_with": [
+        "silently expanding a varlist into an undeclared outcome, treatment, or control specification"
+      ]
+    },
+    {
+      "checkpoint": "robustness.multiple_testing",
+      "unit_kind": "robustness",
+      "purpose_ko": "검정 family·목표 계수·재표본 계획이 선언된 경우 rwolf2 mechanics를 보조하는 참고용 강건성 단위다.",
+      "aliases": [
+        "multiple testing",
+        "rwolf2",
+        "stepdown",
+        "familywise adjustment"
+      ],
+      "input_contract": [
+        "declared model-to-target mapping",
+        "declared testing family and resampling plan",
+        "declared cluster or strata when used"
+      ],
+      "output_contract": [
+        "adjusted p-values tied to declared targets"
+      ],
+      "can_follow": [
+        "estimation.conventional",
+        "estimation.difference_in_differences",
+        "postest.persist_estimate"
+      ],
+      "can_precede": [
+        "final_excel_assembly",
+        "exports.estimate_text_table"
+      ],
+      "incompatible_with": [
+        "defining the hypothesis family, target coefficients, or resampling structure from a guide example"
+      ]
+    },
+    {
+      "checkpoint": "robustness.resampling_simulation",
+      "unit_kind": "robustness",
+      "purpose_ko": "반복 횟수·난수 시드·재배정 또는 시뮬레이션 설계가 선언된 경우 simulate/permute mechanics를 보조하는 참고용 단위다.",
+      "aliases": [
+        "simulate",
+        "permute",
+        "randomization",
+        "resampling simulation"
+      ],
+      "input_contract": [
+        "declared statistic or command",
+        "declared repetitions, seed, and assignment or strata design"
+      ],
+      "output_contract": [
+        "declared simulation or permutation result state"
+      ],
+      "can_follow": [
+        "estimation.conventional",
+        "estimation.difference_in_differences",
+        "integrity.audit"
+      ],
+      "can_precede": [
+        "descriptives.command_result",
+        "robustness.multiple_testing"
+      ],
+      "incompatible_with": [
+        "using a guide default repetition count, seed, assignment process, or strata as a research decision"
+      ]
+    },
+    {
+      "checkpoint": "workflow_orchestration.file_execution",
+      "unit_kind": "orchestration",
+      "purpose_ko": "이미 승인된 파일 경로와 실행 순서가 있을 때 do/include mechanics만 보조하는 참고용 실행 단위다.",
+      "aliases": [
+        "do",
+        "include",
+        "run",
+        "file execution",
+        "declared workflow file"
+      ],
+      "input_contract": [
+        "declared file path",
+        "user-approved execution order and path context"
+      ],
+      "output_contract": [
+        "bounded execution of the declared file without inventing workflow order"
+      ],
+      "can_follow": [
+        "project_setup.paths",
+        "workflow_orchestration.master"
+      ],
+      "can_precede": [
+        "input_load.single_source",
+        "clean.derive_variables",
+        "estimation.conventional"
+      ],
+      "incompatible_with": [
+        "discovering files, changing paths, probing dependencies, or inventing execution order"
+      ]
     }
   ]
 }

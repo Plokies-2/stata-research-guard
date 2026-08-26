@@ -29,7 +29,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 0,
       "reference_only_count": 3,
-      "guide_mechanics_count": 0,
+      "guide_mechanics_count": 2,
       "aliases": [
         "전처리",
         "recode",
@@ -4882,7 +4882,7 @@
       "maturity": "guide_only",
       "auto_selectable_count": 0,
       "reference_only_count": 0,
-      "guide_mechanics_count": 11,
+      "guide_mechanics_count": 17,
       "aliases": [
         "correlation",
         "pwcorr",
@@ -6556,7 +6556,7 @@
       "maturity": "prototype",
       "auto_selectable_count": 1,
       "reference_only_count": 0,
-      "guide_mechanics_count": 0,
+      "guide_mechanics_count": 3,
       "aliases": [
         "sample flow",
         "sample-flow dataset",
@@ -8539,6 +8539,54 @@
       ]
     },
     {
+      "headword": "diagnostics.display",
+      "name_ko": "표시 제어 진단",
+      "name_en": "Display-control diagnostics",
+      "purpose_ko": "quietly/noisily처럼 결과 표시와 반환값 확인의 경계를 명시하는 참고용 진단 단위다.",
+      "maturity": "guide_only",
+      "auto_selectable_count": 0,
+      "reference_only_count": 0,
+      "guide_mechanics_count": 2,
+      "aliases": [
+        "quietly",
+        "noisily",
+        "display control",
+        "반환값 확인"
+      ],
+      "unit_kind": "diagnostic",
+      "input_contract": [
+        "active data or an active result",
+        "a declared command whose display behavior is relevant"
+      ],
+      "output_contract": [
+        "bounded displayed or suppressed command output without changing the underlying analytic state"
+      ],
+      "common_commands": [],
+      "retrieval_features": [
+        "diagnostic",
+        "active data or an active result",
+        "a declared command whose display behavior is relevant",
+        "bounded displayed or suppressed command output without changing the underlying analytic state",
+        "quietly",
+        "noisily",
+        "display control",
+        "반환값 확인"
+      ],
+      "composition": {
+        "can_follow": [
+          "input_load.single_source",
+          "input_load.combine",
+          "clean.derive_variables",
+          "estimation.conventional"
+        ],
+        "can_precede": [],
+        "incompatible_with": [
+          "using suppressed output as evidence that a required integrity or estimation check was performed"
+        ]
+      },
+      "variants": []
+    },
+    {
       "headword": "estimation.conventional",
       "name_ko": "표준 회귀 추정",
       "name_en": "Conventional regression estimation",
@@ -8546,7 +8594,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 8,
       "reference_only_count": 2,
-      "guide_mechanics_count": 73,
+      "guide_mechanics_count": 158,
       "aliases": [
         "회귀",
         "OLS",
@@ -10686,6 +10734,116 @@
           "code_sha256": "a51765a879c2c3c833d205460f68068aecf6d74ae36ced09c66ed8e5a3eaf3a8"
         }
       ]
+    },
+    {
+      "headword": "estimation.difference_in_differences",
+      "name_ko": "차분의 차분 추정",
+      "name_en": "Difference-in-differences estimation",
+      "purpose_ko": "반복횡단면 또는 패널 DID의 자료 형태, 처리·집단·시간 정의와 목표 효과를 명시하는 참고용 추정 단위다.",
+      "maturity": "guide_only",
+      "auto_selectable_count": 0,
+      "reference_only_count": 0,
+      "guide_mechanics_count": 5,
+      "aliases": [
+        "DID",
+        "didregress",
+        "xtdidregress",
+        "hdidregress",
+        "xthdidregress"
+      ],
+      "unit_kind": "estimation",
+      "input_contract": [
+        "declared outcome, treatment, group and time variables",
+        "declared panel or repeated-cross-section form",
+        "pre-specified target effect and comparison design"
+      ],
+      "output_contract": [
+        "DID e-class result and declared postestimation state"
+      ],
+      "common_commands": [],
+      "retrieval_features": [
+        "estimation",
+        "declared outcome, treatment, group and time variables",
+        "declared panel or repeated-cross-section form",
+        "pre-specified target effect and comparison design",
+        "DID e-class result and declared postestimation state",
+        "DID",
+        "didregress",
+        "xtdidregress",
+        "hdidregress",
+        "xthdidregress"
+      ],
+      "composition": {
+        "can_follow": [
+          "integrity.audit",
+          "sample.restriction",
+          "panel.treatment_cohort",
+          "panel.time_operator"
+        ],
+        "can_precede": [
+          "postest.command_result",
+          "postest.persist_estimate",
+          "robustness.placebo"
+        ],
+        "incompatible_with": [
+          "inferring treatment cohorts, comparison groups, or estimands from a guide example"
+        ]
+      },
+      "variants": []
+    },
+    {
+      "headword": "estimation.rdrobust_suite",
+      "name_ko": "회귀불연속 추정",
+      "name_en": "Regression-discontinuity estimation",
+      "purpose_ko": "running variable, cutoff, bandwidth·추론 선택을 사용자가 선언할 때만 RD 명령 mechanics를 보여 주는 참고용 추정 단위다.",
+      "maturity": "guide_only",
+      "auto_selectable_count": 0,
+      "reference_only_count": 0,
+      "guide_mechanics_count": 6,
+      "aliases": [
+        "RD",
+        "rdrobust",
+        "rdbwselect",
+        "rdplot",
+        "regression discontinuity"
+      ],
+      "unit_kind": "estimation",
+      "input_contract": [
+        "declared outcome and running variable",
+        "declared cutoff",
+        "declared bandwidth, covariate, cluster, and graph choices when applicable"
+      ],
+      "output_contract": [
+        "bounded RD estimate, bandwidth result, or graph state"
+      ],
+      "common_commands": [],
+      "retrieval_features": [
+        "estimation",
+        "declared outcome and running variable",
+        "declared cutoff",
+        "declared bandwidth, covariate, cluster, and graph choices when applicable",
+        "bounded RD estimate, bandwidth result, or graph state",
+        "RD",
+        "rdrobust",
+        "rdbwselect",
+        "rdplot",
+        "regression discontinuity"
+      ],
+      "composition": {
+        "can_follow": [
+          "integrity.audit",
+          "clean.derive_variables",
+          "sample.restriction"
+        ],
+        "can_precede": [
+          "postest.command_result",
+          "figures.export_pdf"
+        ],
+        "incompatible_with": [
+          "choosing the cutoff, bandwidth, covariates, or identification design from a guide example"
+        ]
+      },
+      "variants": []
     },
     {
       "headword": "estimation.staggered_did",
@@ -13275,6 +13433,110 @@
       ]
     },
     {
+      "headword": "estimation.survey_design",
+      "name_ko": "복합표본 설계",
+      "name_en": "Survey-design declaration and estimation",
+      "purpose_ko": "PSU·가중치·층화 또는 복제 가중치가 이미 선언된 경우 svyset/svy mechanics를 보조하는 참고용 단위다.",
+      "maturity": "guide_only",
+      "auto_selectable_count": 0,
+      "reference_only_count": 0,
+      "guide_mechanics_count": 3,
+      "aliases": [
+        "survey design",
+        "svyset",
+        "svy",
+        "PSU",
+        "replicate weights"
+      ],
+      "unit_kind": "estimation",
+      "input_contract": [
+        "declared survey design variables and weight semantics",
+        "a stated subpopulation or estimation target when used"
+      ],
+      "output_contract": [
+        "active survey-design state or survey-adjusted command result"
+      ],
+      "common_commands": [],
+      "retrieval_features": [
+        "estimation",
+        "declared survey design variables and weight semantics",
+        "a stated subpopulation or estimation target when used",
+        "active survey-design state or survey-adjusted command result",
+        "survey design",
+        "svyset",
+        "svy",
+        "PSU",
+        "replicate weights"
+      ],
+      "composition": {
+        "can_follow": [
+          "input_load.single_source",
+          "integrity.audit",
+          "preparation.varlist_resolution"
+        ],
+        "can_precede": [
+          "estimation.conventional",
+          "postest.command_result"
+        ],
+        "incompatible_with": [
+          "treating an ordinary analytic weight as a survey design without a declared design"
+        ]
+      },
+      "variants": []
+    },
+    {
+      "headword": "estimation.synthetic_control",
+      "name_ko": "합성통제 추정",
+      "name_en": "Synthetic-control estimation",
+      "purpose_ko": "처리 단위·시점·패널 식별자·예측변수 집합이 선언된 경우 synth mechanics를 보조하는 참고용 단위다.",
+      "maturity": "guide_only",
+      "auto_selectable_count": 0,
+      "reference_only_count": 0,
+      "guide_mechanics_count": 3,
+      "aliases": [
+        "synthetic control",
+        "synth",
+        "treated unit",
+        "predictor path"
+      ],
+      "unit_kind": "estimation",
+      "input_contract": [
+        "declared unit and time identity",
+        "declared treated unit and treatment period",
+        "pre-treatment predictor and outcome history choices"
+      ],
+      "output_contract": [
+        "synthetic-control fit, weights, or declared saved result"
+      ],
+      "common_commands": [],
+      "retrieval_features": [
+        "estimation",
+        "declared unit and time identity",
+        "declared treated unit and treatment period",
+        "pre-treatment predictor and outcome history choices",
+        "synthetic-control fit, weights, or declared saved result",
+        "synthetic control",
+        "synth",
+        "treated unit",
+        "predictor path"
+      ],
+      "composition": {
+        "can_follow": [
+          "integrity.audit",
+          "panel.treatment_cohort",
+          "panel.time_operator"
+        ],
+        "can_precede": [
+          "postest.command_result",
+          "figures.export_pdf"
+        ],
+        "incompatible_with": [
+          "selecting treated units, treatment timing, predictors, or placebo design from a guide example"
+        ]
+      },
+      "variants": []
+    },
+    {
       "headword": "exports.dataset_file",
       "name_ko": "자료 파일 내보내기",
       "name_en": "Dataset-file export",
@@ -15089,6 +15351,57 @@
           "code_sha256": "2492ed0d806a4f98fa2c682e3ebe28ff28afec4584ef61016365b882fe93d80b"
         }
       ]
+    },
+    {
+      "headword": "figures.binned_scatter",
+      "name_ko": "구간 산점도",
+      "name_en": "Binned scatter plot",
+      "purpose_ko": "표본·x/y·통제·bin 규칙이 선언된 경우 binscatter mechanics를 보조하는 참고용 그림 단위다.",
+      "maturity": "guide_only",
+      "auto_selectable_count": 0,
+      "reference_only_count": 0,
+      "guide_mechanics_count": 7,
+      "aliases": [
+        "binscatter",
+        "binned scatter",
+        "bin plot",
+        "precomputed bins"
+      ],
+      "unit_kind": "figure",
+      "input_contract": [
+        "declared analysis sample and x/y variables",
+        "declared bin count or compatible precomputed bin identifier when used",
+        "declared controls or group comparison when used"
+      ],
+      "output_contract": [
+        "active binned-scatter graph or named bin identifier"
+      ],
+      "common_commands": [],
+      "retrieval_features": [
+        "figure",
+        "declared analysis sample and x/y variables",
+        "declared bin count or compatible precomputed bin identifier when used",
+        "declared controls or group comparison when used",
+        "active binned-scatter graph or named bin identifier",
+        "binscatter",
+        "binned scatter",
+        "bin plot",
+        "precomputed bins"
+      ],
+      "composition": {
+        "can_follow": [
+          "clean.derive_variables",
+          "sample.restriction",
+          "estimation.conventional"
+        ],
+        "can_precede": [
+          "figures.export_pdf"
+        ],
+        "incompatible_with": [
+          "choosing bin count, residualization controls, groups, or display scale from a guide example"
+        ]
+      },
+      "variants": []
     },
     {
       "headword": "figures.coefplot_named_estimates",
@@ -21271,7 +21584,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 3,
       "reference_only_count": 1,
-      "guide_mechanics_count": 5,
+      "guide_mechanics_count": 7,
       "aliases": [
         "single source import",
         "원자료 불러오기",
@@ -22633,7 +22946,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 6,
       "reference_only_count": 3,
-      "guide_mechanics_count": 11,
+      "guide_mechanics_count": 14,
       "aliases": [
         "키 검사",
         "고유키 검사",
@@ -25427,6 +25740,58 @@
       ]
     },
     {
+      "headword": "integrity.missing_data",
+      "name_ko": "결측자료 점검과 MI 상태",
+      "name_en": "Missing-data and MI state",
+      "purpose_ko": "결측 규칙과 MI 등록 범위가 선언된 경우 missing()/mi mechanics를 점검하는 참고용 무결성 단위다.",
+      "maturity": "guide_only",
+      "auto_selectable_count": 0,
+      "reference_only_count": 0,
+      "guide_mechanics_count": 3,
+      "aliases": [
+        "missing data",
+        "missing()",
+        "mi set",
+        "mi register",
+        "mi misstable"
+      ],
+      "unit_kind": "validation",
+      "input_contract": [
+        "declared missing-value semantics",
+        "declared imputation scope and variables when MI is used"
+      ],
+      "output_contract": [
+        "visible missingness diagnostic or declared MI data-management state"
+      ],
+      "common_commands": [],
+      "retrieval_features": [
+        "validation",
+        "declared missing-value semantics",
+        "declared imputation scope and variables when MI is used",
+        "visible missingness diagnostic or declared MI data-management state",
+        "missing data",
+        "missing()",
+        "mi set",
+        "mi register",
+        "mi misstable"
+      ],
+      "composition": {
+        "can_follow": [
+          "input_load.single_source",
+          "input_load.combine",
+          "clean.derive_variables"
+        ],
+        "can_precede": [
+          "sample.restriction",
+          "estimation.conventional"
+        ],
+        "incompatible_with": [
+          "silently redefining substantive missing values or imputing variables not declared by the analysis plan"
+        ]
+      },
+      "variants": []
+    },
+    {
       "headword": "merge_reshape.integration",
       "name_ko": "자료 병합·형태 변환",
       "name_en": "Data integration and reshape",
@@ -25434,7 +25799,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 7,
       "reference_only_count": 3,
-      "guide_mechanics_count": 11,
+      "guide_mechanics_count": 23,
       "aliases": [
         "merge",
         "reshape",
@@ -30154,7 +30519,7 @@
       "maturity": "prototype",
       "auto_selectable_count": 1,
       "reference_only_count": 0,
-      "guide_mechanics_count": 0,
+      "guide_mechanics_count": 2,
       "aliases": [
         "tsfill",
         "panel time grid",
@@ -31258,6 +31623,62 @@
       ]
     },
     {
+      "headword": "panel.time_operator",
+      "name_ko": "시계열 연산자",
+      "name_en": "Time-series operator state",
+      "purpose_ko": "정렬되고 선언된 시간 또는 패널 시간이 있을 때 lag·lead·difference operator의 mechanics를 보조하는 참고용 단위다.",
+      "maturity": "guide_only",
+      "auto_selectable_count": 0,
+      "reference_only_count": 0,
+      "guide_mechanics_count": 3,
+      "aliases": [
+        "time operator",
+        "lag",
+        "lead",
+        "difference",
+        "L.",
+        "F.",
+        "D."
+      ],
+      "unit_kind": "preparation",
+      "input_contract": [
+        "declared tsset or xtset-compatible time ordering",
+        "declared variable and boundary treatment"
+      ],
+      "output_contract": [
+        "derived time-series expression or an estimation expression tied to the declared time state"
+      ],
+      "common_commands": [],
+      "retrieval_features": [
+        "preparation",
+        "declared tsset or xtset-compatible time ordering",
+        "declared variable and boundary treatment",
+        "derived time-series expression or an estimation expression tied to the declared time state",
+        "time operator",
+        "lag",
+        "lead",
+        "difference",
+        "L.",
+        "F.",
+        "D."
+      ],
+      "composition": {
+        "can_follow": [
+          "integrity.audit",
+          "panel.treatment_cohort",
+          "panel.materialize_time_grid"
+        ],
+        "can_precede": [
+          "estimation.conventional",
+          "estimation.difference_in_differences"
+        ],
+        "incompatible_with": [
+          "using time operators before a valid temporal declaration or silently bridging gaps"
+        ]
+      },
+      "variants": []
+    },
+    {
       "headword": "panel.treatment_cohort",
       "name_ko": "패널 처치 코호트",
       "name_en": "Panel treatment cohort",
@@ -32347,7 +32768,7 @@
       "maturity": "guide_only",
       "auto_selectable_count": 0,
       "reference_only_count": 0,
-      "guide_mechanics_count": 28,
+      "guide_mechanics_count": 32,
       "aliases": [
         "predict",
         "test",
@@ -36379,6 +36800,212 @@
       ]
     },
     {
+      "headword": "preparation.by_group",
+      "name_ko": "그룹별 처리",
+      "name_en": "By-group processing",
+      "purpose_ko": "그룹 키·정렬·그룹 내 연산의 의미가 선언된 경우 by/bysort mechanics를 보조하는 참고용 준비 단위다.",
+      "maturity": "guide_only",
+      "auto_selectable_count": 0,
+      "reference_only_count": 0,
+      "guide_mechanics_count": 3,
+      "aliases": [
+        "by",
+        "bysort",
+        "group-wise",
+        "within group"
+      ],
+      "unit_kind": "preparation",
+      "input_contract": [
+        "active data",
+        "declared group key and required ordering",
+        "declared within-group operation"
+      ],
+      "output_contract": [
+        "bounded group-wise result or updated values"
+      ],
+      "common_commands": [],
+      "retrieval_features": [
+        "preparation",
+        "active data",
+        "declared group key and required ordering",
+        "declared within-group operation",
+        "bounded group-wise result or updated values",
+        "by",
+        "bysort",
+        "group-wise",
+        "within group"
+      ],
+      "composition": {
+        "can_follow": [
+          "input_load.single_source",
+          "input_load.combine",
+          "integrity.audit"
+        ],
+        "can_precede": [
+          "clean.derive_variables",
+          "preparation.transform",
+          "estimation.conventional"
+        ],
+        "incompatible_with": [
+          "treating incidental current sort order as the required analytic ordering"
+        ]
+      },
+      "variants": []
+    },
+    {
+      "headword": "preparation.display_metadata",
+      "name_ko": "표시 형식 메타데이터",
+      "name_en": "Display-format metadata",
+      "purpose_ko": "이미 정의된 값의 표시 형식만 명시적으로 바꾸는 참고용 메타데이터 단위다.",
+      "maturity": "guide_only",
+      "auto_selectable_count": 0,
+      "reference_only_count": 0,
+      "guide_mechanics_count": 1,
+      "aliases": [
+        "format",
+        "display format",
+        "currency format",
+        "date format"
+      ],
+      "unit_kind": "preparation",
+      "input_contract": [
+        "active variable with unchanged substantive meaning",
+        "declared display format"
+      ],
+      "output_contract": [
+        "updated display metadata without changing stored values"
+      ],
+      "common_commands": [],
+      "retrieval_features": [
+        "preparation",
+        "active variable with unchanged substantive meaning",
+        "declared display format",
+        "updated display metadata without changing stored values",
+        "format",
+        "display format",
+        "currency format",
+        "date format"
+      ],
+      "composition": {
+        "can_follow": [
+          "input_load.single_source",
+          "clean.derive_variables",
+          "preparation.storage_metadata"
+        ],
+        "can_precede": [
+          "exports.dataset_file",
+          "figures.descriptive_graph"
+        ],
+        "incompatible_with": [
+          "using display formats to conceal a unit, scale, or stored-value change"
+        ]
+      },
+      "variants": []
+    },
+    {
+      "headword": "preparation.storage_metadata",
+      "name_ko": "저장형식 메타데이터",
+      "name_en": "Storage-type metadata",
+      "purpose_ko": "변수 복제·저장형식 변경·압축의 정보 보존 조건을 명시하는 참고용 메타데이터 단위다.",
+      "maturity": "guide_only",
+      "auto_selectable_count": 0,
+      "reference_only_count": 0,
+      "guide_mechanics_count": 3,
+      "aliases": [
+        "clonevar",
+        "recast",
+        "compress",
+        "storage type"
+      ],
+      "unit_kind": "preparation",
+      "input_contract": [
+        "active data",
+        "declared variable meaning and required precision",
+        "declared overwrite or clone policy"
+      ],
+      "output_contract": [
+        "declared storage representation with preserved or explicitly changed metadata"
+      ],
+      "common_commands": [],
+      "retrieval_features": [
+        "preparation",
+        "active data",
+        "declared variable meaning and required precision",
+        "declared overwrite or clone policy",
+        "declared storage representation with preserved or explicitly changed metadata",
+        "clonevar",
+        "recast",
+        "compress",
+        "storage type"
+      ],
+      "composition": {
+        "can_follow": [
+          "input_load.single_source",
+          "input_load.combine",
+          "clean.derive_variables"
+        ],
+        "can_precede": [
+          "preparation.display_metadata",
+          "preparation.transform",
+          "dataset.finalize_keep_label_save"
+        ],
+        "incompatible_with": [
+          "compression or recasting that loses identifiers, precision, labels, or value semantics"
+        ]
+      },
+      "variants": []
+    },
+    {
+      "headword": "preparation.temporary_state",
+      "name_ko": "임시 객체 상태",
+      "name_en": "Temporary-object state",
+      "purpose_ko": "임시 파일·변수·이름이 현재 블록 안에서만 소비될 때 그 수명과 연결을 보조하는 참고용 단위다.",
+      "maturity": "guide_only",
+      "auto_selectable_count": 0,
+      "reference_only_count": 0,
+      "guide_mechanics_count": 3,
+      "aliases": [
+        "tempfile",
+        "tempvar",
+        "tempname",
+        "temporary state"
+      ],
+      "unit_kind": "preparation",
+      "input_contract": [
+        "active Stata session",
+        "declared immediate consumer for each temporary object"
+      ],
+      "output_contract": [
+        "session-scoped temporary object bound to its declared consumer"
+      ],
+      "common_commands": [],
+      "retrieval_features": [
+        "preparation",
+        "active Stata session",
+        "declared immediate consumer for each temporary object",
+        "session-scoped temporary object bound to its declared consumer",
+        "tempfile",
+        "tempvar",
+        "tempname",
+        "temporary state"
+      ],
+      "composition": {
+        "can_follow": [
+          "input_load.single_source",
+          "preparation.transform",
+          "preparation.by_group"
+        ],
+        "can_precede": [
+          "merge_reshape.integration",
+          "descriptives.command_result"
+        ],
+        "incompatible_with": [
+          "persisting a temporary name as a project interface or relying on it after its producing session"
+        ]
+      },
+      "variants": []
+    },
+    {
       "headword": "preparation.transform",
       "name_ko": "일반 자료 변환",
       "name_en": "General data transformation",
@@ -36431,6 +37058,59 @@
         ],
         "incompatible_with": [
           "undeclared recode, missing-value rule, overwrite, or category mapping"
+        ]
+      },
+      "variants": []
+    },
+    {
+      "headword": "preparation.varlist_resolution",
+      "name_ko": "변수목록 해석",
+      "name_en": "Varlist resolution",
+      "purpose_ko": "현재 자료에서 변수목록을 점검·해석하고 즉시 소비할 때 ds/unab mechanics를 보조하는 참고용 단위다.",
+      "maturity": "guide_only",
+      "auto_selectable_count": 0,
+      "reference_only_count": 0,
+      "guide_mechanics_count": 2,
+      "aliases": [
+        "ds",
+        "unab",
+        "varlist",
+        "wildcard",
+        "control list"
+      ],
+      "unit_kind": "preparation",
+      "input_contract": [
+        "active dataset",
+        "declared variable-selection rule or explicit varlist"
+      ],
+      "output_contract": [
+        "resolved local varlist for an immediate declared consumer"
+      ],
+      "common_commands": [],
+      "retrieval_features": [
+        "preparation",
+        "active dataset",
+        "declared variable-selection rule or explicit varlist",
+        "resolved local varlist for an immediate declared consumer",
+        "ds",
+        "unab",
+        "varlist",
+        "wildcard",
+        "control list"
+      ],
+      "composition": {
+        "can_follow": [
+          "input_load.single_source",
+          "input_load.combine",
+          "integrity.audit"
+        ],
+        "can_precede": [
+          "clean.derive_variables",
+          "estimation.conventional",
+          "estimation.survey_design"
+        ],
+        "incompatible_with": [
+          "silently expanding a varlist into an undeclared outcome, treatment, or control specification"
         ]
       },
       "variants": []
@@ -37074,7 +37754,7 @@
       "maturity": "prototype",
       "auto_selectable_count": 1,
       "reference_only_count": 0,
-      "guide_mechanics_count": 5,
+      "guide_mechanics_count": 8,
       "aliases": [
         "boottest",
         "wild bootstrap",
@@ -38512,6 +39192,58 @@
       ]
     },
     {
+      "headword": "robustness.multiple_testing",
+      "name_ko": "다중검정 보정",
+      "name_en": "Multiple-testing adjustment",
+      "purpose_ko": "검정 family·목표 계수·재표본 계획이 선언된 경우 rwolf2 mechanics를 보조하는 참고용 강건성 단위다.",
+      "maturity": "guide_only",
+      "auto_selectable_count": 0,
+      "reference_only_count": 0,
+      "guide_mechanics_count": 4,
+      "aliases": [
+        "multiple testing",
+        "rwolf2",
+        "stepdown",
+        "familywise adjustment"
+      ],
+      "unit_kind": "robustness",
+      "input_contract": [
+        "declared model-to-target mapping",
+        "declared testing family and resampling plan",
+        "declared cluster or strata when used"
+      ],
+      "output_contract": [
+        "adjusted p-values tied to declared targets"
+      ],
+      "common_commands": [],
+      "retrieval_features": [
+        "robustness",
+        "declared model-to-target mapping",
+        "declared testing family and resampling plan",
+        "declared cluster or strata when used",
+        "adjusted p-values tied to declared targets",
+        "multiple testing",
+        "rwolf2",
+        "stepdown",
+        "familywise adjustment"
+      ],
+      "composition": {
+        "can_follow": [
+          "estimation.conventional",
+          "estimation.difference_in_differences",
+          "postest.persist_estimate"
+        ],
+        "can_precede": [
+          "final_excel_assembly",
+          "exports.estimate_text_table"
+        ],
+        "incompatible_with": [
+          "defining the hypothesis family, target coefficients, or resampling structure from a guide example"
+        ]
+      },
+      "variants": []
+    },
+    {
       "headword": "robustness.placebo",
       "name_ko": "위약 검정",
       "name_en": "Placebo test",
@@ -39178,6 +39910,56 @@
       ]
     },
     {
+      "headword": "robustness.resampling_simulation",
+      "name_ko": "재표본·시뮬레이션",
+      "name_en": "Resampling and simulation",
+      "purpose_ko": "반복 횟수·난수 시드·재배정 또는 시뮬레이션 설계가 선언된 경우 simulate/permute mechanics를 보조하는 참고용 단위다.",
+      "maturity": "guide_only",
+      "auto_selectable_count": 0,
+      "reference_only_count": 0,
+      "guide_mechanics_count": 3,
+      "aliases": [
+        "simulate",
+        "permute",
+        "randomization",
+        "resampling simulation"
+      ],
+      "unit_kind": "robustness",
+      "input_contract": [
+        "declared statistic or command",
+        "declared repetitions, seed, and assignment or strata design"
+      ],
+      "output_contract": [
+        "declared simulation or permutation result state"
+      ],
+      "common_commands": [],
+      "retrieval_features": [
+        "robustness",
+        "declared statistic or command",
+        "declared repetitions, seed, and assignment or strata design",
+        "declared simulation or permutation result state",
+        "simulate",
+        "permute",
+        "randomization",
+        "resampling simulation"
+      ],
+      "composition": {
+        "can_follow": [
+          "estimation.conventional",
+          "estimation.difference_in_differences",
+          "integrity.audit"
+        ],
+        "can_precede": [
+          "descriptives.command_result",
+          "robustness.multiple_testing"
+        ],
+        "incompatible_with": [
+          "using a guide default repetition count, seed, assignment process, or strata as a research decision"
+        ]
+      },
+      "variants": []
+    },
+    {
       "headword": "sample.arm_response_eligibility",
       "name_ko": "처치군·응답 적격 표본",
       "name_en": "Arm and response eligibility sample",
@@ -39645,7 +40427,7 @@
       "maturity": "guide_only",
       "auto_selectable_count": 0,
       "reference_only_count": 0,
-      "guide_mechanics_count": 4,
+      "guide_mechanics_count": 7,
       "aliases": [
         "표본 제한",
         "sample restriction",
@@ -41669,6 +42451,58 @@
       ]
     },
     {
+      "headword": "workflow_orchestration.file_execution",
+      "name_ko": "선언된 파일 실행",
+      "name_en": "Declared file execution",
+      "purpose_ko": "이미 승인된 파일 경로와 실행 순서가 있을 때 do/include mechanics만 보조하는 참고용 실행 단위다.",
+      "maturity": "guide_only",
+      "auto_selectable_count": 0,
+      "reference_only_count": 0,
+      "guide_mechanics_count": 2,
+      "aliases": [
+        "do",
+        "include",
+        "run",
+        "file execution",
+        "declared workflow file"
+      ],
+      "unit_kind": "orchestration",
+      "input_contract": [
+        "declared file path",
+        "user-approved execution order and path context"
+      ],
+      "output_contract": [
+        "bounded execution of the declared file without inventing workflow order"
+      ],
+      "common_commands": [],
+      "retrieval_features": [
+        "orchestration",
+        "declared file path",
+        "user-approved execution order and path context",
+        "bounded execution of the declared file without inventing workflow order",
+        "do",
+        "include",
+        "run",
+        "file execution",
+        "declared workflow file"
+      ],
+      "composition": {
+        "can_follow": [
+          "project_setup.paths",
+          "workflow_orchestration.master"
+        ],
+        "can_precede": [
+          "input_load.single_source",
+          "clean.derive_variables",
+          "estimation.conventional"
+        ],
+        "incompatible_with": [
+          "discovering files, changing paths, probing dependencies, or inventing execution order"
+        ]
+      },
+      "variants": []
+    },
+    {
       "headword": "workflow_orchestration.master",
       "name_ko": "마스터 실행 흐름",
       "name_en": "Master workflow orchestration",
@@ -42902,11 +43736,23 @@
     "CSV regression table": [
       "exports.estimate_text_table"
     ],
+    "D.": [
+      "panel.time_operator"
+    ],
+    "DID": [
+      "estimation.difference_in_differences"
+    ],
     "Excel assembly": [
       "final_excel_assembly"
     ],
+    "F.": [
+      "panel.time_operator"
+    ],
     "ID 정리": [
       "clean.id_normalize"
+    ],
+    "L.": [
+      "panel.time_operator"
     ],
     "OLS": [
       "estimation.conventional"
@@ -42917,8 +43763,14 @@
     "PDF 그림 내보내기": [
       "figures.export_pdf"
     ],
+    "PSU": [
+      "estimation.survey_design"
+    ],
     "R-squared": [
       "final_excel_assembly"
+    ],
+    "RD": [
+      "estimation.rdrobust_suite"
     ],
     "TWFE": [
       "estimation.staggered_did"
@@ -42962,17 +43814,35 @@
     "bar chart": [
       "figures.descriptive_bar"
     ],
+    "bin plot": [
+      "figures.binned_scatter"
+    ],
+    "binned scatter": [
+      "figures.binned_scatter"
+    ],
+    "binscatter": [
+      "figures.binned_scatter"
+    ],
     "bootstrap inference": [
       "robustness.bootstrap_inference"
     ],
     "boottest": [
       "robustness.bootstrap_inference"
     ],
+    "by": [
+      "preparation.by_group"
+    ],
+    "bysort": [
+      "preparation.by_group"
+    ],
     "cleaning": [
       "clean.derive_variables"
     ],
     "cleanup": [
       "cleanup"
+    ],
+    "clonevar": [
+      "preparation.storage_metadata"
     ],
     "cluster": [
       "estimation.conventional"
@@ -43019,6 +43889,9 @@
     "composite graph": [
       "figures.named_graph_combine"
     ],
+    "compress": [
+      "preparation.storage_metadata"
+    ],
     "compress save": [
       "dataset.finalize_keep_label_save"
     ],
@@ -43027,6 +43900,9 @@
     ],
     "confidence interval PDF": [
       "figures.event_study"
+    ],
+    "control list": [
+      "preparation.varlist_resolution"
     ],
     "conventional estimation": [
       "estimation.conventional"
@@ -43037,8 +43913,17 @@
     "coverage cutoff": [
       "sample.trade_share_threshold"
     ],
+    "currency format": [
+      "preparation.display_metadata"
+    ],
     "dataset export": [
       "exports.dataset_file"
+    ],
+    "date format": [
+      "preparation.display_metadata"
+    ],
+    "declared workflow file": [
+      "workflow_orchestration.file_execution"
     ],
     "dependent variable mean": [
       "descriptives.sample_mean"
@@ -43057,6 +43942,24 @@
     ],
     "destring id": [
       "clean.id_normalize"
+    ],
+    "didregress": [
+      "estimation.difference_in_differences"
+    ],
+    "difference": [
+      "panel.time_operator"
+    ],
+    "display control": [
+      "diagnostics.display"
+    ],
+    "display format": [
+      "preparation.display_metadata"
+    ],
+    "do": [
+      "workflow_orchestration.file_execution"
+    ],
+    "ds": [
+      "preparation.varlist_resolution"
     ],
     "dtable": [
       "tables.collection_result"
@@ -43155,6 +44058,12 @@
     "falsification": [
       "robustness.placebo"
     ],
+    "familywise adjustment": [
+      "robustness.multiple_testing"
+    ],
+    "file execution": [
+      "workflow_orchestration.file_execution"
+    ],
     "final dataset": [
       "dataset.finalize_keep_label_save"
     ],
@@ -43172,6 +44081,9 @@
     ],
     "fixed sample": [
       "postest.sample_flag"
+    ],
+    "format": [
+      "preparation.display_metadata"
     ],
     "generate": [
       "preparation.transform"
@@ -43219,8 +44131,14 @@
     "group summary": [
       "descriptives.command_result"
     ],
+    "group-wise": [
+      "preparation.by_group"
+    ],
     "grouped descriptive bar": [
       "figures.descriptive_bar"
+    ],
+    "hdidregress": [
+      "estimation.difference_in_differences"
     ],
     "heterogeneity": [
       "robustness.heterogeneity"
@@ -43236,6 +44154,9 @@
     ],
     "import combine": [
       "input_load.combine"
+    ],
+    "include": [
+      "workflow_orchestration.file_execution"
     ],
     "integrity check": [
       "integrity.audit"
@@ -43273,6 +44194,12 @@
     "labels": [
       "clean.derive_variables",
       "preparation.transform"
+    ],
+    "lag": [
+      "panel.time_operator"
+    ],
+    "lead": [
+      "panel.time_operator"
     ],
     "leave-one-out": [
       "robustness.jackknife"
@@ -43314,8 +44241,26 @@
     "merge": [
       "merge_reshape.integration"
     ],
+    "mi misstable": [
+      "integrity.missing_data"
+    ],
+    "mi register": [
+      "integrity.missing_data"
+    ],
+    "mi set": [
+      "integrity.missing_data"
+    ],
+    "missing data": [
+      "integrity.missing_data"
+    ],
+    "missing()": [
+      "integrity.missing_data"
+    ],
     "multi-arm contrast": [
       "treatment.arm_mapping"
+    ],
+    "multiple testing": [
+      "robustness.multiple_testing"
     ],
     "municipality-year": [
       "figures.descriptive_scatter"
@@ -43325,6 +44270,9 @@
     ],
     "named graph combine": [
       "figures.named_graph_combine"
+    ],
+    "noisily": [
+      "diagnostics.display"
     ],
     "non-TeX estimate table": [
       "exports.estimate_text_table"
@@ -43350,6 +44298,9 @@
     "path setup": [
       "project_setup.paths"
     ],
+    "permute": [
+      "robustness.resampling_simulation"
+    ],
     "person-period": [
       "panel.stack_waves"
     ],
@@ -43365,11 +44316,17 @@
     "postfile count dataset": [
       "descriptives.sample_flow"
     ],
+    "precomputed bins": [
+      "figures.binned_scatter"
+    ],
     "predict": [
       "postest.command_result"
     ],
     "predicted margins": [
       "postest.margins"
+    ],
+    "predictor path": [
+      "estimation.synthetic_control"
     ],
     "pretrend plot": [
       "figures.event_study"
@@ -43383,8 +44340,29 @@
     "quantiles": [
       "descriptives.command_result"
     ],
+    "quietly": [
+      "diagnostics.display"
+    ],
+    "randomization": [
+      "robustness.resampling_simulation"
+    ],
+    "rdbwselect": [
+      "estimation.rdrobust_suite"
+    ],
+    "rdplot": [
+      "estimation.rdrobust_suite"
+    ],
+    "rdrobust": [
+      "estimation.rdrobust_suite"
+    ],
+    "recast": [
+      "preparation.storage_metadata"
+    ],
     "recode": [
       "clean.derive_variables"
+    ],
+    "regression discontinuity": [
+      "estimation.rdrobust_suite"
     ],
     "relative time": [
       "panel.turnover_event_time"
@@ -43392,11 +44370,17 @@
     "replace": [
       "preparation.transform"
     ],
+    "replicate weights": [
+      "estimation.survey_design"
+    ],
     "required missing exclusion": [
       "sample.restriction"
     ],
     "resampling": [
       "robustness.jackknife"
+    ],
+    "resampling simulation": [
+      "robustness.resampling_simulation"
     ],
     "reshape": [
       "merge_reshape.integration"
@@ -43407,8 +44391,14 @@
     "root globals": [
       "project_setup.paths"
     ],
+    "run": [
+      "workflow_orchestration.file_execution"
+    ],
     "runall": [
       "workflow_orchestration.master"
+    ],
+    "rwolf2": [
+      "robustness.multiple_testing"
     ],
     "sample dta": [
       "postest.export_sample_keys"
@@ -43440,6 +44430,9 @@
     "section exposure": [
       "feature.aggregate_section_exposure"
     ],
+    "simulate": [
+      "robustness.resampling_simulation"
+    ],
     "single source import": [
       "input_load.single_source"
     ],
@@ -43455,8 +44448,14 @@
     "standardize": [
       "scale.standardize_esample"
     ],
+    "stepdown": [
+      "robustness.multiple_testing"
+    ],
     "ster": [
       "postest.persist_estimate"
+    ],
+    "storage type": [
+      "preparation.storage_metadata"
     ],
     "stored estimate": [
       "postest.persist_estimate"
@@ -43485,6 +44484,21 @@
     "summary statistics workbook": [
       "exports.descriptive_excel_sheet"
     ],
+    "survey design": [
+      "estimation.survey_design"
+    ],
+    "svy": [
+      "estimation.survey_design"
+    ],
+    "svyset": [
+      "estimation.survey_design"
+    ],
+    "synth": [
+      "estimation.synthetic_control"
+    ],
+    "synthetic control": [
+      "estimation.synthetic_control"
+    ],
     "table": [
       "tables.collection_result"
     ],
@@ -43494,17 +44508,35 @@
     "tail cap": [
       "outlier.winsorize"
     ],
+    "tempfile": [
+      "preparation.temporary_state"
+    ],
+    "tempname": [
+      "preparation.temporary_state"
+    ],
     "temporary files": [
       "cleanup"
     ],
+    "temporary state": [
+      "preparation.temporary_state"
+    ],
+    "tempvar": [
+      "preparation.temporary_state"
+    ],
     "test": [
       "postest.command_result"
+    ],
+    "time operator": [
+      "panel.time_operator"
     ],
     "time window": [
       "sample.restriction"
     ],
     "trade share threshold": [
       "sample.trade_share_threshold"
+    ],
+    "treated unit": [
+      "estimation.synthetic_control"
     ],
     "treatment mapping": [
       "treatment.arm_mapping"
@@ -43524,6 +44556,9 @@
     "type conversion": [
       "preparation.transform"
     ],
+    "unab": [
+      "preparation.varlist_resolution"
+    ],
     "unchecked estimator merge": [
       "postest.estimator_comparison_unsafe"
     ],
@@ -43535,6 +44570,9 @@
     ],
     "unsafe dedup": [
       "integrity.adjacency_dedup"
+    ],
+    "varlist": [
+      "preparation.varlist_resolution"
     ],
     "voting section aggregate": [
       "feature.aggregate_section_exposure"
@@ -43548,11 +44586,23 @@
     "wild cluster bootstrap": [
       "robustness.bootstrap_inference"
     ],
+    "wildcard": [
+      "preparation.varlist_resolution"
+    ],
     "winsor": [
       "outlier.winsorize"
     ],
     "winsorize": [
       "outlier.winsorize"
+    ],
+    "within group": [
+      "preparation.by_group"
+    ],
+    "xtdidregress": [
+      "estimation.difference_in_differences"
+    ],
+    "xthdidregress": [
+      "estimation.difference_in_differences"
     ],
     "xtset": [
       "integrity.audit"
@@ -43620,6 +44670,9 @@
     ],
     "무역표본": [
       "sample.trade_share_threshold"
+    ],
+    "반환값 확인": [
+      "diagnostics.display"
     ],
     "번호 추정치 불러오기": [
       "postest.persist_estimate"

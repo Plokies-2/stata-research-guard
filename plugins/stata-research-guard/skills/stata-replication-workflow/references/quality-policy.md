@@ -74,6 +74,8 @@ Warnings require correction or a case-specific written explanation:
 
 A reusable label is incomplete unless it carries a compact structured `input_signature` supported by the cited source bytes and surrounding context. Record, when observable, the source data shape, record unit, time structure, identifying keys, and variable traits relevant to the block. Time structure may include frequency, observed year or wave span, and balanced or unbalanced status; variable traits may include continuous, binary, categorical, count, share, rate, level, or transformed status. Write `unknown` when the source does not establish a field. Never infer panel length, balance, keys, units, or transformations from a variable name alone.
 
+Guide coverage is complexity-weighted, not quota-weighted. A simple command may be complete with one source-backed mechanics example. A complex command is incomplete until distinct examples cover every material input-state, syntax, estimation, returned-state, and handoff dimension declared by its official manual or maintainer guide. Cosmetic rewrites and placeholder substitutions are duplicates, not variants. An independent pre-insertion audit records the dimensions, removes redundant candidates, and leaves unresolved dimensions as gaps.
+
 Template selection compares the target project's observed input signature with the label before ranking readability or generality. A known incompatibility blocks automatic reuse; an unknown field calls for source or project inspection, not a guessed match. Corpus coverage and label count therefore do not establish label sufficiency: the review must also report input-signature completeness and unresolved `unknown` fields.
 
 ## Positive evidence

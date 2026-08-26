@@ -12,6 +12,12 @@ Use `resolve_transition_evidence` before the legacy dictionary, corpus, or manua
 
 Never collapse these questions. `foreach`, `forvalues`, macros, factor variables, `program define`, `_b[]`, `_se[]`, `putexcel`, and `putdocx` can be valid Stata syntax even when a specific use does not match the target research-code style.
 
+## Complexity-weighted guide coverage
+
+Do not impose a fixed example quota per command. One bounded guide example can be sufficient for a simple command with one material syntax-and-state path. A complex command requires separate guide examples for each material dimension that changes its inputs, syntax, estimation choice, returned state, or downstream handoff. Mere spelling, placeholder, or cosmetic option changes do not count as additional coverage.
+
+For every ranked command group, record the material dimensions found in the official manual or maintainer guide and audit whether the retained examples cover them. Missing dimensions remain explicit gaps. Redundant examples are removed even when doing so lowers the raw example count. This mechanics-sufficiency decision is independent of whether the paper corpus contains a matching usage occurrence.
+
 ## Pass boundary
 
 - `search_stata_manual` supplies evidence, not a pass.

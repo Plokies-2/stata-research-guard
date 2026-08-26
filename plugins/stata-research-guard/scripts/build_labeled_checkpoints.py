@@ -574,13 +574,20 @@ def enforce_reusable_block_safety(
     max_loop_depth: int,
     unclosed_blocks: int,
     tex_output: bool,
+    *,
+    allow_reference_fragment: bool = False,
 ) -> None:
-    """Reject unsafe executable structure before a reusable label is published."""
+    """Reject unsafe executable structure before a reusable label is published.
+
+    A bounded guide companion can quote the interior of a documented conditional
+    block.  It is never auto-selectable, so retaining that reference fragment
+    must not weaken the executable-template gate for any other label.
+    """
     if decision == "drop":
         return
     if max_loop_depth >= 3:
         raise ValueError(f"reusable label has loop depth three or greater: {label_id}")
-    if unclosed_blocks:
+    if unclosed_blocks and not allow_reference_fragment:
         raise ValueError(f"reusable label has unclosed block: {label_id}")
     if tex_output:
         raise ValueError(f"reusable label contains TeX output: {label_id}")
@@ -949,6 +956,12 @@ def main() -> None:
             max_loop_depth,
             unclosed_blocks,
             tex_output,
+            allow_reference_fragment=(
+                is_noncompeting_guide_mechanics(annotation)
+                and annotation.get("canonical_generation_class") == "reference_only"
+                and annotation.get("promotion_status") == "reference_only"
+                and annotation.get("adaptation_mode") == "structural_reference"
+            ),
         )
         enforce_event_plot_metadata(label_id, checkpoint, annotation["decision"], annotation)
         signature = input_signature(annotation, source_text)

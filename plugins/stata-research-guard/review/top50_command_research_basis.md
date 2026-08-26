@@ -16,7 +16,7 @@ That method supports reproducible package-level discovery, but it is not executi
 - Research usage comes from independently deposited researcher `.do` code, including bounded AEA/openICPSR examples. It can illustrate a workflow only when the source, span, hash, input profile, and state signature are explicit.
 - Direct primitives cover harmless statements that do not require a reusable template.
 
-The current build contains 262 newly audited guide-mechanics atoms. All are `reference_only`, all have `auto_selectable=false`, and all are delivered through the separate guide layer rather than the legacy template ranking. The research-usage layer contains 128 examples, including 19 bounded AEA/openICPSR support rows; nine rejected AEA candidates are retained only in the audit accounting and excluded from generated evidence.
+This document records the frozen Top 50 prefix history. Current Top 100 counts, the completed promotion audit, the schema-2 corpus-occurrence ledger, and the expanded primary-source basis are recorded in [top100_command_research_basis.md](top100_command_research_basis.md).
 
 ## Promotion and contamination gate
 

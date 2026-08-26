@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "title": "Stata command and package family registry",
   "scope": "Common official Stata command families and widely used community packages. This is a retrieval and coverage index, not an endorsement of every command use or a dependency installer.",
   "global_template_policy": {
@@ -25,7 +25,7 @@
     "families": 43,
     "indexed_commands": 109,
     "families_observed_in_corpus": 32,
-    "commands_observed_in_corpus": 77
+    "commands_observed_in_corpus": 129
   },
   "families": [
     {

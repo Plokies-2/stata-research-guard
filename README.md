@@ -2,9 +2,9 @@
 
 연구자가 읽을 수 있는 Stata 코드를 만들고, 재현성을 해치는 실수를 작업 전반에서 막아 주는 Codex 플러그인입니다.
 
-단순한 코드 조각 모음이 아닙니다. legacy selector label 148개, 독립 감사를 통과한 신규 가이드 mechanics 262개, 그리고 별도로 생성한 research-usage example 128개를 서로 다른 격으로 관리합니다. 전체 guide card는 기존 공식-manual reference 2개를 포함한 264개이며 자동선택은 0개입니다. 선택한 명령의 공식·maintainer 가이드는 항상 함께 보여 주되 template 점수 경쟁에는 넣지 않고, 연구 코드용례가 현재 데이터 구조와 작업 상태에 정확히 맞을 때만 별도 template으로 고릅니다. 맞는 용례가 없으면 가이드에 근거한 좁은 fallback으로 전환합니다.
+단순한 코드 조각 모음이 아닙니다. 독립 promotion audit을 거친 guide mechanics 440개(기존 262개와 Top 51–100 확장 178개), guide card 442개, 그리고 별도로 생성한 research-usage example 166개를 서로 다른 격으로 관리합니다. 두 evidence layer의 자동선택 가능 항목은 모두 0개입니다. 선택한 명령의 공식·maintainer 가이드는 항상 함께 보여 주되 template 점수 경쟁에는 넣지 않고, 연구 코드용례가 현재 데이터 구조와 작업 상태에 정확히 맞을 때만 별도 reference evidence로 함께 제공합니다. 맞는 용례가 없으면 가이드에 근거한 좁은 fallback으로 전환합니다.
 
-현재 배포 버전은 `0.2.0+codex.20260825225433`입니다.
+현재 배포 버전은 `0.2.0+codex.20260826093554`입니다.
 
 ## 무엇이 좋은가
 
@@ -59,7 +59,7 @@ fallback은 즉흥적으로 코드를 만드는 우회로가 아닙니다. 플�
 ### 회귀 앞뒤의 연구 workflow도 다룹니다
 
 - StataCorp 공식 manual을 페이지 단위로 찾고, 실제 실행으로 확인한 official example과 code hash를 별도 증거로 제공합니다.
-- Top 50 명령군의 203개 주요 변형과 추가 user-written 명령군 15개의 48개 변형을 계약으로 관리합니다.
+- Top 100 명령군의 381개 주요 변형과 추가 user-written 명령군 15개의 48개 변형을 계약으로 관리합니다. 단순 명령은 하나의 교과서 예시로 충분할 수 있지만, 복잡 명령은 입력 상태·문법·추정·추론·반환 상태·후속 handoff가 달라질 때마다 서로 다른 가이드 예시를 요구합니다.
 - 공식 명령과 주요 community package를 43개 명령군·109개 canonical command anchor로 관리하며, 개별 estimator 이름을 끝없이 탐지기에 추가하지 않고 상태 호환 원자 template으로 확장합니다.
 - import, integrity check, cleaning·label, merge·reshape, panel 구성, descriptive statistics, sample flow, estimation·robustness, figure·table export와 master orchestration을 한 흐름으로 점검합니다.
 - summary 작업은 평균·표준편차·관측치 수를 하나의 named dataset에 저장하고, Excel 표와 PDF 그림이 같은 자료를 읽도록 설계할 수 있습니다.
@@ -147,12 +147,15 @@ node plugins/stata-research-guard/scripts/verify_plugin_bundle.cjs `
 
 현재 배포본의 검증 상태는 다음과 같습니다.
 
-- bundle manifest: 236개 파일, 통과
-- Node test: 22/22 test file 통과(실제 Stata runtime fixture 포함)
-- Python test: 38/38 통과
-- Top 50 coverage: 50개 명령군·203개 variant 전부 적재(직접 primitive 19, reference-only guide coverage 184)
-- 신규 guide promotion audit: 262/262 reference-only, 자동선택 0
-- generated evidence: guide card 264개, research-usage example 128개(자동선택 가능 46개), AEA/openICPSR support 19개·제외 9개
+- bundle manifest: 253개 파일, 통과
+- Node regression test: 262/262 통과(실제 Stata runtime fixture 포함)
+- bundle-manifest regression test: 5/5 통과
+- Python test: 52/52 통과
+- Top 100 coverage: 100개 명령군·381개 variant 전부 적재, frozen Top 50은 50개 명령군·203개 variant로 보존
+- supplemental coverage: 15개 명령군·48개 variant, 전체 계약 429개
+- guide promotion audit: 440/440 reference-only(기존 262개와 신규 178개), 자동선택 0
+- generated evidence: guide card 442개, research-usage example 166개, 두 layer 자동선택 0
+- paper corpus occurrence audit: 132개 후보 중 통과 38개·추가 검토 13개·제외 81개; 통과 항목만 support evidence로 적재
 
 MCP launcher는 `CODEX_MCP_NODE_PATH`, Codex에 포함된 Node.js, `PATH`의 `node.exe` 순서로 실행 파일을 찾습니다.
 

@@ -2463,6 +2463,7 @@ function capGuideCode(value) {
 }
 
 function materialAlternativeMetadata(card) {
+  const stataCompatibility = cardStataCompatibility(card);
   return {
     layer_id: card.layer_id,
     label_id: card.label_id,
@@ -2474,6 +2475,12 @@ function materialAlternativeMetadata(card) {
     source_tier: card.source_tier || card.evidence_layer,
     evidence_role: card.evidence_role || null,
     contract_ids: card.contract_ids || [],
+    supplemental_contract_id: card.supplemental_contract_id || null,
+    unmapped_reason: card.unmapped_reason || null,
+    variant_facets: card.variant_facets || {},
+    version: card.version ?? card.provenance?.version ?? null,
+    stata_compatibility: stataCompatibility,
+    version_semantics: versionSemantics(card, stataCompatibility),
     disposition: card.disposition || null,
     code_available: card.code_available !== false && Boolean(card.code),
     provenance: card.provenance || null,
@@ -2483,12 +2490,18 @@ function materialAlternativeMetadata(card) {
 function publicGuideCard(card) {
   if (!card) return null;
   const capped = capGuideCode(card.code);
+  const stataCompatibility = cardStataCompatibility(card);
   return {
     layer_id: card.layer_id,
     label_id: card.label_id,
     checkpoint: card.checkpoint,
     variant_group: card.variant_group,
     variant_id: card.variant_id,
+    contract_ids: card.contract_ids || [],
+    variant_facets: card.variant_facets || {},
+    version: card.version ?? card.provenance?.version ?? null,
+    stata_compatibility: stataCompatibility,
+    version_semantics: versionSemantics(card, stataCompatibility),
     authority_tier: card.authority_tier,
     command_anchors: card.command_anchors || [],
     state_signature: card.state_signature || {},
@@ -2509,12 +2522,18 @@ function publicGuideCard(card) {
 
 function publicUsageExample(card, profileComparison) {
   if (!card) return null;
+  const stataCompatibility = cardStataCompatibility(card);
   return {
     layer_id: card.layer_id,
     label_id: card.label_id,
     checkpoint: card.checkpoint,
     variant_group: card.variant_group,
     variant_id: card.variant_id,
+    contract_ids: card.contract_ids || [],
+    variant_facets: card.variant_facets || {},
+    version: card.version ?? card.provenance?.version ?? null,
+    stata_compatibility: stataCompatibility,
+    version_semantics: versionSemantics(card, stataCompatibility),
     command_anchors: card.command_anchors || [],
     state_signature: card.state_signature || {},
     template_input_profile: card.template_input_profile || {},
@@ -2528,20 +2547,129 @@ function publicUsageExample(card, profileComparison) {
   };
 }
 
+function stableEvidenceValue(value) {
+  if (Array.isArray(value)) return `[${value.map(stableEvidenceValue).join(",")}]`;
+  if (value && typeof value === "object") {
+    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${stableEvidenceValue(value[key])}`).join(",")}}`;
+  }
+  if (typeof value === "string") return JSON.stringify(value.trim().toLowerCase());
+  return JSON.stringify(value);
+}
+
+function cardVersion(card) {
+  return card.version ?? card.provenance?.version ?? null;
+}
+
+function numericStataVersion(value) {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value !== "string") return null;
+  const match = value.trim().match(/^(?:stata\s*)?(\d+(?:\.\d+)?)$/i);
+  return match ? Number(match[1]) : null;
+}
+
+function requestedStataCompatibility(version) {
+  if (version && typeof version === "object" && !Array.isArray(version)) {
+    const exact = numericStataVersion(version.stata);
+    return exact === null ? null : { kind: "exact", value: exact };
+  }
+  const exact = numericStataVersion(version);
+  return exact === null ? null : { kind: "exact", value: exact };
+}
+
+function cardStataCompatibility(card) {
+  const version = cardVersion(card);
+  if (version && typeof version === "object" && !Array.isArray(version)) {
+    const exact = numericStataVersion(version.stata);
+    return exact === null ? null : { kind: "exact", value: exact };
+  }
+  const exact = numericStataVersion(version);
+  if (exact !== null) return { kind: "exact", value: exact };
+  if (typeof version === "string") {
+    const introduced = version.match(/\bintroduced\s+stata\s+(\d+(?:\.\d+)?)/i);
+    if (introduced) return { kind: "minimum", value: Number(introduced[1]) };
+  }
+  // Null and free-text manual/source-edition notes carry provenance but do not
+  // assert a Stata runtime compatibility boundary.
+  return null;
+}
+
+function versionSemantics(card, compatibility = cardStataCompatibility(card)) {
+  if (compatibility) return "stata_runtime_compatibility";
+  return cardVersion(card) === null
+    ? "unspecified_no_runtime_constraint"
+    : "source_or_manual_edition_note_no_runtime_constraint";
+}
+
+function stataCompatibilityMatches(card, requestedVersion) {
+  const requested = requestedStataCompatibility(requestedVersion);
+  const evidence = cardStataCompatibility(card);
+  if (!evidence) return true;
+  if (!requested) return false;
+  if (evidence.kind === "minimum") return requested.value >= evidence.value;
+  return requested.value === evidence.value;
+}
+
+function hasMappedContract(card) {
+  return Array.isArray(card.contract_ids)
+    && card.contract_ids.some((value) => String(value || "").trim().length > 0);
+}
+
+function cardHasCompletePromotionGate(card) {
+  const gate = card.provenance?.audit_gate || {};
+  return card.auto_selectable === true
+    && card.promotion_status === "audited_template"
+    && gate.basis === "audited_template"
+    && gate.promotion_status === "audited_template"
+    && gate.source_hash_verified === true
+    && gate.code_hash_verified === true
+    && gate.runtime_status === "pass"
+    && gate.selector_positive_status === "pass"
+    && gate.selector_sibling_negative_status === "pass"
+    && gate.auto_selectable_passed === true;
+}
+
+function exactCodeContractMatches(card, transition, requireVariant = true) {
+  const requestedContracts = new Set((transition.contract_ids || [])
+    .map((value) => String(value || "").trim()).filter(Boolean));
+  const cardContracts = (card.contract_ids || []).map((value) => String(value || "").trim()).filter(Boolean);
+  const requestedCommands = unique((transition.commands || []).map(normalizeEvidenceCommand).filter(Boolean));
+  const anchors = new Set(normalizedCardCommands(card));
+  if (!requestedContracts.size || !cardContracts.some((value) => requestedContracts.has(value))) return false;
+  if (requireVariant && (!transition.variant_id || card.variant_id !== transition.variant_id)) return false;
+  if (!requireVariant && transition.variant_id && card.variant_id !== transition.variant_id) return false;
+  if (!requestedCommands.length || !requestedCommands.every((command) => anchors.has(command))) return false;
+  if (!stataCompatibilityMatches(card, transition.version)) return false;
+  const requestedFacets = transition.variant_facets;
+  const cardFacets = card.variant_facets || {};
+  if (requestedFacets && stableEvidenceValue(cardFacets) !== stableEvidenceValue(requestedFacets)) return false;
+  if (!requestedFacets && Object.keys(cardFacets).length) return false;
+  return true;
+}
+
+function guideMaterialKey(card) {
+  return stableEvidenceValue({
+    contract_ids: [...(card.contract_ids || [])].sort(),
+    variant_id: card.variant_id || null,
+    command_anchors: normalizedCardCommands(card).sort(),
+    stata_compatibility: cardStataCompatibility(card),
+    variant_facets: card.variant_facets || {},
+    code_sha256: card.provenance?.code_sha256 || null,
+  });
+}
+
 function filterEvidenceCards(cards, transition, options = {}) {
   const requestedCommands = unique((transition.commands || []).map(normalizeEvidenceCommand).filter(Boolean));
   const requestedContractIds = new Set((transition.contract_ids || []).map((value) => String(value).trim()).filter(Boolean));
-  const exactSupport = (card) => card.evidence_role === "exact_usage_support";
   let rows = cards.slice();
-  if (transition.checkpoint) rows = rows.filter((card) => card.checkpoint === transition.checkpoint || exactSupport(card));
-  else if (transition.stage) rows = rows.filter((card) => card.stage === transition.stage || exactSupport(card));
-  if (transition.unit_kind) rows = rows.filter((card) => card.unit_kind === transition.unit_kind || exactSupport(card));
+  if (transition.checkpoint) rows = rows.filter((card) => card.checkpoint === transition.checkpoint || card.evidence_role === "exact_usage_support");
+  else if (transition.stage) rows = rows.filter((card) => card.stage === transition.stage || card.evidence_role === "exact_usage_support");
+  if (transition.unit_kind) rows = rows.filter((card) => card.unit_kind === transition.unit_kind || card.evidence_role === "exact_usage_support");
   if (transition.variant_group) rows = rows.filter((card) => card.variant_group === transition.variant_group);
   if (transition.variant_id) rows = rows.filter((card) => card.variant_id === transition.variant_id);
   if (requestedContractIds.size) {
-    rows = rows.filter((card) => !exactSupport(card)
-      || (card.contract_ids || []).some((contractId) => requestedContractIds.has(contractId)));
+    rows = rows.filter((card) => (card.contract_ids || []).some((contractId) => requestedContractIds.has(contractId)));
   }
+  rows = rows.filter(hasMappedContract);
   if (requestedCommands.length) {
     const fullyCovered = rows.filter((card) => {
       const anchors = new Set(normalizedCardCommands(card));
@@ -2609,6 +2737,8 @@ function resolveTransitionEvidence(args, sources = {}) {
     task: transition.task || "",
     commands: atomicity.commands,
     contract_ids: unique((transition.contract_ids || []).map((value) => String(value).trim()).filter(Boolean)),
+    variant_facets: transition.variant_facets || {},
+    version: transition.version ?? null,
     current_state_signals: normalizeStateSignals(transition.current_state_signals),
     target_state_signals: normalizeStateSignals(transition.target_state_signals),
     atomicity: atomicity.status,
@@ -2640,25 +2770,42 @@ function resolveTransitionEvidence(args, sources = {}) {
   }));
   const profileMismatches = usageComparisons.filter((item) => item.comparison.status === "incompatible");
   const compatibleUsages = usageComparisons.filter((item) => item.comparison.status !== "incompatible");
-  const autoUsages = compatibleUsages.filter((item) => item.card.auto_selectable === true
+  const autoUsages = compatibleUsages.filter((item) => cardHasCompletePromotionGate(item.card)
     && item.card.decision !== "drop"
-    && item.card.provenance?.audit_gate?.passed === true);
+    && exactCodeContractMatches(item.card, transition));
   const unresolved = unresolvedSubstantiveChoices(args);
   const materialVariants = unique(autoUsages.map((item) => `${item.card.variant_group || ""}:${item.card.variant_id || item.card.label_id}`));
   const multipleVariants = materialVariants.length > 1 && !transition.variant_id;
-  const primaryGuide = guides[0] || null;
-  const guideAlternatives = guides.slice(1, 1 + MATERIAL_ALTERNATIVE_LIMIT).map(materialAlternativeMetadata);
+  const declarationMatchedGuides = guides.filter((card) => exactCodeContractMatches(card, transition, false));
+  const exactGuides = declarationMatchedGuides.filter((card) => exactCodeContractMatches(card, transition));
+  const guideMaterials = new Map();
+  for (const card of declarationMatchedGuides) {
+    const key = guideMaterialKey(card);
+    if (!guideMaterials.has(key)) guideMaterials.set(key, card);
+  }
+  const materialGuides = [...guideMaterials.values()];
+  const guideAmbiguous = materialGuides.length > 1;
+  const primaryGuide = exactGuides.length > 0 && materialGuides.length === 1 ? materialGuides[0] : null;
+  const guideAlternatives = (guideAmbiguous ? materialGuides : guides.filter((card) => card !== primaryGuide))
+    .slice(0, MATERIAL_ALTERNATIVE_LIMIT).map(materialAlternativeMetadata);
+  const guideSelectionMissing = guides.length > 0 && exactGuides.length === 0 && !guideAmbiguous;
 
   let routeMode;
   let routeReason;
   let selectedUsage = null;
-  if (unresolved.length) {
+  if (guideAmbiguous) {
+    routeMode = "selection_required";
+    routeReason = "Multiple materially distinct guide mechanics variants remain; no guide code or usage template can be selected.";
+  } else if (guideSelectionMissing) {
+    routeMode = "selection_required";
+    routeReason = "Guide code requires simultaneous exact contract, variant, command-anchor, declared Stata compatibility, and material-facet declarations.";
+  } else if (unresolved.length) {
     routeMode = "selection_required";
     routeReason = `Unresolved substantive choice(s): ${unresolved.join(", ")}`;
   } else if (multipleVariants) {
     routeMode = "selection_required";
     routeReason = "Multiple materially distinct audited usage variants remain after deterministic filtering.";
-  } else if (autoUsages.length === 1) {
+  } else if (autoUsages.length === 1 && primaryGuide) {
     routeMode = "guide+usage_template";
     routeReason = "Exactly one audited research-usage example matches the declared variant, command, state, and profile gates.";
     selectedUsage = autoUsages[0];
@@ -2675,10 +2822,14 @@ function resolveTransitionEvidence(args, sources = {}) {
   return {
     transition: baseTransition,
     guide_layer: {
-      status: primaryGuide ? "provided" : "not_available",
+      status: guideAmbiguous ? "ambiguous_variant"
+        : primaryGuide ? "provided"
+          : guideSelectionMissing ? "selection_required" : "not_available",
       primary_card: publicGuideCard(primaryGuide),
       material_alternatives: guideAlternatives,
-      selection_rule: "Guide mechanics are selected independently by exact transition fields and are never part of usage ranking or auto-selection.",
+      ambiguity_state: guideAmbiguous ? "material_variants_remain"
+        : guideSelectionMissing ? "exact_declaration_incomplete_or_mismatched" : "none",
+      selection_rule: "Guide mechanics remain a non-competing companion. Code is returned only for one exact contract, variant, command-anchor, declared Stata compatibility, and material-facet match; free-text manual/source-edition notes do not act as runtime gates, and material ambiguity fails closed.",
     },
     usage_layer: {
       status: selectedUsage ? "audited_exact_match"
@@ -2706,7 +2857,11 @@ function resolveTransitionEvidence(args, sources = {}) {
       guide_auto_selectable_count: guides.filter((card) => card.auto_selectable === true).length,
       guide_exists_but_omitted: guides.length > 0 && !primaryGuide,
       guide_and_usage_scores_combined: false,
-      deterministic_filters: ["variant", "command", "state", "profile"],
+      deterministic_filters: ["contract", "variant", "command", "version", "material_facets", "state", "profile"],
+      contractless_comparison_only_counts: {
+        guide: guideCards.filter((card) => !hasMappedContract(card)).length,
+        usage: usageCards.filter((card) => !hasMappedContract(card)).length,
+      },
       maximum_guide_cards: 1,
       maximum_material_alternatives: MATERIAL_ALTERNATIVE_LIMIT,
       maximum_usage_examples: 1,
@@ -3081,14 +3236,21 @@ function buildSourceReusePlan(root, request, contract) {
 const HEADWORD_SEQUENCE = [
   "project_setup.paths",
   "workflow_orchestration.master",
+  "workflow_orchestration.file_execution",
   "input_load.single_source",
   "input_load.combine",
   "preparation.transform",
+  "preparation.by_group",
+  "preparation.varlist_resolution",
+  "preparation.temporary_state",
+  "preparation.storage_metadata",
+  "preparation.display_metadata",
   "clean.id_normalize",
   "clean.derive_variables",
   "treatment.arm_mapping",
   "outlier.winsorize",
   "integrity.audit",
+  "integrity.missing_data",
   "merge_reshape.integration",
   "sample.restriction",
   "sample.trade_share_threshold",
@@ -3099,9 +3261,14 @@ const HEADWORD_SEQUENCE = [
   "integrity.adjacency_dedup",
   "panel.stack_waves",
   "panel.materialize_time_grid",
+  "panel.time_operator",
   "panel.treatment_cohort",
   "panel.turnover_event_time",
   "estimation.conventional",
+  "estimation.survey_design",
+  "estimation.rdrobust_suite",
+  "estimation.synthetic_control",
+  "estimation.difference_in_differences",
   "estimation.staggered_did",
   "postest.sample_flag",
   "scale.standardize_esample",
@@ -3112,10 +3279,13 @@ const HEADWORD_SEQUENCE = [
   "postest.command_result",
   "postest.export_sample_keys",
   "postest.estimator_comparison_unsafe",
+  "diagnostics.display",
   "robustness.placebo",
   "robustness.heterogeneity",
   "robustness.bootstrap_inference",
   "robustness.jackknife",
+  "robustness.resampling_simulation",
+  "robustness.multiple_testing",
   "descriptives.entity_collapse",
   "descriptives.sample_flow",
   "descriptives.summary_dataset",
@@ -3126,6 +3296,7 @@ const HEADWORD_SEQUENCE = [
   "exports.dataset_file",
   "figures.descriptive_bar",
   "figures.descriptive_scatter",
+  "figures.binned_scatter",
   "figures.descriptive_graph",
   "figures.event_study",
   "figures.marginsplot",
@@ -5421,7 +5592,7 @@ function workflowReproductionCheck(args) {
 const TOOLS = [
   {
     name: "resolve_transition_evidence",
-    description: "Resolve one substantive atomic Stata transition through two non-competing evidence layers. It always returns one matching guide-mechanics card when available, capped at 12 lines and 600 characters, but guide code is never auto-selectable and never supplies research decisions. Separately, it may return at most one audited deposited/independent research-usage example. Routes are guide+usage_template, guide+fallback, guide_informed_fallback, selection_required, or split_required. Known target-profile contradictions block usage auto-selection; unrelated multi-command requests must be split except for one explicitly declared bounded inseparable producer-consumer handoff.",
+    description: "Resolve one substantive atomic Stata transition through two non-competing evidence layers. Guide code is never auto-selectable, is capped at 12 lines and 600 characters, and is returned only for one exact contract, variant, command-anchor, declared Stata compatibility, and material-facet match; free-text manual/source-edition notes remain provenance rather than runtime gates, guide ambiguity fails closed, and guides never supply research decisions. Separately, it may return at most one audited deposited/independent research-usage example that passed runtime plus selector positive and sibling-negative gates. Routes are guide+usage_template, guide+fallback, guide_informed_fallback, selection_required, or split_required.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -5439,6 +5610,8 @@ const TOOLS = [
             task: { type: "string" },
             commands: { type: "array", minItems: 1, maxItems: 2, uniqueItems: true, items: { type: "string", minLength: 1 } },
             contract_ids: { type: "array", maxItems: 20, uniqueItems: true, items: { type: "string", minLength: 1 } },
+            version: { anyOf: [{ type: "string", minLength: 1 }, { type: "number" }, { type: "object", additionalProperties: true }] },
+            variant_facets: { type: "object", additionalProperties: true },
             current_state_signals: { type: "array", maxItems: 20, uniqueItems: true, items: { type: "string", minLength: 1 } },
             target_state_signals: { type: "array", maxItems: 20, uniqueItems: true, items: { type: "string", minLength: 1 } },
             composition: {

@@ -30,6 +30,15 @@ class CommandRegistryTests(unittest.TestCase):
             registry["global_template_policy"]["quarantine"],
             ["manual coefficient or standard-error reconstruction", "manual result transfer into final tables"],
         )
+        top100 = registry["top100_coverage"]
+        self.assertEqual([row["rank"] for row in top100["groups"]], list(range(1, 101)))
+        self.assertEqual(len(top100["groups"]), 100)
+        self.assertTrue(all(
+            len(row["command_mappings"]) + len(row["language_element_exemptions"]) == len(row["commands"])
+            for row in top100["groups"]
+        ))
+        qualifiers = next(row for row in top100["groups"] if row["group_id"] == "if_in_qualifiers")
+        self.assertEqual({row["source_command"] for row in qualifiers["language_element_exemptions"]}, {"if", "in"})
 
     def test_detector_uses_canonical_package_command_names(self) -> None:
         commands = detect_commands(
@@ -38,8 +47,14 @@ class CommandRegistryTests(unittest.TestCase):
             "ivreg2 y (x = z)\n"
             "ivreghdfe y (x = z), absorb(id)\n"
             "export excel using results.xlsx, replace\n"
+            "frame create auxiliary\n"
+            "teffects ipw (y) (treat x)\n"
+            "bayes: regress y x\n"
         )
-        self.assertTrue({"eststo", "reghdfe", "estpost", "ivreg2", "ivreghdfe", "export_excel"} <= set(commands))
+        self.assertTrue({
+            "eststo", "reghdfe", "estpost", "ivreg2", "ivreghdfe", "export_excel",
+            "frame_create", "teffects_ipw", "bayes",
+        } <= set(commands))
 
     def test_catalog_keeps_policy_static_and_adds_observed_coverage(self) -> None:
         catalog = build_command_catalog(

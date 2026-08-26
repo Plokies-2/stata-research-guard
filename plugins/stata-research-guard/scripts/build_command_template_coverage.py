@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-"""Deterministically report Top 50 template coverage and enforce promotion evidence.
+"""Deterministically report Top-100 template coverage and enforce promotion evidence.
 
 This intentionally sits beside, rather than inside, the legacy label builder.  The
 legacy corpus is a useful retrieval source but does not thereby claim a pass under
@@ -9,6 +9,7 @@ same pure validation functions without changing the gate's meaning.
 """
 
 import argparse
+import hashlib
 import json
 import re
 from collections import Counter
@@ -16,7 +17,7 @@ from pathlib import Path
 from typing import Any
 
 
-VALID_MODES = {"direct_primitive", "template_required", "mixed"}
+VALID_MODES = {"direct_primitive", "template_required", "mixed", "guide_mechanics_reference_only"}
 VALID_DISPOSITIONS = {"audited_template", "reference_only", "rejected"}
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 SPAN_RE = re.compile(r"^[1-9][0-9]*(?:-[1-9][0-9]*)?(?:,[1-9][0-9]*(?:-[1-9][0-9]*)?)*$")
@@ -38,21 +39,48 @@ def _is_direct_variant(group: dict[str, Any], variant: str) -> bool:
 def requirement_ids(requirements: dict[str, Any]) -> set[str]:
     return {
         f"{group['group_id']}.{variant}"
-        for group in [*requirements["top50_groups"], *requirements.get("additional_user_written_groups", [])]
+        for group in [*requirements["ranked_groups"], *requirements["supplemental_groups"]]
         for variant in group["required_variants"]
     }
 
 
+def _stable_sha256(value: Any) -> str:
+    encoded = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
 def validate_requirements(requirements: dict[str, Any]) -> None:
-    if requirements.get("schema_version") != "1.0":
-        raise ValueError("requirements schema_version must be 1.0")
-    groups = requirements.get("top50_groups")
-    if not isinstance(groups, list) or len(groups) != 50:
-        raise ValueError("Top 50 requirements must contain exactly 50 groups")
+    if requirements.get("schema_version") != "2.0":
+        raise ValueError("requirements schema_version must be 2.0")
+    ranking_contract = requirements.get("ranking_contract")
+    if not isinstance(ranking_contract, dict):
+        raise ValueError("requirements must declare a ranking_contract")
+    groups = requirements.get("ranked_groups")
+    if not isinstance(groups, list) or len(groups) != 100:
+        raise ValueError("Top-100 requirements must contain exactly 100 ranked groups")
     ranks = [group.get("rank") for group in groups]
-    if ranks != list(range(1, 51)):
-        raise ValueError("Top 50 ranks must be contiguous from 1 through 50")
-    all_groups = [*groups, *requirements.get("additional_user_written_groups", [])]
+    if ranks != list(range(1, 101)):
+        raise ValueError("Top-100 ranks must be contiguous from 1 through 100")
+    if ranking_contract.get("rank_limit") != 100 or ranking_contract.get("unit") != "command_group":
+        raise ValueError("ranking_contract must declare 100 command groups")
+    if ranking_contract.get("top50_prefix_frozen") is not True:
+        raise ValueError("ranking_contract must freeze the Top-50 prefix")
+    _require_sha(ranking_contract.get("top50_prefix_sha256"), "ranking_contract.top50_prefix_sha256")
+    if _stable_sha256(groups[:50]) != ranking_contract["top50_prefix_sha256"]:
+        raise ValueError("frozen Top-50 prefix hash does not match ranked_groups")
+    _require_sha(ranking_contract.get("rank_research_sha256"), "ranking_contract.rank_research_sha256")
+    complexity = requirements.get("complexity_weighted_sufficiency")
+    if not isinstance(complexity, dict) or complexity.get("fixed_per_command_quota_forbidden") is not True:
+        raise ValueError("complexity-weighted sufficiency must explicitly prohibit fixed per-command quotas")
+    for key in ("simple_command_rule", "complex_command_rule", "duplicate_rule", "verification_rule"):
+        _require_nonempty_string(complexity.get(key), f"complexity_weighted_sufficiency.{key}")
+    dimensions = complexity.get("material_dimensions")
+    if not isinstance(dimensions, list) or len(dimensions) < 3 or len(dimensions) != len(set(dimensions)):
+        raise ValueError("complexity-weighted sufficiency must declare unique material dimensions")
+    supplemental = requirements.get("supplemental_groups")
+    if not isinstance(supplemental, list) or len(supplemental) != 15:
+        raise ValueError("requirements must contain exactly 15 supplemental groups")
+    all_groups = [*groups, *supplemental]
     group_ids: set[str] = set()
     for group in all_groups:
         group_id = group.get("group_id")
@@ -73,8 +101,60 @@ def validate_requirements(requirements: dict[str, Any]) -> None:
             raise ValueError(f"invalid required variant identifier for {group_id}")
         if group.get("user_written_guide_required") and group.get("coverage_mode", "template_required") == "direct_primitive":
             raise ValueError(f"user-written guide requirement cannot be direct-only: {group_id}")
+        declared_contracts = group.get("contract_ids")
+        if declared_contracts is not None:
+            expected_contracts = [f"{group_id}.{variant}" for variant in variants]
+            if declared_contracts != expected_contracts:
+                raise ValueError(f"declared contract_ids must exactly match required_variants for {group_id}")
     if len(requirement_ids(requirements)) != sum(len(group["required_variants"]) for group in all_groups):
         raise ValueError("duplicate group/variant contract identifier")
+    if sum(len(group["required_variants"]) for group in groups) != 381:
+        raise ValueError("Top-100 ranked requirements must contain exactly 381 variants")
+    if sum(len(group["required_variants"]) for group in supplemental) != 48:
+        raise ValueError("supplemental requirements must contain exactly 48 variants")
+    if "\ufffd" in json.dumps(requirements, ensure_ascii=False):
+        raise ValueError("requirements contains replacement-character corruption")
+
+
+def validate_ranked_atomic_contract_coverage(requirements: dict[str, Any], atomic_records: list[dict[str, Any]]) -> None:
+    """Require a one-to-one pre-audit guide atom for every newly ranked contract.
+
+    This checks the guide-candidate layer only.  It does not grant auto-selection
+    status: runtime, selector, and independent promotion-audit gates remain
+    separate and fail closed.
+    """
+    validate_requirements(requirements)
+    expected = {
+        f"{group['group_id']}.{variant}"
+        for group in requirements["ranked_groups"][50:]
+        for variant in group["required_variants"]
+    }
+    seen_labels: set[str] = set()
+    by_contract: dict[str, list[str]] = {}
+    for record in atomic_records:
+        label_id = record.get("label_id")
+        _require_nonempty_string(label_id, "atomic.label_id")
+        if label_id in seen_labels:
+            raise ValueError(f"duplicate atomic label_id: {label_id}")
+        seen_labels.add(label_id)
+        if (
+            record.get("canonical_generation_class") != "reference_only"
+            or record.get("candidate_disposition") not in {None, "reference_only"}
+            or record.get("audit_status") != "candidate_pre_audit"
+        ):
+            raise ValueError(f"Top-100 guide atom must remain pre-audit reference_only: {label_id}")
+        contracts = record.get("contract_ids")
+        if not isinstance(contracts, list) or len(contracts) != 1 or not isinstance(contracts[0], str):
+            raise ValueError(f"Top-100 guide atom must have exactly one contract: {label_id}")
+        by_contract.setdefault(contracts[0], []).append(label_id)
+    duplicate = {contract: labels for contract, labels in by_contract.items() if len(labels) != 1}
+    unexpected = sorted(set(by_contract) - expected)
+    missing = sorted(expected - set(by_contract))
+    if duplicate or unexpected or missing:
+        raise ValueError(
+            "Top-100 guide atomic contract coverage mismatch: "
+            f"duplicate={duplicate}, unexpected={unexpected}, missing={missing}"
+        )
 
 
 def _require_sha(value: Any, context: str) -> None:
@@ -101,7 +181,7 @@ def validate_promotion_audit(audit: dict[str, Any], requirements: dict[str, Any]
     known_contracts = requirement_ids(requirements)
     group_by_id = {
         group["group_id"]: group
-        for group in [*requirements["top50_groups"], *requirements.get("additional_user_written_groups", [])]
+        for group in [*requirements["ranked_groups"], *requirements["supplemental_groups"]]
     }
     seen_labels: set[str] = set()
     seen_contracts: set[str] = set()
@@ -204,7 +284,7 @@ def build_coverage(requirements: dict[str, Any], audit: dict[str, Any]) -> dict[
         for contract_id in record["contract_ids"]:
             target[contract_id] = record["label_id"]
     rows = []
-    for group in requirements["top50_groups"]:
+    for group in requirements["ranked_groups"]:
         variants = []
         for variant in group["required_variants"]:
             contract_id = f"{group['group_id']}.{variant}"
@@ -224,14 +304,16 @@ def build_coverage(requirements: dict[str, Any], audit: dict[str, Any]) -> dict[
         })
     counts = Counter(variant["status"] for row in rows for variant in row["variants"])
     return {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "summary": {
-            "top50_groups": len(rows),
-            "top50_required_variants": sum(len(row["variants"]) for row in rows),
-            "all_required_variants_including_additional_user_written": sum(
-                len(group["required_variants"])
-                for group in [*requirements["top50_groups"], *requirements.get("additional_user_written_groups", [])]
-            ),
+            "ranked_groups": len(rows),
+            "ranked_required_variants": sum(len(row["variants"]) for row in rows),
+            "supplemental_groups": len(requirements["supplemental_groups"]),
+            "supplemental_required_variants": sum(len(group["required_variants"]) for group in requirements["supplemental_groups"]),
+            "all_required_variants": sum(len(group["required_variants"]) for group in [*requirements["ranked_groups"], *requirements["supplemental_groups"]]),
+            "top50_prefix_groups": 50,
+            "top50_prefix_required_variants": sum(len(row["variants"]) for row in rows[:50]),
+            "top50_prefix_status_counts": dict(sorted(Counter(variant["status"] for row in rows[:50] for variant in row["variants"]).items())),
             "status_counts": dict(sorted(counts.items())),
             "audit_gate": "audited_template requires exact SHA, runtime pass, and selector positive plus negative pass; legacy_pre_policy labels do not count",
         },
@@ -242,15 +324,16 @@ def build_coverage(requirements: dict[str, Any], audit: dict[str, Any]) -> dict[
 def render_markdown(coverage: dict[str, Any]) -> str:
     summary = coverage["summary"]
     lines = [
-        "# Top 50 command-template coverage / Top 50 명령어 템플릿 범위",
+        "# Top 100 command-template coverage / Top 100 명령어 템플릿 범위",
         "",
         "> 이 표는 명령어의 사용 빈도 순위 자체가 아니라, 현재 플러그인이 보유해야 할 변형 계약의 충족 상태입니다. `legacy_pre_policy` 라벨은 새 사전승격 감사를 통과한 것으로 계산하지 않습니다.",
         "",
         "## 현재 판정",
         "",
-        f"- Top 50 그룹: {summary['top50_groups']}개",
-        f"- 필수 변형 계약: {summary['top50_required_variants']}개",
-        f"- 추가 user-written command까지 포함한 전체 계약: {summary['all_required_variants_including_additional_user_written']}개",
+        f"- ranked 그룹: {summary['ranked_groups']}개 (Top 50 prefix {summary['top50_prefix_groups']}개 고정)",
+        f"- ranked 필수 변형 계약: {summary['ranked_required_variants']}개",
+        f"- supplemental 그룹/계약: {summary['supplemental_groups']}개 / {summary['supplemental_required_variants']}개",
+        f"- 전체 계약: {summary['all_required_variants']}개",
         f"- 상태별 수: {summary['status_counts']}",
         "- `direct_primitive_policy`: 명시적 진단·언어 primitive라 독립 template를 억지로 만들지 않는 계약입니다.",
         "- `audited_template`: 명령어 종류에 맞는 official manual 또는 maintainer guide, candidate inventory와 source/template exact SHA, source span, runtime, selector 양성·음성 검사를 모두 통과한 경우만 해당합니다.",
@@ -265,7 +348,7 @@ def render_markdown(coverage: dict[str, Any]) -> str:
     for row in coverage["groups"]:
         variants = "; ".join(f"`{item['variant']}`: {item['status']}" for item in row["variants"])
         lines.append(f"| {row['rank']} | `{row['group_id']}` | {', '.join(f'`{item}`' for item in row['commands'])} | {variants} |")
-    lines.extend(["", "## 승격 경계", "", "- guide-derived mechanics는 `reference_only`로 시작합니다. 독립 연구 코드·정확한 source span·runtime·selector 검사가 누적되어야만 `audited_template`가 됩니다.", "- 기존 148개 라벨은 provenance를 유지하되 이 새 gate의 통과 주장에는 쓰지 않습니다.", ""])
+    lines.extend(["", "## 승격 경계", "", "- guide-derived mechanics는 `reference_only`로 시작합니다. 독립 연구 코드·정확한 source span·runtime·selector 검사가 누적되어야만 `audited_template`가 됩니다.", "- Top 50 prefix는 별도 hash로 고정합니다. guide card 수는 명령어별 고정 quota가 아니라 material state 차이로 결정합니다.", ""])
     return "\n".join(lines)
 
 
