@@ -808,7 +808,7 @@
     "source_spans": [
       [
         70,
-        72
+        73
       ]
     ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
@@ -1194,6 +1194,160 @@
     "review_notes": "공식 StataCorp 매뉴얼 rank 56 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
   },
   {
+    "label_id": "guide.format.format_date_display.v1",
+    "contract_ids": [
+      "format.format_date_display"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "preparation.display_metadata",
+    "variant_group": "guide.format",
+    "variant_id": "format_date_display",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        125,
+        125
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/dformat.pdf"
+    ],
+    "research_situations": [
+      "The researcher has declared the state needed for the bounded format_date_display guide mechanic."
+    ],
+    "selection_conditions": [
+      "the active state satisfies the declared inputs for format_date_display",
+      "all research-design, sample, inference, and interpretation choices are supplied outside the guide"
+    ],
+    "required_changes": [
+      "replace only declared variables, keys, options, and output bindings; preserve the bounded mechanic"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options",
+      "declared state or output binding"
+    ],
+    "tradeoffs": [
+      "date rendering is distinct from numeric currency rendering.",
+      "the guide does not supply a research design, sample, estimand, or inference choice"
+    ],
+    "state_signature": {
+      "requires": [
+        "numeric Stata date variable"
+      ],
+      "observable_signals": [
+        "format",
+        "%td"
+      ],
+      "produces": [
+        "date display format state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/dformat.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "format date %tdCCYY-NN-DD"
+    ],
+    "reusable_core": "Retain only the bounded format_date_display mechanic after its inputs and state have been declared.",
+    "generality_rationale_ko": "format_date_display의 명령 mechanics만 보존하며 연구 설계와 표본, 추론 선택은 자동으로 정하지 않는다.",
+    "variant_distinction": "[format_date_display] date rendering is distinct from numeric currency rendering. It is not interchangeable with sibling variants in guide.format.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 56 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.format.format_string_width.v1",
+    "contract_ids": [
+      "format.format_string_width"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "preparation.display_metadata",
+    "variant_group": "guide.format",
+    "variant_id": "format_string_width",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        126,
+        126
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/dformat.pdf"
+    ],
+    "research_situations": [
+      "The researcher has declared the state needed for the bounded format_string_width guide mechanic."
+    ],
+    "selection_conditions": [
+      "the active state satisfies the declared inputs for format_string_width",
+      "all research-design, sample, inference, and interpretation choices are supplied outside the guide"
+    ],
+    "required_changes": [
+      "replace only declared variables, keys, options, and output bindings; preserve the bounded mechanic"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options",
+      "declared state or output binding"
+    ],
+    "tradeoffs": [
+      "string width rendering is distinct from numeric and date formats.",
+      "the guide does not supply a research design, sample, estimand, or inference choice"
+    ],
+    "state_signature": {
+      "requires": [
+        "string variable"
+      ],
+      "observable_signals": [
+        "format",
+        "%20s"
+      ],
+      "produces": [
+        "string display-width state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/dformat.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "format name %20s"
+    ],
+    "reusable_core": "Retain only the bounded format_string_width mechanic after its inputs and state have been declared.",
+    "generality_rationale_ko": "format_string_width의 명령 mechanics만 보존하며 연구 설계와 표본, 추론 선택은 자동으로 정하지 않는다.",
+    "variant_distinction": "[format_string_width] string width rendering is distinct from numeric and date formats. It is not interchangeable with sibling variants in guide.format.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 56 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
     "label_id": "guide.ds_unab.ds_numeric_wildcard.v1",
     "contract_ids": [
       "ds_unab.ds_numeric_wildcard"
@@ -1206,7 +1360,7 @@
     "source_spans": [
       [
         74,
-        75
+        76
       ]
     ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
@@ -1263,6 +1417,86 @@
     "reusable_core": "선언된 입력과 상태 조건에서 ds x*, has(type numeric)\nlocal nums `r(varlist)'의 공식 mechanics만 사용한다.",
     "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
     "variant_distinction": "[ds_numeric_wildcard] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 57 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.ds_unab.ds_not_string_wildcard.v1",
+    "contract_ids": [
+      "ds_unab.ds_not_string_wildcard"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "preparation.varlist_resolution",
+    "variant_group": "guide.ds_unab",
+    "variant_id": "ds_not_string_wildcard",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        127,
+        128
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/dds.pdf"
+    ],
+    "research_situations": [
+      "The researcher has declared the state needed for the bounded ds_not_string_wildcard guide mechanic."
+    ],
+    "selection_conditions": [
+      "the active state satisfies the declared inputs for ds_not_string_wildcard",
+      "all research-design, sample, inference, and interpretation choices are supplied outside the guide"
+    ],
+    "required_changes": [
+      "replace only declared variables, keys, options, and output bindings; preserve the bounded mechanic"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options",
+      "declared state or output binding"
+    ],
+    "tradeoffs": [
+      "exclusion filtering differs from positive type inclusion.",
+      "the guide does not supply a research design, sample, estimand, or inference choice"
+    ],
+    "state_signature": {
+      "requires": [
+        "active dataset",
+        "declared wildcard"
+      ],
+      "observable_signals": [
+        "ds",
+        "not(type string)",
+        "r(varlist)"
+      ],
+      "produces": [
+        "caller local containing the non-string varlist"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/dds.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "ds x*, not(type string)",
+      "local keep `r(varlist)'"
+    ],
+    "reusable_core": "Retain only the bounded ds_not_string_wildcard mechanic after its inputs and state have been declared.",
+    "generality_rationale_ko": "ds_not_string_wildcard의 명령 mechanics만 보존하며 연구 설계와 표본, 추론 선택은 자동으로 정하지 않는다.",
+    "variant_distinction": "[ds_not_string_wildcard] exclusion filtering differs from positive type inclusion. It is not interchangeable with sibling variants in guide.ds_unab.",
     "guide_derived": true,
     "independent_support": false,
     "researcher_style_evidence": false,
@@ -1364,7 +1598,7 @@
     "source_spans": [
       [
         77,
-        78
+        79
       ]
     ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
@@ -1444,7 +1678,7 @@
     "source_spans": [
       [
         80,
-        81
+        82
       ]
     ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
@@ -1524,7 +1758,7 @@
     "source_spans": [
       [
         83,
-        84
+        85
       ]
     ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
@@ -1604,7 +1838,7 @@
     "source_spans": [
       [
         86,
-        89
+        90
       ]
     ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
@@ -1683,7 +1917,7 @@
     "source_spans": [
       [
         91,
-        94
+        95
       ]
     ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
@@ -1762,7 +1996,7 @@
     "source_spans": [
       [
         96,
-        99
+        100
       ]
     ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
@@ -1841,7 +2075,7 @@
     "source_spans": [
       [
         101,
-        102
+        103
       ]
     ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
@@ -2157,7 +2391,7 @@
     "source_spans": [
       [
         104,
-        106
+        107
       ]
     ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
@@ -2317,7 +2551,7 @@
     "source_spans": [
       [
         108,
-        109
+        110
       ]
     ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
@@ -2690,6 +2924,88 @@
     "reusable_core": "선언된 입력과 상태 조건에서 cross using `\"lookup.dta\"'의 공식 mechanics만 사용한다.",
     "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
     "variant_distinction": "[cross_cartesian_product] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 64 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.cross_joinby.cross_with_declared_row_count_guard.v1",
+    "contract_ids": [
+      "cross_joinby.cross_with_declared_row_count_guard"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "merge_reshape.integration",
+    "variant_group": "guide.cross_joinby",
+    "variant_id": "cross_with_declared_row_count_guard",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        129,
+        130
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/dcross.pdf"
+    ],
+    "research_situations": [
+      "The researcher has declared the state needed for the bounded cross_with_declared_row_count_guard guide mechanic."
+    ],
+    "selection_conditions": [
+      "the active state satisfies the declared inputs for cross_with_declared_row_count_guard",
+      "all research-design, sample, inference, and interpretation choices are supplied outside the guide"
+    ],
+    "required_changes": [
+      "replace only declared variables, keys, options, and output bindings; preserve the bounded mechanic"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options",
+      "declared state or output binding"
+    ],
+    "tradeoffs": [
+      "the producer and its declared row-count consumer form one bounded handoff.",
+      "the guide does not supply a research design, sample, estimand, or inference choice"
+    ],
+    "state_signature": {
+      "requires": [
+        "master data",
+        "using data",
+        "caller-declared expected Cartesian row count"
+      ],
+      "observable_signals": [
+        "cross",
+        "assert _N"
+      ],
+      "produces": [
+        "Cartesian product with checked row count"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset",
+      "record_unit": "one row sharing a declared key",
+      "required_keys": [
+        "declared key or identifier"
+      ],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/dcross.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "cross using `\"lookup.dta\"'",
+      "assert _N == `expected_rows'"
+    ],
+    "reusable_core": "Retain only the bounded cross_with_declared_row_count_guard mechanic after its inputs and state have been declared.",
+    "generality_rationale_ko": "cross_with_declared_row_count_guard의 명령 mechanics만 보존하며 연구 설계와 표본, 추론 선택은 자동으로 정하지 않는다.",
+    "variant_distinction": "[cross_with_declared_row_count_guard] the producer and its declared row-count consumer form one bounded handoff. It is not interchangeable with sibling variants in guide.cross_joinby.",
     "guide_derived": true,
     "independent_support": false,
     "researcher_style_evidence": false,
@@ -3284,7 +3600,7 @@
     "source_spans": [
       [
         111,
-        112
+        113
       ]
     ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
@@ -3424,6 +3740,83 @@
     "reusable_core": "선언된 입력과 상태 조건에서 import sas using `\"source.sas7bdat\"', clear의 공식 mechanics만 사용한다.",
     "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
     "variant_distinction": "[import_sas_file] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 67 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.import_other_formats.import_spss_file.v1",
+    "contract_ids": [
+      "import_other_formats.import_spss_file"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "input_load.single_source",
+    "variant_group": "guide.import_other_formats",
+    "variant_id": "import_spss_file",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        131,
+        131
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/dimport.pdf"
+    ],
+    "research_situations": [
+      "The researcher has declared the state needed for the bounded import_spss_file guide mechanic."
+    ],
+    "selection_conditions": [
+      "the active state satisfies the declared inputs for import_spss_file",
+      "all research-design, sample, inference, and interpretation choices are supplied outside the guide"
+    ],
+    "required_changes": [
+      "replace only declared variables, keys, options, and output bindings; preserve the bounded mechanic"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options",
+      "declared state or output binding"
+    ],
+    "tradeoffs": [
+      "SPSS and SAS use distinct file parsers.",
+      "the guide does not supply a research design, sample, estimand, or inference choice"
+    ],
+    "state_signature": {
+      "requires": [
+        "declared SPSS file"
+      ],
+      "observable_signals": [
+        "import spss",
+        "clear"
+      ],
+      "produces": [
+        "active dataset imported through the SPSS parser"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "external_format_or_remote_series",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/dimport.pdf)",
+      "time_structure": "inherited_or_not_stated",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "import spss using `\"source.sav\"', clear"
+    ],
+    "reusable_core": "Retain only the bounded import_spss_file mechanic after its inputs and state have been declared.",
+    "generality_rationale_ko": "import_spss_file의 명령 mechanics만 보존하며 연구 설계와 표본, 추론 선택은 자동으로 정하지 않는다.",
+    "variant_distinction": "[import_spss_file] SPSS and SAS use distinct file parsers. It is not interchangeable with sibling variants in guide.import_other_formats.",
     "guide_derived": true,
     "independent_support": false,
     "researcher_style_evidence": false,
@@ -3766,7 +4159,7 @@
     "source_spans": [
       [
         114,
-        115
+        116
       ]
     ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
@@ -3846,7 +4239,7 @@
     "source_spans": [
       [
         117,
-        118
+        119
       ]
     ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
@@ -3926,7 +4319,7 @@
     "source_spans": [
       [
         120,
-        121
+        122
       ]
     ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
@@ -3986,6 +4379,86 @@
     "reusable_core": "선언된 입력과 상태 조건에서 tsset id time\ngen lag_x = L.x의 공식 mechanics만 사용한다.",
     "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
     "variant_distinction": "[lag_operator_generate] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 70 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.time_series_operators.lead_operator_generate.v1",
+    "contract_ids": [
+      "time_series_operators.lead_operator_generate"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "panel.time_operator",
+    "variant_group": "guide.time_series_operators",
+    "variant_id": "lead_operator_generate",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        132,
+        133
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/tsvarlist.pdf"
+    ],
+    "research_situations": [
+      "The researcher has declared the state needed for the bounded lead_operator_generate guide mechanic."
+    ],
+    "selection_conditions": [
+      "the active state satisfies the declared inputs for lead_operator_generate",
+      "all research-design, sample, inference, and interpretation choices are supplied outside the guide"
+    ],
+    "required_changes": [
+      "replace only declared variables, keys, options, and output bindings; preserve the bounded mechanic"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options",
+      "declared state or output binding"
+    ],
+    "tradeoffs": [
+      "lead state differs from a lag or difference.",
+      "the guide does not supply a research design, sample, estimand, or inference choice"
+    ],
+    "state_signature": {
+      "requires": [
+        "declared tsset-compatible panel/time state"
+      ],
+      "observable_signals": [
+        "tsset",
+        "F."
+      ],
+      "produces": [
+        "lead variable with boundary/gap missingness"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "panel_or_time_series_data",
+      "record_unit": "one declared observation",
+      "required_keys": [
+        "declared key or identifier"
+      ],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/tsvarlist.pdf)",
+      "time_structure": "declared time/window structure",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "tsset id time",
+      "generate lead_x = F.x"
+    ],
+    "reusable_core": "Retain only the bounded lead_operator_generate mechanic after its inputs and state have been declared.",
+    "generality_rationale_ko": "lead_operator_generate의 명령 mechanics만 보존하며 연구 설계와 표본, 추론 선택은 자동으로 정하지 않는다.",
+    "variant_distinction": "[lead_operator_generate] lead state differs from a lag or difference. It is not interchangeable with sibling variants in guide.time_series_operators.",
     "guide_derived": true,
     "independent_support": false,
     "researcher_style_evidence": false,
@@ -4068,6 +4541,86 @@
     "reusable_core": "선언된 입력과 상태 조건에서 generate dx = D.x의 공식 mechanics만 사용한다.",
     "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
     "variant_distinction": "[difference_operator_generate] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 70 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.time_series_operators.seasonal_difference_generate.v1",
+    "contract_ids": [
+      "time_series_operators.seasonal_difference_generate"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "panel.time_operator",
+    "variant_group": "guide.time_series_operators",
+    "variant_id": "seasonal_difference_generate",
+    "stage": "preparation",
+    "source_spans": [
+      [
+        134,
+        135
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/tsvarlist.pdf"
+    ],
+    "research_situations": [
+      "The researcher has declared the state needed for the bounded seasonal_difference_generate guide mechanic."
+    ],
+    "selection_conditions": [
+      "the active state satisfies the declared inputs for seasonal_difference_generate",
+      "all research-design, sample, inference, and interpretation choices are supplied outside the guide"
+    ],
+    "required_changes": [
+      "replace only declared variables, keys, options, and output bindings; preserve the bounded mechanic"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options",
+      "declared state or output binding"
+    ],
+    "tradeoffs": [
+      "seasonal differencing differs from first differencing.",
+      "the guide does not supply a research design, sample, estimand, or inference choice"
+    ],
+    "state_signature": {
+      "requires": [
+        "declared tsset-compatible panel/time state and seasonal spacing"
+      ],
+      "observable_signals": [
+        "tsset",
+        "S."
+      ],
+      "produces": [
+        "seasonally differenced variable with boundary/gap missingness"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "panel_or_time_series_data",
+      "record_unit": "one declared observation",
+      "required_keys": [
+        "declared key or identifier"
+      ],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/tsvarlist.pdf)",
+      "time_structure": "declared time/window structure",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "tsset id time",
+      "generate seasonal_dx = S.x"
+    ],
+    "reusable_core": "Retain only the bounded seasonal_difference_generate mechanic after its inputs and state have been declared.",
+    "generality_rationale_ko": "seasonal_difference_generate의 명령 mechanics만 보존하며 연구 설계와 표본, 추론 선택은 자동으로 정하지 않는다.",
+    "variant_distinction": "[seasonal_difference_generate] seasonal differencing differs from first differencing. It is not interchangeable with sibling variants in guide.time_series_operators.",
     "guide_derived": true,
     "independent_support": false,
     "researcher_style_evidence": false,
@@ -4229,6 +4782,88 @@
     "reusable_core": "선언된 입력과 상태 조건에서 rolling mean=r(mean), window(12): summarize y의 공식 mechanics만 사용한다.",
     "generality_rationale_ko": "공식 guide는 구문과 반환·자료 상태만 설명하며 연구자의 표본, estimand, 식별, 가중·군집, 키와 출력 배치를 결정하지 않는다.",
     "variant_distinction": "[rolling_summary_window] 이 variation은 같은 guide group의 다른 variation과 구문·상태 계약이 다르므로 혼합하지 않는다.",
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 71 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+  },
+  {
+    "label_id": "guide.rolling_statsby.rolling_summary_stepped_window.v1",
+    "contract_ids": [
+      "rolling_statsby.rolling_summary_stepped_window"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "descriptives.command_result",
+    "variant_group": "guide.rolling_statsby",
+    "variant_id": "rolling_summary_stepped_window",
+    "stage": "post_estimation",
+    "source_spans": [
+      [
+        136,
+        137
+      ]
+    ],
+    "source_kind": "official_stata_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/tsrolling.pdf"
+    ],
+    "research_situations": [
+      "The researcher has declared the state needed for the bounded rolling_summary_stepped_window guide mechanic."
+    ],
+    "selection_conditions": [
+      "the active state satisfies the declared inputs for rolling_summary_stepped_window",
+      "all research-design, sample, inference, and interpretation choices are supplied outside the guide"
+    ],
+    "required_changes": [
+      "replace only declared variables, keys, options, and output bindings; preserve the bounded mechanic"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options",
+      "declared state or output binding"
+    ],
+    "tradeoffs": [
+      "a stepped window changes result observation spacing.",
+      "the guide does not supply a research design, sample, estimand, or inference choice"
+    ],
+    "state_signature": {
+      "requires": [
+        "declared tsset-compatible time data",
+        "declared window and step size"
+      ],
+      "observable_signals": [
+        "tsset",
+        "rolling",
+        "window()",
+        "stepsize()",
+        "r(mean)"
+      ],
+      "produces": [
+        "stepped rolling-results dataset"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "active_dataset_plus_declared_result_state",
+      "record_unit": "one declared observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp manual mechanics (https://www.stata.com/manuals/tsrolling.pdf)",
+      "time_structure": "declared time/window structure",
+      "variable_characteristics": [
+        "declared command inputs",
+        "version-sensitive options where applicable"
+      ]
+    },
+    "source_specific_elements": [
+      "tsset id time",
+      "rolling mean=r(mean), window(12) stepsize(3): summarize y"
+    ],
+    "reusable_core": "Retain only the bounded rolling_summary_stepped_window mechanic after its inputs and state have been declared.",
+    "generality_rationale_ko": "rolling_summary_stepped_window의 명령 mechanics만 보존하며 연구 설계와 표본, 추론 선택은 자동으로 정하지 않는다.",
+    "variant_distinction": "[rolling_summary_stepped_window] a stepped window changes result observation spacing. It is not interchangeable with sibling variants in guide.rolling_statsby.",
     "guide_derived": true,
     "independent_support": false,
     "researcher_style_evidence": false,

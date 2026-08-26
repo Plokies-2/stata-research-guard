@@ -977,10 +977,14 @@
       ],
       "coverage_mode": "guide_mechanics_reference_only",
       "required_variants": [
-        "format_numeric_currency"
+        "format_numeric_currency",
+        "format_date_display",
+        "format_string_width"
       ],
       "contract_ids": [
-        "format.format_numeric_currency"
+        "format.format_numeric_currency",
+        "format.format_date_display",
+        "format.format_string_width"
       ],
       "source_kind": "official_stata_manual_guide_derived_mechanics",
       "source_urls": [
@@ -990,7 +994,7 @@
       "usage_template_audited": false,
       "paper_corpus_evidence": "separate_occurrence_ledger_required",
       "registry_exempt_reason": "official guide group; registry mapping is a separate Top-100 integration step",
-      "required_variant_count": 1,
+      "required_variant_count": 3,
       "complexity_weighted_rule": "retain only materially distinct mechanics/input/output states"
     },
     {
@@ -1003,10 +1007,12 @@
       "coverage_mode": "guide_mechanics_reference_only",
       "required_variants": [
         "ds_numeric_wildcard",
+        "ds_not_string_wildcard",
         "unab_declared_controls"
       ],
       "contract_ids": [
         "ds_unab.ds_numeric_wildcard",
+        "ds_unab.ds_not_string_wildcard",
         "ds_unab.unab_declared_controls"
       ],
       "source_kind": "official_stata_manual_guide_derived_mechanics",
@@ -1018,7 +1024,7 @@
       "usage_template_audited": false,
       "paper_corpus_evidence": "separate_occurrence_ledger_required",
       "registry_exempt_reason": "official guide group; registry mapping is a separate Top-100 integration step",
-      "required_variant_count": 2,
+      "required_variant_count": 3,
       "complexity_weighted_rule": "retain only materially distinct mechanics/input/output states"
     },
     {
@@ -1206,11 +1212,13 @@
       "coverage_mode": "guide_mechanics_reference_only",
       "required_variants": [
         "cross_cartesian_product",
+        "cross_with_declared_row_count_guard",
         "joinby_declared_key",
         "joinby_keep_unmatched"
       ],
       "contract_ids": [
         "cross_joinby.cross_cartesian_product",
+        "cross_joinby.cross_with_declared_row_count_guard",
         "cross_joinby.joinby_declared_key",
         "cross_joinby.joinby_keep_unmatched"
       ],
@@ -1223,7 +1231,7 @@
       "usage_template_audited": false,
       "paper_corpus_evidence": "separate_occurrence_ledger_required",
       "registry_exempt_reason": "official guide group; registry mapping is a separate Top-100 integration step",
-      "required_variant_count": 3,
+      "required_variant_count": 4,
       "complexity_weighted_rule": "retain only materially distinct mechanics/input/output states"
     },
     {
@@ -1302,10 +1310,12 @@
       "coverage_mode": "guide_mechanics_reference_only",
       "required_variants": [
         "import_sas_file",
+        "import_spss_file",
         "import_fred_series"
       ],
       "contract_ids": [
         "import_other_formats.import_sas_file",
+        "import_other_formats.import_spss_file",
         "import_other_formats.import_fred_series"
       ],
       "source_kind": "official_stata_manual_guide_derived_mechanics",
@@ -1317,7 +1327,7 @@
       "usage_template_audited": false,
       "paper_corpus_evidence": "separate_occurrence_ledger_required",
       "registry_exempt_reason": "official guide group; registry mapping is a separate Top-100 integration step",
-      "required_variant_count": 2,
+      "required_variant_count": 3,
       "complexity_weighted_rule": "retain only materially distinct mechanics/input/output states"
     },
     {
@@ -1390,12 +1400,16 @@
       "coverage_mode": "guide_mechanics_reference_only",
       "required_variants": [
         "lag_operator_generate",
+        "lead_operator_generate",
         "difference_operator_generate",
+        "seasonal_difference_generate",
         "lag_interaction_estimate"
       ],
       "contract_ids": [
         "time_series_operators.lag_operator_generate",
+        "time_series_operators.lead_operator_generate",
         "time_series_operators.difference_operator_generate",
+        "time_series_operators.seasonal_difference_generate",
         "time_series_operators.lag_interaction_estimate"
       ],
       "source_kind": "official_stata_manual_guide_derived_mechanics",
@@ -1406,7 +1420,7 @@
       "usage_template_audited": false,
       "paper_corpus_evidence": "separate_occurrence_ledger_required",
       "registry_exempt_reason": "official guide group; registry mapping is a separate Top-100 integration step",
-      "required_variant_count": 3,
+      "required_variant_count": 5,
       "complexity_weighted_rule": "retain only materially distinct mechanics/input/output states"
     },
     {
@@ -1419,11 +1433,13 @@
       "coverage_mode": "guide_mechanics_reference_only",
       "required_variants": [
         "rolling_summary_window",
+        "rolling_summary_stepped_window",
         "rolling_saved_estimates",
         "statsby_saved_results"
       ],
       "contract_ids": [
         "rolling_statsby.rolling_summary_window",
+        "rolling_statsby.rolling_summary_stepped_window",
         "rolling_statsby.rolling_saved_estimates",
         "rolling_statsby.statsby_saved_results"
       ],
@@ -1436,7 +1452,7 @@
       "usage_template_audited": false,
       "paper_corpus_evidence": "separate_occurrence_ledger_required",
       "registry_exempt_reason": "official guide group; registry mapping is a separate Top-100 integration step",
-      "required_variant_count": 3,
+      "required_variant_count": 4,
       "complexity_weighted_rule": "retain only materially distinct mechanics/input/output states"
     },
     {
@@ -1658,7 +1674,7 @@
         "mixed_random_intercept",
         "mixed_random_slope",
         "mixed_covariance",
-        "mixed_generalized"
+        "mixed_meglm_family_link"
       ]
     },
     {
@@ -1690,7 +1706,8 @@
         "systems_sureg",
         "systems_mvreg",
         "systems_equation_lists",
-        "systems_cross_equation_test"
+        "systems_cross_equation_test",
+        "systems_equation_prediction"
       ]
     },
     {
@@ -1720,8 +1737,8 @@
       "required_variants": [
         "did_repeated_cross_section",
         "did_panel",
-        "did_group_time",
-        "did_postestimation"
+        "did_ptrends",
+        "did_trendplots"
       ]
     },
     {
@@ -1739,7 +1756,8 @@
         "hdid_repeated_cross_section",
         "hdid_panel",
         "hdid_aggregation",
-        "hdid_atetplot"
+        "hdid_atetplot",
+        "hdid_ptrends"
       ]
     },
     {
@@ -1795,6 +1813,7 @@
       "required_variants": [
         "survival_stset_basic",
         "survival_stset_enter_id",
+        "survival_stset_origin_enter_id",
         "survival_stsplit",
         "survival_stjoin"
       ]
@@ -1812,6 +1831,8 @@
       "user_written_guide_required": false,
       "required_variants": [
         "survival_stcox",
+        "survival_stcox_tvc_texp",
+        "survival_stcox_ph_diagnostic",
         "survival_streg",
         "survival_sts_graph",
         "survival_sts_test"
@@ -1847,7 +1868,8 @@
       "coverage_mode": "template_required",
       "user_written_guide_required": false,
       "required_variants": [
-        "mi_impute",
+        "mi_impute_chained_add_rseed",
+        "mi_impute_monotone_add_rseed",
         "mi_estimate",
         "mi_passive",
         "mi_extract"

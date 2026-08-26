@@ -27,6 +27,9 @@ class CommandTemplateCoverageTests(unittest.TestCase):
         cls.audit = json.loads(
             (PLUGIN / "annotations" / "template_promotion_audit.json").read_text(encoding="utf-8")
         )
+        cls.command_example_audit = json.loads(
+            (PLUGIN / "annotations" / "command_example_audit.json").read_text(encoding="utf-8")
+        )
         cls.top100_atomic_records = [
             record
             for path in sorted((PLUGIN / "annotations" / "atomic_template_sets").glob("top100_*.json"))
@@ -38,15 +41,15 @@ class CommandTemplateCoverageTests(unittest.TestCase):
         groups = self.requirements["ranked_groups"]
         self.assertEqual(len(groups), 100)
         self.assertEqual([row["rank"] for row in groups], list(range(1, 101)))
-        self.assertEqual(sum(len(row["required_variants"]) for row in groups), 381)
+        self.assertEqual(sum(len(row["required_variants"]) for row in groups), 395)
         self.assertEqual(
             sum(len(row["required_variants"]) for row in [*groups, *self.requirements["supplemental_groups"]]),
-            429,
+            443,
         )
         self.assertEqual(sum(len(row["required_variants"]) for row in groups[:50]), 203)
         self.assertTrue(self.requirements["ranking_contract"]["top50_prefix_frozen"])
         self.assertTrue(self.requirements["complexity_weighted_sufficiency"]["fixed_per_command_quota_forbidden"])
-        self.assertEqual(next(row for row in groups if row["group_id"] == "format")["required_variants"], ["format_numeric_currency"])
+        self.assertEqual(next(row for row in groups if row["group_id"] == "format")["required_variants"], ["format_numeric_currency", "format_date_display", "format_string_width"])
         self.assertGreater(len(next(row for row in groups if row["group_id"] == "teffects")["required_variants"]), 1)
         self.assertIn("reghdfe", {row["group_id"] for row in groups[:50]})
         self.assertTrue(next(row for row in groups if row["group_id"] == "outreg2")["user_written_guide_required"])
@@ -61,17 +64,18 @@ class CommandTemplateCoverageTests(unittest.TestCase):
 
     def test_new_ranked_contracts_and_pre_audit_guide_atoms_are_exactly_bijective(self) -> None:
         validate_ranked_atomic_contract_coverage(self.requirements, self.top100_atomic_records)
-        self.assertEqual(len(self.top100_atomic_records), 178)
+        self.assertEqual(len(self.top100_atomic_records), 192)
 
     def test_coverage_keeps_direct_primitives_distinct_from_reference_guides(self) -> None:
-        coverage = build_coverage(self.requirements, self.audit)
+        coverage = build_coverage(self.requirements, self.audit, self.command_example_audit)
         self.assertEqual(coverage["summary"]["ranked_groups"], 100)
-        self.assertEqual(coverage["summary"]["ranked_required_variants"], 381)
-        self.assertEqual(coverage["summary"]["all_required_variants"], 429)
+        self.assertEqual(coverage["summary"]["ranked_required_variants"], 395)
+        self.assertEqual(coverage["summary"]["all_required_variants"], 443)
         statuses = coverage["summary"]["status_counts"]
         top50_statuses = coverage["summary"]["top50_prefix_status_counts"]
         self.assertEqual(top50_statuses["direct_primitive_policy"], 19)
-        self.assertEqual(top50_statuses["reference_only"], 184)
+        self.assertEqual(top50_statuses["reference_only"], 183)
+        self.assertEqual(top50_statuses["uncovered"], 1)
         reghdfe = next(row for row in coverage["groups"] if row["group_id"] == "reghdfe")
         self.assertTrue(all(row["status"] == "reference_only" for row in reghdfe["variants"]))
         diagnostics = next(row for row in coverage["groups"] if row["group_id"] == "describe_codebook")
@@ -79,6 +83,19 @@ class CommandTemplateCoverageTests(unittest.TestCase):
         assert_isid = next(row for row in coverage["groups"] if row["group_id"] == "assert_isid")
         direct_diagnostic = next(row for row in assert_isid["variants"] if row["variant"] == "direct_diagnostic")
         self.assertEqual(direct_diagnostic["status"], "direct_primitive_policy")
+
+    def test_independent_command_audit_removes_false_and_duplicate_guide_coverage(self) -> None:
+        coverage = build_coverage(self.requirements, self.audit, self.command_example_audit)
+        winsor = next(row for row in coverage["groups"] if row["group_id"] == "winsor2")
+        upper = next(row for row in winsor["variants"] if row["variant"] == "upper_tail_replace")
+        two_sided = next(row for row in winsor["variants"] if row["variant"] == "two_sided_replace")
+        self.assertEqual(upper["status"], "uncovered")
+        self.assertEqual(two_sided["status"], "reference_only")
+        overrides = self.command_example_audit["label_overrides"]
+        self.assertEqual(overrides["data.generate_indicator.v1"]["action"], "suppress_semantic_duplicate")
+        self.assertEqual(overrides["reporting.graph_export_pdf.separate.v1"]["action"], "suppress_semantic_duplicate")
+        self.assertEqual(overrides["official.table_legacy_c_reference.v1"]["contract_ids"], [])
+        self.assertEqual(overrides["official.dtable_export_xlsx.v1"]["contract_ids"], [])
 
     def test_rank_gap_is_rejected(self) -> None:
         broken = copy.deepcopy(self.requirements)
@@ -93,13 +110,13 @@ class CommandTemplateCoverageTests(unittest.TestCase):
             "disposition": "rejected",
             "contract_ids": ["reghdfe.one_fe_clustered"],
         }]
-        coverage = build_coverage(self.requirements, audit)
+        coverage = build_coverage(self.requirements, audit, self.command_example_audit)
         reghdfe = next(row for row in coverage["groups"] if row["group_id"] == "reghdfe")
         one_fe = next(row for row in reghdfe["variants"] if row["contract_id"] == "reghdfe.one_fe_clustered")
         self.assertEqual(one_fe["status"], "uncovered")
 
     def test_unmapped_reference_record_does_not_contribute_coverage(self) -> None:
-        baseline = build_coverage(self.requirements, self.audit)["summary"]["status_counts"]
+        baseline = build_coverage(self.requirements, self.audit, self.command_example_audit)["summary"]["status_counts"]
         audit = copy.deepcopy(self.audit)
         audit["candidate_records"].append({
             "label_id": "reference.supplemental.fixture.v1",
@@ -107,7 +124,7 @@ class CommandTemplateCoverageTests(unittest.TestCase):
             "contract_ids": [],
             "supplemental_contract_id": "reghdfe.guide_only_supplement",
         })
-        observed = build_coverage(self.requirements, audit)["summary"]["status_counts"]
+        observed = build_coverage(self.requirements, audit, self.command_example_audit)["summary"]["status_counts"]
         self.assertEqual(observed, baseline)
 
 

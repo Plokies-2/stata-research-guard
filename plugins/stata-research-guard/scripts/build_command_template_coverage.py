@@ -108,8 +108,8 @@ def validate_requirements(requirements: dict[str, Any]) -> None:
                 raise ValueError(f"declared contract_ids must exactly match required_variants for {group_id}")
     if len(requirement_ids(requirements)) != sum(len(group["required_variants"]) for group in all_groups):
         raise ValueError("duplicate group/variant contract identifier")
-    if sum(len(group["required_variants"]) for group in groups) != 381:
-        raise ValueError("Top-100 ranked requirements must contain exactly 381 variants")
+    if sum(len(group["required_variants"]) for group in groups) != 395:
+        raise ValueError("Top-100 ranked requirements must contain exactly 395 variants")
     if sum(len(group["required_variants"]) for group in supplemental) != 48:
         raise ValueError("supplemental requirements must contain exactly 48 variants")
     if "\ufffd" in json.dumps(requirements, ensure_ascii=False):
@@ -273,15 +273,24 @@ def validate_promotion_audit(audit: dict[str, Any], requirements: dict[str, Any]
             _require_nonempty_string(selector.get("reason"), f"{label_id}.selector.reason")
 
 
-def build_coverage(requirements: dict[str, Any], audit: dict[str, Any]) -> dict[str, Any]:
+def build_coverage(
+    requirements: dict[str, Any],
+    audit: dict[str, Any],
+    command_example_audit: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     validate_requirements(requirements)
     audited_by_contract: dict[str, str] = {}
     reference_by_contract: dict[str, str] = {}
+    overrides = (command_example_audit or {}).get("label_overrides", {})
     for record in audit["candidate_records"]:
+        override = overrides.get(record["label_id"])
+        if override and override.get("action") == "suppress_semantic_duplicate":
+            continue
         if record["disposition"] == "rejected":
             continue
         target = audited_by_contract if record["disposition"] == "audited_template" else reference_by_contract
-        for contract_id in record["contract_ids"]:
+        contract_ids = override.get("contract_ids", []) if override else record["contract_ids"]
+        for contract_id in contract_ids:
             target[contract_id] = record["label_id"]
     rows = []
     for group in requirements["ranked_groups"]:
@@ -360,10 +369,12 @@ def main() -> None:
     plugin = args.plugin.resolve()
     requirements = load_json(plugin / "annotations" / "command_template_requirements.json")
     audit = load_json(plugin / "annotations" / "template_promotion_audit.json")
+    command_example_audit_path = plugin / "annotations" / "command_example_audit.json"
+    command_example_audit = load_json(command_example_audit_path) if command_example_audit_path.exists() else None
     legacy_labels = load_json(plugin / "annotations" / "labeled_checkpoints.json")
     package_first = load_json(plugin / "annotations" / "package_first_atomic_templates.json")
     validate_promotion_audit(audit, requirements, len(legacy_labels) + len(package_first))
-    coverage = build_coverage(requirements, audit)
+    coverage = build_coverage(requirements, audit, command_example_audit)
     if args.write_review:
         (plugin / "review" / "command_template_coverage.md").write_text(render_markdown(coverage), encoding="utf-8", newline="\n")
     print(json.dumps(coverage["summary"], ensure_ascii=False, sort_keys=True))

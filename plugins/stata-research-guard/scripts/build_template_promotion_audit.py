@@ -1,7 +1,7 @@
 """Deterministically append the independently re-audited Top-100 guide atoms.
 
 The three Top-100 atomic inventories and their independent JSONL audit are the
-only authority for the 178 new rows.  Existing ledger rows are loaded and
+only authority for the 192 new rows.  Existing ledger rows are loaded and
 copied without normalization or semantic edits, so a rebuild cannot silently
 rewrite the pre-existing 262 records.
 """
@@ -21,7 +21,7 @@ from typing import Any, Iterable
 ROOT = Path(__file__).resolve().parents[3]
 PLUGIN = ROOT / "plugins" / "stata-research-guard"
 ANNOTATIONS = PLUGIN / "annotations"
-REQUIRED_NEW = 178
+REQUIRED_NEW = 192
 LEGACY_RECORDS = 262
 NEW_SOURCES = (
     ("top100_official_data_programming.json", "top100_official_data_programming_guide_templates.do"),
@@ -124,8 +124,8 @@ def _load_current_sources() -> dict[str, tuple[Path, Path, dict[str, Any]]]:
 
 
 def _validate_summary(summary: dict[str, Any]) -> None:
-    _require(summary.get("candidate_count") == REQUIRED_NEW, "independent audit candidate_count must be 178")
-    _require(summary.get("decision_counts") == {"pass_reference_only": REQUIRED_NEW}, "independent audit decisions are not exactly 178 passes")
+    _require(summary.get("candidate_count") == REQUIRED_NEW, f"independent audit candidate_count must be {REQUIRED_NEW}")
+    _require(summary.get("decision_counts") == {"pass_reference_only": REQUIRED_NEW}, f"independent audit decisions are not exactly {REQUIRED_NEW} passes")
     _require(summary.get("all_candidates_pass_reference_only") is True, "independent audit all-pass gate is not true")
     _require(summary.get("existing_atomic_candidate_count_checked") == LEGACY_RECORDS, "independent audit did not check the 262 existing atoms")
 
@@ -246,7 +246,7 @@ def build_ledger(
     old_records = existing.get("candidate_records")
     _require(
         isinstance(old_records, list) and len(old_records) in {LEGACY_RECORDS, LEGACY_RECORDS + REQUIRED_NEW},
-        f"existing ledger must contain exactly {LEGACY_RECORDS} records (or its deterministic 440-record rebuild)",
+        f"existing ledger must contain exactly {LEGACY_RECORDS} records (or its deterministic {LEGACY_RECORDS + REQUIRED_NEW}-record rebuild)",
     )
     # A completed ledger is accepted as an idempotent rebuild input. Only its
     # preserved legacy prefix is used; the new rows are always regenerated from
@@ -276,7 +276,7 @@ def build_ledger(
     _require(len(new_records) == REQUIRED_NEW, "new record count changed during build")
     ledger = copy.deepcopy(existing)
     ledger["candidate_records"] = copy.deepcopy(old_records) + new_records
-    _require(len(ledger["candidate_records"]) == LEGACY_RECORDS + REQUIRED_NEW, "final candidate record count is not 440")
+    _require(len(ledger["candidate_records"]) == LEGACY_RECORDS + REQUIRED_NEW, f"final candidate record count is not {LEGACY_RECORDS + REQUIRED_NEW}")
     _require(len({r["label_id"] for r in ledger["candidate_records"]}) == len(ledger["candidate_records"]), "final label IDs are not unique")
     report = {
         "schema_version": "1.0",

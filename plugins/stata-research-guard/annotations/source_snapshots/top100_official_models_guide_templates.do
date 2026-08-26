@@ -30,7 +30,7 @@ sqreg outcome treatment control_1 control_2, quantile(q_1 q_2) reps(100) seed(12
 mixed outcome treatment control_1 || cluster_id:
 mixed outcome treatment control_1 || cluster_id: treatment
 mixed outcome treatment control_1 || cluster_id: treatment, covariance(unstructured)
-meglm outcome treatment control_1 
+meglm outcome treatment control_1 || cluster_id:, family(family_name) link(link_name)
 sem (outcome <- treatment control_1)
 gsem (outcome <- treatment control_1), family(family_name) link(link_name)
 sem (outcome <- latent_factor) (latent_factor -> indicator_1 indicator_2)
@@ -45,8 +45,8 @@ gmm (outcome - {b0} - {b1}*treatment), twostep
 gmm (outcome - {b0} - {b1}*treatment), vce(cluster cluster_id)
 didregress (outcome control_1 control_2) (treatment), group(group_id) time(time_var)
 xtdidregress (outcome control_1 control_2) (treatment), group(group_id) time(time_var)
-didregress (outcome) (treatment), group(group_id) time(time_var)
-estat atetplot
+estat ptrends
+estat trendplots
 hdidregress (outcome control_1) (treatment), group(group_id) time(time_var)
 xthdidregress (outcome control_1) (treatment), group(group_id) time(time_var)
 estat aggregation, over(cohort)
@@ -71,7 +71,7 @@ meta set effect_size effect_se
 meta esize, esize(cohensd) studyid(study_id)
 meta summarize, random
 meta forestplot, studylabel(study_label)
-mi impute chained (outcome treatment control_1 = control_2), add(5) rseed(12345)
+mi impute chained (regress) outcome treatment control_1 = control_2, add(5) rseed(12345)
 mi estimate: regress outcome treatment control_1 control_2
 mi passive: generate interaction = treatment * control_1
 mi extract 1
@@ -84,3 +84,11 @@ teffects ipw (outcome) (treatment control_1 control_2), ate
 teffects aipw (outcome control_1 control_2) (treatment control_1 control_2), ate
 teffects psmatch (outcome) (treatment control_1 control_2), atet
 margins, dydx(treatment) post
+
+* Additional source-matrix-backed mechanics from the independent complexity audit.
+predict eq1_prediction, equation(eq1)
+estat ptrends
+stset stop_time, failure(failure) origin(time origin_time) enter(time start_time) id(subject_id)
+stcox treatment control_1 control_2, tvc(treatment) texp(_t)
+estat phtest, detail
+mi impute monotone (regress) outcome treatment control_1 = control_2, add(5) rseed(12345)

@@ -1,6 +1,6 @@
 # Official-manual fallback policy
 
-Call `resolve_transition_evidence` first. Its bounded official/maintainer guide card is retained whenever available, while an independently matched usage row may supply at most one template. Search the legacy workflow dictionary and collected researcher examples only for diagnosis or a nearest nonbinding hint after the resolver reports fallback or mismatch; use deeper official-manual search only for syntax, returned results, and command-state mechanics. None of these guide sources supplies a researcher-style choice when usage evidence has none.
+For a Top 100 command explanation or example-coverage audit, call `inspect_top100_command_examples` to retrieve every materially distinct guide block required by the command's complexity and the separately classified paper-evidence status. For one concrete authoring transition, call `resolve_transition_evidence` first. Its bounded official/maintainer guide card is retained whenever available, while an independently matched usage row may supply at most one template. Search the legacy workflow dictionary and collected researcher examples only for diagnosis or a nearest nonbinding hint after the resolver reports fallback or mismatch; use deeper official-manual search only for syntax, returned results, and command-state mechanics. None of these guide sources supplies a researcher-style choice when usage evidence has none.
 
 ## Three independent questions
 

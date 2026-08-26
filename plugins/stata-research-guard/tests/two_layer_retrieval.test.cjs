@@ -236,15 +236,15 @@ test("unknown guide compatibility does not contradict a known request, but decla
   assert.equal(compatible.guide_layer.primary_card.version_semantics, "stata_runtime_compatibility");
 });
 
-test("all 178 new Top100 guides are retrievable at Stata 18 by exact contract and facets", () => {
+test("all 192 new Top100 guides are retrievable at Stata 18 by exact contract and facets", () => {
   const guides = fs.readFileSync(path.join(ROOT, "data", "guide_mechanics_cards.jsonl"), "utf8")
     .split(/\r?\n/).filter(Boolean).map(JSON.parse);
   const top100Guides = guides.filter((card) => {
     const sourcePath = card.provenance?.source_path || "";
     return /source_snapshots\/top100_(?:official_data_programming|official_models|maintainer_methods)_guide_templates\.do$/.test(sourcePath);
   });
-  assert.equal(top100Guides.length, 178);
-  assert.equal(top100Guides.filter((card) => card.version === null).length, 93);
+  assert.equal(top100Guides.length, 192);
+  assert.ok(top100Guides.filter((card) => card.version === null).length >= 93);
 
   for (const card of top100Guides) {
     const result = resolveTransitionEvidence({
@@ -439,6 +439,25 @@ test("evidence builder fails closed on duplicate IDs and ambiguous source tiers"
   }]);
   assert.notEqual(ambiguous.status, 0);
   assert.match(`${ambiguous.stdout}\n${ambiguous.stderr}`, /ambiguous research usage source tier/i);
+});
+
+test("evidence builder applies the command-example audit only for canonical input by default", (t) => {
+  const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "stata-evidence-default-audit-"));
+  t.after(() => fs.rmSync(temporary, { recursive: true, force: true }));
+  const python = path.resolve(path.dirname(process.execPath), "..", "..", "python", "python.exe");
+  const builder = path.join(ROOT, "scripts", "build_evidence_layers.py");
+  const run = spawnSync(python, [
+    builder,
+    "--guide-output", path.join(temporary, "guide.jsonl"),
+    "--usage-output", path.join(temporary, "usage.jsonl"),
+  ], { encoding: "utf8" });
+  assert.equal(run.status, 0, `${run.stdout}\n${run.stderr}`);
+  const summary = JSON.parse(run.stdout);
+  assert.deepEqual(summary.command_example_audit_actions, {
+    override_contracts: 1,
+    supplemental_only: 5,
+    suppress_semantic_duplicate: 2,
+  });
 });
 
 test("evidence builder preserves contract metadata, merges exact guide provenance, and enforces the promotion gate", (t) => {

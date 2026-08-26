@@ -120,3 +120,18 @@ tsfill, full
 * guide.time_series_operators.lag_operator_generate.v1
 tsset id time
 gen lag_x = L.x
+
+* Additional source-matrix-backed mechanics from the independent complexity audit.
+format date %tdCCYY-NN-DD
+format name %20s
+ds x*, not(type string)
+local keep `r(varlist)'
+cross using `"lookup.dta"'
+assert _N == `expected_rows'
+import spss using `"source.sav"', clear
+tsset id time
+generate lead_x = F.x
+tsset id time
+generate seasonal_dx = S.x
+tsset id time
+rolling mean=r(mean), window(12) stepsize(3): summarize y

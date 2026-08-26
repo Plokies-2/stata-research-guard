@@ -106,6 +106,7 @@ const PLANNED_VARIABLE_SCHEMA = {
 };
 const INSTRUCTIONS = [
   "Use this server whenever generating or revising Stata research code.",
+  "When explaining a Top 100 command or auditing example coverage, call inspect_top100_command_examples. It returns the full complexity-weighted set of materially distinct guide blocks for that command and keeps paper code context separate from exact reusable support. Continue to use resolve_transition_evidence for one concrete atomic authoring transition.",
   "For every substantive atomic transition, call resolve_transition_evidence first. It uses two non-competing evidence layers: guide mechanics are always returned when a matching guide card exists and are never auto-selectable, while deposited or genuinely independent research usage may supply at most one audited usage template. Guide mechanics explain syntax and state handling only; they never supply or resolve a sample, estimand, model, treatment, merge key, VCE, event axis, workbook sheet, or output placement. Keep search_labeled_checkpoints, search_stata_manual, and search_approved_patterns only for compatibility, diagnosis, or a deliberately broader inspection after the resolver reports fallback, mismatch, or missing coverage.",
   "For every atomic implementation step, write only the statements required by the current concrete input-to-output contract. Do not design for future outcomes, sheets, callers, options, or reuse. Do not add unused syntax options, one-item loops, one-use programs, registries, dispatchers, optional branches, or generic interfaces. Repetition is abstracted only when that repetition exists in the current request and a direct block cannot provide the required interface.",
   "Reserve globals for intentional cross-do-file contracts. Keep shared directory roots such as project, data, table, figures, and ster in setup when multiple stages consume them. Do not hoist a leaf filename such as summary_excel = $table/file.xlsx into setup when only one child do-file consumes it; declare it as a local in that child near its first use, or write the literal directly when it appears once and is clearer. A leaf file binding may remain global only when two or more do-files intentionally share that exact producer-consumer artifact contract. Put repeated regression-specific controls, sample restrictions, event-study RHS terms, fixed effects, clustering choices, and other single-consumer specification bindings in local macros inside the do-file that consumes them, close to the estimation block; keep a one-use list explicit in the command when clearer. Put same-file event selectors, display order, reference position, and notes in locals as well. Fingerprinted macro names are evidence to classify their scope, not a reason to preserve private or single-consumer globals. Format long variable, outcome, estimate, or option lists as meaningfully grouped multiline blocks: use whitespace to align comparable entries, indent continuation lines, and keep short lists on one line. Never align or reflow quoted labels, paths, or other text where whitespace is data. Use /// only when the command continues on the immediately following physical line, indent continuation lines beyond the command start, and omit /// from the final physical line.",
@@ -175,15 +176,24 @@ const OFFICIAL_WEB_SOURCES = loadJson("official_web_sources.json");
 const WORKFLOWS = loadJson("workflow_examples.json");
 const PACKAGES = loadJson("reference_packages.json");
 const LABELED_CHECKPOINTS = loadJsonl("labeled_checkpoints.jsonl");
+const COMMAND_EXAMPLE_AUDIT = fs.existsSync(path.join(ROOT, "annotations", "command_example_audit.json"))
+  ? JSON.parse(fs.readFileSync(path.join(ROOT, "annotations", "command_example_audit.json"), "utf8"))
+  : { label_overrides: {} };
 const GUIDE_MECHANICS_CARDS = fs.existsSync(path.join(DATA, "guide_mechanics_cards.jsonl"))
   ? loadJsonl("guide_mechanics_cards.jsonl")
   : [];
-const GUIDE_MECHANICS_LABEL_IDS = new Set(GUIDE_MECHANICS_CARDS
-  .filter((row) => row.provenance?.promotion_audit)
-  .map((row) => row.label_id));
+const GUIDE_MECHANICS_LABEL_IDS = new Set([
+  ...GUIDE_MECHANICS_CARDS
+    .filter((row) => row.provenance?.promotion_audit)
+    .map((row) => row.label_id),
+  ...Object.keys(COMMAND_EXAMPLE_AUDIT.label_overrides || {}),
+]);
 const RESEARCH_USAGE_EXAMPLES = fs.existsSync(path.join(DATA, "research_usage_examples.jsonl"))
   ? loadJsonl("research_usage_examples.jsonl")
   : [];
+const TOP100_COMMAND_EVIDENCE = fs.existsSync(path.join(DATA, "top100_command_evidence_matrix.json"))
+  ? loadJson("top100_command_evidence_matrix.json")
+  : { rows: [], summary: {} };
 const WORKFLOW_DICTIONARY = loadJson("workflow_block_dictionary.json");
 const PACKAGE_COVERAGE = fs.existsSync(path.join(DATA, "package_checkpoint_coverage.json"))
   ? loadJson("package_checkpoint_coverage.json")
@@ -207,6 +217,54 @@ function fail(message, details = {}) {
     content: [{ type: "text", text: JSON.stringify({ error: message, ...details }) }],
     structuredContent: { error: message, ...details },
     isError: true,
+  };
+}
+
+function inspectTop100CommandExamples(args = {}) {
+  const requestedGroups = new Set((args.group_ids || []).map((value) => String(value).trim().toLowerCase()).filter(Boolean));
+  const requestedCommands = new Set((args.commands || []).map((value) => String(value).trim().toLowerCase()).filter(Boolean));
+  if (!requestedGroups.size && !requestedCommands.size) {
+    throw new Error("group_ids 또는 commands 중 하나 이상을 지정해야 합니다.");
+  }
+
+  const rows = (TOP100_COMMAND_EVIDENCE.rows || []).filter((row) => {
+    if (requestedGroups.has(String(row.group_id || "").toLowerCase())) return true;
+    const tokens = [...(row.commands || []), ...(row.registry_tokens || [])]
+      .map((value) => String(value).trim().toLowerCase());
+    return tokens.some((token) => requestedCommands.has(token));
+  }).map((row) => {
+    const result = {
+      rank: row.rank,
+      group_id: row.group_id,
+      commands: row.commands,
+      complexity: row.complexity,
+      material_contracts: row.material_contracts,
+      guide_blocks: row.guide_blocks,
+      supplemental_guide_context: row.supplemental_guide_context,
+      guide_gap_contract_ids: row.guide_gap_contract_ids,
+      paper_exact_support_code_unavailable: row.paper_exact_support_code_unavailable,
+      paper_exact_support_gap_contract_ids: row.paper_exact_support_gap_contract_ids,
+      paper_code_template_exact_mapping_gap_contract_ids: row.paper_code_template_exact_mapping_gap_contract_ids,
+    };
+    if (args.include_paper_context === true) result.paper_code_context = row.paper_code_context;
+    return result;
+  });
+
+  return {
+    schema_version: TOP100_COMMAND_EVIDENCE.schema_version,
+    mode: "complexity_weighted_command_overview",
+    requested: {
+      group_ids: [...requestedGroups],
+      commands: [...requestedCommands],
+      include_paper_context: args.include_paper_context === true,
+    },
+    matched_group_count: rows.length,
+    rows,
+    claim_boundary: {
+      guide_blocks: "각 명령어의 물질적으로 다른 문법·상태·추정·추론·handoff를 덮는 reference-only 교과서 mechanics이며 자동 선택 근거가 아닙니다.",
+      paper_code_context: "command anchor가 나타난 논문 코드 문맥일 뿐 exact contract template support가 아닙니다.",
+      paper_exact_support_code_unavailable: "명시 contract support이나 원문 코드가 없어 코드 템플릿으로 사용할 수 없습니다.",
+    },
   };
 }
 
@@ -5668,6 +5726,22 @@ const TOOLS = [
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   },
   {
+    name: "inspect_top100_command_examples",
+    description: "Inspect the complexity-weighted textbook/guide example set and paper-evidence status for one or more Top 100 Stata commands. Unlike the atomic resolver, this command-level overview returns every distinct guide block judged necessary for the command. Paper code is returned only when include_paper_context=true and remains group context rather than exact reusable template support.",
+    inputSchema: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        group_ids: { type: "array", minItems: 1, maxItems: 10, uniqueItems: true, items: { type: "string", minLength: 1 } },
+        commands: { type: "array", minItems: 1, maxItems: 10, uniqueItems: true, items: { type: "string", minLength: 1 } },
+        include_paper_context: { type: "boolean", default: false },
+      },
+      anyOf: [{ required: ["group_ids"] }, { required: ["commands"] }],
+    },
+    outputSchema: { type: "object", additionalProperties: true },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  {
     name: "search_stata_manual",
     description: "Search page-level StataCorp official manuals first, or explicitly requested community maintainer references. Returns authority, URL, page, hashes, and excerpts; it never declares code passed.",
     inputSchema: { type: "object", additionalProperties: false, properties: {
@@ -6022,6 +6096,7 @@ async function dispatch(method, params) {
     const args = params?.arguments || {};
     try {
       if (name === "resolve_transition_evidence") return resolveTransitionEvidence(args);
+      if (name === "inspect_top100_command_examples") return inspectTop100CommandExamples(args);
       if (name === "search_stata_manual") return searchManual(args);
       if (name === "get_verified_stata_examples") return getVerifiedExamples(args);
       if (name === "search_approved_patterns") return searchApproved(args);

@@ -88,8 +88,8 @@ def _write_release_owned_audit_fixture(directory: Path, ordered_labels: list[str
     )
     summary_path = directory / "release_owned_audit_summary.json"
     summary_path.write_text(json.dumps({
-        "candidate_count": 178,
-        "decision_counts": {"pass_reference_only": 178},
+        "candidate_count": 192,
+        "decision_counts": {"pass_reference_only": 192},
         "all_candidates_pass_reference_only": True,
         "existing_atomic_candidate_count_checked": 262,
     }, sort_keys=True), encoding="utf-8")
@@ -134,17 +134,17 @@ class TemplatePromotionAuditTests(unittest.TestCase):
     def test_populated_ledger_keeps_legacy_separate_and_guides_reference_only(self) -> None:
         validate_promotion_audit(self.audit, self.requirements, self.legacy_count)
         self.assertEqual(self.audit["legacy_baseline"]["status"], "legacy_pre_policy")
-        self.assertEqual(len(self.audit["candidate_records"]), 440)
+        self.assertEqual(len(self.audit["candidate_records"]), 454)
         self.assertEqual(self.legacy_count, 148)
         self.assertTrue(all(row["disposition"] == "reference_only" for row in self.audit["candidate_records"]))
         self.assertTrue(all(row.get("auto_selectable") is False for row in self.audit["candidate_records"]))
 
-    def test_top100_audit_set_is_exactly_178_and_is_appended(self) -> None:
+    def test_top100_audit_set_is_exactly_192_and_is_appended(self) -> None:
         audited = set(_top100_atoms())
         records = self.audit["candidate_records"]
-        self.assertEqual(len(audited), 178)
+        self.assertEqual(len(audited), 192)
         self.assertEqual({row["label_id"] for row in records[262:]}, audited)
-        self.assertEqual(len({row["label_id"] for row in records}), 440)
+        self.assertEqual(len({row["label_id"] for row in records}), 454)
 
     def test_top100_records_keep_reference_only_gate(self) -> None:
         for row in self.audit["candidate_records"][262:]:
@@ -176,7 +176,7 @@ class TemplatePromotionAuditTests(unittest.TestCase):
         self.assertEqual(first, second)
         self.assertEqual(first_report, second_report)
         self.assertEqual(first["candidate_records"][:262], baseline["candidate_records"])
-        self.assertEqual(first_report["candidate_records"], 440)
+        self.assertEqual(first_report["candidate_records"], 454)
         self.assertEqual(first, self.audit)
 
     def test_audited_template_requires_hash_runtime_and_both_selector_cases(self) -> None:

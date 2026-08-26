@@ -245,6 +245,49 @@ class CorpusUsageExtractionTests(unittest.TestCase):
                 self.archive_manifest,
             )
 
+    def test_command_example_audit_corrects_guide_layer_without_rewriting_sources(self):
+        source_rows = read_jsonl(ROOT / "data/labeled_checkpoints.jsonl")
+        usage_evidence = read_jsonl(ROOT / "annotations/research_usage_evidence.jsonl")
+        command_audit = json.loads(
+            (ROOT / "annotations/command_example_audit.json").read_text(encoding="utf-8")
+        )
+        guides, _usages, summary = build_layers(
+            source_rows,
+            usage_evidence,
+            self.rows,
+            command_audit,
+        )
+        self.assertEqual(len(guides), 454)
+        self.assertTrue(all(row["promotion_status"] == "reference_only" for row in guides))
+        self.assertTrue(all(row["rubric_classification"] == "reference_only" for row in guides))
+        self.assertTrue(all(row["auto_selectable"] is False for row in guides))
+        by_label = {row["label_id"]: row for row in guides}
+        self.assertIsNone(by_label["input.delimited_single_source_clear.v1"]["provenance"]["upstream_promotion_status"])
+        self.assertEqual(
+            by_label["input.delimited_single_source_clear.v1"]["provenance"]["upstream_rubric_classification"],
+            "preferred_candidate",
+        )
+        self.assertIsNone(by_label["descriptives.named_sample_flow_dataset.v1"]["provenance"]["upstream_promotion_status"])
+        self.assertEqual(
+            by_label["descriptives.named_sample_flow_dataset.v1"]["provenance"]["upstream_rubric_classification"],
+            "conditional_candidate",
+        )
+        self.assertNotIn("data.generate_indicator.v1", by_label)
+        self.assertNotIn("reporting.graph_export_pdf.separate.v1", by_label)
+        self.assertEqual(
+            by_label["reporting.winsor2_pooled_replace.v1"]["contract_ids"],
+            ["winsor2.two_sided_replace"],
+        )
+        self.assertEqual(by_label["official.table_legacy_c_reference.v1"]["contract_ids"], [])
+        self.assertEqual(
+            by_label["official.table_legacy_c_reference.v1"]["supplemental_contract_id"],
+            "table_dtable.legacy_c_grammar_reference",
+        )
+        self.assertEqual(
+            summary["command_example_audit_actions"],
+            {"override_contracts": 1, "supplemental_only": 5, "suppress_semantic_duplicate": 2},
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

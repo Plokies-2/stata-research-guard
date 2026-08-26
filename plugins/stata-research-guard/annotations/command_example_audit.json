@@ -1,0 +1,82 @@
+{
+  "schema_version": "1.0",
+  "purpose": "Independent complexity-weighted audit overrides for command-level guide display. The source labels remain preserved for provenance; this file only corrects command-contract presentation and retrieval.",
+  "label_overrides": {
+    "data.generate_indicator.v1": {
+      "action": "suppress_semantic_duplicate",
+      "replacement_label_id": "data.generate_missing_preserving_indicator.v1",
+      "reason": "The two guide atoms differ only in placeholder variable names and implement the same missing-preserving indicator mechanic."
+    },
+    "reporting.graph_export_pdf.separate.v1": {
+      "action": "suppress_semantic_duplicate",
+      "replacement_label_id": "official.graph_export_pdf_replace.v1",
+      "reason": "Both atoms export the active graph to a named PDF with replace; path and comment changes are cosmetic."
+    },
+    "reporting.winsor2_pooled_replace.v1": {
+      "action": "override_contracts",
+      "contract_ids": [
+        "winsor2.two_sided_replace"
+      ],
+      "reason": "cuts(1 99) is a two-sided replacement and does not demonstrate the declared upper-tail-only state."
+    },
+    "official.table_legacy_c_reference.v1": {
+      "action": "supplemental_only",
+      "contract_ids": [],
+      "supplemental_contract_id": "table_dtable.legacy_c_grammar_reference",
+      "reason": "Legacy table ..., c() grammar must not count as modern table one-way statistics coverage."
+    },
+    "official.dtable_export_xlsx.v1": {
+      "action": "supplemental_only",
+      "contract_ids": [],
+      "supplemental_contract_id": "table_dtable.dtable_export_xlsx_handoff",
+      "reason": "The atom demonstrates export persistence and contains no by() grouping mechanic."
+    },
+    "official.regress_factor_interaction_cluster.v1": {
+      "action": "supplemental_only",
+      "contract_ids": [],
+      "supplemental_contract_id": "regress.factor_interaction_clustered_grammar",
+      "reason": "Factor-variable interaction grammar is a material command dimension beyond generic clustered OLS."
+    },
+    "reporting.outreg2_restored_estimate_append.v1": {
+      "action": "supplemental_only",
+      "contract_ids": [],
+      "supplemental_contract_id": "outreg2.restored_estimate_append_handoff",
+      "reason": "Restoring a durable estimate before append is a distinct input-state handoff, not generic active-estimate append coverage."
+    },
+    "reporting.outreg2_native_raw_rows.v1": {
+      "action": "supplemental_only",
+      "contract_ids": [],
+      "supplemental_contract_id": "outreg2.native_omitted_base_raw_rows_context",
+      "reason": "The bounded span states a raw-row policy but does not itself create or verify an omitted/base e(b) state."
+    }
+  },
+  "group_findings": {
+    "table_dtable": {
+      "status": "corrected_by_override",
+      "reason": "Legacy table grammar and dtable export persistence are retained only as supplemental context."
+    },
+    "generate": {
+      "status": "corrected_by_override",
+      "reason": "A placeholder-only duplicate was suppressed."
+    },
+    "regress": {
+      "status": "material_supplement_retained",
+      "reason": "Clustered factor-interaction grammar remains visible as a supplemental mechanic, not generic clustered coverage."
+    },
+    "graph_export": {
+      "status": "corrected_by_override",
+      "reason": "A cosmetic duplicate active-PDF export atom was suppressed."
+    },
+    "outreg2": {
+      "status": "material_supplements_retained",
+      "reason": "Restored-estimate input and raw omitted/base context are separated from generic seed/append contracts."
+    },
+    "winsor2": {
+      "status": "guide_gap",
+      "missing_contract_ids": [
+        "winsor2.upper_tail_replace"
+      ],
+      "reason": "No retained guide atom currently demonstrates an upper-tail-only replacement."
+    }
+  }
+}

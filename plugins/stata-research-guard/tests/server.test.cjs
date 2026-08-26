@@ -172,7 +172,7 @@ test("MCP handshake and tool inventory", async (t) => {
   assert.match(initialized.instructions, /typed named-sample-flow postfile block/i);
   assert.doesNotMatch(initialized.instructions, /femaleboard|\bAEA\b|\bAER\b/i);
   const listed = await client.request("tools/list");
-  assert.deepEqual(listed.tools.map((tool) => tool.name), ["resolve_transition_evidence", "search_stata_manual", "get_verified_stata_examples", "search_approved_patterns", "search_labeled_checkpoints", "inspect_dictionary_coverage", "plan_dictionary_repairs", "template_reuse_check", "workflow_blueprint", "lint_do_file", "audit_stata_project", "workflow_reproduction_check", "research_output_check"]);
+  assert.deepEqual(listed.tools.map((tool) => tool.name), ["resolve_transition_evidence", "inspect_top100_command_examples", "search_stata_manual", "get_verified_stata_examples", "search_approved_patterns", "search_labeled_checkpoints", "inspect_dictionary_coverage", "plan_dictionary_repairs", "template_reuse_check", "workflow_blueprint", "lint_do_file", "audit_stata_project", "workflow_reproduction_check", "research_output_check"]);
   assert.ok(listed.tools.every((tool) => tool.outputSchema?.type === "object"));
   const transitionResolver = listed.tools.find((tool) => tool.name === "resolve_transition_evidence");
   assert.match(transitionResolver.description, /two non-competing evidence layers/i);
@@ -186,6 +186,27 @@ test("MCP handshake and tool inventory", async (t) => {
   assert.match(fallbackTool.description, /one atomic transition only/i);
   const negotiated = await client.request("initialize", { protocolVersion: "2099-01-01" });
   assert.equal(negotiated.protocolVersion, "2025-06-18");
+});
+
+test("Top 100 command overview returns every complexity-weighted guide block and keeps paper context bounded", async (t) => {
+  const client = new McpClient();
+  t.after(() => client.close());
+  const compact = await client.request("tools/call", {
+    name: "inspect_top100_command_examples",
+    arguments: { commands: ["regress"] },
+  });
+  const compactPayload = compact.structuredContent;
+  assert.equal(compactPayload.matched_group_count, 1);
+  assert.equal(compactPayload.rows[0].group_id, "regress");
+  assert.equal(compactPayload.rows[0].complexity.example_count, compactPayload.rows[0].guide_blocks.filter((row) => row.counts_toward_complexity).length);
+  assert.equal(Object.hasOwn(compactPayload.rows[0], "paper_code_context"), false);
+
+  const withPaper = await client.request("tools/call", {
+    name: "inspect_top100_command_examples",
+    arguments: { group_ids: ["regress"], include_paper_context: true },
+  });
+  assert.ok(withPaper.structuredContent.rows[0].paper_code_context);
+  assert.match(withPaper.structuredContent.claim_boundary.paper_code_context, /exact contract template support/i);
 });
 
 test("Windows plugin launcher starts the MCP server", async (t) => {

@@ -400,6 +400,106 @@
     "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rglm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
   },
   {
+    "label_id": "guide.glm.glm_postest.v1",
+    "contract_ids": [
+      "glm.glm_postest"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.conventional",
+    "variant_group": "glm",
+    "variant_id": "glm_postest",
+    "stage": "estimation",
+    "method_family": "glm",
+    "source_spans": [
+      [
+        86,
+        86
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rglm.pdf"
+    ],
+    "source_release": "Stata 19 documentation checked 2026-08-26",
+    "version": "Base [R]; verify feature/options against installed release.",
+    "release_notes": "Base [R]; verify feature/options against installed release.",
+    "research_situations": [
+      "researcher has explicitly selected the margins postestimation transition"
+    ],
+    "selection_conditions": [
+      "researcher declares the outcome/data form and all inputs required by glm_postest",
+      "researcher resolves choices not supplied by this guide: outcome distribution/link; causal interpretation; exposure versus offset meaning; clustering unit",
+      "guide does not supply: outcome distribution/link; causal interpretation; exposure versus offset meaning; clustering unit"
+    ],
+    "required_changes": [
+      "replace only the declared variables, options, and state/output bindings for glm_postest"
+    ],
+    "minimal_edit_fields": [
+      "declared outcome or input variables",
+      "declared model/options",
+      "declared sample or state binding"
+    ],
+    "tradeoffs": [
+      "keeps vce(robust mechanics visible",
+      "does not supply the researcher's model, identification, sample, inference, or interpretation decisions",
+      "does not supply: outcome distribution/link; causal interpretation; exposure versus offset meaning; clustering unit"
+    ],
+    "state_signature": {
+      "requires": [
+        "outcome, covariates, family/link, optional exposure/offset and VCE"
+      ],
+      "observable_signals": [
+        "margins postestimation"
+      ],
+      "produces": [
+        "e()-class fit plus prediction/marginal-effects state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "unknown",
+      "record_unit": "one declared analysis observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp glm manual mechanics",
+      "time_structure": "not_stated",
+      "variable_characteristics": [
+        "declared outcome/input variables"
+      ]
+    },
+    "source_specific_elements": [
+      "margins postestimation"
+    ],
+    "reusable_core": "Declared mechanics only; researcher supplies substantive choices.",
+    "generality_rationale_ko": "Official StataCorp mechanics only; substantive decisions remain with the researcher.",
+    "variant_distinction": "[glm_postest] remains distinct from sibling material states.",
+    "does_not_supply": [
+      "outcome distribution/link",
+      "causal interpretation",
+      "exposure versus offset meaning",
+      "clustering unit"
+    ],
+    "must_not_supply": [
+      "outcome distribution/link",
+      "causal interpretation",
+      "exposure versus offset meaning",
+      "clustering unit"
+    ],
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "safety_notes": [
+      "no loops",
+      "no installation or dependency probes",
+      "no shell/process escape",
+      "no TeX/Word output",
+      "no unsafe merge or forced duplicate deletion"
+    ],
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "Official StataCorp bounded mechanics only; reference-only pending audit, runtime, and selector checks."
+  },
+  {
     "label_id": "guide.ordered_response.ordered_ologit.v1",
     "contract_ids": [
       "ordered_response.ordered_ologit"
@@ -2020,6 +2120,111 @@
     "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rtobit.pdf, https://www.stata.com/manuals/rintreg.pdf, https://www.stata.com/manuals/rtruncreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
   },
   {
+    "label_id": "guide.censored_interval_truncated.censored_prediction.v1",
+    "contract_ids": [
+      "censored_interval_truncated.censored_prediction"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.conventional",
+    "variant_group": "censored_interval_truncated",
+    "variant_id": "censored_prediction",
+    "stage": "estimation",
+    "method_family": "censored_interval_truncated",
+    "source_spans": [
+      [
+        82,
+        82
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rtobit.pdf",
+      "https://www.stata.com/manuals/rintreg.pdf",
+      "https://www.stata.com/manuals/rtruncreg.pdf"
+    ],
+    "source_release": "Stata 19 documentation checked 2026-08-26",
+    "version": "Base [R].",
+    "release_notes": "Base [R].",
+    "research_situations": [
+      "researcher has explicitly selected the predict ystar() transition"
+    ],
+    "selection_conditions": [
+      "researcher declares the outcome/data form and all inputs required by censored_prediction",
+      "researcher resolves choices not supplied by this guide: censoring versus truncation mechanism; true lower/upper limits; whether intervals encode missing/censoring; distributional assumption",
+      "guide does not supply: censoring versus truncation mechanism; true lower/upper limits; whether intervals encode missing/censoring; distributional assumption"
+    ],
+    "required_changes": [
+      "replace only the declared variables, options, and state/output bindings for censored_prediction"
+    ],
+    "minimal_edit_fields": [
+      "declared outcome or input variables",
+      "declared model/options",
+      "declared sample or state binding"
+    ],
+    "tradeoffs": [
+      "keeps tobit postestimation predict ystar() mechanics visible",
+      "does not supply the researcher's model, identification, sample, inference, or interpretation decisions",
+      "does not supply: censoring versus truncation mechanism; true lower/upper limits; whether intervals encode missing/censoring; distributional assumption"
+    ],
+    "state_signature": {
+      "requires": [
+        "active tobit estimation results",
+        "declared upper censoring limit",
+        "declared prediction target"
+      ],
+      "observable_signals": [
+        "predict",
+        "ystar(., upper_limit)"
+      ],
+      "produces": [
+        "declared censored-outcome prediction variable"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "unknown",
+      "record_unit": "one declared analysis observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp censored_interval_truncated manual mechanics",
+      "time_structure": "not_stated",
+      "variable_characteristics": [
+        "declared outcome/input variables"
+      ]
+    },
+    "source_specific_elements": [
+      "predict outcome_prediction, ystar(., upper_limit)"
+    ],
+    "reusable_core": "선행 tobit 추정 결과와 선언된 upper limit에서 predict ystar(., upper_limit) mechanics만 제공한다.",
+    "generality_rationale_ko": "Official StataCorp mechanics only; substantive decisions remain with the researcher.",
+    "variant_distinction": "[censored_prediction] 선행 tobit 결과의 censored-outcome prediction은 같은 censored_interval_truncated family의 fit variation과 대체하거나 이어 붙이지 않는다.",
+    "does_not_supply": [
+      "censoring versus truncation mechanism",
+      "true lower/upper limits",
+      "whether intervals encode missing/censoring",
+      "distributional assumption"
+    ],
+    "must_not_supply": [
+      "censoring versus truncation mechanism",
+      "true lower/upper limits",
+      "whether intervals encode missing/censoring",
+      "distributional assumption"
+    ],
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "safety_notes": [
+      "no loops",
+      "no installation or dependency probes",
+      "no shell/process escape",
+      "no TeX/Word output",
+      "no unsafe merge or forced duplicate deletion"
+    ],
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "Official StataCorp bounded mechanics only; reference-only pending audit, runtime, and selector checks."
+  },
+  {
     "label_id": "guide.sample_selection.selection_heckman_twostep.v1",
     "contract_ids": [
       "sample_selection.selection_heckman_twostep"
@@ -3145,14 +3350,14 @@
     "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/me.pdf, https://www.stata.com/manuals/memixed.pdf, https://www.stata.com/manuals/memelogit.pdf, https://www.stata.com/manuals/memeglm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
   },
   {
-    "label_id": "guide.mixed_effects.mixed_generalized.v1",
+    "label_id": "guide.mixed_effects.mixed_meglm_family_link.v1",
     "contract_ids": [
-      "mixed_effects.mixed_generalized"
+      "mixed_effects.mixed_meglm_family_link"
     ],
     "canonical_generation_class": "reference_only",
     "checkpoint": "estimation.conventional",
     "variant_group": "mixed_effects",
-    "variant_id": "mixed_generalized",
+    "variant_id": "mixed_meglm_family_link",
     "stage": "estimation",
     "method_family": "mixed_effects",
     "source_spans": [
@@ -3175,12 +3380,12 @@
       "researcher has explicitly selected the  transition"
     ],
     "selection_conditions": [
-      "researcher declares the outcome/data form and all inputs required by mixed_generalized",
+      "researcher declares the outcome/data form and all inputs required by mixed_meglm_family_link",
       "researcher resolves choices not supplied by this guide: level hierarchy/crossing; random intercept/slope; covariance structure; family/link",
       "guide does not supply: level hierarchy/crossing; random intercept/slope; covariance structure; family/link"
     ],
     "required_changes": [
-      "replace only the declared variables, options, and state/output bindings for mixed_generalized"
+      "replace only the declared variables, options, and state/output bindings for mixed_meglm_family_link"
     ],
     "minimal_edit_fields": [
       "declared outcome or input variables",
@@ -3214,11 +3419,11 @@
       ]
     },
     "source_specific_elements": [
-      ""
+      "meglm outcome treatment control_1 || cluster_id:, family(family_name) link(link_name)"
     ],
     "reusable_core": "선언된 입력과 선택을 보존한  mechanics만 제공한다.",
     "generality_rationale_ko": "공식 StataCorp 문서의  mechanics만 보존하며 표본·식별·추정·해석 결정을 자동화하지 않는다.",
-    "variant_distinction": "[mixed_generalized]  상태는 같은 mixed_effects family의 다른 옵션·상태와 대체하거나 이어 붙이지 않는다.",
+    "variant_distinction": "[mixed_meglm_family_link]  상태는 같은 mixed_effects family의 다른 옵션·상태와 대체하거나 이어 붙이지 않는다.",
     "does_not_supply": [
       "level hierarchy/crossing",
       "random intercept/slope",
@@ -4060,6 +4265,107 @@
     "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rsureg.pdf, https://www.stata.com/manuals/rmvreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
   },
   {
+    "label_id": "guide.systems_regression.systems_equation_prediction.v1",
+    "contract_ids": [
+      "systems_regression.systems_equation_prediction"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.conventional",
+    "variant_group": "systems_regression",
+    "variant_id": "systems_equation_prediction",
+    "stage": "estimation",
+    "method_family": "systems_regression",
+    "source_spans": [
+      [
+        89,
+        89
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/rsureg.pdf",
+      "https://www.stata.com/manuals/rmvreg.pdf"
+    ],
+    "source_release": "Stata 19 documentation checked 2026-08-26",
+    "version": "Base [R]; verify postestimation compatibility.",
+    "release_notes": "Base [R]; verify postestimation compatibility.",
+    "research_situations": [
+      "The researcher has declared the state needed for the bounded systems_equation_prediction guide mechanic."
+    ],
+    "selection_conditions": [
+      "the active state satisfies the declared inputs for systems_equation_prediction",
+      "all research-design, sample, inference, and interpretation choices are supplied outside the guide"
+    ],
+    "required_changes": [
+      "replace only declared variables, keys, options, and output bindings; preserve the bounded mechanic"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options",
+      "declared state or output binding"
+    ],
+    "tradeoffs": [
+      "equation-specific prediction consumes a fitted system rather than testing coefficients.",
+      "the guide does not supply a research design, sample, estimand, or inference choice"
+    ],
+    "state_signature": {
+      "requires": [
+        "active named-equation system fit",
+        "declared equation"
+      ],
+      "observable_signals": [
+        "predict",
+        "equation()"
+      ],
+      "produces": [
+        "equation-specific prediction"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "unknown",
+      "record_unit": "one declared analysis observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp systems_regression manual mechanics",
+      "time_structure": "not_stated",
+      "variable_characteristics": [
+        "declared outcome/input variables"
+      ]
+    },
+    "source_specific_elements": [
+      "predict eq1_prediction, equation(eq1)"
+    ],
+    "reusable_core": "Retain only the bounded systems_equation_prediction mechanic after its inputs and state have been declared.",
+    "generality_rationale_ko": "systems_equation_prediction의 명령 mechanics만 보존하며 연구 설계와 표본, 추론 선택은 자동으로 정하지 않는다.",
+    "variant_distinction": "[systems_equation_prediction] equation-specific prediction consumes a fitted system rather than testing coefficients. It is not interchangeable with sibling variants in systems_regression.",
+    "does_not_supply": [
+      "which equations belong jointly",
+      "cross-equation equality hypothesis",
+      "error-correlation rationale",
+      "common sample policy"
+    ],
+    "must_not_supply": [
+      "which equations belong jointly",
+      "cross-equation equality hypothesis",
+      "error-correlation rationale",
+      "common sample policy"
+    ],
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "safety_notes": [
+      "no loops",
+      "no installation or dependency probes",
+      "no shell/process escape",
+      "no TeX/Word output",
+      "no unsafe merge or forced duplicate deletion"
+    ],
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rsureg.pdf, https://www.stata.com/manuals/rmvreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+  },
+  {
     "label_id": "guide.gmm.gmm_moments.v1",
     "contract_ids": [
       "gmm.gmm_moments"
@@ -4664,14 +4970,14 @@
     "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causaldidregress.pdf, https://www.stata.com/stata17/difference-in-differences-DID-DDD/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
   },
   {
-    "label_id": "guide.standard_did.did_group_time.v1",
+    "label_id": "guide.standard_did.did_ptrends.v1",
     "contract_ids": [
-      "standard_did.did_group_time"
+      "standard_did.did_ptrends"
     ],
     "canonical_generation_class": "reference_only",
     "checkpoint": "estimation.conventional",
     "variant_group": "standard_did",
-    "variant_id": "did_group_time",
+    "variant_id": "did_ptrends",
     "stage": "estimation",
     "method_family": "standard_did",
     "source_spans": [
@@ -4693,12 +4999,12 @@
       "researcher has explicitly selected the group()/time() transition"
     ],
     "selection_conditions": [
-      "researcher declares the outcome/data form and all inputs required by did_group_time",
+      "researcher declares the outcome/data form and all inputs required by did_ptrends",
       "researcher resolves choices not supplied by this guide: panel versus repeated-cross-section status; treatment/group/time construction; parallel-trends credibility; clustering/inference design",
       "guide does not supply: panel versus repeated-cross-section status; treatment/group/time construction; parallel-trends credibility; clustering/inference design"
     ],
     "required_changes": [
-      "replace only the declared variables, options, and state/output bindings for did_group_time"
+      "replace only the declared variables, options, and state/output bindings for did_ptrends"
     ],
     "minimal_edit_fields": [
       "declared outcome or input variables",
@@ -4732,11 +5038,11 @@
       ]
     },
     "source_specific_elements": [
-      "group()/time()"
+      "estat ptrends"
     ],
     "reusable_core": "선언된 입력과 선택을 보존한 group()/time() mechanics만 제공한다.",
     "generality_rationale_ko": "공식 StataCorp 문서의 group()/time() mechanics만 보존하며 표본·식별·추정·해석 결정을 자동화하지 않는다.",
-    "variant_distinction": "[did_group_time] group()/time() 상태는 같은 standard_did family의 다른 옵션·상태와 대체하거나 이어 붙이지 않는다.",
+    "variant_distinction": "[did_ptrends] group()/time() 상태는 같은 standard_did family의 다른 옵션·상태와 대체하거나 이어 붙이지 않는다.",
     "does_not_supply": [
       "panel versus repeated-cross-section status",
       "treatment/group/time construction",
@@ -4766,14 +5072,14 @@
     "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causaldidregress.pdf, https://www.stata.com/stata17/difference-in-differences-DID-DDD/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
   },
   {
-    "label_id": "guide.standard_did.did_postestimation.v1",
+    "label_id": "guide.standard_did.did_trendplots.v1",
     "contract_ids": [
-      "standard_did.did_postestimation"
+      "standard_did.did_trendplots"
     ],
     "canonical_generation_class": "reference_only",
     "checkpoint": "estimation.conventional",
     "variant_group": "standard_did",
-    "variant_id": "did_postestimation",
+    "variant_id": "did_trendplots",
     "stage": "estimation",
     "method_family": "standard_did",
     "source_spans": [
@@ -4795,12 +5101,12 @@
       "researcher has explicitly selected the estat postestimation transition"
     ],
     "selection_conditions": [
-      "researcher declares the outcome/data form and all inputs required by did_postestimation",
+      "researcher declares the outcome/data form and all inputs required by did_trendplots",
       "researcher resolves choices not supplied by this guide: panel versus repeated-cross-section status; treatment/group/time construction; parallel-trends credibility; clustering/inference design",
       "guide does not supply: panel versus repeated-cross-section status; treatment/group/time construction; parallel-trends credibility; clustering/inference design"
     ],
     "required_changes": [
-      "replace only the declared variables, options, and state/output bindings for did_postestimation"
+      "replace only the declared variables, options, and state/output bindings for did_trendplots"
     ],
     "minimal_edit_fields": [
       "declared outcome or input variables",
@@ -4834,11 +5140,11 @@
       ]
     },
     "source_specific_elements": [
-      "estat postestimation"
+      "estat trendplots"
     ],
     "reusable_core": "선언된 입력과 선택을 보존한 estat postestimation mechanics만 제공한다.",
     "generality_rationale_ko": "공식 StataCorp 문서의 estat postestimation mechanics만 보존하며 표본·식별·추정·해석 결정을 자동화하지 않는다.",
-    "variant_distinction": "[did_postestimation] estat postestimation 상태는 같은 standard_did family의 다른 옵션·상태와 대체하거나 이어 붙이지 않는다.",
+    "variant_distinction": "[did_trendplots] estat postestimation 상태는 같은 standard_did family의 다른 옵션·상태와 대체하거나 이어 붙이지 않는다.",
     "does_not_supply": [
       "panel versus repeated-cross-section status",
       "treatment/group/time construction",
@@ -5276,6 +5582,107 @@
     "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causalxthdidregress.pdf, https://www.stata.com/features/overview/heterogeneous-difference-in-differences/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
   },
   {
+    "label_id": "guide.heterogeneous_did.hdid_ptrends.v1",
+    "contract_ids": [
+      "heterogeneous_did.hdid_ptrends"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.conventional",
+    "variant_group": "heterogeneous_did",
+    "variant_id": "hdid_ptrends",
+    "stage": "estimation",
+    "method_family": "heterogeneous_did",
+    "source_spans": [
+      [
+        90,
+        90
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/causal.pdf",
+      "https://www.stata.com/manuals/causalxthdidregress.pdf",
+      "https://www.stata.com/features/overview/heterogeneous-difference-in-differences/"
+    ],
+    "source_release": "Stata 19 documentation checked 2026-08-26",
+    "version": "Introduced Stata 18; StataNow adds capabilities, so freeze target release.",
+    "release_notes": "Introduced Stata 18; StataNow adds capabilities, so freeze target release.",
+    "research_situations": [
+      "The researcher has declared the state needed for the bounded hdid_ptrends guide mechanic."
+    ],
+    "selection_conditions": [
+      "the active state satisfies the declared inputs for hdid_ptrends",
+      "all research-design, sample, inference, and interpretation choices are supplied outside the guide"
+    ],
+    "required_changes": [
+      "replace only declared variables, keys, options, and output bindings; preserve the bounded mechanic"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options",
+      "declared state or output binding"
+    ],
+    "tradeoffs": [
+      "the diagnostic consumer differs from aggregation and ATET plotting.",
+      "the guide does not supply a research design, sample, estimand, or inference choice"
+    ],
+    "state_signature": {
+      "requires": [
+        "active heterogeneous-DID fit",
+        "declared pretrend diagnostic request"
+      ],
+      "observable_signals": [
+        "estat ptrends"
+      ],
+      "produces": [
+        "pretrend diagnostic state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "unknown",
+      "record_unit": "one declared analysis observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp heterogeneous_did manual mechanics",
+      "time_structure": "not_stated",
+      "variable_characteristics": [
+        "declared outcome/input variables"
+      ]
+    },
+    "source_specific_elements": [
+      "estat ptrends"
+    ],
+    "reusable_core": "Retain only the bounded hdid_ptrends mechanic after its inputs and state have been declared.",
+    "generality_rationale_ko": "hdid_ptrends의 명령 mechanics만 보존하며 연구 설계와 표본, 추론 선택은 자동으로 정하지 않는다.",
+    "variant_distinction": "[hdid_ptrends] the diagnostic consumer differs from aggregation and ATET plotting. It is not interchangeable with sibling variants in heterogeneous_did.",
+    "does_not_supply": [
+      "staggered/adoption coding",
+      "estimator",
+      "comparison/support population",
+      "aggregation and event-time window"
+    ],
+    "must_not_supply": [
+      "staggered/adoption coding",
+      "estimator",
+      "comparison/support population",
+      "aggregation and event-time window"
+    ],
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "safety_notes": [
+      "no loops",
+      "no installation or dependency probes",
+      "no shell/process escape",
+      "no TeX/Word output",
+      "no unsafe merge or forced duplicate deletion"
+    ],
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causalxthdidregress.pdf, https://www.stata.com/features/overview/heterogeneous-difference-in-differences/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+  },
+  {
     "label_id": "guide.teffects.teffects_ra.v1",
     "contract_ids": [
       "teffects.teffects_ra"
@@ -5682,6 +6089,312 @@
     "runtime_status": "pending",
     "selector_status": "pending",
     "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causalteffects.pdf, https://www.stata.com/features/overview/causal-inference/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+  },
+  {
+    "label_id": "guide.teffects.teffects_ipw.v1",
+    "contract_ids": [
+      "teffects.teffects_ipw"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.conventional",
+    "variant_group": "teffects",
+    "variant_id": "teffects_ipw",
+    "stage": "estimation",
+    "method_family": "teffects",
+    "source_spans": [
+      [
+        83,
+        83
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/causal.pdf",
+      "https://www.stata.com/manuals/causalteffects.pdf",
+      "https://www.stata.com/features/overview/causal-inference/"
+    ],
+    "source_release": "Stata 19 documentation checked 2026-08-26",
+    "version": "[CAUSAL]; command suite predates 19 but options expand by release.",
+    "release_notes": "[CAUSAL]; command suite predates 19 but options expand by release.",
+    "research_situations": [
+      "researcher has explicitly selected the teffects ipw transition"
+    ],
+    "selection_conditions": [
+      "researcher declares the outcome/data form and all inputs required by teffects_ipw",
+      "researcher resolves choices not supplied by this guide: ATE versus ATET; unconfoundedness covariate set; propensity/outcome model; caliper/neighbors or overlap handling",
+      "guide does not supply: ATE versus ATET; unconfoundedness covariate set; propensity/outcome model; caliper/neighbors or overlap handling"
+    ],
+    "required_changes": [
+      "replace only the declared variables, options, and state/output bindings for teffects_ipw"
+    ],
+    "minimal_edit_fields": [
+      "declared outcome or input variables",
+      "declared model/options",
+      "declared sample or state binding"
+    ],
+    "tradeoffs": [
+      "keeps teffects ipw mechanics visible",
+      "does not supply the researcher's model, identification, sample, inference, or interpretation decisions",
+      "does not supply: ATE versus ATET; unconfoundedness covariate set; propensity/outcome model; caliper/neighbors or overlap handling"
+    ],
+    "state_signature": {
+      "requires": [
+        "outcome/treatment, estimand, model forms or matching metric, overlap design"
+      ],
+      "observable_signals": [
+        "teffects ipw"
+      ],
+      "produces": [
+        "treatment-effect e() results plus balance/overlap/postestimation state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "unknown",
+      "record_unit": "one declared analysis observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp teffects manual mechanics",
+      "time_structure": "not_stated",
+      "variable_characteristics": [
+        "declared outcome/input variables"
+      ]
+    },
+    "source_specific_elements": [
+      "teffects ipw"
+    ],
+    "reusable_core": "Declared mechanics only; researcher supplies substantive choices.",
+    "generality_rationale_ko": "Official StataCorp mechanics only; substantive decisions remain with the researcher.",
+    "variant_distinction": "[teffects_ipw] remains distinct from sibling material states.",
+    "does_not_supply": [
+      "ATE versus ATET",
+      "unconfoundedness covariate set",
+      "propensity/outcome model",
+      "caliper/neighbors or overlap handling"
+    ],
+    "must_not_supply": [
+      "ATE versus ATET",
+      "unconfoundedness covariate set",
+      "propensity/outcome model",
+      "caliper/neighbors or overlap handling"
+    ],
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "safety_notes": [
+      "no loops",
+      "no installation or dependency probes",
+      "no shell/process escape",
+      "no TeX/Word output",
+      "no unsafe merge or forced duplicate deletion"
+    ],
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "Official StataCorp bounded mechanics only; reference-only pending audit, runtime, and selector checks."
+  },
+  {
+    "label_id": "guide.teffects.teffects_aipw.v1",
+    "contract_ids": [
+      "teffects.teffects_aipw"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.conventional",
+    "variant_group": "teffects",
+    "variant_id": "teffects_aipw",
+    "stage": "estimation",
+    "method_family": "teffects",
+    "source_spans": [
+      [
+        84,
+        84
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/causal.pdf",
+      "https://www.stata.com/manuals/causalteffects.pdf",
+      "https://www.stata.com/features/overview/causal-inference/"
+    ],
+    "source_release": "Stata 19 documentation checked 2026-08-26",
+    "version": "[CAUSAL]; command suite predates 19 but options expand by release.",
+    "release_notes": "[CAUSAL]; command suite predates 19 but options expand by release.",
+    "research_situations": [
+      "researcher has explicitly selected the teffects aipw transition"
+    ],
+    "selection_conditions": [
+      "researcher declares the outcome/data form and all inputs required by teffects_aipw_aipw",
+      "researcher resolves choices not supplied by this guide: ATE versus ATET; unconfoundedness covariate set; propensity/outcome model; caliper/neighbors or overlap handling",
+      "guide does not supply: ATE versus ATET; unconfoundedness covariate set; propensity/outcome model; caliper/neighbors or overlap handling"
+    ],
+    "required_changes": [
+      "replace only the declared variables, options, and state/output bindings for teffects_aipw_aipw"
+    ],
+    "minimal_edit_fields": [
+      "declared outcome or input variables",
+      "declared model/options",
+      "declared sample or state binding"
+    ],
+    "tradeoffs": [
+      "keeps teffects aipw mechanics visible",
+      "does not supply the researcher's model, identification, sample, inference, or interpretation decisions",
+      "does not supply: ATE versus ATET; unconfoundedness covariate set; propensity/outcome model; caliper/neighbors or overlap handling"
+    ],
+    "state_signature": {
+      "requires": [
+        "outcome/treatment, estimand, model forms or matching metric, overlap design"
+      ],
+      "observable_signals": [
+        "teffects aipw"
+      ],
+      "produces": [
+        "treatment-effect e() results plus balance/overlap/postestimation state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "unknown",
+      "record_unit": "one declared analysis observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp teffects manual mechanics",
+      "time_structure": "not_stated",
+      "variable_characteristics": [
+        "declared outcome/input variables"
+      ]
+    },
+    "source_specific_elements": [
+      "teffects aipw"
+    ],
+    "reusable_core": "Declared mechanics only; researcher supplies substantive choices.",
+    "generality_rationale_ko": "Official StataCorp mechanics only; substantive decisions remain with the researcher.",
+    "variant_distinction": "[teffects_aipw_aipw] remains distinct from sibling material states.",
+    "does_not_supply": [
+      "ATE versus ATET",
+      "unconfoundedness covariate set",
+      "propensity/outcome model",
+      "caliper/neighbors or overlap handling"
+    ],
+    "must_not_supply": [
+      "ATE versus ATET",
+      "unconfoundedness covariate set",
+      "propensity/outcome model",
+      "caliper/neighbors or overlap handling"
+    ],
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "safety_notes": [
+      "no loops",
+      "no installation or dependency probes",
+      "no shell/process escape",
+      "no TeX/Word output",
+      "no unsafe merge or forced duplicate deletion"
+    ],
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "Official StataCorp bounded mechanics only; reference-only pending audit, runtime, and selector checks."
+  },
+  {
+    "label_id": "guide.teffects.teffects_psmatch.v1",
+    "contract_ids": [
+      "teffects.teffects_psmatch"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.conventional",
+    "variant_group": "teffects",
+    "variant_id": "teffects_psmatch",
+    "stage": "estimation",
+    "method_family": "teffects",
+    "source_spans": [
+      [
+        85,
+        85
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/causal.pdf",
+      "https://www.stata.com/manuals/causalteffects.pdf",
+      "https://www.stata.com/features/overview/causal-inference/"
+    ],
+    "source_release": "Stata 19 documentation checked 2026-08-26",
+    "version": "[CAUSAL]; command suite predates 19 but options expand by release.",
+    "release_notes": "[CAUSAL]; command suite predates 19 but options expand by release.",
+    "research_situations": [
+      "researcher has explicitly selected the teffects psmatch transition"
+    ],
+    "selection_conditions": [
+      "researcher declares the outcome/data form and all inputs required by teffects_psmatch",
+      "researcher resolves choices not supplied by this guide: ATE versus ATET; unconfoundedness covariate set; propensity/outcome model; caliper/neighbors or overlap handling",
+      "guide does not supply: ATE versus ATET; unconfoundedness covariate set; propensity/outcome model; caliper/neighbors or overlap handling"
+    ],
+    "required_changes": [
+      "replace only the declared variables, options, and state/output bindings for teffects_psmatch"
+    ],
+    "minimal_edit_fields": [
+      "declared outcome or input variables",
+      "declared model/options",
+      "declared sample or state binding"
+    ],
+    "tradeoffs": [
+      "keeps teffects psmatch mechanics visible",
+      "does not supply the researcher's model, identification, sample, inference, or interpretation decisions",
+      "does not supply: ATE versus ATET; unconfoundedness covariate set; propensity/outcome model; caliper/neighbors or overlap handling"
+    ],
+    "state_signature": {
+      "requires": [
+        "outcome/treatment, estimand, model forms or matching metric, overlap design"
+      ],
+      "observable_signals": [
+        "teffects psmatch"
+      ],
+      "produces": [
+        "treatment-effect e() results plus balance/overlap/postestimation state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "unknown",
+      "record_unit": "one declared analysis observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp teffects manual mechanics",
+      "time_structure": "not_stated",
+      "variable_characteristics": [
+        "declared outcome/input variables"
+      ]
+    },
+    "source_specific_elements": [
+      "teffects psmatch"
+    ],
+    "reusable_core": "Declared mechanics only; researcher supplies substantive choices.",
+    "generality_rationale_ko": "Official StataCorp mechanics only; substantive decisions remain with the researcher.",
+    "variant_distinction": "[teffects_matching] remains distinct from sibling material states.",
+    "does_not_supply": [
+      "ATE versus ATET",
+      "unconfoundedness covariate set",
+      "propensity/outcome model",
+      "caliper/neighbors or overlap handling"
+    ],
+    "must_not_supply": [
+      "ATE versus ATET",
+      "unconfoundedness covariate set",
+      "propensity/outcome model",
+      "caliper/neighbors or overlap handling"
+    ],
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "safety_notes": [
+      "no loops",
+      "no installation or dependency probes",
+      "no shell/process escape",
+      "no TeX/Word output",
+      "no unsafe merge or forced duplicate deletion"
+    ],
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "Official StataCorp bounded mechanics only; reference-only pending audit, runtime, and selector checks."
   },
   {
     "label_id": "guide.endogenous_treatment.endogenous_eteffects.v1",
@@ -6302,6 +7015,113 @@
     "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststset.pdf, https://www.stata.com/manuals/ststsplit.pdf, https://www.stata.com/manuals/ststjoin.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
   },
   {
+    "label_id": "guide.survival_setup_split.survival_stset_origin_enter_id.v1",
+    "contract_ids": [
+      "survival_setup_split.survival_stset_origin_enter_id"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.conventional",
+    "variant_group": "survival_setup_split",
+    "variant_id": "survival_stset_origin_enter_id",
+    "stage": "estimation_or_postestimation",
+    "method_family": "survival_setup_split",
+    "source_spans": [
+      [
+        91,
+        91
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/st.pdf",
+      "https://www.stata.com/manuals/ststset.pdf",
+      "https://www.stata.com/manuals/ststsplit.pdf",
+      "https://www.stata.com/manuals/ststjoin.pdf"
+    ],
+    "source_release": "Stata 19 documentation checked 2026-08-26",
+    "version": "[ST]; syntax/options must match installed release.",
+    "release_notes": "[ST]; syntax/options must match installed release.",
+    "research_situations": [
+      "The researcher has declared the state needed for the bounded survival_stset_origin_enter_id guide mechanic."
+    ],
+    "selection_conditions": [
+      "the active state satisfies the declared inputs for survival_stset_origin_enter_id",
+      "all research-design, sample, inference, and interpretation choices are supplied outside the guide"
+    ],
+    "required_changes": [
+      "replace only declared variables, keys, options, and output bindings; preserve the bounded mechanic"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options",
+      "declared state or output binding"
+    ],
+    "tradeoffs": [
+      "explicit origin changes analysis-time state beyond enter()/id() alone.",
+      "the guide does not supply a research design, sample, estimand, or inference choice"
+    ],
+    "state_signature": {
+      "requires": [
+        "declared failure coding",
+        "time origin",
+        "delayed entry",
+        "subject identifier"
+      ],
+      "observable_signals": [
+        "stset",
+        "origin(time)",
+        "enter(time)",
+        "id()"
+      ],
+      "produces": [
+        "survival declaration with origin, entry, and subject state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "unknown",
+      "record_unit": "one declared analysis observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp survival_setup_split manual mechanics",
+      "time_structure": "not_stated",
+      "variable_characteristics": [
+        "declared outcome/input variables"
+      ]
+    },
+    "source_specific_elements": [
+      "stset stop_time, failure(failure) origin(time origin_time) enter(time start_time) id(subject_id)"
+    ],
+    "reusable_core": "Retain only the bounded survival_stset_origin_enter_id mechanic after its inputs and state have been declared.",
+    "generality_rationale_ko": "survival_stset_origin_enter_id의 명령 mechanics만 보존하며 연구 설계와 표본, 추론 선택은 자동으로 정하지 않는다.",
+    "variant_distinction": "[survival_stset_origin_enter_id] explicit origin changes analysis-time state beyond enter()/id() alone. It is not interchangeable with sibling variants in survival_setup_split.",
+    "does_not_supply": [
+      "failure/censoring coding",
+      "time scale/origin/entry",
+      "subject identifier",
+      "time-varying cutpoints"
+    ],
+    "must_not_supply": [
+      "failure/censoring coding",
+      "time scale/origin/entry",
+      "subject identifier",
+      "time-varying cutpoints"
+    ],
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "safety_notes": [
+      "no loops",
+      "no installation or dependency probes",
+      "no shell/process escape",
+      "no TeX/Word output",
+      "no unsafe merge or forced duplicate deletion"
+    ],
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststset.pdf, https://www.stata.com/manuals/ststsplit.pdf, https://www.stata.com/manuals/ststjoin.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+  },
+  {
     "label_id": "guide.survival_setup_split.survival_stsplit.v1",
     "contract_ids": [
       "survival_setup_split.survival_stsplit"
@@ -6583,6 +7403,215 @@
     "reusable_core": "선언된 입력과 선택을 보존한 stcox mechanics만 제공한다.",
     "generality_rationale_ko": "공식 StataCorp 문서의 stcox mechanics만 보존하며 표본·식별·추정·해석 결정을 자동화하지 않는다.",
     "variant_distinction": "[survival_stcox] stcox 상태는 같은 survival_models family의 다른 옵션·상태와 대체하거나 이어 붙이지 않는다.",
+    "does_not_supply": [
+      "hazard versus AFT/model distribution",
+      "PH assumption decision",
+      "time-varying specification",
+      "strata/cluster/inference"
+    ],
+    "must_not_supply": [
+      "hazard versus AFT/model distribution",
+      "PH assumption decision",
+      "time-varying specification",
+      "strata/cluster/inference"
+    ],
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "safety_notes": [
+      "no loops",
+      "no installation or dependency probes",
+      "no shell/process escape",
+      "no TeX/Word output",
+      "no unsafe merge or forced duplicate deletion"
+    ],
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststcox.pdf, https://www.stata.com/manuals/ststreg.pdf, https://www.stata.com/manuals/ststsgraph.pdf, https://www.stata.com/manuals/stststest.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+  },
+  {
+    "label_id": "guide.survival_models.survival_stcox_tvc_texp_tvc_texp.v1",
+    "contract_ids": [
+      "survival_models.survival_stcox_tvc_texp"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.conventional",
+    "variant_group": "survival_models",
+    "variant_id": "survival_stcox_tvc_texp",
+    "stage": "estimation_or_postestimation",
+    "method_family": "survival_models",
+    "source_spans": [
+      [
+        92,
+        92
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/st.pdf",
+      "https://www.stata.com/manuals/ststcox.pdf",
+      "https://www.stata.com/manuals/ststreg.pdf",
+      "https://www.stata.com/manuals/ststsgraph.pdf",
+      "https://www.stata.com/manuals/stststest.pdf"
+    ],
+    "source_release": "Stata 19 documentation checked 2026-08-26",
+    "version": "[ST]; stcox/streg options and postestimation vary by release.",
+    "release_notes": "[ST]; stcox/streg options and postestimation vary by release.",
+    "research_situations": [
+      "The researcher has declared the state needed for the bounded survival_stcox_tvc_texp guide mechanic."
+    ],
+    "selection_conditions": [
+      "the active state satisfies the declared inputs for survival_stcox_tvc_texp",
+      "all research-design, sample, inference, and interpretation choices are supplied outside the guide"
+    ],
+    "required_changes": [
+      "replace only declared variables, keys, options, and output bindings; preserve the bounded mechanic"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options",
+      "declared state or output binding"
+    ],
+    "tradeoffs": [
+      "time-varying coefficient mechanics differ from a proportional-hazards fit.",
+      "the guide does not supply a research design, sample, estimand, or inference choice"
+    ],
+    "state_signature": {
+      "requires": [
+        "stset data",
+        "declared time-varying coefficient and time function"
+      ],
+      "observable_signals": [
+        "stcox",
+        "tvc()",
+        "texp()"
+      ],
+      "produces": [
+        "Cox fit with declared time-varying coefficient state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "unknown",
+      "record_unit": "one declared analysis observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp survival_models manual mechanics",
+      "time_structure": "not_stated",
+      "variable_characteristics": [
+        "declared outcome/input variables"
+      ]
+    },
+    "source_specific_elements": [
+      "stcox treatment control_1 control_2, tvc(treatment) texp(_t)"
+    ],
+    "reusable_core": "Retain only the bounded survival_stcox_tvc_texp mechanic after its inputs and state have been declared.",
+    "generality_rationale_ko": "survival_stcox_tvc_texp의 명령 mechanics만 보존하며 연구 설계와 표본, 추론 선택은 자동으로 정하지 않는다.",
+    "variant_distinction": "[survival_stcox_tvc_texp] time-varying coefficient mechanics differ from a proportional-hazards fit. It is not interchangeable with sibling variants in survival_models.",
+    "does_not_supply": [
+      "hazard versus AFT/model distribution",
+      "PH assumption decision",
+      "time-varying specification",
+      "strata/cluster/inference"
+    ],
+    "must_not_supply": [
+      "hazard versus AFT/model distribution",
+      "PH assumption decision",
+      "time-varying specification",
+      "strata/cluster/inference"
+    ],
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "safety_notes": [
+      "no loops",
+      "no installation or dependency probes",
+      "no shell/process escape",
+      "no TeX/Word output",
+      "no unsafe merge or forced duplicate deletion"
+    ],
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststcox.pdf, https://www.stata.com/manuals/ststreg.pdf, https://www.stata.com/manuals/ststsgraph.pdf, https://www.stata.com/manuals/stststest.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+  },
+  {
+    "label_id": "guide.survival_models.survival_stcox_ph_diagnostic_ph_diagnostic.v1",
+    "contract_ids": [
+      "survival_models.survival_stcox_ph_diagnostic"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.conventional",
+    "variant_group": "survival_models",
+    "variant_id": "survival_stcox_ph_diagnostic",
+    "stage": "estimation_or_postestimation",
+    "method_family": "survival_models",
+    "source_spans": [
+      [
+        93,
+        93
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/st.pdf",
+      "https://www.stata.com/manuals/ststcox.pdf",
+      "https://www.stata.com/manuals/ststreg.pdf",
+      "https://www.stata.com/manuals/ststsgraph.pdf",
+      "https://www.stata.com/manuals/stststest.pdf"
+    ],
+    "source_release": "Stata 19 documentation checked 2026-08-26",
+    "version": "[ST]; stcox/streg options and postestimation vary by release.",
+    "release_notes": "[ST]; stcox/streg options and postestimation vary by release.",
+    "research_situations": [
+      "The researcher has declared the state needed for the bounded survival_stcox_ph_diagnostic guide mechanic."
+    ],
+    "selection_conditions": [
+      "the active state satisfies the declared inputs for survival_stcox_ph_diagnostic",
+      "all research-design, sample, inference, and interpretation choices are supplied outside the guide"
+    ],
+    "required_changes": [
+      "replace only declared variables, keys, options, and output bindings; preserve the bounded mechanic"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options",
+      "declared state or output binding"
+    ],
+    "tradeoffs": [
+      "the postestimation diagnostic consumes rather than refits the Cox model.",
+      "the guide does not supply a research design, sample, estimand, or inference choice"
+    ],
+    "state_signature": {
+      "requires": [
+        "active stcox fit",
+        "declared PH diagnostic request"
+      ],
+      "observable_signals": [
+        "estat phtest",
+        "detail"
+      ],
+      "produces": [
+        "proportional-hazards diagnostic state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "unknown",
+      "record_unit": "one declared analysis observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp survival_models manual mechanics",
+      "time_structure": "not_stated",
+      "variable_characteristics": [
+        "declared outcome/input variables"
+      ]
+    },
+    "source_specific_elements": [
+      "estat phtest, detail"
+    ],
+    "reusable_core": "Retain only the bounded survival_stcox_ph_diagnostic mechanic after its inputs and state have been declared.",
+    "generality_rationale_ko": "survival_stcox_ph_diagnostic의 명령 mechanics만 보존하며 연구 설계와 표본, 추론 선택은 자동으로 정하지 않는다.",
+    "variant_distinction": "[survival_stcox_ph_diagnostic] the postestimation diagnostic consumes rather than refits the Cox model. It is not interchangeable with sibling variants in survival_models.",
     "does_not_supply": [
       "hazard versus AFT/model distribution",
       "PH assumption decision",
@@ -7340,14 +8369,14 @@
     "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/meta.pdf, https://www.stata.com/manuals/metametaset.pdf, https://www.stata.com/manuals/metametaesize.pdf, https://www.stata.com/manuals/metametasummarize.pdf, https://www.stata.com/manuals/metametaforestplot.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
   },
   {
-    "label_id": "guide.multiple_imputation.mi_impute.v1",
+    "label_id": "guide.multiple_imputation.mi_impute_chained_add_rseed_chained_add_rseed.v1",
     "contract_ids": [
-      "multiple_imputation.mi_impute"
+      "multiple_imputation.mi_impute_chained_add_rseed"
     ],
     "canonical_generation_class": "reference_only",
     "checkpoint": "estimation.conventional",
     "variant_group": "multiple_imputation",
-    "variant_id": "mi_impute",
+    "variant_id": "mi_impute_chained_add_rseed",
     "stage": "estimation_or_postestimation",
     "method_family": "multiple_imputation",
     "source_spans": [
@@ -7371,12 +8400,12 @@
       "researcher has explicitly selected the mi impute transition"
     ],
     "selection_conditions": [
-      "researcher declares the outcome/data form and all inputs required by mi_impute",
+      "researcher declares the outcome/data form and all inputs required by mi_impute_chained_add_rseed",
       "researcher resolves choices not supplied by this guide: missingness assumption; imputation model per variable; number of imputations/seed; passive transformations",
       "guide does not supply: missingness assumption; imputation model per variable; number of imputations/seed; passive transformations"
     ],
     "required_changes": [
-      "replace only the declared variables, options, and state/output bindings for mi_impute"
+      "replace only the declared variables, options, and state/output bindings for mi_impute_chained_add_rseed"
     ],
     "minimal_edit_fields": [
       "declared outcome or input variables",
@@ -7410,11 +8439,119 @@
       ]
     },
     "source_specific_elements": [
-      "mi impute"
+      "mi impute chained (regress) outcome treatment control_1 = control_2, add(5) rseed(12345)"
     ],
     "reusable_core": "선언된 입력과 선택을 보존한 mi impute mechanics만 제공한다.",
     "generality_rationale_ko": "공식 StataCorp 문서의 mi impute mechanics만 보존하며 표본·식별·추정·해석 결정을 자동화하지 않는다.",
-    "variant_distinction": "[mi_impute] mi impute 상태는 같은 multiple_imputation family의 다른 옵션·상태와 대체하거나 이어 붙이지 않는다.",
+    "variant_distinction": "[mi_impute_chained_add_rseed] mi impute 상태는 같은 multiple_imputation family의 다른 옵션·상태와 대체하거나 이어 붙이지 않는다.",
+    "does_not_supply": [
+      "missingness assumption",
+      "imputation model per variable",
+      "number of imputations/seed",
+      "passive transformations"
+    ],
+    "must_not_supply": [
+      "missingness assumption",
+      "imputation model per variable",
+      "number of imputations/seed",
+      "passive transformations"
+    ],
+    "guide_derived": true,
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "research_decisions_supplied_by_guide": false,
+    "safety_notes": [
+      "no loops",
+      "no installation or dependency probes",
+      "no shell/process escape",
+      "no TeX/Word output",
+      "no unsafe merge or forced duplicate deletion"
+    ],
+    "audit_status": "candidate_pre_audit",
+    "runtime_status": "pending",
+    "selector_status": "pending",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/mi.pdf, https://www.stata.com/manuals/mimiimpute.pdf, https://www.stata.com/manuals/mimiestimate.pdf, https://www.stata.com/manuals/mimipassive.pdf, https://www.stata.com/manuals/mimiextract.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+  },
+  {
+    "label_id": "guide.multiple_imputation.mi_impute_monotone_add_rseed_chained_add_rseed.v1",
+    "contract_ids": [
+      "multiple_imputation.mi_impute_monotone_add_rseed"
+    ],
+    "canonical_generation_class": "reference_only",
+    "checkpoint": "estimation.conventional",
+    "variant_group": "multiple_imputation",
+    "variant_id": "mi_impute_monotone_add_rseed",
+    "stage": "estimation_or_postestimation",
+    "method_family": "multiple_imputation",
+    "source_spans": [
+      [
+        94,
+        94
+      ]
+    ],
+    "source_kind": "official_manual_guide_derived_mechanics",
+    "source_urls": [
+      "https://www.stata.com/manuals/mi.pdf",
+      "https://www.stata.com/manuals/mimiimpute.pdf",
+      "https://www.stata.com/manuals/mimiestimate.pdf",
+      "https://www.stata.com/manuals/mimipassive.pdf",
+      "https://www.stata.com/manuals/mimiextract.pdf"
+    ],
+    "source_release": "Stata 19 documentation checked 2026-08-26",
+    "version": "[MI]; random-number behavior can differ by version (StataCorp FAQ notes version-14 RNG change).",
+    "release_notes": "[MI]; random-number behavior can differ by version (StataCorp FAQ notes version-14 RNG change).",
+    "research_situations": [
+      "The researcher has declared the state needed for the bounded mi_impute_monotone_add_rseed guide mechanic."
+    ],
+    "selection_conditions": [
+      "the active state satisfies the declared inputs for mi_impute_monotone_add_rseed",
+      "all research-design, sample, inference, and interpretation choices are supplied outside the guide"
+    ],
+    "required_changes": [
+      "replace only declared variables, keys, options, and output bindings; preserve the bounded mechanic"
+    ],
+    "minimal_edit_fields": [
+      "declared variables or keys",
+      "declared options",
+      "declared state or output binding"
+    ],
+    "tradeoffs": [
+      "monotone and chained imputation are distinct method grammars and state contracts.",
+      "the guide does not supply a research design, sample, estimand, or inference choice"
+    ],
+    "state_signature": {
+      "requires": [
+        "mi-set data",
+        "declared monotone missingness pattern",
+        "declared regression imputation variables",
+        "M and seed"
+      ],
+      "observable_signals": [
+        "mi impute monotone",
+        "(regress)",
+        "add()",
+        "rseed()"
+      ],
+      "produces": [
+        "monotone-method MI data state"
+      ]
+    },
+    "template_input_profile": {
+      "data_structure": "unknown",
+      "record_unit": "one declared analysis observation",
+      "required_keys": [],
+      "source_basis": "official StataCorp multiple_imputation manual mechanics",
+      "time_structure": "not_stated",
+      "variable_characteristics": [
+        "declared outcome/input variables"
+      ]
+    },
+    "source_specific_elements": [
+      "mi impute monotone (regress) outcome treatment control_1 = control_2, add(5) rseed(12345)"
+    ],
+    "reusable_core": "Retain only the bounded mi_impute_monotone_add_rseed mechanic after its inputs and state have been declared.",
+    "generality_rationale_ko": "mi_impute_monotone_add_rseed의 명령 mechanics만 보존하며 연구 설계와 표본, 추론 선택은 자동으로 정하지 않는다.",
+    "variant_distinction": "[mi_impute_monotone_add_rseed] monotone and chained imputation are distinct method grammars and state contracts. It is not interchangeable with sibling variants in multiple_imputation.",
     "does_not_supply": [
       "missingness assumption",
       "imputation model per variable",
@@ -8170,516 +9307,5 @@
     "runtime_status": "pending",
     "selector_status": "pending",
     "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/bayes.pdf, https://www.stata.com/manuals/bayesbayes.pdf, https://www.stata.com/manuals/bayesbayesmh.pdf, https://www.stata.com/manuals/bayesbayesstats.pdf, https://www.stata.com/features/overview/bayesian-analysis/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
-  },
-  {
-    "label_id": "guide.glm.glm_postest.v1",
-    "contract_ids": [
-      "glm.glm_postest"
-    ],
-    "canonical_generation_class": "reference_only",
-    "checkpoint": "estimation.conventional",
-    "variant_group": "glm",
-    "variant_id": "glm_postest",
-    "stage": "estimation",
-    "method_family": "glm",
-    "source_spans": [
-      [
-        86,
-        86
-      ]
-    ],
-    "source_kind": "official_manual_guide_derived_mechanics",
-    "source_urls": [
-      "https://www.stata.com/manuals/rglm.pdf"
-    ],
-    "source_release": "Stata 19 documentation checked 2026-08-26",
-    "version": "Base [R]; verify feature/options against installed release.",
-    "release_notes": "Base [R]; verify feature/options against installed release.",
-    "research_situations": [
-      "researcher has explicitly selected the margins postestimation transition"
-    ],
-    "selection_conditions": [
-      "researcher declares the outcome/data form and all inputs required by glm_postest",
-      "researcher resolves choices not supplied by this guide: outcome distribution/link; causal interpretation; exposure versus offset meaning; clustering unit",
-      "guide does not supply: outcome distribution/link; causal interpretation; exposure versus offset meaning; clustering unit"
-    ],
-    "required_changes": [
-      "replace only the declared variables, options, and state/output bindings for glm_postest"
-    ],
-    "minimal_edit_fields": [
-      "declared outcome or input variables",
-      "declared model/options",
-      "declared sample or state binding"
-    ],
-    "tradeoffs": [
-      "keeps vce(robust mechanics visible",
-      "does not supply the researcher's model, identification, sample, inference, or interpretation decisions",
-      "does not supply: outcome distribution/link; causal interpretation; exposure versus offset meaning; clustering unit"
-    ],
-    "state_signature": {
-      "requires": [
-        "outcome, covariates, family/link, optional exposure/offset and VCE"
-      ],
-      "observable_signals": [
-        "margins postestimation"
-      ],
-      "produces": [
-        "e()-class fit plus prediction/marginal-effects state"
-      ]
-    },
-    "template_input_profile": {
-      "data_structure": "unknown",
-      "record_unit": "one declared analysis observation",
-      "required_keys": [],
-      "source_basis": "official StataCorp glm manual mechanics",
-      "time_structure": "not_stated",
-      "variable_characteristics": [
-        "declared outcome/input variables"
-      ]
-    },
-    "source_specific_elements": [
-      "margins postestimation"
-    ],
-    "reusable_core": "Declared mechanics only; researcher supplies substantive choices.",
-    "generality_rationale_ko": "Official StataCorp mechanics only; substantive decisions remain with the researcher.",
-    "variant_distinction": "[glm_postest] remains distinct from sibling material states.",
-    "does_not_supply": [
-      "outcome distribution/link",
-      "causal interpretation",
-      "exposure versus offset meaning",
-      "clustering unit"
-    ],
-    "must_not_supply": [
-      "outcome distribution/link",
-      "causal interpretation",
-      "exposure versus offset meaning",
-      "clustering unit"
-    ],
-    "guide_derived": true,
-    "independent_support": false,
-    "researcher_style_evidence": false,
-    "research_decisions_supplied_by_guide": false,
-    "safety_notes": [
-      "no loops",
-      "no installation or dependency probes",
-      "no shell/process escape",
-      "no TeX/Word output",
-      "no unsafe merge or forced duplicate deletion"
-    ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "Official StataCorp bounded mechanics only; reference-only pending audit, runtime, and selector checks."
-  },
-  {
-    "label_id": "guide.censored_interval_truncated.censored_prediction.v1",
-    "contract_ids": [
-      "censored_interval_truncated.censored_prediction"
-    ],
-    "canonical_generation_class": "reference_only",
-    "checkpoint": "estimation.conventional",
-    "variant_group": "censored_interval_truncated",
-    "variant_id": "censored_prediction",
-    "stage": "estimation",
-    "method_family": "censored_interval_truncated",
-    "source_spans": [
-      [
-        82,
-        82
-      ]
-    ],
-    "source_kind": "official_manual_guide_derived_mechanics",
-    "source_urls": [
-      "https://www.stata.com/manuals/rtobit.pdf",
-      "https://www.stata.com/manuals/rintreg.pdf",
-      "https://www.stata.com/manuals/rtruncreg.pdf"
-    ],
-    "source_release": "Stata 19 documentation checked 2026-08-26",
-    "version": "Base [R].",
-    "release_notes": "Base [R].",
-    "research_situations": [
-      "researcher has explicitly selected the predict ystar() transition"
-    ],
-    "selection_conditions": [
-      "researcher declares the outcome/data form and all inputs required by censored_prediction",
-      "researcher resolves choices not supplied by this guide: censoring versus truncation mechanism; true lower/upper limits; whether intervals encode missing/censoring; distributional assumption",
-      "guide does not supply: censoring versus truncation mechanism; true lower/upper limits; whether intervals encode missing/censoring; distributional assumption"
-    ],
-    "required_changes": [
-      "replace only the declared variables, options, and state/output bindings for censored_prediction"
-    ],
-    "minimal_edit_fields": [
-      "declared outcome or input variables",
-      "declared model/options",
-      "declared sample or state binding"
-    ],
-    "tradeoffs": [
-      "keeps tobit postestimation predict ystar() mechanics visible",
-      "does not supply the researcher's model, identification, sample, inference, or interpretation decisions",
-      "does not supply: censoring versus truncation mechanism; true lower/upper limits; whether intervals encode missing/censoring; distributional assumption"
-    ],
-    "state_signature": {
-      "requires": [
-        "active tobit estimation results",
-        "declared upper censoring limit",
-        "declared prediction target"
-      ],
-      "observable_signals": [
-        "predict",
-        "ystar(., upper_limit)"
-      ],
-      "produces": [
-        "declared censored-outcome prediction variable"
-      ]
-    },
-    "template_input_profile": {
-      "data_structure": "unknown",
-      "record_unit": "one declared analysis observation",
-      "required_keys": [],
-      "source_basis": "official StataCorp censored_interval_truncated manual mechanics",
-      "time_structure": "not_stated",
-      "variable_characteristics": [
-        "declared outcome/input variables"
-      ]
-    },
-    "source_specific_elements": [
-      "predict outcome_prediction, ystar(., upper_limit)"
-    ],
-    "reusable_core": "선행 tobit 추정 결과와 선언된 upper limit에서 predict ystar(., upper_limit) mechanics만 제공한다.",
-    "generality_rationale_ko": "Official StataCorp mechanics only; substantive decisions remain with the researcher.",
-    "variant_distinction": "[censored_prediction] 선행 tobit 결과의 censored-outcome prediction은 같은 censored_interval_truncated family의 fit variation과 대체하거나 이어 붙이지 않는다.",
-    "does_not_supply": [
-      "censoring versus truncation mechanism",
-      "true lower/upper limits",
-      "whether intervals encode missing/censoring",
-      "distributional assumption"
-    ],
-    "must_not_supply": [
-      "censoring versus truncation mechanism",
-      "true lower/upper limits",
-      "whether intervals encode missing/censoring",
-      "distributional assumption"
-    ],
-    "guide_derived": true,
-    "independent_support": false,
-    "researcher_style_evidence": false,
-    "research_decisions_supplied_by_guide": false,
-    "safety_notes": [
-      "no loops",
-      "no installation or dependency probes",
-      "no shell/process escape",
-      "no TeX/Word output",
-      "no unsafe merge or forced duplicate deletion"
-    ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "Official StataCorp bounded mechanics only; reference-only pending audit, runtime, and selector checks."
-  },
-  {
-    "label_id": "guide.teffects.teffects_ipw.v1",
-    "contract_ids": [
-      "teffects.teffects_ipw"
-    ],
-    "canonical_generation_class": "reference_only",
-    "checkpoint": "estimation.conventional",
-    "variant_group": "teffects",
-    "variant_id": "teffects_ipw",
-    "stage": "estimation",
-    "method_family": "teffects",
-    "source_spans": [
-      [
-        83,
-        83
-      ]
-    ],
-    "source_kind": "official_manual_guide_derived_mechanics",
-    "source_urls": [
-      "https://www.stata.com/manuals/causal.pdf",
-      "https://www.stata.com/manuals/causalteffects.pdf",
-      "https://www.stata.com/features/overview/causal-inference/"
-    ],
-    "source_release": "Stata 19 documentation checked 2026-08-26",
-    "version": "[CAUSAL]; command suite predates 19 but options expand by release.",
-    "release_notes": "[CAUSAL]; command suite predates 19 but options expand by release.",
-    "research_situations": [
-      "researcher has explicitly selected the teffects ipw transition"
-    ],
-    "selection_conditions": [
-      "researcher declares the outcome/data form and all inputs required by teffects_ipw",
-      "researcher resolves choices not supplied by this guide: ATE versus ATET; unconfoundedness covariate set; propensity/outcome model; caliper/neighbors or overlap handling",
-      "guide does not supply: ATE versus ATET; unconfoundedness covariate set; propensity/outcome model; caliper/neighbors or overlap handling"
-    ],
-    "required_changes": [
-      "replace only the declared variables, options, and state/output bindings for teffects_ipw"
-    ],
-    "minimal_edit_fields": [
-      "declared outcome or input variables",
-      "declared model/options",
-      "declared sample or state binding"
-    ],
-    "tradeoffs": [
-      "keeps teffects ipw mechanics visible",
-      "does not supply the researcher's model, identification, sample, inference, or interpretation decisions",
-      "does not supply: ATE versus ATET; unconfoundedness covariate set; propensity/outcome model; caliper/neighbors or overlap handling"
-    ],
-    "state_signature": {
-      "requires": [
-        "outcome/treatment, estimand, model forms or matching metric, overlap design"
-      ],
-      "observable_signals": [
-        "teffects ipw"
-      ],
-      "produces": [
-        "treatment-effect e() results plus balance/overlap/postestimation state"
-      ]
-    },
-    "template_input_profile": {
-      "data_structure": "unknown",
-      "record_unit": "one declared analysis observation",
-      "required_keys": [],
-      "source_basis": "official StataCorp teffects manual mechanics",
-      "time_structure": "not_stated",
-      "variable_characteristics": [
-        "declared outcome/input variables"
-      ]
-    },
-    "source_specific_elements": [
-      "teffects ipw"
-    ],
-    "reusable_core": "Declared mechanics only; researcher supplies substantive choices.",
-    "generality_rationale_ko": "Official StataCorp mechanics only; substantive decisions remain with the researcher.",
-    "variant_distinction": "[teffects_ipw] remains distinct from sibling material states.",
-    "does_not_supply": [
-      "ATE versus ATET",
-      "unconfoundedness covariate set",
-      "propensity/outcome model",
-      "caliper/neighbors or overlap handling"
-    ],
-    "must_not_supply": [
-      "ATE versus ATET",
-      "unconfoundedness covariate set",
-      "propensity/outcome model",
-      "caliper/neighbors or overlap handling"
-    ],
-    "guide_derived": true,
-    "independent_support": false,
-    "researcher_style_evidence": false,
-    "research_decisions_supplied_by_guide": false,
-    "safety_notes": [
-      "no loops",
-      "no installation or dependency probes",
-      "no shell/process escape",
-      "no TeX/Word output",
-      "no unsafe merge or forced duplicate deletion"
-    ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "Official StataCorp bounded mechanics only; reference-only pending audit, runtime, and selector checks."
-  },
-  {
-    "label_id": "guide.teffects.teffects_aipw.v1",
-    "contract_ids": [
-      "teffects.teffects_aipw"
-    ],
-    "canonical_generation_class": "reference_only",
-    "checkpoint": "estimation.conventional",
-    "variant_group": "teffects",
-    "variant_id": "teffects_aipw",
-    "stage": "estimation",
-    "method_family": "teffects",
-    "source_spans": [
-      [
-        84,
-        84
-      ]
-    ],
-    "source_kind": "official_manual_guide_derived_mechanics",
-    "source_urls": [
-      "https://www.stata.com/manuals/causal.pdf",
-      "https://www.stata.com/manuals/causalteffects.pdf",
-      "https://www.stata.com/features/overview/causal-inference/"
-    ],
-    "source_release": "Stata 19 documentation checked 2026-08-26",
-    "version": "[CAUSAL]; command suite predates 19 but options expand by release.",
-    "release_notes": "[CAUSAL]; command suite predates 19 but options expand by release.",
-    "research_situations": [
-      "researcher has explicitly selected the teffects aipw transition"
-    ],
-    "selection_conditions": [
-      "researcher declares the outcome/data form and all inputs required by teffects_aipw_aipw",
-      "researcher resolves choices not supplied by this guide: ATE versus ATET; unconfoundedness covariate set; propensity/outcome model; caliper/neighbors or overlap handling",
-      "guide does not supply: ATE versus ATET; unconfoundedness covariate set; propensity/outcome model; caliper/neighbors or overlap handling"
-    ],
-    "required_changes": [
-      "replace only the declared variables, options, and state/output bindings for teffects_aipw_aipw"
-    ],
-    "minimal_edit_fields": [
-      "declared outcome or input variables",
-      "declared model/options",
-      "declared sample or state binding"
-    ],
-    "tradeoffs": [
-      "keeps teffects aipw mechanics visible",
-      "does not supply the researcher's model, identification, sample, inference, or interpretation decisions",
-      "does not supply: ATE versus ATET; unconfoundedness covariate set; propensity/outcome model; caliper/neighbors or overlap handling"
-    ],
-    "state_signature": {
-      "requires": [
-        "outcome/treatment, estimand, model forms or matching metric, overlap design"
-      ],
-      "observable_signals": [
-        "teffects aipw"
-      ],
-      "produces": [
-        "treatment-effect e() results plus balance/overlap/postestimation state"
-      ]
-    },
-    "template_input_profile": {
-      "data_structure": "unknown",
-      "record_unit": "one declared analysis observation",
-      "required_keys": [],
-      "source_basis": "official StataCorp teffects manual mechanics",
-      "time_structure": "not_stated",
-      "variable_characteristics": [
-        "declared outcome/input variables"
-      ]
-    },
-    "source_specific_elements": [
-      "teffects aipw"
-    ],
-    "reusable_core": "Declared mechanics only; researcher supplies substantive choices.",
-    "generality_rationale_ko": "Official StataCorp mechanics only; substantive decisions remain with the researcher.",
-    "variant_distinction": "[teffects_aipw_aipw] remains distinct from sibling material states.",
-    "does_not_supply": [
-      "ATE versus ATET",
-      "unconfoundedness covariate set",
-      "propensity/outcome model",
-      "caliper/neighbors or overlap handling"
-    ],
-    "must_not_supply": [
-      "ATE versus ATET",
-      "unconfoundedness covariate set",
-      "propensity/outcome model",
-      "caliper/neighbors or overlap handling"
-    ],
-    "guide_derived": true,
-    "independent_support": false,
-    "researcher_style_evidence": false,
-    "research_decisions_supplied_by_guide": false,
-    "safety_notes": [
-      "no loops",
-      "no installation or dependency probes",
-      "no shell/process escape",
-      "no TeX/Word output",
-      "no unsafe merge or forced duplicate deletion"
-    ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "Official StataCorp bounded mechanics only; reference-only pending audit, runtime, and selector checks."
-  },
-  {
-    "label_id": "guide.teffects.teffects_psmatch.v1",
-    "contract_ids": [
-      "teffects.teffects_psmatch"
-    ],
-    "canonical_generation_class": "reference_only",
-    "checkpoint": "estimation.conventional",
-    "variant_group": "teffects",
-    "variant_id": "teffects_psmatch",
-    "stage": "estimation",
-    "method_family": "teffects",
-    "source_spans": [
-      [
-        85,
-        85
-      ]
-    ],
-    "source_kind": "official_manual_guide_derived_mechanics",
-    "source_urls": [
-      "https://www.stata.com/manuals/causal.pdf",
-      "https://www.stata.com/manuals/causalteffects.pdf",
-      "https://www.stata.com/features/overview/causal-inference/"
-    ],
-    "source_release": "Stata 19 documentation checked 2026-08-26",
-    "version": "[CAUSAL]; command suite predates 19 but options expand by release.",
-    "release_notes": "[CAUSAL]; command suite predates 19 but options expand by release.",
-    "research_situations": [
-      "researcher has explicitly selected the teffects psmatch transition"
-    ],
-    "selection_conditions": [
-      "researcher declares the outcome/data form and all inputs required by teffects_psmatch",
-      "researcher resolves choices not supplied by this guide: ATE versus ATET; unconfoundedness covariate set; propensity/outcome model; caliper/neighbors or overlap handling",
-      "guide does not supply: ATE versus ATET; unconfoundedness covariate set; propensity/outcome model; caliper/neighbors or overlap handling"
-    ],
-    "required_changes": [
-      "replace only the declared variables, options, and state/output bindings for teffects_psmatch"
-    ],
-    "minimal_edit_fields": [
-      "declared outcome or input variables",
-      "declared model/options",
-      "declared sample or state binding"
-    ],
-    "tradeoffs": [
-      "keeps teffects psmatch mechanics visible",
-      "does not supply the researcher's model, identification, sample, inference, or interpretation decisions",
-      "does not supply: ATE versus ATET; unconfoundedness covariate set; propensity/outcome model; caliper/neighbors or overlap handling"
-    ],
-    "state_signature": {
-      "requires": [
-        "outcome/treatment, estimand, model forms or matching metric, overlap design"
-      ],
-      "observable_signals": [
-        "teffects psmatch"
-      ],
-      "produces": [
-        "treatment-effect e() results plus balance/overlap/postestimation state"
-      ]
-    },
-    "template_input_profile": {
-      "data_structure": "unknown",
-      "record_unit": "one declared analysis observation",
-      "required_keys": [],
-      "source_basis": "official StataCorp teffects manual mechanics",
-      "time_structure": "not_stated",
-      "variable_characteristics": [
-        "declared outcome/input variables"
-      ]
-    },
-    "source_specific_elements": [
-      "teffects psmatch"
-    ],
-    "reusable_core": "Declared mechanics only; researcher supplies substantive choices.",
-    "generality_rationale_ko": "Official StataCorp mechanics only; substantive decisions remain with the researcher.",
-    "variant_distinction": "[teffects_matching] remains distinct from sibling material states.",
-    "does_not_supply": [
-      "ATE versus ATET",
-      "unconfoundedness covariate set",
-      "propensity/outcome model",
-      "caliper/neighbors or overlap handling"
-    ],
-    "must_not_supply": [
-      "ATE versus ATET",
-      "unconfoundedness covariate set",
-      "propensity/outcome model",
-      "caliper/neighbors or overlap handling"
-    ],
-    "guide_derived": true,
-    "independent_support": false,
-    "researcher_style_evidence": false,
-    "research_decisions_supplied_by_guide": false,
-    "safety_notes": [
-      "no loops",
-      "no installation or dependency probes",
-      "no shell/process escape",
-      "no TeX/Word output",
-      "no unsafe merge or forced duplicate deletion"
-    ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "Official StataCorp bounded mechanics only; reference-only pending audit, runtime, and selector checks."
   }
 ]

@@ -4882,7 +4882,7 @@
       "maturity": "guide_only",
       "auto_selectable_count": 0,
       "reference_only_count": 0,
-      "guide_mechanics_count": 17,
+      "guide_mechanics_count": 18,
       "aliases": [
         "correlation",
         "pwcorr",
@@ -8594,7 +8594,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 8,
       "reference_only_count": 2,
-      "guide_mechanics_count": 158,
+      "guide_mechanics_count": 164,
       "aliases": [
         "회귀",
         "OLS",
@@ -21584,7 +21584,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 3,
       "reference_only_count": 1,
-      "guide_mechanics_count": 7,
+      "guide_mechanics_count": 8,
       "aliases": [
         "single source import",
         "원자료 불러오기",
@@ -25799,7 +25799,7 @@
       "maturity": "comparative",
       "auto_selectable_count": 7,
       "reference_only_count": 3,
-      "guide_mechanics_count": 23,
+      "guide_mechanics_count": 24,
       "aliases": [
         "merge",
         "reshape",
@@ -31630,7 +31630,7 @@
       "maturity": "guide_only",
       "auto_selectable_count": 0,
       "reference_only_count": 0,
-      "guide_mechanics_count": 3,
+      "guide_mechanics_count": 5,
       "aliases": [
         "time operator",
         "lag",
@@ -36860,7 +36860,7 @@
       "maturity": "guide_only",
       "auto_selectable_count": 0,
       "reference_only_count": 0,
-      "guide_mechanics_count": 1,
+      "guide_mechanics_count": 3,
       "aliases": [
         "format",
         "display format",
@@ -37070,7 +37070,7 @@
       "maturity": "guide_only",
       "auto_selectable_count": 0,
       "reference_only_count": 0,
-      "guide_mechanics_count": 2,
+      "guide_mechanics_count": 3,
       "aliases": [
         "ds",
         "unab",

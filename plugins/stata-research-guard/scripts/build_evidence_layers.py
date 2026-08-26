@@ -440,6 +440,7 @@ def build_layers(
     rows: Iterable[dict],
     research_usage_evidence: Iterable[dict] = (),
     corpus_occurrences: Iterable[dict] = (),
+    command_example_audit: dict | None = None,
 ) -> tuple[list[dict], list[dict], dict]:
     source_rows = list(rows)
     label_ids = [str(row.get("label_id") or "") for row in source_rows]
@@ -453,7 +454,28 @@ def build_layers(
     guide_cards: list[dict] = []
     usage_cards: list[dict] = []
     skipped = Counter()
-    for row in source_rows:
+    audit_overrides = (command_example_audit or {}).get("label_overrides", {})
+    if command_example_audit and command_example_audit.get("schema_version") != "1.0":
+        raise ValueError("command example audit schema_version must be 1.0")
+    unknown_override_labels = sorted(set(audit_overrides) - set(label_ids))
+    if unknown_override_labels:
+        raise ValueError(f"command example audit references unknown labels: {unknown_override_labels}")
+    command_audit_actions = Counter()
+    for source_row in source_rows:
+        row = dict(source_row)
+        override = audit_overrides.get(row["label_id"])
+        if override:
+            action = override.get("action")
+            if action not in {"suppress_semantic_duplicate", "override_contracts", "supplemental_only"}:
+                raise ValueError(f"unsupported command example audit action for {row['label_id']}: {action}")
+            command_audit_actions[action] += 1
+            if action == "suppress_semantic_duplicate":
+                if source_tier(row) != "guide_mechanics":
+                    raise ValueError(f"only guide mechanics may be suppressed as semantic duplicates: {row['label_id']}")
+                continue
+            row["contract_ids"] = list(override.get("contract_ids", []))
+            if override.get("supplemental_contract_id"):
+                row["supplemental_contract_id"] = override["supplemental_contract_id"]
         tier = source_tier(row)
         if tier == "excluded_derived_or_unclassified":
             skipped[str(row.get("source_kind") or "<missing>")] += 1
@@ -464,10 +486,19 @@ def build_layers(
                 f"evidence layer input did not pass the upstream audit gate: {row['label_id']} ({gate['basis']})"
             )
         card = common_card(row, tier)
+        if override:
+            card["command_example_audit"] = {
+                "action": override["action"],
+                "reason": override.get("reason", ""),
+            }
         if tier == "guide_mechanics":
+            card["provenance"]["upstream_promotion_status"] = card["promotion_status"]
+            card["provenance"]["upstream_rubric_classification"] = card["rubric_classification"]
             card.update(
                 authority_tier=guide_authority_tier(row),
                 auto_selectable=False,
+                promotion_status="reference_only",
+                rubric_classification="reference_only",
                 research_decisions_supplied=False,
                 usage_rule=(
                     "Guide mechanics explain command syntax and state handling only. "
@@ -547,8 +578,13 @@ def build_layers(
     duplicate_layer_ids = sorted(value for value, count in Counter(layer_ids).items() if count > 1)
     if duplicate_layer_ids:
         raise ValueError(f"duplicate layer_id(s): {', '.join(duplicate_layer_ids)}")
-    if any(row["auto_selectable"] for row in guide_cards):
-        raise ValueError("guide layer contains an auto-selectable card")
+    if any(
+        row["promotion_status"] != "reference_only"
+        or row["rubric_classification"] != "reference_only"
+        or row["auto_selectable"] is not False
+        for row in guide_cards
+    ):
+        raise ValueError("guide layer contains a non-reference-only card")
 
     summary = {
         "input_rows": len(source_rows),
@@ -568,6 +604,7 @@ def build_layers(
             int(audit_summaries[0].get("reject_count", 0)) if audit_summaries else 0,
         ),
         "skipped_source_kinds": dict(sorted(skipped.items())),
+        "command_example_audit_actions": dict(sorted(command_audit_actions.items())),
     }
     return guide_cards, usage_cards, summary
 
@@ -585,7 +622,9 @@ def main() -> None:
         description="Build non-competing guide-mechanics and research-usage evidence layers."
     )
     plugin = Path(__file__).resolve().parents[1]
-    parser.add_argument("--input", type=Path, default=plugin / "data" / "labeled_checkpoints.jsonl")
+    canonical_input = plugin / "data" / "labeled_checkpoints.jsonl"
+    canonical_command_audit = plugin / "annotations" / "command_example_audit.json"
+    parser.add_argument("--input", type=Path)
     parser.add_argument("--guide-output", type=Path, default=plugin / "data" / "guide_mechanics_cards.jsonl")
     parser.add_argument("--usage-output", type=Path, default=plugin / "data" / "research_usage_examples.jsonl")
     parser.add_argument(
@@ -600,11 +639,32 @@ def main() -> None:
         default=plugin / "annotations" / "corpus_usage_occurrences.jsonl",
         help="Optional code-free corpus occurrence ledger. Only pass_reference_only rows become occurrence_support cards.",
     )
+    parser.add_argument(
+        "--command-example-audit",
+        type=Path,
+        help="Independent command-level semantic duplicate and contract-mapping corrections. Required by default for the canonical input; opt in explicitly for custom input.",
+    )
     args = parser.parse_args()
+
+    input_path = args.input or canonical_input
+    use_canonical_audit = input_path.resolve() == canonical_input.resolve()
+    command_audit_path = args.command_example_audit or (canonical_command_audit if use_canonical_audit else None)
 
     usage_evidence = read_jsonl(args.usage_evidence) if args.usage_evidence.exists() else []
     corpus_occurrences = read_jsonl(args.corpus_occurrences) if args.corpus_occurrences.exists() else []
-    guide_cards, usage_cards, summary = build_layers(read_jsonl(args.input), usage_evidence, corpus_occurrences)
+    if command_audit_path is not None and not command_audit_path.exists():
+        raise FileNotFoundError(f"command example audit not found: {command_audit_path}")
+    command_example_audit = (
+        json.loads(command_audit_path.read_text(encoding="utf-8"))
+        if command_audit_path is not None
+        else None
+    )
+    guide_cards, usage_cards, summary = build_layers(
+        read_jsonl(input_path),
+        usage_evidence,
+        corpus_occurrences,
+        command_example_audit,
+    )
     write_jsonl(args.guide_output, guide_cards)
     write_jsonl(args.usage_output, usage_cards)
     print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
