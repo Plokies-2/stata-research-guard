@@ -42,7 +42,7 @@ test("structural-transition fixture stays atomic and parsimonious", () => {
 
 test("structural-transition fixture runs in StataMP and creates the composite graph", (t) => {
   const stata = stataExecutable();
-  if (!stata) t.skip("StataMP-64 is unavailable");
+  if (!stata) return t.skip("StataMP-64 is unavailable");
 
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-structural-transitions-"));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));

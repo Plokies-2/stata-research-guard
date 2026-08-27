@@ -170,10 +170,41 @@ function references() {
   return referencesCache;
 }
 
-const MANUALS = loadJsonl("manual_index.jsonl");
-const OFFICIAL_VERIFICATION = loadJson("official_example_verification.json");
-const OFFICIAL_WEB_SOURCES = loadJson("official_web_sources.json");
-const WORKFLOWS = loadJson("workflow_examples.json");
+let manualsCache = null;
+let officialVerificationCache = null;
+let officialWebSourcesCache = null;
+let workflowExamplesCache = null;
+let top100CommandEvidenceCache = null;
+
+function manuals() {
+  if (manualsCache === null) manualsCache = loadJsonl("manual_index.jsonl");
+  return manualsCache;
+}
+
+function officialVerification() {
+  if (officialVerificationCache === null) officialVerificationCache = loadJson("official_example_verification.json");
+  return officialVerificationCache;
+}
+
+function officialWebSources() {
+  if (officialWebSourcesCache === null) officialWebSourcesCache = loadJson("official_web_sources.json");
+  return officialWebSourcesCache;
+}
+
+function workflowExamples() {
+  if (workflowExamplesCache === null) workflowExamplesCache = loadJson("workflow_examples.json");
+  return workflowExamplesCache;
+}
+
+function top100CommandEvidence() {
+  if (top100CommandEvidenceCache === null) {
+    top100CommandEvidenceCache = fs.existsSync(path.join(DATA, "top100_command_evidence_matrix.json"))
+      ? loadJson("top100_command_evidence_matrix.json")
+      : { rows: [], summary: {} };
+  }
+  return top100CommandEvidenceCache;
+}
+
 const PACKAGES = loadJson("reference_packages.json");
 const LABELED_CHECKPOINTS = loadJsonl("labeled_checkpoints.jsonl");
 const COMMAND_EXAMPLE_AUDIT = fs.existsSync(path.join(ROOT, "annotations", "command_example_audit.json"))
@@ -191,9 +222,6 @@ const GUIDE_MECHANICS_LABEL_IDS = new Set([
 const RESEARCH_USAGE_EXAMPLES = fs.existsSync(path.join(DATA, "research_usage_examples.jsonl"))
   ? loadJsonl("research_usage_examples.jsonl")
   : [];
-const TOP100_COMMAND_EVIDENCE = fs.existsSync(path.join(DATA, "top100_command_evidence_matrix.json"))
-  ? loadJson("top100_command_evidence_matrix.json")
-  : { rows: [], summary: {} };
 const WORKFLOW_DICTIONARY = loadJson("workflow_block_dictionary.json");
 const PACKAGE_COVERAGE = fs.existsSync(path.join(DATA, "package_checkpoint_coverage.json"))
   ? loadJson("package_checkpoint_coverage.json")
@@ -221,13 +249,14 @@ function fail(message, details = {}) {
 }
 
 function inspectTop100CommandExamples(args = {}) {
+  const evidence = top100CommandEvidence();
   const requestedGroups = new Set((args.group_ids || []).map((value) => String(value).trim().toLowerCase()).filter(Boolean));
   const requestedCommands = new Set((args.commands || []).map((value) => String(value).trim().toLowerCase()).filter(Boolean));
   if (!requestedGroups.size && !requestedCommands.size) {
     throw new Error("group_ids 또는 commands 중 하나 이상을 지정해야 합니다.");
   }
 
-  const rows = (TOP100_COMMAND_EVIDENCE.rows || []).filter((row) => {
+  const rows = (evidence.rows || []).filter((row) => {
     if (requestedGroups.has(String(row.group_id || "").toLowerCase())) return true;
     const tokens = [...(row.commands || []), ...(row.registry_tokens || [])]
       .map((value) => String(value).trim().toLowerCase());
@@ -251,7 +280,7 @@ function inspectTop100CommandExamples(args = {}) {
   });
 
   return {
-    schema_version: TOP100_COMMAND_EVIDENCE.schema_version,
+    schema_version: evidence.schema_version,
     mode: "complexity_weighted_command_overview",
     requested: {
       group_ids: [...requestedGroups],
@@ -1380,13 +1409,36 @@ function lintContent(content, role = "auto", source = "inline", authoringState =
 }
 
 function readDoInput(args) {
-  if (typeof args.content === "string") return { content: args.content, source: "inline" };
-  if (!args.path) throw new Error("content 또는 path 중 하나가 필요합니다.");
+  const hasContent = Object.prototype.hasOwnProperty.call(args, "content");
+  const hasPath = Object.prototype.hasOwnProperty.call(args, "path");
+  if (hasContent === hasPath) throw new Error("content와 path 중 정확히 하나가 필요합니다.");
+  if (hasContent) {
+    if (typeof args.content !== "string") throw new Error("content는 문자열이어야 합니다.");
+    return { content: args.content, source: "inline" };
+  }
+  if (typeof args.path !== "string" || !args.path) throw new Error("path는 비어 있지 않은 문자열이어야 합니다.");
   const target = path.resolve(String(args.path));
   if (path.extname(target).toLowerCase() !== ".do") throw new Error("path는 .do 파일이어야 합니다.");
   const stat = fs.statSync(target);
   if (stat.size > 2 * 1024 * 1024) throw new Error("2 MiB를 넘는 do-file은 분할해서 검사하세요.");
   return { content: fs.readFileSync(target, "utf8"), source: target };
+}
+
+const REPORT_POLICIES = new Set(["required", "optional", "disabled"]);
+const SCOPE_MODES = new Set(["reachable", "all"]);
+
+function resolveReportPolicy(args, fallback) {
+  if (!Object.prototype.hasOwnProperty.call(args, "report_policy")) return fallback;
+  const value = args.report_policy;
+  if (!REPORT_POLICIES.has(value)) throw new Error("report_policy는 required, optional, disabled 중 하나여야 합니다.");
+  return value;
+}
+
+function resolveScopeMode(scope) {
+  if (!Object.prototype.hasOwnProperty.call(scope, "mode")) return "reachable";
+  const value = scope.mode;
+  if (!SCOPE_MODES.has(value)) throw new Error("scope.mode는 reachable 또는 all이어야 합니다.");
+  return value;
 }
 
 function canonicalReferenceCommand(value) {
@@ -1442,13 +1494,15 @@ function manualExcerpt(content, terms, width = 1400) {
 }
 
 function searchManual(args) {
+  const manualRows = manuals();
+  const webSources = officialWebSources();
   const authority = args.authority || "official";
   if (!["official", "community", "any"].includes(authority)) throw new Error("authority는 official, community, any 중 하나여야 합니다.");
   const commands = unique((args.commands || []).map((value) => String(value).toLowerCase()));
   const terms = unique([...commands, ...tokenize(args.query || "")]);
   if (!terms.length) throw new Error("query 또는 commands가 필요합니다.");
   const limit = Math.min(Math.max(Number(args.limit) || 6, 1), 10);
-  const results = MANUALS.filter((row) => {
+  const results = manualRows.filter((row) => {
     if (authority !== "any" && row.authority !== authority) return false;
     if (commands.length && !commands.some((command) => row.commands.includes(command))) return false;
     return true;
@@ -1481,7 +1535,7 @@ function searchManual(args) {
     }));
   const coveredCommands = commands.filter((command) => results.some((row) => row.commands.includes(command)));
   const missingCommands = commands.filter((command) => !coveredCommands.includes(command));
-  const suggestedSources = OFFICIAL_WEB_SOURCES.filter((row) => missingCommands.some((command) => {
+  const suggestedSources = webSources.filter((row) => missingCommands.some((command) => {
     const documented = String(row.command || "").toLowerCase();
     return documented === command || documented.includes(command) || command.includes(documented);
   }));
@@ -1500,9 +1554,10 @@ function searchManual(args) {
 }
 
 function getVerifiedExamples(args) {
+  const verification = officialVerification();
   const command = String(args.command || "").toLowerCase();
   if (!command) throw new Error("command가 필요합니다.");
-  const examples = OFFICIAL_VERIFICATION.examples.filter((row) =>
+  const examples = verification.examples.filter((row) =>
     row.passed && row.authority === "official" && row.return_code === 0 && row.error_codes.length === 0 && row.command.toLowerCase() === command
   );
   return {
@@ -1525,7 +1580,7 @@ function getVerifiedExamples(args) {
     })),
     unavailable: examples.length === 0,
     unavailable_rule: "검증된 쉬운 예제가 없으면 pass를 추론하지 말고 search_stata_manual과 Stata 실제 실행 검증이 필요하다고 보고하세요.",
-    verified_at: OFFICIAL_VERIFICATION.verified_at,
+    verified_at: verification.verified_at,
   };
 }
 
@@ -4076,7 +4131,7 @@ function planDictionaryRepairs(args) {
   if (!fs.existsSync(root) || !fs.statSync(root).isDirectory()) throw new Error("path는 디렉터리여야 합니다.");
   const requestText = String(args.request || "");
   const reportDisabledByRequest = /report\.md[^.!?\n]{0,40}(?:만들지|작성하지|수정하지|쓰지|삭제하고|삭제해|불필요|금지)|(?:do\s+not|don't|dont|never)\s+(?:create|write|modify|use)[^.!?\n]{0,30}report\.md|\bno\s+report\.md\b/i.test(requestText);
-  const reportPolicy = args.report_policy || (reportDisabledByRequest ? "disabled" : "required");
+  const reportPolicy = resolveReportPolicy(args, reportDisabledByRequest ? "disabled" : "required");
   const requestedMode = args.repair_mode || "auto";
   const targetFiles = (args.target_files || []).map((value) => normalizeRelativePath(value, "target_files"));
   const existingDoTarget = targetFiles.some((relative) => {
@@ -4535,6 +4590,7 @@ function stageContract(stage) {
 }
 
 function workflowBlueprint(args) {
+  const workflows = workflowExamples();
   const requested = args.expected_stages && args.expected_stages.length ? args.expected_stages : STAGES;
   if (requested.some((stage) => !STAGES.includes(stage))) throw new Error("expected_stages에 알 수 없는 단계가 있습니다.");
   const projectMode = args.project_mode || "existing";
@@ -4544,7 +4600,7 @@ function workflowBlueprint(args) {
   const noNewPersistentVariables = args.no_new_persistent_variables === true;
   if (plannedVariables.length && noNewPersistentVariables) throw new Error("planned_variables와 no_new_persistent_variables: true를 함께 지정할 수 없습니다.");
   const stages = STAGES.filter((stage) => requested.includes(stage));
-  const structures = WORKFLOWS.packages
+  const structures = workflows.packages
     .filter((pkg) => ["gold_candidate", "partial_gold", "conditional_priority"].includes(pkg.corpus_role))
     .map((pkg) => ({
       package_id: pkg.package_id,
@@ -4876,7 +4932,7 @@ function researchOutputCheck(args) {
   if (!fs.statSync(root).isDirectory()) throw new Error("path는 디렉터리여야 합니다.");
   const expectedStages = args.expected_stages?.length ? unique(args.expected_stages) : STAGES;
   const strictStructure = args.strict_structure === true;
-  const reportPolicy = args.report_policy || "required";
+  const reportPolicy = resolveReportPolicy(args, "required");
   const audit = auditProject({ path: root, expected_stages: expectedStages, strict_structure: strictStructure, report_policy: reportPolicy, authored_spans: args.authored_spans, scope: args.scope, estimability_readback: args.estimability_readback });
   const checks = [];
   const blockers = [];
@@ -5222,10 +5278,10 @@ function auditProject(args) {
   const root = path.resolve(String(args.path));
   if (!fs.statSync(root).isDirectory()) throw new Error("path는 디렉터리여야 합니다.");
   const strictStructure = args.strict_structure === true;
-  const reportPolicy = args.report_policy || (args.require_report === true ? "required" : "optional");
+  const reportPolicy = resolveReportPolicy(args, args.require_report === true ? "required" : "optional");
   const requireReport = reportPolicy === "required";
   const scopeInput = args.scope && typeof args.scope === "object" ? args.scope : {};
-  const scopeMode = scopeInput.mode || "reachable";
+  const scopeMode = resolveScopeMode(scopeInput);
   const requestedEntrypoints = (scopeInput.entrypoints || []).map((value) => normalizeRelativePath(value, "scope.entrypoints"));
   const includePaths = (scopeInput.include_paths || []).map((value) => normalizeRelativePath(value, "scope.include_paths").replace(/\/$/, ""));
   const excludePaths = (scopeInput.exclude_paths || []).map((value) => normalizeRelativePath(value, "scope.exclude_paths").replace(/\/$/, ""));
@@ -5962,7 +6018,7 @@ const TOOLS = [
   {
     name: "lint_do_file",
     description: "Statically lint one Stata do-file or inline code. role describes the file; authoring_state controls whether new-master readability is blocking, modified-master readability is advisory, or existing code is audited without retroactive comment enforcement.",
-    inputSchema: { type: "object", additionalProperties: false, properties: { path: { type: "string" }, content: { type: "string" }, role: { type: "string" }, authoring_state: { type: "string", enum: ["new", "modified", "existing_audit"] } }, anyOf: [{ required: ["path"] }, { required: ["content"] }] },
+    inputSchema: { type: "object", additionalProperties: false, properties: { path: { type: "string" }, content: { type: "string" }, role: { type: "string" }, authoring_state: { type: "string", enum: ["new", "modified", "existing_audit"] } }, oneOf: [{ required: ["path"] }, { required: ["content"] }] },
     outputSchema: { type: "object", additionalProperties: true },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   },

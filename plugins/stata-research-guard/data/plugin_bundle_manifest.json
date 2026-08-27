@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.2.0+codex.20260827202346"
+    "version": "0.2.0+codex.20260827212812"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
       "bytes": 17076,
-      "sha256": "d4d66b9faa98b23ad8f93a1beb83752e998b9450a949ec73cf2c9043157b1451"
+      "sha256": "b845dca2640dd113413cb7b9e22904ae53727da4e1843c81675df3a369a75aa9"
     },
     {
       "path": ".mcp.json",
@@ -282,8 +282,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 5993,
-      "sha256": "b8f86ee521f6068d16537a856e36839c341acb8bead74d6a82af5a50c6d83421"
+      "bytes": 6425,
+      "sha256": "277a9580211ac5598bde9e563e7ef590d6ba970f9079edb66026e28cfbb00159"
     },
     {
       "path": "data/guide_mechanics_cards.jsonl",
@@ -832,13 +832,13 @@
     },
     {
       "path": "mcp/server.cjs",
-      "bytes": 400065,
-      "sha256": "d9d37320a02bdfbf34264d0b40d28b631e8e13f795de16975d646b8d4c0a47f8"
+      "bytes": 402026,
+      "sha256": "1863c4a45c3482de7c23686ad9aa35c7f40112e4bfc741a49af8175387111028"
     },
     {
       "path": "mcp/template_reuse.cjs",
-      "bytes": 111295,
-      "sha256": "3f49d8738a37b39bdb69aa1cbee695266510c3556b560252ecc8c503b098cbfd"
+      "bytes": 111331,
+      "sha256": "585b8df76ac8bcc0282fa20d3fc5190c33f718d0fe63d979e58536fc528d99b7"
     },
     {
       "path": "README.md",
@@ -1082,8 +1082,8 @@
     },
     {
       "path": "tests/event_reference_slot_runtime.test.cjs",
-      "bytes": 4440,
-      "sha256": "6630df789fe9f0332dbdc007bb7ff9c3c20061c552c27bc26021dced9da019b4"
+      "bytes": 4447,
+      "sha256": "7787e264a070cad01445b3d239aa75c325a287b7da038eda0cd46ee78a2d0490"
     },
     {
       "path": "tests/event_reference_slot.test.cjs",
@@ -1212,8 +1212,8 @@
     },
     {
       "path": "tests/server.test.cjs",
-      "bytes": 229416,
-      "sha256": "f7dc9c7ef8e527532967a4e23a2ecef7f08260c6c815a2533f31da17e458cb29"
+      "bytes": 239831,
+      "sha256": "eb53d639f86addea3e4a96dbffb08b7f59d4714a206db44dba0e168ecbafd75b"
     },
     {
       "path": "tests/single_event_retrieval.test.cjs",
@@ -1222,13 +1222,13 @@
     },
     {
       "path": "tests/state_transition_runtime.test.cjs",
-      "bytes": 2709,
-      "sha256": "dc381f97b33283816617093651135c81262b04c1053a0dbb87aa11e6a96a906f"
+      "bytes": 2716,
+      "sha256": "8f536f7a17c570186a074d988caee346a7f0635c29ba2dc99b65a8725eee40cd"
     },
     {
       "path": "tests/structural_transitions_runtime.test.cjs",
-      "bytes": 3559,
-      "sha256": "047b9d5139933e8f853043c3f7dd552048addcd91a8683b2217f34d30d7faad1"
+      "bytes": 3566,
+      "sha256": "5cda1d2ef8016f058d7ee58c5ba784d43311e6703390851e04436050d5480339"
     },
     {
       "path": "tests/summary_template_retrieval.test.cjs",
@@ -1309,7 +1309,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.2.0+codex.20260827202346"
+      "value": "0.2.0+codex.20260827212812"
     },
     {
       "id": "readme.heading",

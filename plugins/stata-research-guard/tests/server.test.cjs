@@ -216,15 +216,17 @@ test("Windows plugin launcher starts the MCP server", async (t) => {
   assert.equal(initialized.serverInfo.name, "stata-research-guard");
 });
 
-test("MCP startup and labeled retrieval do not eagerly load the fallback reference index", { timeout: 5000 }, async (t) => {
+test("MCP startup and labeled retrieval do not eagerly load deferred evidence families", { timeout: 5000 }, async (t) => {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), "stata-guard-lazy-reference-"));
   const preload = path.join(temp, "block-reference-index.cjs");
   fs.writeFileSync(preload, [
     '"use strict";',
     'const fs = require("node:fs");',
     'const originalReadFileSync = fs.readFileSync;',
+    'const blocked = new Set(["reference_index.jsonl", "top100_command_evidence_matrix.json", "manual_index.jsonl", "official_example_verification.json", "official_web_sources.json", "workflow_examples.json"]);',
     'fs.readFileSync = function guardedReadFileSync(target, ...args) {',
-    '  if (String(target).replaceAll("\\\\", "/").endsWith("/reference_index.jsonl")) throw new Error("EAGER_REFERENCE_INDEX_READ");',
+    '  const name = require("node:path").basename(String(target));',
+    '  if (blocked.has(name)) throw new Error(`EAGER_DEFERRED_DATA_READ:${name}`);',
     '  return originalReadFileSync.call(this, target, ...args);',
     '};',
   ].join("\n"), "utf8");
@@ -238,6 +240,119 @@ test("MCP startup and labeled retrieval do not eagerly load the fallback referen
   assert.equal(initialized.serverInfo.name, "stata-research-guard");
   const labeled = await client.tool("search_labeled_checkpoints", { variant_id: "xtreg_country_year_fe_clustered", limit: 1 });
   assert.equal(labeled.results[0].variant_id, "xtreg_country_year_fe_clustered");
+});
+
+test("deferred evidence families load once and preserve cold and warm results", { timeout: 10000 }, async (t) => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "stata-guard-lazy-counts-"));
+  const preload = path.join(temp, "count-deferred-reads.cjs");
+  const readLog = path.join(temp, "reads.log");
+  fs.writeFileSync(preload, [
+    '"use strict";',
+    'const fs = require("node:fs");',
+    'const path = require("node:path");',
+    `const readLog = ${JSON.stringify(readLog)};`,
+    'const watched = new Set(["top100_command_evidence_matrix.json", "manual_index.jsonl", "official_example_verification.json", "official_web_sources.json", "workflow_examples.json"]);',
+    'const originalReadFileSync = fs.readFileSync;',
+    'fs.readFileSync = function countedReadFileSync(target, ...args) {',
+    '  const name = path.basename(String(target));',
+    '  if (watched.has(name)) fs.appendFileSync(readLog, `${name}\\n`, "utf8");',
+    '  return originalReadFileSync.call(this, target, ...args);',
+    '};',
+  ].join("\n"), "utf8");
+  const client = new McpClient({ execArgs: ["--require", preload] });
+  t.after(() => {
+    client.close();
+    fs.rmSync(temp, { recursive: true, force: true });
+  });
+
+  await client.request("initialize", { protocolVersion: "2025-06-18" });
+  await client.request("tools/list");
+  await client.tool("search_labeled_checkpoints", { variant_id: "xtreg_country_year_fe_clustered", limit: 1 });
+  assert.equal(fs.existsSync(readLog), false);
+
+  const calls = [
+    ["inspect_top100_command_examples", { commands: ["regress"] }],
+    ["search_stata_manual", { commands: ["putexcel"], authority: "official", limit: 3 }],
+    ["get_verified_stata_examples", { command: "regress" }],
+    ["workflow_blueprint", { analysis_type: "applied_micro", data_shape: "panel", project_size: "large", project_mode: "new", new_project_confirmed: true, no_new_persistent_variables: true }],
+  ];
+  for (const [name, args] of calls) {
+    const cold = await client.tool(name, args);
+    const warm = await client.tool(name, args);
+    assert.deepEqual(warm, cold, name);
+  }
+
+  const counts = fs.readFileSync(readLog, "utf8").trim().split(/\r?\n/).reduce((result, name) => {
+    result[name] = (result[name] || 0) + 1;
+    return result;
+  }, {});
+  assert.deepEqual(counts, {
+    "top100_command_evidence_matrix.json": 1,
+    "manual_index.jsonl": 1,
+    "official_web_sources.json": 1,
+    "official_example_verification.json": 1,
+    "workflow_examples.json": 1,
+  });
+});
+
+test("deferred evidence failures stay isolated and Top 100 absence remains advisory", { timeout: 10000 }, async (t) => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "stata-guard-lazy-errors-"));
+  t.after(() => fs.rmSync(temp, { recursive: true, force: true }));
+
+  const workflowFailurePreload = path.join(temp, "fail-workflow.cjs");
+  fs.writeFileSync(workflowFailurePreload, [
+    '"use strict";',
+    'const fs = require("node:fs");',
+    'const path = require("node:path");',
+    'const originalReadFileSync = fs.readFileSync;',
+    'fs.readFileSync = function guardedReadFileSync(target, ...args) {',
+    '  if (path.basename(String(target)) === "workflow_examples.json") throw new Error("WORKFLOW_EXAMPLES_UNAVAILABLE");',
+    '  return originalReadFileSync.call(this, target, ...args);',
+    '};',
+  ].join("\n"), "utf8");
+  const workflowClient = new McpClient({ execArgs: ["--require", workflowFailurePreload] });
+  t.after(() => workflowClient.close());
+  const before = await workflowClient.tool("search_labeled_checkpoints", { variant_id: "xtreg_country_year_fe_clustered", limit: 1 });
+  assert.equal(before.results.length, 1);
+  const workflowFailure = await workflowClient.request("tools/call", { name: "workflow_blueprint", arguments: { project_mode: "existing" } });
+  assert.equal(workflowFailure.isError, true);
+  assert.match(workflowFailure.structuredContent.error, /WORKFLOW_EXAMPLES_UNAVAILABLE/);
+  const after = await workflowClient.tool("search_labeled_checkpoints", { variant_id: "xtreg_country_year_fe_clustered", limit: 1 });
+  assert.deepEqual(after, before);
+
+  const top100MissingPreload = path.join(temp, "missing-top100.cjs");
+  fs.writeFileSync(top100MissingPreload, [
+    '"use strict";',
+    'const fs = require("node:fs");',
+    'const path = require("node:path");',
+    'const originalExistsSync = fs.existsSync;',
+    'fs.existsSync = function guardedExistsSync(target) {',
+    '  if (path.basename(String(target)) === "top100_command_evidence_matrix.json") return false;',
+    '  return originalExistsSync.call(this, target);',
+    '};',
+  ].join("\n"), "utf8");
+  const missingClient = new McpClient({ execArgs: ["--require", top100MissingPreload] });
+  t.after(() => missingClient.close());
+  const missing = await missingClient.tool("inspect_top100_command_examples", { commands: ["regress"] });
+  assert.equal(missing.matched_group_count, 0);
+  assert.deepEqual(missing.rows, []);
+
+  const top100CorruptPreload = path.join(temp, "corrupt-top100.cjs");
+  fs.writeFileSync(top100CorruptPreload, [
+    '"use strict";',
+    'const fs = require("node:fs");',
+    'const path = require("node:path");',
+    'const originalReadFileSync = fs.readFileSync;',
+    'fs.readFileSync = function guardedReadFileSync(target, ...args) {',
+    '  if (path.basename(String(target)) === "top100_command_evidence_matrix.json") return "{";',
+    '  return originalReadFileSync.call(this, target, ...args);',
+    '};',
+  ].join("\n"), "utf8");
+  const corruptClient = new McpClient({ execArgs: ["--require", top100CorruptPreload] });
+  t.after(() => corruptClient.close());
+  const corrupt = await corruptClient.request("tools/call", { name: "inspect_top100_command_examples", arguments: { commands: ["regress"] } });
+  assert.equal(corrupt.isError, true);
+  assert.match(corrupt.structuredContent.error, /JSON|Unexpected|position/i);
 });
 
 test("MCP text content is compact JSON equivalent to structuredContent", async (t) => {
@@ -3411,11 +3526,87 @@ test("tool schemas expose review-only authoring state and reachable audit scope 
   assert.ok(plan.inputSchema.properties.scope.properties.include_paths);
   assert.deepEqual(plan.inputSchema.properties.source_reuse.properties.allowed_changes.items.properties.operation.enum, ["replace_literal", "delete_literal", "insert_after_literal"]);
   assert.deepEqual(lint.inputSchema.properties.authoring_state.enum, ["new", "modified", "existing_audit"]);
+  assert.ok(Array.isArray(lint.inputSchema.oneOf));
+  assert.equal(Object.hasOwn(lint.inputSchema, "anyOf"), false);
+  assert.deepEqual(lint.inputSchema.oneOf, [{ required: ["path"] }, { required: ["content"] }]);
   assert.deepEqual(audit.inputSchema.properties.scope.properties.mode.enum, ["reachable", "all"]);
   assert.ok(audit.inputSchema.properties.authored_spans);
   assert.ok(audit.inputSchema.properties.estimability_readback);
   assert.equal(audit.inputSchema.properties.estimability_readback.properties.models.items.properties.declared_nonreference_terms.minItems, 1);
   assert.deepEqual(audit.inputSchema.properties.report_policy.enum, ["required", "optional", "disabled"]);
+});
+
+test("lint_do_file requires exactly one input source at schema and runtime boundaries", async (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-lint-input-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const doPath = path.join(root, "sample.do");
+  fs.writeFileSync(doPath, "sysuse auto, clear\n", "utf8");
+  const client = new McpClient();
+  t.after(() => client.close());
+
+  assert.equal((await client.tool("lint_do_file", { content: "" })).source, "inline");
+  assert.equal((await client.tool("lint_do_file", { path: doPath })).source, doPath);
+
+  for (const argumentsValue of [{}, { path: doPath, content: "sysuse auto, clear" }]) {
+    const result = await client.request("tools/call", { name: "lint_do_file", arguments: argumentsValue });
+    assert.equal(result.isError, true);
+    assert.match(result.content[0].text, /정확히 하나/);
+    assert.match(result.structuredContent.error, /정확히 하나/);
+  }
+});
+
+test("report policy and audit scope enums fail closed while valid defaults and aliases remain stable", async (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-runtime-enums-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.writeFileSync(path.join(root, "analysis.do"), "sysuse auto, clear\nregress price mpg\n", "utf8");
+  const client = new McpClient();
+  t.after(() => client.close());
+
+  const invalidCalls = [];
+  for (const reportPolicy of ["bogus", "", null]) {
+    invalidCalls.push(["plan_dictionary_repairs", { path: root, request: "Review only.", report_policy: reportPolicy }]);
+    invalidCalls.push(["audit_stata_project", { path: root, report_policy: reportPolicy }]);
+    invalidCalls.push(["research_output_check", { path: root, deliverables: [{ pattern: "*.xlsx", expected_count: 0 }], report_policy: reportPolicy }]);
+  }
+  for (const mode of ["bogus", "", null]) {
+    invalidCalls.push(["audit_stata_project", { path: root, scope: { mode } }]);
+    invalidCalls.push(["research_output_check", { path: root, deliverables: [{ pattern: "*.xlsx", expected_count: 0 }], scope: { mode } }]);
+  }
+  for (const [name, args] of invalidCalls) {
+    const result = await client.request("tools/call", { name, arguments: args });
+    assert.equal(result.isError, true, `${name}: ${JSON.stringify(args)}`);
+  }
+
+  const defaultPlan = await client.tool("plan_dictionary_repairs", { path: root, request: "Add an Excel output." });
+  assert.equal(defaultPlan.work_report_contract.report_policy, "required");
+  const noReportPlan = await client.tool("plan_dictionary_repairs", { path: root, request: "Add an Excel output, but do not create report.md." });
+  assert.equal(noReportPlan.work_report_contract.report_policy, "disabled");
+
+  const defaultAudit = await client.tool("audit_stata_project", { path: root, expected_stages: ["import", "estimation"] });
+  assert.equal(defaultAudit.scope.mode, "reachable");
+  assert.equal(defaultAudit.work_report.required, false);
+  const legacyAudit = await client.tool("audit_stata_project", { path: root, require_report: true, expected_stages: ["import", "estimation"] });
+  assert.equal(legacyAudit.work_report.required, true);
+  const explicitWins = await client.tool("audit_stata_project", { path: root, require_report: true, report_policy: "disabled", expected_stages: ["import", "estimation"] });
+  assert.equal(explicitWins.work_report.required, false);
+
+  const defaultOutput = await client.tool("research_output_check", {
+    path: root,
+    deliverables: [{ pattern: "*.xlsx", expected_count: 0 }],
+    expected_stages: ["import", "estimation"],
+  });
+  assert.equal(defaultOutput.static_audit.work_report.required, true);
+});
+
+test("Stata runtime tests return immediately after an unavailable-runtime skip", () => {
+  for (const file of [
+    "event_reference_slot_runtime.test.cjs",
+    "state_transition_runtime.test.cjs",
+    "structural_transitions_runtime.test.cjs",
+  ]) {
+    const content = fs.readFileSync(path.join(__dirname, file), "utf8");
+    assert.match(content, /if \(!stata\) return t\.skip\(/, file);
+  }
 });
 
 test("reachable project audit isolates inactive files while all-files scope retains a full repository scan", async (t) => {

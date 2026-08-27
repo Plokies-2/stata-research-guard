@@ -61,7 +61,7 @@ test("event runtime fixture declares one generic omitted-base reference slot", (
 
 test("event reference-slot fixture runs in StataMP and creates both PDF and GPH paths", (t) => {
   const stata = stataExecutable();
-  if (!stata) t.skip("StataMP-64 is unavailable");
+  if (!stata) return t.skip("StataMP-64 is unavailable");
 
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-event-reference-slot-"));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));

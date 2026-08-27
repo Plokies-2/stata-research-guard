@@ -1344,7 +1344,8 @@ function templateReuseCheck(args, context) {
       else if (claimedTargetHash !== targetRawHash) fail("target_drift", { expected: claimedTargetHash, observed: targetRawHash });
       const sourceSequence = commandSequence(label.code);
       const targetSequence = commandSequence(targetText);
-      const retained = sourceSequence.length ? lcsLength(sourceSequence, targetSequence) / sourceSequence.length : 0;
+      const retainedCommandCount = lcsLength(sourceSequence, targetSequence);
+      const retained = sourceSequence.length ? retainedCommandCount / sourceSequence.length : 0;
       const minimum = Math.max(
         0.75,
         ...[
@@ -1361,7 +1362,7 @@ function templateReuseCheck(args, context) {
         target_span_sha256: targetRawHash,
         source_command_count: sourceSequence.length,
         target_command_count: targetSequence.length,
-        retained_command_count: lcsLength(sourceSequence, targetSequence),
+        retained_command_count: retainedCommandCount,
         command_retention: Number(retained.toFixed(4)),
         minimum_command_retention: minimum,
       };
