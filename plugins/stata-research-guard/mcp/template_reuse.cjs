@@ -1210,7 +1210,7 @@ function templateReuseCheck(args, context) {
     warnings.push({
       rule: "legacy_manifest_schema",
       schema_version: manifest.schema_version,
-      message: "schema 1.0 cannot enforce mixed template and native_substep coverage within a broad headword; use schema 2.0 for a new trial",
+          message: "schema 1.0 cannot enforce mixed template and general_rule coverage within a broad headword; use schema 2.0 for a new trial",
     });
   }
   const knownCheckpoints = new Set(context.labels.map((row) => String(row.checkpoint || "").trim()).filter(Boolean));
@@ -1458,10 +1458,12 @@ function templateReuseCheck(args, context) {
         const substep = rawSubstep && typeof rawSubstep === "object" && !Array.isArray(rawSubstep) ? rawSubstep : {};
         const id = String(substepId(substep) || "").trim();
         const normalizedId = id.toLowerCase();
+        const rawMode = substep.mode || null;
+        const normalizedMode = rawMode === "native_substep" ? "general_rule" : rawMode;
         const check = {
           checkpoint,
           substep_id: id || null,
-          mode: substep.mode || null,
+          mode: normalizedMode,
           selections: [],
           matched_candidate_ids: [],
           passed: true,
@@ -1477,8 +1479,24 @@ function templateReuseCheck(args, context) {
         const assignedSelections = manifest.selections.filter((selection) => selectionSubstepIds(selection).includes(normalizedId));
         check.selections = assignedSelections.map((selection) => selection.label_id);
         const match = substep.match && typeof substep.match === "object" ? substep.match : {};
-        const justification = substep.native_justification;
-        const fallbackQuery = justification?.search_evidence?.query || "";
+        const justification = substep.general_rule_justification || substep.native_justification;
+        const rawJustificationKind = justification?.kind || null;
+        const justificationKind = ["template_mismatch_fallback", "direct_implementation"].includes(rawJustificationKind)
+          ? "template_mismatch"
+          : rawJustificationKind;
+        const evidenceQuery = justification?.search_evidence?.query || "";
+        if (rawMode === "native_substep") warnings.push({
+          rule: "legacy_native_substep_mode",
+          checkpoint,
+          substep_id: id || null,
+          message: "native_substep is accepted for read compatibility and normalized to general_rule; emit general_rule in new manifests.",
+        });
+        if (substep.native_justification && !substep.general_rule_justification) warnings.push({
+          rule: "legacy_native_justification_field",
+          checkpoint,
+          substep_id: id || null,
+          message: "native_justification is accepted for read compatibility; emit general_rule_justification in new manifests.",
+        });
         const declaredMatchCheckpoints = normalizedTerms(match.searched_checkpoints || match.checkpoints);
         if (declaredMatchCheckpoints.length && !declaredMatchCheckpoints.includes(String(checkpoint).toLowerCase())) {
           failSubstep("substep_match_checkpoint_mismatch", { searched_checkpoints: declaredMatchCheckpoints });
@@ -1487,8 +1505,8 @@ function templateReuseCheck(args, context) {
           || normalizedTerms(match.tokens).length > 0
           || typeof match.query === "string" && match.query.trim().length > 0;
         const hasAtomicMatch = hasDataDrivenMatch || normalizedTerms(match.label_ids).length > 0;
-        const candidateMap = new Map(matchingAutoSelectableLabels(context.labels, checkpoint, match, fallbackQuery).map((label) => [label.label_id, label]));
-        if (substep.mode === "template") {
+        const candidateMap = new Map(matchingAutoSelectableLabels(context.labels, checkpoint, match, evidenceQuery).map((label) => [label.label_id, label]));
+        if (normalizedMode === "template") {
           const candidates = [...candidateMap.values()];
           check.matched_candidate_ids = candidates.map((label) => label.label_id);
           if (!hasAtomicMatch) failSubstep("template_substep_atomic_match_missing");
@@ -1501,9 +1519,9 @@ function templateReuseCheck(args, context) {
               failSubstep("template_substep_match_mismatch", { label_id: assignedSelections[0].label_id, matched_candidate_ids: check.matched_candidate_ids });
             }
           }
-        } else if (substep.mode === "native_substep") {
+        } else if (normalizedMode === "general_rule") {
           const target = targetDeclaration(substep);
-          const nativeEvidence = {
+          const generalRuleEvidence = {
             target_path: target.path || null,
             target_spans: target.spans || null,
             target_span_sha256: null,
@@ -1516,74 +1534,75 @@ function templateReuseCheck(args, context) {
             tex_output: null,
             program_definitions: [],
           };
-          check.native_target_evidence = nativeEvidence;
+          check.general_rule_target_evidence = generalRuleEvidence;
+          if (rawMode === "native_substep") check.native_target_evidence = generalRuleEvidence;
           if (!target.path || !target.spans || !target.sha256) {
-            failSubstep("native_target_declaration_missing", { required: ["target_path", "target_spans", "target_span_sha256"] });
+            failSubstep("general_rule_target_declaration_missing", { required: ["target_path", "target_spans", "target_span_sha256"] });
           } else {
             try {
-              const targetPath = resolveExistingInside(root, target.path, `native target ${id}`);
-              const targetContent = decodeUtf8(fs.readFileSync(targetPath), `native target ${target.path}`);
-              const targetText = extractSpans(targetContent, target.spans, `native target ${id}`);
+              const targetPath = resolveExistingInside(root, target.path, `general_rule target ${id}`);
+              const targetContent = decodeUtf8(fs.readFileSync(targetPath), `general_rule target ${target.path}`);
+              const targetText = extractSpans(targetContent, target.spans, `general_rule target ${id}`);
               const observedHash = sha256(Buffer.from(targetText, "utf8"));
               const observedCommands = observedCommandAnchors(targetText);
-              nativeEvidence.target_path = path.relative(root, targetPath).replace(/\\/g, "/");
-              nativeEvidence.target_span_sha256 = observedHash;
-              nativeEvidence.observed_commands = observedCommands;
-              if (observedHash !== target.sha256) failSubstep("native_target_drift", { expected: target.sha256, observed: observedHash });
+              generalRuleEvidence.target_path = path.relative(root, targetPath).replace(/\\/g, "/");
+              generalRuleEvidence.target_span_sha256 = observedHash;
+              generalRuleEvidence.observed_commands = observedCommands;
+              if (observedHash !== target.sha256) failSubstep("general_rule_target_drift", { expected: target.sha256, observed: observedHash });
 
               const declaredCommands = normalizedTerms(match.commands);
               const missingCommands = declaredCommands.filter((command) => !commandObserved(command, observedCommands));
-              nativeEvidence.command_match = { declared: declaredCommands, missing: missingCommands, passed: missingCommands.length === 0 };
-              if (missingCommands.length) failSubstep("native_target_declared_commands_missing", { missing: missingCommands, observed_commands: observedCommands });
+              generalRuleEvidence.command_match = { declared: declaredCommands, missing: missingCommands, passed: missingCommands.length === 0 };
+              if (missingCommands.length) failSubstep("general_rule_target_declared_commands_missing", { missing: missingCommands, observed_commands: observedCommands });
 
               const tokenEvidence = meaningEvidence(match.tokens || [], targetText, observedCommands);
-              nativeEvidence.token_match = tokenEvidence;
-              if (normalizedTerms(match.tokens).length && !tokenEvidence.passed) failSubstep("native_target_declared_tokens_missing", tokenEvidence);
+              generalRuleEvidence.token_match = tokenEvidence;
+              if (normalizedTerms(match.tokens).length && !tokenEvidence.passed) failSubstep("general_rule_target_declared_tokens_missing", tokenEvidence);
               const queryValues = [match.query, justification?.search_evidence?.query].filter(Boolean);
               const queryEvidence = meaningEvidence(queryValues, targetText, observedCommands);
-              nativeEvidence.query_match = queryEvidence;
-              if (queryValues.length && !queryEvidence.passed) failSubstep("native_target_declared_query_missing", queryEvidence);
+              generalRuleEvidence.query_match = queryEvidence;
+              if (queryValues.length && !queryEvidence.passed) failSubstep("general_rule_target_declared_query_missing", queryEvidence);
 
-              const lint = context.lintContent(normalizeStructuralPrefixes(targetText), "native_substep", nativeEvidence.target_path);
-              nativeEvidence.lint = { max_loop_depth: lint.summary.max_loop_depth, error_count: lint.findings.filter((row) => row.severity === "error").length };
+              const lint = context.lintContent(normalizeStructuralPrefixes(targetText), "general_rule", generalRuleEvidence.target_path);
+              generalRuleEvidence.lint = { max_loop_depth: lint.summary.max_loop_depth, error_count: lint.findings.filter((row) => row.severity === "error").length };
               const lintErrors = lint.findings.filter((row) => row.severity === "error");
-              if (lintErrors.length) failSubstep("native_target_lint_blocked", { findings: lintErrors });
-              if (lint.summary.max_loop_depth > 2) failSubstep("native_target_nested_loop", { max_loop_depth: lint.summary.max_loop_depth });
-              nativeEvidence.tex_output = hasTexOutputContent(targetText);
-              if (nativeEvidence.tex_output) failSubstep("native_target_tex_output");
-              nativeEvidence.program_definitions = targetText.split(/\r?\n/).flatMap((line, index) => {
+              if (lintErrors.length) failSubstep("general_rule_target_lint_blocked", { findings: lintErrors });
+              if (lint.summary.max_loop_depth > 2) failSubstep("general_rule_target_nested_loop", { max_loop_depth: lint.summary.max_loop_depth });
+              generalRuleEvidence.tex_output = hasTexOutputContent(targetText);
+              if (generalRuleEvidence.tex_output) failSubstep("general_rule_target_tex_output");
+              generalRuleEvidence.program_definitions = targetText.split(/\r?\n/).flatMap((line, index) => {
                 const program = stripStataCommandPrefixes(line).value.match(/^program\s+define\s+([^\s,]+)/i);
                 return program ? [{ name: program[1], line: index + 1 }] : [];
               });
-              if (nativeEvidence.program_definitions.length) failSubstep("native_target_program_definition", { definitions: nativeEvidence.program_definitions });
+              if (generalRuleEvidence.program_definitions.length) failSubstep("general_rule_target_program_definition", { definitions: generalRuleEvidence.program_definitions });
 
-              const observedCandidates = observedNativeCandidates(context.labels, checkpoint, targetText, observedCommands, match, fallbackQuery, nativeEvidence);
-              nativeEvidence.observed_candidate_ids = observedCandidates.map((label) => label.label_id);
+              const observedCandidates = observedNativeCandidates(context.labels, checkpoint, targetText, observedCommands, match, evidenceQuery, generalRuleEvidence);
+              generalRuleEvidence.observed_candidate_ids = observedCandidates.map((label) => label.label_id);
               for (const label of observedCandidates) candidateMap.set(label.label_id, label);
             } catch (error) {
-              failSubstep("native_target_read_decode_or_span_error", { message: error.message });
+              failSubstep("general_rule_target_read_decode_or_span_error", { message: error.message });
             }
           }
           const candidates = [...candidateMap.values()];
           check.matched_candidate_ids = candidates.map((label) => label.label_id);
-          if (!hasDataDrivenMatch) failSubstep("native_substep_atomic_match_missing");
-          if (assignedSelections.length) failSubstep("native_substep_has_template_selection", { selections: check.selections });
+          if (!hasDataDrivenMatch) failSubstep("general_rule_substep_atomic_match_missing");
+          if (assignedSelections.length) failSubstep("general_rule_substep_has_template_selection", { selections: check.selections });
           if (candidates.length) {
-            if (enforceTemplateReuse) failSubstep("native_substep_template_available", { matched_candidate_ids: check.matched_candidate_ids });
+            if (enforceTemplateReuse) failSubstep("general_rule_substep_template_available", { matched_candidate_ids: check.matched_candidate_ids });
             else warnings.push({
               rule: "preferred_template_not_selected",
               checkpoint,
               substep_id: id || null,
               matched_candidate_ids: check.matched_candidate_ids,
-              message: "A compatible template was available. A native fallback remains advisory when the manifest records the rank-relative nearest template hint, the no_suitable_template or wrong_selection trigger, and any nonbinding hint used.",
+              message: "A compatible template was available. The general_rule implementation remains advisory when the manifest records the rank-relative nearest template hint, template status, and any nonbinding hint used.",
             });
           }
-          if (!justification || !["project_specific_formula", "dictionary_gap", "template_mismatch_fallback", "direct_implementation"].includes(justification.kind)) {
-            failSubstep("native_substep_justification_invalid", { allowed_kinds: ["project_specific_formula", "dictionary_gap", "template_mismatch_fallback", "direct_implementation"] });
-          } else if (justification.kind === "project_specific_formula") {
+          if (!justification || !["project_specific_formula", "dictionary_gap", "template_mismatch"].includes(justificationKind)) {
+            failSubstep("general_rule_substep_justification_invalid", { allowed_kinds: ["project_specific_formula", "dictionary_gap", "template_mismatch"] });
+          } else if (justificationKind === "project_specific_formula") {
             const definition = justification.formula_or_definition || justification.description;
             if (typeof definition !== "string" || !definition.trim()) failSubstep("project_specific_formula_definition_missing");
-          } else if (justification.kind === "dictionary_gap") {
+          } else if (justificationKind === "dictionary_gap") {
             const evidence = justification.search_evidence;
             if (!evidence || typeof evidence !== "object") failSubstep("dictionary_gap_search_evidence_missing");
             else {
@@ -1604,7 +1623,7 @@ function templateReuseCheck(args, context) {
             }
           } else {
             const nearestTemplateHint = justification.nearest_template_hint;
-            const fallbackTrigger = justification.fallback_trigger;
+            const templateStatus = justification.template_status || justification.fallback_trigger;
             const hintUsed = justification.hint_used;
             if (typeof nearestTemplateHint !== "string" || !nearestTemplateHint.trim()) failSubstep("template_mismatch_nearest_template_hint_missing");
             else {
@@ -1621,17 +1640,17 @@ function templateReuseCheck(args, context) {
                 }
               }
             }
-            if (!["no_suitable_template", "wrong_selection"].includes(fallbackTrigger)) failSubstep("template_mismatch_fallback_trigger_invalid", { allowed: ["no_suitable_template", "wrong_selection"] });
+            if (!["no_suitable_template", "wrong_selection"].includes(templateStatus)) failSubstep("template_mismatch_template_status_invalid", { allowed: ["no_suitable_template", "wrong_selection"] });
             if (typeof hintUsed !== "string" || !hintUsed.trim()) failSubstep("template_mismatch_hint_used_missing");
-            if (justification.kind === "direct_implementation") warnings.push({
-              rule: "legacy_direct_implementation_kind",
+            if (["template_mismatch_fallback", "direct_implementation"].includes(rawJustificationKind)) warnings.push({
+              rule: "legacy_template_mismatch_kind",
               checkpoint,
               substep_id: id || null,
-              message: "Use template_mismatch_fallback for new manifests; the legacy kind is accepted only with nearest_template_hint, fallback_trigger, and hint_used.",
+              message: "The legacy justification kind is accepted for read compatibility; emit template_mismatch with nearest_template_hint, template_status, and hint_used in new manifests.",
             });
           }
         } else {
-          failSubstep("substep_mode_invalid", { observed: substep.mode || null, allowed: ["template", "native_substep"] });
+          failSubstep("substep_mode_invalid", { observed: substep.mode || null, allowed: ["template", "general_rule"] });
         }
         checkpointSubsteps.push(check);
         substepChecks.push(check);
@@ -1642,7 +1661,7 @@ function templateReuseCheck(args, context) {
       if (unassignedSelections.length) blockers.push({ rule: "selection_substep_id_missing", checkpoint, selections: unassignedSelections });
       headwordChecks.push({
         checkpoint,
-        mode: headword.mode || (checkpointSubsteps.some((row) => row.mode === "native_substep") ? "mixed" : "template"),
+        mode: headword.mode || (checkpointSubsteps.some((row) => row.mode === "general_rule") ? "mixed" : "template"),
         selections: checkpointSubsteps.flatMap((row) => row.selections),
         substeps: checkpointSubsteps.map((row) => row.substep_id),
         passed: blockers.length === headwordBlockerStart && checkpointSubsteps.every((row) => row.passed),

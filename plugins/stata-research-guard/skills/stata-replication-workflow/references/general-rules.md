@@ -1,18 +1,32 @@
-# General-rule fallback
+# General authoring rules
 
-Use this reference only after searching the dictionary and approved corpus for one atomic transition. Activate it when no candidate is genuinely close or when inspection, lint, runtime, or output evidence shows that the selected template is the wrong fit for the target frame, algorithm, control flow, interface, input profile, or output contract. It permits concise Stata for the already-declared transition; it is not a new workflow, template, or source of research choices.
+These rules always apply to every Stata code-writing task. They govern direct implementation, selection and adaptation of a template, composition of several atomic transitions, and revision after lint, runtime, or output evidence. They are the baseline authoring contract, not a fallback path and not a source of substantive research choices.
 
-Before writing fallback code, inject the search-ranked nearest inspected candidate as a nonbinding hint. Prefer the highest-ranked writable candidate; when none is writable, use the highest-ranked reference candidate. This is only the nearest candidate among those searched: it may still be absolutely distant or incompatible, so never treat rank as proof of suitability. The model may borrow a useful command, ordering idea, state-handling pattern, or output idiom, or use none of it. Record `nearest_template_hint=<label_id>`, `fallback_trigger=<no_suitable_template|wrong_selection>`, and `hint_used=<borrowed idea or none>`. If retrieval returns no candidate, record `nearest_template_hint=none`, `fallback_trigger=no_suitable_template`, and the searched checkpoint plus command/state anchors. Do not require an argument that the fallback is better than the template.
+Use this priority order:
 
-## Activation and stop boundary
+1. the user and project contract fixes the sample, estimand, merge key, treatment rule, model, event axis, sheet group, and output placement;
+2. these general rules govern every implementation;
+3. a genuinely compatible template may provide an optional source-backed implementation for one complete atomic transition.
 
-Implement only the already-declared input-to-output transition. Keep the declared sample, estimand, merge key, treatment rule, model, event axis, sheet group, and output placement. A fallback never supplies a missing substantive decision or bypasses a merge-key, sample, estimator, event-axis, raw-table, sheet-cardinality, or output contract.
+## Template selection and adaptation
+
+Search the dictionary and approved corpus for each substantive atomic transition. Select a template only when its input state, output state, method, control flow, required interface, input profile, and output contract cover that entire transition after the declared bindings are applied.
+
+Every template adaptation must still follow these general rules. Bind only the declared variable, key, path, estimate, workbook, sheet, precision, and other `minimal_edit_fields` or `required_changes`. Apply a necessity gate: keep only statements needed for the current transition, while preserving the selected template's algorithm, state contract, and required safety checks.
+
+If the requested change would alter the template's frame, algorithm, control flow, estimate handoff, caller interface, or output contract, stop treating it as a template implementation. When a natural state boundary exists, split the work into smaller atomic transitions and retain the template only for the complete compatible transition. Otherwise write the transition under `general_rule`; the nearest inspected template may remain a nonbinding hint for commands, ordering, state handling, or output idioms. Do not splice templates or progressively rewrite a near miss while continuing to claim template provenance.
+
+For a general-rule implementation, record `nearest_template_hint=<label_id|none>`, `template_status=<no_suitable_template|wrong_selection|project_specific_contract>`, and `hint_used=<borrowed idea or none>` when the selected report policy or persistent audit requires provenance. Rank-relative nearest does not establish compatibility, and no argument that the direct implementation is superior is required.
+
+## Research-choice and stop boundary
+
+Implement only an already-declared input-to-output transition. Keep the declared sample, estimand, merge key, treatment rule, model, event axis, sheet group, and output placement. General rules never supply a missing substantive decision or bypass a merge-key, sample, estimator, event-axis, raw-table, sheet-cardinality, or output contract.
 
 Stop and obtain the missing contract rather than improvising when a substantive rule, an event-study axis profile, or the final Excel output flow is unresolved. In particular, a multi-sheet workbook needs the compatible canonical formatter; do not evade it with a new helper or a direct substitute.
 
-## Concise fallback rule
+## Concise implementation rule
 
-Write the shortest readable direct Stata sequence with one final implementation path and shallow indentation. Prefer one active loop. A flat `foreach` or `forvalues` loop may bind a real plain list; Stata's programming manual specifies its brace layout and recommends direct varlist iteration over tokenized numbered macros ([`[P] Programming`](https://www.stata.com/manuals/p.pdf)). Exactly two active loop levels are allowed only when both axes are plain named lists or numeric ranges, the same mechanical body repeats, the reduction is substantial, and sample, estimand, specification, grouping, and output placement remain visible at the loop site. Never use loop depth 3 or hide another loop in a helper.
+Write the shortest readable Stata sequence with one final implementation path and shallow indentation. Prefer one active loop. A flat `foreach` or `forvalues` loop may bind a real plain list; Stata's programming manual specifies its brace layout and recommends direct varlist iteration over tokenized numbered macros ([`[P] Programming`](https://www.stata.com/manuals/p.pdf)). Exactly two active loop levels are allowed only when both axes are plain named lists or numeric ranges, the same mechanical body repeats, the reduction is substantial, and sample, estimand, specification, grouping, and output placement remain visible at the loop site. Never use loop depth 3 or hide another loop in a helper.
 
 For long macro varlists and other long enumerations, use whitespace and multiline alignment to expose meaningful groups. A typical shape is:
 
@@ -55,12 +69,14 @@ Keep figures as PDF and durable estimates as `.ster` only when needed. Do not em
 
 ## Required root `report.md` record
 
-After creating or revising Stata code, record every fallback span in the project-root `report.md`. Use one `general_rule_fallback` row for each contiguous, project-relative `.do` range with its actual one-based inclusive `start-end` lines, a valid checkpoint or `unmapped`, label ID `-`, and a note in the form `nearest_template_hint=<label_id|none>; fallback_trigger=<no_suitable_template|wrong_selection>; hint_used=<borrowed idea|none>`. This records how the rank-relative hint informed the fallback; it does not assert compatibility or justify the fallback as superior. Keep provenance out of the `.do` source.
+After creating or revising substantive Stata code under `report_policy: required`, record each final implementation span in the project-root `report.md`. Use `template` when the selected template still covers the complete atomic transition after permitted adaptation. Use `general_rule` when no complete compatible template was used. Each row contains the actual project-relative `.do` path, one-based inclusive `start-end` lines, checkpoint or `unmapped`, and label ID or `-`.
+
+A `general_rule` row records `nearest_template_hint=<label_id|none>; template_status=<no_suitable_template|wrong_selection|project_specific_contract>; hint_used=<borrowed idea|none>`. This is provenance about template inspection, not a claim that general-rule code is an exception or degraded result. Keep provenance out of the `.do` source.
 
 ```markdown
 | mode | target | lines | checkpoint | label_id | reason |
 | --- | --- | --- | --- | --- | --- |
-| general_rule_fallback | analysis/02_estimate.do | 18-24 | estimation.conventional | - | nearest_template_hint=estimation.ols_visible_specs_eststo.v1; fallback_trigger=wrong_selection; hint_used=regression and vce option ordering. |
+| general_rule | analysis/02_estimate.do | 18-24 | estimation.conventional | - | nearest_template_hint=estimation.ols_visible_specs_eststo.v1; template_status=wrong_selection; hint_used=regression and vce option ordering. |
 ```
 
-Do not overlap recorded implementation ranges. This record is required for fallback provenance; it does not make an unresolved substantive contract writable.
+Do not overlap recorded implementation ranges. Harmless primitives and the declared master shell remain unrecorded. Legacy `general_rule_fallback` rows and `fallback_trigger` fields may be accepted only as read compatibility; new plans, reports, and tool outputs use `general_rule` and `template_status`.

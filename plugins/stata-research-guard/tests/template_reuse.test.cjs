@@ -232,10 +232,10 @@ function standardizationNativeClaim(t, transform) {
   const content = `${transform(current.label.code)}\ndisplay "zebra"`;
   useAtomicSubsteps(current.root, current.manifest, current.label, [{
     substep_id: "standardization_native_claim",
-    mode: "native_substep",
+    mode: "general_rule",
     match: { commands: ["display"], tokens: ["zebra"], query: "display zebra" },
     ...nativeTarget(current.root, "standardization_native_claim", content),
-    native_justification: {
+    general_rule_justification: {
       kind: "project_specific_formula",
       formula_or_definition: "Print a project-specific marker after the claimed native standardization flow.",
     },
@@ -366,19 +366,19 @@ test("one-command PDF export is an archive-backed template and cannot be claimed
   native.manifest.selections = [];
   useAtomicSubsteps(native.root, native.manifest, native.label, [{
     substep_id: "native_pdf_export",
-    mode: "native_substep",
+    mode: "general_rule",
     match: { commands: ["graph export"], tokens: ["pdf"] },
     ...nativeTarget(native.root, "native_pdf_export", targetCode),
-    native_justification: {
-      kind: "template_mismatch_fallback",
+    general_rule_justification: {
+      kind: "template_mismatch",
       nearest_template_hint: "export.figure_pdf.v1",
-      fallback_trigger: "wrong_selection",
+      template_status: "wrong_selection",
       hint_used: "graph export syntax",
     },
   }]);
   const nativeBlocked = check(native.root);
   assert.equal(nativeBlocked.status, "needs_revision");
-  assert.ok(nativeBlocked.blockers.some((row) => row.rule === "native_substep_template_available"
+  assert.ok(nativeBlocked.blockers.some((row) => row.rule === "general_rule_substep_template_available"
     && row.matched_candidate_ids.includes("export.figure_pdf.v1")));
   const nativeAdvisory = check(native.root, { enforce_template_reuse: false });
   assert.equal(nativeAdvisory.status, "pass", JSON.stringify(nativeAdvisory.blockers));
@@ -415,34 +415,34 @@ test("graph export and graph save retain distinct atomic signatures and native c
   nativeSave.manifest.selections = [];
   useAtomicSubsteps(nativeSave.root, nativeSave.manifest, nativeSave.label, [{
     substep_id: "native_gph_save",
-    mode: "native_substep",
+    mode: "general_rule",
     match: { commands: ["graph save"], tokens: ["gph"] },
     ...nativeTarget(nativeSave.root, "native_gph_save", saveCode),
-    native_justification: {
+    general_rule_justification: {
       kind: "project_specific_formula",
       formula_or_definition: "The project requires a durable GPH graph artifact.",
     },
   }]);
   const nativeSaveResult = check(nativeSave.root);
   assert.equal(nativeSaveResult.status, "pass", JSON.stringify(nativeSaveResult.blockers));
-  assert.ok(!nativeSaveResult.substep_checks[0].native_target_evidence.observed_candidate_ids.includes("export.figure_pdf.v1"));
+  assert.ok(!nativeSaveResult.substep_checks[0].general_rule_target_evidence.observed_candidate_ids.includes("export.figure_pdf.v1"));
 
   const nativePdf = fixture(t, "export.figure_pdf.v1");
   nativePdf.manifest.selections = [];
   useAtomicSubsteps(nativePdf.root, nativePdf.manifest, nativePdf.label, [{
     substep_id: "native_pdf_export",
-    mode: "native_substep",
+    mode: "general_rule",
     match: { commands: ["graph export"], tokens: ["pdf"] },
     ...nativeTarget(nativePdf.root, "native_pdf_export", 'graph export "$OUTPUT/figures/figure_1.pdf", replace'),
-    native_justification: {
+    general_rule_justification: {
       kind: "project_specific_formula",
       formula_or_definition: "The PDF output location is specific to this project.",
     },
   }]);
   const nativePdfResult = check(nativePdf.root);
   assert.equal(nativePdfResult.status, "needs_revision");
-  assert.ok(nativePdfResult.substep_checks[0].native_target_evidence.observed_candidate_ids.includes("export.figure_pdf.v1"));
-  assert.ok(nativePdfResult.blockers.some((row) => row.rule === "native_substep_template_available"));
+  assert.ok(nativePdfResult.substep_checks[0].general_rule_target_evidence.observed_candidate_ids.includes("export.figure_pdf.v1"));
+  assert.ok(nativePdfResult.blockers.some((row) => row.rule === "general_rule_substep_template_available"));
 });
 
 test("coefplot graph assembly and PDF export remain separate atomic templates", (t) => {
@@ -504,17 +504,17 @@ test("m:1 retained merge has a distinct atomic template and blocks cardinality d
   native.manifest.selections = [];
   useAtomicSubsteps(native.root, native.manifest, native.label, [{
     substep_id: "native_retained_m1_merge",
-    mode: "native_substep",
+    mode: "general_rule",
     match: { commands: ["merge"], tokens: ["m:1", "keep(match)"] },
     ...nativeTarget(native.root, "native_retained_m1_merge", forms[0]),
-    native_justification: {
+    general_rule_justification: {
       kind: "project_specific_formula",
       formula_or_definition: "The merge fields are project specific but the retained m:1 transition is not.",
     },
   }]);
   const nativeBlocked = check(native.root);
   assert.equal(nativeBlocked.status, "needs_revision");
-  assert.ok(nativeBlocked.blockers.some((row) => row.rule === "native_substep_template_available"
+  assert.ok(nativeBlocked.blockers.some((row) => row.rule === "general_rule_substep_template_available"
     && row.matched_candidate_ids.includes("merge.retain_matched_rows_m1.v1")));
 });
 
@@ -542,17 +542,17 @@ test("native claims cannot bypass any exact atomic transition", (t) => {
     current.manifest.selections = [];
     useAtomicSubsteps(current.root, current.manifest, current.label, [{
       substep_id: `native_${labelId.replace(/[^a-z0-9_]+/gi, "_")}`,
-      mode: "native_substep",
+      mode: "general_rule",
       match: { commands: [command], query: command },
       ...nativeTarget(current.root, labelId, targetCode),
-      native_justification: {
+      general_rule_justification: {
         kind: "project_specific_formula",
         formula_or_definition: "Claimed project-specific implementation of this atomic transition.",
       },
     }]);
     const result = check(current.root);
     assert.equal(result.status, "needs_revision", labelId);
-    assert.ok(result.blockers.some((row) => row.rule === "native_substep_template_available"), `${labelId}: ${JSON.stringify(result.blockers)}`);
+    assert.ok(result.blockers.some((row) => row.rule === "general_rule_substep_template_available"), `${labelId}: ${JSON.stringify(result.blockers)}`);
   }
 });
 
@@ -937,10 +937,10 @@ test("advisory native final Excel still requires the fixed output-flow contract"
   delete manifest.output_flow_profile;
   useAtomicSubsteps(root, manifest, label, [{
     substep_id: "direct_excel",
-    mode: "native_substep",
+    mode: "general_rule",
     match: { commands: ["outreg2"], tokens: ["Excel"] },
     ...nativeTarget(root, "direct_excel", "outreg2 using table.xlsx, replace"),
-    native_justification: { kind: "template_mismatch_fallback", nearest_template_hint: "export.regression_excel.from_ster_default_style.v1", fallback_trigger: "wrong_selection", hint_used: "outreg2 output idiom" },
+    general_rule_justification: { kind: "template_mismatch", nearest_template_hint: "export.regression_excel.from_ster_default_style.v1", template_status: "wrong_selection", hint_used: "outreg2 output idiom" },
   }]);
   const result = check(root, { enforce_template_reuse: false });
   assert.equal(result.template_reuse_enforcement, "advisory");
@@ -953,10 +953,10 @@ test("complete output flow cannot replace the canonical final-Excel formatter se
   manifest.selections = [];
   useAtomicSubsteps(root, manifest, label, [{
     substep_id: "direct_excel_with_profile",
-    mode: "native_substep",
+    mode: "general_rule",
     match: { commands: ["outreg2"], tokens: ["Excel"] },
     ...nativeTarget(root, "direct_excel_with_profile", "outreg2 using table.xlsx, replace"),
-    native_justification: { kind: "template_mismatch_fallback", nearest_template_hint: "export.regression_excel.from_ster_default_style.v1", fallback_trigger: "wrong_selection", hint_used: "none" },
+    general_rule_justification: { kind: "template_mismatch", nearest_template_hint: "export.regression_excel.from_ster_default_style.v1", template_status: "wrong_selection", hint_used: "none" },
   }]);
   const result = check(root, { enforce_template_reuse: false });
   assert.equal(result.status, "needs_revision");
@@ -1029,10 +1029,10 @@ test("advisory native event study cannot omit the 4-way axis profile", (t) => {
   manifest.selections = [];
   useAtomicSubsteps(root, manifest, label, [{
     substep_id: "direct_event_figure",
-    mode: "native_substep",
+    mode: "general_rule",
     match: { commands: ["coefplot"], tokens: ["event study"] },
     ...nativeTarget(root, "direct_event_figure", "coefplot model\ngraph export event.pdf, replace"),
-    native_justification: { kind: "template_mismatch_fallback", nearest_template_hint: "figure.event_study_single_automatic.v1", fallback_trigger: "wrong_selection", hint_used: "coefplot and PDF export idioms" },
+    general_rule_justification: { kind: "template_mismatch", nearest_template_hint: "figure.event_study_single_automatic.v1", template_status: "wrong_selection", hint_used: "coefplot and PDF export idioms" },
   }]);
   const result = check(root, { enforce_template_reuse: false });
   assert.equal(result.template_reuse_enforcement, "advisory");
@@ -1045,10 +1045,10 @@ test("fallback nearest-template hints must exist and match the ranked candidate"
   unknown.manifest.selections = [];
   useAtomicSubsteps(unknown.root, unknown.manifest, unknown.label, [{
     substep_id: "unknown_hint",
-    mode: "native_substep",
+    mode: "general_rule",
     match: { commands: ["coefplot"], tokens: ["event study"] },
     ...nativeTarget(unknown.root, "unknown_hint", "coefplot model\ngraph export event.pdf, replace"),
-    native_justification: { kind: "template_mismatch_fallback", nearest_template_hint: "not.a.real.label", fallback_trigger: "wrong_selection", hint_used: "none" },
+    general_rule_justification: { kind: "template_mismatch", nearest_template_hint: "not.a.real.label", template_status: "wrong_selection", hint_used: "none" },
   }]);
   const unknownResult = check(unknown.root, { enforce_template_reuse: false });
   assert.ok(unknownResult.blockers.some((row) => row.rule === "template_mismatch_nearest_template_hint_unknown"));
@@ -1057,10 +1057,10 @@ test("fallback nearest-template hints must exist and match the ranked candidate"
   nonNearest.manifest.selections = [];
   useAtomicSubsteps(nonNearest.root, nonNearest.manifest, nonNearest.label, [{
     substep_id: "non_nearest_hint",
-    mode: "native_substep",
+    mode: "general_rule",
     match: { commands: ["coefplot"], tokens: ["event study"] },
     ...nativeTarget(nonNearest.root, "non_nearest_hint", "coefplot model\ngraph export event.pdf, replace"),
-    native_justification: { kind: "template_mismatch_fallback", nearest_template_hint: "figure.event_study_flat_loop_fixed_group.v1", fallback_trigger: "wrong_selection", hint_used: "none" },
+    general_rule_justification: { kind: "template_mismatch", nearest_template_hint: "figure.event_study_flat_loop_fixed_group.v1", template_status: "wrong_selection", hint_used: "none" },
   }]);
   const nonNearestResult = check(nonNearest.root, { enforce_template_reuse: false });
   assert.ok(nonNearestResult.blockers.some((row) => row.rule === "template_mismatch_nearest_template_hint_not_ranked_first"));
@@ -1076,10 +1076,10 @@ test("schema 2.0 composes one template and one justified native substep under a 
     },
     {
       substep_id: "twfe_firm_specific_trends",
-      mode: "native_substep",
+      mode: "general_rule",
       match: { commands: ["reghdfe"], tokens: ["firm-specific trends"] },
       ...nativeTarget(root, "twfe_firm_specific_trends", "reghdfe y event_terms, absorb(year firm_id##c.linear_time) vce(cluster firm_id)"),
-      native_justification: {
+      general_rule_justification: {
         kind: "dictionary_gap",
         search_evidence: {
           query: "reghdfe firm-specific trends",
@@ -1102,10 +1102,10 @@ test("schema 2.0 blocks native bypass when an auto-selectable matching LEGO exis
   manifest.selections = [];
   useAtomicSubsteps(root, manifest, label, [{
     substep_id: "dependent_variable_mean_on_esample",
-    mode: "native_substep",
+    mode: "general_rule",
     match: { commands: ["estadd"], tokens: ["e(ymean)"] },
     ...nativeTarget(root, "dependent_variable_mean_on_esample", label.code),
-    native_justification: {
+    general_rule_justification: {
       kind: "dictionary_gap",
       search_evidence: {
         query: "dependent-variable mean on e(sample)",
@@ -1116,7 +1116,7 @@ test("schema 2.0 blocks native bypass when an auto-selectable matching LEGO exis
   }]);
   const result = check(root);
   assert.equal(result.status, "needs_revision");
-  const blocked = result.blockers.find((row) => row.rule === "native_substep_template_available");
+  const blocked = result.blockers.find((row) => row.rule === "general_rule_substep_template_available");
   assert.ok(blocked.matched_candidate_ids.includes(label.label_id));
   assert.ok(result.substep_checks[0].matched_candidate_ids.includes(label.label_id));
 });
@@ -1126,10 +1126,10 @@ test("schema 2.0 derives native search evidence from the target and blocks self-
   manifest.selections = [];
   useAtomicSubsteps(root, manifest, label, [{
     substep_id: "disguised_esample_mean",
-    mode: "native_substep",
+    mode: "general_rule",
     match: { commands: ["rename"], tokens: ["zebra bypass"], query: "rename zebra bypass" },
     ...nativeTarget(root, "disguised_esample_mean", label.code),
-    native_justification: {
+    general_rule_justification: {
       kind: "dictionary_gap",
       search_evidence: {
         query: "rename zebra bypass",
@@ -1140,20 +1140,20 @@ test("schema 2.0 derives native search evidence from the target and blocks self-
   }]);
   const result = check(root);
   assert.equal(result.status, "needs_revision");
-  assert.ok(result.blockers.some((row) => row.rule === "native_target_declared_commands_missing"));
-  assert.ok(result.blockers.some((row) => row.rule === "native_target_declared_tokens_missing"));
-  assert.ok(result.blockers.some((row) => row.rule === "native_substep_template_available" && row.matched_candidate_ids.includes(label.label_id)));
-  assert.ok(result.substep_checks[0].native_target_evidence.observed_commands.includes("estadd"));
-  assert.ok(result.substep_checks[0].native_target_evidence.observed_candidate_ids.includes(label.label_id));
+  assert.ok(result.blockers.some((row) => row.rule === "general_rule_target_declared_commands_missing"));
+  assert.ok(result.blockers.some((row) => row.rule === "general_rule_target_declared_tokens_missing"));
+  assert.ok(result.blockers.some((row) => row.rule === "general_rule_substep_template_available" && row.matched_candidate_ids.includes(label.label_id)));
+  assert.ok(result.substep_checks[0].general_rule_target_evidence.observed_commands.includes("estadd"));
+  assert.ok(result.substep_checks[0].general_rule_target_evidence.observed_candidate_ids.includes(label.label_id));
 });
 
 test("schema 2.0 structural fingerprint catches one consistently renamed identifier behind a distractor", (t) => {
   const { label, result } = standardizationNativeClaim(t, (code) => code
     .replace(/\bcomponent_index\b/g, "standardized_index"));
   assert.equal(result.status, "needs_revision");
-  assert.ok(result.blockers.some((row) => row.rule === "native_substep_template_available" && row.matched_candidate_ids.includes(label.label_id)));
-  assert.ok(!result.substep_checks[0].native_target_evidence.exact_source_block_candidate_ids.includes(label.label_id));
-  assert.ok(result.substep_checks[0].native_target_evidence.structural_source_block_candidate_ids.includes(label.label_id));
+  assert.ok(result.blockers.some((row) => row.rule === "general_rule_substep_template_available" && row.matched_candidate_ids.includes(label.label_id)));
+  assert.ok(!result.substep_checks[0].general_rule_target_evidence.exact_source_block_candidate_ids.includes(label.label_id));
+  assert.ok(result.substep_checks[0].general_rule_target_evidence.structural_source_block_candidate_ids.includes(label.label_id));
 });
 
 test("schema 2.0 structural fingerprint catches multiple consistent identifier substitutions", (t) => {
@@ -1161,7 +1161,7 @@ test("schema 2.0 structural fingerprint catches multiple consistent identifier s
     .replace(/\bcomponent_rowmiss\b/g, "analysis_rowmiss")
     .replace(/\bcomponent_index\b/g, "standardized_index"));
   assert.equal(result.status, "needs_revision");
-  const match = result.substep_checks[0].native_target_evidence.structural_source_block_matches.find((row) => row.label_id === label.label_id);
+  const match = result.substep_checks[0].general_rule_target_evidence.structural_source_block_matches.find((row) => row.label_id === label.label_id);
   assert.ok(match);
   assert.equal(match.source_command_count, commandSequence(label.code).length);
   assert.ok(match.fingerprint_sha256);
@@ -1175,8 +1175,8 @@ test("schema 2.0 structural fingerprint leaves a genuinely different project for
     "drop temporary_cost_component",
   ].join("\n"));
   assert.equal(result.status, "pass", JSON.stringify(result.blockers));
-  assert.ok(!result.substep_checks[0].native_target_evidence.exact_source_block_candidate_ids.includes(label.label_id));
-  assert.ok(!result.substep_checks[0].native_target_evidence.structural_source_block_candidate_ids.includes(label.label_id));
+  assert.ok(!result.substep_checks[0].general_rule_target_evidence.exact_source_block_candidate_ids.includes(label.label_id));
+  assert.ok(!result.substep_checks[0].general_rule_target_evidence.structural_source_block_candidate_ids.includes(label.label_id));
 });
 
 test("schema 2.0 structural fingerprint preserves numeric and string research constants", (t) => {
@@ -1186,8 +1186,8 @@ test("schema 2.0 structural fingerprint preserves numeric and string research co
   ]) {
     const { label, result } = standardizationNativeClaim(t, transform);
     assert.equal(result.status, "pass", JSON.stringify(result.blockers));
-    assert.ok(!result.substep_checks[0].native_target_evidence.exact_source_block_candidate_ids.includes(label.label_id));
-    assert.ok(!result.substep_checks[0].native_target_evidence.structural_source_block_candidate_ids.includes(label.label_id));
+    assert.ok(!result.substep_checks[0].general_rule_target_evidence.exact_source_block_candidate_ids.includes(label.label_id));
+    assert.ok(!result.substep_checks[0].general_rule_target_evidence.structural_source_block_candidate_ids.includes(label.label_id));
   }
 });
 
@@ -1211,10 +1211,10 @@ test("schema 2.0 permits prompt-directed manual paths but blocks merge-policy an
   manualPath.manifest.selections = [];
   useAtomicSubsteps(manualPath.root, manualPath.manifest, manualPath.label, [{
     substep_id: `native_bypass_${manualPath.label.variant_id}`,
-    mode: "native_substep",
+    mode: "general_rule",
     match: { label_ids: [manualPath.label.label_id], commands: [manualPath.label.command_anchors[0]] },
     ...nativeTarget(manualPath.root, `native_bypass_${manualPath.label.variant_id}`, manualPath.label.code),
-    native_justification: {
+    general_rule_justification: {
       kind: "project_specific_formula",
       formula_or_definition: "The project explicitly directs its manual path interface.",
     },
@@ -1222,7 +1222,7 @@ test("schema 2.0 permits prompt-directed manual paths but blocks merge-policy an
   const manualPathResult = check(manualPath.root);
   assert.equal(manualPath.label.quality_rubric_review.classification, "reference_only");
   assert.equal(manualPathResult.status, "pass", JSON.stringify(manualPathResult.blockers));
-  assert.ok(!manualPathResult.blockers.some((row) => row.rule === "native_substep_template_available"));
+  assert.ok(!manualPathResult.blockers.some((row) => row.rule === "general_rule_substep_template_available"));
 
   const cases = [
     "merge.m1_complete_match_assert.v1",
@@ -1233,17 +1233,17 @@ test("schema 2.0 permits prompt-directed manual paths but blocks merge-policy an
     manifest.selections = [];
     useAtomicSubsteps(root, manifest, label, [{
       substep_id: `native_bypass_${label.variant_id}`,
-      mode: "native_substep",
+      mode: "general_rule",
       match: { label_ids: [label.label_id], commands: [label.command_anchors[0]] },
       ...nativeTarget(root, `native_bypass_${label.variant_id}`, label.code),
-      native_justification: {
+      general_rule_justification: {
         kind: "project_specific_formula",
         formula_or_definition: "A claimed project-specific definition cannot override an existing exact reusable block.",
       },
     }]);
     const result = check(root);
     assert.equal(result.status, "needs_revision", label.label_id);
-    const blocker = result.blockers.find((row) => row.rule === "native_substep_template_available");
+    const blocker = result.blockers.find((row) => row.rule === "general_rule_substep_template_available");
     assert.ok(blocker?.matched_candidate_ids.includes(label.label_id), label.label_id);
   }
 });
@@ -1253,15 +1253,42 @@ test("schema 2.0 accepts a project-specific formula only as an atomic unmatched 
   manifest.selections = [];
   useAtomicSubsteps(root, manifest, label, [{
     substep_id: "cpi_label_to_year_mapping",
-    mode: "native_substep",
+    mode: "general_rule",
     match: { commands: ["import excel"], tokens: ["CPI label-to-year mapping"] },
     ...nativeTarget(root, "cpi_label_to_year_mapping", "import excel using cpi.xlsx, firstrow clear\nrename cpi_value cpi\ngenerate year = real(substr(period_label, 1, 4))"),
-    native_justification: {
+    general_rule_justification: {
       kind: "project_specific_formula",
       formula_or_definition: "Map the supplied CPI workbook column labels to the contract-defined calendar year before deflation.",
     },
   }]);
   assert.equal(check(root).status, "pass");
+});
+
+test("schema 2.0 reads legacy native manifest vocabulary and normalizes it to general_rule", (t) => {
+  const { root, label, manifest } = fixture(t, "input.wto_trade_minimal_harmonization.v1");
+  manifest.selections = [];
+  const target = nativeTarget(root, "legacy_cpi_mapping", "import excel using cpi.xlsx, firstrow clear\nrename cpi_value cpi\ngenerate year = real(substr(period_label, 1, 4))");
+  manifest.schema_version = "2.0";
+  manifest.required_headwords = [{
+    checkpoint: label.checkpoint,
+    mode: "mixed",
+    substeps: [{
+      substep_id: "legacy_cpi_mapping",
+      mode: "native_substep",
+      match: { commands: ["import excel"], tokens: ["CPI label-to-year mapping"] },
+      ...target,
+      native_justification: {
+        kind: "project_specific_formula",
+        formula_or_definition: "Map the supplied CPI workbook column labels to the contract-defined calendar year before deflation.",
+      },
+    }],
+  }];
+  fs.writeFileSync(path.join(root, "template_reuse_manifest.json"), JSON.stringify(manifest, null, 2), "utf8");
+  const result = check(root);
+  assert.equal(result.status, "pass");
+  assert.equal(result.substep_checks[0].mode, "general_rule");
+  assert.ok(result.warnings.some((row) => row.rule === "legacy_native_substep_mode"));
+  assert.ok(result.warnings.some((row) => row.rule === "legacy_native_justification_field"));
 });
 
 test("schema 2.0 requires the raw source-file hash while schema 1.0 only warns", (t) => {
@@ -1418,10 +1445,10 @@ test("schema 2.0 rejects unknown and duplicate manifest checkpoints and enforces
     mode: "mixed",
     substeps: [{
       substep_id: "fake_native",
-      mode: "native_substep",
+      mode: "general_rule",
       match: { commands: ["display"], tokens: ["zebra"] },
       ...nativeTarget(unknown.root, "fake_native", 'display "zebra"'),
-      native_justification: { kind: "project_specific_formula", formula_or_definition: "Print the declared project marker." },
+      general_rule_justification: { kind: "project_specific_formula", formula_or_definition: "Print the declared project marker." },
     }],
   }];
   fs.writeFileSync(path.join(unknown.root, "template_reuse_manifest.json"), JSON.stringify(unknown.manifest, null, 2), "utf8");

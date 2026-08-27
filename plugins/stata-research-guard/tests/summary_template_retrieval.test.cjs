@@ -71,12 +71,12 @@ test("AEA-family summary atoms retain deposited-paper provenance and writable bo
     assert.equal(row.source_package_review.repository_doi, repositoryDoi);
     assert.equal(row.auto_select_allowed, writable);
   }
-  assert.ok(summary.general_rule_fallback_policy.closest_template_evidence.label_id);
-  assert.equal(summary.general_rule_fallback_policy.closest_template_evidence.hint_role, "nonbinding_rank_relative_hint");
-  assert.equal(summary.general_rule_fallback_policy.closest_template_evidence.absolute_compatibility, "not_established");
-  assert.match(summary.general_rule_fallback_policy.closest_template_evidence.comparison_rule, /absolutely distant or incompatible/i);
-  assert.match(summary.general_rule_fallback_policy.preferred_mode, /genuinely close writable template with permitted bindings/i);
-  assert.doesNotMatch(JSON.stringify(summary.general_rule_fallback_policy), /why the remaining statements are shorter and clearer|fallback code is superior/i);
+  assert.ok(summary.general_rule_policy.closest_template_evidence.label_id);
+  assert.equal(summary.general_rule_policy.closest_template_evidence.hint_role, "nonbinding_rank_relative_hint");
+  assert.equal(summary.general_rule_policy.closest_template_evidence.absolute_compatibility, "not_established");
+  assert.match(summary.general_rule_policy.closest_template_evidence.comparison_rule, /absolutely distant or incompatible/i);
+  assert.match(summary.general_rule_policy.template_selection_rule, /genuinely close writable template/i);
+  assert.doesNotMatch(JSON.stringify(summary.general_rule_policy), /why the remaining statements are shorter and clearer|fallback code is superior/i);
 
   const excel = await client.tool("search_labeled_checkpoints", {
     checkpoint: "exports.descriptive_excel_sheet",
@@ -104,7 +104,7 @@ test("AEA-family summary atoms retain deposited-paper provenance and writable bo
   assert.doesNotMatch(barRow.code, /graph\s+export/i);
 });
 
-test("fallback policy exposes none when retrieval has no ranked candidate", async (t) => {
+test("general-rule policy exposes none when retrieval has no ranked candidate", async (t) => {
   const client = new McpClient();
   t.after(() => client.close());
   const result = await client.tool("search_labeled_checkpoints", {
@@ -113,8 +113,8 @@ test("fallback policy exposes none when retrieval has no ranked candidate", asyn
     limit: 5,
   });
   assert.equal(result.results.length, 0);
-  assert.equal(result.general_rule_fallback_policy.closest_template_evidence.label_id, null);
-  assert.equal(result.general_rule_fallback_policy.closest_template_evidence.hint_role, "none");
-  assert.equal(result.general_rule_fallback_policy.closest_template_evidence.absolute_compatibility, "not_available");
-  assert.match(result.general_rule_fallback_policy.closest_template_evidence.comparison_rule, /nearest_template_hint=none/);
+  assert.equal(result.general_rule_policy.closest_template_evidence.label_id, null);
+  assert.equal(result.general_rule_policy.closest_template_evidence.hint_role, "none");
+  assert.equal(result.general_rule_policy.closest_template_evidence.absolute_compatibility, "not_available");
+  assert.match(result.general_rule_policy.closest_template_evidence.comparison_rule, /nearest_template_hint=none/);
 });

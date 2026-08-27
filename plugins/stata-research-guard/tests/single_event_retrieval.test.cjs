@@ -236,8 +236,8 @@ test("axis-profile metadata strictly selects automatic fixed or explicit mixed r
   assert.equal(unresolved.event_study_axis_pattern_gate.status, "mixed_profile_requires_explicit_rendering_mode");
   assert.deepEqual(unresolved.event_study_axis_pattern_gate.required_patterns, []);
   assert.deepEqual(unresolved.results, []);
-  assert.equal(unresolved.general_rule_fallback_policy.eligible, false);
-  assert.ok(unresolved.general_rule_fallback_policy.hard_stop_reasons.some((reason) => /mixed_profile_requires_explicit_rendering_mode/.test(reason)));
+  assert.equal(unresolved.general_rule_policy.implementation_allowed, false);
+  assert.ok(unresolved.general_rule_policy.hard_stop_reasons.some((reason) => /mixed_profile_requires_explicit_rendering_mode/.test(reason)));
 });
 
 test("event-study searches without axis evidence retain metadata but expose no writable choice", async (t) => {
@@ -256,8 +256,8 @@ test("event-study searches without axis evidence retain metadata but expose no w
     ["flat_loop_automatic_axis", "flat_loop_fixed_group_axis", "single_automatic_axis", "single_flat_mixed_axis_loop"].sort(),
   );
   assert.deepEqual(result.results.filter((row) => row.auto_select_allowed), []);
-  assert.equal(result.general_rule_fallback_policy.eligible, false);
-  assert.ok(result.general_rule_fallback_policy.hard_stop_reasons.some((reason) => /cardinality|axis profile/i.test(reason)));
+  assert.equal(result.general_rule_policy.implementation_allowed, false);
+  assert.ok(result.general_rule_policy.hard_stop_reasons.some((reason) => /cardinality|axis profile/i.test(reason)));
 
   const fixedMetadata = await client.tool("search_labeled_checkpoints", {
     variant_id: "stored_samples_flat_close_group_fixed_axis_pdf",

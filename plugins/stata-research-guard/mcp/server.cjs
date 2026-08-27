@@ -107,12 +107,12 @@ const PLANNED_VARIABLE_SCHEMA = {
 const INSTRUCTIONS = [
   "Use this server whenever generating or revising Stata research code.",
   "When explaining a Top 100 command or auditing example coverage, call inspect_top100_command_examples. It returns the full complexity-weighted set of materially distinct guide blocks for that command and keeps paper code context separate from exact reusable support. Continue to use resolve_transition_evidence for one concrete atomic authoring transition.",
-  "For every substantive atomic transition, call resolve_transition_evidence first. It uses two non-competing evidence layers: guide mechanics are always returned when a matching guide card exists and are never auto-selectable, while deposited or genuinely independent research usage may supply at most one audited usage template. Guide mechanics explain syntax and state handling only; they never supply or resolve a sample, estimand, model, treatment, merge key, VCE, event axis, workbook sheet, or output placement. Keep search_labeled_checkpoints, search_stata_manual, and search_approved_patterns only for compatibility, diagnosis, or a deliberately broader inspection after the resolver reports fallback, mismatch, or missing coverage.",
+  "For every substantive atomic transition, call resolve_transition_evidence first. It uses two non-competing evidence layers: guide mechanics are always returned when a matching guide card exists and are never auto-selectable, while deposited or genuinely independent research usage may supply at most one audited usage template. Guide mechanics explain syntax and state handling only; they never supply or resolve a sample, estimand, model, treatment, merge key, VCE, event axis, workbook sheet, or output placement. Keep search_labeled_checkpoints, search_stata_manual, and search_approved_patterns only for compatibility, diagnosis, or a deliberately broader inspection after the resolver reports general-rule implementation, mismatch, or missing coverage.",
   "For every atomic implementation step, write only the statements required by the current concrete input-to-output contract. Do not design for future outcomes, sheets, callers, options, or reuse. Do not add unused syntax options, one-item loops, one-use programs, registries, dispatchers, optional branches, or generic interfaces. Repetition is abstracted only when that repetition exists in the current request and a direct block cannot provide the required interface.",
   "Reserve globals for intentional cross-do-file contracts. Keep shared directory roots such as project, data, table, figures, and ster in setup when multiple stages consume them. Do not hoist a leaf filename such as summary_excel = $table/file.xlsx into setup when only one child do-file consumes it; declare it as a local in that child near its first use, or write the literal directly when it appears once and is clearer. A leaf file binding may remain global only when two or more do-files intentionally share that exact producer-consumer artifact contract. Put repeated regression-specific controls, sample restrictions, event-study RHS terms, fixed effects, clustering choices, and other single-consumer specification bindings in local macros inside the do-file that consumes them, close to the estimation block; keep a one-use list explicit in the command when clearer. Put same-file event selectors, display order, reference position, and notes in locals as well. Fingerprinted macro names are evidence to classify their scope, not a reason to preserve private or single-consumer globals. Format long variable, outcome, estimate, or option lists as meaningfully grouped multiline blocks: use whitespace to align comparable entries, indent continuation lines, and keep short lists on one line. Never align or reflow quoted labels, paths, or other text where whitespace is data. Use /// only when the command continues on the immediately following physical line, indent continuation lines beyond the command start, and omit /// from the final physical line.",
-  "First decide whether the request needs code. Korean or English review, audit, inspection, assessment, diagnosis, analysis, explanation, and explicit no-change requests are review_only and load no writable code; caller checkpoints cannot override that write boundary. A separate unnegated write clause authorizes only its stated mutation scope. If code is needed, classify its state-transition footprint and resolve only that bounded footprint using bilingual aliases, exact command anchors, input/output state, and target input signature. Call resolve_transition_evidence first. Within the independent research-usage layer, preserve the ordinary template-first path: follow guide+usage_template only for one exact audited usage variant with no known profile contradiction. Otherwise follow guide+fallback or guide_informed_fallback, and stop at selection_required whenever a substantive choice or material variant remains unresolved. Guide cards never compete with usage examples and never authorize template-mode reuse.",
-  "For every non-template substantive transition, apply the general-rule fallback reference. Inject the highest-ranked writable candidate, or the highest-ranked reference candidate when none is writable, as a nonbinding hint. State explicitly that nearest-by-ranking may still be absolutely distant or incompatible. Record nearest_template_hint=<label_id|none>, fallback_trigger=<no_suitable_template|wrong_selection>, and hint_used=<borrowed command, ordering, state handling, or output idiom|none>. Do not require a claim that fallback code is better. It implements only an already-declared atomic contract and never supplies an unresolved sample, estimand, merge key, treatment rule, model, event axis, sheet group, or output placement. Keep one readable final path and shallow indentation. Prefer one active loop; permit exactly two active loop levels only when both axes are plain named lists or numeric ranges, the same mechanical body is repeated, the reduction is substantial, and sample, estimand, specification, grouping, and output placement remain visible at the loop site. Loop depth three is always blocked. Do not use a registry, dispatcher, positional job string, one-use program, unused interface, dependency probe, manual event dummy, or coefficient reconstruction.",
-  "Iteration is allowed; judge the final frozen source, not the number of drafts. Revise only from concrete lint, runtime, or output evidence. For a binding-only failure inside declared minimal edits, delete the affected span and cleanly re-render it from the same selected block. If frame, algorithm, control flow, interface, or output contract must change, discard that span and reselect a complete variant. Never stack patches, wrappers, compatibility branches, fallback residue, or dead helpers on already modified generated code. Before freezing, leave exactly one final implementation path per atomic transition.",
+  "First decide whether the request needs code. Korean or English review, audit, inspection, assessment, diagnosis, analysis, explanation, and explicit no-change requests are review_only and load no writable code; caller checkpoints cannot override that write boundary. A separate unnegated write clause authorizes only its stated mutation scope. If code is needed, classify its state-transition footprint and resolve only that bounded footprint using bilingual aliases, exact command anchors, input/output state, and target input signature. Call resolve_transition_evidence first. Within the independent research-usage layer, use guide+usage_template only for one exact audited usage variant with no known profile contradiction and complete atomic-transition coverage. Otherwise use guide+general_rule or guide_informed_general_rule, and stop at selection_required whenever a substantive choice or material variant remains unresolved. Guide cards never compete with usage examples and never authorize template-mode reuse.",
+  "Apply the general rules to every substantive transition, including template selection, binding, adaptation, and verification. Select a template only when permitted bindings leave the complete atomic transition intact. If frame, algorithm, control flow, interface, or output contract must change, stop calling the result a template: split at a natural state boundary when possible, otherwise use general_rule for the already-declared transition. A highest-ranked inspected candidate may be retained only as a nonbinding hint and may still be absolutely distant or incompatible. Record nearest_template_hint=<label_id|none>, template_status=<no_suitable_template|wrong_selection|project_specific_contract>, and hint_used=<borrowed command, ordering, state handling, or output idiom|none>. The general rules never supply an unresolved sample, estimand, merge key, treatment rule, model, event axis, sheet group, or output placement. Keep one readable final path and shallow indentation. Prefer one active loop; permit exactly two active loop levels only when both axes are plain named lists or numeric ranges, the same mechanical body is repeated, the reduction is substantial, and sample, estimand, specification, grouping, and output placement remain visible at the loop site. Loop depth three is always blocked. Do not use a registry, dispatcher, positional job string, one-use program, unused interface, dependency probe, manual event dummy, or coefficient reconstruction.",
+  "Iteration is allowed; judge the final frozen source, not the number of drafts. Revise only from concrete lint, runtime, or output evidence. For a binding-only failure inside declared minimal edits, delete the affected span and cleanly re-render it from the same selected block. If frame, algorithm, control flow, interface, or output contract must change, discard that span and reselect a complete variant or use general_rule. Never stack patches, wrappers, compatibility branches, stale provenance residue, or dead helpers on already modified generated code. Before freezing, leave exactly one final implementation path per atomic transition.",
   "Inspect the project structure read-only before planning any write. Preserve a compatible existing layout; use the default-style tree only for an explicitly new first build.",
   "Audit scope defaults to scope.mode reachable from scope.entrypoints or the selected top-level master. Only active files are fully linted and contribute to blocking status; inactive files are listed as informational discoveries until scope.mode all or project-relative scope.include_paths promotes them. Multiple plausible top-level masters produce a review finding asking for explicit scope.entrypoints.",
   "Before creating or modifying any project file or folder, show the exact folders to create, files to create, modify, move, rename, delete, or overwrite, and the entrypoint and execution command, then wait for explicit user approval.",
@@ -120,8 +120,8 @@ const INSTRUCTIONS = [
   "For each substantive reusable state transition call resolve_transition_evidence before compatibility searches. Harmless setup, declared input loading, inspection, assertion, naming, logging, and other direct primitives do not need a checkpoint, ledger row, or template. Compare the target with a usage example's six-field template_input_profile before copying; a known contradiction blocks usage auto-selection but does not suppress an independently matching guide-mechanics card. A variant_group contains alternatives for the same transition, while distinct sequential groups may be composed only for an explicitly inseparable bounded producer-consumer handoff. Treat preparation, validation, estimation, and post-estimation blocks as equal sources of useful patterns rather than mandatory coverage quotas.",
   "Keep selected label, source hash, target span, declared selection conditions, and edited-field evidence in the session or audit result. Do not create a manifest folder or template-reuse manifest in the research project by default.",
   "Write reader-facing do-file comments only for project-local state transitions: input meaning, a new variable formula or definition, a retained merge or filter rule, the active sample or specification, and output purpose. Never put journal or repository names, template or source names, internal label/checkpoint/substep IDs, source paths, or provenance markers in generated comments. Keep those details in session or audit evidence, unless a named source is itself part of the project's data-acquisition contract.",
-  "For schema 2.0, decompose broad headwords into atomic substeps only when a persistent template-reuse audit is requested. Merge retained-state handling, panel-key declaration, CPI transformation, dataset finalization, age/entity collapse, e(sample) mean, estimation, ster save, ster load, Excel assembly, and figure assembly remain separately reviewable. Use one genuinely close template with permitted bindings when available; otherwise use general-rule fallback with the rank-relative nearest candidate only as a nonbinding hint. A matching template that was not used is an advisory unless the caller explicitly enables strict template-reuse enforcement. Native audit rows keep project-local target evidence, fallback trigger, and hint used; template availability alone is not a blocker.",
-  "Do not invent a primitive mode or search for templates for harmless direct statements. Contract-declared examples include sysuse of a built-in dataset, use of a declared input with clear and no if/in, version and simple set commands, approved path/name bindings, confirm/describe/codebook/count/assert checks, identifier encoding and variable labels, plain summarize or tabstat, estimates clear, an active .gph save, and approved log open/close. Write these directly without ledger, provenance, report row, or DIRECT FALLBACK markers. If a primitive's returned state is later used to make a substantive sample, estimand, transform, or reporting choice, review that larger transition normally. Merge retained states, sample restrictions, formulas, estimation, e(sample) statistics, estimate handoffs, figure/PDF assembly, axis choices, and final data saves should still be checked against templates first, but no suitable template or a wrong selection leads to general-rule fallback with the rank-relative nearest candidate retained only as a hint rather than a forced stop.",
+  "For schema 2.0, decompose broad headwords into atomic substeps only when a persistent template-reuse audit is requested. Merge retained-state handling, panel-key declaration, CPI transformation, dataset finalization, age/entity collapse, e(sample) mean, estimation, ster save, ster load, Excel assembly, and figure assembly remain separately reviewable. Apply the general rules to every substep and use a genuinely close template only when permitted bindings leave the complete transition intact. A matching template that was not used is an advisory unless the caller explicitly enables strict template-reuse enforcement. General-rule audit rows keep project-local target evidence, template status, and hint used; template availability alone is not a blocker.",
+  "Do not invent a primitive mode or search for templates for harmless direct statements. Contract-declared examples include sysuse of a built-in dataset, use of a declared input with clear and no if/in, version and simple set commands, approved path/name bindings, confirm/describe/codebook/count/assert checks, identifier encoding and variable labels, plain summarize or tabstat, estimates clear, an active .gph save, and approved log open/close. Write these directly without ledger, provenance, report row, or special markers. If a primitive's returned state is later used to make a substantive sample, estimand, transform, or reporting choice, review that larger transition normally. Merge retained states, sample restrictions, formulas, estimation, e(sample) statistics, estimate handoffs, figure/PDF assembly, axis choices, and final data saves should still be checked against templates, while selection, adaptation, and direct implementation all remain governed by the general rules.",
   "Use inspect_dictionary_coverage to distinguish full package review from reusable label coverage. A full-read attestation does not make every file or stage a generation source.",
   "Before editing an existing project, call plan_dictionary_repairs with the user's request. Preserve completed stages, translate only missing or defective work into dictionary headwords, and default to partial repair. Caller arguments cannot turn a narrow natural-language request into an overhaul. Use overhaul only when the user explicitly requests it or when confirmed incompatibility evidence shows the existing workflow cannot satisfy the target.",
   "When a checkpoint has multiple researcher variants, treat an explicitly requested method or state as a compatibility gate before ranking. Select one whose input contract and selection conditions match. Do not average, splice, or merge variants by default; never copy a drop variant.",
@@ -132,13 +132,13 @@ const INSTRUCTIONS = [
   "Before final Excel assembly, trace outcome meaning, unit, transform, sample, estimand, estimate handoff, and specification order. Define semantic sheet_groups from reader-facing evidence, then give every sheet_plan placement an ordered readable estimate_names list. Do not create a helper for a one-sheet workbook: keep regressions and direct outreg2 replace/append calls visible, compute each mean on e(sample), save the active estimate directly when only one durable result is needed, and avoid unnecessary globals, store/restore cycles, scratch import/export, Mata formatting, and one-use programs. The canonical outreg2_xlsx formatter is reserved for two or more sheets in the same workbook.",
   "Treat event-study axis_groups independently from Excel sheet_groups. Automatic vertical axes are the default. Use one fixed common vertical range only for a declared group of genuinely close, directly comparable outcomes with the same specification, sample comparison, coefficient unit, and transform. Keep the omitted base out of keep(), retain it as exactly one blank display-order slot, and derive the explicit x labels, zero reference position, and base-to-post policy boundary from that slot. For exactly one outcome use the direct no-loop figure variant; for two or more outcomes use one flat outcome loop. Put the comparison/sample legend below the axis, put the raw outcome variable name alone at the top, and export each PDF immediately after its graph.",
   "A mixed event-study axis loop is an opt-in exception: rendering_mode single_flat_mixed_axis_loop requires exactly one evidenced fixed_group, one or more automatic groups, complete expected_plots coverage, and one explicit mixed_loop_binding. Select only a label carrying the same event_axis_pattern. Keep one flat outcome loop, clear the bound axis-options local on every iteration, set it only under direct fixed-outcome membership, and use that local in the graph. Never replace this with plot_jobs, a generic dispatcher, or positional research-spec strings.",
-  "When the caller has already approved one master log path and the exact ordered do-file paths, write only log using, flat direct do calls in that exact order, log close, and optionally the exact approved completion display. Immediately above every individual do call, write one Korean comment sentence that states the called do-file's project-local role. This prompt-only shell uses no template, ledger, provenance or fallback marker. Do not infer stages, paths, or order; do not add loops, programs, registries, dispatchers, conditionals, positional strings, dependency probes, captured stage-failure handling, or alternate setup. Every approved do target must already exist. Lint a newly created master with lint_do_file role master and authoring_state new; modified master omissions are warnings and existing audits are not retroactively blocked. Existing master labels remain reference-only.",
+  "When the caller has already approved one master log path and the exact ordered do-file paths, write only log using, flat direct do calls in that exact order, log close, and optionally the exact approved completion display. Immediately above every individual do call, write one Korean comment sentence that states the called do-file's project-local role. This prompt-only shell uses no template, ledger, or provenance marker. Do not infer stages, paths, or order; do not add loops, programs, registries, dispatchers, conditionals, positional strings, dependency probes, captured stage-failure handling, or alternate setup. Every approved do target must already exist. Lint a newly created master with lint_do_file role master and authoring_state new; modified master omissions are warnings and existing audits are not retroactively blocked. Existing master labels remain reference-only.",
   "Prefer explicit sequential blocks or one flat loop. Use a two-level loop only for plainly declared repeated axes when it materially removes an otherwise duplicated mechanical block without hiding a research choice. Block active loop depth three and positional strings that encode outcome, sample, specification, or graph jobs for later word parsing. Report braced structural depth four as a complexity warning on its separate scale; a longer directly readable block remains preferable to hidden research-spec dispatch.",
-  "After Stata code creation or revision, apply report_policy required, optional, or disabled. Required records every selected template and general_rule_fallback in project-root report.md and passes authored_spans so confidently substantive changed lines are coverage-checked. Optional permits omission. Disabled, including an explicit no-report request, forbids creating or modifying report.md. require_report true is only a compatibility alias for required. Harmless primitives and untouched legacy code do not gain provenance requirements.",
-  "For a new project call workflow_blueprint with project_mode new, then resolve_transition_evidence for every substantive atomic transition; use compatibility searches only when the resolver routes to fallback or diagnosis. Lint each authored do-file, apply the selected report_policy, and audit the active reachable workflow.",
+  "After Stata code creation or revision, apply report_policy required, optional, or disabled. Required records every selected template and substantive general_rule span in project-root report.md and passes authored_spans so confidently substantive changed lines are coverage-checked. Optional permits omission. Disabled, including an explicit no-report request, forbids creating or modifying report.md. require_report true is only a compatibility alias for required. Harmless primitives and untouched legacy code do not gain provenance requirements. Legacy general_rule_fallback rows and fallback_trigger fields are accepted only for read compatibility and are never emitted.",
+  "For a new project call workflow_blueprint with project_mode new, then resolve_transition_evidence for every substantive atomic transition; use compatibility searches only when the resolver routes to general-rule implementation or diagnosis. Lint each authored do-file, apply the selected report_policy, and audit the active reachable workflow.",
   "When execution verification is requested, run the approved entrypoint from a clean generated-results state and call research_output_check with the exact contracted output patterns and counts, the actual main log, the selected report_policy, and the approved README tree and variable documentation when applicable. Keep runtime success, static audit, and substantive validity separate. For every persistent variable preserve its reader description, raw source unit plus exact formula or threshold, output unit and observation level, and a nearby label variable statement; never translate a numeric threshold into another unit unless the conversion is explicit and correct.",
   "For blind workflow validation, treat the natural-language contract as the only task input. Never expose the source do-file, earlier outputs, or example code as an answer key; use workflow_reproduction_check for semantic stage, lineage, and deliverable checks.",
-  "For a source-isolated blind trial, use only the staged inputs, contract, installed plugin local data/manual/archive, and exposed stataResearchGuard calls. Do not use Browser, web search, external URLs, shell retrieval, external connectors, prior generated code, or evaluator answer assets. Source isolation protects evidence boundaries; it does not require template-only code. After local template and manual checks, harmless primitives and narrow fallback implementations are allowed from the declared contract, with the rank-relative nearest inspected candidate injected only as a nonbinding hint and never presumed compatible. Stop only when a substantive research choice is unresolved, required input or execution capability is unavailable, or a hard safety/output contract would be violated.",
+  "For a source-isolated blind trial, use only the staged inputs, contract, installed plugin local data/manual/archive, and exposed stataResearchGuard calls. Do not use Browser, web search, external URLs, shell retrieval, external connectors, prior generated code, or evaluator answer assets. Source isolation protects evidence boundaries; it does not require template-only code. After local template and manual checks, harmless primitives and narrow general-rule implementations are allowed from the declared contract, with the rank-relative nearest inspected candidate retained only as a nonbinding hint and never presumed compatible. Stop only when a substantive research choice is unresolved, required input or execution capability is unavailable, or a hard safety/output contract would be violated.",
   "Native Stata python script with one declared .py path and optional args() is an explicit embedded-script integration, not a shell, winexec, bang, or inline Python process escape. Do not block it solely as process_escape, but verify its runtime exit evidence and concrete output effects separately. Continue to block arbitrary shell, winexec, Unix, bang, Java, Rscript, and inline Python escapes.",
   "For grouped summary statistics used by both a table and a figure, resolve the producer, Excel consumer, and figure consumer as separate atomic transitions unless their exact producer-consumer state is declared inseparable and bounded. Compose only source-backed deposited-paper usage atoms whose producer-consumer states connect, while consulting guide mechanics independently for each chosen command. Build one named canonical summary dataset with the complete declared statistic set and make both consumers read it. A one-off summarize or tabstat used only for inspection is harmless; a saved summary dataset, paper workbook, or figure is substantive.",
   "Never manually generate treat_y2015, _y2015, or similar treatment-by-year event variables. For a conventional event-study RHS with a declared window, omit the design reference and list every nonreference level as a native level-specific no-base term such as 2015bn.time#1.treatment 2016bn.time#1.treatment; do not use plain i(<levels>), the invalid ibn(<levels>) form, or ## there. This does not prohibit a justified year##c.control heterogeneous slope inside absorb(). Runtime verification must find every declared nonreference level under the exact raw e(b) token Stata returns, including a retained first-term bn marker or an estimator-created o marker. Treat outreg2 output as the raw source of record and preserve native coefficient, standard-error, omitted/base, and note rows; if outreg2 emits 2024o.year#1o.treat2019, keep that exact row. Final Excel may only arrange placement and add adjusted R-squared plus dependent-variable mean. Event-study selectors must target native coefficient names.",
@@ -867,8 +867,8 @@ function directFallbackMarkerFindings(content) {
       "error",
       "direct_fallback_markers_forbidden",
       line,
-      "fallback provenance marker를 연구 .do 코드에 넣을 수 없습니다.",
-      "marker를 제거하고 프로젝트 루트 report.md의 general_rule_fallback 행에 정확한 target과 line span을 기록하세요.",
+      "legacy provenance marker를 연구 .do 코드에 넣을 수 없습니다.",
+      "legacy marker를 제거하고 프로젝트 루트 report.md의 general_rule 행에 정확한 target과 line span을 기록하세요.",
       "researcher_style_reference",
     ));
   }
@@ -1573,7 +1573,7 @@ function searchApproved(args) {
     query: { stage: args.stage, task: args.task || "", subtask: args.subtask || "", commands: args.commands || [], canonical_command_anchors: requestedCommands },
     result_accounting: { returned: candidates.length, total_eligible: ranked.length, exhaustive },
     atomic_query_split_required: atomicQuerySplitRequired,
-    atomic_query_rule: "Call this fallback only after one atomic checkpoint has no compatible labeled block. Do not mix commands from separate state transitions in one query; split the query when atomic_query_split_required is true.",
+    atomic_query_rule: "Call this secondary reference search only for one atomic checkpoint. Do not mix commands from separate state transitions in one query; split the query when atomic_query_split_required is true.",
     usage_rule: "Use only after search_labeled_checkpoints found no compatible block for this one atomic transition. Copy only approved_for_generation=true rows with the required matched command anchors. Prefer loop depth one; accept depth two only when the row carries an explicit reviewed readability contract for two plain repeated axes. Never return depth three. Treat unmatched anchors as evidence that the query must be narrowed or split, and unexpected anchors as broader source scope that must not displace an equally compatible atomic span. Contextual, reference, and negative rows are explanation-only.",
     results: candidates.map(({ row, score, matchedCommandAnchors, unmatchedCommandAnchors, unexpectedCommandAnchors }) => ({
       chunk_id: row.chunk_id,
@@ -1754,19 +1754,21 @@ function eventStudyAxisAutoSelectReady(row, axisDecision, cardinality = "unspeci
   return Boolean(axisDecision) || ["single", "multiple"].includes(cardinality);
 }
 
-const GENERAL_RULE_FALLBACK_RULES = Object.freeze([
+const GENERAL_RULES = Object.freeze([
   "Implement only the already-declared atomic input-to-output transition; do not invent a sample, estimand, merge key, treatment rule, axis group, sheet group, model, or output placement.",
-  "Write the shortest readable fallback Stata sequence with one final implementation path and shallow indentation. Prefer one active loop; use depth two only for substantial repetition over two plain named lists or numeric ranges when the same mechanical body and all research choices remain visible. Never use depth three.",
+  "Apply these rules to template selection, binding, adaptation, verification, and direct general-rule implementation. Select a template only when permitted bindings leave the complete atomic transition intact.",
+  "If frame, algorithm, control flow, interface, or output contract must change, stop calling the result a template. Split at a natural state boundary when possible; otherwise use general_rule.",
+  "Write the shortest readable Stata sequence with one final implementation path and shallow indentation. Prefer one active loop; use depth two only for substantial repetition over two plain named lists or numeric ranges when the same mechanical body and all research choices remain visible. Never use depth three.",
   "Do not create a program, wrapper, registry, dispatcher, positional job string, hidden branch, unused option, future-facing interface, or unnecessary intermediate variable. The only standing program exception remains the canonical formatter for two or more sheets in one workbook.",
   "Do not probe or install dependencies, hide a core error with capture, use merge m:m, force-drop duplicates, write to raw data, or emit TeX.",
   "Keep native factor-variable expressions and raw e(b) coefficient names; do not generate manual event dummies, rename event coefficients, or reconstruct coefficient tables.",
   "Preserve the active output contract: direct one-sheet outreg2 uses an explicit .xls target, multi-sheet output uses the canonical .xlsx formatter, figures use PDF, and durable estimates use .ster only when needed.",
   "Lint the completed target immediately, then verify runtime state and exact declared outputs. Remove superseded attempts before freezing.",
-  "Before fallback code, inject the highest-ranked inspected writable candidate, or the highest-ranked reference candidate when none is writable, as a nonbinding hint. Nearest is rank-relative and may still be absolutely distant or incompatible. Record nearest_template_hint=<label_id|none>, fallback_trigger=<no_suitable_template|wrong_selection>, and hint_used=<borrowed idea|none>. Do not require a claim that fallback code is better.",
-  "Record every fallback span in root report.md as general_rule_fallback with the actual .do path, one-based inclusive lines, checkpoint or unmapped, fallback trigger, and hint used.",
+  "A highest-ranked inspected candidate may be retained only as a nonbinding hint. Nearest is rank-relative and may still be absolutely distant or incompatible. Record nearest_template_hint=<label_id|none>, template_status=<no_suitable_template|wrong_selection|project_specific_contract>, and hint_used=<borrowed idea|none>.",
+  "Record every substantive general-rule span in root report.md as general_rule with the actual .do path, one-based inclusive lines, checkpoint or unmapped, template status, and hint used.",
 ]);
 
-function generalRuleFallbackPolicy(args, context = {}) {
+function generalRulePolicy(args, context = {}) {
   const hardStopReasons = [];
   if (args.checkpoint === "figures.event_study") {
     const status = context.axisPatternSelection?.status;
@@ -1784,15 +1786,17 @@ function generalRuleFallbackPolicy(args, context = {}) {
     }
   }
   return {
-    mode: "general_rule_fallback",
-    eligible: hardStopReasons.length === 0,
-    preferred_mode: context.writableCandidateCount
-      ? "use one genuinely close writable template with permitted bindings when it fits; otherwise enter general_rule_fallback with the rank-relative nearest candidate injected only as a nonbinding hint"
-      : (hardStopReasons.length ? "stop_and_complete_contract_or_reselect" : "general_rule_fallback"),
-    activation_conditions: [
-      "the search covers exactly one substantive atomic transition",
-      "no auto-selectable candidate is genuinely close after checking input archetype, state, method, output contract, and cardinality",
-      "or inspection, lint, runtime, or output evidence shows that the selected template is wrong for the target frame, algorithm, control flow, interface, input profile, or output contract",
+    mode: "general_rule",
+    always_applies: true,
+    implementation_allowed: hardStopReasons.length === 0,
+    template_role: "optional specialization for one complete compatible atomic transition",
+    template_selection_rule: context.writableCandidateCount
+      ? "select one genuinely close writable template only when permitted bindings leave the complete atomic transition intact; otherwise use general_rule with the rank-relative nearest candidate retained only as a nonbinding hint"
+      : (hardStopReasons.length ? "stop_and_complete_contract_or_reselect" : "use general_rule for the declared atomic transition"),
+    application_scope: [
+      "every substantive atomic transition",
+      "every template selection, binding, adaptation, and verification",
+      "every direct implementation when no complete compatible template exists",
     ],
     closest_template_evidence: context.closestCandidate ? {
       label_id: context.closestCandidate.row.label_id,
@@ -1812,7 +1816,7 @@ function generalRuleFallbackPolicy(args, context = {}) {
       hint_role: "nonbinding_rank_relative_hint",
       absolute_compatibility: "not_established",
       rank_basis: "highest-ranked inspected candidate within the requested checkpoint and specificity, cardinality, axis, and output-flow gates",
-      comparison_rule: "This is only the highest-ranked inspected candidate and may still be absolutely distant or incompatible. If no suitable template exists or this selection is wrong, enter general_rule_fallback and borrow only useful commands, ordering, state handling, or output idioms, if any.",
+      comparison_rule: "This is only the highest-ranked inspected candidate and may still be absolutely distant or incompatible. Under the general rules, borrow only useful commands, ordering, state handling, or output idioms, if any.",
     } : {
       label_id: null,
       variant_id: null,
@@ -1820,11 +1824,11 @@ function generalRuleFallbackPolicy(args, context = {}) {
       auto_select_allowed: false,
       hint_role: "none",
       absolute_compatibility: "not_available",
-      comparison_rule: "No ranked candidate was returned. Record nearest_template_hint=none, fallback_trigger=no_suitable_template, hint_used=none, and the exact searched checkpoint plus command/state anchors before fallback.",
+      comparison_rule: "No ranked candidate was returned. Record nearest_template_hint=none, template_status=no_suitable_template, hint_used=none, and the exact searched checkpoint plus command/state anchors.",
     },
     hard_stop_reasons: hardStopReasons,
-    hard_stop_rule: "Fallback never supplies a missing substantive research choice and never bypasses event-axis, raw-table, sheet-cardinality, merge-key, sample, estimator, or output contracts.",
-    rules: GENERAL_RULE_FALLBACK_RULES,
+    hard_stop_rule: "General rules never supply a missing substantive research choice and never bypass event-axis, raw-table, sheet-cardinality, merge-key, sample, estimator, or output contracts.",
+    rules: GENERAL_RULES,
     report_policy: context.reportPolicy || "caller_selected",
     report_required: context.reportPolicy ? context.reportPolicy === "required" : null,
     report_path: "report.md",
@@ -2023,7 +2027,7 @@ function searchLabeledCheckpoints(args) {
   const closestCandidate = writableCandidates[0] || candidates[0] || inspectedCandidates[0] || null;
   const closestCandidateWritable = Boolean(closestCandidate
     && writableCandidates.some((item) => item.row.label_id === closestCandidate.row.label_id));
-  const fallbackPolicy = generalRuleFallbackPolicy(args, {
+  const generalPolicy = generalRulePolicy(args, {
     axisPatternSelection,
     requestedFlow,
     writableCandidateCount: writableCandidates.length,
@@ -2045,8 +2049,8 @@ function searchLabeledCheckpoints(args) {
       target_input_signature: args.target_input_signature || null,
       target_input_profile: args.target_input_profile || null,
     },
-    usage_rule: "Each result is one external-evidence-rubric-reviewed atomic state-transition block. Auto-select only preferred_candidate or conditional_candidate rows. Prefer general, then matching method_specific variants. Compare the target project with input_signature and template_input_profile as well as input_contract and selection_conditions. Preserve the ordinary template-first path: choose one genuinely close complete block and keep it nearly verbatim with permitted bindings. If no suitable template exists or the selection is wrong, discard it as an implementation, reselect once with the observed mismatch, then follow general_rule_fallback_policy with the rank-relative nearest inspected candidate injected only as a nonbinding hint. Ranking does not establish absolute similarity. Do not splice variants or fragments within a group. drop is comparison-only.",
-    general_rule_fallback_policy: fallbackPolicy,
+    usage_rule: "Each result is one external-evidence-rubric-reviewed atomic state-transition block. Auto-select only preferred_candidate or conditional_candidate rows. Prefer general, then matching method_specific variants. Compare the target project with input_signature and template_input_profile as well as input_contract and selection_conditions. Apply general_rule_policy throughout. Choose one genuinely close complete block only when permitted bindings leave the complete atomic transition intact. If structural changes are required, discard it as a template, reselect once with the observed mismatch, then split at a natural boundary or use general_rule with the nearest inspected candidate retained only as a nonbinding hint. Ranking does not establish absolute similarity. Do not splice variants or fragments within a group. drop is comparison-only.",
+    general_rule_policy: generalPolicy,
     variant_group_rule: "Choose at most one alternative within a variant_group. Distinct groups may represent sequential transitions and may be composed only in the actual producer-to-consumer order.",
     final_excel_rule: "Final Excel preserves the complete native raw outreg2 coefficient, standard-error, omitted/base, and note rows and adds exactly adjusted R-squared and the dependent-variable mean. A workbook with one sheet uses direct outreg2 replace/append code with an explicit .xls target and no program, regardless of model-column count; use the canonical .xlsx formatter only for a workbook with two or more sheets. First-stage results follow the same sheet-cardinality rule while remaining a separate model-role group.",
     output_flow_selection: requestedFlow || {
@@ -2257,7 +2261,7 @@ function inspectDictionaryCoverage(args) {
     },
     results,
     interpretation_rule: "Label count and package coverage are separate. end_to_end_read proves full .do accounting; it does not make every block reusable. Prefer labeled variants, and treat negative_only/no_safe_block as anti-pattern evidence.",
-    fallback_rule: "If the fine-grained dictionary and every approved corpus example lack a compatible transition, consult the official Stata manual for mechanics. Ask the user when the remaining choice is substantive rather than syntactic.",
+    official_mechanics_rule: "If the fine-grained dictionary and every approved corpus example lack a compatible transition, consult the official Stata manual for mechanics. Ask the user when the remaining choice is substantive rather than syntactic.",
   };
 }
 
@@ -2868,12 +2872,12 @@ function resolveTransitionEvidence(args, sources = {}) {
     routeReason = "Exactly one audited research-usage example matches the declared variant, command, state, and profile gates.";
     selectedUsage = autoUsages[0];
   } else if (usagesBeforeProfile.length || compatibleUsages.length) {
-    routeMode = "guide+fallback";
+    routeMode = "guide+general_rule";
     routeReason = profileMismatches.length
       ? "Known target-profile contradiction blocks research-usage auto-selection."
       : "Only reference, non-auto-selectable, or non-unique research usage remains.";
   } else {
-    routeMode = "guide_informed_fallback";
+    routeMode = "guide_informed_general_rule";
     routeReason = "No research-usage example matches the declared atomic transition.";
   }
 
@@ -3205,7 +3209,7 @@ function buildSourceReusePlan(root, request, contract) {
       status: "needs_declared_reuse_contract",
       direct_generation_allowed: false,
       required_fields: ["mode", "canonical_source", "destination or modify_in_place", "allowed_changes"],
-      rule: "Declare the canonical source and every permitted literal edit before writing. Do not synthesize a replacement from an estimator-specific detector or a generic fallback.",
+      rule: "Declare the canonical source and every permitted literal edit before writing. Do not synthesize a replacement from an estimator-specific detector or a generic adapter.",
     };
   }
 
@@ -3776,7 +3780,7 @@ function inferImplementationFootprint(request, mode, explicitHeadwords, requeste
     keyword_queries: codeRequired ? scaleKeywordBundle.headword_queries : [],
     writable_code_budget_per_headword: 1,
     alternative_metadata_limit_per_headword: 3,
-    corpus_fallback_context_limit_per_headword: 3,
+    corpus_context_limit_per_headword: 3,
     loading_rule: codeRequired
       ? "Convert the approved request scale into retrieval keywords, then evaluate dictionary metadata deterministically and load code for only one chosen compatible variant inside each selected headword. Do not retrieve code from unselected headwords."
       : "This is a read-only request. Do not load writable dictionary code or create an intervention.",
@@ -4212,7 +4216,7 @@ function planDictionaryRepairs(args) {
         score: item.score + ((substep.match?.label_ids || []).map((value) => String(value).toLowerCase()).includes(String(item.row.label_id).toLowerCase()) ? 1000 : 0),
       })).filter((item) => item.compatibility.compatible)
         .sort((a, b) => b.score - a.score || a.row.annotation_order - b.row.annotation_order);
-      const recommendedMode = matchedCandidates.length ? "template" : "native_substep";
+      const recommendedMode = matchedCandidates.length ? "template" : "general_rule";
       return {
         substep_id: substep.substep_id,
         description: substep.description || null,
@@ -4222,8 +4226,8 @@ function planDictionaryRepairs(args) {
         matched_candidate_ids: matchedCandidates.map((item) => item.row.label_id),
         incompatible_candidate_ids: matchedLabels.filter((row) => !matchedCandidates.some((item) => item.row.label_id === row.label_id)).map((row) => row.label_id),
         native_rule: matchedCandidates.length
-          ? "Use the compatible template when it is genuinely close. If later evidence shows that selection is wrong, enter general-rule fallback and retain the rank-relative nearest candidate only as a nonbinding hint."
-          : "No suitable template matched. Enter general-rule fallback, inject the rank-relative nearest inspected candidate only as a nonbinding hint if available, write the shortest declared transition, then lint and runtime-test it.",
+          ? "Use the compatible template only when permitted bindings leave the complete atomic transition intact. If later evidence shows that selection is wrong, use general_rule and retain the rank-relative nearest candidate only as a nonbinding hint."
+          : "No suitable template matched. Use general_rule, retain the rank-relative nearest inspected candidate only as a nonbinding hint if available, write the shortest declared transition, then lint and runtime-test it.",
       };
     });
     return {
@@ -4260,7 +4264,7 @@ function planDictionaryRepairs(args) {
         code: candidates[0].row.code,
       } : null,
       status: candidates.length ? "compatible_variant_selected" : "no_compatible_labeled_variant",
-      general_rule_fallback_policy: generalRuleFallbackPolicy({ checkpoint }, {
+      general_rule_policy: generalRulePolicy({ checkpoint }, {
         axisPatternSelection: eventStudyAxisPatternSelection(axisDecision, eventCardinality),
         requestedFlow: finalExcelFlow,
         writableCandidateCount: candidates.length,
@@ -4305,8 +4309,8 @@ function planDictionaryRepairs(args) {
         approved_pattern_result_count: approvedFallback?.results.length || 0,
         approved_pattern_total_eligible: approvedFallback?.result_accounting?.total_eligible || 0,
         approved_pattern_exhaustive: Boolean(approvedFallback?.result_accounting?.exhaustive),
-        approved_pattern_sources: (approvedFallback?.results || []).slice(0, retrievalPlan.corpus_fallback_context_limit_per_headword).map((row) => ({ chunk_id: row.chunk_id, source: row.source })),
-        approved_pattern_context_limit: retrievalPlan.corpus_fallback_context_limit_per_headword,
+        approved_pattern_sources: (approvedFallback?.results || []).slice(0, retrievalPlan.corpus_context_limit_per_headword).map((row) => ({ chunk_id: row.chunk_id, source: row.source })),
+        approved_pattern_context_limit: retrievalPlan.corpus_context_limit_per_headword,
         manual_checked: manualFallback !== null,
         manual_query: manualFallback ? { query: manualFallback.query, commands: manualFallback.commands, authority: manualFallback.authority } : null,
         manual_result_count: manualFallback?.results.length || 0,
@@ -4318,9 +4322,9 @@ function planDictionaryRepairs(args) {
           ? (finalExcelFlow?.direct_implementation_allowed
             ? "A workbook with one sheet must use concise direct outreg2 replace/append code with an explicit .xls target and no program, regardless of model-column count. Preserve raw outreg2 rows, compute each dependent-variable mean on e(sample), add only adjusted R-squared and those means, and avoid generic formatting machinery."
             : "A workbook with two or more sheets uses the canonical formatter to preserve raw outreg2 rows and align exactly the two approved added statistics. Upstream estimation and every other compatible transition remain flexible.")
-          : "Templates remain the preferred nearly-verbatim minimal-binding path when genuinely close. If no suitable template exists or the selected template is wrong, use general-rule fallback and retain the rank-relative nearest inspected candidate only as a nonbinding hint; ranking does not establish compatibility. Manual evidence is mechanics-only; ask the user only if a substantive choice is not fixed by the request or observed project.",
+          : "Apply the general rules throughout. Select a template only when permitted bindings leave the complete atomic transition intact. If no suitable template exists or the selected template is wrong, use general_rule and retain the rank-relative nearest inspected candidate only as a nonbinding hint; ranking does not establish compatibility. Manual evidence is mechanics-only; ask the user only if a substantive choice is not fixed by the request or observed project.",
       },
-      fallback_chain: candidates.length ? [] : [
+      general_rule_evidence_chain: candidates.length ? [] : [
         approvedFallback?.results.length
           ? "approved collected examples were returned as evidence; reuse a genuinely close one or implement the declared transition directly"
           : "all approved collected examples were searched and no compatible labeled transition was found",
@@ -4388,8 +4392,8 @@ function planDictionaryRepairs(args) {
         direct_implementation_allowed: !sourceReusePlan,
         user_decision_required: false,
         rule: sourceReusePlan
-          ? "The request is governed by source_reuse_plan. Clone the canonical source and apply only declared edits; dictionary fallback and fresh synthesis are disabled."
-          : "No dictionary headword maps this code request. Use general-rule fallback, inject the rank-relative nearest inspected candidate if one exists only as a nonbinding hint, implement the declared transition with the shortest readable Stata statements, then lint and verify it. Ranking does not establish compatibility. Ask the user only if a substantive research choice remains unresolved.",
+          ? "The request is governed by source_reuse_plan. Clone the canonical source and apply only declared edits; other template search and fresh synthesis are disabled."
+          : "No dictionary headword maps this code request. Use general_rule, retain the rank-relative nearest inspected candidate if one exists only as a nonbinding hint, implement the declared transition with the shortest readable Stata statements, then lint and verify it. Ranking does not establish compatibility. Ask the user only if a substantive research choice remains unresolved.",
       }
       : null,
     retrieval_plan: { ...retrievalPlan, selected_headwords: headwords, headword_budget: headwords.length },
@@ -4443,20 +4447,20 @@ function planDictionaryRepairs(args) {
         "replace the project's estimate handoff merely to fit a preferred dictionary example",
         "generate a custom adapter with new control flow when no labeled compatible interface exists",
       ],
-      fallback: "If no selected variant consumes the frozen interface, preserve that interface and enter general-rule fallback. Inject the rank-relative nearest inspected candidate only as a hint, without presuming compatibility; write the smallest readable binding or transition and do not invent a generic adapter, dispatcher, or framework.",
+      general_rule: "If no selected variant consumes the frozen interface, preserve that interface and apply the general rules. Retain the rank-relative nearest inspected candidate only as a hint, without presuming compatibility; write the smallest readable binding or transition and do not invent a generic adapter, dispatcher, or framework.",
     },
-    dictionary_fallback_chain: [
+    general_rule_evidence_chain: [
       "fine-grained labeled checkpoint",
       "all approved collected examples",
       "official Stata manual for mechanics only",
-      "general-rule fallback from the declared contract with the rank-relative nearest candidate only as a nonbinding hint",
+      "general-rule implementation from the declared contract with the rank-relative nearest candidate only as a nonbinding hint",
       "user question only for an unresolved substantive choice",
     ],
     template_reuse_contract: {
       schema_version: "2.0",
       granularity: "broad headword with atomic substeps",
       template_rule: "A genuinely close template is preferred and each selected template substep binds one label with substep_id.",
-      native_rule: "native_substep remains valid for a project-specific formula, dictionary gap, or template-mismatch fallback. A persistent audit binds its target span; mismatch fallback records nearest_template_hint, fallback_trigger, and hint_used, while stating that nearest-by-ranking does not establish compatibility. Template availability is advisory unless strict enforcement is explicitly requested.",
+      general_rule: "general_rule remains valid for a project-specific formula, dictionary gap, or template mismatch. A persistent audit binds its target span; template mismatch records nearest_template_hint, template_status, and hint_used, while stating that nearest-by-ranking does not establish compatibility. Legacy native_substep, template_mismatch_fallback, and fallback_trigger values are accepted only for read compatibility. Template availability is advisory unless strict enforcement is explicitly requested.",
       required_atomic_boundaries: [
         "merge retained-state handling",
         "panel-key declaration",
@@ -4479,10 +4483,11 @@ function planDictionaryRepairs(args) {
       required_after_code_write: reportPolicy === "required",
       path: "report.md",
       table_header: "| mode | target | lines | checkpoint | label_id | reason |",
-      modes: ["template", "general_rule_fallback"],
+      modes: ["template", "general_rule"],
+      legacy_modes: ["general_rule_fallback"],
       rule: reportPolicy === "disabled"
-        ? "The user explicitly disabled report.md. Do not create or modify it; retain template and fallback evidence in the session only."
-        : "After creating or revising Stata code, record each selected template and each general-rule fallback as a separate row with the actual project-relative .do path and one-based inclusive line range. Use - as the fallback label_id and record nearest_template_hint=<label_id|none>; fallback_trigger=<no_suitable_template|wrong_selection>; hint_used=<borrowed idea|none>. Keep provenance out of the .do source.",
+        ? "The user explicitly disabled report.md. Do not create or modify it; retain template and general-rule evidence in the session only."
+        : "After creating or revising Stata code, record each selected template and each substantive general-rule implementation as a separate row with the actual project-relative .do path and one-based inclusive line range. Use - as the general_rule label_id and record nearest_template_hint=<label_id|none>; template_status=<no_suitable_template|wrong_selection|project_specific_contract>; hint_used=<borrowed idea|none>. Keep provenance out of the .do source. Never emit legacy general_rule_fallback or fallback_trigger values.",
     },
     user_summary: {
       decision: intent === "review_only" ? "review_only" : planningMode,
@@ -4584,7 +4589,7 @@ function workflowBlueprint(args) {
       verdicts: ["verified only after the requested static, log, README, and output checks pass", "needs_revision with explicit blockers otherwise"],
     },
     observed_structure_references: structures,
-    next_actions: ["현재 폴더와 파일 구조를 읽기 전용으로 조사", "생성할 폴더, 생성 및 수정할 파일, 이동, 이름변경, 삭제, 덮어쓰기 대상을 정확히 제시", "사용자의 명시적 승인을 기다림", "승인 후 각 단계에 대해 search_labeled_checkpoints 호출", "승인된 범위에서 연구 workflow 생성 또는 수정", "작성한 각 do-file을 lint_do_file로 검사", "report_policy가 required일 때만 root report.md에 template과 fallback의 실제 line range를 기록", "선택한 report_policy와 scope 계약으로 프로젝트 전체를 audit_stata_project에서 검사", "요청 시 entrypoint clean run", "research_output_check에 계약된 산출물 이름과 정확한 개수를 전달해 직접 hash 증거와 함께 검증"],
+    next_actions: ["현재 폴더와 파일 구조를 읽기 전용으로 조사", "생성할 폴더, 생성 및 수정할 파일, 이동, 이름변경, 삭제, 덮어쓰기 대상을 정확히 제시", "사용자의 명시적 승인을 기다림", "승인 후 각 단계에 대해 resolve_transition_evidence 호출", "모든 템플릿 선택·변형과 직접 구현에 general rules 적용", "승인된 범위에서 연구 workflow 생성 또는 수정", "작성한 각 do-file을 lint_do_file로 검사", "report_policy가 required일 때만 root report.md에 template과 substantive general_rule의 실제 line range를 기록", "선택한 report_policy와 scope 계약으로 프로젝트 전체를 audit_stata_project에서 검사", "요청 시 entrypoint clean run", "research_output_check에 계약된 산출물 이름과 정확한 개수를 전달해 직접 hash 증거와 함께 검증"],
     claim_boundary: "이 계획은 연구자가 읽고 실행할 Stata workflow를 정리한다. 배포, dependency 관리, 제출 패키지 또는 저널 인증을 판정하지 않는다.",
   };
 }
@@ -4605,7 +4610,9 @@ function resolveInside(root, value, label) {
   return { relative, target };
 }
 
-const WORK_REPORT_MODES = new Set(["template", "general_rule_fallback"]);
+const WORK_REPORT_MODES = new Set(["template", "general_rule"]);
+const LEGACY_WORK_REPORT_MODES = new Set(["general_rule_fallback"]);
+const ACCEPTED_WORK_REPORT_MODES = new Set([...WORK_REPORT_MODES, ...LEGACY_WORK_REPORT_MODES]);
 
 function validateWorkReport(root, options = {}) {
   const required = options.required === true;
@@ -4615,8 +4622,10 @@ function validateWorkReport(root, options = {}) {
     path: "report.md",
     columns: ["mode", "target", "lines", "checkpoint", "label_id", "reason"],
     modes: [...WORK_REPORT_MODES],
+    legacy_modes: [...LEGACY_WORK_REPORT_MODES],
     line_rule: "Use one row per contiguous one-based inclusive target range, written as start-end.",
-    fallback_reason_rule: "For general_rule_fallback, reason must contain nearest_template_hint=<label_id|none>; fallback_trigger=<no_suitable_template|wrong_selection>; hint_used=<borrowed idea|none>.",
+    general_rule_reason_rule: "For general_rule, reason must contain nearest_template_hint=<label_id|none>; template_status=<no_suitable_template|wrong_selection|project_specific_contract>; hint_used=<borrowed idea|none>.",
+    compatibility_rule: "Legacy general_rule_fallback rows and fallback_trigger fields are accepted for read compatibility and normalized to general_rule and template_status.",
   };
   if (!fs.existsSync(reportPath)) {
     return {
@@ -4646,9 +4655,11 @@ function validateWorkReport(root, options = {}) {
     const line = lines[index];
     if (!/^\s*\|/.test(line)) continue;
     const cells = line.split("|").slice(1, -1).map((cell) => cell.trim().replace(/^`|`$/g, ""));
-    if (cells.length !== expectedHeader.length || !WORK_REPORT_MODES.has(cells[0])) continue;
-    const [mode, targetValue, rangeValue, checkpoint, labelId, reason] = cells;
+    if (cells.length !== expectedHeader.length || !ACCEPTED_WORK_REPORT_MODES.has(cells[0])) continue;
+    const [rawMode, targetValue, rangeValue, checkpoint, labelId, reason] = cells;
+    const mode = rawMode === "general_rule_fallback" ? "general_rule" : rawMode;
     const entry = { mode, target: targetValue, lines: rangeValue, checkpoint, label_id: labelId, reason, report_line: index + 1 };
+    if (rawMode !== mode) entry.legacy_mode = rawMode;
     const rangeMatch = rangeValue.match(/^(\d+)-(\d+)$/);
     if (!rangeMatch) {
       errors.push(`report.md line ${index + 1}: lines must be one contiguous start-end range`);
@@ -4692,34 +4703,39 @@ function validateWorkReport(root, options = {}) {
     } else {
       if (labelId !== "-") errors.push(`report.md line ${index + 1}: ${mode} must use - for label_id`);
       if (checkpoint !== "unmapped" && !CHECKPOINTS.includes(checkpoint)) {
-        errors.push(`report.md line ${index + 1}: unknown fallback checkpoint ${checkpoint || "<missing>"}`);
+        errors.push(`report.md line ${index + 1}: unknown general-rule checkpoint ${checkpoint || "<missing>"}`);
       }
-      const fallbackEvidence = {};
+      const generalRuleEvidence = {};
       for (const segment of String(reason || "").split(";")) {
         const field = segment.trim().match(/^([a-z_]+)\s*=\s*(.+)$/i);
-        if (field) fallbackEvidence[field[1].toLowerCase()] = field[2].trim();
+        if (field) generalRuleEvidence[field[1].toLowerCase()] = field[2].trim();
       }
-      entry.fallback_evidence = fallbackEvidence;
-      for (const field of ["nearest_template_hint", "fallback_trigger", "hint_used"]) {
-        if (!fallbackEvidence[field]) errors.push(`report.md line ${index + 1}: fallback reason is missing ${field}=...`);
+      if (!generalRuleEvidence.template_status && generalRuleEvidence.fallback_trigger) {
+        generalRuleEvidence.template_status = generalRuleEvidence.fallback_trigger;
+        entry.legacy_reason_field = "fallback_trigger";
       }
-      if (fallbackEvidence.fallback_trigger && !["no_suitable_template", "wrong_selection"].includes(fallbackEvidence.fallback_trigger)) {
-        errors.push(`report.md line ${index + 1}: fallback_trigger must be no_suitable_template or wrong_selection`);
+      entry.general_rule_evidence = generalRuleEvidence;
+      if (entry.legacy_mode || entry.legacy_reason_field) entry.fallback_evidence = generalRuleEvidence;
+      for (const field of ["nearest_template_hint", "template_status", "hint_used"]) {
+        if (!generalRuleEvidence[field]) errors.push(`report.md line ${index + 1}: general-rule reason is missing ${field}=...`);
       }
-      const nearestHint = fallbackEvidence.nearest_template_hint;
+      if (generalRuleEvidence.template_status && !["no_suitable_template", "wrong_selection", "project_specific_contract"].includes(generalRuleEvidence.template_status)) {
+        errors.push(`report.md line ${index + 1}: template_status must be no_suitable_template, wrong_selection, or project_specific_contract`);
+      }
+      const nearestHint = generalRuleEvidence.nearest_template_hint;
       if (nearestHint && nearestHint !== "none") {
         const hintedLabel = LABELED_CHECKPOINTS.find((row) => row.label_id === nearestHint);
         if (!hintedLabel) errors.push(`report.md line ${index + 1}: unknown nearest_template_hint ${nearestHint}`);
         else if (checkpoint === "unmapped" || hintedLabel.checkpoint !== checkpoint) {
-          errors.push(`report.md line ${index + 1}: nearest_template_hint ${nearestHint} does not match fallback checkpoint ${checkpoint}`);
+          errors.push(`report.md line ${index + 1}: nearest_template_hint ${nearestHint} does not match general-rule checkpoint ${checkpoint}`);
         }
       }
     }
     entries.push(entry);
   }
 
-  if (!entries.length && !/^No template or general-rule fallback spans\.$/im.test(content)) {
-    errors.push("report.md has no implementation rows and no explicit no-template-or-fallback declaration");
+  if (!entries.length && !/^(?:No template or substantive general-rule spans\.|No template or general-rule fallback spans\.)$/im.test(content)) {
+    errors.push("report.md has no implementation rows and no explicit no-template-or-substantive-general-rule declaration");
   }
   const byTarget = new Map();
   for (const entry of entries.filter((row) => Array.isArray(row.target_span))) {
@@ -4888,7 +4904,7 @@ function researchOutputCheck(args) {
         : reportPolicy === "optional" && audit.work_report?.status === "not_present"
           ? "optional report not present"
           : (audit.work_report?.errors || ["report.md validation failed"]).join("; "),
-    "report_policy가 required이면 작성·수정한 workflow의 root report.md에 template과 general_rule_fallback 구간을 기록하세요. 사용자가 명시적으로 금지했다면 disabled를 사용하세요.",
+    "report_policy가 required이면 작성·수정한 workflow의 root report.md에 template과 substantive general_rule 구간을 기록하세요. 사용자가 명시적으로 금지했다면 disabled를 사용하세요.",
   );
 
   const plannedVariables = normalizePlannedVariables(args.planned_variables || []);
@@ -5650,7 +5666,7 @@ function workflowReproductionCheck(args) {
 const TOOLS = [
   {
     name: "resolve_transition_evidence",
-    description: "Resolve one substantive atomic Stata transition through two non-competing evidence layers. Guide code is never auto-selectable, is capped at 12 lines and 600 characters, and is returned only for one exact contract, variant, command-anchor, declared Stata compatibility, and material-facet match; free-text manual/source-edition notes remain provenance rather than runtime gates, guide ambiguity fails closed, and guides never supply research decisions. Separately, it may return at most one audited deposited/independent research-usage example that passed runtime plus selector positive and sibling-negative gates. Routes are guide+usage_template, guide+fallback, guide_informed_fallback, selection_required, or split_required.",
+    description: "Resolve one substantive atomic Stata transition through two non-competing evidence layers. Guide code is never auto-selectable, is capped at 12 lines and 600 characters, and is returned only for one exact contract, variant, command-anchor, declared Stata compatibility, and material-facet match; free-text manual/source-edition notes remain provenance rather than runtime gates, guide ambiguity fails closed, and guides never supply research decisions. Separately, it may return at most one audited deposited/independent research-usage example that passed runtime plus selector positive and sibling-negative gates. Routes are guide+usage_template, guide+general_rule, guide_informed_general_rule, selection_required, or split_required.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -5759,7 +5775,7 @@ const TOOLS = [
   },
   {
     name: "search_approved_patterns",
-    description: "Fallback search for one atomic transition only after search_labeled_checkpoints has no compatible block. It canonicalizes detailed commands such as import excel, reshape long, and graph export to the corpus span index, reports matched and unmatched anchors, and flags mixed-transition queries. Default results are safe generation references; optional reference and negative tiers are explanation-only.",
+    description: "Secondary reference search for one atomic transition. It canonicalizes detailed commands such as import excel, reshape long, and graph export to the corpus span index, reports matched and unmatched anchors, and flags mixed-transition queries. Default results are safe generation references; optional reference and negative tiers are explanation-only. General rules govern whether and how any result is used.",
     inputSchema: { type: "object", additionalProperties: false, required: ["stage"], properties: {
       stage: { type: "string", enum: STAGES }, task: { type: "string" }, subtask: { type: "string" }, commands: { type: "array", items: { type: "string" }, maxItems: 10 }, data_shape: { type: "string" }, limit: { type: "integer", minimum: 1, maximum: 10 }, include_contextual: { type: "boolean" }, include_reference: { type: "boolean" }, include_negative: { type: "boolean" },
     } },
@@ -5922,7 +5938,7 @@ const TOOLS = [
   },
   {
     name: "template_reuse_check",
-    description: "Verify a project-declared template provenance manifest against the current labeled dictionary. By default, a matching template that was not selected is reported as an advisory; a template-mismatch fallback records the rank-relative nearest hint, no_suitable_template or wrong_selection trigger, and hint used without asserting compatibility. Set enforce_template_reuse only for an explicit strict benchmark. Schema 2.0 still verifies live source hashes, target-bound native code, full-project lint/loop/TeX policy, structural retention, and approved program bodies. This is a static provenance check, not runtime or substantive certification.",
+    description: "Verify a project-declared template provenance manifest against the current labeled dictionary. By default, a matching template that was not selected is reported as an advisory; a general_rule template-mismatch row records the rank-relative nearest hint, template status, and hint used without asserting compatibility. Legacy native_substep and template_mismatch_fallback values are accepted for read compatibility. Set enforce_template_reuse only for an explicit strict benchmark. Schema 2.0 still verifies live source hashes, target-bound general-rule code, full-project lint/loop/TeX policy, structural retention, and approved program bodies. This is a static provenance check, not runtime or substantive certification.",
     inputSchema: { type: "object", additionalProperties: false, required: ["path", "manifest_path"], properties: {
       path: { type: "string" },
       manifest_path: { type: "string" },
@@ -6026,7 +6042,7 @@ const TOOLS = [
   },
   {
     name: "research_output_check",
-    description: "Verify an approved Stata research workflow's selected report_policy, static audit, entrypoint, optional researcher-facing README tree and variable descriptions, actual log when supplied, exact deliverable counts, JSON validity, and direct SHA-256 evidence. Under report_policy=required, report.md maps each template and general-rule fallback to actual one-based .do-file ranges or explicitly states that neither was used; optional permits omission and disabled forbids creating or modifying it. Runtime, static, and substantive statuses remain separate. It does not manage dependencies or assess deployment or submission packaging.",
+    description: "Verify an approved Stata research workflow's selected report_policy, static audit, entrypoint, optional researcher-facing README tree and variable descriptions, actual log when supplied, exact deliverable counts, JSON validity, and direct SHA-256 evidence. Under report_policy=required, report.md maps each template and substantive general_rule span to actual one-based .do-file ranges or explicitly states that neither was used; optional permits omission and disabled forbids creating or modifying it. Runtime, static, and substantive statuses remain separate. It does not manage dependencies or assess deployment or submission packaging.",
     inputSchema: {
       type: "object",
       additionalProperties: false,

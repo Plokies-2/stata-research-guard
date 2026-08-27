@@ -129,7 +129,7 @@ test("A/B: a matching guide is never omitted when the usage layer is empty", () 
   const withoutUsage = resolve({}, { guideCards: [guide()], usageCards: [] });
   assert.equal(withUsage.guide_layer.primary_card.label_id, "guide.regress");
   assert.equal(withoutUsage.guide_layer.primary_card.label_id, "guide.regress");
-  assert.equal(withoutUsage.implementation_route.mode, "guide_informed_fallback");
+  assert.equal(withoutUsage.implementation_route.mode, "guide_informed_general_rule");
   assert.equal(withoutUsage.safety.guide_exists_but_omitted, false);
 });
 
@@ -147,7 +147,7 @@ test("known profile contradiction blocks usage auto-selection but retains guide 
   assert.equal(result.guide_layer.status, "provided");
   assert.equal(result.usage_layer.example, null);
   assert.equal(result.usage_layer.status, "profile_mismatch");
-  assert.equal(result.implementation_route.mode, "guide+fallback");
+  assert.equal(result.implementation_route.mode, "guide+general_rule");
   assert.ok(result.usage_layer.profile_mismatches.length >= 1);
 });
 
@@ -199,7 +199,7 @@ test("unknown guide compatibility does not contradict a known request, but decla
   assert.equal(bothUnknown.guide_layer.primary_card.stata_compatibility, null);
   assert.equal(bothUnknown.guide_layer.primary_card.version_semantics, "unspecified_no_runtime_constraint");
   assert.equal(bothUnknown.guide_layer.primary_card.auto_selectable, false);
-  assert.equal(bothUnknown.implementation_route.mode, "guide_informed_fallback");
+  assert.equal(bothUnknown.implementation_route.mode, "guide_informed_general_rule");
   assert.equal(bothUnknown.implementation_route.auto_select_allowed, false);
 
   const knownRequestUnknownGuide = resolve({}, {
@@ -288,7 +288,7 @@ test("legacy rubric/hash pass never authorizes usage selection", () => {
   const result = resolve({}, { guideCards: [guide()], usageCards: [legacy] });
   assert.equal(result.usage_layer.example, null);
   assert.equal(result.implementation_route.auto_select_allowed, false);
-  assert.equal(result.implementation_route.mode, "guide+fallback");
+  assert.equal(result.implementation_route.mode, "guide+general_rule");
 });
 
 test("multiple material usage variants require a substantive selection", () => {
@@ -304,7 +304,7 @@ test("multiple material usage variants require a substantive selection", () => {
   assert.equal(result.usage_layer.material_alternatives.length, 2);
 });
 
-test("an unresolved substantive choice stops both template and fallback routing", () => {
+test("an unresolved substantive choice stops both template and general-rule routing", () => {
   const result = resolve({
     substantive_choices: { status: "unresolved", unresolved: ["VCE choice"] },
   });
@@ -375,7 +375,7 @@ test("generated evidence layers have disjoint source tiers and guide auto-select
   assert.ok(exactSupports.every((card) => card.provenance.audit_gate.runtime_status === "not_checked"));
 });
 
-test("AEA exact-usage support can explain fallback but can never become generation authority", () => {
+test("AEA exact-usage support can explain a general-rule route but can never become generation authority", () => {
   const usages = fs.readFileSync(path.join(ROOT, "data", "research_usage_examples.jsonl"), "utf8")
     .split(/\r?\n/).filter(Boolean).map(JSON.parse);
   const aregSupport = usages.filter((card) => card.evidence_role === "exact_usage_support" && card.command_anchors.includes("areg"));
@@ -399,7 +399,7 @@ test("AEA exact-usage support can explain fallback but can never become generati
     })],
     usageCards: aregSupport,
   });
-  assert.equal(result.implementation_route.mode, "guide+fallback");
+  assert.equal(result.implementation_route.mode, "guide+general_rule");
   assert.equal(result.implementation_route.auto_select_allowed, false);
   assert.equal(result.usage_layer.status, "exact_usage_support_only");
   assert.equal(result.usage_layer.example, null);

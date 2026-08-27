@@ -165,8 +165,8 @@ test("MCP handshake and tool inventory", async (t) => {
   assert.match(initialized.instructions, /every contracted outcome, sample, and specification/);
   assert.match(initialized.instructions, /reader-facing do-file comments only for project-local state transitions/);
   assert.match(initialized.instructions, /Do not create a manifest folder or template-reuse manifest/);
-  assert.match(initialized.instructions, /preserve the ordinary template-first path/i);
-  assert.match(initialized.instructions, /nearest-by-ranking may still be absolutely distant or incompatible/i);
+  assert.match(initialized.instructions, /Apply the general rules to every substantive transition/i);
+  assert.match(initialized.instructions, /permitted bindings leave the complete atomic transition intact/i);
   assert.doesNotMatch(initialized.instructions, /why the remaining direct statements are shorter and clearer/i);
   assert.match(initialized.instructions, /direct primitives do not need a checkpoint/i);
   assert.match(initialized.instructions, /typed named-sample-flow postfile block/i);
@@ -182,8 +182,8 @@ test("MCP handshake and tool inventory", async (t) => {
   assert.equal(reuseTool.inputSchema.properties.enforce_template_reuse.default, false);
   const labeledTool = listed.tools.find((tool) => tool.name === "search_labeled_checkpoints");
   assert.match(labeledTool.inputSchema.properties.output_flow_profile.description, /user.*existing_project.*model_from_metadata.*caller_declared/);
-  const fallbackTool = listed.tools.find((tool) => tool.name === "search_approved_patterns");
-  assert.match(fallbackTool.description, /one atomic transition only/i);
+  const secondaryReferenceTool = listed.tools.find((tool) => tool.name === "search_approved_patterns");
+  assert.match(secondaryReferenceTool.description, /one atomic transition/i);
   const negotiated = await client.request("initialize", { protocolVersion: "2099-01-01" });
   assert.equal(negotiated.protocolVersion, "2025-06-18");
 });
@@ -582,7 +582,7 @@ test("repair planner exposes template and native recommendations for atomic subs
   const substeps = plan.interventions.find((row) => row.headword === "estimation.staggered_did").atomic_substeps;
   assert.equal(substeps[0].recommended_mode, "template");
   assert.equal(substeps[0].chosen_label_id, "estimation.twfe_did_no_controls.v1");
-  assert.equal(substeps[1].recommended_mode, "native_substep");
+  assert.equal(substeps[1].recommended_mode, "general_rule");
   assert.deepEqual(substeps[1].matched_candidate_ids, []);
   assert.equal(plan.template_reuse_contract.schema_version, "2.0");
   assert.deepEqual(plan.template_reuse_contract.required_atomic_boundaries, [
@@ -900,8 +900,8 @@ test("repair planning rejects incompatible variants but permits a bounded direct
   assert.equal(intervention.evidence_progress.user_decision_required, false);
   assert.equal(intervention.evidence_progress.direct_implementation_allowed, false);
   assert.match(intervention.evidence_progress.boundary, /two or more sheets/i);
-  assert.match(intervention.fallback_chain.join(" "), /approved collected examples were returned as evidence/i);
-  assert.match(intervention.fallback_chain.join(" "), /official Stata manual was searched/i);
+  assert.match(intervention.general_rule_evidence_chain.join(" "), /approved collected examples were returned as evidence/i);
+  assert.match(intervention.general_rule_evidence_chain.join(" "), /official Stata manual was searched/i);
 });
 
 test("every labeled block exposes commands and observable state signals", () => {
@@ -1011,10 +1011,10 @@ test("feature addition freezes completed upstream headwords and selects by ster 
   assert.equal(plan.interventions[0].evidence_progress.direct_implementation_allowed, true);
   assert.match(plan.interventions[0].evidence_progress.boundary, /one sheet.*direct outreg2/i);
   assert.deepEqual(plan.compatibility_contract.mutable_existing_files, []);
-  assert.match(plan.compatibility_contract.fallback, /general-rule fallback/i);
-  assert.match(plan.compatibility_contract.fallback, /smallest readable binding or transition/i);
-  assert.match(plan.compatibility_contract.fallback, /without presuming compatibility/i);
-  assert.match(plan.compatibility_contract.fallback, /do not invent a generic adapter/i);
+  assert.match(plan.compatibility_contract.general_rule, /general rules/i);
+  assert.match(plan.compatibility_contract.general_rule, /smallest readable binding or transition/i);
+  assert.match(plan.compatibility_contract.general_rule, /without presuming compatibility/i);
+  assert.match(plan.compatibility_contract.general_rule, /do not invent a generic adapter/i);
 });
 
 test("output-only ster consumer excludes preserved upstream headwords in Korean and English", async (t) => {
@@ -1249,7 +1249,7 @@ test("unmapped model families remain writable without a fabricated template or f
   assert.deepEqual(unmapped.dictionary_headwords, []);
   assert.equal(unmapped.dictionary_unmapped_policy.direct_implementation_allowed, true);
   assert.equal(unmapped.dictionary_unmapped_policy.user_decision_required, false);
-  assert.match(unmapped.dictionary_unmapped_policy.rule, /Use general-rule fallback/i);
+  assert.match(unmapped.dictionary_unmapped_policy.rule, /Use general_rule/i);
   assert.match(unmapped.dictionary_unmapped_policy.rule, /Ranking does not establish compatibility/i);
 });
 
@@ -1859,24 +1859,26 @@ test("whole-flow profile uses direct outreg2 for one-sheet workbooks and the for
   assert.equal(single.output_flow_selection.direct_implementation_allowed, true);
   assert.equal(single.output_flow_selection.formatter_required, false);
   assert.equal(single.output_flow_selection.maximum_sheet_count_per_workbook, 1);
-  assert.equal(single.general_rule_fallback_policy.eligible, true);
-  assert.equal(single.general_rule_fallback_policy.preferred_mode, "general_rule_fallback");
-  assert.ok(single.general_rule_fallback_policy.rules.some((rule) => /explicit \.xls target/i.test(rule)));
-  assert.equal(single.general_rule_fallback_policy.report_path, "report.md");
+  assert.equal(single.general_rule_policy.implementation_allowed, true);
+  assert.equal(single.general_rule_policy.mode, "general_rule");
+  assert.equal(single.general_rule_policy.always_applies, true);
+  assert.equal(single.general_rule_fallback_policy, undefined);
+  assert.ok(single.general_rule_policy.rules.some((rule) => /explicit \.xls target/i.test(rule)));
+  assert.equal(single.general_rule_policy.report_path, "report.md");
   const helper = await client.tool("search_labeled_checkpoints", { checkpoint: "final_excel_assembly", output_flow_profile: groupedExcelFlowProfile() });
   assert.deepEqual(helper.results.map((row) => row.label_id), ["export.regression_excel.from_ster_default_style.v1"]);
   assert.equal(helper.output_flow_selection.selection_class, "canonical_raw_outreg2_formatter");
   assert.equal(helper.output_flow_selection.formatter_required, true);
   assert.equal(helper.output_flow_selection.maximum_sheet_count_per_workbook, 2);
-  assert.match(helper.general_rule_fallback_policy.preferred_mode, /genuinely close writable template/i);
+  assert.match(helper.general_rule_policy.template_selection_rule, /genuinely close writable template/i);
   const unresolved = await client.tool("search_labeled_checkpoints", {
     checkpoint: "final_excel_assembly",
     output_flow_profile: { outcomes: [{ name: "y1" }, { name: "y2" }] },
   });
   assert.equal(unresolved.output_flow_selection.selection_ready, false);
   assert.equal(unresolved.results.length, 0);
-  assert.equal(unresolved.general_rule_fallback_policy.eligible, false);
-  assert.ok(unresolved.general_rule_fallback_policy.hard_stop_reasons.some((reason) => /output_flow_profile is incomplete/i.test(reason)));
+  assert.equal(unresolved.general_rule_policy.implementation_allowed, false);
+  assert.ok(unresolved.general_rule_policy.hard_stop_reasons.some((reason) => /output_flow_profile is incomplete/i.test(reason)));
 });
 
 test("new import, reshape, event-study, and IV handoff labels are retrievable with input profiles", async (t) => {
@@ -1936,12 +1938,12 @@ test("template input profiles rank compatible new labels and narrowly exclude de
   });
   assert.equal(wrongTopology.results.length, 0);
   assert.ok(wrongTopology.template_input_profile_gate.excluded_label_ids.includes("input.excel_firstrow_clear.v1"));
-  assert.equal(wrongTopology.general_rule_fallback_policy.closest_template_evidence.label_id, "input.excel_firstrow_clear.v1");
-  assert.equal(wrongTopology.general_rule_fallback_policy.closest_template_evidence.hint_role, "nonbinding_rank_relative_hint");
-  assert.equal(wrongTopology.general_rule_fallback_policy.closest_template_evidence.absolute_compatibility, "not_established");
-  assert.equal(wrongTopology.general_rule_fallback_policy.closest_template_evidence.auto_select_allowed, false);
-  assert.equal(wrongTopology.general_rule_fallback_policy.closest_template_evidence.template_input_profile_comparison.status, "incompatible");
-  assert.match(wrongTopology.general_rule_fallback_policy.closest_template_evidence.code, /import excel/i);
+  assert.equal(wrongTopology.general_rule_policy.closest_template_evidence.label_id, "input.excel_firstrow_clear.v1");
+  assert.equal(wrongTopology.general_rule_policy.closest_template_evidence.hint_role, "nonbinding_rank_relative_hint");
+  assert.equal(wrongTopology.general_rule_policy.closest_template_evidence.absolute_compatibility, "not_established");
+  assert.equal(wrongTopology.general_rule_policy.closest_template_evidence.auto_select_allowed, false);
+  assert.equal(wrongTopology.general_rule_policy.closest_template_evidence.template_input_profile_comparison.status, "incompatible");
+  assert.match(wrongTopology.general_rule_policy.closest_template_evidence.code, /import excel/i);
   const missingInstrument = await client.tool("search_labeled_checkpoints", {
     variant_id: "xtivreg2_first_stage_restore_ymean_ster",
     target_input_profile: { data_structure: "panel", variable_characteristics: ["no excluded instrument"] },
@@ -2798,11 +2800,11 @@ function buildResearchFixture(root) {
     "",
     "| mode | target | lines | checkpoint | label_id | reason |",
     "|---|---|---|---|---|---|",
-    "| general_rule_fallback | do/20_analysis_master.do | 5-5 | estimation.conventional | - | nearest_template_hint=none; fallback_trigger=no_suitable_template; hint_used=none |",
-    "| general_rule_fallback | do/20_analysis_master.do | 6-6 | postest.persist_estimate | - | nearest_template_hint=none; fallback_trigger=no_suitable_template; hint_used=none |",
-    "| general_rule_fallback | do/20_analysis_master.do | 7-8 | final_excel_assembly | - | nearest_template_hint=none; fallback_trigger=no_suitable_template; hint_used=none |",
-    "| general_rule_fallback | do/20_analysis_master.do | 9-9 | figures.descriptive_scatter | - | nearest_template_hint=none; fallback_trigger=no_suitable_template; hint_used=none |",
-    "| general_rule_fallback | do/20_analysis_master.do | 11-11 | figures.export_pdf | - | nearest_template_hint=none; fallback_trigger=no_suitable_template; hint_used=none |",
+    "| general_rule | do/20_analysis_master.do | 5-5 | estimation.conventional | - | nearest_template_hint=none; template_status=no_suitable_template; hint_used=none |",
+    "| general_rule | do/20_analysis_master.do | 6-6 | postest.persist_estimate | - | nearest_template_hint=none; template_status=no_suitable_template; hint_used=none |",
+    "| general_rule | do/20_analysis_master.do | 7-8 | final_excel_assembly | - | nearest_template_hint=none; template_status=no_suitable_template; hint_used=none |",
+    "| general_rule | do/20_analysis_master.do | 9-9 | figures.descriptive_scatter | - | nearest_template_hint=none; template_status=no_suitable_template; hint_used=none |",
+    "| general_rule | do/20_analysis_master.do | 11-11 | figures.export_pdf | - | nearest_template_hint=none; template_status=no_suitable_template; hint_used=none |",
   ].join("\n"), "utf8");
 }
 
@@ -2906,13 +2908,20 @@ test("completed workflow requires a valid root report with actual implementation
   const validAudit = await client.tool("audit_stata_project", { path: project, require_report: true, expected_stages: RESEARCH_STAGES });
   assert.equal(validAudit.work_report.status, "valid", JSON.stringify(validAudit.work_report.errors));
 
+  const reportPath = path.join(project, "report.md");
+  fs.writeFileSync(reportPath, fs.readFileSync(reportPath, "utf8")
+    .replaceAll("general_rule", "general_rule_fallback")
+    .replaceAll("template_status", "fallback_trigger"), "utf8");
+  const legacyAudit = await client.tool("audit_stata_project", { path: project, require_report: true, expected_stages: RESEARCH_STAGES });
+  assert.equal(legacyAudit.work_report.status, "valid", JSON.stringify(legacyAudit.work_report.errors));
+  assert.ok(legacyAudit.work_report.entries.every((row) => row.mode === "general_rule" && row.legacy_mode === "general_rule_fallback"));
+
   fs.rmSync(path.join(project, "report.md"));
   const missing = await client.tool("research_output_check", args);
   assert.equal(missing.status, "needs_revision");
   assert.ok(missing.blockers.some((row) => row.check === "work_report"));
 
   buildResearchFixture(project);
-  const reportPath = path.join(project, "report.md");
   fs.writeFileSync(reportPath, fs.readFileSync(reportPath, "utf8").replace("11-11", "11-999"), "utf8");
   const invalid = await client.tool("audit_stata_project", { path: project, require_report: true, expected_stages: RESEARCH_STAGES });
   assert.equal(invalid.status, "blocked");
@@ -2925,7 +2934,7 @@ test("completed workflow requires a valid root report with actual implementation
     "",
     "| mode | target | lines | checkpoint | label_id | reason |",
     "|---|---|---|---|---|---|",
-    "| general_rule_fallback | do/20_analysis_master.do | 1-2 | unmapped | - | nearest_template_hint=none; fallback_trigger=no_suitable_template; hint_used=none |",
+    "| general_rule | do/20_analysis_master.do | 1-2 | unmapped | - | nearest_template_hint=none; template_status=no_suitable_template; hint_used=none |",
   ].join("\n"), "utf8");
   const primitiveOnly = await client.tool("audit_stata_project", { path: project, require_report: true, expected_stages: RESEARCH_STAGES });
   assert.equal(primitiveOnly.work_report.status, "invalid");
@@ -2933,7 +2942,7 @@ test("completed workflow requires a valid root report with actual implementation
 
   buildResearchFixture(project);
   fs.writeFileSync(reportPath, fs.readFileSync(reportPath, "utf8")
-    .replace("nearest_template_hint=none; fallback_trigger=no_suitable_template; hint_used=none", "fallback_trigger=no_suitable_template; hint_used=none"), "utf8");
+    .replace("nearest_template_hint=none; template_status=no_suitable_template; hint_used=none", "template_status=no_suitable_template; hint_used=none"), "utf8");
   const missingFallbackField = await client.tool("audit_stata_project", { path: project, require_report: true, expected_stages: RESEARCH_STAGES });
   assert.equal(missingFallbackField.work_report.status, "invalid");
   assert.ok(missingFallbackField.work_report.errors.some((message) => /missing nearest_template_hint/i.test(message)));
@@ -3079,8 +3088,8 @@ function buildExistingResearchFixture(root) {
     "",
     "| mode | target | lines | checkpoint | label_id | reason |",
     "|---|---|---|---|---|---|",
-    "| general_rule_fallback | dofiles/step2.do | 4-4 | estimation.conventional | - | nearest_template_hint=none; fallback_trigger=no_suitable_template; hint_used=none |",
-    "| general_rule_fallback | dofiles/step2.do | 5-5 | final_excel_assembly | - | nearest_template_hint=none; fallback_trigger=no_suitable_template; hint_used=none |",
+    "| general_rule | dofiles/step2.do | 4-4 | estimation.conventional | - | nearest_template_hint=none; template_status=no_suitable_template; hint_used=none |",
+    "| general_rule | dofiles/step2.do | 5-5 | final_excel_assembly | - | nearest_template_hint=none; template_status=no_suitable_template; hint_used=none |",
   ].join("\n"), "utf8");
 }
 
@@ -3834,7 +3843,7 @@ test("report policy can disable report and authored-span coverage while retainin
   });
   assert.equal(disabledPlan.work_report_contract.report_policy, "disabled");
   assert.equal(disabledPlan.work_report_contract.required_after_code_write, false);
-  assert.ok(disabledPlan.interventions.every((row) => row.general_rule_fallback_policy.report_required === false));
+  assert.ok(disabledPlan.interventions.every((row) => row.general_rule_policy.report_required === false));
 });
 
 test("source reuse planner clones a canonical do-file and blocks every undeclared edit", async (t) => {

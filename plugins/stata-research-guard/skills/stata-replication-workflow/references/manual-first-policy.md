@@ -1,6 +1,6 @@
-# Official-manual fallback policy
+# Official-manual evidence policy
 
-For a Top 100 command explanation or example-coverage audit, call `inspect_top100_command_examples` to retrieve every materially distinct guide block required by the command's complexity and the separately classified paper-evidence status. For one concrete authoring transition, call `resolve_transition_evidence` first. Its bounded official/maintainer guide card is retained whenever available, while an independently matched usage row may supply at most one template. Search the legacy workflow dictionary and collected researcher examples only for diagnosis or a nearest nonbinding hint after the resolver reports fallback or mismatch; use deeper official-manual search only for syntax, returned results, and command-state mechanics. None of these guide sources supplies a researcher-style choice when usage evidence has none.
+For a Top 100 command explanation or example-coverage audit, call `inspect_top100_command_examples` to retrieve every materially distinct guide block required by the command's complexity and the separately classified paper-evidence status. For one concrete authoring transition, call `resolve_transition_evidence` first. Its bounded official/maintainer guide card is retained whenever available, while an independently matched usage row may supply at most one template. Search the legacy workflow dictionary and collected researcher examples only for diagnosis or a nearest nonbinding hint after the resolver reports general-rule implementation or mismatch; use deeper official-manual search only for syntax, returned results, and command-state mechanics. None of these guide sources supplies a researcher-style choice when usage evidence has none.
 
 ## Three independent questions
 
@@ -29,7 +29,7 @@ For every ranked command group, record the material dimensions found in the offi
 
 The indexed local set covers `regress`, factor variables, `foreach`, `forvalues`, macros, estimates store/save/use, `putexcel`, and `putdocx`. Page-level results preserve the source filename, official URL, page, file hash, and extracted-text hash.
 
-## Official web fallback
+## Official web search
 
 If the local official set has no match, browse official StataCorp or Stata Press sources. Core verified URLs include:
 

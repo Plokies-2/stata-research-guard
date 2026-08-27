@@ -64,7 +64,7 @@ test("iteration cleanly re-renders an atomic span and freezes one final path", a
   assert.match(initialized.instructions, /one final implementation path per atomic transition/i);
 
   const skill = fs.readFileSync(path.join(ROOT, "skills", "stata-replication-workflow", "SKILL.md"), "utf8");
-  const authoring = fs.readFileSync(path.join(ROOT, "skills", "stata-replication-workflow", "references", "template-first-authoring.md"), "utf8");
+  const authoring = fs.readFileSync(path.join(ROOT, "skills", "stata-replication-workflow", "references", "general-rule-authoring.md"), "utf8");
   assert.match(skill, /number of drafts is not a failure criterion/i);
   assert.match(skill, /canonical block rejected by the linter is a plugin defect/i);
   assert.match(authoring, /only the final frozen source is judged/i);
@@ -84,7 +84,7 @@ test("source-isolated trials preserve evidence boundaries without imposing templ
   assert.match(initialized.instructions, /source-isolated blind trial/i);
   assert.match(initialized.instructions, /Do not use Browser, web search, external URLs/i);
   assert.match(initialized.instructions, /does not require template-only code/i);
-  assert.match(initialized.instructions, /narrow fallback implementations are allowed/i);
+  assert.match(initialized.instructions, /narrow general-rule implementations are allowed/i);
   assert.match(initialized.instructions, /rank-relative nearest inspected candidate.*nonbinding hint/i);
   assert.match(initialized.instructions, /Stop only when a substantive research choice is unresolved/i);
 
@@ -96,6 +96,26 @@ test("source-isolated trials preserve evidence boundaries without imposing templ
   assert.match(evaluation, /Do not use Browser, web search, external URLs/i);
   assert.match(evaluation, /not a template-only requirement/i);
   assert.match(evaluation, /narrow contract-driven implementations may be written/i);
+});
+
+test("general rules govern both complete template use and direct implementation", async (t) => {
+  const client = new McpClient();
+  t.after(() => client.close());
+  const initialized = await client.request("initialize", {
+    protocolVersion: "2025-06-18",
+    capabilities: {},
+    clientInfo: { name: "general-rule-contract", version: "1" },
+  });
+  assert.match(initialized.instructions, /Apply the general rules to every substantive transition/i);
+  assert.match(initialized.instructions, /template selection, binding, adaptation, and verification/i);
+  assert.match(initialized.instructions, /permitted bindings leave the complete atomic transition intact/i);
+  assert.match(initialized.instructions, /stop calling the result a template/i);
+
+  const rules = fs.readFileSync(path.join(ROOT, "skills", "stata-replication-workflow", "references", "general-rules.md"), "utf8");
+  assert.match(rules, /always apply/i);
+  assert.match(rules, /baseline authoring contract, not a fallback path/i);
+  assert.match(rules, /Every template adaptation must still follow these general rules/i);
+  assert.match(rules, /frame, algorithm, control flow, estimate handoff, caller interface, or output contract/i);
 });
 
 test("safe one-statement bindings need neither fallback markers nor a third schema mode", async (t) => {
@@ -144,7 +164,7 @@ test("an already-declared direct master shell stays prompt-only and unmarked", a
   assert.match(initialized.instructions, /above every individual do call.*one Korean comment sentence.*role/i);
 
   const skill = fs.readFileSync(path.join(ROOT, "skills", "stata-replication-workflow", "SKILL.md"), "utf8");
-  const authoring = fs.readFileSync(path.join(ROOT, "skills", "stata-replication-workflow", "references", "template-first-authoring.md"), "utf8");
+  const authoring = fs.readFileSync(path.join(ROOT, "skills", "stata-replication-workflow", "references", "general-rule-authoring.md"), "utf8");
   for (const text of [skill, authoring]) {
     assert.match(text, /prompt-only (?:master |orchestration )?shell/i);
     assert.match(text, /flat (?:caller-declared sequence|list) of (?:the caller-declared )?direct `do` calls/i);

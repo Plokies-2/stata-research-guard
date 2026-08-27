@@ -9,7 +9,7 @@ Stata 내장 `auto` 자료에서 자동차 모형을 관측단위로 삼아 `pri
 - `i.foreign`을 native factor-variable 형태로 유지합니다.
 - 각 모형의 `e(sample)`에서 종속변수 평균을 계산합니다.
 - 한 sheet workbook에는 별도 program 없이 direct `outreg2 replace/append`를 사용합니다.
-- template과 좁은 fallback의 실제 줄 범위를 `report.md`에 남깁니다.
+- template과 substantive `general_rule` 구현의 실제 줄 범위를 `report.md`에 남깁니다.
 
 ## 실행
 
