@@ -15,6 +15,9 @@ const COMMAND_SOURCES_PATH = path.join(DATA_ROOT, "command_sources.json");
 const FULL_COMMAND_GUIDES_PATH = path.join(DATA_ROOT, "full_command_guides.json");
 const PAPER_USAGE_PATH = path.join(DATA_ROOT, "paper_usage_occurrences.jsonl");
 const PAPER_USAGE_INDEX_PATH = path.join(DATA_ROOT, "command_paper_index.json");
+const HIGH_QUALITY_PAPER_BLOCKS_PATH = path.join(DATA_ROOT, "high_quality_paper_blocks.jsonl");
+const PAPER_REVIEW_SUMMARY_PATH = path.join(DATA_ROOT, "paper_review_summary.json");
+const PAPER_REVIEW_INTEGRITY_AUDIT_PATH = path.join(DATA_ROOT, "paper_review_integrity_audit.json");
 const GENERAL_RULES_PATH = path.join(
   PLUGIN_ROOT,
   "skills",
@@ -74,11 +77,24 @@ const commandSources = readJson(COMMAND_SOURCES_PATH).sources;
 const fullCommandGuideIndex = readJson(FULL_COMMAND_GUIDES_PATH);
 const paperUsageFileAvailable = fs.existsSync(PAPER_USAGE_PATH);
 const paperUsageIndexFileAvailable = fs.existsSync(PAPER_USAGE_INDEX_PATH);
-if (paperUsageFileAvailable !== paperUsageIndexFileAvailable) {
-  throw new Error("paper usage occurrence and index files must be installed together");
+const highQualityPaperBlocksFileAvailable = fs.existsSync(HIGH_QUALITY_PAPER_BLOCKS_PATH);
+const paperReviewSummaryFileAvailable = fs.existsSync(PAPER_REVIEW_SUMMARY_PATH);
+const paperReviewIntegrityAuditFileAvailable = fs.existsSync(PAPER_REVIEW_INTEGRITY_AUDIT_PATH);
+const paperBundleAvailability = [
+  paperUsageFileAvailable,
+  paperUsageIndexFileAvailable,
+  highQualityPaperBlocksFileAvailable,
+  paperReviewSummaryFileAvailable,
+  paperReviewIntegrityAuditFileAvailable,
+];
+if (paperBundleAvailability.some(Boolean) && !paperBundleAvailability.every(Boolean)) {
+  throw new Error("reviewed paper occurrence, index, high-quality block, summary, and integrity-audit files must be installed together");
 }
 const paperUsageOccurrences = paperUsageFileAvailable ? readJsonl(PAPER_USAGE_PATH) : [];
 const paperUsageIndex = paperUsageFileAvailable ? readJson(PAPER_USAGE_INDEX_PATH) : null;
+const highQualityPaperBlocks = paperUsageFileAvailable ? readJsonl(HIGH_QUALITY_PAPER_BLOCKS_PATH) : [];
+const paperReviewSummary = paperUsageFileAvailable ? readJson(PAPER_REVIEW_SUMMARY_PATH) : null;
+const paperReviewIntegrityAudit = paperUsageFileAvailable ? readJson(PAPER_REVIEW_INTEGRITY_AUDIT_PATH) : null;
 
 const familiesById = new Map(registry.families.map((family) => [family.family_id, family]));
 const commandsByName = new Map(registry.commands.map((command) => [command.command, command]));
@@ -142,7 +158,7 @@ function buildPaperUsageByCommand(indexPayload, occurrenceRows, occurrenceFileHa
     }
     return new Map(registry.commands.map((command) => [command.command, []]));
   }
-  if (indexPayload.record_type !== "command_paper_occurrence_index") {
+  if (indexPayload.record_type !== "reviewed_command_paper_occurrence_index") {
     throw new Error("command_paper_index.json has an unexpected record_type");
   }
   if (indexPayload.registry_command_count !== registry.commands.length) {
@@ -198,14 +214,183 @@ function buildPaperUsageByCommand(indexPayload, occurrenceRows, occurrenceFileHa
   return byCommand;
 }
 
+function buildHighQualityPaperBlocksByCommand(summaryPayload, auditPayload, blockRows, occurrenceRows, hashes = {}) {
+  if (summaryPayload === null) {
+    if (auditPayload !== null || blockRows.length !== 0 || occurrenceRows.length !== 0 || Object.values(hashes).some(Boolean)) {
+      throw new Error("reviewed paper blocks and review summary must be supplied together");
+    }
+    return new Map(registry.commands.map((command) => [command.command, []]));
+  }
+  if (summaryPayload.record_type !== "manual_paper_occurrence_review_summary") {
+    throw new Error("paper_review_summary.json has an unexpected record_type");
+  }
+  if (
+    !auditPayload
+    || auditPayload.record_type !== "final_output_integrity_audit"
+    || auditPayload.pass !== true
+    || !Array.isArray(auditPayload.errors)
+    || auditPayload.errors.length !== 0
+  ) {
+    throw new Error("paper_review_integrity_audit.json is not a passing final audit");
+  }
+  const counts = summaryPayload.counts || {};
+  const summaryHashes = summaryPayload.hashes || {};
+  const inputHashes = summaryPayload.input_hashes || {};
+  const validation = summaryPayload.validation || {};
+  if (
+    counts.registry_command_count !== registry.commands.length
+    || counts.include_count !== occurrenceRows.length
+    || counts.reviewed_index_link_count !== occurrenceRows.length
+    || counts.high_quality_block_count !== blockRows.length
+  ) {
+    throw new Error("paper_review_summary.json counts do not match the installed reviewed paper bundle");
+  }
+  if (
+    summaryHashes["reviewed_paper_usage_occurrences.jsonl"] !== hashes.occurrences
+    || summaryHashes["reviewed_command_paper_index.json"] !== hashes.index
+    || summaryHashes["high_quality_paper_blocks.jsonl"] !== hashes.blocks
+    || inputHashes["command_registry.json"] !== hashes.registry
+  ) {
+    throw new Error("paper_review_summary.json hashes do not match the installed reviewed paper bundle");
+  }
+  for (const key of [
+    "review_id_set_matches_original",
+    "include_rows_object_identical_to_original",
+    "reviewed_index_commands_match_registry",
+    "reviewed_index_links_only_include_occurrences",
+    "non_outreg2_include_anchors_covered_once_by_high_quality_blocks",
+    "high_quality_block_source_spans_and_hashes_read_back",
+  ]) {
+    if (validation[key] !== true) throw new Error(`paper_review_summary.json validation is not locked: ${key}`);
+  }
+  const auditCounts = auditPayload.counts || {};
+  const auditHashes = auditPayload.hashes || {};
+  const auditChecks = auditPayload.checks || {};
+  if (
+    auditCounts.include_count !== occurrenceRows.length
+    || auditCounts.reviewed_index_link_count !== occurrenceRows.length
+    || auditCounts.registry_command_count !== registry.commands.length
+    || auditCounts.high_quality_block_count !== blockRows.length
+    || auditHashes["reviewed_paper_usage_occurrences.jsonl"] !== hashes.occurrences
+    || auditHashes["reviewed_command_paper_index.json"] !== hashes.index
+    || auditHashes["high_quality_paper_blocks.jsonl"] !== hashes.blocks
+    || auditHashes["review_summary.json"] !== hashes.summary
+  ) {
+    throw new Error("paper_review_integrity_audit.json does not match the installed reviewed paper bundle");
+  }
+  for (const key of [
+    "non_outreg2_include_anchor_exact_once",
+    "independent_decision_audit_count",
+    "independent_block_boundary_audit_count",
+    "summary_counts_exact",
+    "summary_validation_flags",
+    "block_target_span_records_readback",
+    "outreg2_unlinked_target_spans_are_explicit_source_spans",
+    "outreg2_target_occurrence_link_consistency",
+  ]) {
+    if (auditChecks[key] !== true) throw new Error(`paper_review_integrity_audit.json check is not locked: ${key}`);
+  }
+
+  const occurrencesById = new Map(occurrenceRows.map((row) => [row.occurrence_id, row]));
+  const byCommand = new Map(registry.commands.map((command) => [command.command, []]));
+  const blockIds = new Set();
+  for (const block of blockRows) {
+    if (
+      !block
+      || block.evidence_role !== "high_quality_example"
+      || !commandsByName.has(block.focus_command)
+      || typeof block.block_id !== "string"
+      || blockIds.has(block.block_id)
+    ) {
+      throw new Error("high_quality_paper_blocks.jsonl contains a noncanonical or duplicate block");
+    }
+    if (
+      typeof block.block_code !== "string"
+      || !block.block_code.trim()
+      || crypto.createHash("sha256").update(block.block_code).digest("hex") !== block.block_code_sha256
+    ) {
+      throw new Error(`high-quality paper block code hash mismatch for ${block.block_id}`);
+    }
+    if (
+      typeof block.source_path !== "string"
+      || !/^[0-9a-f]{64}$/.test(block.source_file_sha256)
+      || !Number.isInteger(block.block_span_start)
+      || !Number.isInteger(block.block_span_end)
+      || block.block_span_start < 1
+      || block.block_span_end < block.block_span_start
+      || !Array.isArray(block.target_occurrence_ids)
+      || !Array.isArray(block.target_spans)
+      || block.target_spans.length === 0
+      || typeof block.what_this_example_shows !== "string"
+      || typeof block.do_not_carry_over !== "string"
+    ) {
+      throw new Error(`high-quality paper block metadata is incomplete for ${block.block_id}`);
+    }
+    const targetIds = new Set(block.target_occurrence_ids);
+    if (targetIds.size !== block.target_occurrence_ids.length) {
+      throw new Error(`high-quality paper block repeats a target occurrence for ${block.block_id}`);
+    }
+    for (const occurrenceId of targetIds) {
+      const occurrence = occurrencesById.get(occurrenceId);
+      if (!occurrence || occurrence.command !== block.focus_command) {
+        throw new Error(`high-quality paper block has an invalid target occurrence for ${block.block_id}`);
+      }
+    }
+    for (const span of block.target_spans) {
+      if (
+        !span
+        || !Number.isInteger(span.span_start)
+        || !Number.isInteger(span.span_end)
+        || span.span_start < block.block_span_start
+        || span.span_end > block.block_span_end
+        || span.span_end < span.span_start
+        || (span.occurrence_id !== null && !targetIds.has(span.occurrence_id))
+      ) {
+        throw new Error(`high-quality paper block has an invalid target span for ${block.block_id}`);
+      }
+    }
+    blockIds.add(block.block_id);
+    byCommand.get(block.focus_command).push(block);
+  }
+  const blockCommands = new Set(blockRows.map((block) => block.focus_command));
+  const occurrenceCommands = new Set(occurrenceRows.map((row) => row.command));
+  if (
+    blockCommands.size !== counts.high_quality_block_distinct_command_count
+    || blockCommands.size !== counts.include_distinct_command_count
+    || blockCommands.size !== occurrenceCommands.size
+    || [...blockCommands].some((command) => !occurrenceCommands.has(command))
+  ) {
+    throw new Error("high-quality paper block command coverage does not match reviewed occurrences");
+  }
+  return byCommand;
+}
+
 const paperUsageByCommand = buildPaperUsageByCommand(
   paperUsageIndex,
   paperUsageOccurrences,
   paperUsageFileAvailable ? sha256File(PAPER_USAGE_PATH) : null,
 );
 
+const highQualityPaperBlocksByCommand = buildHighQualityPaperBlocksByCommand(
+  paperReviewSummary,
+  paperReviewIntegrityAudit,
+  highQualityPaperBlocks,
+  paperUsageOccurrences,
+  paperUsageFileAvailable ? {
+    occurrences: sha256File(PAPER_USAGE_PATH),
+    index: sha256File(PAPER_USAGE_INDEX_PATH),
+    blocks: sha256File(HIGH_QUALITY_PAPER_BLOCKS_PATH),
+    summary: sha256File(PAPER_REVIEW_SUMMARY_PATH),
+    registry: sha256File(REGISTRY_PATH),
+  } : {},
+);
+
 function paperUsageRowsFor(command) {
   return paperUsageByCommand.get(command) || [];
+}
+
+function highQualityPaperBlocksFor(command) {
+  return highQualityPaperBlocksByCommand.get(command) || [];
 }
 
 function unique(values) {
@@ -295,21 +480,31 @@ function sourceCardsFor(command) {
   return cards;
 }
 
-function paperUsageCardsFor(selectedCommands, rows = null) {
+function paperUsageCardsFor(selectedCommands, blocks = null, rows = null) {
   const selected = new Set(selectedCommands);
-  const selectedRows = rows === null
-    ? selectedCommands.flatMap((command) => paperUsageRowsFor(command))
-    : rows;
-  return selectedRows
-    .filter((row) => row && typeof row === "object" && selected.has(row.command))
-    .map((row) => ({
-      command: row.command,
+  const selectedBlocks = blocks === null
+    ? selectedCommands.flatMap((command) => highQualityPaperBlocksFor(command))
+    : blocks;
+  const occurrenceRows = rows === null ? paperUsageOccurrences : rows;
+  const occurrencesById = new Map(occurrenceRows.map((row) => [row.occurrence_id, row]));
+  return selectedBlocks
+    .filter((block) => block && typeof block === "object" && selected.has(block.focus_command))
+    .map((block) => ({
+      command: block.focus_command,
+      evidence_role: "high_quality_example",
+      usage_instruction: {
+        template_status: "not_a_template",
+        follow_current_selected_commands: true,
+        preserve_current_research_and_output_choices: true,
+        adapt_the_focus_command_region_when_useful: true,
+      },
       source_role: {
-        focus_command: row.command,
+        focus_command: block.focus_command,
         surrounding_code: "reference_context",
         owns_other_command_choices: false,
       },
-      occurrence: row,
+      example: block,
+      linked_target_occurrences: block.target_occurrence_ids.map((occurrenceId) => occurrencesById.get(occurrenceId)),
     }));
 }
 
@@ -340,15 +535,15 @@ function relatedArtifactsFor(selectedCommands) {
   return formatter ? [formatter] : [];
 }
 
-function commandCard(commandName, paperRows = null) {
+function commandCard(commandName, paperBlocks = null) {
   const command = commandsByName.get(commandName);
   if (!command) return null;
   const family = familiesById.get(command.family_id) || {};
   const readableSourceAvailable = manualRowsFor(command.command).length > 0
     || fullCommandGuidesByCommand.has(command.command);
-  const paperAvailable = paperRows === null
-    ? paperUsageRowsFor(command.command).length > 0
-    : paperRows.some((row) => row?.command === command.command);
+  const paperAvailable = paperBlocks === null
+    ? highQualityPaperBlocksFor(command.command).length > 0
+    : paperBlocks.some((block) => block?.focus_command === command.command);
   return {
     command: command.command,
     invocation: commandInvocation(command.command),
@@ -648,7 +843,7 @@ function commandDictionary() {
       functional_labels: functionalLabels,
       guide_available: sourceCardsFor(command.command).length > 0
         || officialExamples.some((row) => row.command === command.command),
-      paper_available: paperUsageRowsFor(command.command).length > 0,
+      paper_available: highQualityPaperBlocksFor(command.command).length > 0,
     };
   }).sort((left, right) => left.command.localeCompare(right.command));
 }
@@ -716,8 +911,8 @@ function buildCommandEvidence(args) {
     }
     if (card.evidence_mode === "guide_only_fallback") {
       const reason = paperUsageFileAvailable
-        ? `No reviewed paper_usage_occurrence is stored for ${card.command}; guide_only_fallback.`
-        : `Reviewed paper occurrence files are not installed; ${card.command} uses guide_only_fallback.`;
+        ? `No reviewed high-quality paper example is stored for ${card.command}; guide_only_fallback.`
+        : `Reviewed paper example files are not installed; ${card.command} uses guide_only_fallback.`;
       unresolved.push(reason);
     }
   }
@@ -741,7 +936,7 @@ function buildCommandEvidence(args) {
 const TOOL_DEFINITIONS = [
   {
     name: "get_stata_command_evidence",
-    description: "Two-stage exact-key Stata evidence router. First omit selected_commands to receive the complete canonical command dictionary without guide or paper bodies. Then call again with one or more exact canonical registry keys to receive evidence only for those commands, including a complete cleaned official or maintainer guide in one response when stored. Empty, duplicate, alias, abbreviation, inferred, or unregistered keys abort with command_not_in_dictionary; if the needed command is absent from the dictionary, the calling skill must abort instead of guessing. Paper occurrences focus on the selected command; surrounding producer or downstream code is nonbinding reference context and does not replace user or project command choices. The tool never chooses a command or grades generated code.",
+    description: "Two-stage exact-key Stata evidence router. First omit selected_commands to receive the complete canonical command dictionary without guide or paper bodies. Then call again with one or more exact canonical registry keys to receive evidence only for those commands, including a complete cleaned official or maintainer guide in one response when stored. Empty, duplicate, alias, abbreviation, inferred, or unregistered keys abort with command_not_in_dictionary; if the needed command is absent from the dictionary, the calling skill must abort instead of guessing. Reviewed paper blocks are high-quality examples, not templates: only the selected focus command is binding, while surrounding estimators, samples, FE, VCE, and outputs remain nonbinding source context. The tool never chooses a command or grades generated code.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -873,6 +1068,7 @@ module.exports = {
   FORBIDDEN_RESPONSE_KEYS,
   TOOL_DEFINITIONS,
   assertNoForbiddenKeys,
+  buildHighQualityPaperBlocksByCommand,
   buildPaperUsageByCommand,
   buildFullCommandGuidesByCommand,
   buildCommandEvidence,

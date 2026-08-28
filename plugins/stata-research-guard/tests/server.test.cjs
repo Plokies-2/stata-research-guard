@@ -100,6 +100,9 @@ test("evidence returns guide and paper payloads only for exact selected subset",
   assert.ok(evidence.authoritative_examples.every((row) => ["regress", "outreg2"].includes(row.command)));
   assert.ok(evidence.full_command_guides.every((row) => ["regress", "outreg2"].includes(row.command)));
   assert.ok(evidence.paper_usage_cards.every((row) => ["regress", "outreg2"].includes(row.command)));
+  assert.ok(evidence.paper_usage_cards.every((row) => row.evidence_role === "high_quality_example"));
+  assert.ok(evidence.paper_usage_cards.every((row) => row.usage_instruction.template_status === "not_a_template"));
+  assert.equal(evidence.paper_usage_cards.filter((row) => row.command === "outreg2").length, 4);
   assert.deepEqual(evidence.related_artifacts.map((row) => row.artifact), ["outreg2_xlsx"]);
   assert.ok(evidence.related_artifacts[0].boundaries.some((row) => row.includes("does not choose or replace the estimator")));
   assert.equal(evidence.command_cards.some((card) => card.command === "areg"), false);
@@ -174,7 +177,7 @@ test("selected commands reject empty, duplicate, unregistered, alias-like, and c
   assert.match(aborted.result.content[0].text, /^ABORT command_not_in_dictionary:/);
 });
 
-test("a selected command without a reviewed occurrence reports guide-only fallback", () => {
+test("a selected command without a reviewed high-quality example reports guide-only fallback", () => {
   const discovery = buildCommandEvidence({ request: "Discover available commands" });
   const dictionaryRow = discovery.command_dictionary.find((row) => row.guide_available && !row.paper_available);
   assert.ok(dictionaryRow, "fixture must include a guide-only command");
@@ -187,16 +190,24 @@ test("a selected command without a reviewed occurrence reports guide-only fallba
   assert.ok(evidence.unresolved_facts.some((fact) => fact.includes("guide_only_fallback")));
 });
 
-test("paper helper keeps every exact-key reviewed row and wraps source role separately", () => {
+test("paper helper returns selected high-quality blocks and keeps other commands nonbinding", () => {
   const rows = [
-    { occurrence_id: "outreg2-1", command: "outreg2", exact_excerpt: "regress y x\noutreg2 using t.xls" },
-    { occurrence_id: "regress-1", command: "regress", exact_excerpt: "regress y x" },
-    { occurrence_id: "outreg2-2", command: "outreg2", exact_excerpt: "areg y x\noutreg2 using t.xls" },
+    { occurrence_id: "outreg2-1", command: "outreg2" },
+    { occurrence_id: "regress-1", command: "regress" },
+    { occurrence_id: "outreg2-2", command: "outreg2" },
   ];
-  const cards = paperUsageCardsFor(["outreg2"], rows);
+  const blocks = [
+    { block_id: "block-1", focus_command: "outreg2", target_occurrence_ids: ["outreg2-1"] },
+    { block_id: "block-2", focus_command: "regress", target_occurrence_ids: ["regress-1"] },
+    { block_id: "block-3", focus_command: "outreg2", target_occurrence_ids: ["outreg2-2"] },
+  ];
+  const cards = paperUsageCardsFor(["outreg2"], blocks, rows);
   assert.equal(cards.length, 2);
-  assert.deepEqual(cards.map((card) => card.occurrence), [rows[0], rows[2]]);
+  assert.deepEqual(cards.map((card) => card.example), [blocks[0], blocks[2]]);
+  assert.deepEqual(cards.map((card) => card.linked_target_occurrences), [[rows[0]], [rows[2]]]);
   assert.ok(cards.every((card) => card.command === "outreg2"));
+  assert.ok(cards.every((card) => card.evidence_role === "high_quality_example"));
+  assert.ok(cards.every((card) => card.usage_instruction.template_status === "not_a_template"));
   assert.ok(cards.every((card) => card.source_role.focus_command === "outreg2"));
   assert.ok(cards.every((card) => card.source_role.surrounding_code === "reference_context"));
   assert.ok(cards.every((card) => card.source_role.owns_other_command_choices === false));
@@ -219,7 +230,7 @@ test("reviewed paper index must cover all 109 commands and link exact occurrence
     };
   });
   const index = {
-    record_type: "command_paper_occurrence_index",
+    record_type: "reviewed_command_paper_occurrence_index",
     registry_command_count: 109,
     occurrence_file: "paper_usage_occurrences.jsonl",
     occurrence_file_sha256: "fixture-hash",

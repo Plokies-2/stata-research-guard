@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.3.0+codex.20260828214821"
+    "version": "0.3.0+codex.20260828220212"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
       "bytes": 1735,
-      "sha256": "0bb19bbd085a4f7a80236e897041da924fab943e7ff6efb732783e14c7ea2ddb"
+      "sha256": "d1c4c30ab914deaffd47b14a51741b62b7e653134ec3b95a627e80519d382c3c"
     },
     {
       "path": ".mcp.json",
@@ -22,8 +22,13 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 3089,
-      "sha256": "009111149c76c1dac192a692167c21fb1d5800c23e1584a9d4d9c59b5474909d"
+      "bytes": 3321,
+      "sha256": "1dc82a6c2be7ff7e4d8f7b75d7870a8288ae6e97ef7f6519075fb433bbe77157"
+    },
+    {
+      "path": "data/command_paper_index.json",
+      "bytes": 53393,
+      "sha256": "bf97a1f54faee840d15fca161ddef7a1263cb610fcc593f8db7b1629c517e5e7"
     },
     {
       "path": "data/command_registry.json",
@@ -51,6 +56,11 @@
       "sha256": "eacc9e9f4f8f2c11cc10917c96f53396b3f636f09c2baf11567ddb1c6ef071a2"
     },
     {
+      "path": "data/high_quality_paper_blocks.jsonl",
+      "bytes": 341892,
+      "sha256": "deca72efcbf14233f0f762ed614e22ba26216b4853818339efe08e5bb719e248"
+    },
+    {
       "path": "data/manual_index.jsonl",
       "bytes": 478423,
       "sha256": "dbcdaed345b98204c7315f279efddd422598689938b8cad2108fe574992e63d2"
@@ -64,6 +74,21 @@
       "path": "data/official_web_sources.json",
       "bytes": 3087,
       "sha256": "b6a1e231607f35d8b61523a66ac18b8dd23f665cab76066cb620d506d34ca42b"
+    },
+    {
+      "path": "data/paper_review_integrity_audit.json",
+      "bytes": 80442,
+      "sha256": "54e0662a979d45df573abb087f45ebb082237b89aa963b961547190a10dfd841"
+    },
+    {
+      "path": "data/paper_review_summary.json",
+      "bytes": 2409,
+      "sha256": "948ac203fc0e4db9263659d44c707ecaa5c69d0ce0799cc9a6da51f59d41037b"
+    },
+    {
+      "path": "data/paper_usage_occurrences.jsonl",
+      "bytes": 618585,
+      "sha256": "79370d763e13cf9c05ed474b8fb47f01088b8b771156d6d98d66b178850a305c"
     },
     {
       "path": "data/reference_packages.json",
@@ -327,18 +352,18 @@
     },
     {
       "path": "INSTRUCTIONS.md",
-      "bytes": 3526,
-      "sha256": "294b06ffafcb587531f1e4afa63aa9ef5c256c2a27f636084702bdca9eb437a4"
+      "bytes": 3666,
+      "sha256": "3a3b0ccdc9a1219a825c3917be918df532f2647f6e1307f9b568a14643a9b9d7"
     },
     {
       "path": "mcp/server.cjs",
-      "bytes": 36044,
-      "sha256": "89e0ed5a5344f8ae49b4f778c9232d2cd65f6de7237a658a2ec42cbd6c565876"
+      "bytes": 45459,
+      "sha256": "c4c8c76519424cef3b2f5465efac2bc3cc5d8a4a3eb489643ba0ea00c54379ed"
     },
     {
       "path": "README.md",
-      "bytes": 7252,
-      "sha256": "92d2b5b563f130b62e66f768c91e83df5b226cb72a31227f666b03c05b4e1833"
+      "bytes": 7585,
+      "sha256": "906e6e5394b804cb344d05367188c1d9497303387b5e05cafce10a9bfcc95970"
     },
     {
       "path": "scripts/build_clean_command_guide.py",
@@ -367,8 +392,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/command-evidence.md",
-      "bytes": 5224,
-      "sha256": "029255aebe358ef044d0968a6648fe62248872090deb9741f9f96e74f58302c3"
+      "bytes": 5327,
+      "sha256": "81578eb2dbf8aa692b5ceb1bc44d0aff99a693fad99e45311fb6a5b1d73b1755"
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rules.md",
@@ -387,8 +412,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/SKILL.md",
-      "bytes": 4233,
-      "sha256": "bceed8cef6c5c3268b046937382fc684046a98aca8bfacf274d93f1e99af907a"
+      "bytes": 4294,
+      "sha256": "806e859abb08cc4d42c341104eb82b5d77a9db306a22600f7f646f6f77058073"
     },
     {
       "path": "tests/fixtures/outreg2_excel_runtime.do",
@@ -412,13 +437,13 @@
     },
     {
       "path": "tests/server.test.cjs",
-      "bytes": 15089,
-      "sha256": "87a69e3dacdf982e15be42ec597f473e0bbf4c00329a962450bb79d54bce29ab"
+      "bytes": 15888,
+      "sha256": "fc41582c697d5c94adfbd4559540ac5b6dc25681feb62ce0bb406438a4d951c1"
     },
     {
       "path": "tests/test_command_evidence.py",
-      "bytes": 5701,
-      "sha256": "bf4e04609301d9a3c2335fa9a97ea7598e42b02ca8953f45af46b9b6813da74b"
+      "bytes": 9156,
+      "sha256": "8a6a0f4375199134f7a3c4d95e860b50b42c5c590180cbbf8d5f52d0c86a7458"
     },
     {
       "path": "tests/test_source_archive.py",
@@ -439,7 +464,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.3.0+codex.20260828214821"
+      "value": "0.3.0+codex.20260828220212"
     },
     {
       "id": "readme.heading",

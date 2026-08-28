@@ -13,8 +13,9 @@
 - Made the command dictionary the hard command boundary while the plugin is in use; unknown, duplicate, or empty selections abort instead of being guessed or substituted.
 - Split evidence retrieval into discovery and selected-command phases so guide and paper payloads are returned only for commands the model chose.
 - Restored a concise common general-rules contract without restoring generated-code grading, promotion gates, or broad semantic validators.
-- Added paired reviewed-occurrence and 109-command index loading, exact occurrence-ID/hash linkage, selected-command-only delivery, guide-only fallback, and support for multiple material variants.
-- Kept paper occurrences unmodified, focused examples on the selected command, and marked surrounding estimators and workflow code as reference context.
+- Added a locked reviewed-paper bundle with 168 included occurrences, a 109-command exact index, 166 manually bounded high-quality blocks, and a hash-linked review summary.
+- Kept paper occurrences unmodified, returned blocks only for the selected focus command, labeled them as high-quality examples rather than templates, and marked surrounding estimators and workflow code as reference context.
+- Added exact occurrence/index/block/summary hash and count checks, guide-only fallback for 32 commands without reviewed blocks, and multiple blocks for materially different variants.
 - Removed unknown-first-token project-scan fallback and retained exact registry invocation or explicit-alias observations only.
 
 ## 2026-08-29 — autonomy-first evidence router

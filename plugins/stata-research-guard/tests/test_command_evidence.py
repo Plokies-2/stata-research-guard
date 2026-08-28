@@ -13,6 +13,11 @@ MANUAL_INDEX = ROOT / "data" / "manual_index.jsonl"
 OFFICIAL_EXAMPLES = ROOT / "data" / "official_examples.json"
 COMMAND_SOURCES = ROOT / "data" / "command_sources.json"
 FULL_COMMAND_GUIDES = ROOT / "data" / "full_command_guides.json"
+PAPER_OCCURRENCES = ROOT / "data" / "paper_usage_occurrences.jsonl"
+PAPER_INDEX = ROOT / "data" / "command_paper_index.json"
+PAPER_BLOCKS = ROOT / "data" / "high_quality_paper_blocks.jsonl"
+PAPER_REVIEW_SUMMARY = ROOT / "data" / "paper_review_summary.json"
+PAPER_REVIEW_AUDIT = ROOT / "data" / "paper_review_integrity_audit.json"
 
 
 class CommandEvidenceTests(unittest.TestCase):
@@ -124,6 +129,47 @@ class CommandEvidenceTests(unittest.TestCase):
                 check=True,
             )
             self.assertEqual(rebuilt.read_bytes(), content_bytes)
+
+    def test_reviewed_paper_bundle_is_hash_linked_and_high_quality_not_template_data(self):
+        registry = json.loads(REGISTRY.read_text(encoding="utf-8"))
+        registry_commands = [row["command"] for row in registry["commands"]]
+        occurrences = [json.loads(line) for line in PAPER_OCCURRENCES.read_text(encoding="utf-8").splitlines() if line]
+        index = json.loads(PAPER_INDEX.read_text(encoding="utf-8"))
+        blocks = [json.loads(line) for line in PAPER_BLOCKS.read_text(encoding="utf-8").splitlines() if line]
+        summary = json.loads(PAPER_REVIEW_SUMMARY.read_text(encoding="utf-8"))
+        audit = json.loads(PAPER_REVIEW_AUDIT.read_text(encoding="utf-8"))
+
+        self.assertEqual(index["record_type"], "reviewed_command_paper_occurrence_index")
+        self.assertEqual([row["command"] for row in index["commands"]], registry_commands)
+        self.assertEqual(index["registry_command_count"], len(registry_commands))
+        self.assertEqual(index["occurrence_file"], PAPER_OCCURRENCES.name)
+        self.assertEqual(index["occurrence_file_sha256"], hashlib.sha256(PAPER_OCCURRENCES.read_bytes()).hexdigest())
+        self.assertEqual(len(occurrences), 168)
+        self.assertEqual(len({row["occurrence_id"] for row in occurrences}), len(occurrences))
+
+        self.assertEqual(summary["counts"]["include_count"], len(occurrences))
+        self.assertEqual(summary["counts"]["high_quality_block_count"], len(blocks))
+        self.assertEqual(summary["hashes"]["reviewed_paper_usage_occurrences.jsonl"], hashlib.sha256(PAPER_OCCURRENCES.read_bytes()).hexdigest())
+        self.assertEqual(summary["hashes"]["reviewed_command_paper_index.json"], hashlib.sha256(PAPER_INDEX.read_bytes()).hexdigest())
+        self.assertEqual(summary["hashes"]["high_quality_paper_blocks.jsonl"], hashlib.sha256(PAPER_BLOCKS.read_bytes()).hexdigest())
+        self.assertTrue(all(summary["validation"].values()))
+        self.assertTrue(audit["pass"])
+        self.assertEqual(audit["errors"], [])
+        self.assertEqual(audit["hashes"]["review_summary.json"], hashlib.sha256(PAPER_REVIEW_SUMMARY.read_bytes()).hexdigest())
+        self.assertTrue(audit["checks"]["block_target_span_records_readback"])
+        self.assertTrue(audit["checks"]["outreg2_unlinked_target_spans_are_explicit_source_spans"])
+
+        occurrence_ids = {row["occurrence_id"] for row in occurrences}
+        self.assertEqual(len(blocks), 166)
+        self.assertEqual(len({row["block_id"] for row in blocks}), len(blocks))
+        self.assertEqual(sum(row["focus_command"] == "outreg2" for row in blocks), 4)
+        for block in blocks:
+            self.assertEqual(block["evidence_role"], "high_quality_example")
+            self.assertIn(block["focus_command"], registry_commands)
+            self.assertEqual(hashlib.sha256(block["block_code"].encode("utf-8")).hexdigest(), block["block_code_sha256"])
+            self.assertTrue(set(block["target_occurrence_ids"]).issubset(occurrence_ids))
+            self.assertTrue(block["what_this_example_shows"].strip())
+            self.assertTrue(block["do_not_carry_over"].strip())
 
 
 if __name__ == "__main__":

@@ -25,7 +25,7 @@ The response may contain:
 - complete content-only official or maintainer guides for selected commands when available, with version, source commit, raw hash, cleaned hash, and no silent truncation;
 - readable StataCorp or maintainer documentation excerpts and examples;
 - factual project observations with file, line, statement, options, input/output bindings, calls, and estimate handoffs;
-- reviewed paper usage cards when such cards exist; and
+- reviewed high-quality paper example cards when such cards exist; and
 - unresolved facts when a source or research choice is not established.
 
 The response never contains a winner, numeric ranking, semantic pass, promotion state, or automatic-selection verdict. Existing project usage is an observation, not a vote. The model considers the user's current requirements, official or maintainer semantics, project facts, paper context, and implementation simplicity, then chooses and writes the code. While the plugin is in use, code generation stays inside the exposed dictionary; if the necessary command is absent, the workflow stops and reports the missing capability.
@@ -37,7 +37,7 @@ The response never contains a winner, numeric ranking, semantic pass, promotion 
 - Paper code shows how the selected command was used in a particular research workflow. The selected-command region is a practical example; surrounding estimators, samples, fixed effects, VCE choices, and downstream steps remain reference context. Paper code is not syntax authority and is never rewritten offline to match house style.
 - Runtime output records what Stata executed and produced. It does not establish causal validity or select a research design.
 
-Documentation examples are readable and nonbinding. A document-derived fixture is labeled as derived rather than presented as a verbatim manual example. Reviewed paper data is installed only as the paired `paper_usage_occurrences.jsonl` and `command_paper_index.json`; a partial pair or broken exact-ID/hash link aborts at server start. When the pair is absent, or the selected command has no reviewed occurrence, the tool provides guide-only evidence and reports the gap honestly.
+Documentation examples are readable and nonbinding. A document-derived fixture is labeled as derived rather than presented as a verbatim manual example. Reviewed paper evidence is installed as one locked five-file bundle: `paper_usage_occurrences.jsonl`, `command_paper_index.json`, `high_quality_paper_blocks.jsonl`, `paper_review_summary.json`, and `paper_review_integrity_audit.json`. A partial bundle, nonpassing final audit, or broken exact-ID/hash/count link aborts at server start. When the bundle is absent, or the selected command has no reviewed high-quality block, the tool provides guide-only evidence and reports the gap honestly.
 
 Complete guides are separate from short documentation excerpts and paper occurrences. They are returned only for `selected_commands`; discovery never carries guide bodies. Each indexed complete guide is hash-linked to a preserved raw source and a cleaned Markdown file. Missing files, path escape, invalid UTF-8, or raw/clean hash mismatch aborts at server start. Cleaning removes viewer navigation and presentation markup but preserves source order, syntax and abbreviation boundaries, option descriptions, warnings, examples, postestimation, stored results, references, and external links. The guide supplies command grammar; `general-rules.md`, the user request, and the current project still govern authoring and research choices.
 
@@ -49,9 +49,9 @@ The scanner does not infer preferred style, rank commands by frequency, or turn 
 
 ## Paper and formatter boundaries
 
-Raw paper source files and their citation, path, hash, and span provenance remain preserved. Raw archives, mechanical windows, mixed legacy usage rows, and rejected audit packets are not returned directly. Reviewed evidence uses unmodified `paper_usage_occurrence` records and a 109-command exact index; the server reads only occurrence IDs attached to the model's selected commands. Materially different command variants may supply more than one occurrence.
+Raw paper source files and their citation, path, hash, and span provenance remain preserved. Raw archives, mechanical windows, mixed legacy usage rows, and rejected audit packets are not returned directly. Reviewed evidence keeps unmodified `paper_usage_occurrence` records and a 109-command exact index, while manually bounded `high_quality_example` blocks show the selected command's working context. The server returns only blocks whose `focus_command` is selected and links their target occurrences when available. Materially different variants may therefore supply more than one block.
 
-A close occurrence may guide minimal edits around the selected command so that it harmonizes with the current project and documented syntax. A distant occurrence is reference context rather than a template. For example, an `outreg2` occurrence may show a preceding `areg`, but the `outreg2` example does not own the estimator and must not replace a current `regress` choice.
+A close block may guide minimal edits around the selected command so that it harmonizes with the current project and documented syntax. Every block is a high-quality example, never a template. A distant block is reference context only. For example, an `outreg2` block may show a preceding `areg`, but the `outreg2` example does not own the estimator and must not replace a current `regress` choice.
 
 The user-approved `outreg2_xlsx` multi-sheet formatter is preserved as a named implementation artifact. Its card describes its interface and preconditions but does not decide whether a project needs it.
 
