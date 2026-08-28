@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-29 — audited 107-command full-guide bundle
+
+- Bundled complete cleaned official or maintainer guides for 107 of the 109 closed-dictionary commands and preserved every indexed primary source plus nine required supplemental sources.
+- Recorded `cgmreg` and `jwdidstacked` as independently confirmed unavailable instead of reconstructing help from implementation code or inventing a substitute.
+- Added exact registry-order, ready/unavailable status, source/content/supplemental hash, UTF-8, final-audit, and authority-file checks at server startup and in regression tests.
+- Kept discovery body-free and selected-command delivery untruncated; complete guides remain syntax authority while reviewed paper blocks remain nonbinding high-quality examples rather than templates.
+
 ## 2026-08-29 — direct verification boundary
 
 - Prohibited one-off `capture confirm file`/`_rc`/`exit` blocks that manually re-check scratch cleanup or output existence inside project `.do` files; requested verification belongs in runtime or artifact inspection.

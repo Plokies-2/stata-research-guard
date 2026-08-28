@@ -1,0 +1,270 @@
+## Title
+
+ppmlhdfe 
+---
+Poisson pseudo-likelihood regression with multiple levels of fixed effects
+
+## Syntax
+
+ ppmlhdfe
+depvar [indepvars]
+[if] [in] weight , [a[bsorb(ppmlhdfe##absvar:absvars)]] [options] 
+
+### Model
+
+a[bsorb(ppmlhdfe##absvar:absvars)]categorical variables to be absorbed (fixed effects); individual slopes are also allowed
+ a[bsorb(]..., save[fe)]save all fixed effect estimates with __hdfe as prefix
+exp[osure(varname)]include ln(varname) in model with
+coefficient constrained to 1
+off[set(varname)]include varname in model with coefficient
+constrained to 1
+d(newvar)save sum of fixed effects as newvar; mandatory if running predict afterwards (except for predict,xb)
+ das above, but variable will be saved as _ppmlhdfe_d
+
+sep[aration(string)]algorithm used to drop 
+separated (http://scorreia.com/research/separation.pdf) observations and their associated regressors.
+Valid options are fe, ir, simplex, and mu (or any combination of those).
+Although ir (iterated rectifier) is the only one that can systematically correct separation arising from both regressors and fixed effects, by default the first three methods are applied ( fe simplex ir).
+See the ppmlhdfe paper (http://scorreia.com/research/ppmlhdfe.pdf) as well as this guide (https://github.com/sergiocorreia/ppmlhdfe/blob/master/guides/separation_primer.md) for more information.
+
+### SE/Robust
+
+vce(vcetype)vcetype
+may be r[obust] (default) or cl[uster] fvvarlist (allowing two- and multi-way clustering)
+
+### Reporting
+
+ef[orm]report exponentiated coefficients (incidence-rate ratios)
+ir[r]synonym for ef[orm]
+display_optionscontrol many options of the regression table,
+such as confidence levels, number formats, etc.
+
+### Optimization
+
+tol[erance(#)]criterion for convergence (default: 1e-8)
+guess(string)set rule for setting initial values; valid options are simple (default, almost always faster), ols; and  var <variable>
+
+### Diagnostic and undocumented
+
+v[erbose(#)]amount of debugging information to show; use v(1) or higher to view additional information;
+secret option: v(-1) disables all messages
+[no[]]lo[g]hide iteration log
+keepsin[gletons]do not drop singleton groups
+version[]reports the version number and date of ppmlhdfe, and the list of required packages. standalone option
+
+time-series operators and factor variables are allowed;
+the dependent variable cannot be of the form i.turn, but 42.turn works
+fweights and pweights are allowed; see weight.
+
+## Description
+
+ppmlhdfe implements Poisson pseudo-maximum likelihood regressions (PPML) with multi-way fixed effects,
+as described by Correia, Guimarães, Zylkin (2019a) (http://scorreia.com/research/ppmlhdfe.pdf).
+The estimator employed is robust to statistical separation and convergence issues, due to the procedures developed in Correia, Guimarães, Zylkin (2019b) (http://scorreia.com/research/separation.pdf).
+
+This package has four key advantages:
+
+ 1. Allows any number and combination of fixed effects and individual slopes.
+
+ 2. Correctly detects and drops separated observations (Correia, Guimarães, Zylkin 2019b (http://scorreia.com/research/separation.pdf)).
+This issue would be otherwise particularly pernicious in regressions with many fixed effects, and can lead to lack of convergence,
+or even worse, incorrect estimates.
+
+ 3. Allows two- and multi-way clustering, and can be used in combination with boottest (https://ideas.repec.org/c/boc/bocode/s458121.html) to derive wild bootstrap inference.
+
+ 4. Includes several algorithmic shortcuts and accelerations aimed at allowing its use with very large datasets.
+
+## Background
+
+PPML models are particularly useful in models with positive count (and non-count (https://doi.org/10.1515/jem-2015-0022)) outcome variables, where
+otherwise applying least-squares regressions on outcome variables of the form log(y) would lead to inconsistent estimates (https://www.mitpressjournals.org/doi/abs/10.1162/rest.88.4.641) in the presence of heteroskedasticity.
+
+These models are thus important in trade economics (where common outcomes include log(exports)), labor economics (log wage),
+finance (log credit, log sales, etc.), innovation (log patents), etc.
+Further, they alleviate the issue of dealings with zero-outcomes variables (as log(0) is minus infinity), and allow applied economists to jointly estimate effects at the intensive and extensive margins.
+
+## Syntax for absorbed variables
+
+varnamecategorical variable to be absorbed (fixed effect)
+i.varnamesame as above; the i. prefix is always tacit
+i.var1#i.var2absorb pairwise combinations of two or more categorical variables (e.g. country-time fixed effects)
+i.var1##c.var2absorb fixed effects and
+individual slopes (https://www.stata.com/meeting/germany10/germany10_ludwig.pdf) (e.g. "i.country##c.time" includes country FEs and different time trend per country)
+i.var1#c.var2only absorbs individual slopes
+(advice: never run "i.id i.id#c.z", as it is slower and less accurate that running "i.id##c.z")
+var1##c.(var2 var3)multiple heterogeneous slopes are allowed together. Alternative syntax: var1##(c.var2 c.var3)
+v1#v2#v3##c.(v4 v5)factor operators can be combined
+
+- To save the estimates specific absvars, write newvar=absvar.
+-  However, be aware that estimates for the fixed effects are generally inconsistent and not econometrically identified.
+- Using categorical interactions (e.g. x#z) is faster than running egen group(...) beforehand.
+- Singleton observations (http://scorreia.com/research/singletons.pdf) are dropped iteratively until no more singletons are found (see linked article for details).
+
+## Advanced options
+
+You can use all of the reghdfe optimization options.
+Particularly useful are itol(#) to set the tolerance used when partialling out fixed effects,
+as well as the accel(), transform(), and prune options to modify the partialling out method.
+
+You can also modify the parameters used internally for the IRLS iteration and for each separation method.
+For instance, standardize_data(0) will disable the standardization of variables (done to increase numerical accuracy),
+while use_exact_solver(1) will run avoid using a faster version of the least squares solver on the initial IRLS iterations.
+
+More information on these and other undocumented options is available in the online guide (https://github.com/sergiocorreia/ppmlhdfe/blob/master/guides/undocumented.md).
+
+## Caveats
+
+Convergence is decided based on the deviance (and thus log-likelihood), not coefficients or residuals. Thus, we declare convergence once relative changes of the deviance fall below tol[erance(#)].
+
+Note that although continuing to iterate further should not improve the overall fit of the model, it could improve the quality of e.g. fixed effect estimates. For an example of this, see this do-file (https://github.com/sergiocorreia/ppmlhdfe/blob/master/guides/misc/relative_tolerance.do).
+
+## Postestimation Syntax
+
+The predict, test, and margins postestimation commands are available after ppmlhdfe.
+
+Also the three standard estat subcommands are allowed: estat ic, estat summarize, and estat vce.
+
+## Authors
+
+Sergio Correia
+Board of Governors of the Federal Reserve
+Email: sergio.correia@gmail.com (mailto:sergio.correia@gmail.com)
+
+Paulo Guimarães
+Banco de Portugal, Portugal
+Email: pguimaraes2001@gmail.com (mailto:pguimaraes2001@gmail.com)
+
+Thomas Zylkin
+Economics Department
+Robins School of Business, University of Richmond
+Email: tzylkin@richmond.edu (mailto:tzylkin@richmond.edu)
+
+## Citation
+
+Sergio Correia, Paulo Guimarães, Thomas Zylkin: "ppmlhdfe: Fast Poisson Estimation with High-Dimensional Fixed Effects", 2019; arXiv:1903.01690 (http://arxiv.org/abs/1903.01690).
+
+Sergio Correia, Paulo Guimarães, Thomas Zylkin: "Verifying the existence of maximum likelihood estimates for generalized linear models", 2019; arXiv:1903.01633 (http://arxiv.org/abs/1903.01633).
+
+>> BibTeX text available here (https://github.com/sergiocorreia/ppmlhdfe/blob/master/README.md#citation) <<
+
+## Support and updates
+
+ppmlhdfe requires the reghdfe and ftools packages.
+
+To see your current version, and to see the installed dependencies, type ppmlhdfe, version
+
+To download the latest version, to report report any issues, or for additional support, please see the Github repo (https://github.com/sergiocorreia/ppmlhdfe) of the project.
+
+## Examples
+
+First, we will replicate Example 1 from Stata's
+poisson manual (https://www.stata.com/manuals/rpoisson.pdf).
+Note that we run poisson with robust standard errors in order to obtain
+standard errors matching ppmlhdfe:
+
+---
+
+. use http://www.stata-press.com/data/r14/airline
+. poisson injuries XYZowned, vce(robust)
+. ppmlhdfe injuries XYZowned
+
+---
+
+To add fixed effects, we can use the absorb() option.
+The example below does so, based on Example 1 of the 
+xtpoisson manual (https://www.stata.com/manuals/rpoisson.pdf)
+(see also example 2 of the ppmlhdfe paper.
+
+---
+
+. use "https://www.stata-press.com/data/r16/ships", clear
+. xtpoisson accident op_75_79 co_65_69 co_70_74 co_75_79, exp(service) irr fe vce(robust) // xtpoisson standard errors need to be multiplied by e(N_g) / (e(N_g)-1)
+. poisson accident op_75_79 co_65_69 co_70_74 co_75_79 i.ship, exp(service) irr vce(cluster ship)
+. ppmlhdfe accident op_75_79 co_65_69 co_70_74 co_75_79, exp(service) irr absorb(ship) vce(cluster ship)
+
+---
+
+Finally, in the example below we replicate a more complex case involving trade data.
+Here, we add three levels of fixed effects,
+corresponding to exporter-importer, exporter-year, and importer-year.
+See Example 3 of the ppmlhdfe paper (http://scorreia.com/research/ppmlhdfe.pdf) for more details.
+
+---
+
+. use "http://fmwww.bc.edu/RePEc/bocode/e/EXAMPLE_TRADE_FTA_DATA" if category=="TOTAL", clear
+. egen imp = group(isoimp)
+. egen exp = group(isoexp)
+. ppmlhdfe trade fta, a(imp#year exp#year imp#exp) cluster(imp#exp)
+
+---
+
+## Stored results
+
+ppmlhdfe stores the following in e():
+
+### Scalars
+
+e(N)number of observations
+e(num_singletons)number of dropped singleton observations
+e(num_separated)number of dropped separated observations
+e(N_full)number of observations, including dropped singleton and separated observations
+e(drop_singletons)whether singleton observations were searched for and dropped or not
+
+e(rank)rank of e(V)
+e(df)residual degrees of freedom
+e(df_m)model degrees of freedom
+e(df_a)degrees of freedom lost due to the fixed effects
+e(df_a_initial)number of categories in the fixed effects; same as e(df_a) but ignoring redundant categories
+e(df_a_redundant)number of redundant fixed effect categories
+
+e(N_hdfe)number of absorbed fixed-effects
+e(N_hdfe_extended)number of absorbed fixed-effects plus fixed-slopes
+
+e(rss)residual sum of squares
+e(rmse)root mean squared error
+e(chi2)chi-squared
+e(r2_p)pseudo-R-squared
+e(ll)log-likelihood
+e(ll_0)log-likelihood of fixed-effect-only regression
+
+e(N_clustervars)number of cluster variables; if vce() is set to use clustered standard errors
+e(N_clust#)number of clusters in the #th cluster variable
+e(N_clust)number of clusters; minimum of all the e(clust#)
+
+e(ic)number of iterations
+e(ic2)number of iterations when partialling-out fixed effects
+e(converged)1 if converged, 0 otherwise
+
+### Macros
+
+e(cmd)ppmlhdfe
+e(cmdline)command as typed
+e(separation)list methods used to detect and drop separated observations: fe, simplex, ir, and mu
+e(dofmethod)dofmethod employed in the regression
+e(depvar)name of dependent variable
+e(indepvars)names of independent variables
+e(absvars)name of the absorbed variables or interactions
+e(extended_absvars)expanded absorbed variables or interactions
+e(title)title in estimation output
+e(clustvar)name of cluster variable
+e(clustvar#)name of the #th cluster variable
+e(vce)vcetype specified in vce()
+e(vcetype)title used to label Std. Err.
+e(chi2type)Wald; type of model chi-squared test
+e(offset)linear offset variable
+e(properties)b V
+e(predict)ppmlhdfe_p; program used to implement predict
+e(estat_cmd)reghdfe_estat; program used to implement estat
+e(marginsok)predictions allowed by margins
+e(marginsnotok)predictions disallowed by margins
+e(footnote)reghdfe_footnote; program used to display the degrees-of-freedom table
+
+### Matrices
+
+e(b)coefficient vector
+e(V)variance-covariance matrix of the estimators
+e(dof_table)number of categories, redundant categories, and degrees-of-freedom absorbed by each set of fixed effects
+
+### Functions
+
+e(sample)marks estimation sample

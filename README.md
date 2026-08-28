@@ -2,7 +2,7 @@
 
 Stata Research Guard는 모델이 현재 연구 상황에 맞는 Stata 코드를 스스로 판단해 작성할 수 있도록 근거를 제공하는 Codex 플러그인입니다. 특정 명령이나 코드를 정답으로 고르거나, 생성 코드를 채점하거나, 연구 설계를 자동 인증하지 않습니다.
 
-현재 배포 버전은 `0.3.0+codex.20260828222007`입니다.
+현재 배포 버전은 `0.3.0+codex.20260828233542`입니다.
 
 ## 핵심 설계
 
@@ -35,7 +35,7 @@ Stata Research Guard는 모델이 현재 연구 상황에 맞는 Stata 코드를
 - 파일 누락, path escape, invalid UTF-8 또는 hash 불일치가 있으면 서버 시작 단계에서 중단합니다.
 - discovery에는 가이드 본문을 넣지 않고, 모델이 선택한 명령의 전문만 전달합니다.
 
-전체 가이드 전달 구조는 모든 사전 명령을 받을 수 있도록 구현되어 있지만, 실제 bundle에는 명령별 정제와 독립감사를 통과한 자료만 추가합니다. 현재 포함된 pilot은 `reghdfe` maintainer help 전문입니다. 아직 전체 가이드가 준비되지 않은 명령은 확인된 공식·maintainer 발췌만 사용하며, 누락된 내용을 추측하거나 임의로 축약한 전문을 만들지 않습니다.
+현재 bundle에는 독립감사를 통과한 107개 명령의 전체 가이드가 들어 있습니다. `cgmreg`와 `jwdidstacked`는 완전한 공식·maintainer guide를 확보하지 못해 `guide_unavailable`로 명시하며, 선택 시 확인된 권위 있는 발췌만 사용합니다. 누락된 guide를 구현 코드에서 재구성하거나 추측·합성하지 않습니다. 107개 primary source, 9개 supplemental source, cleaned content, 109-command status ledger와 최종 audit는 모두 hash로 연결되어 서버 시작 시 검증됩니다.
 
 ## 논문 코드는 템플릿이 아니라 고품질 예시
 
@@ -78,7 +78,7 @@ codex plugin list
 
 ## 검증 범위
 
-배포 bundle은 89개 파일의 정확한 inventory와 SHA-256을 기록합니다. 현재 회귀 검증은 Node 24개와 Python 8개이며 다음을 확인합니다.
+배포 bundle은 319개 파일의 정확한 inventory와 SHA-256을 기록합니다. 현재 회귀 검증은 Node 26개와 Python 8개이며 다음을 확인합니다.
 
 - MCP transport와 2단계 schema
 - 사전 밖 명령 abort와 선택 명령만의 evidence 전달

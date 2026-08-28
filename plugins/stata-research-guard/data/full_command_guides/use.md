@@ -1,0 +1,167 @@
+# use — Load Stata dataset
+
+
+        Description     Quick start     Menu       Syntax      Options    Remarks and examples
+        Also see
+
+
+Description
+     use loads into memory a Stata-format dataset previously saved by save. If filename is specified
+ without an extension, .dta is assumed. If your filename contains embedded spaces, remember to enclose
+ it in double quotes.
+    In the second syntax for use, a subset of the data may be read.
+
+
+Quick start
+ Load Stata-format dataset mydata.dta into memory from current directory
+       use mydata
+ Same as above, but load data from the mysubdir subdirectory in current directory and clear current data
+   from memory first
+      use mysubdir/mydata, clear
+ Load only variables v1, v2, and v3 from mydata.dta
+       use v1 v2 v3 using mydata
+ Same as above, and further restrict to the first 100 observations
+      use v1 v2 v3 in 1/100 using mydata
+ Load observations from mydata.dta where catvar = 2
+       use if catvar==2 using mydata
+
+
+Menu
+ File > Open...
+
+
+
+
+
+
+
+Syntax
+ Load Stata-format dataset
+    use filename [ , clear nolabel ]
+
+ Load subset of Stata-format dataset
+    use [ varlist ] [ if ] [ in ] using filename [ , clear nolabel ]
+
+
+Options
+ clear specifies that it is okay to replace the data in memory, even though the current data have not been
+   saved to disk.
+ nolabel prevents value labels in the saved data from being loaded. It is unlikely that you will ever want
+   to specify this option.
+
+
+Remarks and examples
+
+ Example 1
+   We have no data in memory. In a previous session, we issued the command save hiway to save the
+ Minnesota Highway Data that we had been analyzing. We retrieve it now:
+       . use hiway
+       (Minnesota Highway Data, 1973)
+
+ Stata loads the data into memory and shows us that the dataset is labeled “Minnesota Highway Data,
+ 1973”.
+
+
+ Example 2
+    We continue to work with our hiway data and find an error in our data that needs correcting:
+       . replace spdlimit=70 in 1
+       (1 real change made)
+
+    We remember that we need to forward some information from another dataset to a colleague. We use
+ that other dataset:
+       . use accident
+       no; dataset in memory has changed since last saved
+       r(4);
+
+ Stata refuses to load the data because we have not saved the hiway data since we changed it.
+       . save hiway, replace
+       file hiway.dta saved
+       . use accident
+       (Minnesota accident data)
+
+
+
+After we save our hiway data, Stata lets us load our accident dataset. If we had not cared whether our
+changed hiway dataset were saved, we could have typed use accident, clear to tell Stata to load the
+accident data without saving the changed dataset in memory.
+
+
+Technical note
+   In example 2, you saved a revised hiway.dta dataset, which you forward to your colleague. Your
+colleague issues the command
+      . use hiway
+
+and gets the message
+      file hiway.dta not Stata format
+      r(610);
+
+Your colleague is using a version of Stata older than Stata 14. If your colleague is using Stata 11, 12, or
+13, you can save the dataset in Stata 11, 12, or 13 format by using the saveold command; see [D] save.
+   Newer versions of Stata can always read datasets created by older versions of Stata. Stata/MP and
+Stata/SE can read datasets created by Stata/BE. Stata/BE can read datasets created by Stata/MP and
+Stata/SE if those datasets conform to Stata/BE’s limits; see [R] Limits.
+
+
+Example 3
+   If you are using a dataset that is too large for the amount of memory on your computer, you could
+load only some of the variables:
+      . use ln_wage grade age tenure race using
+      > https://www.stata-press.com/data/r19/nlswork
+      (National Longitudinal Survey of Young Women, 14-24 years old in 1968)
+      . describe
+      Contains data from https://www.stata-press.com/data/r19/nlswork.dta
+       Observations:        28,534                  National Longitudinal Survey of
+                                                      Young Women, 14-24 years old in
+          Variables:             5                  27 Nov 2024 08:14
+                                                    (_dta has notes)
+
+      Variable         Storage   Display        Value
+          name            type    format        label     Variable label
+
+      age               byte     %8.0g                    Age in current year
+      race              byte     %8.0g          racelbl   Race
+      grade             byte     %8.0g                    Current grade completed
+      tenure            float    %9.0g                    Job tenure, in years
+      ln_wage           float    %9.0g                    ln(wage/GNP deflator)
+
+      Sorted by:
+
+Stata successfully loaded the five variables.
+
+
+
+ Example 4
+    You are new to Stata and want to try working with a Stata dataset that was used in example 1 of
+ [XT] xtlogit. You load the dataset:
+        . use https://www.stata-press.com/data/r19/union
+        (NLS Women 14-24 in 1968)
+
+ The dataset is successfully loaded, but it would have been shorter to type
+        . webuse union
+        (NLS Women 14-24 in 1968)
+
+ webuse is a synonym for use https://www.stata-press.com/data/r19/; see [D] webuse.
+
+
+
+Also see
+ [D] compress — Compress data in memory
+ [D] datasignature — Determine whether data have changed
+ [D] frames use — Load a set of frames from disk
+ [D] import — Overview of importing data into Stata
+ [D] save — Save Stata dataset
+ [D] sysuse — Use shipped dataset
+ [D] webuse — Use dataset from Stata website
+ [U] 11.6 Filenaming conventions
+ [U] 22 Entering and importing data
+
+
+
+
+ Stata, Stata Press, Mata, NetCourse, and NetCourseNow are registered trademarks of StataCorp
+                                                                                                              ®
+ LLC. Stata and Stata Press are registered trademarks with the World Intellectual Property Or-
+ ganization of the United Nations. StataNow is a trademark of StataCorp LLC. Other brand and
+ product names are registered trademarks or trademarks of their respective companies. Copyright
+ © 1985–2025 StataCorp LLC, College Station, TX, USA. All rights reserved.
+ For suggested citations, see the FAQ on citing Stata documentation.

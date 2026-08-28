@@ -1,0 +1,389 @@
+# event_plot complete maintainer help
+
+Maintainer help version: 1 2021-05-26
+
+Notation: bracketed prefixes such as a[bsorb] preserve minimum abbreviations from the source.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Description
+
+
+
+
+event_plot - Plot the staggered-adoption diff-in-diff ("event study") estimates: coefficients post treatment ("lags") and, if available, pre-trend coefficients ("leads") along with confidence intervals (CIs).
+
+
+
+This command is used once estimates have been produced by the imputation estimator of Borusyak et al. 2021 (did_imputation),
+other methods robust to treatment effect heterogeneity (did_multiplegt, csdid, eventstudyinteract), and conventional event-study OLS.
+
+
+
+
+## Syntax
+
+
+
+
+event_plot [list of models] [, options]
+
+
+
+
+## The List of Models
+
+
+
+
+Each term in the list of models specifies where to read the coefficient estimates (and variances) from.
+
+
+
+1) Leave empty or specify a dot (.) to plot the current estimates, stored in the e() output;
+
+
+2) To show previously constructed estimates which were saved by estimates store, provide their name;
+
+
+3) To read the estimates from an arbitrary row-vector, specify bmat#vmat where:
+
+
+- bmat is the name of the coefficient matrix or an expression to access it, e.g. r(myestimates) (with no internal spaces).
+This should be a row-vector;
+
+
+- vmat is the name of the variance matrix or an expression to access it.
+This can be a square matrix or a row-vector of invidiual coefficient variances, and it is optional
+(i.e. bmat# would plot the coefs without CIs).
+
+
+
+By including several terms like this, you can combine several sets of estimates on one plot, see Combining plots.
+
+
+
+
+## Options
+
+
+
+
+These options are designs for a showing single plot. Please see Combining plots for adjustments and additional options when plots are combined.
+
+
+### Which Coefficients to Show
+
+
+
+stub_lag(prefix#postfix): a template for how the relevant coefficients are called in the estimation output.
+No lag coefficients will be shown if stub_lag is not specified, except after did_imputation (in which case stub_lag(tau#) is assumed).
+The template must include the symbol # indicating where the number is located (running from 0).
+
+
+
+Examples:
+
+
+stub_lag(tau#) means that the relevant coefficients are called tau0, tau1, ..., as with did_imputation (note that the postfix is empty in this example);
+
+
+stub_lag(L#xyz) means they are called L0xyz, L1xyz, ... (note that just specifying stub_lag(L#) will not be enough in this case).
+
+
+stub_lead(prefix#postfix): same for the leads. Here the number runs from 1. Examples: stub_lead(pre#) or stub_lead(F#xyz).
+
+
+trimlag(integer): lags 0..trimlag will be shown, while others will be suppressed. To show none (i.e. pre-trends only), specify trimlag(-1). The default is to show all available lags.
+
+
+trimlead(integer): leads 1..trimlead will be shown, while others will be suppressed. To show none (i.e no pre-trends), specify trimlead(0). The default is to show all available lags.
+
+
+### How to Show The Coefficients
+
+
+
+plottype(string): the twoway plot type used to show coefficient estimates. Supported options: connected (by default), line, scatter.
+
+
+
+ciplottype(string); the twoway plot type used to show CI estimates. Supported options:
+
+
+- rarea (default for plottype(connected) and plottype(line));
+
+
+- rcap (default for plottype(scatter));
+
+
+- connected;
+
+
+- scatter;
+
+
+- none (i.e. don't show CIs at all; default if SE are not available).
+
+
+
+together: by default the leads and lags are shown as two separate lines (as recommended by Borusyak, Jaravel, and Spiess 2021).
+If together is specified, they are shown as one line, and the options for the lags are used for this line
+(while the options for the leads are ignored).
+
+
+
+shift(integer): Shift all coefficients to the left (when shift>0) or right (when shift<0). Specify if lag 0 actually corresponds to period -shift relative to the event time, as in the case of anticipation effects. This is similar to the shift option in did_imputation. The default is zero.
+
+
+
+### Graph options
+
+
+
+default_look: sets default graph parameters. Additional graph options can still be specified and will be combined with these, but options cannot be repeated. See details in the Default Look section below.
+
+
+
+graph_opt(string): additional twoway options for the graph overall (e.g. title, xlabel).
+
+
+
+lag_opt(string): additional options for the lag coefficient graph (e.g. msymbol, lpattern, color).
+
+
+
+lag_ci_opt(string): additional options for the lag CI graph (e.g. color)
+
+
+
+lead_opt(string), lead_ci_opt(string): same for lead coefficients and CIs. Ignored if together is specified.
+
+
+
+### Legend options
+
+
+
+A legend is shown by default, unless together is specified. You can either adjust the automatic legend by using legend_opt()
+, or suppress or replace it by specifying noautolegend and modifying graph_opt().
+
+
+Notes:
+
+
+- the order of graphs for the legend: lead coefs, lead CIs, lag coefs, lag CIs, excluding those not applicable
+(e.g. CIs with ciplottype(none) or leads with together).
+
+
+- with ciplottype(connected) or ciplottype(scatter), each CI is two lines instead of one.
+
+
+- if together is specified, the legend is automatically off. Use noautolegend to add a manual legend.
+
+
+
+legend_opt(string): additional options for the automatic legend.
+
+
+
+noautolegend: suppresses the automatic legend. A manual legend (or the legend(off) option) should be added to graph_opt().
+
+
+
+### Miscellaneous
+
+
+
+savecoef: save the data underlying the plot in the current dataset, e.g. to later use it in more elaborate manual plots.
+Variables __event_H#, __event_pos#, __event_coef#, __event_lo#, and __event_hi# will be created for each model #=1,..., where:
+
+
+- H is the number of periods relative to treatment;
+
+
+- pos is the x-coordinate (equals to H by default but modified by perturb and shift);
+
+
+- coef is the point estimate;
+
+
+- [lo,hi] is the CI.
+
+
+
+reportcommand: report the command for the plot. Use it together with savecoef to then create more elaborate manual plots.
+
+
+
+noplot: do not show the plot (useful together with savecoef).
+
+
+
+alpha(real): CIs will be shown for the confidence level alpha. Default is 0.05.
+
+
+
+verbose: debugging mode.
+
+
+
+
+
+## Combining plots
+
+
+
+Up to 8 models can be combined, e.g. to show how the estimates differ between did_imputation and OLS, or between males and females.
+
+
+With several models, additional options are available, while the syntax and meaning of others is modified:
+
+
+
+perturb(numlist): shifts the plots horizontally relative to each other, so that the estimates are easier to read. The numlist is the list of x-shifts, and the default is an equally spaced sequence from 0 to 0.2 (but negative numbers are allowed). To prevent the shifts, specify perturb(0).
+
+
+
+lag_opt#(string), lag_ci_opt#(string), lead_opt#(string), lead_ci_opt#() for #=1,...,5: extra parameters
+for individual models (e.g. colors). Similar options without an index, e.g. lag_opt(), are passed to all relevant graphs.
+
+
+
+stub_lag, stub_lead, trim_lag, trim_lead, shift can be specified either as a list of values (one per plot), or as just one value to be used for all plots.
+
+
+
+plottype and together are currently required to be the same for all graphs.
+
+
+
+
+
+## Default Look
+
+
+
+ With one model, specifying default_look is equivalent to including these options:
+
+
+
+graph_opt(xline(0, lcolor(gs8) lpattern(dash)) yline(0, lcolor(gs8)) graphregion(color(white)) bgcolor(white) ylabel(, angle(horizontal)))
+lag_opt(color(navy)) lead_opt(color(maroon) msymbol(S))
+lag_ci_opt(color(navy%45 navy%45)) lead_ci_opt(color(maroon%45 maroon%45))
+legend_opt(region(lstyle(none)))
+
+
+With multiple models, the only difference is in colors. Both lags and leads use the same color: navy for the first plot, maroon for the second, etc.
+
+
+
+
+## Usage examples
+
+
+    1) Estimation + plottting via did_imputation:
+
+        did_imputation Y i t Ei, autosample hor(0/20) pretrend(14)
+        estimates store bjs // you need to store the coefs only to combined the plots, see Exanple 3
+        event_plot, default_look graph_opt(xtitle("Days since the event") ytitle("Coefficients") xlabel(-14(7)14 20))
+
+    2) Estimation + plotting via conventional OLS-based event study estimation:
+
+        // creating dummies for the lags 0..19, based on K = number of periods since treatment (or missing if there is a never-treated group)
+        forvalues l = 0/19 {cmd:gen L`l'event = K==`l'}
+        gen L20event = K>=20 // binning K=20 and above
+
+        // creating dummies for the leads 1..14
+        forvalues l = 0/13 {cmd:gen F`l'event = K==-`l'}
+        gen F14event = K<=-14 // binning K=-14 and below
+
+        // running the event study regression. Drop leads 1 and 2 to avoid underidentification
+        //if there is no never-treated group (could instead drop any others); see Borusyak et al. 2021
+        reghdfe outcome o.F1event o.F2event F3event-F14event L*event, a(i t) cluster(i)
+
+        // plotting the coeffients
+        event_plot, default_look stub_lag(L#event) stub_lead(F#event) together plottype(scatter) ///
+		graph_opt(xtitle("Days since the event") ytitle("OLS coefficients") xlabel(-14(7)14 20))
+
+    3) Combining estimates from did_imputation OLS:
+
+        event_plot bjs ., stub_lag(tau# L#event) stub_lead(pre# F#event) together plottype(scatter) default_look ///
+		graph_opt(xtitle("Days since the event") ytitle("OLS coefficients") xlabel(-14(7)14 20))
+
+    4) For estimation + plotting with csdid, did_multiplegt, and eventstudyinteract, as well as did_imputation
+        and traditional OLS, see our example on GitHub: five_estimators_example.do at https://github.com/borusyak/did_imputation
+
+
+
+## Missing Features
+
+
+
+- More flexibility for stub_lag and stub_lead for reading the coefficients of conventional event studies
+
+
+- Automatic support of alternative robust estimators: did_multiplegt, csdid, and eventstudyinteract
+
+
+- Allow plottype and together to vary across the combined plots
+
+
+- Make the command consistent with did_multiplegt with the longdiff_placebo option
+
+
+- Throw an error when neither default_look nor graphical options are specified
+
+
+- In old Stata versions, avoid using transparent colors
+
+
+- After eventstudyinteract, allow to display omitted categories
+
+
+- Add the addzero() option to accommodate the omitted category in, e.g., eventstudyinteract
+
+
+
+If you are interested in discussing these or others, please contact me.
+
+
+## References
+
+
+
+If using this command, please cite:
+
+
+
+Borusyak, Kirill, Xavier Jaravel, and Jann Spiess (2021). "Revisiting Event Study Designs: Robust and Efficient Estimation," Working paper.
+
+
+
+
+## Acknowledgements
+
+
+
+
+We thank Kyle Butts for the help in preparing this helpfile.
+
+
+
+## Author
+
+
+
+
+Kirill Borusyak (UCL Economics), k.borusyak@ucl.ac.uk

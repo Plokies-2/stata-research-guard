@@ -1,0 +1,388 @@
+{
+  "audit_id": "B04_jregress_independent_second_repair_audit_2026-08-29",
+  "auditor_independence": "This auditor did not produce or repair B04, including jregress. No production, source, or guide file was modified.",
+  "history": {
+    "prior_audits": [
+      "audits/B04_audit.json",
+      "audits/B04_reaudit.json"
+    ],
+    "prior_jregress_issue": "Earlier B04_reaudit found an authoritative Zenodo archive member that contradicted jregress unavailability. This second audit evaluates the subsequent producer repair."
+  },
+  "method": [
+    "Recomputed all current B04 ready source and content path/SHA-256 links from B04_production.json.",
+    "Read the Zenodo archive central member directly and compared its byte SHA-256 and size with the copied raw source.",
+    "Inspected the born-digital one-page PDF visually and with layout text extraction, then directly reconciled title, prose, ordered examples/code, Syntax, all options rows, and the tail with guides/jregress.md.",
+    "Checked metadata consistency and presentation residue/truncation indicators without relying on producer self-checks."
+  ],
+  "summary": {
+    "registry_records": 16,
+    "ready_records_hash_path_passed": 15,
+    "ready_records_total": 15,
+    "jregress_audit_status": "passed",
+    "unavailable_confirmed": 1,
+    "failed": 0,
+    "B04_import_ready": true,
+    "project_wide_import_ready": "not_assessed"
+  },
+  "current_ready_path_hash_reconfirmation": [
+    {
+      "command": "import_delimited",
+      "source": {
+        "path": "sources/import_delimited-stata19.pdf",
+        "sha256": "0a9f0d226761dfc02684ef2f899598b77796fd5cce7d2d81ef11198e9eaf1da2",
+        "exists": true,
+        "hash_matches": true
+      },
+      "content": {
+        "path": "guides/import_delimited.md",
+        "sha256": "578d7ae75bfb622f699b940d2b9fd94a6645774cc21a7d72a402d79d51a9cea7",
+        "exists": true,
+        "hash_matches": true
+      }
+    },
+    {
+      "command": "import_excel",
+      "source": {
+        "path": "sources/import_excel-stata19.pdf",
+        "sha256": "c4f3a22a44378ca7cfacd0cdc05ed7a7f57a9a2f92d5fa79e0d6420e3015165b",
+        "exists": true,
+        "hash_matches": true
+      },
+      "content": {
+        "path": "guides/import_excel.md",
+        "sha256": "59213e8bcb856aeb1ffbaa28bb86efc993d1a0d0f92cc31c4629dc7d3590cf99",
+        "exists": true,
+        "hash_matches": true
+      }
+    },
+    {
+      "command": "isid",
+      "source": {
+        "path": "sources/isid-stata19.pdf",
+        "sha256": "7062cd636b868f29c639c2dc60f2d713c0507324747840573894208f51ea8883",
+        "exists": true,
+        "hash_matches": true
+      },
+      "content": {
+        "path": "guides/isid.md",
+        "sha256": "3b2211142efdf714c725bdf3ca96d15dce5ada3fc8d6a03e59d2a82f03fbd659",
+        "exists": true,
+        "hash_matches": true
+      }
+    },
+    {
+      "command": "ivreg2",
+      "source": {
+        "path": "sources/ivreg2-ssc-20260829.sthlp",
+        "sha256": "c387f5d743111ed76578d19b6f130adb71cdca9cfe1d5f4432ceeed1b6c06848",
+        "exists": true,
+        "hash_matches": true
+      },
+      "content": {
+        "path": "guides/ivreg2.md",
+        "sha256": "f4ffae8212681dfb678e155ed1cb7fa85ae8a362dbcfa4e2fcca984b3790d721",
+        "exists": true,
+        "hash_matches": true
+      }
+    },
+    {
+      "command": "ivregress",
+      "source": {
+        "path": "sources/ivregress-stata19.pdf",
+        "sha256": "b832a001ba439977f67b8082edd1c03c89080d05fda85e4f88dbfe798e05e9a5",
+        "exists": true,
+        "hash_matches": true
+      },
+      "content": {
+        "path": "guides/ivregress.md",
+        "sha256": "8f9523af05f02e867274238432efcf4dfaf97606ceabf120ab541d55bb37725d",
+        "exists": true,
+        "hash_matches": true
+      }
+    },
+    {
+      "command": "ivreghdfe",
+      "source": {
+        "path": "sources/ivreghdfe-bfb5577a6dbdfb029ab4ab6a7e93f7257a827b42.sthlp",
+        "sha256": "3cf9edb0918df56176bc433e737f090f9008d47efaf001e897ebd4cb63bacda8",
+        "exists": true,
+        "hash_matches": true
+      },
+      "content": {
+        "path": "guides/ivreghdfe.md",
+        "sha256": "572aa73750d7f8ab76b7a5378ba565e65a6ef287597d4d6a541978d7b572710c",
+        "exists": true,
+        "hash_matches": true
+      }
+    },
+    {
+      "command": "jwdid",
+      "source": {
+        "path": "sources/jwdid-738defceb5413.sthlp",
+        "sha256": "e072c2d66b2bade526c9314cd4aafd48dcb33ca2c7706cd5b001f14a7c3e0a8b",
+        "exists": true,
+        "hash_matches": true
+      },
+      "content": {
+        "path": "guides/jwdid.md",
+        "sha256": "c4da37a5b065e191c103f8a6dab489193b21a5be8462cdeeabdb415c562c7533",
+        "exists": true,
+        "hash_matches": true
+      }
+    },
+    {
+      "command": "jregress",
+      "source": {
+        "path": "sources/jregress-zenodo-17712099-b0db4dc34ad7.pdf",
+        "sha256": "b0db4dc34ad7fb1b02cc0641a1a4317080331c4231ab160c1ba5e5bbd00e0b3b",
+        "exists": true,
+        "hash_matches": true
+      },
+      "content": {
+        "path": "guides/jregress.md",
+        "sha256": "0116da7e34c2348cc1dbb4edda74053078dbee39ec3faaea4d905aca257145f0",
+        "exists": true,
+        "hash_matches": true
+      }
+    },
+    {
+      "command": "label",
+      "source": {
+        "path": "sources/label-stata19.pdf",
+        "sha256": "3308726168fac9a3fc9b4e155bf1b050e786273274681ac8951683e909b32f7e",
+        "exists": true,
+        "hash_matches": true
+      },
+      "content": {
+        "path": "guides/label.md",
+        "sha256": "e79e5376fbaa95a7dbb6c743f74eae3f0287d0146a905af89cf3793c5a6e26f1",
+        "exists": true,
+        "hash_matches": true
+      }
+    },
+    {
+      "command": "lincom",
+      "source": {
+        "path": "sources/lincom-stata19.pdf",
+        "sha256": "4dace58f88b92788cac42c503dee52185a871dac141ebcbdcd2ccb46158a4225",
+        "exists": true,
+        "hash_matches": true
+      },
+      "content": {
+        "path": "guides/lincom.md",
+        "sha256": "e5f67cfdb9a836e5c495b1e33d86ecbde9c39a60bc7f3962b150a37e123873c4",
+        "exists": true,
+        "hash_matches": true
+      }
+    },
+    {
+      "command": "logit",
+      "source": {
+        "path": "sources/logit-stata19.pdf",
+        "sha256": "a0e511d4250ad25d7c48ae6d0e1e26c286ea4c8097b7a2c152ccf76d8887c620",
+        "exists": true,
+        "hash_matches": true
+      },
+      "content": {
+        "path": "guides/logit.md",
+        "sha256": "da5e7136e9f7b2507feee0b8cf58c4946a343e4e785afe3148cce13db32383a9",
+        "exists": true,
+        "hash_matches": true
+      }
+    },
+    {
+      "command": "logistic",
+      "source": {
+        "path": "sources/logistic-stata19.pdf",
+        "sha256": "e52d25aa84a2293b99fff84a791ccf7716538d3019f01679cc30a66c1a2e2434",
+        "exists": true,
+        "hash_matches": true
+      },
+      "content": {
+        "path": "guides/logistic.md",
+        "sha256": "31da540c704943e2ac97da542519177089bbb3e8a28dce683c50a025cc2e8ec4",
+        "exists": true,
+        "hash_matches": true
+      }
+    },
+    {
+      "command": "margins",
+      "source": {
+        "path": "sources/margins-stata19.pdf",
+        "sha256": "f24551dedb8b81f8bcf434d3629d1ad6be6c0944615a5342a48d4de0424b034b",
+        "exists": true,
+        "hash_matches": true
+      },
+      "content": {
+        "path": "guides/margins.md",
+        "sha256": "20e573df9430d90df07245e4f826504dc7bb73568420a119bd64f31d7ea7a25c",
+        "exists": true,
+        "hash_matches": true
+      }
+    },
+    {
+      "command": "marginsplot",
+      "source": {
+        "path": "sources/marginsplot-stata19.pdf",
+        "sha256": "76d58b3dd501a483df9e686115d4d1fbf76ab1249fa31938decbce652145765a",
+        "exists": true,
+        "hash_matches": true
+      },
+      "content": {
+        "path": "guides/marginsplot.md",
+        "sha256": "d2d33510f13870aae0d90b00f5e2c5d5d8fbfadb5e12dfb6104cbd6286b3535b",
+        "exists": true,
+        "hash_matches": true
+      }
+    },
+    {
+      "command": "merge",
+      "source": {
+        "path": "sources/merge-stata19.pdf",
+        "sha256": "7ee0cff7b8eecb68644a435a661ff92cbee5f0d12348b22a0de9437c3fef750a",
+        "exists": true,
+        "hash_matches": true
+      },
+      "content": {
+        "path": "guides/merge.md",
+        "sha256": "09b661f4875d526e4b0801b2f0bd5cc1336a0ec5e441e4283fa28e78b0e95ae8",
+        "exists": true,
+        "hash_matches": true
+      }
+    }
+  ],
+  "jwdidstacked": {
+    "status": "guide_unavailable",
+    "audit_status": "unavailable_confirmed",
+    "source_and_content_absent": true,
+    "attempted_urls": [
+      "https://raw.githubusercontent.com/friosavila/stpackages/738defceb5413face7051754b259c82798c67e52/jwdid/jwdid.sthlp",
+      "http://fmwww.bc.edu/repec/bocode/j/jwdidstacked.sthlp"
+    ],
+    "reason": "No complete maintainer/SSC raw help or complete web usage manual was located. The current maintainer stpackages commit contains jwdid help but no jwdidstacked help; an old replication code copy is not an authoritative command manual."
+  },
+  "jregress": {
+    "status": "ready",
+    "audit_status": "passed",
+    "authority": "Maintainer-distributed replication archive member authored by Bruce Hansen",
+    "source_metadata": {
+      "source_url": "https://zenodo.org/records/17712099/files/JackknifeStandardErrors_Replication.zip",
+      "source_version": "PDF creation metadata 20 Jul 2024; Zenodo record 17712099, no formal PDF version label",
+      "source_date": "Zenodo record created and modified 2026-05-04; PDF creation metadata 2024-07-20",
+      "retrieved_at": "2026-08-29",
+      "archive_member": "jregress/jregress.pdf",
+      "copied_source_file": "sources/jregress-zenodo-17712099-b0db4dc34ad7.pdf",
+      "copied_source_sha256": "b0db4dc34ad7fb1b02cc0641a1a4317080331c4231ab160c1ba5e5bbd00e0b3b",
+      "copied_source_hash_recomputed": true,
+      "content_file": "guides/jregress.md",
+      "content_sha256": "0116da7e34c2348cc1dbb4edda74053078dbee39ec3faaea4d905aca257145f0",
+      "content_hash_recomputed": true
+    },
+    "archive_member_verification": {
+      "archive_file": "sources/jregress-zenodo-17712099.zip",
+      "member": "jregress/jregress.pdf",
+      "member_bytes": 63947,
+      "member_compressed_bytes": 59216,
+      "member_last_modified": "2024-07-20T08:41:16.0000000+09:00",
+      "member_sha256": "b0db4dc34ad7fb1b02cc0641a1a4317080331c4231ab160c1ba5e5bbd00e0b3b",
+      "copied_raw_bytes": 63947,
+      "copied_raw_sha256": "b0db4dc34ad7fb1b02cc0641a1a4317080331c4231ab160c1ba5e5bbd00e0b3b",
+      "byte_hash_match": true
+    },
+    "born_digital_pdf": {
+      "pages": 1,
+      "tagged": true,
+      "creator": "Acrobat PDFMaker 24 for Word",
+      "producer": "Adobe PDF Library 24.2.159",
+      "creation_date": "2024-07-20T08:41:12-05:00",
+      "modification_date": "2024-07-20T08:41:14-05:00",
+      "extractable_layout_text": true,
+      "visual_reading_order": "Single-column, one-page source: title, description, Examples with seven command lines, Syntax, then two-column five-row options table."
+    },
+    "direct_source_to_clean": {
+      "title_match": true,
+      "description_present": true,
+      "section_order_source": [
+        "Title",
+        "Description",
+        "Examples",
+        "Syntax",
+        "Options table"
+      ],
+      "section_order_clean": [
+        "Title",
+        "Description",
+        "Examples",
+        "Syntax",
+        "Options table"
+      ],
+      "example_code_source": [
+        "jregress y x1",
+        "jregress y x1 x2 i.a, cluster(id)",
+        "jregress y x1 c.x2##i.a, cluster(id)",
+        "jregress y x1 x2 i.a if v1>0, cluster(id)",
+        "jregress y x1 x2 i.a, cluster(id) fe",
+        "jregress y x1 x2 i.a, cluster(id) dfdisplay",
+        "jregress y x1 x2 i.a, cluster(id) noadjust"
+      ],
+      "example_code_clean": [
+        "jregress y x1",
+        "jregress y x1 x2 i.a, cluster(id)",
+        "jregress y x1 c.x2##i.a, cluster(id)",
+        "jregress y x1 x2 i.a if v1>0, cluster(id)",
+        "jregress y x1 x2 i.a, cluster(id) fe",
+        "jregress y x1 x2 i.a, cluster(id) dfdisplay",
+        "jregress y x1 x2 i.a, cluster(id) noadjust"
+      ],
+      "example_code_count_source": 7,
+      "example_code_count_clean": 7,
+      "example_code_order_and_lines_match": true,
+      "syntax_source": "jregress depvar [ indepvars ] [ if ] [ in ] [ , options ]",
+      "syntax_clean": "jregress depvar [ indepvars ] [ if ] [ in ] [ , options ]",
+      "syntax_match": true,
+      "option_rows_source_count": 5,
+      "option_rows_clean_count": 5,
+      "option_rows": [
+        {
+          "option": "cluster(varname)",
+          "guide_row_present": true,
+          "source_row_present": true
+        },
+        {
+          "option": "fe",
+          "guide_row_present": true,
+          "source_row_present": true
+        },
+        {
+          "option": "dfdisplay",
+          "guide_row_present": true,
+          "source_row_present": true
+        },
+        {
+          "option": "noadjust",
+          "guide_row_present": true,
+          "source_row_present": true
+        },
+        {
+          "option": "level(#)",
+          "guide_row_present": true,
+          "source_row_present": true
+        }
+      ],
+      "tail_source": "level(#) set confidence level; default is level(95)",
+      "tail_clean": "| level(#) | set confidence level; default is level(95) |",
+      "tail_preserved": true
+    },
+    "cleaned_file_integrity": {
+      "utf8_bom_free": true,
+      "lf_only": true,
+      "literal_form_feed_count": 0,
+      "running_header_or_footer_residue": false,
+      "unresolved_smcl_or_html_residue": false,
+      "fixed_page_line_or_character_cap_evidence": false,
+      "full_source_traversal": true
+    },
+    "visual_inspection": "Rendered page confirms no running header/footer or page furniture to preserve/remove; no clipping, column ambiguity, or OCR artifact affects reading order. Table header and all five row relationships are legible."
+  },
+  "conclusion": "passed: jregress is now a complete ready guide. All 15 current ready B04 records have existing source/content files with matching metadata hashes, while jwdidstacked remains correctly guide_unavailable. B04 is import-ready at the batch level."
+}

@@ -1,0 +1,34 @@
+{
+  "audit_id": "B06_final_testparm_independent_reaudit",
+  "audited_at": "2026-08-29",
+  "auditor_independence": "The auditor did not produce or repair B06. Prior B06 audits are preserved.",
+  "inputs": ["audits/B06_second_reaudit.json", "batches/B06_production.json", "batches/B06_repair.json"],
+  "method": ["Rendered raw testparm PDF page 1 and compared its visible title with the current guide title.", "Recomputed all current 15 B06 source/content hashes.", "Compared current content hashes of the prior B06_second_reaudit 14 passed commands against that audit.", "Checked B06 repair sequence 3 before/after hashes and title-occurrence claim."],
+  "summary": {"records": 15, "passed": 15, "failed": 0, "unavailable_confirmed": 0, "prior_14_passed_hashes_unchanged": true, "current_path_hash_records_verified": 15, "B06_import_ready": true, "scope_note": "The content/audit gate is passed for B06. Current production records remain ready_candidate/complete:false until the owning integration step promotes manifest status; this audit does not edit that metadata."},
+  "testparm_final_reaudit": {
+    "status": "passed",
+    "source": {"file": "sources/testparm-stata19.pdf", "sha256": "846cd0ef3f5f296308c8b300e945a1edaab75443d0a47916894ba9f672f22002", "url": "https://www.stata.com/manuals/rtest.pdf", "visual_page_checked": 1},
+    "content": {"file": "guides/testparm.md", "sha256": "432fe0617af1b5cc83ebcd36b8df6b825b83c3152caae47f221c86b509493575", "utf8_bom_free": true, "lf_only": true},
+    "direct_title_comparison": {"raw_rendered_title": "test — Test linear hypotheses after estimation", "guide_line": 10, "guide_title": "test — Test linear hypotheses after estimation", "exact_match": true, "correct_title_occurrences": 1, "old_T_est_occurrences": 0},
+    "furniture_and_boundary_check": {"repeated_running_header_residue": 0, "form_feed_residue": 0, "source_entry_boundary_line": 8, "first_raw_title_line": 10, "sections_tables_code_references_tail_preserved_from_prior_audit": true, "silent_truncation_or_cap": false},
+    "repair_sequence": {"sequence": 3, "before_content_sha256": "7da2ea4ae98f252675f529c939df6766e59a3a01f3bcae259b3c6dfca1f3a506", "after_content_sha256": "432fe0617af1b5cc83ebcd36b8df6b825b83c3152caae47f221c86b509493575", "source_sha256_unchanged": true, "declared_only_change": "one title occurrence: T est -> Test", "metadata_hash_matches_current": true}
+  },
+  "prior_passed_continuity": {"commands": ["regress", "reghdfe", "replace", "reshape", "ritest", "save", "sdid", "stackedev", "stcox", "stset", "summarize", "table", "tabstat", "tabulate"], "count": 14, "result": "Every current content hash exactly equals its B06_second_reaudit.json passed-record hash; reghdfe and stackedev are included."},
+  "current_path_hash_reconfirmation": [
+    {"command":"regress","sources":[["sources/regress-stata19.pdf","b1cf66f31b230ce22ccd28abb694b267a3bf6b252e35a6776ab2a0a90e4b2204"]],"content":["guides/regress.md","cedcbbf3dec710c1131418fd80384358675f628fd712821320397041fcf213ae"]},
+    {"command":"reghdfe","sources":[["sources/reghdfe-29b2b203-sergiocorreia.sthlp","5c99c4d0b34eebe53d6f1158ba093d693cf4d0c74a3f7eb9603c6b0972b072c1"],["sources/stata19_displayopts_list.ihlp","46d2d0c7d6970a22e17897f3eee247f3229edb52328967dc377d02659d525a83"]],"content":["guides/reghdfe.md","16d2de586045e24bb29937f194689ce196182814a2cbd7fc30b66ecba12f9c7e"]},
+    {"command":"replace","sources":[["sources/replace-stata19.pdf","bad549e178163bcc2c5b80c8a3dd493517dc9825227e638ce8bd104c7d82e469"]],"content":["guides/replace.md","a19387e0fbfa09bd6900ea298ecd1ab3139fdba2afe1915632cbf272f8ad430a"]},
+    {"command":"reshape","sources":[["sources/reshape-stata19.pdf","3bbfd6e39d9106616fc21927371944e3fb7aac4a5923b76cb8ca80fbecae02d3"]],"content":["guides/reshape.md","bc66b37d4e02a7f43c36a3a8096f988421250dedc527a27dcf30ad8c974b2e60"]},
+    {"command":"ritest","sources":[["sources/ritest-1.1.18-simonheb.sthlp","6ea86ae6cfe6ce3d39edfbfedc673dd8be0fcf7d42c7437eefe8fa6e92ed37a5"]],"content":["guides/ritest.md","f64d7486e50ba9a2c5f30cf6aca245b6ef6e07591c53bcad50f64488e2431b4f"]},
+    {"command":"save","sources":[["sources/save-stata19.pdf","ba36828b84a1d297eecf03e892ceba7a24f3a282ce33e4cdf6364a8886ed9642"]],"content":["guides/save.md","de4acdee359fb6c9fe744f7fb08d90ec78090cf43b0e46e04e7b58fa996a19f1"]},
+    {"command":"sdid","sources":[["sources/sdid-7f06fd7-daniel-pailanir.sthlp","0dd7d62cd6076dccb9a24e942dcf8ba14d6cfed39b0e0bf6ef7f90ff85562c66"]],"content":["guides/sdid.md","626c49ddcec0745accb75f332b5b64e33ae6e96d7e8648f17ceab455d9d6f2c2"]},
+    {"command":"stackedev","sources":[["sources/stackedev-0da3631-joshbleiberg.sthlp","19ca7395b63e26348a6e94e0efe0d2e928449a763b2a5d08377b2fa1527e51bc"]],"content":["guides/stackedev.md","fe524ff2dab6344797ac55b16b7d94ae84865d734d3fd58c428e711b539698d1"]},
+    {"command":"stcox","sources":[["sources/stcox-stata19.pdf","af2d4ffd60482e5495aa31eaf5fbc5e116c5618e8224a2657098a8b42dcc7ae3"]],"content":["guides/stcox.md","e3d295999cdc97420876b7fdf7d12c2b77455c4de2b18ec59ff7ef93c2405a0a"]},
+    {"command":"stset","sources":[["sources/stset-stata19.pdf","bebc348943188746caa4613970220fc197728f21228443175536f27aebcb14db"]],"content":["guides/stset.md","3ddc92c695767ef9cd254748cad5e82bacc8af39ec41b5c5131139279e10794c"]},
+    {"command":"summarize","sources":[["sources/summarize-stata19.pdf","affe91f5cff89ddde1394d6a75979079be56b223b241d00dff134be9ef67e8a2"]],"content":["guides/summarize.md","6691df3ef8b5590060c18f5a51db48bf52e54e5afe88244307153e5ce8ae533c"]},
+    {"command":"table","sources":[["sources/table-stata19.pdf","6eb8d0816151121a242a18a596bc58c2b5aed779f34c2d6fefc63d1eb67e1e01"]],"content":["guides/table.md","ade4f808eb37ec3ce2a737faf6cd19b1164380a124a42189ae039183c67a1d06"]},
+    {"command":"tabstat","sources":[["sources/tabstat-stata19.pdf","bfe90815468375e17a075d4bf55766f966c09d8fe5891ab8167bb9a2aa59064a"]],"content":["guides/tabstat.md","0480849a68b60dea8ec9485f517504a4fe1d2b61276714e6cd44801e64eabe0c"]},
+    {"command":"tabulate","sources":[["sources/tabulate-oneway-stata19.pdf","49fc63259bd0ec0a28150ea0ae69243668622cebbb9ee6bdc134614446558d8f"],["sources/tabulate-twoway-stata19.pdf","19107b3b34ea5b30e481775f9fdcdc6a69a161e2f65496c74f583b98a88a78f3"]],"content":["guides/tabulate.md","55d74bd52844fda33ee6aa4479e4b6405f7c04be8e5ceb82f5688c1055a8829f"]},
+    {"command":"testparm","sources":[["sources/testparm-stata19.pdf","846cd0ef3f5f296308c8b300e945a1edaab75443d0a47916894ba9f672f22002"]],"content":["guides/testparm.md","432fe0617af1b5cc83ebcd36b8df6b825b83c3152caae47f221c86b509493575"]}
+  ]
+}

@@ -485,7 +485,22 @@ compact preserve the dataset and drop variables as much as possible on every ste
 
 l[evel](#) sets confidence level; default is level(95); see [R] Estimation options
 
-INCLUDE help displayopts_list
+display_options:
+noci,
+nopv[alues],
+noomit[ted],
+vsquish,
+noempty[cells],
+base[levels],
+allbase[levels],
+nofvlab[el],
+fvwrap(#),
+fvwrapon(style),
+cformat(%fmt),
+pformat(%fmt),
+sformat(%fmt), and
+nolstretch;
+see [R] Estimation options.
 
 nohead[er] suppresses the display of the table of summary
 statistics at the top of the output; only the coefficient table is displayed.

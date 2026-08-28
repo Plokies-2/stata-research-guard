@@ -1,0 +1,1530 @@
+\# coefplot — complete maintainer help
+
+Source help version: 1.5.3 28may2025 Ben Jann
+
+help coefplot
+
+## Title
+
+coefplot
+Plotting regression coefficients and other
+results
+
+## Syntax
+
+coefplot subgraph [ || subgraph || ... ]
+[, globalopts ]
+
+where subgraph is defined as
+
+(plot) [ (plot) ... ]
+[, subgropts ]
+
+and plot is either _skip (to skip a plot) or
+
+model [ \ model \ ... ]
+[, plotopts ]
+
+and model is
+
+namelist [, modelopts ]
+
+where namelist is a list of names of stored models
+(see help estimates; type . or leave blank to refer to
+the active model). The * and ? wildcards are allowed
+in namelist; see
+Using wildcards in model names. Furthermore,
+model may also be
+
+matrix(mspec) [, modelopts ]
+
+to plot results from a matrix (see
+Plotting results from matrices below).
+Parentheses around plot can be omitted if plot does not contain
+spaces.
+
+### Main
+
+- omitted: include omitted
+coefficients
+
+- baselevels: include base levels
+
+- b(mspec): specify source to be plotted; default is to
+plot e(b)
+
+- at[(spec)]: get plot positions from
+e(at), or as specified by spec
+
+- keep(coeflist): keep specified coefficients
+
+- drop(coeflist): drop specified coefficients
+
+### Confidence intervals
+
+- noci: omit confidence intervals
+
+- levels(numlist): set level(s) for
+conficence intervals
+
+- ci(spec): provide confidence intervals
+
+- v(name): provide variances; default is to use
+e(V)
+
+- se(mspec): provide standard errors
+
+- df(spec): provide degrees of freedom
+
+- citype(method): method to compute
+confidence intervals; default is citype(normal)
+
+### Transform results
+
+- eform[(coeflist)]: plot
+exponentiated point estimates and confidence intervals
+
+- rescale(spec): rescale point estimates
+and confidence intervals
+
+- transform(matchlist): transform
+point estimates and confidence intervals
+
+### Names and labels
+
+- rename(spec): rename coefficients
+
+- eqrename(spec): rename
+equations
+
+- asequation[(string)]: set equation
+to model name or string
+
+- swapnames: swap coefficient names and
+equation names
+
+- mlabels(matchlist): add custom marker labels
+
+### Auxiliary results
+
+- aux(mspec [mspec ...]): make
+additional results available as @aux1, @aux2, etc.
+
+### Passthru
+
+- modelopts: plot-specific model options;
+see Placement of options
+
+### Main
+
+- label(string): label to be used for
+the plot in the legend
+
+- key[(ci [#])]: key
+symbol to be used for the plot in the legend
+
+- nokey: do not include the plot in the legend
+
+- pstyle(pstyle): overall
+style of the plot
+
+- axis(#): choice of axis for the plot, 1 < # < 9
+
+- offset(#): provide offset for plot
+positions
+
+- if(exp): restrict the contents of the plot
+
+- weight(exp): scale size of markers
+
+### Markers
+
+- marker_options: change look of
+markers (color, size, etc.)
+
+- mlabel[(spec)]: add marker
+labels
+
+- marker_label_options: change the look and position of marker
+labels
+
+- recast(plottype): plot results using
+plottype
+
+### Confidence spikes
+
+- cionly: plot confidence spikes only
+
+- citop: draw confidence spikes in front
+of markers
+
+- cirecast(plottype): shorthand for ciopts(recast())
+
+- ciopts(options): affect rendition
+of confidence spikes
+
+- cismooth[(options)]: add smoothed
+confidence intervals
+
+### Passthru
+
+- modelopts: subgraph-specific model
+options; see Placement of options
+
+- plotopts: subgraph-specific plot
+options; see Placement of options
+
+### Main
+
+- bylabel(string): label to be used
+for the subgraph
+
+### Passthru
+
+- modelopts: global model options; see
+Placement of options
+
+- plotopts: global plot options; see
+Placement of options
+
+- subgropts: global subgraph options;
+see Placement of options
+
+### Main
+
+- horizontal: coefficient values are
+on x axis; general default
+
+- vertical: coefficient values are on y
+axis; default with at()
+
+- eqstrict: be strict about equations
+
+- order(coeflist): order coefficients
+
+- orderby(spec): order coefficients by
+specific model
+
+- sort[(spec)]: sort coefficients
+
+- relocate(spec): assign
+specific positions to coefficients
+
+- bycoefs: arrange subgraphs by
+coefficients
+
+- norecycle: increment plot styles across
+subgraphs
+
+- nooffsets: do not offset plot
+positions
+
+- format(format): set the display format for
+numeric labels
+
+- p#(plotopts): options for #th plot
+
+### Labels and grid lines
+
+- nolabels: use variable names instead of
+labels
+
+- coeflabels(spec): specify
+custom labels for coefficients
+
+- noeqlabels: suppress equation labels
+
+- eqlabels(spec): specify labels
+for equations
+
+- headings(spec): add headings between
+coefficients
+
+- groups(spec): add labels for groups of
+coefficients
+
+- plotlabels(spec): (re)set plot
+labels
+
+- bylabels(spec): (re)set subgraph
+labels
+
+- grid(options): affect rendition of grid lines
+
+### Save results
+
+- generate[(prefix)]: generate
+variables containing the graph data
+
+- replace: overwrite existing variables
+
+### Add plots
+
+- addplot(plot): add other plots to the
+graph
+
+- nodrop: do not drop observations
+
+### Y axis, X axis, Titles, Legend, Overall, By
+
+- twoway_options: twoway options, other than by()
+
+- byop:ts(byopts): how subgraphs
+are combined
+
+## Description
+
+coefplot plots results from estimation commands or Stata matrices.
+Results from multiple models or matrices can be combined in a single
+graph. The default behavior of coefplot is to draw markers for
+coefficients and horizontal spikes for confidence intervals. However,
+coefplot can also produce various other types of graphs.
+
+## Options
+
+### Model options
+
+omitted includes omitted coefficients. This may be useful if a model
+contains coefficients that have been dropped due to collinearity.
+
+baselevels includes base levels of factor variables.
+
+b(mspec) specifies the source from which the point
+estimates and coefficient names are to be collected. The default is to use
+(the first row of) e(b) (or e(b_mi) if plotting results from
+mi estimate). b() is discarded in matrix mode (see
+Plotting results from matrices below).
+mspec may be:
+
+- name: use first row of e(name)
+
+- name[#,.]: use #th row of
+e(name); may also type name[#,]
+or name[#]
+
+- name[.,#]: use #th column of
+e(name); may also type name[,#]
+
+at[(spec)] causes plot positions to be determined
+by the values in e(at) (or matrix at) or as specified by
+spec. The default is to create a categorical axis with coefficients
+matched by their names. However, if at is specified, the axis is
+treated as continuous. Note that labeling options
+coeflabels(), eqlabels(), headings(), or groups()
+are not allowed if at is specified. Also not allowed with at
+are options bycoefs, order(), and relocate().
+Furthermore, note that at has to be specified for all models or
+for none. spec is
+
+[atspec] [, t:ransform(exp)]
+
+where atspec may be
+
+- mspec: as above for b()
+
+- #: use #th at-dimension (margins) or #th row/column of main matrix
+
+- m:atrix(mspec): read from matrix instead of e()
+
+- _coef: use coefficient names as plot positions
+
+- _eq: use equation names as plot positions
+
+If at is specified without argument, the plot positions are taken from the first row
+of e(at) (or matrix at). A special case are results from
+margins where recovering the plot positions is more
+complicated. The default in this case is to use the first
+at-dimension. Type, e.g., at(2) if multiple at-dimension were specified
+with margins and you want to use the second dimension. Furthermore,
+in matrix mode (see
+Plotting results from matrices below), at(2)
+would read the plot positions from the 2nd row (or column) of the main matrix.
+
+When plotting results from e() it is sometimes convenient to
+maintain an external matrix with the plot positions instead of
+adding plot positions to each e()-set. In this case you can use
+syntax at(matrix(mspec)) to read the plot positions. Note
+that the vector of plot positions must have the same length as the
+coefficient vectors of the plotted models; elements are matched by position,
+not by name.
+
+Furthermore, at(_coef) or at(_eq) will use the coefficient names or
+the equation names as plot positions, respectively. This is useful only if
+the coefficient names or the equation names are numeric. Note that you may
+use rename() and
+eqrename() to strip a non-numeric prefix or suffix
+from coefficient names or equation names.
+
+Suboption transform() transforms the plot positions before creating
+the graph. Within the transformation expression, use @ as a
+placeholder for the value to be transformed. For example, to take the
+antilogarithm of the plot positions type transform(exp(@)).
+
+keep(coeflist) specifies the coefficients to be
+plotted. The default is to include all coefficients from the
+first (nonzero) equation of a model (and discard further equations).
+coeflist is a space-separated list of
+elements such as:
+
+- coef: keep coefficient coef
+
+- eq:: keep all coefficients from equation eq
+
+- eq:coef: keep coefficient coef from equation eq
+
+where eq and coef may contain "*" (any string) and
+"?" (any nonzero character) wildcards. For example, type keep(*:) or
+keep(*:*) to plot all coefficients from all equations.
+
+If eq is specified, it is applied to all subsequent
+names until a new eq is specified. For example,
+keep(3:mpg price 4:weight) will plot coefficients "mpg" and
+"price" from equation "3" and coefficient "weight" from
+equation "4".
+
+drop(coeflist) drops the specified coefficients, where
+coeflist is as above for keep().
+
+noci omits confidence intervals.
+
+levels(numlist) sets the level(s), as percentages,
+for confidence intervals. Specified values may be between 10.00 and 99.99
+and can have at most two digits after the decimal point. The default is
+levels(95) or as set by set level. If multiple values are
+specified, multiple confidence intervals are plotted. For example, type
+levels(99.9 99 95) to plot the 99.9%, 99%, and 95% confidence
+intervals. The default is to use (logarithmically) increasing line widths
+for multiple confidence intervals. This behavior is disabled as soon as
+lwidth() or recast() is specified within
+ciopts().
+
+ci(spec) specifies the source from which to collect
+confidence intervals. Default is to compute confidence intervals for the
+levels specified in levels() using variances/standard errors (and,
+possibly, degrees of freedom). The ci() option is useful to
+plot confidence intervals that have been provided by the estimation
+command (such as, e.g., bootstrap). spec is
+
+cispec [cispec ...]
+
+where cispec is name to get the lower and upper confidence limits
+from rows 1 and 2 of e(name) (or matrix name),
+respectively. Alternatively, cispec may be (mspec
+mspec) to identify the lower and upper confidence limits, with
+mspec as above for b(). For example, after
+bootstrap, ci(ci_bc) would get bias-corrected confidence intervals
+from rows 1 and 2 of e(ci_bc). The same could be achieved by
+ci((ci_bc[1] ci_bc[2])).
+
+cispec may also be # for a specific confidence level as in
+levels(). Hence, you may type, e.g.,
+ci(95 myci) to plot the usual 95% confidence intervals along with
+custom confidence intervals provided in e(myci). Levels specified
+in ci() take precedence over levels specified in levels()),
+however, you may also type "" within ci() to leave a
+position blank an use the specified level from levels().
+
+In matrix mode (see
+Plotting results from matrices below),
+cispec may also be (# #). For example, ci((2 3)) would
+read the lower confidence limit from the 2nd row (or column) and
+the upper confidence limit from the 3rd row (or column) of the main matrix.
+
+v(name) specifies that the variances for confidence interval
+computation are to be taken from the diagonal of e(name)
+(or matrix name). Default is e(V) (or e(V_mi) if plotting
+results from mi estimate).
+
+se(mspec) provides standard errors to be used for
+computation of confidence intervals. Default is to compute confidence
+intervals based on the variances in e(V)
+(see v() above). mspec is as above for
+b().
+In matrix mode (see
+Plotting results from matrices below), you may
+also specify se(#) to read the standard errors from the #th
+row (or column) of the main matrix.
+
+df(spec) specifies degrees of freedom (DF) to be taken into
+account for confidence interval computation. Default is to obtain DF
+from scalar e(df_r) if defined (as in, e.g., regress)
+or, for results from mi estimate, from matrix e(df_mi). Otherwise,
+no DF are taken into account. Specify df(spec) to provide
+custom DF. spec may be:
+
+- #: set DF for all coefficients to #
+
+- mspec: as above for b()
+
+citype(method) specifies the method to be used to compute the limits of
+confidence intervals. method can be normal, logit, probit,
+atanh, or log.
+
+citype(normal), the default, computes confidence
+limits based on untransformed coefficients and standard errors. Let b be
+the point estimate, se the standard error, and t the (1-a/2)
+quantile of the standard normal distribution or the t-distribution (if degrees
+of freedom are available; see above), where a is 1 minus the
+confidence level (e.g. a=5% for a 95% confidence interval). Then the
+limits of the confidence interval are computed as
+
+b +/- t * se
+
+citype(logit) uses the logit transformation to compute the limits
+of confidence intervals. This is useful if the estimates to be plotted are
+proportions and the confidence limits are supposed to lie between 0 and
+1. The limits are computed as
+
+invlogit(logit(b) +/- t * se / (b * (1 - b)))
+
+citype(probit) is an alternative to citype(logit) and computes the
+limits as
+
+normal(invnormal(b) +/- t * se / normalden(invnormal(b)))
+
+citype(atanh) uses the inverse hyperbolic tangent to compute the
+confidence intervals. This is useful for estimates that lie between -1 and
+1, such as a correlation coefficient. The limits are computed as:
+
+tanh(atanh(b) +/- t * se / (1 - b^2))
+
+citype(log) computes log-transformed confidence intervals. This is useful
+for estimates that may only be positive, such as a variance estimate. The limits
+are computed as:
+
+exp(ln(b) +/- t * se / b)
+
+eform[(coeflist)] causes point estimates and
+confidence intervals to be exponentiated. This is useful
+if you want to plot hazard ratios (HR), incidence-rate ratios (IRR),
+odds ratios (OR), or relative-risk ratios (RRR). If eform is
+specified without arguments, then all coefficients of the model are
+exponentiated. To exponentiate only selected coefficients, specify
+coeflist as above for keep().
+
+rescale(spec) rescales point estimates and confidence
+intervals. Type rescale(#) to rescale all coefficients
+by a constant factor. For example, rescale(100) will multiply all
+coefficients by 100. Alternatively, spec may be
+
+coeflist = # [coeflist = # ...]
+
+with coeflist as above for keep().
+
+transform(matchlist) transforms point estimates and confidence
+intervals. machlist is:
+
+coeflist = "exp" [coeflist = "exp" ...]
+
+with coeflist as above for keep(). Within the
+transformation expression, use @ as a placeholder for
+the value to be transformed. For example, to take the square root of all
+coefficients type transform(* = sqrt(@)). In addition, internal
+variables may be used as explained in
+Accessing internal temporary variables. The
+transformation expression must be enclosed in double quotes if it contains
+spaces. If specified, eform() and rescale() are applied before applying
+transform().
+
+rename(spec) renames coefficients. spec is:
+
+coeflist = newname [coeflist = newname ...] [, r:egex]
+
+with coeflist as above for keep() except that
+wildcards are only allowed in equation names, and coefficient names may
+be specified as prefix* to replace a prefix or
+*suffix to replace a suffix. For example,
+rename(*.foreign = .cartype) will rename coefficients such as
+0.foreign and 1.foreign to 0.cartype and
+1.cartype. newname must be enclosed in double quotes if it
+contains spaces. For labeling coefficients, also see
+coeflabels().
+
+Apply option regex to cause coefficient specifications (but not
+equation specifications) to be interpreted as
+[regular expressions](https://en.wikipedia.org/wiki/Regular_expression). In this
+case, newname may contain \1, ..., \9 to reference back to
+matched subexpressions (and \0 for the entire match). For example, type
+rename(^AA([0-9]+)BB$ = YY\1ZZ, regex) to rename
+coefficients such as AA123BB, AA0BB, or AA99BB to
+YY123ZZ, YY0ZZ, or YY99ZZ. If the leading ^ or the
+tailing $ is omitted, only the matched part of a coefficient name is
+subject to substitution; the rest of the name will remain unchanged. Include
+the regular expressions in quotes or compound double quotes if they contain
+funny characters (such as, e.g., quotes, equal signs, or commas).
+
+eqrename(spec) renames equations. spec is:
+
+eqlist = newname [eqlist = newname ...] [, r:egex]
+
+where eqlist is a space separated list of equation names. Equation
+names may be prefix* to replace a prefix or
+*suffix to replace a suffix. For example,
+eqrename(rep78* = reprec) will rename equations such as
+rep78_3 and rep78_4 to reprec_3 and
+reprec_4. newname must be enclosed in double quotes if it
+contains spaces. For labeling equations, also see
+eqlabels().
+
+Apply option regex to cause equation specifications to be interpreted as
+[regular expressions](https://en.wikipedia.org/wiki/Regular_expression). In this
+case, newname may contain \1, ..., \9 to reference back to
+matched subexpressions (and \0 for the entire match). For example, type
+eqrename(^eq([0-9])0$ = Outcome_\1, regex) to rename
+equations such as eq20 or eq90 to
+Outcome_1 or Outcome_9. If the leading ^ or the
+tailing $ is omitted, only the matched part of an equation name is
+subject to substitution; the rest of the name will remain unchanged. Include the regular expressions in
+quotes or compound double quotes if they contain funny characters (such as, e.g., quotes,
+equal signs, or commas).
+
+asequation[(string)] sets the equation name for all
+included coefficients from the model to string. This is useful if you
+want to assign an equation name to results that have been stored without
+information on equations. If asequation is specified without
+argument, the name of the model is used. If you apply the
+asequation() option you may also want to specify
+eqstrict.
+
+swapnames swaps coefficient names and equation names after collecting
+the model's results. The names are swapped after applying model options
+such as keep(), drop(), or rename() but
+before applying global options such as coeflabel(), order(),
+or eqlabels().
+
+mlabels(matchlist) specifies marker labels for
+selected coefficients. matchlist is:
+
+coeflist = # "label" [coeflist = # "label" ...]
+
+where coeflist is as above for keep() and # is a
+number 0--12 for the location of the marker label (see
+clockposstyle G-4). Not all of Stata's plot types
+support marker labels. For example, if you use
+recast(bar) to change the plot type to
+bar, no marker labels will be displayed (this has
+changed with the April 6, 2022, update to Stata 17; plot type
+bar now displays marker labels).
+
+aux(mspec [mspec ...]) collects additional results
+and makes them available as internal variables. mspec is as above for
+b(). The internal variables
+are named @aux1, @aux2, ..., and can be used within
+if(),
+weight(),
+transform(),
+mlabel(),
+mlabvposition(), and
+addplot() (see
+Accessing internal temporary variables
+below). In matrix mode (see
+Plotting results from matrices below), you may
+also specify aux(# [# ...]) to read the from corresponding
+rows (or column) of the main matrix.
+
+### Plot options
+
+label(string) provides a label for the plot to be used
+in the legend. Use double quotes to create multiline labels. For example,
+label("This is a" "long label") would create a two-line label. For
+text effects (bold, italics, greek letters, etc.) use SMCL tags as
+described in graph_text.
+
+key[(ci [#])] determines the key symbol
+to be used for the plot in the legend. key without argument uses
+the plot's marker symbol; this is the default. key(ci) determines
+the key symbol from the (first) confidence interval. key(ci #)
+determines the key symbol from the #th confidence interval; this is only
+useful if multiple confidence intervals are included in the plot.
+
+nokey prevents including the plot in the legend.
+
+pstyle(pstyle) sets the overall style of the
+plot; see help pstyle. pstyle() affects both,
+coefficient markers and confidence spikes. To use a different plot style
+for confidence spikes, add pstyle() within
+ciopts().
+
+axis(#) specifies the scale axis to be used for the
+plot, where 1 < # < 9. The default is to place
+all plots on the same scale axis.
+
+offset(#) specifies a custom offset for the plot
+positions. The default is to create automatic offsets to prevent
+overlap of confidence spikes as soon as there are
+multiple plots. The spacing between coefficients is one unit, so
+\# should usually be within -0.5 and 0.5. # may also be a scalar
+expression such as, say, 1/6.
+
+if(exp) restricts the contents of the plot to coefficients
+satisfying exp. The option is useful when you want to select
+coefficients, e.g., based on their values, plot positions, or confidence
+limits. Within exp refer to internal temporary variables as explained
+in Accessing internal temporary variables below.
+For example, to include positive coefficients only, you could type
+if(@b>=0). Note that if() does not affect the rendition of the
+categorical axis (unless at is specified). That is, a
+complete categorical axis is created including labels for all collected
+coefficients, even for the ones that have been removed from the plot by
+if().
+
+weight(exp) scales the size of the markers according to
+the size of the specified weights (see
+Weighted markers in help scatter). Within
+exp refer to internal temporary variables as explained in
+Accessing internal temporary variables below. For
+example, to scale markers according to the inverse of standard errors, you
+could type weight(1/@se). weight() has no effect if marker
+labels are specified.
+
+marker_options change the look of the coefficient markers (color,
+size, etc.); see help marker_options.
+
+mlabel[(spec)] adds marker labels to the
+plot. For adding custom labels to specific markers also see model option
+mlabels() above. Furthermore, note that
+not all of Stata's plot types support marker labels. For example, if you use
+recast(bar) to change the plot type to
+bar, no marker labels will be displayed (this has
+changed with the April 6, 2022, update to Stata 17; plot type
+bar now displays marker labels).
+
+The mlabel option can be used in three different ways:
+
+(1) mlabel without argument adds the values of the point estimates as
+marker labels. Use global option
+format() to set the display format.
+
+(2) mlabel(varname) uses the values of the specified variable
+as marker labels. varname may be an internal variable (see
+Accessing internal temporary variables below). For example,
+mlabel(@b) is equivalent to mlabel without argument.
+
+(3) mlabel(strexp) sets the marker labels to the evaluation of the
+specified string expression. Internal variables can be used within strexp
+(see Accessing internal temporary variables
+below). For example, you can type
+
+mlabel("p = " + string(@pval,"%9.3f"))
+
+to display labels such as "p = 0.001" or "p = 0.127". Furthermore,
+
+mlabel(cond(@pval<.001, "***", cond(@pval<.01, "**", cond(@pval<.05, "*", ""))))
+
+would display significance stars.
+
+marker_label_options change the look and
+position of marker labels; see help marker_label_options.
+
+recast(plottype) plots the coefficients using
+plottype; supported plot types are
+scatter,
+line,
+connected,
+area,
+bar,
+spike,
+dropline, and
+dot. The default plottype is scatter. The
+chosen plot type affects the available plot options. For example, if
+the plot type is bar then barlook_options
+will be available. See the plot type's help file for details.
+
+cionly causes markers for point estimates to be suppressed.
+
+citop specifies that confidence intervals be drawn in front of
+the markers for point estimates; the default is to draw confidence intervals
+behind the markers.
+
+cirecast(plottype) is shorthand notation for
+ciopts(recast()). If both are provided, the plot types
+specified in ciopts(recast()) take precedence over the plot types
+specified in cirecast().
+
+ciopts(options) affect the rendition of confidence
+intervals. options are:
+
+- line_options: change look of spikes
+
+- recast(plottype): plot the confidence intervals using
+plottype
+
+Supported plot types are
+rarea,
+rbar,
+rspike,
+rcap,
+rcapsym,
+rscatter,
+rline,
+rconnected,
+pcspike,
+pccapsym,
+pcarrow (or pcrarrow for the reverse),
+pcbarrow, and
+pcscatter. The default plottype is
+rspike. The chosen plot type affects the available
+options within ciopts(). For example, if the plot type is
+rbar then barlook_options will be
+available. See the plot type's help file for details.
+
+If multiple confidence intervals are requested, then
+stylelists may be specified in the options within
+ciopts(). For example, recast(rspike rcap ..) would use
+rspike for the first confidence interval and
+rcap for the remaining confidence intervals;
+lwidth(thin medium thick) would use thin lines for the first
+confidence interval, medium width lines for the second, and thick lines
+for the third.
+
+cismooth[(options)] adds smoothed confidence
+intervals. options are:
+
+- n(n): number of (equally spaced) confidence levels;
+default is n(50); levels are placed in steps of 100/n from 100/2n to
+100-100/2n (e.g., 1, 3, 5, ..., 99 for n=50)
+
+- lw:idth(min max): set range of
+(relative) line widths; the default is range(2 15)
+(max is exact only for n=50)
+
+- i:ntensity(min max): set range of
+color intensities, as percentages; the default is intensity(min 100)
+where min is determined as 4/(ceil(n/2)+3)*100 (about 14 for n=50)
+
+- c:olor(color): set the color (without
+intensity multiplier); the default color is determined by the graph scheme
+
+- psty:le(pstyle): set the overall style;
+this mainly affects the color
+
+The confidence intervals produced by cismooth are placed behind
+confidence intervals requested in levels() and
+ci(). ciopts() do not
+apply to them.
+
+### Subgraph options
+
+bylabel(string) provides a label for the subgraph. Use
+double quotes to create multiline labels. For example,
+bylabel("This is a" "long label") would create a two-line label. For
+text effects (bold, italics, greek letters, etc.) use SMCL tags as
+described in graph_text.
+
+Subgraphs are implemented in terms of graph's by() option; see
+byopts() below for options on how to combine and
+render the subgraphs.
+
+### Global options
+
+horizontal places coefficient values on the x axis. This is the
+default unless at is specified.
+
+vertical places coefficient values on the y axis. This is the
+default if at is specified.
+
+eqstrict causes equation names to be taken into account (i.e. match coefficients by
+equation names and plot equation labels) even if there is only one equation per model.
+
+order(coeflist) specifies the order of coefficients
+(not allowed with at). The default is to use
+the order as found in the input models (and place _cons last, within
+equations). coeflist is a
+space-separated list of elements such as:
+
+- .: insert a gap
+
+- eq:.: insert a gap within equation eq
+
+- coef: coefficient coef
+
+- eq:: all coefficients from equation eq, in their current order
+
+- eq:coef: coefficient coef from equation eq
+
+where coef may contain "*" (any string) and "?"
+(any nonzero character) wildcards.
+
+If no equations are specified, then the requested order of coefficients
+is repeated within each equation (keeping the existing order of
+equations). Otherwise, the requested order is applied across equations.
+Note that in the later case the first element in order() must be an
+equation name. eq is applied to all subsequent elements until a
+new eq is specified. For example,
+order(5:weight mpg * 4:turn *) would yield the following order:
+"weight" from equation "5", "mpg" from equation "5",
+remaining coefficients from equation "5",
+"turn" from equation "4", remaining coefficients from equation
+"4", remaining equations if any.
+
+orderby([subgraph:][plot]) orders the
+coefficients by a specific model. By default, the coefficients are ordered
+according to how they are provided to coefplot, with earlier plots
+and subgraphs taking precedence over later ones (and placing _cons
+last). This means that coefficients that only appear in later models will
+be placed after the coefficients that appear in earlier models. Specify the
+orderby() option if you want to change the default behavior and
+arrange the coefficients according to their order in a specific model
+(and, within each equation, place the other coefficients after these coefficients, but
+before _cons). Arguments subgraph and plot select the relevant
+model. For example, orderby(2:3) will order coefficients according to
+the model that is displayed in the third plot of the second subgraph. If one
+of the arguments is omitted, it defaults to one. Hence, orderby(3) will
+order the coefficients according to the model displayed in the third plot
+of the first subgraph; orderby(2:) will use the model displayed in the first
+plot of the second subgraph. orderby() will do nothing if a specified subgraph or
+plot does not exist. Furthermore, note that the subgraph argument
+is not allowed if the norecycle option has been
+specified; plots are numbered uniquely across subgraphs in this case.
+
+sort[(spec)] sorts the coefficients by size. spec is
+
+[subgraph:][plot] [, d:escending by(stat) ]
+
+where subgraph and plot, being equal to . or a positive
+integer, identify the subgraph and plot to be used
+to establish the sort order. For example, to sort based on all values in
+the second subgraph (possibly including multiple plots), type
+sort(2:) or sort(2:.); to sort based on all values in the third
+plot (possibly spanning multiple subgraphs), type sort(3) or
+sort(.:3); to sort based on the values of the third plot in the
+second subgraph, type sort(2:3). Specifying sort without
+argument is equivalent to sort(.:.), that is, to sort based on the
+values in all available subgraphs and plots. If you specify a subgraph or
+plot that does not exist, sort() will do nothing. Furthermore, if the
+norecycle option is specified, the subgraph
+argument can be omitted as the plots will be uniquely numbered across
+subgraphs.
+
+By default, the coefficients are sorted in ascending order of the values of
+the point estimates. Specify suboption descending to use a
+descending sort order. Furthermore, use by(stat) to change
+the relevant statistic, where stat may be:
+
+- b: sort by point estimate (the default)
+
+- v (or se): sort by variance (or standard error)
+
+- t: sort by t (or z) statistic
+
+- tabs: sort by absolute t (or z) statistic
+
+- p: sort by p-value
+
+- df: sort by degrees of freedom
+
+- ll [#]: sort by (#th) lower confidence limit; # defaults to 1
+
+- ul [#]: sort by (#th) upper confidence limit; # defaults to 1
+
+- aux [#]: sort by (#th) auxiliary variable (see the
+aux() option); # defaults to 1
+
+In case of multiple equations, coefficients will be sorted separately
+within each equation, keeping the original order of equations. Use the
+order() option the change the order of the equations.
+
+relocate(spec) assigns specific positions to the
+coefficients on the category axis. spec is:
+
+[eq:]coef = # [[eq:]coef = # ...]
+
+where eq and coef may contain "*" (any string) and
+"?" (any nonzero character) wildcards. If bycoefs is
+specified, use numbers (1, 2, ...) instead of eq and coef
+to address the elements on the categorical axis.
+
+The default for coefplot is to place coefficients
+at integer values 1, 2, 3, ... (from top to bottom in horizontal mode,
+from left to right in vertical mode). The relocate() option gives
+you the possibility to specify alternative values. If, for example, you
+want to place coefficient mpg at value 2.5 on the category axis, you
+could type relocate(mpg = 2.5). If you only want to change the
+order of coefficients and are fine with integer positions, then use the
+order() option. Note that the specified positions
+are assigned before inserting gaps between equations, headings, and
+groups (see eqlabels(),
+headings(), and
+groups()). Hence, the final plot positions might
+deviate from the specified positions if there are equation labels, headings,
+or group labels.
+
+bycoefs flips subgraphs and coefficients (not allowed with
+at). If bycoefs is specified, a
+separate subgraph is produced for each coefficient. In this
+case, use integer numbers (1, 2, ...) instead of coefficient names
+to address the elements on the categorical axis within options
+relocate(),
+headings(), and
+groups().
+
+norecycle increments plot styles across subgraphs. The default is
+to start over with each new subgraph.
+
+nooffsets suppresses automatic offsets for plot positions.
+
+format(format) sets the display format for
+coefficients. This affects the rendition of the axis and marker
+labels. format may be a numeric format or a date format
+(see help format).
+
+p#(plotopts) specifies
+options for the #th plot. For example, type p2(nokey) to exclude
+plot 2 from the legend (see nokey). Use the p#()
+options as an alternative to specifying options directly within a plot; in
+case of conflict, options specified within a plot take precedence
+over options specified via p#().
+
+nolabels causes coefficient names to be used as labels instead of
+variable labels or value labels.
+
+coeflabels(spec) specifies custom labels for
+coefficients (not allowed with at). spec is
+
+[coeflist = "label" [coeflist = "label" ...]]
+[, t:runcate(#) w:rap(#) nob:reak
+i:nteraction(string)
+suboptions]
+
+with coeflist as above for keep(). Enclose
+label in double quotes
+if it contains spaces, e.g. coeflabels(foreign = "Car Type").
+Enclose label in compound double quotes to create a multiline
+label, e.g. coeflabels(foreign = `""This is a" "long label""');
+alternatively, apply the wrap() option. For text effects
+(bold, italics, greek letters, etc.) use SMCL tags as described in
+graph_text.
+
+Option truncate(#) truncates coefficient labels to
+a maximum length of # characters. Option wrap(#) divides
+coefficient labels into multiple lines, where each line has a maximum
+length of # characters. truncate() and wrap() operate on
+words. That is, they try to fill to the maximum length without breaking
+in the middle of a word. However, if a word is longer than # characters,
+it will be split or truncated. Specify nobreak to prevent
+truncate() and wrap() from splitting or truncating words
+that are longer than # characters. If truncate() and wrap()
+are both specified, truncate() is applied first.
+interaction() specifies the string to be used as
+delimiter in labels for interaction terms; the default is
+interaction(" # "). suboptions are axis label suboptions as
+described in axis_label_options.
+
+Note: Labels containing multiple lines are left unchanged by truncate()
+and wrap(). Therefore, if you don't like how wrap() breaks a
+specific label, you can provide a custom variant of it in coeflabels()
+while still using wrap() for the other labels. truncate()
+and wrap() may fail to process a label if it contains compound
+double quotes; the label will be left unchanged in this case.
+
+noeqlabels suppresses equation labels.
+
+eqlabels(spec) specifies custom labels for equations, one after
+the other (not allowed with at). spec is:
+
+["label" ["label" ...]] [,
+lab:els[(string)]
+[no]g:ap[(#)] ashead:ings
+off:set(#) t:runcate(#) w:rap(#)
+nob:reak suboptions ]
+
+Enclose labels in double quotes if they contain spaces,
+e.g. eqlabels("EQ one" "EQ two"). Enclose labels in compound
+double quotes to create multiline labels,
+e.g. eqlabels(`""This is a" "long label""'). Alternatively,
+apply the wrap() option. For text effects
+(bold, italics, greek letters, etc.) use SMCL tags as described in
+graph_text.
+
+Option label causes the equation names to be treated as
+variable names; coefplot will then use the corresponding variable labels
+(and, depending on context, value labels) to label the equations. Specify
+label(string) to set the string to be used as
+delimiter in labels for interaction terms; typing label without argument
+is equivalent to label(" # "). gap() specifies the size of the
+gap between equations. The
+default is gap(1). nogap suppresses the gap between
+equations. asheadings treats equation labels as headings;
+see headings(). offset(), only
+allowed with asheadings, offsets the labels. truncate(),
+wrap(), nobreak, and suboptions are as above for
+coeflabels().
+
+headings(spec) adds headings between
+coefficients (not allowed with at). spec is:
+
+coeflist = "label" [coeflist = "label" ...]
+[, [no]g:ap[(#)]
+off:set(#) t:runcate(#)
+w:rap(#) nob:reak
+suboptions ]
+
+with coeflist as above for keep(). If
+bycoefs is specified, use numbers 1, 2,
+... instead of coeflist to address the elements on the categorical
+axis. Enclose label in double quotes if it contains
+spaces. For example, headings(0.foreign = "Car Type") will
+print the heading "Car Type" before coefficient "0.foreign".
+Enclose label in compound double quotes to create a multiline
+label, e.g. headings(foreign = `""This is a" "long heading""').
+Alternatively, apply the wrap() option. For text effects (bold,
+italics, greek letters, etc.) use SMCL tags as
+described in graph_text.
+
+gap() and offset() are as above for
+eqlabels(). truncate(), wrap(),
+nobreak, and suboptions are as above for
+coeflabels().
+
+groups(spec) adds labels for groups of
+coefficients (not allowed with at). The specified
+label will be printed beside (or, in vertical mode, below) the identified
+group of coefficients. spec is:
+
+coeflist = "label" [coeflist = "label" ...]
+[, [no]g:ap[(#)]
+t:runcate(#) w:rap(#)
+nob:reak suboptions ]
+
+with coeflist as above for keep(). If
+bycoefs is specified, use numbers 1, 2,
+... instead of coeflist to address the elements on the categorical
+axis. Enclose label in double quotes if
+it contains spaces. Enclose label in compound double quotes to create
+a multiline label. Alternatively, apply the wrap() option. For text
+effects (bold, italics, greek letters, etc.) use SMCL tags as described in
+graph_text.
+
+gap() is as above for
+eqlabels(). truncate(), wrap(),
+nobreak, and suboptions are as above for
+coeflabels().
+
+plotlabels(spec) specifies labels for the plots to be
+used in the legend. Labels specified via plotlabels()
+take precedence over labels specified in the
+label() plot option. spec is:
+
+["label" ["label" ...]] [, t:runcate(#)
+w:rap(#) nob:reak ]
+
+Enclose labels in double quotes if they contain spaces. Enclose labels in
+compound double quotes to create multiline labels. Alternatively,
+apply the wrap() option. For text effects
+(bold, italics, greek letters, etc.) use SMCL tags as described in
+graph_text. Options truncate(), wrap(), and nobreak are as
+above for coeflabels().
+
+bylabels(spec) specifies labels for the subgraphs. Labels
+specified via bylabels()
+take precedence over labels specified in the
+bylabel() subgraph option. spec is:
+
+["label" ["label" ...]] [, t:runcate(#)
+w:rap(#) nob:reak ]
+
+Enclose labels in double quotes if they contain spaces. Enclose labels in
+compound double quotes to create multiline labels. Alternatively,
+apply the wrap() option. For text effects
+(bold, italics, greek letters, etc.) use SMCL tags as described in
+graph_text. Options truncate(), wrap(), and nobreak are as
+above for coeflabels().
+
+grid(options) affects the rendition of grid lines on the
+category axis (not allowed with at). options are:
+
+b:etween | w:ithin | n:one suboptions
+
+b:etween places grid lines between coefficient labels;
+w:ithin places grid lines at the center of coefficient labels;
+n:one suppress grid lines. suboptions are axis label suboptions
+as described in axis_label_options. In horizontal mode, the
+default is within for single plots and between for multiple
+plots. In vertical mode, the default is none. Alternatively, use
+ytick() and xtick()
+to set grid lines.
+
+generate[(prefix)] generates variables containing
+the graph data. The variable names will be prefixed by "__"
+or as specified by prefix. generate() implies
+nodrop and can make coefplot slow in large
+datasets.
+
+replace allows coefplot to overwrite existing variables.
+
+addplot(plot) adds other plots to the graph. See help
+addplot_option. By default coefplot does not keep the
+original data so that addplot() has access only to data from
+internal temporary variables. Specify
+nodrop to keep the original data.
+
+nodrop causes coefplot to keep the original data when generating
+the graph. The default is to eliminate all existing observations temporarily
+to increase speed. nodrop may be useful in connection with the
+addplot() option (unless the graph contains
+multiple subgraphs).
+
+twoway_options are general twoway options, other than
+by(), as documented in help twoway_options.
+
+byopts(byopts) determines how subgraphs
+are combined. byopts are as described in help by_option.
+
+## Examples
+
+```stata
+. sysuse auto
+```
+```stata
+. regress price mpg headroom trunk length turn
+```
+```stata
+. coefplot, drop(_cons) xline(0)
+```
+
+```stata
+. regress price mpg headroom trunk length turn if foreign==0
+```
+```stata
+. estimates store domestic
+```
+```stata
+. regress price mpg headroom trunk length turn if foreign==1
+```
+```stata
+. estimates store foreign
+```
+```stata
+. coefplot domestic foreign, drop(_cons) xline(0)
+```
+
+```stata
+. coefplot domestic || foreign, drop(_cons) xline(0)
+```
+
+```stata
+. coefplot domestic || foreign, yline(0) bycoefs vertical byopts(yrescale)
+```
+
+For further examples see the [website](http://repec.sowi.unibe.ch/stata/coefplot),
+the [Stata Journal article](http://www.stata-journal.com/article.html?article=gr0059), or the
+[working paper](http://ideas.repec.org/p/bss/wpaper/1.html).
+
+## Remarks
+
+Remarks are presented under the following headings:
+
+Using wildcards in model names
+Placement of options
+Plotting results from matrices
+Accessing internal temporary variables
+
+## Using wildcards in model names
+
+Instead of providing distinct model names to coefplot, you can also
+specify a name pattern containing * (any string)
+and ? (any nonzero character) wildcards. coefplot
+will then plot the results from all matching
+models. If a name pattern is specified as part of a plot delimited by
+parentheses, the results from the matching models will be combined into the
+same plot. For example, if models est11, est12, est13,
+est21, est22, and est23 are in
+memory, typing
+
+```stata
+. coefplot (est1*, opts1) (est2*, opts2)
+```
+
+is equivalent to
+
+```stata
+. coefplot (est11 est12 est13, opts1) (est21 est22 est23, opts2)
+```
+
+Likewise, typing
+
+```stata
+. coefplot (est*1, opts1 \ est*2, opts2 \, opts3)
+```
+
+is equivalent to
+
+```stata
+. coefplot (est11 est21, opts1 \ est12 est22, opts2 \, opts3)
+```
+
+If a name pattern is specified without parentheses,
+the matching models are treated as separate plots. For example, typing
+
+```stata
+. coefplot est1* || est2*
+```
+
+is equivalent to
+
+```stata
+. coefplot est11 est12 est13 || est21 est22 est23
+```
+
+or
+
+```stata
+. coefplot (est11) (est12) (est13) || (est21) (est22) (est23)
+```
+
+Use global options p1(), p2(),
+etc. to provide specific options to the different plots in this case. For
+example, typing
+
+```stata
+. coefplot est1*, p1(opts1) p2(opts2) p3(opts3)
+```
+
+is equivalent to
+
+```stata
+. coefplot (est11, opts1) (est12, opts2) (est13, opts3)
+```
+
+## Placement of options
+
+coefplot has four levels of options:
+
+(1) modelopts are options that apply to a single
+model (or matrix). They specify the information to be displayed.
+
+(2) plotopts are options that apply to a single
+plot, possibly containing results from multiple models. They affect
+the rendition of markers and confidence intervals and provide a label
+for the plot.
+
+(3) subgropts are options that
+apply to a single subgraph, possibly containing multiple plots.
+
+(4) globalopts are options that apply
+to the overall graph.
+
+The levels are nested in the sense that upper level options include all
+lower level options. That is,
+globalopts includes
+subgropts,
+plotopts, and
+modelopts;
+subgropts includes
+plotopts, and
+modelopts;
+plotopts includes
+modelopts. However, upper level options
+may not be specified at a lower level.
+
+If lower level options are specified at an upper level, they serve as
+defaults for all included lower levels elements. For example, if you want
+to draw 99% and 95% confidence intervals for all included models,
+specify levels(99 95) as global option:
+
+```stata
+. coefplot model1 model2 model3, levels(99 95)
+```
+
+Options specified with an individual element override the defaults set
+by upper level options. For example, if you want to draw 99% and 95%
+confidence intervals for model 1 and model 2 and 90% confidence intervals
+for model 3, you could type:
+
+```stata
+. coefplot model1 model2 (model3, level(90)), levels(99 95)
+```
+
+There are some fine distinctions about the placement of options and how they
+are interpreted. For example, if you type
+
+```stata
+. coefplot m1, opts1 || m2, opts2 opts3
+```
+
+then opts2 and opts3 are interpreted as global options. If you
+want to apply opts2 only to m2 then type
+
+```stata
+. coefplot m1, opts1 || m2, opts2 ||, opts3
+```
+
+Similarly, if you type
+
+```stata
+. coefplot (m1, opts1 \ m2, opts2)
+```
+
+then opts2 will be applied to both models. To apply opts2 only to
+m2 type
+
+```stata
+. coefplot (m1, opts1 \ m2, opts2 \)
+```
+
+or, if you also want to include opts3 to be applied to both models,
+type
+
+```stata
+. coefplot (m1, opts1 \ m2, opts2 \, opts3)
+```
+
+or
+
+```stata
+. coefplot (m1, opts1 \ m2, opts2 \), opts3
+```
+
+In case of multiple subgraphs there is some ambiguity about where to
+specify the plot options (unless global option
+norecycle is specified). You can provide plot
+options within any of the subgraphs as plot options are collected across
+subgraphs. However, in case of conflict, the plot options from the rightmost
+subgraph usually take precedence over earlier plot options. In addition,
+you can also use global options p1(),
+p2(), etc. to provide
+options for specific plots. In case of conflict, options specified within a plot take
+precedence over options provided via p1(),
+p2(), etc.
+
+## Plotting results from matrices
+
+Use syntax matrix(mspec) instead of the
+name of a stored model to plot results from a matrix. mspec may be:
+
+- name: use first row of matrix name
+
+- name[#,.]: use #th row of
+matrix name; may also type name[#,] or
+name[#]
+
+- name[.,#]: use #th column of
+matrix name; may also type name[,#]
+
+If the matrix() syntax is used, then option b() is discarded
+and names given in at(), ci(),
+v(), se(),
+df(), and aux() refer to regular
+matrices instead of e()-matrices. The matrix name may be omitted in these
+options if results are to be read from the same matrix; only the
+relevant row or column numbers have to be provided in this case (whether the
+numbers are interpreted as row or column numbers
+depends in how matrix() was specified).
+
+For example, to plot medians and their confidence intervals as computed
+by centile you could type:
+
+sysuse auto, clear
+matrix C = J(3,3,.)
+matrix rownames C = median ll95 ul95
+matrix colnames C = mpg trunk turn
+local i 0
+foreach v of var mpg trunk turn {
+local ++ i
+centile `v'
+matrix C[1,`i'] = r(c_1) \ r(lb_1) \ r(ub_1)
+}
+matrix list C
+coefplot matrix(C), ci((2 3))
+
+This is equivalent to:
+
+coefplot matrix(C[1]), ci((C[2] C[3]))
+
+Note that a single coefplot command can contain both regular syntax
+and matrix() syntax. For example, to add means to the graph above
+you could type:
+
+mean mpg trunk turn
+estimates store mean
+coefplot (matrix(C), ci((2 3))) (mean)
+
+## Accessing internal temporary variables
+
+coefplot maintains a number of internal variables that can be
+used within
+if(),
+weight(),
+transform(),
+mlabel(),
+mlabvposition(), and
+addplot(). These
+variables are:
+
+- @b: point estimates
+
+- @ll#: lower limits of confidence interval # (may use @ll for @ll1)
+
+- @ul#: upper limits of confidence interval # (may use @ul for @ul1)
+
+- @V: variances
+
+- @se: standard errors
+
+- @t: t or z statistics, computed as @b/@se
+
+- @df: degrees of freedom
+
+- @pval: p-values, computed as (1-normal(|@t|))*2 or ttail(@df,|@t|)*2, depending
+on whether df are available
+
+- @at: plot positions
+
+- @plot: plot ID (labeled)
+
+- @by: subgraph ID (labeled)
+
+- @mlbl: Marker labels set by mlabels() (string variable)
+
+- @mlpos: Marker label positions set by mlabels()
+
+- @aux#: auxiliary variables collected by aux() (may use @aux for @aux1)
+
+The internal variables can be used like other variables in the
+dataset. For example, option mlabel(@plot) would add plot labels as marker
+labels or option addplot(line @at @b) would draw a connecting line
+through all point estimates in the graph.
+
+## Saved results
+
+coefplot returns the following macros and scalars in r():
+
+- Scalars:
+
+- r(n_ci): number of confidence intervals
+
+- r(n_plot): number of plots
+
+- r(n_subgr): number of subgraphs
+
+- Macros:
+
+- r(graph): copy of graph command
+
+- r(labels): coefficient labels
+
+- r(eqlabels): equation labels
+
+- r(groups): group labels
+
+- r(headings): headings
+
+- r(legend): contents of legend option
+
+## Author
+
+Ben Jann, University of Bern, ben.jann@unibe.ch
+
+Thanks for citing this software in one of the following ways:
+
+Jann, B. (2014). Plotting regression coefficients and other
+estimates. The Stata Journal 14(4): 708-737.
+
+Jann, B. (2013). Plotting regression coefficients and other estimates
+in Stata. University of Bern Social Sciences Working Papers
+Nr. 1. Available from
+[http://ideas.repec.org/p/bss/wpaper/1.html](http://ideas.repec.org/p/bss/wpaper/1.html).
+
+Jann, B. (2013). coefplot: Stata module to plot regression coefficients
+and other results. Available from
+[http://ideas.repec.org/c/boc/bocode/s457686.html](http://ideas.repec.org/c/boc/bocode/s457686.html).

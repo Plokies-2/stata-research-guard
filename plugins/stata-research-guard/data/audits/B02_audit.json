@@ -1,0 +1,242 @@
+{
+  "audit_id": "B02-independent-source-to-clean-audit",
+  "audit_date": "2026-08-29",
+  "reaudit_date": "2026-08-29",
+  "batch_id": "B02",
+  "registry_range": [17, 31],
+  "auditor_independence": "The auditor did not produce B02. Source, content, and batch metadata were read directly; no B02 source, guide, or production file was modified.",
+  "method": {
+    "hash_and_path": "Recomputed SHA-256 from exact bytes for every selected raw and Markdown file; checked all workspace-relative paths, source URL commit pins where applicable, UTF-8 decoding, BOM absence, and LF-only clean files.",
+    "pdf": "Independently extracted each born-digital PDF with pdftotext -layout, checked first/last substantive units and source-order section presence, and measured unique source 6-token-shingle coverage in clean text. This check is insensitive to removed running titles/page numbers but detects omitted body passages. Layout/table and continuation checks used the retained layout text directly.",
+    "smcl": "Compared raw title-marker order, raw external browse URLs, syntax/table directives, continuation markers, first and last substantive units, and visible-SMCL residue against the cleaned Markdown. INCLUDE directives were separately enumerated and checked for same-commit raw availability and expansion at the source location."
+  },
+  "provenance_inventory": {
+    "csdid_estat": "2.0.0 28aug2026; https://raw.githubusercontent.com/pedrohcgs/csdid-stata/856ecd3f311e4dc20792dd03823c475fcbc3dc06/pkg/csdid_estat.sthlp",
+    "ddml": "6aug2023; https://raw.githubusercontent.com/aahrens1/ddml/6313ba3e1b9fb595325cf0336e86d3f7434373c6/ddml.sthlp",
+    "did_imputation": "3.1 2023-11-22; https://raw.githubusercontent.com/borusyak/did_imputation/767c8d6670a751170910d419bbafd323df92ef08/did_imputation.sthlp",
+    "did_multiplegt_dyn": "1 2026-06-26; https://raw.githubusercontent.com/Credible-Answers/did_multiplegt_dyn/ed2df86f73e6360e615c9cc32697fa1355c3e9ef/Stata/did_multiplegt_dyn.sthlp",
+    "dtable": "Stata 19 command-entry PDF; https://www.stata.com/manuals/rdtable.pdf",
+    "duplicates": "Stata 19 command-entry PDF; https://www.stata.com/manuals/dduplicates.pdf",
+    "egen": "Stata 19 command-entry PDF; https://www.stata.com/manuals/degen.pdf",
+    "encode": "Stata 19 command-entry PDF; https://www.stata.com/manuals/dencode.pdf",
+    "decode": "Stata 19 command-entry PDF; https://www.stata.com/manuals/dencode.pdf",
+    "destring": "Stata 19 command-entry PDF; https://www.stata.com/manuals/ddestring.pdf",
+    "estadd": "source date 01feb2017/distribution 20260413; https://raw.githubusercontent.com/benjann/estout/2c6beb2df405a1aa8940e0432a4a53810eca8e60/estadd.hlp",
+    "estout": "source date 25mar2026/distribution 20260413; https://raw.githubusercontent.com/benjann/estout/2c6beb2df405a1aa8940e0432a4a53810eca8e60/estout.hlp",
+    "estpost": "source date 19may2021/distribution 20260413; https://raw.githubusercontent.com/benjann/estout/2c6beb2df405a1aa8940e0432a4a53810eca8e60/estpost.hlp",
+    "eststo": "source date 01feb2017/distribution 20260413; https://raw.githubusercontent.com/benjann/estout/2c6beb2df405a1aa8940e0432a4a53810eca8e60/eststo.hlp",
+    "esttab": "source date 25mar2026/distribution 20260413; https://raw.githubusercontent.com/benjann/estout/2c6beb2df405a1aa8940e0432a4a53810eca8e60/esttab.hlp"
+  },
+  "summary": {
+    "commands": 15,
+    "passed": 15,
+    "failed": 0,
+    "unavailable_confirmed": 0,
+    "gate": "passed_for_import_metadata_promotion",
+    "blocking_findings": [],
+    "metadata_note": "The independent audit is import-ready. B02_production.json remains a production-stage file with status prepared_pending_independent_audit and complete:false; the separate canonical-index assembly must promote those fields only after consuming this passed audit."
+  },
+  "re_audit_history": {
+    "trigger": "B02-audit-repair-2026-08-29 repaired the three failures recorded in this audit's original 2026-08-29 pass.",
+    "original_summary": {
+      "passed": 12,
+      "failed": 3,
+      "gate": "not_passed"
+    },
+    "original_failures": [
+      {
+        "command": "ddml",
+        "before_content_sha256": "2cd09c77937a302ea27ef836d26b81cb40f9220a85293b93693ec61b2787bce6",
+        "failure_evidence": "The main raw file contained unresolved INCLUDE help ddml_overview.sthlp at line 88 and INCLUDE help ddml_example_partial_pystacked_basic.sthlp at line 98; their bodies were not then preserved or expanded.",
+        "repair": "Added both same-commit raw artifacts to metadata and replaced the two literal include directives with their structurally rendered bodies at the original source-order locations."
+      },
+      {
+        "command": "estpost",
+        "before_content_sha256": "4ebc67cd9ccf7e9d40f1bc58580b8757830541c14034dac61e1e25d669a5a0af",
+        "failure_evidence": "Raw line 4 browse URL http://repec.sowi.unibe.ch/stata/estout/ was absent from clean Markdown.",
+        "repair": "Rendered the URL once after help estpost and before Title."
+      },
+      {
+        "command": "eststo",
+        "before_content_sha256": "f245d4090bf4a9d4389b54297057efff45a18e1fb0b1acaeaefeb44f64f8ba53",
+        "failure_evidence": "Raw line 4 browse URL http://repec.sowi.unibe.ch/stata/estout/ was absent from clean Markdown.",
+        "repair": "Rendered the URL once after help eststo and before Title."
+      }
+    ]
+  },
+  "records": [
+    {
+      "command": "csdid_estat",
+      "audit_status": "passed",
+      "raw_file": "sources/csdid_estat-856ecd3f311e4dc20792dd03823c475fcbc3dc06.sthlp",
+      "raw_sha256": "371d27e0c616e96f97b93885a9d79d6786791521a78525a1823f4580f2dab393",
+      "content_file": "guides/csdid_estat.md",
+      "content_sha256": "e04d703866c77049892e6d11d335f481abfebb62cb17f9665b5e73f89a9f1f7e",
+      "provenance": "Commit 856ecd3f311e4dc20792dd03823c475fcbc3dc06 is present in the pinned source URL; version/date metadata is internally consistent.",
+      "section_coverage": "Raw 16 title sections equal clean 16 in identical source order: Syntax, Options, Remarks, Examples, Stored results, References, and related sections all present. This command is itself postestimation help.",
+      "integrity": "35 raw synopt/p2col table rows render as 35 Markdown option rows; all 3 raw external browse URLs remain; first and last substantive units present; no INCLUDE, continuation loss, or visible SMCL/UI residue.",
+      "truncation": "full traversal supported by matched section order and raw tail presence; no cap evidence."
+    },
+    {
+      "command": "ddml",
+      "audit_status": "passed",
+      "raw_file": "sources/ddml-6313ba3e1b9fb595325cf0336e86d3f7434373c6.sthlp",
+      "raw_sha256": "c895c12f292a6ca99b48979f595fdb78962191655623110ef47a2c0c130054ce",
+      "content_file": "guides/ddml.md",
+      "content_sha256": "2d026761c71778fd74d84f3b6339f7d93da3c318e2822d85bdd40b6a4b3eebb2",
+      "provenance": "Primary source and all three required include artifacts are present with SHA-256 matching B02 metadata. All source and included-source URLs contain the same commit 6313ba3e1b9fb595325cf0336e86d3f7434373c6.",
+      "section_coverage": "Main raw title sections plus included bodies occur in source order: ddml title, Contents, detailed-help list, Models, Main steps when estimating with ddml, Compatible programs, main Example, the included Partially-linear model basic pystacked example, Installation, References, Authors, and Also see. Models/Main steps/Compatible programs come from the include at main line 88; the basic example comes after main Example from the include at line 98; Installation/References/Authors/Also see come from the include at line 102.",
+      "integrity": "Direct re-audit recomputed hashes for main plus ddml_overview (03338f47c2a81ec96f661eaa93c3713e79d9b8385cd85066438674a7f5c2fed8), ddml_example_partial_pystacked_basic (ea3599f228546d4f9299373d8ad13dfffd06f7fd55a8109e7e5eff911376c129), and ddml_install_ref_auth (042a75022d5baf14fcc4c8d3d8df0db90e5044be5da98aede9e09dd0b9706ce9). There are zero literal INCLUDE directives. All 10 raw external URLs and all 18 quoted stata command lines across the four raw artifacts occur in the guide; first source title and final pdslasso related-help tail are present; no visible SMCL/UI residue remains.",
+      "repair_requirement": null,
+      "truncation": "passed: every required include body is stored, expanded at its original source-order point, and has its section/code/link/tail content in the guide; no fixed cap evidence."
+    },
+    {
+      "command": "did_imputation",
+      "audit_status": "passed",
+      "raw_file": "sources/did_imputation-767c8d6670a751170910d419bbafd323df92ef08.sthlp",
+      "raw_sha256": "4aaaf172b9d983f1fa991e17af948fe80c5e20b3250b53c9e7432bff9484b550",
+      "content_file": "guides/did_imputation.md",
+      "content_sha256": "8ec76837a0d08491f6f9d7641df05b18912f1961eb7c04c226a0707c072b146e",
+      "provenance": "Commit 767c8d6670a751170910d419bbafd323df92ef08 is embedded in source URL and metadata.",
+      "section_coverage": "13 raw title sections equal clean 13 in order; Syntax, Options, Estimation weights, Stored results, Usage Examples, References, compatibility/missing-feature notes, and author are retained.",
+      "integrity": "Raw external browse URL is preserved; first/last substantive units and option/example text are present; no INCLUDE or SMCL/UI residue. No raw continuation marker exists to lose.",
+      "truncation": "passed: exact title order and raw tail match; no cap evidence."
+    },
+    {
+      "command": "did_multiplegt_dyn",
+      "audit_status": "passed",
+      "raw_file": "sources/did_multiplegt_dyn-ed2df86f73e6360e615c9cc32697fa1355c3e9ef.sthlp",
+      "raw_sha256": "4aee9dd630b931119b77e96f28d36eb5bf00625292beb2e3ad98e52994b315f4",
+      "content_file": "guides/did_multiplegt_dyn.md",
+      "content_sha256": "b735f900590b6f4874d201ba08aaf4337b2d8b1d43e97864e2316eecd6ad3051",
+      "provenance": "Commit ed2df86f73e6360e615c9cc32697fa1355c3e9ef is pinned in URL and metadata.",
+      "section_coverage": "17 raw title sections equal clean 17 in order: Syntax, all option families, full worked example, FAQ, References, auxiliary dependencies, and Saved results are present; no separate postestimation section exists in raw.",
+      "integrity": "All 8 raw browse URLs are preserved; first/last substantive units including final stored result are present; no unresolved include, continuation loss, or SMCL/UI residue.",
+      "truncation": "passed: source-tail and section sequence reconcile; no cap evidence."
+    },
+    {
+      "command": "dtable",
+      "audit_status": "passed",
+      "raw_file": "sources/dtable-stata-manual-20260829.pdf",
+      "raw_sha256": "712facdf8cf0e3c9e270d1698ebe3583dd649b8a07e5b4a4ca043c6fd06b286b",
+      "content_file": "guides/dtable.md",
+      "content_sha256": "dc4eda44701178be3827ae3f982f73f5e47f2245bd4220f5912a40008668bdab",
+      "provenance": "Official StataCorp rdtable.pdf URL matches selected source metadata.",
+      "section_coverage": "Independent layout extraction has 33 PDF pages/1,477 lines; clean has 1,401 lines after only page furniture. Description, Quick start, Syntax, both Options blocks, Remarks/examples, Methods/formulas, Appendix, acknowledgments, and references are present. Stored results/postestimation are not separate source sections.",
+      "integrity": "32-page substantive manual/table content was checked through source-order layout extraction: option tables, appendix tables, and code lines remain column/indentation preserving. All 2 raw `///` continuations remain. Unique raw 6-token-shingle coverage in clean text is 94.67%; unmatched shingles are repeated running titles/page numbers and typography spacing.",
+      "truncation": "passed: first/last substantive units and source tail (copyright/citation notice) remain; no fixed cap."
+    },
+    {
+      "command": "duplicates",
+      "audit_status": "passed",
+      "raw_file": "sources/duplicates-stata-manual-20260829.pdf",
+      "raw_sha256": "4252de3fca1492f2079b98d602889f7a7c09a195676145abe827f949679f185f",
+      "content_file": "guides/duplicates.md",
+      "content_sha256": "3977109766d3732f2ea8b72d3d26a4300fdddb6cea9abe212a84a84be6f4a8db",
+      "section_coverage": "8-page source has Description, Quick start, Syntax, Options, Remarks/examples, Stored results, references/acknowledgments; all are present. No source postestimation section.",
+      "integrity": "Layout option/code relations retained; 94.91% unique raw 6-token-shingle coverage; first/last substantive units and PDF tail present; no continuation marker or UI residue.",
+      "truncation": "passed."
+    },
+    {
+      "command": "egen",
+      "audit_status": "passed",
+      "raw_file": "sources/egen-stata-manual-20260829.pdf",
+      "raw_sha256": "8edb43c32fdc684c7c8fb62f258a35ccc7674e15d4fa5c77a80f2046c4aa6d73",
+      "content_file": "guides/egen.md",
+      "content_sha256": "88370b571fb6421b770f06df3bbec45f9b910efae818bffd08b2adc78fad554b",
+      "section_coverage": "24-page source functions inventory, Syntax, Remarks/examples, acknowledgments, and references all remain; no separate source Stored-results/postestimation section.",
+      "integrity": "Function names, arguments, examples, and layout function tables are retained in source order. Raw/clean code-prompt counts match at 626; 95.66% unique raw 6-token-shingle coverage; first/last substantive units present.",
+      "truncation": "passed."
+    },
+    {
+      "command": "encode",
+      "audit_status": "passed",
+      "raw_file": "sources/encode-stata-manual-20260829.pdf",
+      "raw_sha256": "0ab7373aa3c9b0f6ef58d708cad7871ab8657d278a386a3392f86c205582231f",
+      "content_file": "guides/encode.md",
+      "content_sha256": "1b0305114085c73772698bad564f91e899d61243efdf0205bd4324112e15210a",
+      "section_coverage": "Joint 9-page encode/decode source retains Syntax, distinct Options for encode and decode, Remarks/examples, and References; no separate source Stored-results/postestimation section.",
+      "integrity": "Joint command table/code relations and both option families retained; raw/clean code-prompt counts match at 100; 95.31% unique raw 6-token-shingle coverage; first/last substantive units present.",
+      "truncation": "passed."
+    },
+    {
+      "command": "decode",
+      "audit_status": "passed",
+      "raw_file": "sources/decode-stata-manual-20260829.pdf",
+      "raw_sha256": "0ab7373aa3c9b0f6ef58d708cad7871ab8657d278a386a3392f86c205582231f",
+      "content_file": "guides/decode.md",
+      "content_sha256": "1b0305114085c73772698bad564f91e899d61243efdf0205bd4324112e15210a",
+      "section_coverage": "Same complete joint encode/decode source as encode; distinct decode syntax/options and examples are present despite the source title being encode.",
+      "integrity": "Intentional identical raw/content hashes to encode reflect the one StataCorp command entry, not an accidental duplicate. 95.31% raw 6-token-shingle coverage and matching first/last units; joint table/code relations preserved.",
+      "truncation": "passed."
+    },
+    {
+      "command": "destring",
+      "audit_status": "passed",
+      "raw_file": "sources/destring-stata-manual-20260829.pdf",
+      "raw_sha256": "7d6aafd5ffb78c7f61c83117cfde089377007513cda47f92baa4bfba6a824307",
+      "content_file": "guides/destring.md",
+      "content_sha256": "5f09c9ef27a04b36e44c6c7a7fb04ac37c1d83fa1c3b25549a97f1c4a011e279",
+      "section_coverage": "Joint 10-page destring/tostring entry retains Syntax, separate option tables, Remarks/examples, and References. No separate Stored-results/postestimation section exists in raw.",
+      "integrity": "destring/tostring joint syntax and code relations retained; raw/clean code-prompt counts match at 200; 94.46% unique raw 6-token-shingle coverage; first/last units present.",
+      "truncation": "passed."
+    },
+    {
+      "command": "estadd",
+      "audit_status": "passed",
+      "raw_file": "sources/estadd-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp",
+      "raw_sha256": "09ce9ae1491b0d265c29f0b92cc6dadfa27963659bbd4c137307232719059c88",
+      "content_file": "guides/estadd.md",
+      "content_sha256": "b2f05f265920776235196baa4b956e76e910bd9f0ef7dfb646e01c11db87adb7",
+      "section_coverage": "9 raw title sections equal clean 9 in source order: Syntax, Subcommands, Options, Examples, custom-subcommand material, author, and links. No separate source Stored-results/postestimation section.",
+      "integrity": "All 5 raw browse URLs retained; raw syntax/table relations and first/last units present; no include, continuation, or SMCL/UI residue.",
+      "truncation": "passed."
+    },
+    {
+      "command": "estout",
+      "audit_status": "passed",
+      "raw_file": "sources/estout-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp",
+      "raw_sha256": "0eab09197208e105fc4fce362fb04ac2d4413130389c72cd76bb336f710b2203",
+      "content_file": "guides/estout.md",
+      "content_sha256": "f89d8f26375b0db180cb10bfefaee24e705e7385accf2c875e5835c40a9eafbf",
+      "section_coverage": "12 raw title sections equal clean 12: Syntax, Options, Examples, Remarks, Saved results, References, acknowledgments, and links retained.",
+      "integrity": "All 3 raw browse URLs retained; five raw `///` continuations remain five in source order; first/last units and option table relations present; no visible SMCL/UI residue.",
+      "truncation": "passed."
+    },
+    {
+      "command": "estpost",
+      "audit_status": "passed",
+      "raw_file": "sources/estpost-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp",
+      "raw_sha256": "3ee756b3b3d19bc9dc515a2509b1e08a72025b0a9f068d23704f6eb00a49a5ec",
+      "content_file": "guides/estpost.md",
+      "content_sha256": "b27aa1d3d224417af2e9c2ff2233d2e1d05ac7de3368e3ad8804bbc94011ebfc",
+      "section_coverage": "All 6 raw title sections and 14 raw `///` continuations remain in source order; Syntax, options, examples, author, and final Also see content traverse the raw source.",
+      "integrity": "Direct re-audit found the raw line-4 maintainer browse URL once as its Markdown link target (the literal URL has two textual occurrences because it is both label and target) after help estpost and before ## Title, matching its raw location before the title. First and tail units, code continuations, and source-present section/table relationships remain; no INCLUDE or visible SMCL/UI residue.",
+      "repair_requirement": null,
+      "truncation": "passed: repaired link is additive at its raw source location; no tail or fixed-cap loss."
+    },
+    {
+      "command": "eststo",
+      "audit_status": "passed",
+      "raw_file": "sources/eststo-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp",
+      "raw_sha256": "5256d91b770ef7774d199280ba1ca2f890fd289a64e80dc77e436492a1cddd69",
+      "content_file": "guides/eststo.md",
+      "content_sha256": "d0b1f8dd69dec4eca5824b5347a8b40ceb229b0c4890ca4d3ea9acbe23e4a37d",
+      "section_coverage": "All 9 raw title sections, including Syntax, Options, Examples, Returned results, acknowledgments, author, and final Also see content, remain in source order.",
+      "integrity": "Direct re-audit found the raw line-4 maintainer browse URL once as its Markdown link target (two literal textual occurrences from label plus target) after help eststo and before ## Title, matching its raw location before the title. First/tail units, code/continuations, stored-result table relationships, and source-present sections remain; no INCLUDE or visible SMCL/UI residue.",
+      "repair_requirement": null,
+      "truncation": "passed: repaired link is additive at its raw source location; no tail or fixed-cap loss."
+    },
+    {
+      "command": "esttab",
+      "audit_status": "passed",
+      "raw_file": "sources/esttab-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp",
+      "raw_sha256": "05f91dc0c6e80e01cfd8c1ed0c0138dc91bf8825d23b9d47c7085cc2ff74d5bb",
+      "content_file": "guides/esttab.md",
+      "content_sha256": "420397a09496663bdb4b28180d0d5da5b41e1f02f6d8d7858aa5d65772dd7740",
+      "section_coverage": "8 raw title sections equal clean 8: Syntax, Description, Options, Examples, author, and links. No separate source Stored-results/postestimation section.",
+      "integrity": "All 6 raw browse URLs retained; one raw `///` continuation remains; first/last units and source-order option/example relations are present with no SMCL/UI residue.",
+      "truncation": "passed."
+    }
+  ]
+}

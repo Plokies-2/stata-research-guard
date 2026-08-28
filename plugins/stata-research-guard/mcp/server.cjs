@@ -13,6 +13,8 @@ const OFFICIAL_EXAMPLES_PATH = path.join(DATA_ROOT, "official_examples.json");
 const WEB_SOURCES_PATH = path.join(DATA_ROOT, "official_web_sources.json");
 const COMMAND_SOURCES_PATH = path.join(DATA_ROOT, "command_sources.json");
 const FULL_COMMAND_GUIDES_PATH = path.join(DATA_ROOT, "full_command_guides.json");
+const FULL_COMMAND_GUIDE_STATUS_PATH = path.join(DATA_ROOT, "guide_status.json");
+const FULL_COMMAND_GUIDE_AUDIT_PATH = path.join(DATA_ROOT, "audits", "final_manifest_audit.json");
 const PAPER_USAGE_PATH = path.join(DATA_ROOT, "paper_usage_occurrences.jsonl");
 const PAPER_USAGE_INDEX_PATH = path.join(DATA_ROOT, "command_paper_index.json");
 const HIGH_QUALITY_PAPER_BLOCKS_PATH = path.join(DATA_ROOT, "high_quality_paper_blocks.jsonl");
@@ -75,6 +77,8 @@ const officialExamples = readJson(OFFICIAL_EXAMPLES_PATH);
 const webSources = readJson(WEB_SOURCES_PATH);
 const commandSources = readJson(COMMAND_SOURCES_PATH).sources;
 const fullCommandGuideIndex = readJson(FULL_COMMAND_GUIDES_PATH);
+const fullCommandGuideStatus = readJson(FULL_COMMAND_GUIDE_STATUS_PATH);
+const fullCommandGuideAudit = readJson(FULL_COMMAND_GUIDE_AUDIT_PATH);
 const paperUsageFileAvailable = fs.existsSync(PAPER_USAGE_PATH);
 const paperUsageIndexFileAvailable = fs.existsSync(PAPER_USAGE_INDEX_PATH);
 const highQualityPaperBlocksFileAvailable = fs.existsSync(HIGH_QUALITY_PAPER_BLOCKS_PATH);
@@ -113,7 +117,7 @@ function dataFile(relative, label) {
   return target;
 }
 
-function buildFullCommandGuidesByCommand(indexPayload) {
+function buildFullCommandGuidesByCommand(indexPayload, statusPayload, auditPayload) {
   if (!indexPayload || indexPayload.schema_version !== "1.0" || !Array.isArray(indexPayload.guides)) {
     throw new Error("full_command_guides.json has an unexpected schema");
   }
@@ -144,12 +148,113 @@ function buildFullCommandGuidesByCommand(indexPayload) {
     }
     const content = new TextDecoder("utf-8", { fatal: true }).decode(fs.readFileSync(contentPath));
     if (!content.trim()) throw new Error(`full command guide content is empty for ${entry.command}`);
+    const sourceFiles = new Set([entry.source_file]);
+    if (entry.supplemental_sources !== undefined && !Array.isArray(entry.supplemental_sources)) {
+      throw new Error(`full_command_guides.json has invalid supplemental_sources for ${entry.command}`);
+    }
+    for (const supplemental of entry.supplemental_sources || []) {
+      if (
+        !supplemental
+        || typeof supplemental.source_url !== "string"
+        || !supplemental.source_url.startsWith("https://")
+        || typeof supplemental.source_file !== "string"
+        || sourceFiles.has(supplemental.source_file)
+      ) {
+        throw new Error(`full_command_guides.json has an invalid supplemental source for ${entry.command}`);
+      }
+      sourceFiles.add(supplemental.source_file);
+      const supplementalPath = dataFile(
+        supplemental.source_file,
+        `${entry.command} supplemental source_file`,
+      );
+      if (sha256File(supplementalPath) !== supplemental.source_sha256) {
+        throw new Error(`full command guide supplemental source hash mismatch for ${entry.command}`);
+      }
+    }
     byCommand.set(entry.command, { ...entry, content });
+  }
+
+  const registryCommands = registry.commands.map((row) => row.command);
+  if (
+    !statusPayload
+    || statusPayload.schema_version !== "1.0"
+    || !Array.isArray(statusPayload.registry_order)
+    || !Array.isArray(statusPayload.guides)
+    || JSON.stringify(statusPayload.registry_order) !== JSON.stringify(registryCommands)
+    || statusPayload.guides.length !== registryCommands.length
+    || JSON.stringify(statusPayload.guides.map((row) => row.command)) !== JSON.stringify(registryCommands)
+  ) {
+    throw new Error("guide_status.json does not cover the exact command registry order");
+  }
+  const readyCommands = [];
+  const unavailableCommands = [];
+  for (const status of statusPayload.guides) {
+    if (status.status === "ready") {
+      const guide = byCommand.get(status.command);
+      if (
+        !guide
+        || status.audit_status !== "passed"
+        || status.target_source_file !== guide.source_file
+        || status.target_content_file !== guide.content_file
+      ) {
+        throw new Error(`guide_status.json ready link mismatch for ${status.command}`);
+      }
+      readyCommands.push(status.command);
+    } else if (status.status === "guide_unavailable") {
+      if (
+        byCommand.has(status.command)
+        || status.audit_status !== "unavailable_confirmed"
+        || status.target_source_file !== null
+        || status.target_content_file !== null
+      ) {
+        throw new Error(`guide_status.json unavailable link mismatch for ${status.command}`);
+      }
+      unavailableCommands.push(status.command);
+    } else {
+      throw new Error(`guide_status.json has an invalid status for ${status.command}`);
+    }
+  }
+  if (JSON.stringify([...byCommand.keys()]) !== JSON.stringify(readyCommands)) {
+    throw new Error("full command guide index order does not match ready guide status order");
+  }
+
+  const requiredAuditChecks = [
+    "all_ready_raw_content_paths_exist",
+    "all_ready_hashes_match",
+    "all_ready_utf8_bom_free_lf",
+    "all_ready_have_final_independent_audit_pass",
+    "unavailable_confirmed",
+    "https_schema_for_index_source_urls",
+    "no_fixed_cap_or_silent_truncation_finding_in_final_audit_gates",
+  ];
+  if (
+    !auditPayload
+    || auditPayload.import_ready !== true
+    || auditPayload.registry?.count !== registryCommands.length
+    || JSON.stringify(auditPayload.registry?.commands) !== JSON.stringify(registryCommands)
+    || auditPayload.accounting?.ready !== readyCommands.length
+    || auditPayload.accounting?.guide_unavailable !== unavailableCommands.length
+    || JSON.stringify(auditPayload.accounting?.unavailable_commands) !== JSON.stringify(unavailableCommands)
+    || requiredAuditChecks.some((key) => auditPayload.checks?.[key] !== true)
+    || auditPayload.checks?.index_sha256 !== sha256File(FULL_COMMAND_GUIDES_PATH)
+    || auditPayload.checks?.status_sha256 !== sha256File(FULL_COMMAND_GUIDE_STATUS_PATH)
+  ) {
+    throw new Error("full command guide final audit is missing or does not match the installed bundle");
+  }
+  if (!auditPayload.final_audit_authorities || typeof auditPayload.final_audit_authorities !== "object") {
+    throw new Error("full command guide final audit has no batch authorities");
+  }
+  for (const [batch, auditFile] of Object.entries(auditPayload.final_audit_authorities)) {
+    dataFile(auditFile, `${batch} final command-guide audit`);
   }
   return byCommand;
 }
 
-const fullCommandGuidesByCommand = buildFullCommandGuidesByCommand(fullCommandGuideIndex);
+const fullCommandGuidesByCommand = buildFullCommandGuidesByCommand(
+  fullCommandGuideIndex,
+  fullCommandGuideStatus,
+  fullCommandGuideAudit,
+);
 
 function buildPaperUsageByCommand(indexPayload, occurrenceRows, occurrenceFileHash) {
   if (indexPayload === null) {

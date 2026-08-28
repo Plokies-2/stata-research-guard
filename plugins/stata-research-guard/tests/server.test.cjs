@@ -86,6 +86,21 @@ test("general guidance is source-backed and identical in both phases", () => {
     discovery.general_guidance.source_hash,
     crypto.createHash("sha256").update(discovery.general_guidance.content).digest("hex"),
   );
+  assert.match(discovery.general_guidance.content, /## Pre-final code-review checklist/);
+  assert.match(discovery.general_guidance.content, /official or maintainer evidence/);
+  assert.match(discovery.general_guidance.content, /raw `e\(b\)` rows/);
+  assert.match(discovery.general_guidance.content, /static observations, runtime results, and substantive or causal validity as separate claims/);
+});
+
+test("skill requires an exact independent Sol-high review before Stata finalization", () => {
+  const skill = fs.readFileSync(path.join(ROOT, "skills", "stata-replication-workflow", "SKILL.md"), "utf8");
+  assert.match(skill, /## Mandatory independent pre-final code review/);
+  assert.match(skill, /gpt-5\.6-sol` with `high` reasoning/);
+  assert.match(skill, /designated `final_code_auditor`/);
+  assert.match(skill, /must not edit files, spawn another reviewer/);
+  assert.match(skill, /substantive Stata code change invalidates the reviewed fingerprint/);
+  assert.match(skill, /label the candidate `audit_pending`/);
+  assert.match(skill, /not required for a read-only explanation or diagnosis/);
 });
 
 test("evidence returns guide and paper payloads only for exact selected subset", () => {
@@ -98,7 +113,7 @@ test("evidence returns guide and paper payloads only for exact selected subset",
   assert.deepEqual(evidence.command_cards.map((card) => card.command), ["regress", "outreg2"]);
   assert.ok(evidence.authoritative_examples.length > 0);
   assert.ok(evidence.authoritative_examples.every((row) => ["regress", "outreg2"].includes(row.command)));
-  assert.ok(evidence.full_command_guides.every((row) => ["regress", "outreg2"].includes(row.command)));
+  assert.deepEqual(evidence.full_command_guides.map((row) => row.command), ["regress", "outreg2"]);
   assert.ok(evidence.paper_usage_cards.every((row) => ["regress", "outreg2"].includes(row.command)));
   assert.ok(evidence.paper_usage_cards.every((row) => row.evidence_role === "high_quality_example"));
   assert.ok(evidence.paper_usage_cards.every((row) => row.usage_instruction.template_status === "not_a_template"));
@@ -127,7 +142,15 @@ test("dictionary exposes canonical multiword invocations and syntax-anchored out
 
   const regress = buildCommandEvidence({ request: "Use regress", selected_commands: ["regress"] });
   assert.deepEqual(regress.related_artifacts, []);
-  assert.deepEqual(regress.full_command_guides, []);
+  assert.deepEqual(regress.full_command_guides.map((row) => row.command), ["regress"]);
+});
+
+test("confirmed unavailable commands fail closed to excerpts without a synthesized full guide", () => {
+  for (const command of ["cgmreg", "jwdidstacked"]) {
+    const evidence = buildCommandEvidence({ request: `Use ${command}`, selected_commands: [command] });
+    assert.deepEqual(evidence.full_command_guides, []);
+    assert.deepEqual(evidence.selected_commands, [command]);
+  }
 });
 
 test("selected reghdfe receives the complete cleaned maintainer guide without truncation", () => {

@@ -20,7 +20,6 @@ Every response also carries the common `general-rules.md` authoring contract. An
 The response may contain:
 
 - a command dictionary with canonical keys, invocations, functional labels, and guide/paper availability;
-- task atoms that keep distinct functions such as estimation and Excel export separate without selecting a winner;
 - functional command cards with command, package, aliases, interfaces, and known tradeoffs;
 - complete content-only official or maintainer guides for selected commands when available, with version, source commit, raw hash, cleaned hash, and no silent truncation;
 - readable StataCorp or maintainer documentation excerpts and examples;
@@ -56,7 +55,7 @@ Documentation examples are readable and nonbinding. A document-derived fixture i
 
 Complete guides are separate from short documentation excerpts and paper occurrences. They are returned only for `selected_commands`; discovery never carries guide bodies. Each indexed complete guide is hash-linked to a preserved raw source and a cleaned Markdown file. Missing files, path escape, invalid UTF-8, or raw/clean hash mismatch aborts at server start. Cleaning removes viewer navigation and presentation markup but preserves source order, syntax and abbreviation boundaries, option descriptions, warnings, examples, postestimation, stored results, references, and external links. The guide supplies command grammar; `general-rules.md`, the user request, and the current project still govern authoring and research choices.
 
-The complete-guide channel is generic, but coverage is added only after command-level source cleaning and independent audit. The current bundled pilot is the complete `reghdfe` maintainer help. Commands whose complete guide has not yet passed that process continue to use the available authoritative excerpts rather than receiving an invented or silently shortened substitute.
+The complete-guide channel now contains independently audited full guides for 107 of the 109 dictionary commands. `cgmreg` and `jwdidstacked` are explicitly recorded as `guide_unavailable`: no complete official or maintainer guide was obtained, so their selected-command responses use only the available authoritative excerpts and report the gap rather than reconstructing, inventing, or silently shortening a guide. The status ledger, final audit, primary sources, nine required supplemental sources, and cleaned contents are hash-linked and checked at server start.
 
 ## Project observations
 

@@ -21,6 +21,18 @@ A command already present in the project is not automatically preferred; old cod
 
 For evidence roles and missing-source handling, read [command-evidence.md](references/command-evidence.md). For code-writing conventions, read [authoring-conventions.md](references/authoring-conventions.md).
 
+## Mandatory independent pre-final code review
+
+Before calling any Stata code written or substantively revised in the current turn final, whether the code is in a `.do` or `.ado` file or in the response itself, complete this review after the latest implementation and validation:
+
+1. If you are already the designated `final_code_auditor`, do not spawn another reviewer. Otherwise spawn exactly one independent subagent using `gpt-5.6-sol` with `high` reasoning. Do not silently substitute another model or effort.
+2. Give the reviewer the latest user request and corrections, applicable project rules, the complete affected code and exact diff, the user-designated reference when one exists, directly affected upstream and downstream interfaces, relevant selected-command evidence, validation status, and a hash or stable fingerprint of the candidate under review.
+3. Make the reviewer read-only. It must not edit files, spawn another reviewer, choose an unresolved research design, select a command winner, or treat a paper example as a template. It applies the pre-final checklist in [general-rules.md](references/general-rules.md) only to changed code and directly affected interfaces, not as a retroactive score for untouched legacy code.
+4. The reviewer returns concrete material findings with file or block location, evidence, impact, and the smallest corrective direction; unresolved documentation gaps; and any nonblocking notes. When there is no material finding, it says so and identifies the reviewed fingerprint. It does not issue a numeric score, certify causal validity, or equate static review with runtime success.
+5. Resolve every material finding or evidence gap before finalization. Any later substantive Stata code change invalidates the reviewed fingerprint and requires a fresh review. If the exact subagent model, reasoning effort, or agent runtime is unavailable, label the candidate `audit_pending` and do not describe it as final or independently reviewed.
+
+This review is not required for a read-only explanation or diagnosis, an execution or status check that changes no code, or a documentation-only edit.
+
 ## Research choices
 
 Do not let a tool choose an unresolved sample, estimand, treatment rule, merge key, fixed effects, weights, VCE, event axis, model role, workbook grouping, or append-versus-replace decision. Resolve it from the user's request and project context or ask the user when the choice materially changes the result.

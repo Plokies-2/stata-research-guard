@@ -1,0 +1,94 @@
+{
+  "audit_id": "B05_psmatch2_independent_third_repair_reaudit",
+  "audited_at": "2026-08-29",
+  "auditor_independence": "The auditor did not produce B05 sources, guides, B05 production metadata, or B05 repair history. Prior audits remain unchanged.",
+  "inputs": [
+    "work/top100_full_manual_cleaning/audits/B05_audit.json",
+    "work/top100_full_manual_cleaning/audits/B05_reaudit.json",
+    "work/top100_full_manual_cleaning/batches/B05_production.json",
+    "work/top100_full_manual_cleaning/batches/B05_repair.json"
+  ],
+  "scope": "Independent re-audit of psmatch2 third repair, plus hash/path reconfirmation of all 16 B05 records and continuity check of the 15 records passed by B05_reaudit.json.",
+  "method": [
+    "Recomputed SHA-256 for every source_file and content_file named in the current B05 production manifest.",
+    "Compared raw psmatch2 lines 216-219 directly with current guide lines 187-190, including the visible command text, nested opening brace, paired closing brace, and source order.",
+    "Scanned the complete current psmatch2 guide for visible SMCL command/control/title wrappers and checked all remaining brace characters.",
+    "Checked that each prior passed record has the same current source and content SHA-256 as its B05_reaudit.json passed record; only prior failed psmatch2 changed content hash."
+  ],
+  "summary": {
+    "records": 16,
+    "passed": 16,
+    "failed": 0,
+    "unavailable_confirmed": 0,
+    "prior_passed_records_reconfirmed": 15,
+    "repaired_record_passed": "psmatch2",
+    "current_path_hash_records_verified": 16,
+    "import_ready": true,
+    "scope_note": "This is an import-ready determination for B05 only; it does not assess other batches or the project-wide import gate."
+  },
+  "psmatch2_repaired_record": {
+    "status": "passed",
+    "source": {
+      "file": "work/top100_full_manual_cleaning/sources/psmatch2_cfb54e6d3156ac9851af3979d4b33b27c86aad03.sthlp",
+      "sha256": "d98b1988bad8e294a4c34360ba74fcf2c863b947b08bd991dd2f79cc0dd92c2f",
+      "source_url": "https://raw.githubusercontent.com/eleuven/psmatch2/cfb54e6d3156ac9851af3979d4b33b27c86aad03/psmatch2.sthlp",
+      "source_commit": "cfb54e6d3156ac9851af3979d4b33b27c86aad03"
+    },
+    "content": {
+      "file": "work/top100_full_manual_cleaning/guides/psmatch2.md",
+      "sha256": "0704ada7d3191c2d83df7bb67e54c8ba82d5b8c3cd1fafb3bcf5877df165fc6d",
+      "utf8_bom_free": true,
+      "lf_only": true
+    },
+    "repair_history_consistency": {
+      "prior_failed_content_sha256": "17b2f6198d2e5133f285ecfcca6e03c88ac58967548c72a55bdbae9efcf9d964",
+      "current_content_sha256_matches_production_and_B05_repair_history": true,
+      "source_sha256_unchanged": true
+    },
+    "direct_raw_to_clean_evidence": {
+      "raw_source_lines": {
+        "216": "{cmd:qui foreach j of local gr {c -(}}",
+        "217": "{cmd:psmatch2 treatvar varlist if g==`j', out(outvar)}",
+        "218": "{cmd:replace att = r(att) if  g==`j'}",
+        "219": "{cmd:{c )-}}"
+      },
+      "guide_lines": {
+        "187": "qui foreach j of local gr {",
+        "188": "psmatch2 treatvar varlist if g==`j', out(outvar)",
+        "189": "replace att = r(att) if  g==`j'",
+        "190": "}"
+      },
+      "visible_command_wrapper_removed": true,
+      "opening_brace": "The raw nested {c -(} directive renders as exactly one literal Stata opening brace after `qui foreach j of local gr`.",
+      "closing_brace": "The raw paired {c )-} directive renders as exactly one literal closing-brace line.",
+      "inner_syntax_and_source_order": "The psmatch2 and replace inner commands are byte-for-visible-text faithful, including the original double space before g== in the replace line, and occur between the paired braces in raw source order.",
+      "full_guide_smcl_residue": {
+        "cmd_wrapper_occurrences": 0,
+        "control_directive_occurrences": 0,
+        "title_or_smcl_directive_occurrences": 0,
+        "literal_opening_braces": 1,
+        "literal_closing_braces": 1,
+        "only_remaining_braces_are_the_unambiguous_Stata_foreach_pair": true
+      },
+      "section_and_tail_continuity": "The third repair changes only the visible rendering of raw line 216; prior re-audit section order, detailed syntax/options/examples, first unit, and author tail remain hash-continuous except for that declared repair."
+    }
+  },
+  "current_path_hash_reconfirmation": [
+    {"command":"misstable","prior_status":"passed","source_file":"work/top100_full_manual_cleaning/sources/misstable_stata19.pdf","source_sha256":"100b0fefc29355a93aaeaa68b666798e4560f46f93538f7c5839cdf834b0f133","content_file":"work/top100_full_manual_cleaning/guides/misstable.md","content_sha256":"9fe4ee81a4d255e1a7cdce721e70fc56a4fa22ceade08dc48e9a5d615ea22c08","path_and_hash_pass":true},
+    {"command":"nbreg","prior_status":"passed","source_file":"work/top100_full_manual_cleaning/sources/nbreg_stata19.pdf","source_sha256":"33dc10432eab032725a4f65989d0a67f7b48ee20c308e6b6d78889f425b1ec40","content_file":"work/top100_full_manual_cleaning/guides/nbreg.md","content_sha256":"1df0a9edc5d435fb324d538e91cbc844d6a7785f49dc608cb45141cc2f0a676a","path_and_hash_pass":true},
+    {"command":"outreg2","prior_status":"passed","source_file":"work/top100_full_manual_cleaning/sources/outreg2_ssc_retrieved_2026-08-28.hlp","source_sha256":"64b57f0b0c4bdc36a382e9edfc5887e4095b5e1c372edbd7b1f651370a8167fe","content_file":"work/top100_full_manual_cleaning/guides/outreg2.md","content_sha256":"f3219ffcbfda91ae47c2c13e68d0a962d4dc18fffcf61b0b9c64868cebc4b0aa","path_and_hash_pass":true},
+    {"command":"poisson","prior_status":"passed","source_file":"work/top100_full_manual_cleaning/sources/poisson_stata19.pdf","source_sha256":"ba999159ce20d2d3dcd9fd4871c55b880990109a8a6fd88f98ec6d2fe61bc896","content_file":"work/top100_full_manual_cleaning/guides/poisson.md","content_sha256":"11aac024af352ee16b0fd01cbb0682c5036c0c0fbc719c73447a933fc35cbe4b","path_and_hash_pass":true},
+    {"command":"ppmlhdfe","prior_status":"passed","source_file":"work/top100_full_manual_cleaning/sources/ppmlhdfe_b85665d8f674e93c1e07446a9a2b29be7f797910.sthlp","source_sha256":"28baa95bd5b6d2887736d1fe334edec95f40f9defdc1cb87ff70b0e22da8ea30","content_file":"work/top100_full_manual_cleaning/guides/ppmlhdfe.md","content_sha256":"e18e866617435faaa85ea0075aaf83fa99488ac77062a2c15bb66ba4bc8f5dda","path_and_hash_pass":true},
+    {"command":"predict","prior_status":"passed","source_file":"work/top100_full_manual_cleaning/sources/predict_stata19.pdf","source_sha256":"024d4516eda31a7930d6eb726219d284d06ad6d20a278e4d548bce63be4ded21","content_file":"work/top100_full_manual_cleaning/guides/predict.md","content_sha256":"e1ba23bb77bc3d84c6d44baa82c2dc43516e655ba52396899b508692018af95b","path_and_hash_pass":true},
+    {"command":"psmatch2","prior_status":"failed_repaired","source_file":"work/top100_full_manual_cleaning/sources/psmatch2_cfb54e6d3156ac9851af3979d4b33b27c86aad03.sthlp","source_sha256":"d98b1988bad8e294a4c34360ba74fcf2c863b947b08bd991dd2f79cc0dd92c2f","content_file":"work/top100_full_manual_cleaning/guides/psmatch2.md","content_sha256":"0704ada7d3191c2d83df7bb67e54c8ba82d5b8c3cd1fafb3bcf5877df165fc6d","path_and_hash_pass":true},
+    {"command":"pstest","prior_status":"passed","source_file":"work/top100_full_manual_cleaning/sources/pstest_cfb54e6d3156ac9851af3979d4b33b27c86aad03.sthlp","source_sha256":"d7e1c24c44408cb6a5d54c6bf78bccdd954e4baa6a574c4366e30cb0c5ca3b61","content_file":"work/top100_full_manual_cleaning/guides/pstest.md","content_sha256":"98ffe17ce5c03a63c7c9f3c8e3a692aaedcdc4869a4683e10b533de32c2caac9","path_and_hash_pass":true},
+    {"command":"probit","prior_status":"passed","source_file":"work/top100_full_manual_cleaning/sources/probit_stata19.pdf","source_sha256":"a5bf6782e26b49a7f42f37dbd9740801693f4e578788d721315917cdb3eb2a77","content_file":"work/top100_full_manual_cleaning/guides/probit.md","content_sha256":"078c39a4a013ddba10f1199589c9c1df9e453c48fe03ce80f815b65a67ab40dc","path_and_hash_pass":true},
+    {"command":"putexcel","prior_status":"passed","source_file":"work/top100_full_manual_cleaning/sources/putexcel_stata19.pdf","source_sha256":"b81e83d16b53c47279ff4ea39d217d1ef48dbfa865bc33862e97104163fa82a5","content_file":"work/top100_full_manual_cleaning/guides/putexcel.md","content_sha256":"059b8b92f3fc32c85e865f78daaacc540eaff2917b4467f7af5f28c6c1b5622a","path_and_hash_pass":true},
+    {"command":"qddml","prior_status":"passed","source_file":"work/top100_full_manual_cleaning/sources/qddml_6313ba3e1b9fb595325cf0336e86d3f7434373c6.sthlp","source_sha256":"296a75f61d2170be4328dc17a5c45a0e163fe024ca94b1c88b1b5dc345232f86","content_file":"work/top100_full_manual_cleaning/guides/qddml.md","content_sha256":"3660928d385e3e88d6c834a3ced776a3f9a4d86da14f106c5d53a559b4807efd","path_and_hash_pass":true},
+    {"command":"rangestat","prior_status":"passed","source_file":"work/top100_full_manual_cleaning/sources/rangestat_ssc_retrieved_2026-08-28.sthlp","source_sha256":"afa347a892c82f410359bc0a35631c08273c821d9013712c97ee735ade8862e1","content_file":"work/top100_full_manual_cleaning/guides/rangestat.md","content_sha256":"71be800e29b46d9fec3ecca41c4f0c5916bbea196b3779e1debdac190703fcb4","path_and_hash_pass":true},
+    {"command":"rdbwselect","prior_status":"passed","source_file":"work/top100_full_manual_cleaning/sources/rdbwselect_7dd25671b8f28fc8618b1b7aa4a981564ee53f75.sthlp","source_sha256":"8584942234dd5b723881d0557fdfbf476e515faa2d0799caf99eac12a38cc745","content_file":"work/top100_full_manual_cleaning/guides/rdbwselect.md","content_sha256":"3f898b586c0224e9681882fec4fd586d46d9dd378c77b81a9c2904b6f45ffa14","path_and_hash_pass":true},
+    {"command":"rdplot","prior_status":"passed","source_file":"work/top100_full_manual_cleaning/sources/rdplot_7dd25671b8f28fc8618b1b7aa4a981564ee53f75.sthlp","source_sha256":"41aa4f40af4d7f3d9de6cd78e449cf9c2b0e519ebfd20e629e87d85ba669fa74","content_file":"work/top100_full_manual_cleaning/guides/rdplot.md","content_sha256":"ddde43dcbc9061c30169579d757dade13d5e8d520a8204d22fdffb58beade6fa","path_and_hash_pass":true},
+    {"command":"rdrobust","prior_status":"passed","source_file":"work/top100_full_manual_cleaning/sources/rdrobust_7dd25671b8f28fc8618b1b7aa4a981564ee53f75.sthlp","source_sha256":"6bd246cc9c9d3395862c6584bba24e86f355bef012560ac9a3ebbeb17008e7b3","content_file":"work/top100_full_manual_cleaning/guides/rdrobust.md","content_sha256":"b38fc1617c4ba8b156a0c24733afd2e56cf7b1f9954331c0a5fad46778f459d7","path_and_hash_pass":true},
+    {"command":"recode","prior_status":"passed","source_file":"work/top100_full_manual_cleaning/sources/recode_stata19.pdf","source_sha256":"456a9f7278b0392f5a8890f0245159243c9b388ca3ae572bb04f64de2887a906","content_file":"work/top100_full_manual_cleaning/guides/recode.md","content_sha256":"3bf905fd8d0379cba36b33cd0a5bcaf4180633b6448bbb02d6e19e575cd3a75c","path_and_hash_pass":true}
+  ]
+}

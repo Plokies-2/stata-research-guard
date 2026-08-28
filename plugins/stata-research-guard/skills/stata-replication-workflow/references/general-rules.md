@@ -18,6 +18,20 @@ Read these rules for every Stata code write or revision. They are concise prospe
 - A durable artifact, independently rerunnable stage, or real handoff is a module boundary; otherwise keep the work together.
 - Do not add one-off manual verification blocks to project `.do` files merely to re-check scratch cleanup or output existence, such as `capture confirm file` followed by `_rc`, `display as error`, and `exit`. Keep the required operation itself direct; when verification is requested, inspect the runtime state or produced artifacts through the execution or audit tools instead of embedding throwaway checks in the research code.
 
+## Pre-final code-review checklist
+
+The independent reviewer required by the workflow applies this checklist to newly written or actively revised Stata code. This is a source-grounded code review, not a server-side validator, command ranking, numeric score, or research-design certification.
+
+- Reconcile the latest user scope with the candidate: allowed files, paths and folder depth, preserved helpers and reference versions, call order, and table, graph, estimate, workbook, and other output contracts must remain compatible.
+- Keep the research specification traceable where estimation occurs. Outcomes, treatment or event terms, consequential samples, controls, fixed effects, weights, VCE, event windows, and model roles must not disappear behind cryptic macros, positional lists, dispatchers, or duplicated branches.
+- Inspect upstream preparation before accepting downstream exceptions. Do not repeat outcome-specific branches, missingness restrictions, or counters when the established data state already enforces the same contract; retain a branch when it represents a real specification or data difference.
+- Before accepting hand-written repetition or a workaround, inspect the currently selected command's official or maintainer evidence for documented native factor-variable, wildcard, range, bulk, or returned-state support. A precise wildcard such as `?` can replace a long selector only when the command's documented matching semantics and the actual names make it exact. This check does not authorize switching to another command or changing the research design.
+- Reduce identical estimation, formatting, diagnostic, and export boilerplate with the shallowest readable construct. Do not trade repetition for nested loops, parallel positional mappings, `word` parsing, one-use wrappers, speculative programs, or aliases that hide meaning. Reusing an existing variable as scratch storage is acceptable only inside a verified recovery boundary such as `preserve`/`restore` and when it makes the mapping clearer.
+- After an estimator or event-term change, compare native factor-variable names and raw `e(b)` rows with every downstream table, plot, selector, stored estimate, and formatter handoff. Preserve required omitted and base rows and ordering.
+- Classify checks by the contract they protect. Preserve data invariants, merge or identifier safeguards, and approved program-internal cleanup checks; remove throwaway counters or post-command existence checks that merely repeat a guarantee already supplied by the command or runtime audit.
+- Keep comments that explain research meaning, a non-obvious transformation, or compact documented syntax. Remove review history, rejected-design narration, personal absolute paths, and verbose interface prose. Preserve user-facing labels and output text unless the user asked to change them.
+- Confirm that a compact refactor leaves samples, specifications, row and sheet order, labels, figures, estimates, and output destinations unchanged unless the user requested the difference. Report static observations, runtime results, and substantive or causal validity as separate claims.
+
 ## Project contracts and outputs
 
 - A master file has exact comma-separated `* Project Inputs:` and `* Project Outputs:` inventories. Immediately before every `.do` call, add one sentence stating that called file's role.
