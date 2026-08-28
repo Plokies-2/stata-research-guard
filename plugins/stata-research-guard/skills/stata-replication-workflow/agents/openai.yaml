@@ -1,13 +1,13 @@
 interface:
   display_name: "Stata Research Workflow"
-  short_description: "Template-guided, flexible Stata research workflows"
-  default_prompt: "Use $stata-replication-workflow to create, revise, or audit a researcher-readable Stata workflow while preserving the declared research and output contracts."
+  short_description: "Official syntax and research-context evidence for Stata"
+  default_prompt: "Use $stata-replication-workflow to choose and write readable Stata from official or maintainer evidence and the current project context."
 
 dependencies:
   tools:
     - type: "mcp"
       value: "stataResearchGuard"
-      description: "Local curated Stata reference, lint, project audit, and research-output verification server"
+      description: "Local Stata command evidence, documentation examples, and factual project observations"
       transport: "stdio"
 
 policy:

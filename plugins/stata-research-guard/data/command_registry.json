@@ -1,0 +1,1678 @@
+{
+  "schema_version": "1.0",
+  "purpose": "Functional command discovery for model-readable evidence. This registry contains no ranking, grading, promotion, or automatic-selection fields.",
+  "families": [
+    {
+      "family_id": "official_data_io",
+      "display_name": "Official data import and export",
+      "ownership": "StataCorp official",
+      "category": "data_io",
+      "evidence": "StataCorp data-management manuals",
+      "features": []
+    },
+    {
+      "family_id": "official_data_management",
+      "display_name": "Official data management",
+      "ownership": "StataCorp official",
+      "category": "data_management",
+      "evidence": "StataCorp data-management manuals",
+      "features": []
+    },
+    {
+      "family_id": "official_integrity",
+      "display_name": "Official integrity diagnostics",
+      "ownership": "StataCorp official",
+      "category": "integrity",
+      "evidence": "StataCorp data-management manuals",
+      "features": []
+    },
+    {
+      "family_id": "official_transformation_labels",
+      "display_name": "Official variable construction and labels",
+      "ownership": "StataCorp official",
+      "category": "transformation",
+      "evidence": "StataCorp data-management manuals",
+      "features": []
+    },
+    {
+      "family_id": "official_panel_timeseries",
+      "display_name": "Official panel and time-series",
+      "ownership": "StataCorp official",
+      "category": "panel",
+      "evidence": "StataCorp longitudinal-data manuals",
+      "features": []
+    },
+    {
+      "family_id": "official_descriptives",
+      "display_name": "Official descriptive statistics",
+      "ownership": "StataCorp official",
+      "category": "descriptives",
+      "evidence": "StataCorp reporting and table manuals",
+      "features": []
+    },
+    {
+      "family_id": "official_table_collect",
+      "display_name": "Official table and collect framework",
+      "ownership": "StataCorp official",
+      "category": "exports",
+      "evidence": "StataCorp table, collect, and putexcel manuals",
+      "features": []
+    },
+    {
+      "family_id": "official_postestimation",
+      "display_name": "Official postestimation",
+      "ownership": "StataCorp official",
+      "category": "postestimation",
+      "evidence": "StataCorp postestimation manuals",
+      "features": []
+    },
+    {
+      "family_id": "official_graphics",
+      "display_name": "Official graphics",
+      "ownership": "StataCorp official",
+      "category": "figures",
+      "evidence": "StataCorp graphics manuals",
+      "features": []
+    },
+    {
+      "family_id": "official_linear_models",
+      "display_name": "Official linear models",
+      "ownership": "StataCorp official",
+      "category": "estimation",
+      "evidence": "StataCorp regression manuals",
+      "features": []
+    },
+    {
+      "family_id": "official_iv",
+      "display_name": "Official instrumental variables",
+      "ownership": "StataCorp official",
+      "category": "estimation",
+      "evidence": "StataCorp IV regression manuals",
+      "features": []
+    },
+    {
+      "family_id": "official_glm",
+      "display_name": "Official nonlinear count and binary models",
+      "ownership": "StataCorp official",
+      "category": "estimation",
+      "evidence": "StataCorp base-reference manuals",
+      "features": []
+    },
+    {
+      "family_id": "official_survival",
+      "display_name": "Official survival analysis",
+      "ownership": "StataCorp official",
+      "category": "estimation",
+      "evidence": "StataCorp survival-analysis manuals",
+      "features": []
+    },
+    {
+      "family_id": "estout",
+      "display_name": "estout / esttab / estpost / eststo",
+      "ownership": "Community (Ben Jann)",
+      "category": "exports",
+      "evidence": "Maintainer documentation and SSC/RePEc package record",
+      "features": []
+    },
+    {
+      "family_id": "outreg2",
+      "display_name": "outreg2",
+      "ownership": "Community (Roy Wada)",
+      "category": "exports",
+      "evidence": "Maintainer documentation and SSC/RePEc package record",
+      "features": []
+    },
+    {
+      "family_id": "reghdfe",
+      "display_name": "reghdfe",
+      "ownership": "Community (Sergio Correia)",
+      "category": "estimation",
+      "evidence": "Maintainer documentation and deposited research code",
+      "features": []
+    },
+    {
+      "family_id": "ppmlhdfe",
+      "display_name": "ppmlhdfe",
+      "ownership": "Community (Sergio Correia and coauthors)",
+      "category": "estimation",
+      "evidence": "Maintainer documentation and deposited research code",
+      "features": []
+    },
+    {
+      "family_id": "ivreg2",
+      "display_name": "ivreg2",
+      "ownership": "Community (Baum, Schaffer, Stillman)",
+      "category": "estimation",
+      "evidence": "Maintainer documentation and SSC/RePEc package record",
+      "features": []
+    },
+    {
+      "family_id": "ivreghdfe",
+      "display_name": "ivreghdfe",
+      "ownership": "Community (Correia)",
+      "category": "estimation",
+      "evidence": "Maintainer documentation and package repository",
+      "features": []
+    },
+    {
+      "family_id": "cgmreg",
+      "display_name": "cgmreg",
+      "ownership": "Community",
+      "category": "estimation",
+      "evidence": "Package documentation and deposited research code",
+      "features": []
+    },
+    {
+      "family_id": "acreg",
+      "display_name": "acreg",
+      "ownership": "Community",
+      "category": "estimation",
+      "evidence": "Package documentation and deposited research code",
+      "features": []
+    },
+    {
+      "family_id": "boottest",
+      "display_name": "boottest",
+      "ownership": "Community (Roodman et al.)",
+      "category": "robustness",
+      "evidence": "Maintainer documentation and SSC/RePEc package record",
+      "features": []
+    },
+    {
+      "family_id": "coefplot",
+      "display_name": "coefplot",
+      "ownership": "Community (Ben Jann)",
+      "category": "figures",
+      "evidence": "Maintainer documentation and SSC/RePEc package record",
+      "features": []
+    },
+    {
+      "family_id": "csdid",
+      "display_name": "csdid",
+      "ownership": "Community (Fernando Rios-Avila)",
+      "category": "staggered_did",
+      "evidence": "Maintainer documentation and deposited research code",
+      "features": []
+    },
+    {
+      "family_id": "did_imputation",
+      "display_name": "did_imputation",
+      "ownership": "Community (Borusyak, Jaravel, Spiess)",
+      "category": "staggered_did",
+      "evidence": "Author package documentation and deposited research code",
+      "features": []
+    },
+    {
+      "family_id": "did_multiplegt_dyn",
+      "display_name": "did_multiplegt_dyn",
+      "ownership": "Community (de Chaisemartin and D'Haultfoeuille)",
+      "category": "staggered_did",
+      "evidence": "Author package documentation",
+      "features": []
+    },
+    {
+      "family_id": "eventstudyinteract",
+      "display_name": "eventstudyinteract",
+      "ownership": "Community (Sun and Abraham)",
+      "category": "staggered_did",
+      "evidence": "Author package documentation and deposited research code",
+      "features": []
+    },
+    {
+      "family_id": "eventdd",
+      "display_name": "eventdd",
+      "ownership": "Community",
+      "category": "staggered_did",
+      "evidence": "Package documentation",
+      "features": []
+    },
+    {
+      "family_id": "event_plot",
+      "display_name": "event_plot",
+      "ownership": "Community",
+      "category": "figures",
+      "evidence": "Package documentation and deposited research code",
+      "features": []
+    },
+    {
+      "family_id": "jwdid",
+      "display_name": "jwdid and jwdidstacked",
+      "ownership": "Community",
+      "category": "staggered_did",
+      "evidence": "Package documentation and deposited research code",
+      "features": []
+    },
+    {
+      "family_id": "jregress",
+      "display_name": "jregress",
+      "ownership": "Community",
+      "category": "estimation",
+      "evidence": "Package documentation and deposited research code",
+      "features": []
+    },
+    {
+      "family_id": "sdid",
+      "display_name": "sdid",
+      "ownership": "Community (Arkhangelsky et al.)",
+      "category": "synthetic_did",
+      "evidence": "Author package documentation",
+      "features": []
+    },
+    {
+      "family_id": "stackedev",
+      "display_name": "stackedev",
+      "ownership": "Community",
+      "category": "staggered_did",
+      "evidence": "Package documentation",
+      "features": []
+    },
+    {
+      "family_id": "rdrobust",
+      "display_name": "rdrobust suite",
+      "ownership": "Community (Cattaneo, Idrobo, Titiunik)",
+      "category": "regression_discontinuity",
+      "evidence": "Author documentation and SSC/RePEc package record",
+      "features": []
+    },
+    {
+      "family_id": "ritest",
+      "display_name": "ritest",
+      "ownership": "Community",
+      "category": "robustness",
+      "evidence": "Package documentation and deposited research code",
+      "features": []
+    },
+    {
+      "family_id": "gtools",
+      "display_name": "gtools",
+      "ownership": "Community",
+      "category": "data_management",
+      "evidence": "Maintainer documentation",
+      "features": []
+    },
+    {
+      "family_id": "winsor2",
+      "display_name": "winsor2",
+      "ownership": "Community",
+      "category": "transformation",
+      "evidence": "Package documentation and deposited research code",
+      "features": []
+    },
+    {
+      "family_id": "rangestat",
+      "display_name": "rangestat",
+      "ownership": "Community",
+      "category": "data_management",
+      "evidence": "Package documentation",
+      "features": []
+    },
+    {
+      "family_id": "psmatch2",
+      "display_name": "psmatch2 and pstest",
+      "ownership": "Community (Leuven and Sianesi)",
+      "category": "matching",
+      "evidence": "Author-maintained help and SSC/RePEc package record",
+      "features": []
+    },
+    {
+      "family_id": "xtabond2",
+      "display_name": "xtabond2",
+      "ownership": "Community (David Roodman)",
+      "category": "dynamic_panel",
+      "evidence": "Author guide and package help",
+      "features": []
+    },
+    {
+      "family_id": "asdoc",
+      "display_name": "asdoc",
+      "ownership": "Community",
+      "category": "exports",
+      "evidence": "Author guide",
+      "features": []
+    },
+    {
+      "family_id": "ftools_commands",
+      "display_name": "fcollapse and fmerge",
+      "ownership": "Community (Sergio Correia)",
+      "category": "data_management",
+      "evidence": "Maintainer documentation",
+      "features": []
+    },
+    {
+      "family_id": "ddml",
+      "display_name": "ddml / qddml",
+      "ownership": "Community",
+      "category": "machine_learning",
+      "evidence": "Maintainer documentation",
+      "features": []
+    }
+  ],
+  "commands": [
+    {
+      "command": "sysuse",
+      "family_id": "official_data_io",
+      "invocation": "sysuse",
+      "aliases": [],
+      "stages": [
+        "import"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "acreg",
+      "family_id": "acreg",
+      "invocation": "acreg",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "append",
+      "family_id": "official_data_management",
+      "invocation": "append",
+      "aliases": [],
+      "stages": [
+        "merge_reshape"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "areg",
+      "family_id": "official_linear_models",
+      "invocation": "areg",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "assert",
+      "family_id": "official_integrity",
+      "invocation": "assert",
+      "aliases": [],
+      "stages": [
+        "data_integrity"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "boottest",
+      "family_id": "boottest",
+      "invocation": "boottest",
+      "aliases": [],
+      "stages": [
+        "robustness"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "cgmreg",
+      "family_id": "cgmreg",
+      "invocation": "cgmreg",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "codebook",
+      "family_id": "official_integrity",
+      "invocation": "codebook",
+      "aliases": [],
+      "stages": [
+        "data_integrity"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "coefplot",
+      "family_id": "coefplot",
+      "invocation": "coefplot",
+      "aliases": [],
+      "stages": [
+        "figures"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "collect_export",
+      "family_id": "official_table_collect",
+      "invocation": "collect export",
+      "aliases": [
+        "collect_export"
+      ],
+      "stages": [
+        "exports"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "collect_get",
+      "family_id": "official_table_collect",
+      "invocation": "collect_get",
+      "aliases": [],
+      "stages": [
+        "exports"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "collect_style",
+      "family_id": "official_table_collect",
+      "invocation": "collect_style",
+      "aliases": [],
+      "stages": [
+        "exports"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "collapse",
+      "family_id": "official_data_management",
+      "invocation": "collapse",
+      "aliases": [],
+      "stages": [
+        "merge_reshape",
+        "descriptives_balance_sample_flow"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "contract",
+      "family_id": "official_data_management",
+      "invocation": "contract",
+      "aliases": [],
+      "stages": [
+        "merge_reshape"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "crossfit",
+      "family_id": "ddml",
+      "invocation": "crossfit",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "csdid",
+      "family_id": "csdid",
+      "invocation": "csdid",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "csdid_estat",
+      "family_id": "csdid",
+      "invocation": "csdid_estat",
+      "aliases": [],
+      "stages": [
+        "postestimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "ddml",
+      "family_id": "ddml",
+      "invocation": "ddml",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "did_imputation",
+      "family_id": "did_imputation",
+      "invocation": "did_imputation",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "did_multiplegt_dyn",
+      "family_id": "did_multiplegt_dyn",
+      "invocation": "did_multiplegt_dyn",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "dtable",
+      "family_id": "official_descriptives",
+      "invocation": "dtable",
+      "aliases": [],
+      "stages": [
+        "descriptives_balance_sample_flow",
+        "exports"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "duplicates",
+      "family_id": "official_integrity",
+      "invocation": "duplicates",
+      "aliases": [],
+      "stages": [
+        "data_integrity"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "egen",
+      "family_id": "official_transformation_labels",
+      "invocation": "egen",
+      "aliases": [],
+      "stages": [
+        "cleaning_labels"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "encode",
+      "family_id": "official_transformation_labels",
+      "invocation": "encode",
+      "aliases": [],
+      "stages": [
+        "cleaning_labels"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "decode",
+      "family_id": "official_transformation_labels",
+      "invocation": "decode",
+      "aliases": [],
+      "stages": [
+        "cleaning_labels"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "destring",
+      "family_id": "official_transformation_labels",
+      "invocation": "destring",
+      "aliases": [],
+      "stages": [
+        "cleaning_labels"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "estadd",
+      "family_id": "estout",
+      "invocation": "estadd",
+      "aliases": [],
+      "stages": [
+        "postestimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "estout",
+      "family_id": "estout",
+      "invocation": "estout",
+      "aliases": [],
+      "stages": [
+        "exports"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "estpost",
+      "family_id": "estout",
+      "invocation": "estpost",
+      "aliases": [],
+      "stages": [
+        "descriptives_balance_sample_flow",
+        "exports"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "eststo",
+      "family_id": "estout",
+      "invocation": "eststo",
+      "aliases": [],
+      "stages": [
+        "estimation",
+        "postestimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "esttab",
+      "family_id": "estout",
+      "invocation": "esttab",
+      "aliases": [],
+      "stages": [
+        "exports"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "etable",
+      "family_id": "official_table_collect",
+      "invocation": "etable",
+      "aliases": [],
+      "stages": [
+        "exports"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "eventdd",
+      "family_id": "eventdd",
+      "invocation": "eventdd",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "event_plot",
+      "family_id": "event_plot",
+      "invocation": "event_plot",
+      "aliases": [],
+      "stages": [
+        "figures"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "eventstudyinteract",
+      "family_id": "eventstudyinteract",
+      "invocation": "eventstudyinteract",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "export_excel",
+      "family_id": "official_data_io",
+      "invocation": "export excel",
+      "aliases": [
+        "export_excel"
+      ],
+      "stages": [
+        "exports"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "export_delimited",
+      "family_id": "official_data_io",
+      "invocation": "export delimited",
+      "aliases": [
+        "export_delimited"
+      ],
+      "stages": [
+        "exports"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "gcollapse",
+      "family_id": "gtools",
+      "invocation": "gcollapse",
+      "aliases": [],
+      "stages": [
+        "merge_reshape"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "gegen",
+      "family_id": "gtools",
+      "invocation": "gegen",
+      "aliases": [],
+      "stages": [
+        "cleaning_labels"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "generate",
+      "family_id": "official_transformation_labels",
+      "invocation": "generate",
+      "aliases": [],
+      "stages": [
+        "cleaning_labels"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "graph",
+      "family_id": "official_graphics",
+      "invocation": "graph",
+      "aliases": [],
+      "stages": [
+        "figures"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "graph_bar",
+      "family_id": "official_graphics",
+      "invocation": "graph_bar",
+      "aliases": [],
+      "stages": [
+        "figures"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "greshape",
+      "family_id": "gtools",
+      "invocation": "greshape",
+      "aliases": [],
+      "stages": [
+        "merge_reshape"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "gstats",
+      "family_id": "gtools",
+      "invocation": "gstats",
+      "aliases": [],
+      "stages": [
+        "descriptives_balance_sample_flow"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "gquantiles",
+      "family_id": "gtools",
+      "invocation": "gquantiles",
+      "aliases": [],
+      "stages": [
+        "cleaning_labels"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "histogram",
+      "family_id": "official_graphics",
+      "invocation": "histogram",
+      "aliases": [],
+      "stages": [
+        "figures"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "import",
+      "family_id": "official_data_io",
+      "invocation": "import",
+      "aliases": [],
+      "stages": [
+        "import"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "import_delimited",
+      "family_id": "official_data_io",
+      "invocation": "import delimited",
+      "aliases": [
+        "import_delimited"
+      ],
+      "stages": [
+        "import"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "import_excel",
+      "family_id": "official_data_io",
+      "invocation": "import excel",
+      "aliases": [
+        "import_excel"
+      ],
+      "stages": [
+        "import"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "isid",
+      "family_id": "official_integrity",
+      "invocation": "isid",
+      "aliases": [],
+      "stages": [
+        "data_integrity"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "ivreg2",
+      "family_id": "ivreg2",
+      "invocation": "ivreg2",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "ivregress",
+      "family_id": "official_iv",
+      "invocation": "ivregress",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "ivreghdfe",
+      "family_id": "ivreghdfe",
+      "invocation": "ivreghdfe",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "jwdid",
+      "family_id": "jwdid",
+      "invocation": "jwdid",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "jwdidstacked",
+      "family_id": "jwdid",
+      "invocation": "jwdidstacked",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "jregress",
+      "family_id": "jregress",
+      "invocation": "jregress",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "label",
+      "family_id": "official_transformation_labels",
+      "invocation": "label",
+      "aliases": [],
+      "stages": [
+        "cleaning_labels"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "lincom",
+      "family_id": "official_postestimation",
+      "invocation": "lincom",
+      "aliases": [],
+      "stages": [
+        "postestimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "logit",
+      "family_id": "official_glm",
+      "invocation": "logit",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "logistic",
+      "family_id": "official_glm",
+      "invocation": "logistic",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "margins",
+      "family_id": "official_postestimation",
+      "invocation": "margins",
+      "aliases": [],
+      "stages": [
+        "postestimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "marginsplot",
+      "family_id": "official_postestimation",
+      "invocation": "marginsplot",
+      "aliases": [],
+      "stages": [
+        "figures"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "merge",
+      "family_id": "official_data_management",
+      "invocation": "merge",
+      "aliases": [],
+      "stages": [
+        "merge_reshape"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "misstable",
+      "family_id": "official_integrity",
+      "invocation": "misstable",
+      "aliases": [],
+      "stages": [
+        "data_integrity"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "nbreg",
+      "family_id": "official_glm",
+      "invocation": "nbreg",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "outreg2",
+      "family_id": "outreg2",
+      "invocation": "outreg2",
+      "aliases": [],
+      "stages": [
+        "exports"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "poisson",
+      "family_id": "official_glm",
+      "invocation": "poisson",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "ppmlhdfe",
+      "family_id": "ppmlhdfe",
+      "invocation": "ppmlhdfe",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "predict",
+      "family_id": "official_postestimation",
+      "invocation": "predict",
+      "aliases": [],
+      "stages": [
+        "postestimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "psmatch2",
+      "family_id": "psmatch2",
+      "invocation": "psmatch2",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "pstest",
+      "family_id": "psmatch2",
+      "invocation": "pstest",
+      "aliases": [],
+      "stages": [
+        "postestimation",
+        "figures"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "probit",
+      "family_id": "official_glm",
+      "invocation": "probit",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "putexcel",
+      "family_id": "official_table_collect",
+      "invocation": "putexcel",
+      "aliases": [],
+      "stages": [
+        "exports"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "qddml",
+      "family_id": "ddml",
+      "invocation": "qddml",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "rangestat",
+      "family_id": "rangestat",
+      "invocation": "rangestat",
+      "aliases": [],
+      "stages": [
+        "merge_reshape"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "rdbwselect",
+      "family_id": "rdrobust",
+      "invocation": "rdbwselect",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "rdplot",
+      "family_id": "rdrobust",
+      "invocation": "rdplot",
+      "aliases": [],
+      "stages": [
+        "figures"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "rdrobust",
+      "family_id": "rdrobust",
+      "invocation": "rdrobust",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "recode",
+      "family_id": "official_transformation_labels",
+      "invocation": "recode",
+      "aliases": [],
+      "stages": [
+        "cleaning_labels"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "regress",
+      "family_id": "official_linear_models",
+      "invocation": "regress",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "reghdfe",
+      "family_id": "reghdfe",
+      "invocation": "reghdfe",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "replace",
+      "family_id": "official_transformation_labels",
+      "invocation": "replace",
+      "aliases": [],
+      "stages": [
+        "cleaning_labels"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "reshape",
+      "family_id": "official_data_management",
+      "invocation": "reshape",
+      "aliases": [],
+      "stages": [
+        "merge_reshape"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "ritest",
+      "family_id": "ritest",
+      "invocation": "ritest",
+      "aliases": [],
+      "stages": [
+        "robustness"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "save",
+      "family_id": "official_data_io",
+      "invocation": "save",
+      "aliases": [],
+      "stages": [
+        "exports"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "sdid",
+      "family_id": "sdid",
+      "invocation": "sdid",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "stackedev",
+      "family_id": "stackedev",
+      "invocation": "stackedev",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "stcox",
+      "family_id": "official_survival",
+      "invocation": "stcox",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "stset",
+      "family_id": "official_survival",
+      "invocation": "stset",
+      "aliases": [],
+      "stages": [
+        "panel_construction"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "summarize",
+      "family_id": "official_descriptives",
+      "invocation": "summarize",
+      "aliases": [],
+      "stages": [
+        "descriptives_balance_sample_flow"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "table",
+      "family_id": "official_descriptives",
+      "invocation": "table",
+      "aliases": [],
+      "stages": [
+        "descriptives_balance_sample_flow",
+        "exports"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "tabstat",
+      "family_id": "official_descriptives",
+      "invocation": "tabstat",
+      "aliases": [],
+      "stages": [
+        "descriptives_balance_sample_flow"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "tabulate",
+      "family_id": "official_descriptives",
+      "invocation": "tabulate",
+      "aliases": [],
+      "stages": [
+        "descriptives_balance_sample_flow"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "testparm",
+      "family_id": "official_postestimation",
+      "invocation": "testparm",
+      "aliases": [],
+      "stages": [
+        "postestimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "test",
+      "family_id": "official_postestimation",
+      "invocation": "test",
+      "aliases": [],
+      "stages": [
+        "postestimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "tostring",
+      "family_id": "official_transformation_labels",
+      "invocation": "tostring",
+      "aliases": [],
+      "stages": [
+        "cleaning_labels"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "tsfill",
+      "family_id": "official_panel_timeseries",
+      "invocation": "tsfill",
+      "aliases": [],
+      "stages": [
+        "panel_construction"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "tsset",
+      "family_id": "official_panel_timeseries",
+      "invocation": "tsset",
+      "aliases": [],
+      "stages": [
+        "panel_construction"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "twoway",
+      "family_id": "official_graphics",
+      "invocation": "twoway",
+      "aliases": [],
+      "stages": [
+        "figures"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "ttest",
+      "family_id": "official_descriptives",
+      "invocation": "ttest",
+      "aliases": [],
+      "stages": [
+        "descriptives_balance_sample_flow"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "use",
+      "family_id": "official_data_io",
+      "invocation": "use",
+      "aliases": [],
+      "stages": [
+        "import"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "winsor2",
+      "family_id": "winsor2",
+      "invocation": "winsor2",
+      "aliases": [],
+      "stages": [
+        "cleaning_labels"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "xtivreg",
+      "family_id": "official_panel_timeseries",
+      "invocation": "xtivreg",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "xtreg",
+      "family_id": "official_panel_timeseries",
+      "invocation": "xtreg",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "xtset",
+      "family_id": "official_panel_timeseries",
+      "invocation": "xtset",
+      "aliases": [],
+      "stages": [
+        "panel_construction"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "xtabond2",
+      "family_id": "xtabond2",
+      "invocation": "xtabond2",
+      "aliases": [],
+      "stages": [
+        "estimation"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "asdoc",
+      "family_id": "asdoc",
+      "invocation": "asdoc",
+      "aliases": [],
+      "stages": [
+        "descriptives_balance_sample_flow",
+        "exports"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "fcollapse",
+      "family_id": "ftools_commands",
+      "invocation": "fcollapse",
+      "aliases": [],
+      "stages": [
+        "merge_reshape",
+        "descriptives_balance_sample_flow"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    },
+    {
+      "command": "fmerge",
+      "family_id": "ftools_commands",
+      "invocation": "fmerge",
+      "aliases": [],
+      "stages": [
+        "merge_reshape"
+      ],
+      "required_input_state": [],
+      "output_interface": [],
+      "tradeoffs_and_incompatibilities": []
+    }
+  ]
+}

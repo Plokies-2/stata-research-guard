@@ -1,45 +1,7 @@
-# 연구자용 README 계약
+# Researcher-facing README
 
-오버홀이나 새 프로젝트 작업에서는 코드를 쓰기 전에 실제 파일 구조와 새 분석변수 목록을 사용자에게 보여준다. 사용자가 승인한 내용은 프로젝트 최상단 `README.md`에도 남긴다. 기존 README가 있으면 유효한 내용을 보존하면서 필요한 절만 보완한다.
+Read this only when the user approves a new project or structural overhaul that needs a root README. Preserve an adequate existing README.
 
-이 README는 배포나 제출용 패키지 문서가 아니다. 연구자가 폴더 역할, 실행 순서, 새 변수의 의미를 나중에 다시 읽을 수 있게 하는 프로젝트 문서다. dependency inventory, 설치 절차, 권리·라이선스 표, 배포 manifest, 제출 checklist는 사용자가 별도로 요청하지 않으면 추가하지 않는다.
+Describe the active workflow, required inputs, produced outputs, execution order, and environment assumptions a researcher needs to rerun the project. For each important constructed variable, give its meaning, source or formula, unit or observation level, coding, missing-data rule, creation file, and downstream use when those facts are known.
 
-## 근거
-
-로컬 연구 예제 35개 패키지 중 최상단 또는 준하는 README 25개에서 프로그램 역할, 실행 지침, 데이터셋 목록, 폴더 구조와 산출물 대응이 반복됐다. 수집한 639개 `.do` 파일에는 `label variable` 문장이 3,514개 있었다. 따라서 승인된 folder tree와 새 변수 설명을 한곳에 모으는 것은 연구자가 코드를 유지하는 데 직접 도움이 된다.
-
-## 기본 내용
-
-1. `개요`: 연구 질문, 관측단위, 실행 entrypoint
-2. `파일 구조`: 승인받은 실제 tree와 주요 경로의 역할
-3. `분석 변수 안내`: 새로 만들어 저장하거나 보고 분석에 쓰는 변수의 설명
-4. `실행 방법`: master 또는 정본 entrypoint와 사용자가 바꿔야 하는 경로
-5. `산출물과 생성 코드`: 표, 그림, `.ster`와 생성 do-file의 대응
-
-확인할 수 없는 내용은 추정하지 않는다. 기존 프로젝트에서는 기본 tree를 강제하지 않고 현재 호환되는 경로와 승인받은 변경만 기록한다.
-
-## 분석 변수 안내 표
-
-| 열 | 내용 |
-|---|---|
-| 변수명 | 실제 Stata 변수명, 32자 이하 |
-| 사용자용 설명 | 변수가 뜻하는 바를 한 문장으로 설명 |
-| 분석 역할 | 결과, 처치, 통제, 표본, 가중치, 식별자 등 |
-| 원자료·생성 방식 | 원변수의 원자료 단위, 정확한 계산식·임계값과 주요 변환. 예: `raw_amount [천 단위] -> >= 2,000,000 -> indicator` |
-| 단위·관측단위 | %, 원, 로그값, 기업-연도 등 |
-| 기간·지리 | 적용 기간과 공간 범위 |
-| 값·결측 | 범주 코딩, 기준범주, 결측 처리 |
-| 생성 파일 | 변수를 만드는 do-file |
-| 사용처 | 분석자료, 회귀, 표, 그림 등 |
-
-최소한 `변수명`, `사용자용 설명`, `원자료·생성 방식`, `단위·관측단위`를 남긴다. 원자료의 `describe`·`codebook`·variable label에서 단위를 먼저 읽고, `원자료·생성 방식`에는 `원변수 [원단위] -> 정확한 변환 또는 임계값 -> 출력형태`를 기록한다. 단위가 없는 지표, indicator, log도 그대로 명시한다. 원 단위로 환산한 설명을 덧붙일 때는 그 환산값이 식과 일치해야 하며, 확실하지 않으면 원자료 단위와 숫자를 그대로 둔다. `.dta`에 저장되는 새 변수, 보고되는 분석에 직접 쓰는 새 변수, 결과 해석에 필요한 표본·처치 지표를 포함한다. 임시 loop index, scratch 변수, local macro, Stata 반환값은 제외한다. 새 영구 변수가 없으면 그 사실을 명시한다. 저장되는 새 변수에는 코드 가까이 정의를 적고 저장 전 `label variable`을 붙인다.
-
-## 승인과 검증
-
-쓰기 전에 다음을 한 번에 보여준다:
-
-1. 실제 생성·수정·이동·삭제 경로를 반영한 tree
-2. 새 분석변수 이름, 사용자용 설명, 원자료·생성 방식, 단위·관측단위 표, 또는 새 변수가 없다는 명시
-3. 최상단 `README.md`를 새로 만들지 기존 파일에 보완할지
-
-계획이 바뀌면 수정된 tree와 변수 표를 다시 보여준다. 완료 점검에서는 승인된 경로와 네 가지 필수 변수 필드가 README에 실제로 들어갔고, 생성 do-file이 해당 영구 변수에 `label variable`을 붙였는지 `research_output_check`로 확인할 수 있다.
+Do not turn the README into plugin provenance, a template ledger, a validator report, a dependency installer, or a claim that runtime completion proves the research design. Keep unavailable or unresolved facts explicit.

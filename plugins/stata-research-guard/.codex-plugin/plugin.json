@@ -1,28 +1,25 @@
 {
   "name": "stata-research-guard",
-  "version": "0.3.0+codex.20260828164500",
-  "description": "Author Stata workflows under general rules with code-free guide metadata and audited research evidence.",
+  "version": "0.3.0+codex.20260828195056",
+  "description": "Provide Stata command evidence, readable official or maintainer examples, and factual project observations while leaving command choice and code writing to the model.",
   "author": {
     "name": "song7"
   },
   "skills": "./skills/",
   "interface": {
     "displayName": "Stata Research Guard",
-    "shortDescription": "General-rule Stata authoring with optional complete templates.",
-    "longDescription": "Creates, revises, and audits researcher-readable Stata workflows. General rules govern every implementation. Code-free manual and maintainer metadata supplies command facts, while separately audited deposited research usage may support one complete compatible transition without supplying unresolved research choices. The plugin preserves existing project interfaces, favors point-of-use readability and shallow control flow, builds a cleaned analysis panel before summaries and regressions in compatible new workflows, and validates native factor-variable, raw outreg2, Excel, PDF, .ster, master Input/Output, report-policy, and runtime-versus-static contracts.",
+    "shortDescription": "Official syntax and project-context evidence for Stata.",
+    "longDescription": "Provides task-separated Stata command candidates, readable StataCorp or maintainer documentation examples, factual project observations, and non-authoritative paper usage context. The model uses that evidence with the user's research and output requirements to choose commands and write readable project-specific code. The plugin does not rank candidates, promote templates, grade generated code, or certify a research design.",
     "developerName": "song7",
     "category": "Developer Tools",
     "capabilities": [
       "MCP",
-      "Skills",
-      "Read-only audit"
+      "Skills"
     ],
     "defaultPrompt": [
-      "Create or revise this Stata workflow within the exact approved scope. Preserve compatible project interfaces, apply the skill's general rules, keep research specifications readable at point of use, lint changed do-files, and verify only the declared outputs.",
-      "Audit this Stata project read-only from its active reachable entrypoint. Keep runtime success, static audit, and substantive validity separate; report inactive files as advisories unless I explicitly widen scope.",
-      "Resolve evidence for this bounded Stata transition. Use guide mechanics only as code-free command metadata, select a deposited usage template only when it completely fits after permitted bindings, and otherwise implement only the already-declared contract under the general rules.",
-      "Check this workflow's master Input/Output contracts and Excel, PDF, .ster, event-study, and raw outreg2 output flow without adding dependency, packaging, deployment, or TeX artifacts.",
-      "Build or evaluate this Stata workflow from the supplied research contract in a source-isolated trial, using the plugin's local evidence and general rules without treating templates as mandatory or prior outputs as an answer key."
+      "Use the skill and get_stata_command_evidence to choose and write readable Stata from official or maintainer examples and the current project context.",
+      "Inspect this Stata project read-only and report literal command, option, input, output, call, and estimate-handoff observations without ranking its existing practices.",
+      "Compare command candidates for this requested Stata function using authoritative documentation and relevant paper context, then make the project-specific choice yourself."
     ]
   },
   "mcpServers": "./.mcp.json"

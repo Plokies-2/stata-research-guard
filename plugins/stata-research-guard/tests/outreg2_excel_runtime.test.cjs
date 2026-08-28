@@ -36,7 +36,11 @@ test("outreg2 Excel fixture runs freshly in StataMP and preserves raw-output mar
   if (!stata) return t.skip("StataMP-64 is unavailable");
 
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-outreg2-excel-"));
-  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const stataBootstrapLog = path.join(WORKSPACE_ROOT, `${path.basename(root)}.log`);
+  t.after(() => {
+    fs.rmSync(root, { recursive: true, force: true });
+    fs.rmSync(stataBootstrapLog, { force: true });
+  });
   const completed = childProcess.spawnSync(stata, ["/e", "do", FIXTURE, root], {
     cwd: WORKSPACE_ROOT,
     encoding: "utf8",
