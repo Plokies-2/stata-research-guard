@@ -1,6 +1,6 @@
 {
   "name": "stata-research-guard",
-  "version": "0.3.0+codex.20260828221342",
+  "version": "0.3.0+codex.20260828222007",
   "description": "Provides a closed Stata command dictionary with complete selected-command guides, paper occurrences, general rules, and factual project observations.",
   "author": {
     "name": "song7"

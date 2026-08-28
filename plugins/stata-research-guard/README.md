@@ -30,6 +30,21 @@ The response may contain:
 
 The response never contains a winner, numeric ranking, semantic pass, promotion state, or automatic-selection verdict. Existing project usage is an observation, not a vote. The model considers the user's current requirements, official or maintainer semantics, project facts, paper context, and implementation simplicity, then chooses and writes the code. While the plugin is in use, code generation stays inside the exposed dictionary; if the necessary command is absent, the workflow stops and reports the missing capability.
 
+## Core design: complete guides plus high-quality paper examples
+
+The two evidence layers have different jobs and must not be collapsed into a template system:
+
+| Evidence layer | What it supplies | What it does not decide |
+| --- | --- | --- |
+| Complete official or maintainer guide | Syntax, options, warnings, examples, postestimation, stored results, and version-specific semantics | The project's estimand, sample, estimator, FE, VCE, or output design |
+| Reviewed high-quality paper example | A manually bounded block showing how the selected command operates inside a real research workflow | A reusable answer template or authority to copy surrounding commands and research choices |
+| Current-project observation | Literal paths, lines, commands, options, inputs, outputs, calls, and estimate handoffs | Which existing practice should win or be preserved |
+| `general-rules.md` | Shared prospective house style for direct, readable Stata | A score, generated-code verdict, or research-design certification |
+
+The model first chooses the command from the user's current requirements and the closed dictionary. It then uses the complete guide as grammar authority, the paper block as working context, current-project observations as facts, and the general rules as the authoring boundary. A nearby paper block may support small edits around the selected command, but it does not replace that command or import the paper's estimator, sample, FE, VCE, or output choices. If an `outreg2` example follows `areg` while the current project has chosen `regress`, the example helps with `outreg2`; it does not change `regress` to `areg`.
+
+The reviewed paper bundle covers all 184 candidate occurrences: 168 are included, 16 excluded, and 166 manually bounded high-quality blocks cover 77 commands. The remaining 32 commands are explicitly guide-only. `outreg2` has four high-quality blocks so materially different real uses can be shown without declaring one template.
+
 ## Evidence authority
 
 - StataCorp manual and help material is the syntax authority for official commands.
@@ -40,6 +55,8 @@ The response never contains a winner, numeric ranking, semantic pass, promotion 
 Documentation examples are readable and nonbinding. A document-derived fixture is labeled as derived rather than presented as a verbatim manual example. Reviewed paper evidence is installed as one locked five-file bundle: `paper_usage_occurrences.jsonl`, `command_paper_index.json`, `high_quality_paper_blocks.jsonl`, `paper_review_summary.json`, and `paper_review_integrity_audit.json`. A partial bundle, nonpassing final audit, or broken exact-ID/hash/count link aborts at server start. When the bundle is absent, or the selected command has no reviewed high-quality block, the tool provides guide-only evidence and reports the gap honestly.
 
 Complete guides are separate from short documentation excerpts and paper occurrences. They are returned only for `selected_commands`; discovery never carries guide bodies. Each indexed complete guide is hash-linked to a preserved raw source and a cleaned Markdown file. Missing files, path escape, invalid UTF-8, or raw/clean hash mismatch aborts at server start. Cleaning removes viewer navigation and presentation markup but preserves source order, syntax and abbreviation boundaries, option descriptions, warnings, examples, postestimation, stored results, references, and external links. The guide supplies command grammar; `general-rules.md`, the user request, and the current project still govern authoring and research choices.
+
+The complete-guide channel is generic, but coverage is added only after command-level source cleaning and independent audit. The current bundled pilot is the complete `reghdfe` maintainer help. Commands whose complete guide has not yet passed that process continue to use the available authoritative excerpts rather than receiving an invented or silently shortened substitute.
 
 ## Project observations
 
