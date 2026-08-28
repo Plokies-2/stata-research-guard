@@ -76,33 +76,25 @@ function extractSourceSpans(content, spans, label) {
   return `${combined}\n`;
 }
 
-function activeLogicalEntries(content) {
+function activeLogicalLines(content) {
   let text = String(content).replace(/\/\*[\s\S]*?\*\//g, "\n");
   const physical = text.split(/\r?\n/);
   const logical = [];
   let buffer = "";
-  let startLine = null;
-  for (let index = 0; index < physical.length; index += 1) {
-    const raw = physical[index];
+  for (const raw of physical) {
     const left = raw.trimStart();
     if (!buffer && (!left || left.startsWith("*") || left.startsWith("//"))) continue;
-    if (startLine === null) startLine = index + 1;
     const continuation = /\/\/\/\s*$/.test(raw);
     const piece = raw.replace(/\/\/\/\s*$/, "").trim();
     buffer = buffer ? `${buffer} ${piece}` : piece;
     if (!continuation) {
       const withoutComment = buffer.replace(/\s+\/\/(?!\/)\s.*$/, "").trim();
-      if (withoutComment) logical.push({ line: startLine, text: withoutComment });
+      if (withoutComment) logical.push(withoutComment);
       buffer = "";
-      startLine = null;
     }
   }
-  if (buffer.trim()) logical.push({ line: startLine, text: buffer.trim() });
+  if (buffer.trim()) logical.push(buffer.trim());
   return logical;
-}
-
-function activeLogicalLines(content) {
-  return activeLogicalEntries(content).map((entry) => entry.text);
 }
 
 function stripStataCommandPrefixes(line) {
@@ -110,54 +102,13 @@ function stripStataCommandPrefixes(line) {
   const prefixes = [];
   let colonPrefix = false;
   while (true) {
-    const match = value.match(/^(cap(?:t(?:u(?:r(?:e)?)?)?)?|qui(?:e(?:t(?:l(?:y)?)?)?)?|noi(?:s(?:i(?:l(?:y)?)?)?)?)(\s*:\s*|\s+)/i);
-    if (match) {
-      prefixes.push(match[1].toLowerCase());
-      if (match[2].includes(":")) colonPrefix = true;
-      value = value.slice(match[0].length).trimStart();
-      continue;
-    }
-    const versionPrefix = value.match(/^vers(?:i(?:o(?:n)?)?)?\s+[0-9]+(?:\.[0-9]+)?(?:\s*,\s*user)?\s*:\s*/i);
-    if (versionPrefix) {
-      prefixes.push("version");
-      colonPrefix = true;
-      value = value.slice(versionPrefix[0].length).trimStart();
-      continue;
-    }
-    break;
+    const match = value.match(/^(capture|cap|quietly|qui|noisily|noi)(\s*:\s*|\s+)/i);
+    if (!match) break;
+    prefixes.push(match[1].toLowerCase());
+    if (match[2].includes(":")) colonPrefix = true;
+    value = value.slice(match[0].length).trimStart();
   }
   return { value, prefixes, colon_prefix: colonPrefix };
-}
-
-const STATA_PROGRAM_COMMAND = "pr(?:o(?:g(?:r(?:a(?:m)?)?)?)?)?";
-const STATA_DEFINE_COMMAND = "de(?:f(?:i(?:n(?:e)?)?)?)?";
-
-function parseStataProgramDefinition(command) {
-  const match = String(command || "").match(new RegExp(`^${STATA_PROGRAM_COMMAND}\\s+(?:(${STATA_DEFINE_COMMAND})\\s+)?([A-Za-z_][A-Za-z0-9_]*)\\b(?:\\s*,[\\s\\S]*)?$`, "i"));
-  if (!match) return null;
-  const name = match[2].toLowerCase();
-  if (!match[1] && ["dir", "drop", "list", "plugin"].includes(name)) return null;
-  return { name };
-}
-
-function isStataProgramDrop(command) {
-  return new RegExp(`^${STATA_PROGRAM_COMMAND}\\s+drop\\b`, "i").test(String(command || ""));
-}
-
-function parseStataProgramDrop(command) {
-  const match = String(command || "").match(new RegExp(`^${STATA_PROGRAM_COMMAND}\\s+drop\\s+([A-Za-z_][A-Za-z0-9_]*(?:\\s+[A-Za-z_][A-Za-z0-9_]*)*)\\s*$`, "i"));
-  if (!match) return null;
-  const names = match[1].toLowerCase().split(/\s+/);
-  if (names.length === 1 && names[0] === "_all") return { all: true, all_ado: false, names: [] };
-  if (names.length === 1 && names[0] === "_allado") return { all: false, all_ado: true, names: [] };
-  if (names.some((name) => name === "_all" || name === "_allado")) return null;
-  return { all: false, all_ado: false, names };
-}
-
-function applyStataProgramDrop(programs, operation) {
-  if (!operation) return;
-  if (operation.all) programs.clear();
-  else if (!operation.all_ado) for (const name of operation.names) programs.delete(name);
 }
 
 function normalizeStructuralPrefixes(content) {
@@ -173,9 +124,8 @@ function commandSignature(line) {
   const parsed = stripStataCommandPrefixes(String(line).toLowerCase());
   const value = parsed.value;
   const capture = parsed.prefixes.some((prefix) => prefix === "capture" || prefix === "cap");
-  const programDefinition = parseStataProgramDefinition(value);
-  if (programDefinition) return `program define:${programDefinition.name}`;
-  if (isStataProgramDrop(value)) return `${capture ? "capture " : ""}program drop`;
+  if (/^program\s+define\b/.test(value)) return `program define:${value.match(/^program\s+define\s+([^\s,]+)/)?.[1] || "unknown"}`;
+  if (/^program\s+drop\b/.test(value)) return `${capture ? "capture " : ""}program drop`;
   if (/^estimates\s+(use|save|store|restore|clear)\b/.test(value)) return `estimates ${value.match(/^estimates\s+(\w+)/)[1]}`;
   if (/^export\s+excel\b/.test(value)) return `export excel${/\bsheet\s*\(/.test(value) ? ":sheet" : ""}${/\breplace\b/.test(value) ? ":replace" : ""}`;
   if (/^import\s+delimited\b/.test(value)) return "import delimited";
@@ -310,35 +260,12 @@ function expandDeterministicMacros(line, macros) {
 
 function literalMacroValue(rawValue) {
   let value = String(rawValue || "").trim();
-  if (!value || value.startsWith(":") || /[`$]/.test(value)) return null;
-  let explicitStringLiteral = false;
-  const unwrapSingleLiteral = (text) => {
-    const doubleQuoted = text.match(/^"([^"]*)"$/);
-    if (doubleQuoted) return doubleQuoted[1];
-    const singleQuoted = text.match(/^'([^']*)'$/);
-    return singleQuoted ? singleQuoted[1] : null;
-  };
-  if (value.startsWith("=")) {
-    const expression = value.slice(1).trim();
-    const literalExpression = unwrapSingleLiteral(expression);
-    if (literalExpression === null) return null;
-    value = literalExpression;
-    explicitStringLiteral = true;
-  } else if (/^["']/.test(value)) {
-    const literal = unwrapSingleLiteral(value);
-    if (literal === null) return null;
-    value = literal;
-    explicitStringLiteral = true;
-  }
-  if (!explicitStringLiteral && /["']|[+*]|\b(?!tex\s*\(\s*\)$)[a-z_][a-z0-9_]*\s*\(/i.test(value)) return null;
-  if ((!value && !explicitStringLiteral) || /[`$]/.test(value)) return null;
+  if (!value || value.startsWith("=") || /[`$]/.test(value)) return null;
+  const quoted = value.match(/^(["'])([\s\S]*)\1$/);
+  if (quoted) value = quoted[2];
+  else if (/["']|[+*]|\b(?!tex\s*\(\s*\)$)[a-z_][a-z0-9_]*\s*\(/i.test(value)) return null;
+  if (!value || /[`$]/.test(value)) return null;
   return value;
-}
-
-function parseStataMacroAssignment(line) {
-  const assignment = String(line || "").match(/^(gl(?:o(?:b(?:a(?:l)?)?)?)?|loc(?:a(?:l)?)?)\s+([a-z_][a-z0-9_]*)(?:(\s*=[\s\S]*)|\s+([\s\S]+))$/i);
-  if (!assignment) return null;
-  return { scope: /^gl/i.test(assignment[1]) ? "global" : "local", name: assignment[2].toLowerCase(), raw_value: assignment[3] ?? assignment[4] };
 }
 
 function deterministicGlobalValue(rawValue, resolved, root) {
@@ -354,11 +281,11 @@ function collectProjectGlobalEnvironment(projectContents, root) {
     const relative = path.relative(root, file).replace(/\\/g, "/");
     for (const [index, rawLine] of activeLogicalLines(content).entries()) {
       const line = stripStataCommandPrefixes(rawLine).value;
-      const assignment = parseStataMacroAssignment(line);
-      if (!assignment || assignment.scope !== "global") continue;
-      const name = assignment.name;
+      const assignment = line.match(/^global\s+([a-z_][a-z0-9_]*)\s+(.+)$/i);
+      if (!assignment) continue;
+      const name = assignment[1].toLowerCase();
       if (!definitions.has(name)) definitions.set(name, []);
-      definitions.get(name).push({ file: relative, logical_line: index + 1, raw_value: assignment.raw_value });
+      definitions.get(name).push({ file: relative, logical_line: index + 1, raw_value: assignment[2] });
     }
   }
   const resolved = new Map();
@@ -401,11 +328,11 @@ function collectFileMacroEnvironment(content, projectGlobals) {
   const evidence = [];
   for (const rawLine of activeLogicalLines(content)) {
     const line = stripStataCommandPrefixes(rawLine).value;
-    const assignment = parseStataMacroAssignment(line);
+    const assignment = line.match(/^(global|local)\s+([a-z_][a-z0-9_]*)\s+(.+)$/i);
     if (!assignment) continue;
-    const scope = assignment.scope;
-    const name = assignment.name;
-    const literal = deterministicGlobalValue(assignment.raw_value, resolved, "");
+    const scope = assignment[1].toLowerCase();
+    const name = assignment[2].toLowerCase();
+    const literal = deterministicGlobalValue(assignment[3], resolved, "");
     if (literal === null) continue;
     resolved.set(`${scope}:${name}`, literal);
     evidence.push({ scope, name, literal });
@@ -422,72 +349,6 @@ function optionLiteral(command, name, projectGlobals) {
   return { value: value.trim(), unresolved: false };
 }
 
-function multiplicityProgramEvents(content, file) {
-  const events = [];
-  let definition = null;
-  for (const entry of activeLogicalEntries(content)) {
-    const command = stripStataCommandPrefixes(entry.text).value;
-    const start = parseStataProgramDefinition(command);
-    if (!definition && start) {
-      definition = { name: start.name, entries: [], file };
-      continue;
-    }
-    if (definition) {
-      if (/^end\s*$/i.test(command)) {
-        events.push({ program_definition: definition });
-        definition = null;
-      } else definition.entries.push({ ...entry, file });
-      continue;
-    }
-    events.push({ ...entry, file });
-  }
-  return events;
-}
-
-function multiplicityExecutionRows(content, file, state) {
-  const rows = [];
-  const execute = (entries, locals = new Map(), trail = new Set()) => {
-    for (const entry of entries) {
-      if (entry.program_definition) {
-        state.programs.set(entry.program_definition.name, entry.program_definition);
-        continue;
-      }
-      const command = stripStataCommandPrefixes(entry.text).value;
-      const assignment = parseStataMacroAssignment(command);
-      if (assignment) {
-        const target = assignment.scope === "global" ? state.globalEnvironment : locals;
-        const key = `${assignment.scope}:${assignment.name}`;
-        const environment = new Map([...state.globalEnvironment, ...locals]);
-        target.delete(key);
-        const literal = deterministicGlobalValue(assignment.raw_value, environment, "");
-        if (literal !== null) target.set(key, literal);
-        continue;
-      }
-      const args = command.match(/^args\s+([\s\S]+)$/i);
-      if (args) {
-        for (const name of args[1].split(/\s+/).filter((value) => /^[A-Za-z_][A-Za-z0-9_]*$/.test(value))) locals.delete(`local:${name.toLowerCase()}`);
-        continue;
-      }
-      const dropped = parseStataProgramDrop(command);
-      if (dropped) {
-        applyStataProgramDrop(state.programs, dropped);
-        continue;
-      }
-      const resolved = new Map([...state.globalEnvironment, ...locals]);
-      rows.push({ file: entry.file || file, logical_line: entry.line, command, resolved });
-      const invoked = command.match(/^([A-Za-z_][A-Za-z0-9_]*)\b/i)?.[1]?.toLowerCase();
-      if (invoked && state.programs.has(invoked) && !trail.has(invoked)) {
-        const nextTrail = new Set(trail);
-        nextTrail.add(invoked);
-        const program = state.programs.get(invoked);
-        execute(program.entries, new Map(), nextTrail);
-      }
-    }
-  };
-  execute(multiplicityProgramEvents(content, file));
-  return rows;
-}
-
 function canonicalOutreg2HelperMultiplicity(projectContents, projectGlobals, projectComponentIds = new Map(), projectGlobalsByComponent = new Map()) {
   const sheets = new Set();
   const placements = new Set();
@@ -500,37 +361,33 @@ function canonicalOutreg2HelperMultiplicity(projectContents, projectGlobals, pro
   const allDurableEstimates = new Set();
   const producerEvidence = [];
   const componentStates = new Map();
-  for (const [entryKey, rawEntry] of projectContents.entries()) {
-    const descriptor = rawEntry && typeof rawEntry === "object" && !Buffer.isBuffer(rawEntry)
-      ? rawEntry
-      : { file: entryKey, content: rawEntry };
-    const file = descriptor.file || entryKey;
-    const content = String(descriptor.content || "");
-    const componentId = descriptor.component_id || projectComponentIds.get(file) || "default";
+  for (const [file, content] of projectContents.entries()) {
+    const componentId = projectComponentIds.get(file) || "default";
     if (!componentStates.has(componentId)) {
+      const baseGlobals = [...(projectGlobalsByComponent.get(componentId)?.resolved || projectGlobals?.resolved || [])]
+        .filter(([key]) => String(key).startsWith("global:"));
       componentStates.set(componentId, {
         producedEstimates: new Set(),
         durableEstimates: new Set(),
-        // Start empty and advance in source execution order. A component-wide
-        // final environment would let later global definitions flow backward
-        // into earlier output-consumer calls.
-        globalEnvironment: new Map(),
-        programs: new Map(),
+        globalEnvironment: new Map(baseGlobals),
       });
     }
-    const state = componentStates.get(componentId);
-    const { producedEstimates, durableEstimates } = state;
-    const executionRows = descriptor.executed_trace
-      ? activeLogicalEntries(content).map((entry) => ({
-        file,
-        logical_line: descriptor.logical_line || entry.line,
-        command: stripStataCommandPrefixes(entry.text).value,
-        resolved: new Map(descriptor.resolved_environment || []),
-      }))
-      : multiplicityExecutionRows(content, file, state);
-    for (const row of executionRows) {
-      const resolved = row.resolved;
-      const command = expandDeterministicMacros(row.command, resolved);
+    const { producedEstimates, durableEstimates, globalEnvironment } = componentStates.get(componentId);
+    const resolved = new Map(globalEnvironment);
+    for (const [index, line] of activeLogicalLines(content).entries()) {
+      const stripped = stripStataCommandPrefixes(line).value;
+      const assignment = stripped.match(/^(global|local)\s+([a-z_][a-z0-9_]*)\s+(.+)$/i);
+      if (assignment) {
+        const scope = assignment[1].toLowerCase();
+        const name = assignment[2].toLowerCase();
+        const literal = deterministicGlobalValue(assignment[3], resolved, "");
+        if (literal !== null) {
+          resolved.set(`${scope}:${name}`, literal);
+          if (scope === "global") globalEnvironment.set(`global:${name}`, literal);
+        }
+        continue;
+      }
+      const command = expandDeterministicMacros(stripped, resolved);
       if (/^estimates?\s+clear\b/i.test(command)) producedEstimates.clear();
       const dropped = command.match(/^estimates?\s+drop\s+([a-z_][a-z0-9_]*)\b/i);
       if (dropped) producedEstimates.delete(dropped[1].toLowerCase());
@@ -539,7 +396,7 @@ function canonicalOutreg2HelperMultiplicity(projectContents, projectGlobals, pro
         const estimateName = stored[1].toLowerCase();
         producedEstimates.add(estimateName);
         allProducedEstimates.add(estimateName);
-        producerEvidence.push({ file: row.file, component_id: componentId, logical_line: row.logical_line, estimate_name: estimateName, command: "estimates store" });
+        producerEvidence.push({ file, component_id: componentId, logical_line: index + 1, estimate_name: estimateName, command: "estimates store" });
       }
       const saved = command.match(/^estimates?\s+save\s+(?:"([^"]+\.ster)"|'([^']+\.ster)'|([^\s,]+\.ster))/i);
       if (saved) {
@@ -547,7 +404,7 @@ function canonicalOutreg2HelperMultiplicity(projectContents, projectGlobals, pro
         const estimateName = path.basename(sterPath, path.extname(sterPath)).toLowerCase();
         durableEstimates.add(estimateName);
         allDurableEstimates.add(estimateName);
-        producerEvidence.push({ file: row.file, component_id: componentId, logical_line: row.logical_line, estimate_name: estimateName, command: "estimates save", state: "durable_ster" });
+        producerEvidence.push({ file, component_id: componentId, logical_line: index + 1, estimate_name: estimateName, command: "estimates save", state: "durable_ster" });
       }
       if (!/^outreg2_xlsx\s*,/i.test(command)) continue;
       const environment = { resolved };
@@ -568,9 +425,9 @@ function canonicalOutreg2HelperMultiplicity(projectContents, projectGlobals, pro
         sheetsByWorkbook.get(componentWorkbookKey).add(sheet.value.toLowerCase());
       }
       calls.push({
-        file: row.file,
+        file,
         component_id: componentId,
-        logical_line: row.logical_line,
+        logical_line: index + 1,
         estimates: estimates.value,
         estimate_names: estimateNames,
         estimate_count: estimateCount,
@@ -628,7 +485,7 @@ function axisOptionsInSpan(content, projectGlobals) {
   const logical = activeLogicalLines(content);
   for (const raw of logical) {
     const command = stripStataCommandPrefixes(raw).value;
-    const assignment = command.match(/^loc(?:a(?:l)?)?\s+([a-z_][a-z0-9_]*)(?:\s+(.+))?$/i);
+    const assignment = command.match(/^local\s+([a-z_][a-z0-9_]*)(?:\s+(.+))?$/i);
     if (!assignment) continue;
     if (assignment[2] === undefined) {
       // Stata의 `local name'은 macro를 빈 값으로 지운다. 선택된 축 분기에서
@@ -668,7 +525,7 @@ function loopBlock(lines, start) {
 }
 
 function declaredLocalWords(lines, localName) {
-  const pattern = new RegExp(`^loc(?:a(?:l)?)?\\s+${escapedRegex(localName)}\\s+(.+)$`, "i");
+  const pattern = new RegExp(`^local\\s+${escapedRegex(localName)}\\s+(.+)$`, "i");
   for (const line of lines) {
     const match = stripStataCommandPrefixes(line).value.match(pattern);
     if (!match) continue;
@@ -692,7 +549,7 @@ function verifyMixedEventStudyAxisLoop(root, decision, projectGlobals) {
 
   const lines = activeLogicalLines(spanContent).map((line) => stripStataCommandPrefixes(line).value);
   if (/\b(?:plot_jobs?|graph_jobs?|plot_job|graph_job)\b/i.test(lines.join("\n"))
-      || lines.some((line) => /^loc(?:a(?:l)?)?\s+\w+\s*:\s*word\b/i.test(line))) {
+      || lines.some((line) => /^local\s+\w+\s*:\s*word\b/i.test(line))) {
     findings.push({ rule: "event_study_mixed_loop_dispatcher_forbidden", target_path: binding.target_path });
   }
   const loops = lines.map((line, index) => ({ line, index }))
@@ -877,12 +734,12 @@ function analyzeTexOutputContent(content, projectGlobals = null) {
   const outputMacroIssues = [];
   for (const rawLine of activeLogicalLines(content)) {
     const line = stripStataCommandPrefixes(rawLine).value;
-    const assignment = parseStataMacroAssignment(line);
+    const assignment = line.match(/^(local|global)\s+([a-z_][a-z0-9_]*)\s+(.+)$/i);
     if (assignment) {
-      let value = expandDeterministicMacros(String(assignment.raw_value || "").trim(), macros);
+      let value = expandDeterministicMacros(assignment[3].trim(), macros);
       const literal = literalMacroValue(value);
-      const kind = assignment.scope;
-      const name = assignment.name;
+      const kind = assignment[1].toLowerCase();
+      const name = assignment[2].toLowerCase();
       const key = `${kind}:${name}`;
       if (literal !== null) {
         macros.set(key, literal);
@@ -1059,21 +916,18 @@ function listDoFiles(root) {
 function extractProgramDefinitions(content, relativeFile) {
   const lines = String(content).split(/\r?\n/);
   const definitions = [];
-  const entries = activeLogicalEntries(content);
-  for (let index = 0; index < entries.length; index += 1) {
-    const definition = parseStataProgramDefinition(stripStataCommandPrefixes(entries[index].text).value);
-    if (!definition) continue;
+  for (let index = 0; index < lines.length; index += 1) {
+    const match = stripStataCommandPrefixes(lines[index]).value.match(/^program\s+define\s+([^\s,]+)/i);
+    if (!match) continue;
     let end = index;
-    while (end + 1 < entries.length && !/^end\s*$/i.test(stripStataCommandPrefixes(entries[end + 1].text).value)) end += 1;
-    if (end + 1 < entries.length) end += 1;
-    const startLine = entries[index].line;
-    const endLine = end + 1 < entries.length ? entries[end].line : lines.length;
+    while (end + 1 < lines.length && !/^\s*end\s*(?:\/\/.*)?$/i.test(lines[end + 1])) end += 1;
+    if (end + 1 < lines.length) end += 1;
     definitions.push({
-      name: definition.name,
+      name: match[1],
       file: relativeFile,
-      line: startLine,
-      end_line: endLine,
-      body: lines.slice(startLine - 1, endLine).join("\n"),
+      line: index + 1,
+      end_line: end + 1,
+      body: lines.slice(index, end + 1).join("\n"),
     });
     index = end;
   }
@@ -1137,7 +991,7 @@ function canonicalOutreg2ScratchContractFindings(content) {
     command: stripStataCommandPrefixes(line).value,
     logical_line: index + 1,
   }));
-  const scratchLocal = /^loc(?:a(?:l)?)?\s+scratch\s+"\$table\/__outreg2_`sheet'"\s*$/i;
+  const scratchLocal = /^local\s+scratch\s+"\$table\/__outreg2_`sheet'"\s*$/i;
   const outreg2Scratch = /^outreg2\s+using\s+"`scratch'"/i;
   const importScratch = /^import\s+delimited\s+using\s+"`scratch'\.txt"/i;
   const bareEraseScratch = /^erase\s+"`scratch'\.txt"\s*$/i;
@@ -1717,9 +1571,9 @@ function templateReuseCheck(args, context) {
               if (lint.summary.max_loop_depth > 2) failSubstep("general_rule_target_nested_loop", { max_loop_depth: lint.summary.max_loop_depth });
               generalRuleEvidence.tex_output = hasTexOutputContent(targetText);
               if (generalRuleEvidence.tex_output) failSubstep("general_rule_target_tex_output");
-              generalRuleEvidence.program_definitions = activeLogicalEntries(targetText).flatMap((entry) => {
-                const program = parseStataProgramDefinition(stripStataCommandPrefixes(entry.text).value);
-                return program ? [{ name: program.name, line: entry.line }] : [];
+              generalRuleEvidence.program_definitions = targetText.split(/\r?\n/).flatMap((line, index) => {
+                const program = stripStataCommandPrefixes(line).value.match(/^program\s+define\s+([^\s,]+)/i);
+                return program ? [{ name: program[1], line: index + 1 }] : [];
               });
               if (generalRuleEvidence.program_definitions.length) failSubstep("general_rule_target_program_definition", { definitions: generalRuleEvidence.program_definitions });
 

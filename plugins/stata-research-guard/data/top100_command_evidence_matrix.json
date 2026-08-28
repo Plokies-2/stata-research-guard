@@ -9870,7 +9870,7 @@
         "sort_gsort",
         "use_save"
       ],
-      "classification": "reference",
+      "classification": "candidate",
       "code": "keep agno rbd Public Voucher Private Rural clave mrun Edad Female Perm Hours Hours_Admin Hours_Teach SenioritySystem SenioritySchool /// \nEducDegree CollegeDegree Teacher SupportWorker_Law20501 SupportWorker Administrative Principal cod_com_rbd\norder clave mrun agno rbd Public Rural Edad Female Hours Teacher SupportWorker SupportWorker_Law20501 Administrative Principal Hours_Admin Hours_Teach SenioritySystem SenioritySchool EducDegree CollegeDegree \nsort mrun agno rbd cod_com_rbd\n\ncompress\nsave \"Data/clean/panel_employeremployee.dta\", replace\n",
       "code_line_count": 7,
       "code_sha256": "000e0bea1dcab1384bc50b2e5f4f45ad8354460e6a07d616cd9ac97e9344e750",
@@ -9884,7 +9884,7 @@
       "decision": "conditional_keep",
       "label_id": "dataset.finalize_declared_inventory_order_sort_save.v1",
       "mapping_scope": "group_context_only_not_exact_contract_support",
-      "rubric_classification": "reference_only",
+      "rubric_classification": "preferred_candidate",
       "source_file_sha256": "ff65b6d4df4f03e3eaa247d512bacfa23e116588b102162cc1d093809faa4e5e",
       "source_kind": "deposited_research_code",
       "source_path": "corpus/packages/191751/script_buildatasets.do",
@@ -10881,7 +10881,7 @@
       "anchor_mapped_group_ids": [
         "coefplot"
       ],
-      "classification": "reference",
+      "classification": "candidate",
       "code": "coefplot (reg_std_q44e, keep(T_*) mcolor(navy) ciopts(lcolor(navy))) ///\n\t\t(reg_std_q44k, keep(T_*) mcolor(navy) ciopts(lcolor(navy))) /// \n\t\t(reg_std_q44m , keep(T_*) mcolor(navy) ciopts(lcolor(navy))) /// \n\t\t(reg_std_q44w , keep(T_*) mcolor(navy) ciopts(lcolor(navy))) /// \n\t\t(reg_std_q44x , keep(T_*) mcolor(navy) ciopts(lcolor(navy))) /// \n\t\t(reg_eq_index_ds, keep(T_*) mcolor(navy) ciopts(lcolor(navy))), ///\n\t\tbgcolor(white) plotregion(color(white)) graphregion(color(white)) ///\n\t\txline(0, lwidth(thin)) nooffsets grid(w) ///\n\t\txtitle(\"Treatment effect\" \"(standard deviations)\") legend(off) ///\n\t\tcoeflabels(\"T_std_q44k\"=`\" \"Academic perform depression/anxiety/\" \"seasonal affect disorder\" \"', ///\n\t\t\tlabsize(normal)) ///\t\n\t\txscale(r(-0.15 0.15)) xtick(-0.15(0.05)0.15) xlabel(-0.15 -0.10 -0.05 0 0.05 0.10 0.15, labsize(normal))\n",
       "code_line_count": 12,
       "code_sha256": "528312de14602e90d609800a478cd934c04feda4c6db4a426c8ad0df3fef58fe",
@@ -10891,7 +10891,7 @@
       "decision": "conditional_keep",
       "label_id": "figure.coefplot_named_estimates_labels.v1",
       "mapping_scope": "group_context_only_not_exact_contract_support",
-      "rubric_classification": "reference_only",
+      "rubric_classification": "preferred_candidate",
       "source_file_sha256": "23b3e7875eefd46bc9fa0deb17b66841cba3e3db8fdbea47f3600d71b1492577",
       "source_kind": "deposited_research_code_source_pattern",
       "source_path": "corpus/packages/175582/Code/Analysis/Figures_MainText/Figures_MainText.do",
@@ -10904,7 +10904,7 @@
     },
     {
       "anchor_mapped_group_ids": [],
-      "classification": "reference",
+      "classification": "candidate",
       "code": "graph bar v ,  over(type, label(labsize(small))) over(moment, label(labsize(small)))  asyvars /// \ntext(-.065 25 \"Share of Firms\") text(-.065 62.5 \"Share of Output\")  text(-.065 90 \"Relative Output\")  ///\nbar(1,fcolor(maroon) lcolor(maroon)) bar(2, fcolor(white) lcolor(navy) lwidth(medthick)) ///\ngraphregion(fcolor(white)) graphregion(color(white)) ///  \nplotregion(fcolor(white)) ///\nytitle(\"Moment Value\") legend(position(12)   region(col(white)))\n",
       "code_line_count": 6,
       "code_sha256": "997f4a8f756a8a13cfd3375ab09d0f720543cf4a2779fd2ed4bc4fe6019ab1ae",
@@ -10914,7 +10914,7 @@
       "decision": "conditional_keep",
       "label_id": "figure.descriptive_grouped_bar.v1",
       "mapping_scope": "group_context_only_not_exact_contract_support",
-      "rubric_classification": "reference_only",
+      "rubric_classification": "conditional_candidate",
       "source_file_sha256": "b8b62ca01c024e6288583e3f300afd1eb10ba0ebed5dd6b50d7c31b32676d797",
       "source_kind": "deposited_research_code",
       "source_path": "corpus/packages/196012/Do/Figure6.do",
@@ -13086,6 +13086,39 @@
         "candidate": [
           {
             "anchor_mapped_group_ids": [
+              "clonevar_recast_compress",
+              "keep_drop",
+              "rename_order",
+              "sort_gsort",
+              "use_save"
+            ],
+            "classification": "candidate",
+            "code": "keep agno rbd Public Voucher Private Rural clave mrun Edad Female Perm Hours Hours_Admin Hours_Teach SenioritySystem SenioritySchool /// \nEducDegree CollegeDegree Teacher SupportWorker_Law20501 SupportWorker Administrative Principal cod_com_rbd\norder clave mrun agno rbd Public Rural Edad Female Hours Teacher SupportWorker SupportWorker_Law20501 Administrative Principal Hours_Admin Hours_Teach SenioritySystem SenioritySchool EducDegree CollegeDegree \nsort mrun agno rbd cod_com_rbd\n\ncompress\nsave \"Data/clean/panel_employeremployee.dta\", replace\n",
+            "code_line_count": 7,
+            "code_sha256": "000e0bea1dcab1384bc50b2e5f4f45ad8354460e6a07d616cd9ac97e9344e750",
+            "command_anchors": [
+              "keep",
+              "order",
+              "sort",
+              "compress",
+              "save"
+            ],
+            "decision": "conditional_keep",
+            "label_id": "dataset.finalize_declared_inventory_order_sort_save.v1",
+            "mapping_scope": "group_context_only_not_exact_contract_support",
+            "rubric_classification": "preferred_candidate",
+            "source_file_sha256": "ff65b6d4df4f03e3eaa247d512bacfa23e116588b102162cc1d093809faa4e5e",
+            "source_kind": "deposited_research_code",
+            "source_path": "corpus/packages/191751/script_buildatasets.do",
+            "source_spans": [
+              [
+                277,
+                283
+              ]
+            ]
+          },
+          {
+            "anchor_mapped_group_ids": [
               "collapse",
               "preserve_restore",
               "temp_objects",
@@ -13407,39 +13440,6 @@
               [
                 18,
                 19
-              ]
-            ]
-          },
-          {
-            "anchor_mapped_group_ids": [
-              "clonevar_recast_compress",
-              "keep_drop",
-              "rename_order",
-              "sort_gsort",
-              "use_save"
-            ],
-            "classification": "reference",
-            "code": "keep agno rbd Public Voucher Private Rural clave mrun Edad Female Perm Hours Hours_Admin Hours_Teach SenioritySystem SenioritySchool /// \nEducDegree CollegeDegree Teacher SupportWorker_Law20501 SupportWorker Administrative Principal cod_com_rbd\norder clave mrun agno rbd Public Rural Edad Female Hours Teacher SupportWorker SupportWorker_Law20501 Administrative Principal Hours_Admin Hours_Teach SenioritySystem SenioritySchool EducDegree CollegeDegree \nsort mrun agno rbd cod_com_rbd\n\ncompress\nsave \"Data/clean/panel_employeremployee.dta\", replace\n",
-            "code_line_count": 7,
-            "code_sha256": "000e0bea1dcab1384bc50b2e5f4f45ad8354460e6a07d616cd9ac97e9344e750",
-            "command_anchors": [
-              "keep",
-              "order",
-              "sort",
-              "compress",
-              "save"
-            ],
-            "decision": "conditional_keep",
-            "label_id": "dataset.finalize_declared_inventory_order_sort_save.v1",
-            "mapping_scope": "group_context_only_not_exact_contract_support",
-            "rubric_classification": "reference_only",
-            "source_file_sha256": "ff65b6d4df4f03e3eaa247d512bacfa23e116588b102162cc1d093809faa4e5e",
-            "source_kind": "deposited_research_code",
-            "source_path": "corpus/packages/191751/script_buildatasets.do",
-            "source_spans": [
-              [
-                277,
-                283
               ]
             ]
           },
@@ -18143,6 +18143,39 @@
         "candidate": [
           {
             "anchor_mapped_group_ids": [
+              "clonevar_recast_compress",
+              "keep_drop",
+              "rename_order",
+              "sort_gsort",
+              "use_save"
+            ],
+            "classification": "candidate",
+            "code": "keep agno rbd Public Voucher Private Rural clave mrun Edad Female Perm Hours Hours_Admin Hours_Teach SenioritySystem SenioritySchool /// \nEducDegree CollegeDegree Teacher SupportWorker_Law20501 SupportWorker Administrative Principal cod_com_rbd\norder clave mrun agno rbd Public Rural Edad Female Hours Teacher SupportWorker SupportWorker_Law20501 Administrative Principal Hours_Admin Hours_Teach SenioritySystem SenioritySchool EducDegree CollegeDegree \nsort mrun agno rbd cod_com_rbd\n\ncompress\nsave \"Data/clean/panel_employeremployee.dta\", replace\n",
+            "code_line_count": 7,
+            "code_sha256": "000e0bea1dcab1384bc50b2e5f4f45ad8354460e6a07d616cd9ac97e9344e750",
+            "command_anchors": [
+              "keep",
+              "order",
+              "sort",
+              "compress",
+              "save"
+            ],
+            "decision": "conditional_keep",
+            "label_id": "dataset.finalize_declared_inventory_order_sort_save.v1",
+            "mapping_scope": "group_context_only_not_exact_contract_support",
+            "rubric_classification": "preferred_candidate",
+            "source_file_sha256": "ff65b6d4df4f03e3eaa247d512bacfa23e116588b102162cc1d093809faa4e5e",
+            "source_kind": "deposited_research_code",
+            "source_path": "corpus/packages/191751/script_buildatasets.do",
+            "source_spans": [
+              [
+                277,
+                283
+              ]
+            ]
+          },
+          {
+            "anchor_mapped_group_ids": [
               "collapse",
               "export",
               "keep_drop",
@@ -18671,39 +18704,6 @@
               [
                 388,
                 402
-              ]
-            ]
-          },
-          {
-            "anchor_mapped_group_ids": [
-              "clonevar_recast_compress",
-              "keep_drop",
-              "rename_order",
-              "sort_gsort",
-              "use_save"
-            ],
-            "classification": "reference",
-            "code": "keep agno rbd Public Voucher Private Rural clave mrun Edad Female Perm Hours Hours_Admin Hours_Teach SenioritySystem SenioritySchool /// \nEducDegree CollegeDegree Teacher SupportWorker_Law20501 SupportWorker Administrative Principal cod_com_rbd\norder clave mrun agno rbd Public Rural Edad Female Hours Teacher SupportWorker SupportWorker_Law20501 Administrative Principal Hours_Admin Hours_Teach SenioritySystem SenioritySchool EducDegree CollegeDegree \nsort mrun agno rbd cod_com_rbd\n\ncompress\nsave \"Data/clean/panel_employeremployee.dta\", replace\n",
-            "code_line_count": 7,
-            "code_sha256": "000e0bea1dcab1384bc50b2e5f4f45ad8354460e6a07d616cd9ac97e9344e750",
-            "command_anchors": [
-              "keep",
-              "order",
-              "sort",
-              "compress",
-              "save"
-            ],
-            "decision": "conditional_keep",
-            "label_id": "dataset.finalize_declared_inventory_order_sort_save.v1",
-            "mapping_scope": "group_context_only_not_exact_contract_support",
-            "rubric_classification": "reference_only",
-            "source_file_sha256": "ff65b6d4df4f03e3eaa247d512bacfa23e116588b102162cc1d093809faa4e5e",
-            "source_kind": "deposited_research_code",
-            "source_path": "corpus/packages/191751/script_buildatasets.do",
-            "source_spans": [
-              [
-                277,
-                283
               ]
             ]
           },
@@ -19621,7 +19621,41 @@
         }
       ],
       "paper_code_context": {
-        "candidate": [],
+        "candidate": [
+          {
+            "anchor_mapped_group_ids": [
+              "clonevar_recast_compress",
+              "keep_drop",
+              "rename_order",
+              "sort_gsort",
+              "use_save"
+            ],
+            "classification": "candidate",
+            "code": "keep agno rbd Public Voucher Private Rural clave mrun Edad Female Perm Hours Hours_Admin Hours_Teach SenioritySystem SenioritySchool /// \nEducDegree CollegeDegree Teacher SupportWorker_Law20501 SupportWorker Administrative Principal cod_com_rbd\norder clave mrun agno rbd Public Rural Edad Female Hours Teacher SupportWorker SupportWorker_Law20501 Administrative Principal Hours_Admin Hours_Teach SenioritySystem SenioritySchool EducDegree CollegeDegree \nsort mrun agno rbd cod_com_rbd\n\ncompress\nsave \"Data/clean/panel_employeremployee.dta\", replace\n",
+            "code_line_count": 7,
+            "code_sha256": "000e0bea1dcab1384bc50b2e5f4f45ad8354460e6a07d616cd9ac97e9344e750",
+            "command_anchors": [
+              "keep",
+              "order",
+              "sort",
+              "compress",
+              "save"
+            ],
+            "decision": "conditional_keep",
+            "label_id": "dataset.finalize_declared_inventory_order_sort_save.v1",
+            "mapping_scope": "group_context_only_not_exact_contract_support",
+            "rubric_classification": "preferred_candidate",
+            "source_file_sha256": "ff65b6d4df4f03e3eaa247d512bacfa23e116588b102162cc1d093809faa4e5e",
+            "source_kind": "deposited_research_code",
+            "source_path": "corpus/packages/191751/script_buildatasets.do",
+            "source_spans": [
+              [
+                277,
+                283
+              ]
+            ]
+          }
+        ],
         "excluded": [
           {
             "anchor_mapped_group_ids": [
@@ -19711,39 +19745,6 @@
           }
         ],
         "reference": [
-          {
-            "anchor_mapped_group_ids": [
-              "clonevar_recast_compress",
-              "keep_drop",
-              "rename_order",
-              "sort_gsort",
-              "use_save"
-            ],
-            "classification": "reference",
-            "code": "keep agno rbd Public Voucher Private Rural clave mrun Edad Female Perm Hours Hours_Admin Hours_Teach SenioritySystem SenioritySchool /// \nEducDegree CollegeDegree Teacher SupportWorker_Law20501 SupportWorker Administrative Principal cod_com_rbd\norder clave mrun agno rbd Public Rural Edad Female Hours Teacher SupportWorker SupportWorker_Law20501 Administrative Principal Hours_Admin Hours_Teach SenioritySystem SenioritySchool EducDegree CollegeDegree \nsort mrun agno rbd cod_com_rbd\n\ncompress\nsave \"Data/clean/panel_employeremployee.dta\", replace\n",
-            "code_line_count": 7,
-            "code_sha256": "000e0bea1dcab1384bc50b2e5f4f45ad8354460e6a07d616cd9ac97e9344e750",
-            "command_anchors": [
-              "keep",
-              "order",
-              "sort",
-              "compress",
-              "save"
-            ],
-            "decision": "conditional_keep",
-            "label_id": "dataset.finalize_declared_inventory_order_sort_save.v1",
-            "mapping_scope": "group_context_only_not_exact_contract_support",
-            "rubric_classification": "reference_only",
-            "source_file_sha256": "ff65b6d4df4f03e3eaa247d512bacfa23e116588b102162cc1d093809faa4e5e",
-            "source_kind": "deposited_research_code",
-            "source_path": "corpus/packages/191751/script_buildatasets.do",
-            "source_spans": [
-              [
-                277,
-                283
-              ]
-            ]
-          },
           {
             "anchor_mapped_group_ids": [
               "egen",
@@ -21541,6 +21542,39 @@
         "candidate": [
           {
             "anchor_mapped_group_ids": [
+              "clonevar_recast_compress",
+              "keep_drop",
+              "rename_order",
+              "sort_gsort",
+              "use_save"
+            ],
+            "classification": "candidate",
+            "code": "keep agno rbd Public Voucher Private Rural clave mrun Edad Female Perm Hours Hours_Admin Hours_Teach SenioritySystem SenioritySchool /// \nEducDegree CollegeDegree Teacher SupportWorker_Law20501 SupportWorker Administrative Principal cod_com_rbd\norder clave mrun agno rbd Public Rural Edad Female Hours Teacher SupportWorker SupportWorker_Law20501 Administrative Principal Hours_Admin Hours_Teach SenioritySystem SenioritySchool EducDegree CollegeDegree \nsort mrun agno rbd cod_com_rbd\n\ncompress\nsave \"Data/clean/panel_employeremployee.dta\", replace\n",
+            "code_line_count": 7,
+            "code_sha256": "000e0bea1dcab1384bc50b2e5f4f45ad8354460e6a07d616cd9ac97e9344e750",
+            "command_anchors": [
+              "keep",
+              "order",
+              "sort",
+              "compress",
+              "save"
+            ],
+            "decision": "conditional_keep",
+            "label_id": "dataset.finalize_declared_inventory_order_sort_save.v1",
+            "mapping_scope": "group_context_only_not_exact_contract_support",
+            "rubric_classification": "preferred_candidate",
+            "source_file_sha256": "ff65b6d4df4f03e3eaa247d512bacfa23e116588b102162cc1d093809faa4e5e",
+            "source_kind": "deposited_research_code",
+            "source_path": "corpus/packages/191751/script_buildatasets.do",
+            "source_spans": [
+              [
+                277,
+                283
+              ]
+            ]
+          },
+          {
+            "anchor_mapped_group_ids": [
               "correlate_pwcorr_tabstat",
               "rename_order"
             ],
@@ -21831,39 +21865,6 @@
               [
                 1349,
                 1363
-              ]
-            ]
-          },
-          {
-            "anchor_mapped_group_ids": [
-              "clonevar_recast_compress",
-              "keep_drop",
-              "rename_order",
-              "sort_gsort",
-              "use_save"
-            ],
-            "classification": "reference",
-            "code": "keep agno rbd Public Voucher Private Rural clave mrun Edad Female Perm Hours Hours_Admin Hours_Teach SenioritySystem SenioritySchool /// \nEducDegree CollegeDegree Teacher SupportWorker_Law20501 SupportWorker Administrative Principal cod_com_rbd\norder clave mrun agno rbd Public Rural Edad Female Hours Teacher SupportWorker SupportWorker_Law20501 Administrative Principal Hours_Admin Hours_Teach SenioritySystem SenioritySchool EducDegree CollegeDegree \nsort mrun agno rbd cod_com_rbd\n\ncompress\nsave \"Data/clean/panel_employeremployee.dta\", replace\n",
-            "code_line_count": 7,
-            "code_sha256": "000e0bea1dcab1384bc50b2e5f4f45ad8354460e6a07d616cd9ac97e9344e750",
-            "command_anchors": [
-              "keep",
-              "order",
-              "sort",
-              "compress",
-              "save"
-            ],
-            "decision": "conditional_keep",
-            "label_id": "dataset.finalize_declared_inventory_order_sort_save.v1",
-            "mapping_scope": "group_context_only_not_exact_contract_support",
-            "rubric_classification": "reference_only",
-            "source_file_sha256": "ff65b6d4df4f03e3eaa247d512bacfa23e116588b102162cc1d093809faa4e5e",
-            "source_kind": "deposited_research_code",
-            "source_path": "corpus/packages/191751/script_buildatasets.do",
-            "source_spans": [
-              [
-                277,
-                283
               ]
             ]
           },
@@ -30341,14 +30342,12 @@
         }
       ],
       "paper_code_context": {
-        "candidate": [],
-        "excluded": [],
-        "reference": [
+        "candidate": [
           {
             "anchor_mapped_group_ids": [
               "coefplot"
             ],
-            "classification": "reference",
+            "classification": "candidate",
             "code": "coefplot (reg_std_q44e, keep(T_*) mcolor(navy) ciopts(lcolor(navy))) ///\n\t\t(reg_std_q44k, keep(T_*) mcolor(navy) ciopts(lcolor(navy))) /// \n\t\t(reg_std_q44m , keep(T_*) mcolor(navy) ciopts(lcolor(navy))) /// \n\t\t(reg_std_q44w , keep(T_*) mcolor(navy) ciopts(lcolor(navy))) /// \n\t\t(reg_std_q44x , keep(T_*) mcolor(navy) ciopts(lcolor(navy))) /// \n\t\t(reg_eq_index_ds, keep(T_*) mcolor(navy) ciopts(lcolor(navy))), ///\n\t\tbgcolor(white) plotregion(color(white)) graphregion(color(white)) ///\n\t\txline(0, lwidth(thin)) nooffsets grid(w) ///\n\t\txtitle(\"Treatment effect\" \"(standard deviations)\") legend(off) ///\n\t\tcoeflabels(\"T_std_q44k\"=`\" \"Academic perform depression/anxiety/\" \"seasonal affect disorder\" \"', ///\n\t\t\tlabsize(normal)) ///\t\n\t\txscale(r(-0.15 0.15)) xtick(-0.15(0.05)0.15) xlabel(-0.15 -0.10 -0.05 0 0.05 0.10 0.15, labsize(normal))\n",
             "code_line_count": 12,
             "code_sha256": "528312de14602e90d609800a478cd934c04feda4c6db4a426c8ad0df3fef58fe",
@@ -30358,7 +30357,7 @@
             "decision": "conditional_keep",
             "label_id": "figure.coefplot_named_estimates_labels.v1",
             "mapping_scope": "group_context_only_not_exact_contract_support",
-            "rubric_classification": "reference_only",
+            "rubric_classification": "preferred_candidate",
             "source_file_sha256": "23b3e7875eefd46bc9fa0deb17b66841cba3e3db8fdbea47f3600d71b1492577",
             "source_kind": "deposited_research_code_source_pattern",
             "source_path": "corpus/packages/175582/Code/Analysis/Figures_MainText/Figures_MainText.do",
@@ -30369,7 +30368,9 @@
               ]
             ]
           }
-        ]
+        ],
+        "excluded": [],
+        "reference": []
       },
       "paper_code_template_exact_mapping_gap_contract_ids": [
         "coefplot.active_estimate_selected_coefficients",
@@ -31513,7 +31514,41 @@
         }
       ],
       "paper_code_context": {
-        "candidate": [],
+        "candidate": [
+          {
+            "anchor_mapped_group_ids": [
+              "clonevar_recast_compress",
+              "keep_drop",
+              "rename_order",
+              "sort_gsort",
+              "use_save"
+            ],
+            "classification": "candidate",
+            "code": "keep agno rbd Public Voucher Private Rural clave mrun Edad Female Perm Hours Hours_Admin Hours_Teach SenioritySystem SenioritySchool /// \nEducDegree CollegeDegree Teacher SupportWorker_Law20501 SupportWorker Administrative Principal cod_com_rbd\norder clave mrun agno rbd Public Rural Edad Female Hours Teacher SupportWorker SupportWorker_Law20501 Administrative Principal Hours_Admin Hours_Teach SenioritySystem SenioritySchool EducDegree CollegeDegree \nsort mrun agno rbd cod_com_rbd\n\ncompress\nsave \"Data/clean/panel_employeremployee.dta\", replace\n",
+            "code_line_count": 7,
+            "code_sha256": "000e0bea1dcab1384bc50b2e5f4f45ad8354460e6a07d616cd9ac97e9344e750",
+            "command_anchors": [
+              "keep",
+              "order",
+              "sort",
+              "compress",
+              "save"
+            ],
+            "decision": "conditional_keep",
+            "label_id": "dataset.finalize_declared_inventory_order_sort_save.v1",
+            "mapping_scope": "group_context_only_not_exact_contract_support",
+            "rubric_classification": "preferred_candidate",
+            "source_file_sha256": "ff65b6d4df4f03e3eaa247d512bacfa23e116588b102162cc1d093809faa4e5e",
+            "source_kind": "deposited_research_code",
+            "source_path": "corpus/packages/191751/script_buildatasets.do",
+            "source_spans": [
+              [
+                277,
+                283
+              ]
+            ]
+          }
+        ],
         "excluded": [
           {
             "anchor_mapped_group_ids": [
@@ -31631,39 +31666,6 @@
               [
                 79,
                 83
-              ]
-            ]
-          },
-          {
-            "anchor_mapped_group_ids": [
-              "clonevar_recast_compress",
-              "keep_drop",
-              "rename_order",
-              "sort_gsort",
-              "use_save"
-            ],
-            "classification": "reference",
-            "code": "keep agno rbd Public Voucher Private Rural clave mrun Edad Female Perm Hours Hours_Admin Hours_Teach SenioritySystem SenioritySchool /// \nEducDegree CollegeDegree Teacher SupportWorker_Law20501 SupportWorker Administrative Principal cod_com_rbd\norder clave mrun agno rbd Public Rural Edad Female Hours Teacher SupportWorker SupportWorker_Law20501 Administrative Principal Hours_Admin Hours_Teach SenioritySystem SenioritySchool EducDegree CollegeDegree \nsort mrun agno rbd cod_com_rbd\n\ncompress\nsave \"Data/clean/panel_employeremployee.dta\", replace\n",
-            "code_line_count": 7,
-            "code_sha256": "000e0bea1dcab1384bc50b2e5f4f45ad8354460e6a07d616cd9ac97e9344e750",
-            "command_anchors": [
-              "keep",
-              "order",
-              "sort",
-              "compress",
-              "save"
-            ],
-            "decision": "conditional_keep",
-            "label_id": "dataset.finalize_declared_inventory_order_sort_save.v1",
-            "mapping_scope": "group_context_only_not_exact_contract_support",
-            "rubric_classification": "reference_only",
-            "source_file_sha256": "ff65b6d4df4f03e3eaa247d512bacfa23e116588b102162cc1d093809faa4e5e",
-            "source_kind": "deposited_research_code",
-            "source_path": "corpus/packages/191751/script_buildatasets.do",
-            "source_spans": [
-              [
-                277,
-                283
               ]
             ]
           },
@@ -39061,7 +39063,7 @@
     },
     "research_usage_examples": {
       "path": "data/research_usage_examples.jsonl",
-      "sha256": "2a3e2f423ceee81a89c314bd6eebcc931abd8a21646ee7a94a06fd8e51b37841"
+      "sha256": "206e05d65532355942ff01b8363b0b45c8c194943d5bf6609422bd48435c50e4"
     }
   },
   "summary": {
@@ -39550,7 +39552,7 @@
     },
     {
       "anchor_mapped_group_ids": [],
-      "classification": "reference",
+      "classification": "candidate",
       "code": "graph bar v ,  over(type, label(labsize(small))) over(moment, label(labsize(small)))  asyvars /// \ntext(-.065 25 \"Share of Firms\") text(-.065 62.5 \"Share of Output\")  text(-.065 90 \"Relative Output\")  ///\nbar(1,fcolor(maroon) lcolor(maroon)) bar(2, fcolor(white) lcolor(navy) lwidth(medthick)) ///\ngraphregion(fcolor(white)) graphregion(color(white)) ///  \nplotregion(fcolor(white)) ///\nytitle(\"Moment Value\") legend(position(12)   region(col(white)))\n",
       "code_line_count": 6,
       "code_sha256": "997f4a8f756a8a13cfd3375ab09d0f720543cf4a2779fd2ed4bc4fe6019ab1ae",
@@ -39560,7 +39562,7 @@
       "decision": "conditional_keep",
       "label_id": "figure.descriptive_grouped_bar.v1",
       "mapping_scope": "group_context_only_not_exact_contract_support",
-      "rubric_classification": "reference_only",
+      "rubric_classification": "conditional_candidate",
       "source_file_sha256": "b8b62ca01c024e6288583e3f300afd1eb10ba0ebed5dd6b50d7c31b32676d797",
       "source_kind": "deposited_research_code",
       "source_path": "corpus/packages/196012/Do/Figure6.do",

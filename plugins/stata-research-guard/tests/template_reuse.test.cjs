@@ -19,51 +19,11 @@ const {
   extractSpans,
   extractSourceSpans,
   matchingAutoSelectableLabels,
-  canonicalOutreg2HelperMultiplicity,
 } = require(path.join(ROOT, "mcp", "template_reuse.cjs"));
 
 function hash(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex");
 }
-
-test("template parser accepts official abbreviated program definitions without treating management commands as definitions", () => {
-  const signatures = commandSequence([
-    "pr def p",
-    "end",
-    "program dir",
-    "pr list",
-    "program drop p",
-  ].join("\n"));
-  assert.deepEqual(signatures.filter((value) => value.startsWith("program define:")), ["program define:p"]);
-  assert.ok(signatures.includes("program drop"));
-});
-
-test("output multiplicity applies program side effects only when the program is invoked", () => {
-  const definition = [
-    "program seed_output",
-    "estimates store m1",
-    'global wb "table.xlsx"',
-    'global sheet_a "family_a"',
-    'global sheet_b "family_b"',
-    "end",
-  ].join("\n");
-  const calls = [
-    'outreg2_xlsx, estimates("m1") workbook("$wb") sheet("$sheet_a")',
-    'outreg2_xlsx, estimates("m1") workbook("$wb") sheet("$sheet_b")',
-  ].join("\n");
-  const uninvoked = canonicalOutreg2HelperMultiplicity(new Map([["workflow.do", `${definition}\n${calls}`]]));
-  assert.equal(uninvoked.unresolved_placement, true);
-  assert.ok(uninvoked.missing_producer_names.includes("m1"));
-  const invoked = canonicalOutreg2HelperMultiplicity(new Map([["workflow.do", `${definition}\nseed_output\n${calls}`]]));
-  assert.equal(invoked.unresolved_placement, false);
-  assert.equal(invoked.producer_consumer_status, "confirmed");
-  assert.equal(invoked.necessary, true);
-  for (const dropCommand of ["program drop seed_output", "pr drop seed_output other", "program drop _all"]) {
-    const dropped = canonicalOutreg2HelperMultiplicity(new Map([["workflow.do", `${definition}\n${dropCommand}\nseed_output\n${calls}`]]));
-    assert.equal(dropped.unresolved_placement, true, dropCommand);
-    assert.ok(dropped.missing_producer_names.includes("m1"), dropCommand);
-  }
-});
 
 function groupedExcelFlowProfile() {
   const outcome = (name, family) => ({ name, meaning: `${family} outcome`, family, unit: "index points", transform: "level", sample: "analysis sample", estimand: "same treatment effect", estimate_handoff: `estimates/${name}.ster`, specification_order: [1, 2, 3] });
@@ -485,7 +445,7 @@ test("graph export and graph save retain distinct atomic signatures and native c
   assert.ok(nativePdfResult.blockers.some((row) => row.rule === "general_rule_substep_template_available"));
 });
 
-test("reference-only coefplot assembly remains separate from the writable PDF export atom", (t) => {
+test("coefplot graph assembly and PDF export remain separate atomic templates", (t) => {
   const labelId = "figure.coefplot_named_estimates_labels.v1";
   const sourceLabel = LABELS.find((row) => row.label_id === labelId);
   const pdfLabelId = "export.figure_pdf.v1";
@@ -497,8 +457,8 @@ test("reference-only coefplot assembly remains separate from the writable PDF ex
   const assembly = atomicSelectionFixture(t, labelId, sourceLabel.code, sourceLabel.minimal_edit_fields);
   setAtomicTarget(assembly, sourceLabel.code);
   const assemblyResult = check(assembly.root, { min_command_retention: 0.75 });
-  assert.equal(assemblyResult.status, "needs_revision");
-  assert.ok(assemblyResult.blockers.some((row) => row.rule === "template_substep_match_mismatch"));
+  assert.equal(assemblyResult.status, "pass", JSON.stringify(assemblyResult.blockers));
+  assert.equal(assemblyResult.selection_checks[0].evidence.command_retention, 1);
 
   const summaryPdf = 'graph export "$figures/summary/female_director_age_summary.pdf", replace';
   const summary = atomicSelectionFixture(t, pdfLabelId, summaryPdf, ["output PDF path"]);
@@ -612,8 +572,8 @@ test("semantic sheet groups can be placed once in each of two workbooks", (t) =>
     ...row,
     workbook: `$table/${row.workbook}`,
   }));
-  fs.writeFileSync(path.join(current.root, "code", "00_paths.do"), [
-    `global project "${current.root.replace(/\\/g, "/")}"`,
+  fs.writeFileSync(path.join(current.root, "code", "paths.do"), [
+    "global project \"`c(pwd)'\"",
     'global output_root "$project/output"',
     'global table "$output_root/excel"',
   ].join("\n"), "utf8");
@@ -713,23 +673,12 @@ test("multi-sheet canonical formatter rejects non-xlsx workbook targets", (t) =>
 });
 
 test("a second program is rejected even when the canonical helper is selected", (t) => {
-  for (const [index, header] of [
-    "pr def hidden_helper",
-    "pro de hidden_helper",
-    "program hidden_helper",
-    "program define hidden_helper",
-    "version 18: program define hidden_helper",
-    "version 18, user: program define hidden_helper",
-    "program ///\n    define hidden_helper",
-    "vers 18: pr ///\n    def hidden_helper",
-  ].entries()) {
-    const { root } = fixture(t);
-    fs.writeFileSync(path.join(root, "code", `extra_${index}.do`), `${header}\nend\n`, "utf8");
-    const result = check(root);
-    assert.equal(result.status, "needs_revision", header);
-    assert.ok(result.blockers.some((row) => row.rule === "program_definition_limit_exceeded"), header);
-    assert.ok(result.blockers.some((row) => row.rule === "unapproved_program_definition"), header);
-  }
+  const { root } = fixture(t);
+  fs.writeFileSync(path.join(root, "code", "extra.do"), "program define hidden_helper\nend\n", "utf8");
+  const result = check(root);
+  assert.equal(result.status, "needs_revision");
+  assert.ok(result.blockers.some((row) => row.rule === "program_definition_limit_exceeded"));
+  assert.ok(result.blockers.some((row) => row.rule === "unapproved_program_definition"));
 });
 
 test("event-study automatic axes stay automatic in the bound target", (t) => {

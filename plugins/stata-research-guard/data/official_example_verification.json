@@ -1,5 +1,5 @@
 {
-  "verified_at": "2026-08-24T11:36:22.706375+00:00",
+  "verified_at": "2026-08-28T10:35:24.460818+00:00",
   "stata_executable": "C:\\Program Files\\Stata18\\StataMP-64.exe",
   "examples": [
     {
@@ -119,7 +119,7 @@
       "stata_version": "18.0",
       "error_codes": [],
       "log_file": "official_example_logs/official-estimates-save-001.log",
-      "log_sha256": "21308aefa5f6c79eadb40eb9a8776dc4d8a409f3be979e1e38d409916f184665"
+      "log_sha256": "7366bf2e5006d5800a123cd0d39613281e4a8a0939678d75c0a8b570ac5984e5"
     },
     {
       "example_id": "official-putexcel-001",
@@ -153,7 +153,7 @@
       "stata_version": "18.0",
       "error_codes": [],
       "log_file": "official_example_logs/official-putdocx-001.log",
-      "log_sha256": "53a981a3399fbe2f2785b3cb909fd21274a316632d3426bd0c11eb7b14575657"
+      "log_sha256": "93f5ca2a2b1fe3ebd24340c32a5f3c3750d72f1124336e9817f8553c16b80e42"
     }
   ],
   "summary": {

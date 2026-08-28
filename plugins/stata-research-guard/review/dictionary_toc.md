@@ -7,7 +7,7 @@
 - 표제어: 72개
 - 용례: 602개
 - 판정: keep 15 / conditional_keep 577 / drop 10
-- 심사표: preferred 20 / conditional 50 / reference 522 / exclude 10
+- 심사표: preferred 22 / conditional 51 / reference 519 / exclude 10
 - 검색 구조: 단계 표제어 → 상태 계약 → 연구자별 variant → 원문 코드 조각
 
 ## 표제어별 현황
@@ -17,7 +17,7 @@
 | 분석변수 생성·재코딩 | Analysis-variable derivation and recoding | `clean.derive_variables` | generate; rename; replace; egen; keep | preparation; loaded data; substantive variable definitions and missing-value rules | comparative | 5 | 0 | 5 | 0 | 5 | 0 | 5/5 | 2/5 |
 | 식별자 정규화 | Identifier normalization | `clean.id_normalize` | destring; use; keep | preparation; loaded identifier field; documented identifier semantics including leading zeros | comparative | 2 | 0 | 2 | 0 | 2 | 0 | 2/2 | 1/2 |
 | 임시파일 정리 | Temporary-file cleanup | `cleanup` | erase | cleanup; known project-owned temporary files; only disposable task-created intermediates removed | prototype | 2 | 0 | 1 | 0 | 1 | 1 | 2/2 | 0/2 |
-| 분석자료 확정·라벨·저장 | Finalize, label, and save analysis data | `dataset.finalize_keep_label_save` | keep; save; label; compress; use | preparation; completed variable construction; known downstream variable requirements | comparative | 4 | 0 | 4 | 0 | 4 | 0 | 4/4 | 3/4 |
+| 분석자료 확정·라벨·저장 | Finalize, label, and save analysis data | `dataset.finalize_keep_label_save` | keep; save; label; compress; use | preparation; completed variable construction; known downstream variable requirements | comparative | 4 | 1 | 3 | 0 | 4 | 0 | 4/4 | 3/4 |
 | 기초통계 명령 결과 | Descriptive command result | `descriptives.command_result` |  | preparation_validation; fixed analysis sample; declared variables, groups, weights, and statistics | guide_only | 18 | 0 | 18 | 0 | 18 | 0 | 18/18 | 18/18 |
 | 개체단위 기초통계 집계 | Entity-level descriptive collapse | `descriptives.entity_collapse` | collapse; gcollapse; local; label | preparation; validated lower-level data; declared entity key | comparative | 9 | 3 | 6 | 0 | 9 | 0 | 9/9 | 8/9 |
 | 활성 estpost 요약결과 | Active estpost summary result | `descriptives.estpost_active_result` | estpost | preparation_validation; analysis sample and variables already fixed; declared statistic or two-group comparison | comparative | 8 | 4 | 4 | 0 | 8 | 0 | 8/8 | 8/8 |
@@ -38,8 +38,8 @@
 | 가구단위 집계변수 | Household-level aggregate features | `feature.aggregate_household` | generate; egen | preparation; validated household key; person-level member definitions | prototype | 1 | 1 | 0 | 0 | 1 | 0 | 1/1 | 0/1 |
 | 구역단위 노출 집계 | Section-level exposure aggregation | `feature.aggregate_section_exposure` | egen; label variable; generate; label; drop | preparation; validated section key; person-level treatment and subgroup indicators | prototype | 1 | 0 | 1 | 0 | 1 | 0 | 1/1 | 0/1 |
 | 구간 산점도 | Binned scatter plot | `figures.binned_scatter` |  | figure; declared analysis sample and x/y variables; declared bin count or compatible precomputed bin identifier when used | guide_only | 7 | 0 | 7 | 0 | 7 | 0 | 7/7 | 7/7 |
-| 명명된 추정치 계수 그림 | Named-estimate coefficient plot | `figures.coefplot_named_estimates` | coefplot | post_estimation_export; named stored estimates compatible with coefplot; declared coefficient keep/order mapping and display labels | prototype | 3 | 0 | 3 | 0 | 3 | 0 | 3/3 | 3/3 |
-| 기초통계 막대그림 | Descriptive bar chart | `figures.descriptive_bar` | graph bar | post_estimation_export; precomputed descriptive values at a declared category or group unit; declared value, category, and optional series variables | prototype | 1 | 0 | 1 | 0 | 1 | 0 | 1/1 | 1/1 |
+| 명명된 추정치 계수 그림 | Named-estimate coefficient plot | `figures.coefplot_named_estimates` | coefplot | post_estimation_export; named stored estimates compatible with coefplot; declared coefficient keep/order mapping and display labels | prototype | 3 | 1 | 2 | 0 | 3 | 0 | 3/3 | 3/3 |
+| 기초통계 막대그림 | Descriptive bar chart | `figures.descriptive_bar` | graph bar | post_estimation_export; precomputed descriptive values at a declared category or group unit; declared value, category, and optional series variables | prototype | 1 | 1 | 0 | 0 | 1 | 0 | 1/1 | 1/1 |
 | 일반 기초통계 그림 | General descriptive graph | `figures.descriptive_graph` |  | post_estimation_export; active data or compatible post-estimation result; declared plot variables, sample, geometry, and axis meaning | guide_only | 11 | 0 | 11 | 0 | 11 | 0 | 11/11 | 11/11 |
 | 기초통계 산점도 | Descriptive scatter plot | `figures.descriptive_scatter` | graph export; twoway; use; collapse; scatter | post_estimation_export; named analysis dataset; declared plotting unit and variable units | comparative | 3 | 1 | 2 | 0 | 3 | 0 | 3/3 | 2/3 |
 | 이벤트 스터디 그림 | Event-study figure | `figures.event_study` | event_plot; local; estimates; estimates use; estimates store | post_estimation_export; named event-time coefficients with one declared design reference; validated event window and estimation sample | comparative | 16 | 0 | 15 | 0 | 15 | 1 | 16/16 | 15/16 |

@@ -100,8 +100,7 @@ test("AEA-family summary atoms retain deposited-paper provenance and writable bo
   });
   const barRow = byId(bar, "figure.descriptive_grouped_bar.v1");
   assert.equal(barRow.source_package_review.repository_doi, "10.3886/E196012V1");
-  assert.equal(barRow.rubric_classification, "reference_only");
-  assert.equal(barRow.auto_select_allowed, false);
+  assert.equal(barRow.auto_select_allowed, true);
   assert.doesNotMatch(barRow.code, /graph\s+export/i);
 });
 

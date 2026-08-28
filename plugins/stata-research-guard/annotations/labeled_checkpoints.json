@@ -13752,7 +13752,7 @@
       "fixed -0.15 to 0.15 scale"
     ],
     "reusable_core": "named stored estimates, a declared coefficient filter/order, explicit coefficient labels, and common-axis confidence intervals form a reusable active-graph assembly.",
-    "preferred_within_checkpoint": false,
+    "preferred_within_checkpoint": true,
     "generality_rationale_ko": "변수명·저장 추정치명·축 범위는 교체 가능한 expected binding이다. 반면 계수 선택·순서·라벨·신뢰구간을 선언하지 않으면 model-to-plot 연결이 깨지므로 그 상태 계약이 충족될 때만 기본 후보로 쓴다. Figure 5의 바깥 회귀 loop와 연구별 outcome 선택·파일 내보내기는 span에 포함하지 않는다.",
     "explicit_canonical_exception": false,
     "generality_review": {
@@ -13835,10 +13835,10 @@
         "minimal_adaptation": 4
       },
       "weighted_score": 87.2,
-      "classification": "reference_only",
-      "reviewer_classification": "reference_only",
-      "classification_calibration_override": "new-authoring lint blocks wildcard coefplot selectors; retain only as mechanics evidence",
-      "preferred_eligible": false,
+      "classification": "preferred_candidate",
+      "reviewer_classification": "preferred_candidate",
+      "classification_calibration_override": null,
+      "preferred_eligible": true,
       "reviewer_notes_ko": "Figure 5의 548-559는 outer loop 없이 완결된 active-graph assembly block이다. 저장 추정치와 coefficient-name contract를 target에서 먼저 검증하면 변수 구조 자체는 harmful coupling이 아니다. 파일 내보내기와 editable graph 저장은 별도 전이다.",
       "uncertainty": "coefplot 버전 및 target stored-estimate compatibility는 실행 전 preflight가 필요하며, 정적 span review는 실제 그래프 렌더링을 증명하지 않는다.",
       "current_vs_recommended_changes": [
@@ -17626,7 +17626,7 @@
     "portability_score": 5,
     "source_specific_elements": ["teacher-employment variable inventory", "mrun/agno/rbd/cod_com_rbd sort keys", "panel_employeremployee.dta path"],
     "reusable_core": "확정된 표본에서 선언한 변수만 남기고 표시 순서와 정렬키를 적용한 뒤 compress하여 최종 dta로 저장한다.",
-    "preferred_within_checkpoint": false,
+    "preferred_within_checkpoint": true,
     "generality_rationale_ko": "표본·공식·라벨을 새로 결정하지 않고 이미 선언된 final dataset interface만 다섯 개의 직접 명령으로 고정한다.",
     "explicit_canonical_exception": false,
     "generality_review": {"status": "external_evidence_rubric_reviewed", "version": "2.0", "criterion": "raw_source_generality_readability_portability_and_minimal_adaptation", "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46"},
@@ -17646,7 +17646,7 @@
       "applicable_dimensions": ["state_visibility", "input_output_contract", "portability", "readability", "sample_estimand_visibility", "loop_program_abstraction", "reproducibility", "project_specific_coupling", "minimal_adaptation"],
       "dimension_scores": {"state_visibility": 5, "input_output_contract": 5, "portability": 5, "readability": 5, "sample_estimand_visibility": 5, "loop_program_abstraction": 5, "reproducibility": 5, "project_specific_coupling": 5, "minimal_adaptation": 5},
       "weighted_score": 100.0,
-      "classification": "reference_only", "reviewer_classification": "reference_only", "classification_calibration_override": "new-authoring continuation audit blocks the deposited physical-line span; retain only as mechanics evidence", "preferred_eligible": false,
+      "classification": "preferred_candidate", "reviewer_classification": "preferred_candidate", "classification_calibration_override": null, "preferred_eligible": true,
       "reviewer_notes_ko": "표본이 이미 확정된 경우 final dataset interface를 가장 읽기 쉽게 고정하는 직접 block이다.",
       "uncertainty": "retained inventory와 sort key의 연구상 완전성은 target README·consumer audit에서 확인한다.",
       "current_vs_recommended_changes": [], "canonical_exception_override": null
@@ -20008,10 +20008,10 @@
     "portability_score": 4,
     "source_specific_elements": ["v", "type and moment", "hard-coded text coordinates", "maroon and navy styles", "Moment Value title"],
     "reusable_core": "long summary 값에서 두 over() 범주와 series를 직접 드러내는 grouped bar active graph를 만든다.",
-    "preferred_within_checkpoint": false,
+    "preferred_within_checkpoint": true,
     "explicit_canonical_exception": false,
     "generality_rationale_ko": "집계는 앞 단계에 두고 graph bar의 값·범주·series·표시만 최소 대체하며 PDF export도 별도 원자로 유지한다.",
     "generality_review": {"status":"external_evidence_rubric_reviewed","version":"2.0","criterion":"raw_source_generality_readability_portability_and_minimal_adaptation","rubric_sha256":"81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46"},
-    "quality_rubric_review": {"status":"external_evidence_rubric_reviewed","version":"1.1","rubric_sha256":"81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46","source_verification":{"source_file_sha256_match":true,"code_sha256_match":true,"context_read":true},"hard_fails":[{"rule_id":"decision_not_generatable","triggered":false,"evidence":"Declared value categories series and labels determine the graph."},{"rule_id":"provenance_incomplete","triggered":false,"evidence":"The exact AER graph span and separate export line were reviewed."},{"rule_id":"input_contract_mismatch","triggered":false,"evidence":"Selection requires precomputed summary values and declared categories."},{"rule_id":"minimal_adaptation_undefined","triggered":false,"evidence":"Only value categories labels and styles change."},{"rule_id":"machine_bound_default","triggered":false,"evidence":"The graph atom has no path."},{"rule_id":"merge_contract_absent","triggered":false,"evidence":"No merge occurs."},{"rule_id":"nested_loop","triggered":false,"evidence":"The atom has no loop."},{"rule_id":"opaque_research_program","triggered":false,"evidence":"The complete graph command remains visible."}],"applicable_dimensions":["state_visibility","input_output_contract","portability","readability","sample_estimand_visibility","loop_program_abstraction","reproducibility","project_specific_coupling","minimal_adaptation"],"dimension_scores":{"state_visibility":5,"input_output_contract":5,"portability":4,"readability":5,"sample_estimand_visibility":5,"loop_program_abstraction":5,"reproducibility":5,"project_specific_coupling":4,"minimal_adaptation":5},"weighted_score":95,"classification":"reference_only","reviewer_classification":"reference_only","classification_calibration_override":"new-authoring continuation audit blocks the deposited physical-line span; retain only as mechanics evidence","preferred_eligible":false,"reviewer_notes_ko":"AER 원문의 grouped bar를 active-graph 원자로 분리했다.","uncertainty":"text annotation과 색상은 렌더링 검증 없이 자동 이식하지 않는다."}
+    "quality_rubric_review": {"status":"external_evidence_rubric_reviewed","version":"1.1","rubric_sha256":"81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46","source_verification":{"source_file_sha256_match":true,"code_sha256_match":true,"context_read":true},"hard_fails":[{"rule_id":"decision_not_generatable","triggered":false,"evidence":"Declared value categories series and labels determine the graph."},{"rule_id":"provenance_incomplete","triggered":false,"evidence":"The exact AER graph span and separate export line were reviewed."},{"rule_id":"input_contract_mismatch","triggered":false,"evidence":"Selection requires precomputed summary values and declared categories."},{"rule_id":"minimal_adaptation_undefined","triggered":false,"evidence":"Only value categories labels and styles change."},{"rule_id":"machine_bound_default","triggered":false,"evidence":"The graph atom has no path."},{"rule_id":"merge_contract_absent","triggered":false,"evidence":"No merge occurs."},{"rule_id":"nested_loop","triggered":false,"evidence":"The atom has no loop."},{"rule_id":"opaque_research_program","triggered":false,"evidence":"The complete graph command remains visible."}],"applicable_dimensions":["state_visibility","input_output_contract","portability","readability","sample_estimand_visibility","loop_program_abstraction","reproducibility","project_specific_coupling","minimal_adaptation"],"dimension_scores":{"state_visibility":5,"input_output_contract":5,"portability":4,"readability":5,"sample_estimand_visibility":5,"loop_program_abstraction":5,"reproducibility":5,"project_specific_coupling":4,"minimal_adaptation":5},"weighted_score":95,"classification":"conditional_candidate","reviewer_classification":"conditional_candidate","preferred_eligible":false,"reviewer_notes_ko":"AER 원문의 grouped bar를 active-graph 원자로 분리했다.","uncertainty":"text annotation과 색상은 렌더링 검증 없이 자동 이식하지 않는다."}
   }
 ]

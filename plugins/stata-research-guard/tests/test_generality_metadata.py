@@ -30,12 +30,12 @@ class GeneralityMetadataTests(unittest.TestCase):
             "negative": 10,
         })
         self.assertEqual(Counter(row["quality_rubric_review"]["classification"] for row in self.rows), {
-            "preferred_candidate": 20,
-            "conditional_candidate": 50,
-            "reference_only": 68,
+            "preferred_candidate": 22,
+            "conditional_candidate": 51,
+            "reference_only": 65,
             "exclude": 10,
         })
-        self.assertEqual(sum(row["preferred_within_checkpoint"] for row in self.rows), 38)
+        self.assertEqual(sum(row["preferred_within_checkpoint"] for row in self.rows), 41)
 
     def test_master_and_finalizer_selection_calibration(self) -> None:
         rows = {row["label_id"]: row for row in self.rows}
@@ -132,9 +132,6 @@ class GeneralityMetadataTests(unittest.TestCase):
             "robustness.dynamic_did_preperiod_placebo.v1",
             "postest.iv_first_stage_handoff.v1",
             "figure.scatter_lfit_by_binary_group_pdf.v1",
-            "figure.coefplot_named_estimates_labels.v1",
-            "dataset.finalize_declared_inventory_order_sort_save.v1",
-            "figure.descriptive_grouped_bar.v1",
         })
         reference_only_ids = {
             row["label_id"]
@@ -207,15 +204,12 @@ class GeneralityMetadataTests(unittest.TestCase):
             "figure.scatter_lfit_by_binary_group_pdf.v1",
             "descriptives.rawsum_reshape_long_structure.v1",
             "estimation.event_rhs_single_hash_base_excluded.v1",
-            "figure.coefplot_named_estimates_labels.v1",
-            "dataset.finalize_declared_inventory_order_sort_save.v1",
-            "figure.descriptive_grouped_bar.v1",
         })
         self.assertTrue(calibration_override_ids <= reference_only_ids)
         self.assertEqual(sum(
             row["quality_rubric_review"]["classification"] in {"preferred_candidate", "conditional_candidate"}
             for row in self.rows
-        ), 70)
+        ), 73)
 
     def test_research_usage_and_top100_surfaces_match_annotation_classification(self) -> None:
         annotations = {row["label_id"]: row["quality_rubric_review"]["classification"] for row in self.rows}
