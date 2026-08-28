@@ -7,15 +7,17 @@ description: Create, revise, or review Stata research workflows using official o
 
 Make the project-specific decision yourself. Use `stataResearchGuard` to obtain grammar, examples, and factual context—not a verdict on the code you should write.
 
+For every Stata code write or revision, read [general-rules.md](references/general-rules.md) first. It is the canonical concise house style; do not reconstruct its rules from this overview or from a paper example.
+
 ## Work from evidence
 
 1. Respect the user's write boundary. Review, diagnosis, explanation, and explicit no-change requests are read-only.
 2. Inspect the active project source and preserve compatible paths, names, call order, estimate handoffs, workbook sheets, and output contracts.
-3. For a consequential command or interface choice, call `get_stata_command_evidence` with the request and, when useful, the project path and target files.
-4. Read the relevant official or maintainer example. Treat paper code and current project usage as context rather than authority.
-5. Choose the command and implementation that best fit the user's research requirements, data state, downstream interface, and preference for readable, maintainable Stata.
+3. For a consequential command or interface choice, first inspect the exposed command dictionary and choose one or more commands yourself. The allowed universe during MCP use is only its 109 exposed commands. If the needed command or feature is absent, abort rather than substitute, abbreviate, or manually implement it; report the missing command or functionality.
+4. Send your chosen `selected_commands` to `get_stata_command_evidence` with the request and, when useful, the project path and target files. Read the returned guide and relevant paper occurrence on demand.
+5. Choose the implementation that best fits the user's research requirements, data state, downstream interface, and preference for readable, maintainable Stata. The server and any scorer never choose a winner.
 
-The registry is not exhaustive. A missing command is not forbidden. A command already present in the project is not automatically preferred; old code may be the reason the user invoked the skill.
+A command already present in the project is not automatically preferred; old code may be the reason the user invoked the skill. The user's request and current compatible code remain stronger continuity evidence than a paper's estimator choice.
 
 For evidence roles and missing-source handling, read [command-evidence.md](references/command-evidence.md). For code-writing conventions, read [authoring-conventions.md](references/authoring-conventions.md).
 
@@ -27,9 +29,7 @@ For a new workflow, use the stages actually required by the request. [workflow-t
 
 ## Authoring and outputs
 
-Write direct Stata whose active sample, specification, and output can be understood at the point of use. Keep control flow shallow and remove abandoned alternatives after iteration.
-
-Preserve native factor-variable syntax and raw `e(b)` names. Do not replace interactions with `treat_yYYYY` or `_yYYYY` variables, manually rebuild coefficient tables, or suppress omitted/base rows. Use Excel for final tables, PDF for figures, and `.ster` for reusable estimates when those artifacts are required; do not add TeX output unless the user explicitly changes that project contract.
+Write direct Stata whose active sample, specification, and output can be understood at the point of use. The detailed authoring boundary and output contracts are in [general-rules.md](references/general-rules.md).
 
 The bundled `outreg2_xlsx` program is a user-approved formatter artifact. Its evidence card describes its inputs and limitations. The model—not the server—decides whether the requested workbook calls for that helper or a direct command.
 

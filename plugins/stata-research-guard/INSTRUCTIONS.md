@@ -1,20 +1,22 @@
 # Stata Research Guard Instructions
 
-Use this plugin to obtain command evidence before making a consequential Stata command or output-interface choice. The evidence supports the model's judgment; it does not replace it.
+Use this plugin to obtain command evidence before making a consequential Stata command or output-interface choice. The evidence supports the model's judgment; it does not replace it. The exposed command dictionary is the hard command boundary while the plugin is in use.
 
 ## Evidence request
 
-Call `get_stata_command_evidence` with the user's request. Add `project_path` and project-relative `target_files` when current project facts matter. Treat each task atom separately so estimation, postestimation, export, and graph construction do not borrow one another's candidates.
+First call `get_stata_command_evidence` without `selected_commands` and read the complete command dictionary. Choose one or more canonical command keys yourself. Then call it again with those `selected_commands`; only their guide and paper evidence should be loaded. Add `project_path` and project-relative `target_files` when current project facts matter.
 
-Read the returned official or maintainer documentation and examples. Use paper usage cards only as contextual evidence. A project observation records what exists at a path and line; it is not a recommendation to preserve an old command or workaround.
+Do not generate, substitute, abbreviate, or hand-implement a command outside the dictionary. If the requested workflow genuinely needs an absent command, abort and report the missing command or capability. An empty, duplicated, or unknown selection is an error rather than a fallback.
 
-If evidence is incomplete, inspect the authoritative source or ask about the material research choice. Do not invent a source, convert a missing record into a prohibition, or let registry membership decide whether a valid Stata command may be used.
+Read the returned official or maintainer documentation and examples and apply the accompanying `general-rules.md`. A paper usage card is an unmodified occurrence focused on the selected command. Treat its surrounding estimator, sample, fixed effects, VCE, and downstream code as context only; an `outreg2` example never authorizes replacing the project's chosen estimator. A project observation records what exists at a path and line; it is not a recommendation to preserve an old command or workaround.
+
+If a paper occurrence is unavailable, use the guide-only path. If guide evidence or a material research choice is incomplete, report the gap or ask the user rather than inventing syntax. A close occurrence can guide minimal harmonization around the selected command; a distant occurrence is a hint, not a compulsory template.
 
 ## Writing boundary
 
 Preserve the user's literal scope and compatible project interfaces. Review-only requests authorize no project write. For a write, inspect the current source and choose the simplest implementation that satisfies the declared research and output requirements.
 
-Prefer direct, readable Stata. Keep samples, models, fixed effects, weights, VCE, event windows, and output destinations visible. Avoid manual factor-variable substitutes, manual coefficient or standard-error reconstruction, unnecessary programs, positional dispatch, speculative options, and nested control flow that hides research choices.
+Prefer direct, readable Stata under `general-rules.md`. Keep samples, models, fixed effects, weights, VCE, event windows, and output destinations visible. Avoid manual factor-variable substitutes, manual coefficient or standard-error reconstruction, unnecessary programs, positional dispatch, speculative options, and nested control flow that hides research choices. Do not add score, promotion, pass/fail, or generated-code grading logic.
 
 Preserve native factor-variable and raw `e(b)` names. Preserve raw `outreg2` coefficient, standard-error, omitted/base, and note rows. Use the approved `outreg2_xlsx` helper only as a formatter after the model has decided that its declared interface fits the requested workbook. Do not treat the helper as a general selection exception.
 

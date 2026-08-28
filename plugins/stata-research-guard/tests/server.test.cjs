@@ -1,6 +1,7 @@
 "use strict";
 
 const assert = require("node:assert/strict");
+const crypto = require("node:crypto");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
@@ -13,6 +14,7 @@ const {
   assertNoForbiddenKeys,
   buildCommandEvidence,
   dispatch,
+  paperUsageCardsFor,
   scanProjectCommandObservations,
 } = require(path.join(ROOT, "mcp", "server.cjs"));
 
@@ -28,100 +30,189 @@ function deepKeys(value, output = new Set()) {
   return output;
 }
 
-test("MCP exposes one evidence tool", () => {
+test("MCP exposes one exact-key two-stage evidence tool", () => {
   assert.deepEqual(TOOL_DEFINITIONS.map((tool) => tool.name), ["get_stata_command_evidence"]);
+  assert.match(TOOL_DEFINITIONS[0].description, /omit selected_commands/i);
+  assert.match(TOOL_DEFINITIONS[0].description, /must abort instead of guessing/i);
+  assert.ok(TOOL_DEFINITIONS[0].inputSchema.properties.selected_commands);
+  assert.equal(TOOL_DEFINITIONS[0].outputSchema.oneOf.length, 2);
+
   const listed = dispatch({ jsonrpc: "2.0", id: 1, method: "tools/list" });
   assert.deepEqual(listed.result.tools.map((tool) => tool.name), ["get_stata_command_evidence"]);
   const initialized = dispatch({ jsonrpc: "2.0", id: 2, method: "initialize" });
   assert.equal(initialized.result.serverInfo.name, "stataResearchGuard");
 });
 
-test("regression and Excel export remain separate task atoms", () => {
-  const evidence = buildCommandEvidence({
-    request: "Run a regression and export the regression table to Excel",
-    known_constraints: { cluster: "firm" },
-  });
-  const estimation = evidence.task_atoms.find((atom) => atom.id === "estimation.linear");
-  const exporting = evidence.task_atoms.find((atom) => atom.id === "export.regression_excel");
-  assert.ok(estimation);
-  assert.ok(exporting);
-  assert.ok(estimation.candidate_commands.includes("regress"));
-  assert.equal(estimation.candidate_commands.includes("outreg2"), false);
-  assert.ok(exporting.candidate_commands.includes("outreg2"));
-  assert.equal(exporting.candidate_commands.includes("regress"), false);
-  assert.equal(evidence.task_atoms.some((atom) => atom.id === "command.table"), false);
-  assert.ok(evidence.task_atoms.every((atom) => atom.known_constraints === '{"cluster":"firm"}'));
-  assert.ok(TOOL_DEFINITIONS[0].outputSchema);
-});
-
-test("response contains readable sources without grading keys", () => {
-  const evidence = buildCommandEvidence({ request: "Estimate an OLS regression with regress" });
-  const regress = evidence.command_cards.find((card) => card.command === "regress");
-  assert.ok(regress);
-  assert.ok(regress.authority_sources.some((source) => source.source_url === "https://www.stata.com/manuals/rregress.pdf"));
-  assert.ok(evidence.authoritative_examples.some((example) => example.command === "regress" && example.excerpt.includes("regress")));
-  assertNoForbiddenKeys(evidence);
-  const keys = deepKeys(evidence);
-  for (const forbidden of FORBIDDEN_RESPONSE_KEYS) assert.equal(keys.has(forbidden), false, forbidden);
-});
-
-test("every surfaced candidate has a source or an explicit source gap", () => {
-  for (const request of [
-    "Estimate an instrumental variables model",
-    "Create and export a graph",
-    "Estimate a difference-in-differences event study",
-  ]) {
-    const evidence = buildCommandEvidence({ request });
-    for (const card of evidence.command_cards) {
-      if (card.authority_sources.length) continue;
-      assert.ok(
-        evidence.unresolved_facts.some((fact) => fact.includes(card.command)),
-        `missing source gap for ${card.command}`,
-      );
-    }
+test("discovery returns all 109 canonical dictionary entries without guide or paper bodies", () => {
+  const discovery = buildCommandEvidence({ request: "Discover available commands" });
+  assert.equal(discovery.phase, "discovery");
+  assert.equal(discovery.command_dictionary.length, 109);
+  assert.equal(new Set(discovery.command_dictionary.map((row) => row.command)).size, 109);
+  assert.ok(discovery.command_dictionary.some((row) => row.command === "regress"));
+  for (const row of discovery.command_dictionary) {
+    assert.deepEqual(Object.keys(row), [
+      "command",
+      "invocation",
+      "label",
+      "description",
+      "functional_labels",
+      "guide_available",
+      "paper_available",
+    ]);
+    assert.equal(typeof row.guide_available, "boolean");
+    assert.equal(typeof row.paper_available, "boolean");
   }
+  assert.equal("command_cards" in discovery, false);
+  assert.equal("authoritative_examples" in discovery, false);
+  assert.equal("paper_usage_cards" in discovery, false);
+  assertNoForbiddenKeys(discovery);
 });
 
-test("paper evidence is empty and honest until reviewed cards exist", () => {
-  const evidence = buildCommandEvidence({ request: "Show a paper replication usage example for reghdfe" });
+test("general guidance is source-backed and identical in both phases", () => {
+  const discovery = buildCommandEvidence({ request: "Discover available commands" });
+  const evidence = buildCommandEvidence({
+    request: "Use regress",
+    selected_commands: ["regress"],
+  });
+  assert.deepEqual(evidence.general_guidance, discovery.general_guidance);
+  assert.equal(
+    discovery.general_guidance.source_path,
+    "plugins/stata-research-guard/skills/stata-replication-workflow/references/general-rules.md",
+  );
+  assert.ok(discovery.general_guidance.content.includes("# General Rules"));
+  assert.equal(
+    discovery.general_guidance.source_hash,
+    crypto.createHash("sha256").update(discovery.general_guidance.content).digest("hex"),
+  );
+});
+
+test("evidence returns guide and paper payloads only for exact selected subset", () => {
+  const evidence = buildCommandEvidence({
+    request: "Estimate with regress and export with outreg2",
+    selected_commands: ["regress", "outreg2"],
+  });
+  assert.equal(evidence.phase, "evidence");
+  assert.deepEqual(evidence.selected_commands, ["regress", "outreg2"]);
+  assert.deepEqual(evidence.command_cards.map((card) => card.command), ["regress", "outreg2"]);
+  assert.ok(evidence.authoritative_examples.length > 0);
+  assert.ok(evidence.authoritative_examples.every((row) => ["regress", "outreg2"].includes(row.command)));
+  assert.ok(evidence.paper_usage_cards.every((row) => ["regress", "outreg2"].includes(row.command)));
+  assert.deepEqual(evidence.related_artifacts.map((row) => row.artifact), ["outreg2_xlsx"]);
+  assert.ok(evidence.related_artifacts[0].boundaries.some((row) => row.includes("does not choose or replace the estimator")));
+  assert.equal(evidence.command_cards.some((card) => card.command === "areg"), false);
+  assert.equal(evidence.authoritative_examples.some((row) => row.command === "areg"), false);
+
+  const repeated = buildCommandEvidence({
+    request: "Estimate with regress and export with outreg2",
+    selected_commands: ["regress", "outreg2"],
+  });
+  assert.deepEqual(repeated.authoritative_examples, evidence.authoritative_examples);
+});
+
+test("dictionary exposes canonical multiword invocations and syntax-anchored outreg2 guide", () => {
+  const discovery = buildCommandEvidence({ request: "Discover available commands" });
+  assert.equal(discovery.command_dictionary.find((row) => row.command === "graph_bar").invocation, "graph bar");
+  assert.equal(discovery.command_dictionary.find((row) => row.command === "collect_get").invocation, "collect get");
+
+  const outreg2 = buildCommandEvidence({ request: "Use outreg2", selected_commands: ["outreg2"] });
+  const guide = outreg2.authoritative_examples.find((row) => row.command === "outreg2");
+  assert.ok(guide);
+  assert.match(guide.excerpt, /outreg2\s+\[varlist\]/i);
+
+  const regress = buildCommandEvidence({ request: "Use regress", selected_commands: ["regress"] });
+  assert.deepEqual(regress.related_artifacts, []);
+});
+
+test("selected commands reject empty, duplicate, unregistered, alias-like, and case-changed keys", () => {
+  for (const selected_commands of [[], ["regress", "regress"], ["not_a_stata_command"], ["reg"], ["Regress"]]) {
+    assert.throws(
+      () => buildCommandEvidence({ request: "Need exact evidence", selected_commands }),
+      /^Error: ABORT command_not_in_dictionary:/,
+    );
+  }
+
+  const aborted = dispatch({
+    jsonrpc: "2.0",
+    id: 3,
+    method: "tools/call",
+    params: {
+      name: "get_stata_command_evidence",
+      arguments: { request: "Need exact evidence", selected_commands: [] },
+    },
+  });
+  assert.equal(aborted.result.isError, true);
+  assert.match(aborted.result.content[0].text, /^ABORT command_not_in_dictionary:/);
+});
+
+test("a selected command without a reviewed occurrence reports guide-only fallback", () => {
+  const discovery = buildCommandEvidence({ request: "Discover available commands" });
+  const dictionaryRow = discovery.command_dictionary.find((row) => row.guide_available && !row.paper_available);
+  assert.ok(dictionaryRow, "fixture must include a guide-only command");
+  const evidence = buildCommandEvidence({
+    request: `Use ${dictionaryRow.command}`,
+    selected_commands: [dictionaryRow.command],
+  });
+  assert.equal(evidence.command_cards[0].evidence_mode, "guide_only_fallback");
   assert.deepEqual(evidence.paper_usage_cards, []);
-  assert.ok(evidence.unresolved_facts.some((fact) => fact.includes("paper_usage_occurrence")));
+  assert.ok(evidence.unresolved_facts.some((fact) => fact.includes("guide_only_fallback")));
 });
 
-test("project scan returns literal observations without recommendation fields", (t) => {
+test("paper helper keeps every exact-key reviewed row and wraps source role separately", () => {
+  const rows = [
+    { occurrence_id: "outreg2-1", command: "outreg2", exact_excerpt: "regress y x\noutreg2 using t.xls" },
+    { occurrence_id: "regress-1", command: "regress", exact_excerpt: "regress y x" },
+    { occurrence_id: "outreg2-2", command: "outreg2", exact_excerpt: "areg y x\noutreg2 using t.xls" },
+  ];
+  const cards = paperUsageCardsFor(["outreg2"], rows);
+  assert.equal(cards.length, 2);
+  assert.deepEqual(cards.map((card) => card.occurrence), [rows[0], rows[2]]);
+  assert.ok(cards.every((card) => card.command === "outreg2"));
+  assert.ok(cards.every((card) => card.source_role.focus_command === "outreg2"));
+  assert.ok(cards.every((card) => card.source_role.surrounding_code === "reference_context"));
+  assert.ok(cards.every((card) => card.source_role.owns_other_command_choices === false));
+  assert.equal(cards.some((card) => card.command === "regress" || card.command === "areg"), false);
+});
+
+test("project scan joins continuation lines and ignores unknown first tokens and abbreviations", (t) => {
   const project = fs.mkdtempSync(path.join(os.tmpdir(), "stata-evidence-project-"));
   t.after(() => fs.rmSync(project, { recursive: true, force: true }));
-  fs.mkdirSync(path.join(project, "do"));
-  fs.writeFileSync(path.join(project, "do", "analysis.do"), [
-    'use "data/panel.dta", clear',
-    'reghdfe outcome treatment controls, absorb(firm year) vce(cluster firm)',
+  fs.writeFileSync(path.join(project, "analysis.do"), [
+    "reghdfe outcome treatment ///",
+    "    controls, absorb(firm year) // inline note",
+    "custom_local_program x y",
+    "reg outcome treatment",
     'outreg2 using "output/table.xls", replace',
-    'do "do/figures.do"',
   ].join("\n"), "utf8");
 
-  const scan = scanProjectCommandObservations(project, ["do/analysis.do"]);
-  assert.equal(scan.observations.length, 4);
-  assert.deepEqual(scan.observations.map((row) => row.command), ["use", "reghdfe", "outreg2", "do"]);
-  assert.equal(scan.observations[1].line, 2);
-  assert.equal(scan.observations[1].options, "absorb(firm year) vce(cluster firm)");
-  assert.ok(scan.observations[2].relations.some((relation) => relation.value === "output/table.xls"));
-  const keys = deepKeys(scan);
-  for (const forbidden of FORBIDDEN_RESPONSE_KEYS) assert.equal(keys.has(forbidden), false, forbidden);
+  const scan = scanProjectCommandObservations(project, ["analysis.do"]);
+  assert.deepEqual(scan.observations.map((row) => row.command), ["reghdfe", "outreg2"]);
+  assert.equal(scan.observations[0].line, 1);
+  assert.equal(
+    scan.observations[0].statement,
+    "reghdfe outcome treatment controls, absorb(firm year)",
+  );
+  assert.ok(scan.observations[1].relations.some((relation) => relation.value === "output/table.xls"));
 });
 
-test("export commands treat using paths as outputs", (t) => {
-  const project = fs.mkdtempSync(path.join(os.tmpdir(), "stata-evidence-exports-"));
+test("project observations remain factual context in evidence and are not selected-command filtered", (t) => {
+  const project = fs.mkdtempSync(path.join(os.tmpdir(), "stata-evidence-context-"));
   t.after(() => fs.rmSync(project, { recursive: true, force: true }));
-  fs.writeFileSync(path.join(project, "exports.do"), [
-    'export delimited using "output/data.csv", replace',
-    'export excel using "output/data.xlsx", firstrow(variables) replace',
+  fs.writeFileSync(path.join(project, "analysis.do"), [
+    'use "data/panel.dta", clear',
+    "regress outcome treatment",
+    'outreg2 using "output/table.xls", replace',
   ].join("\n"), "utf8");
 
-  const scan = scanProjectCommandObservations(project, ["exports.do"]);
-  assert.equal(scan.observations.length, 2);
-  for (const observation of scan.observations) {
-    assert.deepEqual(observation.relations.map((relation) => relation.kind), ["output"]);
-  }
+  const evidence = buildCommandEvidence({
+    request: "Inspect outreg2",
+    selected_commands: ["outreg2"],
+    project_path: project,
+    target_files: ["analysis.do"],
+  });
+  assert.deepEqual(evidence.command_cards.map((row) => row.command), ["outreg2"]);
+  assert.deepEqual(evidence.project_observations.map((row) => row.command), ["use", "regress", "outreg2"]);
+  const keys = deepKeys(evidence);
+  for (const forbidden of FORBIDDEN_RESPONSE_KEYS) assert.equal(keys.has(forbidden), false, forbidden);
 });
 
 test("target files cannot escape the selected project", (t) => {
@@ -132,37 +223,19 @@ test("target files cannot escape the selected project", (t) => {
   assert.throws(() => scanProjectCommandObservations(project, [path.join(project, "inside.do")]), /project-relative/);
 });
 
-test("tool call validates input and rejects legacy tool names", () => {
+test("tool call validates request and rejects legacy tool names", () => {
   const missing = dispatch({
     jsonrpc: "2.0",
-    id: 3,
+    id: 4,
     method: "tools/call",
     params: { name: "get_stata_command_evidence", arguments: {} },
   });
   assert.equal(missing.result.isError, true);
   assert.match(missing.result.content[0].text, /request/);
 
-  const filesWithoutProject = dispatch({
-    jsonrpc: "2.0",
-    id: 31,
-    method: "tools/call",
-    params: {
-      name: "get_stata_command_evidence",
-      arguments: { request: "inspect this file", target_files: ["analysis.do"] },
-    },
-  });
-  assert.equal(filesWithoutProject.result.isError, true);
-  assert.match(filesWithoutProject.result.content[0].text, /project_path/);
-
-  const userVocabulary = buildCommandEvidence({
-    request: "Estimate a regression",
-    known_constraints: { score: "baseline_score", pass: "pass_rate" },
-  });
-  assert.ok(userVocabulary.task_atoms.every((atom) => atom.known_constraints.includes("baseline_score")));
-
   const legacy = dispatch({
     jsonrpc: "2.0",
-    id: 4,
+    id: 5,
     method: "tools/call",
     params: { name: "resolve_transition_evidence", arguments: { request: "regress" } },
   });

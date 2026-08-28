@@ -12,6 +12,15 @@ const MANUAL_INDEX_PATH = path.join(DATA_ROOT, "manual_index.jsonl");
 const OFFICIAL_EXAMPLES_PATH = path.join(DATA_ROOT, "official_examples.json");
 const WEB_SOURCES_PATH = path.join(DATA_ROOT, "official_web_sources.json");
 const COMMAND_SOURCES_PATH = path.join(DATA_ROOT, "command_sources.json");
+const PAPER_USAGE_PATH = path.join(DATA_ROOT, "paper_usage_occurrences.jsonl");
+const GENERAL_RULES_PATH = path.join(
+  PLUGIN_ROOT,
+  "skills",
+  "stata-replication-workflow",
+  "references",
+  "general-rules.md",
+);
+const GENERAL_RULES_SOURCE_PATH = "plugins/stata-research-guard/skills/stata-replication-workflow/references/general-rules.md";
 const FORMATTER_PATH = path.join(
   PLUGIN_ROOT,
   "annotations",
@@ -60,67 +69,11 @@ const manualIndex = readJsonl(MANUAL_INDEX_PATH);
 const officialExamples = readJson(OFFICIAL_EXAMPLES_PATH);
 const webSources = readJson(WEB_SOURCES_PATH);
 const commandSources = readJson(COMMAND_SOURCES_PATH).sources;
+const paperUsageFileAvailable = fs.existsSync(PAPER_USAGE_PATH);
+const paperUsageOccurrences = paperUsageFileAvailable ? readJsonl(PAPER_USAGE_PATH) : [];
 
 const familiesById = new Map(registry.families.map((family) => [family.family_id, family]));
 const commandsByName = new Map(registry.commands.map((command) => [command.command, command]));
-
-const ATOM_RULES = [
-  {
-    id: "estimation.instrumental_variables",
-    label: "Instrumental-variables estimation",
-    pattern: /\b(iv|2sls|instrumental variables?|ivregress|ivreg2|ivreghdfe)\b|도구변수|도구 변수/i,
-    commands: ["ivregress", "ivreg2", "ivreghdfe", "xtivreg"],
-  },
-  {
-    id: "estimation.difference_in_differences",
-    label: "Difference-in-differences estimation",
-    pattern: /difference[- ]in[- ]differences?|\bdid\b|차분의 차분|이중차분|didregress|xtdidregress|csdid|did_multiplegt_dyn/i,
-    commands: ["didregress", "xtdidregress", "csdid", "did_multiplegt_dyn", "eventstudyinteract", "reghdfe"],
-  },
-  {
-    id: "estimation.event_study",
-    label: "Event-study estimation",
-    pattern: /event[- ]study|event study|사건연구|이벤트[ -]?스터디/i,
-    commands: ["reghdfe", "xtreg", "areg", "regress", "eventstudyinteract", "csdid"],
-  },
-  {
-    id: "estimation.linear",
-    label: "Linear regression",
-    pattern: /\b(regress|regression|ols|linear model|areg|reghdfe|xtreg)\b|회귀|선형모형|선형 모형/i,
-    commands: ["regress", "areg", "xtreg", "reghdfe"],
-  },
-  {
-    id: "export.regression_excel",
-    label: "Regression-table export to Excel",
-    pattern: /(excel|xlsx|xls|workbook|엑셀).*(export|save|table|regression|회귀|저장|표)|(export|save|table|regression|회귀|저장|표).*(excel|xlsx|xls|workbook|엑셀)|\boutreg2\b/i,
-    commands: ["collect_export", "etable", "esttab", "outreg2", "putexcel"],
-    includeFormatter: true,
-  },
-  {
-    id: "descriptives.summary",
-    label: "Descriptive statistics",
-    pattern: /descriptive|summary statistics?|summari[sz]e|tabstat|기술통계|요약통계|요약 통계/i,
-    commands: ["summarize", "tabstat", "table", "dtable", "tabulate"],
-  },
-  {
-    id: "data.merge_append",
-    label: "Dataset combination",
-    pattern: /\b(merge|append|join)\b|병합|결합|붙이기/i,
-    commands: ["merge", "append", "joinby", "rangejoin"],
-  },
-  {
-    id: "data.reshape_collapse",
-    label: "Data reshaping or aggregation",
-    pattern: /\b(reshape|collapse|contract|aggregate)\b|재구조화|집계/i,
-    commands: ["reshape", "collapse", "contract", "gcollapse"],
-  },
-  {
-    id: "figures.graph",
-    label: "Graph construction and export",
-    pattern: /\b(graph|plot|figure|coefplot|twoway)\b|그래프|그림|도표/i,
-    commands: ["coefplot", "graph", "twoway", "marginsplot"],
-  },
-];
 
 function unique(values) {
   return [...new Set(values.filter((value) => value !== null && value !== undefined && value !== ""))];
@@ -129,8 +82,11 @@ function unique(values) {
 function commandInvocation(command) {
   const special = {
     collect_export: "collect export",
+    collect_get: "collect get",
+    collect_style: "collect style",
     export_delimited: "export delimited",
     export_excel: "export excel",
+    graph_bar: "graph bar",
     import_delimited: "import delimited",
     import_excel: "import excel",
   };
@@ -141,102 +97,8 @@ function sha256File(file) {
   return crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");
 }
 
-function formatterCard() {
-  if (!fs.existsSync(FORMATTER_PATH)) return null;
-  return {
-    command: "outreg2_xlsx",
-    invocation: "outreg2_xlsx, estimates() workbook() sheet() adjdec() meandec()",
-    package: "Stata Research Guard approved helper",
-    aliases: ["multi-sheet outreg2 formatter"],
-    functional_labels: ["exports"],
-    supported_features: [
-      "places caller-declared stored estimates on one named worksheet",
-      "preserves the raw outreg2 body and adds adjusted R-squared and dependent-variable mean rows",
-    ],
-    required_input_state: [
-      "caller has already chosen and stored the estimates",
-      "caller has already chosen the workbook and worksheet placement",
-    ],
-    output_interface: ["one named worksheet in an .xlsx workbook"],
-    tradeoffs_and_incompatibilities: [
-      "a formatter, not an estimator or research-design rule",
-      "does not choose outcomes, samples, specifications, model roles, or worksheet grouping",
-    ],
-    authority_sources: [{
-      authority: "user-approved internal implementation",
-      source_path: "annotations/source_snapshots/default_style_outreg2_xlsx.do",
-      source_hash: sha256File(FORMATTER_PATH),
-    }],
-  };
-}
-
-function commandMentioned(request, command) {
-  const forms = unique([command, commandInvocation(command), ...(commandsByName.get(command)?.aliases || [])]);
-  const haystack = request.toLowerCase();
-  const ambiguous = new Set([
-    "append", "contract", "generate", "graph", "merge", "predict", "replace",
-    "save", "summarize", "table", "test", "use",
-  ]);
-  return forms.some((form) => {
-    const needle = String(form).toLowerCase();
-    const escaped = needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    if (ambiguous.has(needle)) {
-      return new RegExp(`(?:command|명령(?:어)?)\\s+[\`']?${escaped}[\`']?\\b`, "i").test(haystack)
-        || new RegExp(`[\`]${escaped}[\`]`, "i").test(haystack);
-    }
-    return new RegExp(`(?:^|[^A-Za-z0-9_])${escaped}(?:$|[^A-Za-z0-9_])`, "i").test(haystack);
-  });
-}
-
-function deriveTaskAtoms(request) {
-  const atoms = [];
-  for (const rule of ATOM_RULES) {
-    if (!rule.pattern.test(request)) continue;
-    atoms.push({
-      id: rule.id,
-      functional_label: rule.label,
-      request_fragment: request,
-      candidate_commands: rule.commands.filter((command) => commandsByName.has(command)).sort(),
-      include_formatter: Boolean(rule.includeFormatter),
-    });
-  }
-
-  const mentioned = registry.commands
-    .filter((command) => commandMentioned(request, command.command))
-    .map((command) => command.command)
-    .sort();
-  const alreadyIncluded = new Set(atoms.flatMap((atom) => atom.candidate_commands));
-  const uncovered = mentioned.filter((command) => !alreadyIncluded.has(command));
-  if (uncovered.length) {
-    atoms.push({
-      id: "stata.explicit_commands",
-      functional_label: "Explicitly named Stata commands",
-      request_fragment: request,
-      candidate_commands: uncovered,
-      include_formatter: false,
-    });
-  }
-
-  if (!atoms.length) {
-    atoms.push({
-      id: "stata.command_support",
-      functional_label: "Stata command support",
-      request_fragment: request,
-      candidate_commands: mentioned,
-      include_formatter: false,
-    });
-  }
-  return atoms;
-}
-
 function manualRowsFor(command) {
-  return manualIndex
-    .filter((row) => Array.isArray(row.commands) && row.commands.includes(command))
-    .sort((left, right) => {
-      const authorityOrder = String(left.authority).localeCompare(String(right.authority));
-      if (authorityOrder) return authorityOrder;
-      return Number(left.page || 0) - Number(right.page || 0);
-    });
+  return manualIndex.filter((row) => Array.isArray(row.commands) && row.commands.includes(command));
 }
 
 function sourceCardsFor(command) {
@@ -280,14 +142,57 @@ function sourceCardsFor(command) {
   return cards;
 }
 
-function commandCard(commandName) {
+function paperUsageCardsFor(selectedCommands, rows = paperUsageOccurrences) {
+  const selected = new Set(selectedCommands);
+  return rows
+    .filter((row) => row && typeof row === "object" && selected.has(row.command))
+    .map((row) => ({
+      command: row.command,
+      source_role: {
+        focus_command: row.command,
+        surrounding_code: "reference_context",
+        owns_other_command_choices: false,
+      },
+      occurrence: row,
+    }));
+}
+
+function formatterCard() {
+  if (!fs.existsSync(FORMATTER_PATH)) return null;
+  return {
+    artifact: "outreg2_xlsx",
+    related_command: "outreg2",
+    invocation: "outreg2_xlsx, estimates() workbook() sheet() adjdec() meandec()",
+    role: "approved multi-sheet formatter",
+    required_input_state: [
+      "the caller has already chosen and stored the estimates",
+      "the caller has already chosen workbook and worksheet placement",
+    ],
+    output_interface: ["one named worksheet in an .xlsx workbook"],
+    boundaries: [
+      "does not choose or replace the estimator, outcome, sample, specification, or worksheet grouping",
+      "use direct outreg2 for a one-sheet .xls table",
+    ],
+    source_path: "annotations/source_snapshots/default_style_outreg2_xlsx.do",
+    source_hash: sha256File(FORMATTER_PATH),
+  };
+}
+
+function relatedArtifactsFor(selectedCommands) {
+  if (!selectedCommands.includes("outreg2")) return [];
+  const formatter = formatterCard();
+  return formatter ? [formatter] : [];
+}
+
+function commandCard(commandName, paperRows = paperUsageOccurrences) {
   const command = commandsByName.get(commandName);
   if (!command) return null;
   const family = familiesById.get(command.family_id) || {};
   const readableSourceAvailable = manualRowsFor(command.command).length > 0;
+  const paperAvailable = paperRows.some((row) => row?.command === command.command);
   return {
     command: command.command,
-    invocation: command.invocation || commandInvocation(command.command),
+    invocation: commandInvocation(command.command),
     package: family.display_name || command.family_id,
     aliases: command.aliases || [],
     functional_labels: unique([family.category, ...(command.stages || [])]),
@@ -296,6 +201,7 @@ function commandCard(commandName) {
     output_interface: command.output_interface || [],
     tradeoffs_and_incompatibilities: command.tradeoffs_and_incompatibilities || [],
     authority_sources: sourceCardsFor(command.command),
+    evidence_mode: paperAvailable ? "guide_and_paper_context" : "guide_only_fallback",
     evidence_gaps: unique([
       ...(!readableSourceAvailable ? ["readable local authoritative example unavailable"] : []),
       ...(!(command.required_input_state || []).length ? ["required input state not summarized in the registry; read the authoritative source"] : []),
@@ -311,18 +217,6 @@ function excerpt(text, limit = MAX_EXAMPLE_CHARS) {
   return `${clean.slice(0, limit).trimEnd()}…`;
 }
 
-function manualExampleQuality(row, command) {
-  const content = String(row.content || "");
-  const escaped = command.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  let quality = 0;
-  if (/quick start/i.test(content)) quality += 8;
-  if (/syntax/i.test(content)) quality += 5;
-  if (new RegExp(`(?:^|\\n)\\s*\\.?\\s*${escaped}(?:\\s|,)`, "im").test(content)) quality += 10;
-  if (/\/help\//i.test(String(row.source_url))) quality += 5;
-  if (/abstract/i.test(content.slice(0, 500))) quality -= 10;
-  return quality;
-}
-
 function anchoredExcerpt(text, command) {
   const lines = String(text || "").replace(/\u0000/g, "").split(/\r?\n/);
   const escaped = command.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -332,11 +226,21 @@ function anchoredExcerpt(text, command) {
   return excerpt(lines.slice(Math.max(0, anchor - 2), anchor + 19).join("\n"));
 }
 
+function manualSyntaxRow(command) {
+  const invocation = commandInvocation(command);
+  const escaped = invocation.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const syntaxLine = new RegExp(`^\\s*\\.?\\s*${escaped}(?:\\s|,)`, "im");
+  const rows = manualRowsFor(command);
+  return rows.find((row) => {
+    const content = String(row.content || "");
+    return /(?:^|\n)[^\n]{0,80}\b(?:syntax|synopsis)\b/im.test(content) && syntaxLine.test(content);
+  }) || rows.find((row) => syntaxLine.test(String(row.content || ""))) || rows[0];
+}
+
 function examplesFor(commands) {
   const output = [];
   for (const command of commands) {
-    const manual = manualRowsFor(command)
-      .sort((left, right) => manualExampleQuality(right, command) - manualExampleQuality(left, command))[0];
+    const manual = manualSyntaxRow(command);
     if (manual) {
       output.push({
         command,
@@ -347,7 +251,7 @@ function examplesFor(commands) {
         page_or_section: manual.page ? `page ${manual.page}` : null,
         source_file: manual.source_file,
         source_hash: manual.file_sha256,
-        excerpt: anchoredExcerpt(manual.content, command),
+        excerpt: anchoredExcerpt(manual.content, commandInvocation(command)),
       });
     }
     const fixture = officialExamples.find((row) => row.command === command);
@@ -437,10 +341,13 @@ function logicalStatements(text) {
     }
     line = visible.trim();
     if (!line || line.startsWith("*") || line.startsWith("//")) continue;
-    line = line.replace(/\s+\/\/.*$/, "").trim();
-    if (startLine === null) startLine = index + 1;
     const continues = /\/\/\/\s*$/.test(line);
-    buffer += `${buffer ? " " : ""}${line.replace(/\/\/\/\s*$/, "").trim()}`;
+    line = continues
+      ? line.replace(/\/\/\/\s*$/, "").trim()
+      : line.replace(/\s+\/\/.*$/, "").trim();
+    if (!line) continue;
+    if (startLine === null) startLine = index + 1;
+    buffer += `${buffer ? " " : ""}${line}`;
     if (!continues) {
       statements.push({ line: startLine, text: buffer.trim() });
       buffer = "";
@@ -464,13 +371,12 @@ function detectCommand(statement) {
     return commandInvocation(right.command).length - commandInvocation(left.command).length;
   });
   for (const command of commands) {
-    const forms = unique([command.invocation || commandInvocation(command.command), command.command, ...(command.aliases || [])]);
+    const forms = unique([command.invocation || commandInvocation(command.command), ...(command.aliases || [])]);
     if (forms.some((form) => value === form.toLowerCase() || value.startsWith(`${form.toLowerCase()} `) || value.startsWith(`${form.toLowerCase()},`))) {
       return command.command;
     }
   }
-  const token = value.match(/^([A-Za-z_][A-Za-z0-9_]*)/)?.[1];
-  return token || null;
+  return null;
 }
 
 function extractOptions(statement) {
@@ -559,6 +465,53 @@ function assertNoForbiddenKeys(value, trail = "response") {
   }
 }
 
+function generalGuidance() {
+  if (!fs.existsSync(GENERAL_RULES_PATH)) {
+    throw new Error(`general guidance source is missing: ${GENERAL_RULES_SOURCE_PATH}`);
+  }
+  return {
+    source_path: GENERAL_RULES_SOURCE_PATH,
+    source_hash: sha256File(GENERAL_RULES_PATH),
+    content: new TextDecoder("utf-8", { fatal: true }).decode(fs.readFileSync(GENERAL_RULES_PATH)),
+  };
+}
+
+function commandDictionary() {
+  return registry.commands.map((command) => {
+    const family = familiesById.get(command.family_id) || {};
+    const functionalLabels = unique([family.category, ...(command.stages || [])]);
+    const invocation = commandInvocation(command.command);
+    return {
+      command: command.command,
+      invocation,
+      label: `${invocation} — ${family.display_name || command.family_id}`,
+      description: `Available for ${functionalLabels.join(", ") || "Stata"} work; use returned documentation for syntax and semantics.`,
+      functional_labels: functionalLabels,
+      guide_available: sourceCardsFor(command.command).length > 0
+        || officialExamples.some((row) => row.command === command.command),
+      paper_available: paperUsageOccurrences.some((row) => row?.command === command.command),
+    };
+  }).sort((left, right) => left.command.localeCompare(right.command));
+}
+
+function selectedCommandsFrom(args) {
+  if (!Object.prototype.hasOwnProperty.call(args, "selected_commands")) return null;
+  if (!Array.isArray(args.selected_commands) || args.selected_commands.length === 0) {
+    throw new Error("ABORT command_not_in_dictionary: selected_commands must be a non-empty array of canonical registry keys");
+  }
+  const seen = new Set();
+  for (const command of args.selected_commands) {
+    if (typeof command !== "string" || !commandsByName.has(command)) {
+      throw new Error(`ABORT command_not_in_dictionary: ${JSON.stringify(command)} is not a canonical registry key`);
+    }
+    if (seen.has(command)) {
+      throw new Error(`ABORT command_not_in_dictionary: duplicate canonical registry key ${JSON.stringify(command)}`);
+    }
+    seen.add(command);
+  }
+  return [...args.selected_commands];
+}
+
 function validateArguments(args) {
   if (!args || typeof args !== "object" || Array.isArray(args)) throw new Error("arguments must be an object");
   if (typeof args.request !== "string" || !args.request.trim()) throw new Error("request must be a non-empty string");
@@ -571,25 +524,12 @@ function validateArguments(args) {
   if (args.target_files?.length && !args.project_path) {
     throw new Error("project_path is required when target_files are provided");
   }
+  return selectedCommandsFrom(args);
 }
 
 function buildCommandEvidence(args) {
-  validateArguments(args);
-  const taskAtoms = deriveTaskAtoms(args.request.trim());
-  const commandNames = unique(taskAtoms.flatMap((atom) => atom.candidate_commands)).sort();
-  const cards = commandNames.map(commandCard).filter(Boolean);
-  if (taskAtoms.some((atom) => atom.include_formatter)) {
-    const formatter = formatterCard();
-    if (formatter) cards.push(formatter);
-  }
-
+  const selectedCommands = validateArguments(args);
   const unresolved = [];
-  for (const card of cards) {
-    if (!card.authority_sources.length) {
-      unresolved.push(`No readable local official or maintainer source is stored for ${card.command}.`);
-    }
-  }
-
   let projectObservations = [];
   if (args.project_path) {
     const scan = scanProjectCommandObservations(args.project_path, args.target_files || []);
@@ -597,26 +537,41 @@ function buildCommandEvidence(args) {
     unresolved.push(...scan.unresolved);
   }
 
-  if (/paper|article|replication|논문|복제|선행연구|사용례/i.test(args.request)) {
-    unresolved.push("No reviewed paper_usage_occurrence or paper_adaptation_card is currently stored.");
+  if (selectedCommands === null) {
+    const response = {
+      phase: "discovery",
+      general_guidance: generalGuidance(),
+      command_dictionary: commandDictionary(),
+      project_observations: projectObservations,
+      unresolved_facts: unique(unresolved),
+    };
+    assertNoForbiddenKeys(response);
+    return response;
+  }
+
+  const cards = selectedCommands.map((command) => commandCard(command)).filter(Boolean);
+  const paperCards = paperUsageCardsFor(selectedCommands);
+  for (const card of cards) {
+    if (!card.authority_sources.length) {
+      unresolved.push(`No readable local official or maintainer source is stored for ${card.command}.`);
+    }
+    if (card.evidence_mode === "guide_only_fallback") {
+      const reason = paperUsageFileAvailable
+        ? `No reviewed paper_usage_occurrence is stored for ${card.command}; guide_only_fallback.`
+        : `paper_usage_occurrences.jsonl is not installed; ${card.command} uses guide_only_fallback.`;
+      unresolved.push(reason);
+    }
   }
 
   const response = {
-    task_atoms: taskAtoms.map(({ include_formatter: includeFormatter, ...atom }) => ({
-      ...atom,
-      known_constraints: args.known_constraints === undefined
-        ? null
-        : typeof args.known_constraints === "string"
-          ? args.known_constraints
-          : JSON.stringify(args.known_constraints),
-      candidate_commands: includeFormatter && cards.some((card) => card.command === "outreg2_xlsx")
-        ? unique([...atom.candidate_commands, "outreg2_xlsx"]).sort()
-        : atom.candidate_commands,
-    })),
-    command_cards: cards.sort((left, right) => left.command.localeCompare(right.command)),
+    phase: "evidence",
+    general_guidance: generalGuidance(),
+    selected_commands: selectedCommands,
+    command_cards: cards,
     project_observations: projectObservations,
-    authoritative_examples: examplesFor(commandNames),
-    paper_usage_cards: [],
+    authoritative_examples: examplesFor(selectedCommands),
+    paper_usage_cards: paperCards,
+    related_artifacts: relatedArtifactsFor(selectedCommands),
     unresolved_facts: unique(unresolved),
   };
   assertNoForbiddenKeys(response);
@@ -626,13 +581,18 @@ function buildCommandEvidence(args) {
 const TOOL_DEFINITIONS = [
   {
     name: "get_stata_command_evidence",
-    description: "Return task-separated Stata command candidates, readable official or maintainer examples, factual project observations, and non-authoritative paper usage context. The tool does not choose a command or grade model-written code.",
+    description: "Two-stage exact-key Stata evidence router. First omit selected_commands to receive the complete canonical command dictionary without guide or paper bodies. Then call again with one or more exact canonical registry keys to receive evidence only for those commands. Empty, duplicate, alias, abbreviation, inferred, or unregistered keys abort with command_not_in_dictionary; if the needed command is absent from the dictionary, the calling skill must abort instead of guessing. Paper occurrences focus on the selected command; surrounding producer or downstream code is nonbinding reference context and does not replace user or project command choices. The tool never chooses a command or grades generated code.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
       required: ["request"],
       properties: {
         request: { type: "string", minLength: 1 },
+        selected_commands: {
+          type: "array",
+          description: "Evidence phase only: one or more unique, exact command keys copied from the discovery command_dictionary. Do not send aliases, abbreviations, inferred names, or commands outside the dictionary.",
+          items: { type: "string", minLength: 1 },
+        },
         project_path: { type: "string", minLength: 1 },
         target_files: { type: "array", items: { type: "string", minLength: 1 } },
         known_constraints: {
@@ -642,24 +602,46 @@ const TOOL_DEFINITIONS = [
       },
     },
     outputSchema: {
-      type: "object",
-      additionalProperties: false,
-      required: [
-        "task_atoms",
-        "command_cards",
-        "project_observations",
-        "authoritative_examples",
-        "paper_usage_cards",
-        "unresolved_facts",
+      oneOf: [
+        {
+          type: "object",
+          additionalProperties: false,
+          required: ["phase", "general_guidance", "command_dictionary", "project_observations", "unresolved_facts"],
+          properties: {
+            phase: { const: "discovery" },
+            general_guidance: { type: "object" },
+            command_dictionary: { type: "array", items: { type: "object" } },
+            project_observations: { type: "array", items: { type: "object" } },
+            unresolved_facts: { type: "array", items: { type: "string" } },
+          },
+        },
+        {
+          type: "object",
+          additionalProperties: false,
+          required: [
+            "phase",
+            "general_guidance",
+            "selected_commands",
+            "command_cards",
+            "project_observations",
+            "authoritative_examples",
+            "paper_usage_cards",
+            "related_artifacts",
+            "unresolved_facts",
+          ],
+          properties: {
+            phase: { const: "evidence" },
+            general_guidance: { type: "object" },
+            selected_commands: { type: "array", items: { type: "string" } },
+            command_cards: { type: "array", items: { type: "object" } },
+            project_observations: { type: "array", items: { type: "object" } },
+            authoritative_examples: { type: "array", items: { type: "object" } },
+            paper_usage_cards: { type: "array", items: { type: "object" } },
+            related_artifacts: { type: "array", items: { type: "object" } },
+            unresolved_facts: { type: "array", items: { type: "string" } },
+          },
+        },
       ],
-      properties: {
-        task_atoms: { type: "array", items: { type: "object" } },
-        command_cards: { type: "array", items: { type: "object" } },
-        project_observations: { type: "array", items: { type: "object" } },
-        authoritative_examples: { type: "array", items: { type: "object" } },
-        paper_usage_cards: { type: "array", items: { type: "object" } },
-        unresolved_facts: { type: "array", items: { type: "string" } },
-      },
     },
   },
 ];
@@ -730,8 +712,8 @@ module.exports = {
   TOOL_DEFINITIONS,
   assertNoForbiddenKeys,
   buildCommandEvidence,
-  deriveTaskAtoms,
   dispatch,
   logicalStatements,
+  paperUsageCardsFor,
   scanProjectCommandObservations,
 };

@@ -1,15 +1,15 @@
 {
   "name": "stata-research-guard",
-  "version": "0.3.0+codex.20260828195056",
-  "description": "Provide Stata command evidence, readable official or maintainer examples, and factual project observations while leaving command choice and code writing to the model.",
+  "version": "0.3.0+codex.20260828205001",
+  "description": "Provide a closed Stata command dictionary with on-demand official or maintainer guides, paper occurrences, general rules, and factual project observations.",
   "author": {
     "name": "song7"
   },
   "skills": "./skills/",
   "interface": {
     "displayName": "Stata Research Guard",
-    "shortDescription": "Official syntax and project-context evidence for Stata.",
-    "longDescription": "Provides task-separated Stata command candidates, readable StataCorp or maintainer documentation examples, factual project observations, and non-authoritative paper usage context. The model uses that evidence with the user's research and output requirements to choose commands and write readable project-specific code. The plugin does not rank candidates, promote templates, grade generated code, or certify a research design.",
+    "shortDescription": "Closed Stata command dictionary with guide and paper evidence.",
+    "longDescription": "Lets the model inspect a closed Stata command dictionary, select one or more canonical commands, and retrieve only those commands' StataCorp or maintainer guides, factual project observations, unmodified paper occurrences, and common general rules. Commands outside the dictionary abort instead of being guessed or hand-implemented. The plugin does not rank candidates, promote templates, grade generated code, or certify a research design.",
     "developerName": "song7",
     "category": "Developer Tools",
     "capabilities": [
@@ -17,9 +17,9 @@
       "Skills"
     ],
     "defaultPrompt": [
-      "Use the skill and get_stata_command_evidence to choose and write readable Stata from official or maintainer examples and the current project context.",
+      "Use the skill and get_stata_command_evidence to inspect the command dictionary, select the needed commands, and write readable Stata from their guides, paper occurrences, general rules, and the current project context.",
       "Inspect this Stata project read-only and report literal command, option, input, output, call, and estimate-handoff observations without ranking its existing practices.",
-      "Compare command candidates for this requested Stata function using authoritative documentation and relevant paper context, then make the project-specific choice yourself."
+      "Choose one or more commands from the exposed dictionary, retrieve only their evidence, and abort if the required command is unavailable."
     ]
   },
   "mcpServers": "./.mcp.json"

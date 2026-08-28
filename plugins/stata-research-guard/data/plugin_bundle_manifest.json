@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.3.0+codex.20260828195056"
+    "version": "0.3.0+codex.20260828205001"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
-      "bytes": 1629,
-      "sha256": "901649bf3b35448e53e8fc387175aa79883b30990c67ba1a50d4522167733691"
+      "bytes": 1674,
+      "sha256": "906f8b910aa87d35c07c48479be28add1ccf80514a1fdcbbd6c38806cfacfb40"
     },
     {
       "path": ".mcp.json",
@@ -22,8 +22,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 1268,
-      "sha256": "090694cfd2cd5ce1aa24c18e0da19fe9bb11d83aae49b124e74db9becd7555bc"
+      "bytes": 2218,
+      "sha256": "c6b2923a62510417baca3cd1b2466699de56e3ea88f52690772843d402d0aea9"
     },
     {
       "path": "data/command_registry.json",
@@ -312,18 +312,18 @@
     },
     {
       "path": "INSTRUCTIONS.md",
-      "bytes": 2187,
-      "sha256": "d854f2593048bbd29aff0ea6a3ac0dd341d1ae431950cd0fbc40b76f79d02fe2"
+      "bytes": 3063,
+      "sha256": "56d10ef21eb5cb8bfe67e18a20f50029f0429f18f7332068075689fae1caf558"
     },
     {
       "path": "mcp/server.cjs",
-      "bytes": 28366,
-      "sha256": "b83b3c8cd141ee592e5e13d0d4a1a6cb9cd75de7bedc88c47e4e2e9b0bbb5ba6"
+      "bytes": 28381,
+      "sha256": "da413352c07cd0e3f087932129824402338f0da16749ced2789c179b635503e6"
     },
     {
       "path": "README.md",
-      "bytes": 4415,
-      "sha256": "ffb9944eae7869f3d5863112e7ae241d1a44696d63906b2f7aaf56447aabaa99"
+      "bytes": 5883,
+      "sha256": "9f1207caa151a3a5d585c58931f2e96405f82d57998a0ca2b0099657027869b0"
     },
     {
       "path": "scripts/run_mcp.cmd",
@@ -337,18 +337,23 @@
     },
     {
       "path": "skills/stata-replication-workflow/agents/openai.yaml",
-      "bytes": 541,
-      "sha256": "f4256ddca3b87758b55c7b2187faf69d8ba19c2904533ff7f7e4e50ab064130a"
+      "bytes": 706,
+      "sha256": "24e04c2e10e6831d74d041e9adbd62cce10cce9d8a1ed92544fdc9634cc8c6e2"
     },
     {
       "path": "skills/stata-replication-workflow/references/authoring-conventions.md",
-      "bytes": 2399,
-      "sha256": "7e0c995ca0c9c3b08da2bb79f7ff52c9ca60d220210cbf361d19c2e50a7389d8"
+      "bytes": 1332,
+      "sha256": "fb04495c569517d3358d1d72e7f4b5c45c58a07473e33d509fa6d09f1ad43c79"
     },
     {
       "path": "skills/stata-replication-workflow/references/command-evidence.md",
-      "bytes": 2727,
-      "sha256": "d0a46f2fe361e31f86a3040e9563c0d0bcb422dfa417f5092056975978c89fb5"
+      "bytes": 4596,
+      "sha256": "b9fe857ed610bfc94a3d9b312cf849cdc0f792b28def32ca8d4ca7c999cf251f"
+    },
+    {
+      "path": "skills/stata-replication-workflow/references/general-rules.md",
+      "bytes": 3333,
+      "sha256": "d7ecb2843badf6893fc49a779e77d1c11e9e710398d8f57ecff1bd79a974a667"
     },
     {
       "path": "skills/stata-replication-workflow/references/readme-contract.md",
@@ -362,8 +367,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/SKILL.md",
-      "bytes": 3686,
-      "sha256": "f76527ee1a05bb648cfadade9383677911bf76e993ad51fbfb7a3af0a1dd1ba4"
+      "bytes": 3911,
+      "sha256": "aff8499e11c0665d431bd9cb7a858336e5dbbf9fe800c572c6bf6d75204960a2"
     },
     {
       "path": "tests/fixtures/outreg2_excel_runtime.do",
@@ -372,8 +377,8 @@
     },
     {
       "path": "tests/formatter_guard.test.cjs",
-      "bytes": 1799,
-      "sha256": "07468736f48d4c23fa0ebec0a749bb364461852c768f752a62cec7181b8b5263"
+      "bytes": 1930,
+      "sha256": "34bbfd0c982ccbb632eba73773f081c811441f99a0c334a1a8b515eddd87c571"
     },
     {
       "path": "tests/outreg2_excel_runtime.test.cjs",
@@ -387,8 +392,8 @@
     },
     {
       "path": "tests/server.test.cjs",
-      "bytes": 7924,
-      "sha256": "7fc99c3bd4f1fcbb9a4151026cd11b6887614d890b4211976feb8cc096b5bfcd"
+      "bytes": 11669,
+      "sha256": "b935fb9ba9d126a4bdbdd75233c065e585e69bc703cb0bbd53e576e2d8898cba"
     },
     {
       "path": "tests/test_command_evidence.py",
@@ -414,7 +419,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.3.0+codex.20260828195056"
+      "value": "0.3.0+codex.20260828205001"
     },
     {
       "id": "readme.heading",

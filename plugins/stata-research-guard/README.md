@@ -1,6 +1,6 @@
 # Stata Research Guard
 
-Stata Research Guard is a small evidence provider for Stata research work. It gives the model the material needed to make a good project-specific decision; it does not grade model-written code or choose a command on the model's behalf.
+Stata Research Guard is a small, closed-dictionary evidence provider for Stata research work. It gives the model the material needed to make a good project-specific decision; it does not grade model-written code or choose a command on the model's behalf.
 
 ## What it provides
 
@@ -10,25 +10,33 @@ The `stataResearchGuard` MCP server exposes one tool:
 get_stata_command_evidence
 ```
 
-Given a request and an optional project path, it returns:
+The tool has two phases:
 
-- task atoms that keep distinct functions such as estimation and Excel export separate;
+1. Without `selected_commands`, it returns the complete command dictionary and concise task labels. The model may select one or more canonical command keys.
+2. With `selected_commands`, it returns guide and paper evidence only for those selected commands.
+
+Every response also carries the common `general-rules.md` authoring contract. An unknown, duplicated, or empty selected-command list aborts instead of being guessed, expanded from an abbreviation, or replaced with an unregistered command.
+
+The response may contain:
+
+- a command dictionary with canonical keys, invocations, functional labels, and guide/paper availability;
+- task atoms that keep distinct functions such as estimation and Excel export separate without selecting a winner;
 - functional command cards with command, package, aliases, interfaces, and known tradeoffs;
 - readable StataCorp or maintainer documentation excerpts and examples;
 - factual project observations with file, line, statement, options, input/output bindings, calls, and estimate handoffs;
 - reviewed paper usage cards when such cards exist; and
 - unresolved facts when a source or research choice is not established.
 
-The response never contains a winner, numeric ranking, semantic pass, promotion state, or automatic-selection verdict. Existing project usage is an observation, not a vote. The model considers the user's current requirements, official or maintainer semantics, project facts, paper context, and implementation simplicity, then chooses and writes the code.
+The response never contains a winner, numeric ranking, semantic pass, promotion state, or automatic-selection verdict. Existing project usage is an observation, not a vote. The model considers the user's current requirements, official or maintainer semantics, project facts, paper context, and implementation simplicity, then chooses and writes the code. While the plugin is in use, code generation stays inside the exposed dictionary; if the necessary command is absent, the workflow stops and reports the missing capability.
 
 ## Evidence authority
 
 - StataCorp manual and help material is the syntax authority for official commands.
 - Maintainer help, repositories, and SSC/RePEc documentation are the syntax authority for user-written commands.
-- Paper code shows how a command was used in a particular research workflow. It is not syntax authority, a canonical template, or proof that the same specification fits another project.
+- Paper code shows how the selected command was used in a particular research workflow. The selected-command region is a practical example; surrounding estimators, samples, fixed effects, VCE choices, and downstream steps remain reference context. Paper code is not syntax authority and is never rewritten offline to match house style.
 - Runtime output records what Stata executed and produced. It does not establish causal validity or select a research design.
 
-Documentation examples are readable and nonbinding. A document-derived fixture is labeled as derived rather than presented as a verbatim manual example. Missing maintainer examples and unavailable paper cards are reported honestly.
+Documentation examples are readable and nonbinding. A document-derived fixture is labeled as derived rather than presented as a verbatim manual example. When no reviewed paper occurrence exists, the tool provides guide-only evidence and reports the gap honestly.
 
 ## Project observations
 
@@ -38,7 +46,9 @@ The scanner does not infer preferred style, rank commands by frequency, or turn 
 
 ## Paper and formatter boundaries
 
-Raw paper source files and their citation, path, hash, and span provenance remain preserved. Raw archives, mechanical windows, mixed legacy usage rows, and rejected audit packets are not returned directly. Reviewed paper evidence will use separate `paper_usage_occurrence` and optional `paper_adaptation_card` records.
+Raw paper source files and their citation, path, hash, and span provenance remain preserved. Raw archives, mechanical windows, mixed legacy usage rows, and rejected audit packets are not returned directly. Reviewed evidence uses unmodified `paper_usage_occurrence` records. Materially different command variants may supply more than one occurrence.
+
+A close occurrence may guide minimal edits around the selected command so that it harmonizes with the current project and documented syntax. A distant occurrence is reference context rather than a template. For example, an `outreg2` occurrence may show a preceding `areg`, but the `outreg2` example does not own the estimator and must not replace a current `regress` choice.
 
 The user-approved `outreg2_xlsx` multi-sheet formatter is preserved as a named implementation artifact. Its card describes its interface and preconditions but does not decide whether a project needs it.
 
@@ -49,6 +59,7 @@ The bundled skill favors readable Stata that exposes the active sample, model, f
 These are authoring conventions for the model, not deterministic linter findings. See:
 
 - `skills/stata-replication-workflow/references/command-evidence.md`
+- `skills/stata-replication-workflow/references/general-rules.md`
 - `skills/stata-replication-workflow/references/authoring-conventions.md`
 - `skills/stata-replication-workflow/references/readme-contract.md`
 - `skills/stata-replication-workflow/references/workflow-taxonomy.md`

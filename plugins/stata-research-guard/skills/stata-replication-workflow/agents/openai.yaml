@@ -1,13 +1,13 @@
 interface:
   display_name: "Stata Research Workflow"
-  short_description: "Official syntax and research-context evidence for Stata"
-  default_prompt: "Use $stata-replication-workflow to choose and write readable Stata from official or maintainer evidence and the current project context."
+  short_description: "Closed Stata command dictionary with guide and paper evidence"
+  default_prompt: "Use $stata-replication-workflow to inspect the allowed command dictionary, choose canonical commands, retrieve only their guide and paper evidence, follow the common general rules, and abort with the missing capability if the dictionary cannot supply it."
 
 dependencies:
   tools:
     - type: "mcp"
       value: "stataResearchGuard"
-      description: "Local Stata command evidence, documentation examples, and factual project observations"
+      description: "Closed Stata command dictionary, selected-command guides and paper occurrences, general rules, and factual project observations"
       transport: "stdio"
 
 policy:

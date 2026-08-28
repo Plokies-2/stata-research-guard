@@ -2,19 +2,21 @@
 
 Stata Research Guard는 모델이 Stata 코드를 스스로 판단해 작성할 수 있도록 근거를 공급하는 Codex 플러그인입니다. 모델이 쓴 코드를 채점하거나, 하나의 명령·template을 정답으로 승격하거나, 연구 설계를 자동 인증하지 않습니다.
 
-현재 배포 버전은 `0.3.0+codex.20260828195056`입니다.
+현재 배포 버전은 `0.3.0+codex.20260828205001`입니다.
 
 ## 제공하는 것
 
-MCP 도구는 `get_stata_command_evidence` 하나입니다. 요청을 기능 단위로 나누어 다음 자료를 반환합니다.
+MCP 도구는 `get_stata_command_evidence` 하나입니다. 첫 호출은 109개 canonical command 사전을 보여 주고, 모델이 하나 이상의 명령을 직접 고른 뒤 두 번째 호출에서 선택된 명령의 자료만 반환합니다. 사전에 없는 명령이 필요하면 임의 구현이나 대체 없이 중단하고 누락 기능을 보고합니다.
 
-- 기능별 Stata command 후보와 package·alias·입출력 interface
+- 109개 Stata command의 canonical key·invocation·기능 label
+- 선택된 명령의 package·alias·입출력 interface
 - StataCorp 공식 문서 또는 user-written command maintainer 문서의 실제 구문·예제 발췌
 - 기존 프로젝트에서 관찰한 파일, 줄, command, option, 입력·출력, do-file 호출과 estimate handoff
-- 특정 논문에서 command가 사용된 문맥. 현재 검토된 paper usage card가 없으면 없다고 명시
+- 선택 명령에 대한 수정하지 않은 논문 원문 occurrence. 없으면 guide-only fallback을 명시
+- 모든 명령에 공통으로 적용되는 간결한 `general-rules.md`
 - 아직 문서나 현재 프로젝트에서 확인되지 않은 사실
 
-응답에는 winner, 점수, pass/fail, 자동 선택, template 승격 상태가 없습니다. 공식·maintainer 문서는 문법의 권위이고, 논문 코드는 특정 연구 맥락의 사용례입니다. 현재 연구 설계와 구현은 사용자 요구, 프로젝트 사실과 이 근거를 읽은 모델이 결정합니다.
+응답에는 winner, 점수, pass/fail, 자동 선택, template 승격 상태가 없습니다. 공식·maintainer 문서는 문법의 권위이고, 논문 코드는 선택 명령의 실제 사용 예시입니다. 주변 estimator와 연구 설계는 참고 문맥일 뿐 현재 프로젝트의 선택을 덮어쓰지 않습니다. 가까운 예시는 선택 명령 주변을 조화시키는 출발점으로, 먼 예시는 비구속적 참고로 사용합니다.
 
 ## 작성 원칙
 
@@ -41,6 +43,6 @@ codex plugin list
 
 ## 검증 범위
 
-배포 bundle은 79개 파일의 정확한 inventory와 SHA-256을 기록합니다. 현재 회귀 검증은 Node 19개와 Python 6개이며, MCP transport·schema·경로 containment·근거 비채점 계약·source hash·bundle 무결성을 확인합니다. `outreg2_xlsx`는 실제 StataMP smoke run도 포함합니다. 이 검증은 소프트웨어와 근거 전달 경계를 확인할 뿐, 생성된 연구 코드나 인과추론 결과를 채점하지 않습니다.
+배포 bundle은 80개 파일의 정확한 inventory와 SHA-256을 기록합니다. 현재 회귀 검증은 Node 22개와 Python 6개이며, MCP transport·2단계 schema·사전 밖 명령 abort·선택 명령만의 evidence·경로 containment·근거 비채점 계약·source hash·bundle 무결성을 확인합니다. `outreg2_xlsx`는 실제 StataMP smoke run도 포함합니다. 이 검증은 소프트웨어와 근거 전달 경계를 확인할 뿐, 생성된 연구 코드나 인과추론 결과를 채점하지 않습니다.
 
 플러그인 상세 계약은 [`plugins/stata-research-guard/README.md`](plugins/stata-research-guard/README.md)를 참고하세요.
