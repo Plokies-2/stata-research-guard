@@ -12,6 +12,7 @@ const {
   FORBIDDEN_RESPONSE_KEYS,
   TOOL_DEFINITIONS,
   assertNoForbiddenKeys,
+  buildPaperUsageByCommand,
   buildCommandEvidence,
   dispatch,
   paperUsageCardsFor,
@@ -171,6 +172,46 @@ test("paper helper keeps every exact-key reviewed row and wraps source role sepa
   assert.ok(cards.every((card) => card.source_role.surrounding_code === "reference_context"));
   assert.ok(cards.every((card) => card.source_role.owns_other_command_choices === false));
   assert.equal(cards.some((card) => card.command === "regress" || card.command === "areg"), false);
+});
+
+test("reviewed paper index must cover all 109 commands and link exact occurrence ids once", () => {
+  const dictionary = buildCommandEvidence({ request: "Discover available commands" }).command_dictionary;
+  const rows = [
+    { record_type: "paper_usage_occurrence", occurrence_id: "paper-outreg2-1", command: "outreg2" },
+    { record_type: "paper_usage_occurrence", occurrence_id: "paper-regress-1", command: "regress" },
+  ];
+  const commands = dictionary.map(({ command }) => {
+    const occurrenceIds = rows.filter((row) => row.command === command).map((row) => row.occurrence_id);
+    return {
+      command,
+      occurrence_ids: occurrenceIds,
+      paper_occurrence_count: occurrenceIds.length,
+      guide_only_fallback: occurrenceIds.length === 0,
+    };
+  });
+  const index = {
+    record_type: "command_paper_occurrence_index",
+    registry_command_count: 109,
+    occurrence_file: "paper_usage_occurrences.jsonl",
+    occurrence_file_sha256: "fixture-hash",
+    commands,
+  };
+
+  const byCommand = buildPaperUsageByCommand(index, rows, "fixture-hash");
+  assert.equal(byCommand.size, 109);
+  assert.deepEqual(byCommand.get("outreg2"), [rows[0]]);
+  assert.deepEqual(byCommand.get("regress"), [rows[1]]);
+  assert.deepEqual(byCommand.get("collect_export"), []);
+
+  const incomplete = { ...index, commands: commands.slice(1) };
+  assert.throws(
+    () => buildPaperUsageByCommand(incomplete, rows, "fixture-hash"),
+    /does not cover the complete command dictionary/,
+  );
+  assert.throws(
+    () => buildPaperUsageByCommand(index, rows, "wrong-hash"),
+    /does not match command_paper_index/,
+  );
 });
 
 test("project scan joins continuation lines and ignores unknown first tokens and abbreviations", (t) => {

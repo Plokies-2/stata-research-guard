@@ -13,6 +13,7 @@ const OFFICIAL_EXAMPLES_PATH = path.join(DATA_ROOT, "official_examples.json");
 const WEB_SOURCES_PATH = path.join(DATA_ROOT, "official_web_sources.json");
 const COMMAND_SOURCES_PATH = path.join(DATA_ROOT, "command_sources.json");
 const PAPER_USAGE_PATH = path.join(DATA_ROOT, "paper_usage_occurrences.jsonl");
+const PAPER_USAGE_INDEX_PATH = path.join(DATA_ROOT, "command_paper_index.json");
 const GENERAL_RULES_PATH = path.join(
   PLUGIN_ROOT,
   "skills",
@@ -70,10 +71,88 @@ const officialExamples = readJson(OFFICIAL_EXAMPLES_PATH);
 const webSources = readJson(WEB_SOURCES_PATH);
 const commandSources = readJson(COMMAND_SOURCES_PATH).sources;
 const paperUsageFileAvailable = fs.existsSync(PAPER_USAGE_PATH);
+const paperUsageIndexFileAvailable = fs.existsSync(PAPER_USAGE_INDEX_PATH);
+if (paperUsageFileAvailable !== paperUsageIndexFileAvailable) {
+  throw new Error("paper usage occurrence and index files must be installed together");
+}
 const paperUsageOccurrences = paperUsageFileAvailable ? readJsonl(PAPER_USAGE_PATH) : [];
+const paperUsageIndex = paperUsageFileAvailable ? readJson(PAPER_USAGE_INDEX_PATH) : null;
 
 const familiesById = new Map(registry.families.map((family) => [family.family_id, family]));
 const commandsByName = new Map(registry.commands.map((command) => [command.command, command]));
+
+function buildPaperUsageByCommand(indexPayload, occurrenceRows, occurrenceFileHash) {
+  if (indexPayload === null) {
+    if (occurrenceRows.length !== 0 || occurrenceFileHash !== null) {
+      throw new Error("paper usage occurrence and index data must be supplied together");
+    }
+    return new Map(registry.commands.map((command) => [command.command, []]));
+  }
+  if (indexPayload.record_type !== "command_paper_occurrence_index") {
+    throw new Error("command_paper_index.json has an unexpected record_type");
+  }
+  if (indexPayload.registry_command_count !== registry.commands.length) {
+    throw new Error("command_paper_index.json registry_command_count does not match command_registry.json");
+  }
+  if (indexPayload.occurrence_file !== path.basename(PAPER_USAGE_PATH)) {
+    throw new Error("command_paper_index.json points to an unexpected occurrence file");
+  }
+  if (indexPayload.occurrence_file_sha256 !== occurrenceFileHash) {
+    throw new Error("paper_usage_occurrences.jsonl does not match command_paper_index.json");
+  }
+  if (!Array.isArray(indexPayload.commands)) {
+    throw new Error("command_paper_index.json commands must be an array");
+  }
+
+  const occurrencesById = new Map();
+  for (const row of occurrenceRows) {
+    if (!row || row.record_type !== "paper_usage_occurrence" || !commandsByName.has(row.command)) {
+      throw new Error("paper_usage_occurrences.jsonl contains a noncanonical occurrence");
+    }
+    if (typeof row.occurrence_id !== "string" || occurrencesById.has(row.occurrence_id)) {
+      throw new Error("paper_usage_occurrences.jsonl contains a missing or duplicate occurrence_id");
+    }
+    occurrencesById.set(row.occurrence_id, row);
+  }
+
+  const byCommand = new Map();
+  const linkedOccurrenceIds = new Set();
+  for (const entry of indexPayload.commands) {
+    if (!entry || !commandsByName.has(entry.command) || byCommand.has(entry.command)) {
+      throw new Error("command_paper_index.json contains a missing, duplicate, or noncanonical command");
+    }
+    if (!Array.isArray(entry.occurrence_ids)) {
+      throw new Error(`command_paper_index.json occurrence_ids must be an array for ${entry.command}`);
+    }
+    const rows = entry.occurrence_ids.map((occurrenceId) => {
+      const row = occurrencesById.get(occurrenceId);
+      if (!row || row.command !== entry.command || linkedOccurrenceIds.has(occurrenceId)) {
+        throw new Error(`command_paper_index.json has an invalid occurrence link for ${entry.command}`);
+      }
+      linkedOccurrenceIds.add(occurrenceId);
+      return row;
+    });
+    if (rows.length !== entry.paper_occurrence_count || entry.guide_only_fallback !== (rows.length === 0)) {
+      throw new Error(`command_paper_index.json count or fallback mismatch for ${entry.command}`);
+    }
+    byCommand.set(entry.command, rows);
+  }
+
+  if (byCommand.size !== commandsByName.size || linkedOccurrenceIds.size !== occurrenceRows.length) {
+    throw new Error("paper occurrence index does not cover the complete command dictionary and occurrence file");
+  }
+  return byCommand;
+}
+
+const paperUsageByCommand = buildPaperUsageByCommand(
+  paperUsageIndex,
+  paperUsageOccurrences,
+  paperUsageFileAvailable ? sha256File(PAPER_USAGE_PATH) : null,
+);
+
+function paperUsageRowsFor(command) {
+  return paperUsageByCommand.get(command) || [];
+}
 
 function unique(values) {
   return [...new Set(values.filter((value) => value !== null && value !== undefined && value !== ""))];
@@ -142,9 +221,12 @@ function sourceCardsFor(command) {
   return cards;
 }
 
-function paperUsageCardsFor(selectedCommands, rows = paperUsageOccurrences) {
+function paperUsageCardsFor(selectedCommands, rows = null) {
   const selected = new Set(selectedCommands);
-  return rows
+  const selectedRows = rows === null
+    ? selectedCommands.flatMap((command) => paperUsageRowsFor(command))
+    : rows;
+  return selectedRows
     .filter((row) => row && typeof row === "object" && selected.has(row.command))
     .map((row) => ({
       command: row.command,
@@ -184,12 +266,14 @@ function relatedArtifactsFor(selectedCommands) {
   return formatter ? [formatter] : [];
 }
 
-function commandCard(commandName, paperRows = paperUsageOccurrences) {
+function commandCard(commandName, paperRows = null) {
   const command = commandsByName.get(commandName);
   if (!command) return null;
   const family = familiesById.get(command.family_id) || {};
   const readableSourceAvailable = manualRowsFor(command.command).length > 0;
-  const paperAvailable = paperRows.some((row) => row?.command === command.command);
+  const paperAvailable = paperRows === null
+    ? paperUsageRowsFor(command.command).length > 0
+    : paperRows.some((row) => row?.command === command.command);
   return {
     command: command.command,
     invocation: commandInvocation(command.command),
@@ -489,7 +573,7 @@ function commandDictionary() {
       functional_labels: functionalLabels,
       guide_available: sourceCardsFor(command.command).length > 0
         || officialExamples.some((row) => row.command === command.command),
-      paper_available: paperUsageOccurrences.some((row) => row?.command === command.command),
+      paper_available: paperUsageRowsFor(command.command).length > 0,
     };
   }).sort((left, right) => left.command.localeCompare(right.command));
 }
@@ -558,7 +642,7 @@ function buildCommandEvidence(args) {
     if (card.evidence_mode === "guide_only_fallback") {
       const reason = paperUsageFileAvailable
         ? `No reviewed paper_usage_occurrence is stored for ${card.command}; guide_only_fallback.`
-        : `paper_usage_occurrences.jsonl is not installed; ${card.command} uses guide_only_fallback.`;
+        : `Reviewed paper occurrence files are not installed; ${card.command} uses guide_only_fallback.`;
       unresolved.push(reason);
     }
   }
@@ -711,6 +795,7 @@ module.exports = {
   FORBIDDEN_RESPONSE_KEYS,
   TOOL_DEFINITIONS,
   assertNoForbiddenKeys,
+  buildPaperUsageByCommand,
   buildCommandEvidence,
   dispatch,
   logicalStatements,

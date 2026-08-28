@@ -5,7 +5,7 @@
 - Made the command dictionary the hard command boundary while the plugin is in use; unknown, duplicate, or empty selections abort instead of being guessed or substituted.
 - Split evidence retrieval into discovery and selected-command phases so guide and paper payloads are returned only for commands the model chose.
 - Restored a concise common general-rules contract without restoring generated-code grading, promotion gates, or broad semantic validators.
-- Prepared optional command-keyed `paper_usage_occurrence` delivery with guide-only fallback and support for multiple material variants.
+- Added paired reviewed-occurrence and 109-command index loading, exact occurrence-ID/hash linkage, selected-command-only delivery, guide-only fallback, and support for multiple material variants.
 - Kept paper occurrences unmodified, focused examples on the selected command, and marked surrounding estimators and workflow code as reference context.
 - Removed unknown-first-token project-scan fallback and retained exact registry invocation or explicit-alias observations only.
 

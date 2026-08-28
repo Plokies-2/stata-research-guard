@@ -36,7 +36,7 @@ The response never contains a winner, numeric ranking, semantic pass, promotion 
 - Paper code shows how the selected command was used in a particular research workflow. The selected-command region is a practical example; surrounding estimators, samples, fixed effects, VCE choices, and downstream steps remain reference context. Paper code is not syntax authority and is never rewritten offline to match house style.
 - Runtime output records what Stata executed and produced. It does not establish causal validity or select a research design.
 
-Documentation examples are readable and nonbinding. A document-derived fixture is labeled as derived rather than presented as a verbatim manual example. When no reviewed paper occurrence exists, the tool provides guide-only evidence and reports the gap honestly.
+Documentation examples are readable and nonbinding. A document-derived fixture is labeled as derived rather than presented as a verbatim manual example. Reviewed paper data is installed only as the paired `paper_usage_occurrences.jsonl` and `command_paper_index.json`; a partial pair or broken exact-ID/hash link aborts at server start. When the pair is absent, or the selected command has no reviewed occurrence, the tool provides guide-only evidence and reports the gap honestly.
 
 ## Project observations
 
@@ -46,7 +46,7 @@ The scanner does not infer preferred style, rank commands by frequency, or turn 
 
 ## Paper and formatter boundaries
 
-Raw paper source files and their citation, path, hash, and span provenance remain preserved. Raw archives, mechanical windows, mixed legacy usage rows, and rejected audit packets are not returned directly. Reviewed evidence uses unmodified `paper_usage_occurrence` records. Materially different command variants may supply more than one occurrence.
+Raw paper source files and their citation, path, hash, and span provenance remain preserved. Raw archives, mechanical windows, mixed legacy usage rows, and rejected audit packets are not returned directly. Reviewed evidence uses unmodified `paper_usage_occurrence` records and a 109-command exact index; the server reads only occurrence IDs attached to the model's selected commands. Materially different command variants may supply more than one occurrence.
 
 A close occurrence may guide minimal edits around the selected command so that it harmonizes with the current project and documented syntax. A distant occurrence is reference context rather than a template. For example, an `outreg2` occurrence may show a preceding `areg`, but the `outreg2` example does not own the estimator and must not replace a current `regress` choice.
 

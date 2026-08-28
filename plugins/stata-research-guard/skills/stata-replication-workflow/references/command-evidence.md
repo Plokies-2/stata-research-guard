@@ -16,7 +16,7 @@ If no listed command supplies a needed command or feature, stop. Do not invent a
 - StataCorp manual and help material governs official-command syntax, options, returned state, version notes, and documented incompatibilities.
 - Maintainer help, repositories, and SSC/RePEc documentation governs user-written-command syntax and package behavior.
 - Project observations report literal paths, lines, commands, options, input/output bindings, calls, and estimate handoffs. They do not rank candidates.
-- `paper_usage_occurrence` records a paper's exact use and enough upstream/downstream context to understand it. It is non-authoritative context and is never rewritten to satisfy a house rule.
+- `paper_usage_occurrence` records a paper's exact use and enough upstream/downstream context to understand it. It is non-authoritative context and is never rewritten to satisfy a house rule. The server accepts occurrences only with the paired 109-command exact index and returns only IDs indexed to `selected_commands`.
 
 Do not combine these roles into a numeric score. Documentation establishes grammar; the user and model establish the research design.
 
@@ -43,7 +43,7 @@ Existing usage is a continuity consideration only after it passes this substanti
 
 ## Paper boundary
 
-Never search or return an entire raw archive as if it were a reviewed example. A paper card must identify citation or repository, version, source path, source-file hash, span, exact excerpt, prerequisites, options, and downstream consumer. If that record does not exist, return no paper card and say so.
+Never search or return an entire raw archive as if it were a reviewed example. A paper card must identify citation or repository, version, source path, source-file hash, span, exact excerpt, prerequisites, options, and downstream consumer. The reviewed occurrence file and its exact command index must be installed together; unreviewed rows and partial data are not a fallback. If that record does not exist, return no paper card and say so.
 
 Use guide-only evidence when no paper occurrence exists. For an available occurrence, focus on the selected command. Its surrounding estimator and upstream/downstream code are reference context, not an instruction to adopt that paper's design: an `outreg2` occurrence containing `areg` does not change a current `regress` specification into `areg`.
 
