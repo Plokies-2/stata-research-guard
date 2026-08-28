@@ -30,12 +30,12 @@ class GeneralityMetadataTests(unittest.TestCase):
             "negative": 10,
         })
         self.assertEqual(Counter(row["quality_rubric_review"]["classification"] for row in self.rows), {
-            "preferred_candidate": 24,
-            "conditional_candidate": 57,
-            "reference_only": 57,
+            "preferred_candidate": 20,
+            "conditional_candidate": 50,
+            "reference_only": 68,
             "exclude": 10,
         })
-        self.assertEqual(sum(row["preferred_within_checkpoint"] for row in self.rows), 41)
+        self.assertEqual(sum(row["preferred_within_checkpoint"] for row in self.rows), 38)
 
     def test_master_and_finalizer_selection_calibration(self) -> None:
         rows = {row["label_id"]: row for row in self.rows}
@@ -132,6 +132,9 @@ class GeneralityMetadataTests(unittest.TestCase):
             "robustness.dynamic_did_preperiod_placebo.v1",
             "postest.iv_first_stage_handoff.v1",
             "figure.scatter_lfit_by_binary_group_pdf.v1",
+            "figure.coefplot_named_estimates_labels.v1",
+            "dataset.finalize_declared_inventory_order_sort_save.v1",
+            "figure.descriptive_grouped_bar.v1",
         })
         reference_only_ids = {
             row["label_id"]
@@ -147,8 +150,10 @@ class GeneralityMetadataTests(unittest.TestCase):
             "sample.trade_share_threshold.v1",
             "panel.cohort_anticipation_exit_filter.v1",
             "estimation.ols_visible_specs_eststo.v1",
+            "estimation.ols_explicit_vce.v1",
             "estimation.staggered_jwdid_ppmlhdfe.v1",
             "estimation.twfe_ppmlhdfe.v1",
+            "estimation.twfe_did_both_control_sets.v1",
             "descriptives.depvar_mean_esample.v1",
             "robustness.placebo_renamed_treatment.v1",
             "robustness.heterogeneity_interactions_lincom.v1",
@@ -165,6 +170,7 @@ class GeneralityMetadataTests(unittest.TestCase):
             "figure.municipality_year_scatter_pdf.v1",
             "panel.turnover_event_time.v1",
             "clean.standardize_on_fixed_esample.v1",
+            "clean.standardize_fixed_esample_complete_components.v1",
             "sample.trade_share_threshold_small.v1",
             "master.sequence.config_prepare_analysis.v1",
             "input.single_source.import_recode_save.v1",
@@ -188,6 +194,10 @@ class GeneralityMetadataTests(unittest.TestCase):
             "figure.event_study_csdid_event_plot.v1",
             "figure.event_study_sun_abraham_event_plot.v1",
             "figure.event_study_twfe_event_plot.v1",
+            "figure.event_study_single_automatic.v1",
+            "figure.event_study_flat_loop_automatic.v1",
+            "figure.event_study_flat_loop_fixed_group.v1",
+            "figure.event_study_flat_loop_mixed_axis.v1",
             "panel.stack_wide_year_suffixes.v1",
             "clean.numeric_student_id_from_csv.v1",
             "outlier.winsorize_two_sided_aggregate_wage.v1",
@@ -196,12 +206,30 @@ class GeneralityMetadataTests(unittest.TestCase):
             "postest.reattach_esample_to_loaded_ster.v1",
             "figure.scatter_lfit_by_binary_group_pdf.v1",
             "descriptives.rawsum_reshape_long_structure.v1",
+            "estimation.event_rhs_single_hash_base_excluded.v1",
+            "figure.coefplot_named_estimates_labels.v1",
+            "dataset.finalize_declared_inventory_order_sort_save.v1",
+            "figure.descriptive_grouped_bar.v1",
         })
         self.assertTrue(calibration_override_ids <= reference_only_ids)
         self.assertEqual(sum(
             row["quality_rubric_review"]["classification"] in {"preferred_candidate", "conditional_candidate"}
             for row in self.rows
-        ), 81)
+        ), 70)
+
+    def test_research_usage_and_top100_surfaces_match_annotation_classification(self) -> None:
+        annotations = {row["label_id"]: row["quality_rubric_review"]["classification"] for row in self.rows}
+        usage = [
+            json.loads(line)
+            for line in (ROOT / "data/research_usage_examples.jsonl").read_text(encoding="utf-8").splitlines()
+            if line
+        ]
+        for row in usage:
+            if row["label_id"] in annotations:
+                self.assertEqual(row["rubric_classification"], annotations[row["label_id"]], row["label_id"])
+        top100 = (ROOT / "review/top100_command_evidence_matrix.md").read_text(encoding="utf-8")
+        for label_id in ("estimation.ols_explicit_vce.v1", "estimation.twfe_did_both_control_sets.v1"):
+            self.assertIn(f"{label_id} [reference_only]", top100)
 
     def test_human_review_markdown_exposes_every_label(self) -> None:
         text = (ROOT / "review/generality_selection_review.md").read_text(encoding="utf-8")

@@ -48,10 +48,10 @@
     "method_specific": 74
   },
   "rubric_classification_counts": {
-    "conditional_candidate": 57,
-    "reference_only": 511,
+    "conditional_candidate": 50,
+    "reference_only": 522,
     "exclude": 10,
-    "preferred_candidate": 24
+    "preferred_candidate": 20
   },
   "input_signature_summary": {
     "labels_with_signature": 602,
@@ -75,7 +75,7 @@
       "variable_characteristics": 237
     }
   },
-  "preferred_within_checkpoint_count": 41,
+  "preferred_within_checkpoint_count": 38,
   "variant_groups": {
     "project_setup.paths": 3,
     "workflow_orchestration.master": 3,

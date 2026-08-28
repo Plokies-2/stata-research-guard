@@ -54,7 +54,7 @@ function regressionLines(code) {
   return code.split(/\r?\n/).filter((line) => /^\s*reg(?:ress)?\b/i.test(line));
 }
 
-test("cross-sectional robust OLS retrieval selects the atomic explicit regression rather than a table-ready multi-specification block", async (t) => {
+test("cross-sectional robust OLS retrieval retains the old macro-based atom as reference-only evidence", async (t) => {
   const client = new McpClient();
   t.after(() => client.close());
 
@@ -69,8 +69,8 @@ test("cross-sectional robust OLS retrieval selects the atomic explicit regressio
   });
 
   const row = resultById(result, "estimation.ols_explicit_vce.v1");
-  assert.ok(["preferred_candidate", "conditional_candidate"].includes(row.rubric_classification));
-  assert.equal(row.auto_select_allowed, true);
+  assert.equal(row.rubric_classification, "reference_only");
+  assert.equal(row.auto_select_allowed, false);
   assert.equal(row.source, "corpus/packages/115162/do/Analysis-4.do:428-428");
 
   const commands = regressionLines(row.code);

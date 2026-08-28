@@ -2,6 +2,8 @@
 
 These rules always apply to every Stata code-writing task. They govern direct implementation, selection and adaptation of a template, composition of several atomic transitions, and revision after lint, runtime, or output evidence. They are the baseline authoring contract, not a fallback path and not a source of substantive research choices.
 
+This is the plugin's researcher-readability house style. An AEA or other replication-package template may satisfy archive and reproducibility requirements without satisfying these point-of-use readability rules; conversely, this style does not by itself certify journal compliance.
+
 Use this priority order:
 
 1. the user and project contract fixes the sample, estimand, merge key, treatment rule, model, event axis, sheet group, and output placement;
@@ -24,6 +26,25 @@ Implement only an already-declared input-to-output transition. Keep the declared
 
 Stop and obtain the missing contract rather than improvising when a substantive rule, an event-study axis profile, or the final Excel output flow is unresolved. In particular, a multi-sheet workbook needs the compatible canonical formatter; do not evade it with a new helper or a direct substitute.
 
+## Readability and implementation scale
+
+Use this implementation priority: correctness, point-of-use readability, artifact-based restartability, then brevity, DRY, and modularity. A reader may open a do-file at the relevant section rather than reading every definition from the top. Keep the active transformation, sample, model, and output legible at that point.
+
+For a new applied-micro panel project or an explicitly approved overhaul that actually needs preparation, summary, and estimation, default to this unnumbered execution spine. Other profiles create only the requested stages and outputs:
+
+```text
+masters.do
+do/build_analysis_panel.do
+do/build_summary.do
+do/run_regressions.do
+```
+
+`build_analysis_panel.do` completes all preprocessing shared by descriptive statistics and regressions, labels and checks persistent variables, and saves one analysis-ready cleaned panel. `build_summary.do` and `run_regressions.do` each reopen that panel independently. They do not rely on an incidental in-memory dataset, estimate, frame, or matrix left by a preceding file. Summary outputs may include Excel and descriptive PDFs such as bar charts. Regression outputs may include Excel, reusable `.ster`, and event-study PDFs.
+
+The workflow is fail-fast: `nostop` is forbidden on every `do` or `run` call. In the master, call each stage directly with `do`, `run`, or `include`; never use `capture` or any literal or macro-expanded positional argument or option after the call target. A shared directory-root macro may appear only as a complete directory component inside an explicit literal leaf path, but stage failures must propagate immediately and visibly. A non-master helper may use Stata's documented arguments when its interface actually requires them, but it still may not use `nostop`.
+
+Do not mechanically apply this layout to a partial repair of a compatible existing project. A coherent do-file around 1000 lines may remain one file: add section headings before splitting it. Split only at a durable artifact boundary, an independently runnable stage, genuine reuse, an ownership boundary, or a genuinely distinct responsibility. A conceptual checkpoint or function-sized idea is not by itself a reason to make another file. The 1000-line figure is guidance, never a lint threshold.
+
 ## Concise implementation rule
 
 Write the shortest readable Stata sequence with one final implementation path and shallow indentation. Prefer one active loop. A flat `foreach` or `forvalues` loop may bind a real plain list; Stata's programming manual specifies its brace layout and recommends direct varlist iteration over tokenized numbered macros ([`[P] Programming`](https://www.stata.com/manuals/p.pdf)). Exactly two active loop levels are allowed only when both axes are plain named lists or numeric ranges, the same mechanical body repeats, the reduction is substantial, and sample, estimand, specification, grouping, and output placement remain visible at the loop site. Never use loop depth 3 or hide another loop in a helper.
@@ -38,17 +59,38 @@ global outcomes_all ///
 
 Keep short lists on one line. Do not align or reflow quoted labels, paths, notes, or other strings where whitespace is data. Every `///` must continue on the immediately following physical line, and the final line must omit it.
 
-Reserve `global` for an intentional interface consumed across do-files. Setup may keep shared directory roots, but not a leaf filename used by only one child do-file. Put that binding beside its consumer:
+Use a direct literal for a one-use binding. Otherwise prefer a descriptive `global` defined or redefined in the do-file that consumes it. Setup may keep shared directory roots, but it must not be the remote home of outcome lists, regression controls, samples, event windows, fixed effects, clustering choices, or other specification shortcuts. Outcome-list globals belong in `run_regressions.do`. Put a leaf artifact binding beside its consumer unless two or more files share a real producer-consumer contract:
 
 ```stata
-* setup.do
+* masters.do
 global table "$project/table"
 
-* 04_export_excel.do
-local summary_excel "$table/policy_appointment_summary_definition2.xlsx"
+* do/build_summary.do
+global summary_excel "$table/summary_statistics.xlsx"
 ```
 
-Keep a leaf filename global only when two or more do-files intentionally share that exact producer-consumer artifact contract. Keep repeated regression-specific controls, sample conditions, event-study RHS terms, fixed effects, and clustering definitions in `local` macros beside the specifications that consume them; keep a one-use list explicit in the command when that is clearer. Same-file event selectors, coefficient order, axis labels, reference positions, and graph notes are local too; use a direct literal when it is clearer and used once. Stata defines `///` as joining the next line to the current command, so use it only when the immediately following physical line continues that command, indent continuation lines beyond the command start, and omit it from the final option or line ([Stata User's Guide](https://www.stata.com/manuals/u.pdf)). A blank line, comment-only line, closing brace, `end`, or new command must not follow `///`.
+Never chain aliases such as `controls_current -> controls_2019 -> controls_base`. A regression has zero substantive reference depth: treatment or event window, controls, sample, fixed effects, weights, and VCE appear literally in the estimator block. The only normal mechanical indirection is one local outcome iterator in one flat outcome loop. If those substantive choices differ, use separate visible blocks instead of a conditional `current` alias.
+
+Use `local` only when lexical scope is necessary: loop iterators, `program` syntax or internal state, tempfile/tempvar/tempname handling, per-iteration scratch state, and an immediately consumed `r()` or `e()` result. These exceptions do not authorize hiding a model specification. Existing approved multi-sheet or graph helpers may retain necessary locals inside their programs and loops. Stata defines `///` as joining the next line to the current command, so use it only when the immediately following physical line continues that command, indent continuation lines beyond the command start, and omit it from the final option or line ([Stata User's Guide](https://www.stata.com/manuals/u.pdf)). A blank line, comment-only line, closing brace, `end`, or new command must not follow `///`.
+
+The following point-of-use example deliberately keeps the two model specifications visible. Its variable names are illustrative bindings, not a required project schema:
+
+```stata
+reghdfe female_bm                                      ///
+    i(2015/2018 2020/2024).year#1.treat2019           ///
+    absorb(fid year##c.(ln_AT_real_2019 DR_2019       ///
+                        ln_age_2019 ln_sales_real_2019 ///
+                        cashflow_rate_2019))           ///
+    vce(cluster fid)
+
+reghdfe sales_growth_real                              ///
+    i(2015/2018 2020/2024).year#1.treat2019           ///
+    absorb(fid year##c.(ln_AT_real_2019 DR_2019       ///
+                        ln_age_2019 cashflow_rate_2019)) ///
+    vce(cluster fid)
+```
+
+The compact `i(numlist).var` form is official factor-variable syntax. Stata factor levels must be nonnegative integers, so recode a signed relative-time variable to a nonnegative index and restore negative relative-time text only in graph labels. Use compact syntax here only for a regular displayed window whose minimum-to-maximum support has exactly one omitted interior reference, as in the example. Use a level-by-level native no-base list for an irregular window or a boundary reference that the compact list alone cannot identify. Use one `#` on the event-study RHS. Discover the exact raw coefficient names from runtime `e(b)` before freezing Excel or graph selectors, because source syntax does not authorize guessed coefficient tokens.
 
 Do not add a registry, dispatcher, positional job string with downstream `word` parsing, wrapper, one-use `program`, hidden branch, unused option, future-facing interface, or needless intermediate variable. Repeatedly defining a program inside a `foreach` is also structurally unsafe because Stata parses `end` as the end of the enclosing do-file; the community discussion demonstrates why that definition must be outside the brace block ([Statalist](https://www.statalist.org/forums/forum/general-stata-discussion/general/1681139-writing-a-program-within-a-foreach-loop-in-stata-avoiding-error-r-1)). The one standing program exception is the canonical `outreg2_xlsx` formatter for a workbook with two or more sheets.
 
@@ -65,7 +107,7 @@ These limits favor code a reader can follow, share, and verify, rather than gene
 
 For one sheet in a workbook, use visible direct `outreg2 replace/append` with an explicit `.xls` target and no program. For two or more sheets in the same workbook, use only the canonical `.xlsx` formatter with readable ordered estimate names, workbook, sheet, and precision; it must not estimate, transform research data, reconstruct coefficients, relabel headers, choose groups, or hide iteration. The number of model columns or separate one-sheet workbooks does not trigger the formatter.
 
-Keep figures as PDF and durable estimates as `.ster` only when needed. Do not emit TeX. Lint the completed target, verify runtime state and each declared output, and remove superseded attempts before freezing.
+`build_summary.do` may produce Excel and descriptive PDFs such as bar charts. `run_regressions.do` may produce Excel, event-study PDFs, and durable `.ster` only when reusable estimation states are needed. Do not emit TeX. Lint the completed target, verify runtime state and each declared output, and remove superseded attempts before freezing.
 
 ## Required root `report.md` record
 

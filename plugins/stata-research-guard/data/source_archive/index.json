@@ -327,9 +327,9 @@
       "sha256": "51d40114216beca01459ded18409a1eacf3a915c3da2e1161fec85a34a54797e"
     },
     "plugins/stata-research-guard/annotations/source_snapshots/research_practice_event_rhs_single_hash.do": {
-      "archive_path": "data/source_archive/files/7039190e6b2d0bcb6a4d25eff30a8c294adb137690d733b56062b798a78f5eda.source",
-      "bytes": 634,
-      "sha256": "7039190e6b2d0bcb6a4d25eff30a8c294adb137690d733b56062b798a78f5eda"
+      "archive_path": "data/source_archive/files/15d285b740068bbc04a5a6c0b847c1155b4fbf3ff2a6a737077427de38365c49.source",
+      "bytes": 380,
+      "sha256": "15d285b740068bbc04a5a6c0b847c1155b4fbf3ff2a6a737077427de38365c49"
     },
     "plugins/stata-research-guard/annotations/source_snapshots/research_practice_iv_first_stage_handoff.do": {
       "archive_path": "data/source_archive/files/797c4d7e9982980cbe18b0e22a6c13b26911edeeb6abd35b2cb1b1ead949f686.source",

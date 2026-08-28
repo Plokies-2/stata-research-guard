@@ -86,7 +86,7 @@ test("clean-test merge gap retrieves the complete-match m:1 assertion template w
   assert.doesNotMatch(row.code, /\bnogen\b/i);
 });
 
-test("clean-test finalization gap retrieves the explicit inventory finalizer in readable command order", async (t) => {
+test("clean-test finalization keeps the deposited continuation span as reference-only mechanics", async (t) => {
   const client = new McpClient();
   t.after(() => client.close());
   const result = await client.tool("search_labeled_checkpoints", {
@@ -100,8 +100,8 @@ test("clean-test finalization gap retrieves the explicit inventory finalizer in 
   });
 
   const row = resultById(result, "dataset.finalize_declared_inventory_order_sort_save.v1");
-  assert.ok(["preferred_candidate", "conditional_candidate"].includes(row.rubric_classification));
-  assert.equal(row.auto_select_allowed, true);
+  assert.equal(row.rubric_classification, "reference_only");
+  assert.equal(row.auto_select_allowed, false);
   assert.deepEqual(Object.keys(row.template_input_profile).sort(), PROFILE_FIELDS);
   const sequence = ["keep", "order", "sort", "compress", "save"].map((command) => commandLineIndex(row.code, command));
   assert.ok(sequence.every((index) => index >= 0), `missing finalization command: ${row.code}`);

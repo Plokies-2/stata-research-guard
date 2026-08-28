@@ -2,13 +2,9 @@
 
 xtset panel_id year
 
-* The design reference (2019 here) is absent. Every declared nonreference
-* level is an explicit bn term, so the runtime can verify every raw e(b) token.
-local event_rhs 2015bn.year#1.treat2019 2016bn.year#1.treat2019 ///
-    2017bn.year#1.treat2019 2018bn.year#1.treat2019 ///
-    2020bn.year#1.treat2019 2021bn.year#1.treat2019 ///
-    2022bn.year#1.treat2019 2023bn.year#1.treat2019 ///
-    2024bn.year#1.treat2019
-reghdfe outcome `event_rhs' controls, ///
+* The design reference (2019 here) is absent from the selected levels.
+* Keep the event window visible in the estimation block.
+reghdfe outcome ///
+    i(2015/2018 2020/2024).year#1.treat2019 controls, ///
     absorb(panel_id year) ///
     vce(cluster panel_id)

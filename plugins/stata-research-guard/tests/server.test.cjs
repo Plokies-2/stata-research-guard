@@ -380,6 +380,21 @@ test("default retrieval returns only approved, clean spans with provenance", asy
   }
 });
 
+test("every auto-selectable labeled source span passes new-authoring lint", async (t) => {
+  const client = new McpClient();
+  t.after(() => client.close());
+  const labels = fs.readFileSync(path.join(ROOT, "data", "labeled_checkpoints.jsonl"), "utf8")
+    .split(/\r?\n/)
+    .filter(Boolean)
+    .map((line) => JSON.parse(line))
+    .filter((row) => ["preferred_candidate", "conditional_candidate"].includes(row.quality_rubric_review?.classification));
+  assert.equal(labels.length, 70);
+  for (const row of labels) {
+    const result = await client.tool("lint_do_file", { content: row.code, authoring_state: "new" });
+    assert.notEqual(result.status, "blocked", `${row.label_id}: ${JSON.stringify(result.findings)}`);
+  }
+});
+
 test("approved fallback canonicalizes detailed anchors and exposes mixed atomic queries", async (t) => {
   const client = new McpClient();
   t.after(() => client.close());
@@ -622,8 +637,11 @@ test("staggered-DID retrieval exposes atomic method alternatives separately from
   const legacy = result.results.filter((row) => row.variant_group === "estimation.staggered_did_legacy");
   assert.equal(atomic.length, 8, JSON.stringify(result.results.map((row) => ({ label_id: row.label_id, variant_group: row.variant_group }))));
   assert.equal(legacy.length, 2, JSON.stringify(result.results.map((row) => ({ label_id: row.label_id, variant_group: row.variant_group }))));
-  assert.ok(atomic.every((row) => row.auto_select_allowed), JSON.stringify(atomic));
-  assert.ok(atomic.every((row) => ["preferred_candidate", "conditional_candidate"].includes(row.rubric_classification)), JSON.stringify(atomic));
+  const demotedTwfeControls = atomic.find((row) => row.label_id === "estimation.twfe_did_both_control_sets.v1");
+  assert.equal(demotedTwfeControls.rubric_classification, "reference_only");
+  assert.equal(demotedTwfeControls.auto_select_allowed, false);
+  assert.ok(atomic.filter((row) => row !== demotedTwfeControls).every((row) => row.auto_select_allowed), JSON.stringify(atomic));
+  assert.ok(atomic.filter((row) => row !== demotedTwfeControls).every((row) => ["preferred_candidate", "conditional_candidate"].includes(row.rubric_classification)), JSON.stringify(atomic));
   assert.equal(new Set(atomic.map((row) => row.label_id)).size, 8);
   assert.equal(new Set(atomic.map((row) => row.variant_id)).size, 8);
   assert.ok(legacy.every((row) => row.rubric_classification === "reference_only" && !row.auto_select_allowed), JSON.stringify(legacy));
@@ -1679,6 +1697,16 @@ test("one-sheet direct outreg2 permits only the declared sample mean and adjuste
   ].join("\n") });
   assert.equal(accepted.status, "static_clean", JSON.stringify(accepted.findings));
   assert.ok(accepted.strengths.some((row) => row.rule === "direct_single_sheet_outreg2_statistics"));
+  for (const localCommand of ["loc", "loca", "local"]) {
+    const abbreviatedLocal = await client.tool("lint_do_file", { content: [
+      "regress price mpg weight, vce(robust)",
+      "quietly summarize price if e(sample), meanonly",
+      `${localCommand} dep_mean = r(mean)`,
+      'estimates save "model.ster", replace',
+      'outreg2 using "table.xls", excel replace adjr2 addstat(Dep. variable mean, `dep_mean\')',
+    ].join("\n") });
+    assert.equal(abbreviatedLocal.status, "static_clean", `${localCommand}: ${JSON.stringify(abbreviatedLocal.findings)}`);
+  }
 
   for (const target of ["table.xml", "table.xlsx", "table"]) {
     const rejected = await client.tool("lint_do_file", { content: [
@@ -2305,7 +2333,8 @@ test("sheet grouping is evidence-backed and independent from selective event-stu
   assert.equal(mixed.event_study_axis_selection.selection_ready, true);
   assert.equal(mixed.event_study_axis_pattern_gate.active, true);
   assert.deepEqual(mixed.results.map((row) => row.label_id), ["figure.event_study_flat_loop_mixed_axis.v1"]);
-  assert.equal(mixed.results[0].auto_select_allowed, true);
+  assert.equal(mixed.results[0].rubric_classification, "reference_only");
+  assert.equal(mixed.results[0].auto_select_allowed, false);
   assert.ok(mixed.event_study_axis_pattern_gate.excluded_label_ids.includes("figure.event_study_flat_loop_automatic.v1"));
 
   const invalidMixedProfile = mixedEventAxisProfile();
@@ -2398,9 +2427,18 @@ test("linter reviews deep structural nesting while blocking positional research-
   assert.equal(dispatcher.status, "blocked");
   assert.ok(dispatcher.findings.some((row) => row.rule === "encoded_research_spec_dispatch"));
   assert.equal(dispatcher.summary.max_loop_depth, 1);
+  const abbreviatedDispatcher = await client.tool("lint_do_file", { content: [
+    'gl plot_jobs ""',
+    "foreach graph_job in $graph_jobs {",
+    "  loc outcome : word 1 of `graph_job'",
+    "  loca sample : word 2 of `graph_job'",
+    "  loc specification : word 3 of `graph_job'",
+    "}",
+  ].join("\n") });
+  assert.ok(abbreviatedDispatcher.findings.some((row) => row.rule === "encoded_research_spec_dispatch"));
 });
 
-test("planner makes the mixed-axis label writable only for a ready mixed loop profile", async (t) => {
+test("planner keeps mixed-axis labels reference-only even for a ready mixed loop profile", async (t) => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-mixed-axis-plan-"));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   fs.writeFileSync(path.join(root, "analysis.do"), "estimates use outcome.ster\n", "utf8");
@@ -2416,8 +2454,10 @@ test("planner makes the mixed-axis label writable only for a ready mixed loop pr
     },
   });
   const mixedIntervention = mixed.interventions.find((row) => row.headword === "figures.event_study");
-  assert.equal(mixedIntervention.status, "compatible_variant_selected", JSON.stringify(mixedIntervention));
-  assert.equal(mixedIntervention.chosen_variant.label_id, "figure.event_study_flat_loop_mixed_axis.v1");
+  assert.equal(mixedIntervention.status, "no_compatible_labeled_variant", JSON.stringify(mixedIntervention));
+  assert.equal(mixedIntervention.chosen_variant, null);
+  assert.equal(mixedIntervention.general_rule_policy.implementation_allowed, true);
+  assert.ok(mixedIntervention.evidence_progress.rubric_reference_only_variants.some((row) => row.label_id === "figure.event_study_flat_loop_mixed_axis.v1"));
 
   const ordinary = await client.tool("plan_dictionary_repairs", {
     path: root,
@@ -2519,7 +2559,7 @@ test("new-project overhaul displays the compact tree and reader-facing variables
       unit_observation_level: "0/1, 기업-연도",
       period_geography: "분석기간 전체, 전국",
       coding_missing: "두 구성변수 중 하나가 결측이면 결측",
-      creation_file: "do/10_prep_master.do",
+      creation_file: "do/build_analysis_panel.do",
       used_in: "본문 회귀와 event-study",
     }],
   });
@@ -2554,21 +2594,90 @@ test("event-study RHS preserves every declared nonreference level and forbids do
   const blocked = await client.tool("lint_do_file", { content: "reghdfe outcome ib2019.year##i.treat2019, absorb(firm_id year)" });
   assert.equal(blocked.status, "blocked");
   assert.ok(blocked.findings.some((row) => row.rule === "event_study_double_hash_main_effects"));
+  const relativeDoubleHash = await client.tool("lint_do_file", { content: "reghdfe outcome i.rel_time##i.treated, absorb(firm_id year)" });
+  assert.ok(relativeDoubleHash.findings.some((row) => row.rule === "event_study_double_hash_main_effects"));
+  const relativeMissingBase = await client.tool("lint_do_file", { content: "reghdfe outcome i.relative_time#1.treated, absorb(firm_id year)" });
+  assert.ok(relativeMissingBase.findings.some((row) => row.rule === "event_study_single_hash_base_not_explicit"));
+  for (const estimator of ["ppmlhdfe", "poisson", "logit", "qreg", "mixed"]) {
+    const familyDouble = await client.tool("lint_do_file", { content: `${estimator} outcome i.year##i.treated` });
+    assert.ok(familyDouble.findings.some((row) => row.rule === "event_study_double_hash_main_effects"), estimator);
+    const familyBase = await client.tool("lint_do_file", { content: `${estimator} outcome i.year#1.treated` });
+    assert.ok(familyBase.findings.some((row) => row.rule === "event_study_single_hash_base_not_explicit"), estimator);
+  }
+  for (const modifier of ["quietly:", "capture:", "noisily:"]) {
+    const modifierDouble = await client.tool("lint_do_file", { content: `${modifier} reghdfe outcome i.year##i.treated, absorb(firm_id year)` });
+    assert.ok(modifierDouble.findings.some((row) => row.rule === "event_study_double_hash_main_effects"), modifier);
+    const modifierHidden = await client.tool("lint_do_file", { content: `global controls_current x1 x2\n${modifier} regress outcome $controls_current`, authoring_state: "new" });
+    assert.ok(modifierHidden.findings.some((row) => row.rule === "regression_substantive_indirection"), modifier);
+  }
+  for (const interaction of ["i.year##treated", "year##i.treated", "year##treated"]) {
+    const shorthandDouble = await client.tool("lint_do_file", { content: `regress outcome ${interaction}` });
+    assert.ok(shorthandDouble.findings.some((row) => row.rule === "event_study_double_hash_main_effects"), interaction);
+  }
+  for (const abbreviation of ["regr", "regre", "regres"]) {
+    const abbreviated = await client.tool("lint_do_file", { content: `${abbreviation} outcome i.year##i.treated` });
+    assert.ok(abbreviated.findings.some((row) => row.rule === "event_study_double_hash_main_effects"), abbreviation);
+  }
+  for (const interaction of ["i.year#treated", "year#1.treated"]) {
+    const shorthandSingle = await client.tool("lint_do_file", { content: `regress outcome ${interaction}` });
+    assert.ok(shorthandSingle.findings.some((row) => row.rule === "event_study_single_hash_base_not_explicit"), interaction);
+  }
+  for (const interaction of ["c.year##i.treated", "i.treated##c.year", "c.rel_time#i.treated", "i.treated#c.rel_time"]) {
+    const continuous = await client.tool("lint_do_file", { content: `regress outcome ${interaction}` });
+    assert.equal(continuous.findings.some((row) => /event_study_(?:double_hash|single_hash)/.test(row.rule)), false, interaction);
+  }
   const missingBase = await client.tool("lint_do_file", { content: "reghdfe outcome i.year#1.treat2019, absorb(firm_id year)" });
   assert.equal(missingBase.status, "blocked");
   assert.ok(missingBase.findings.some((row) => row.rule === "event_study_single_hash_base_not_explicit"));
-  const implicitSecondBase = await client.tool("lint_do_file", { content: "reghdfe outcome i(2015/2018 2020/2024).year#1.treat2019, absorb(firm_id year##c.baseline_control)" });
-  assert.equal(implicitSecondBase.status, "blocked");
-  assert.ok(implicitSecondBase.findings.some((row) => row.rule === "event_study_single_hash_base_not_explicit"));
+  const compactSelectedLevels = await client.tool("lint_do_file", { content: "reghdfe outcome i(2015/2018 2020/2024).year#1.treat2019, absorb(firm_id year##c.baseline_control)" });
+  assert.equal(compactSelectedLevels.findings.some((row) => row.rule === "event_study_single_hash_base_not_explicit"), false);
+  const compactWrongWindow = await client.tool("lint_do_file", { content: "reghdfe outcome i(2015/2024).year#1.treat2019, absorb(firm_id year)" });
+  assert.ok(compactWrongWindow.findings.some((row) => row.rule === "event_study_compact_reference_not_unique"));
+  const boundaryReference = await client.tool("lint_do_file", { content: "reghdfe outcome 2016bn.year#1.treat2019 2017bn.year#1.treat2019, absorb(firm_id year)" });
+  assert.equal(boundaryReference.findings.some((row) => row.rule === "event_study_single_hash_base_not_explicit"), false);
+  assert.equal(boundaryReference.findings.some((row) => row.rule === "event_study_compact_reference_not_unique"), false);
+  const compactInvalid = await client.tool("lint_do_file", { content: "reghdfe outcome i(foo).year#1.treat2019, absorb(firm_id year)" });
+  assert.ok(compactInvalid.findings.some((row) => row.rule === "event_study_compact_numlist_invalid"));
+  const compactDifferentReference = await client.tool("lint_do_file", { content: "reghdfe outcome i(2015/2017 2019/2024).year#1.treat2019, absorb(firm_id year)" });
+  assert.equal(compactDifferentReference.findings.some((row) => row.rule === "event_study_compact_reference_not_unique"), false);
+  const negativeCompact = await client.tool("lint_do_file", { content: "reghdfe outcome i(-4/-1 1/4).rel_time#1.treated, absorb(firm_id year)" });
+  assert.ok(negativeCompact.findings.some((row) => row.rule === "event_study_compact_numlist_invalid"));
+  const negativeFlat = await client.tool("lint_do_file", { content: "reghdfe outcome -5bn.rel_time#1.treated -4bn.rel_time#1.treated 1bn.rel_time#1.treated, absorb(firm_id year)" });
+  assert.ok(negativeFlat.findings.some((row) => row.rule === "event_study_negative_factor_level_invalid"));
+  for (const content of [
+    "reghdfe outcome i(32738 32740/32741).year#1.treated, absorb(firm_id year)",
+    "reghdfe outcome 32741bn.year#1.treated, absorb(firm_id year)",
+    "reghdfe outcome ib32741.year#1.treated, absorb(firm_id year)",
+  ]) {
+    const outOfRange = await client.tool("lint_do_file", { content });
+    assert.ok(outOfRange.findings.some((row) => row.rule === "event_study_factor_level_out_of_range"), content);
+  }
+  for (const content of [
+    "reghdfe outcome i(32738 32740).year#1.treated, absorb(firm_id year)",
+    "reghdfe outcome 32740bn.year#1.treated, absorb(firm_id year)",
+  ]) {
+    const upperBoundary = await client.tool("lint_do_file", { content });
+    assert.equal(upperBoundary.findings.some((row) => row.rule === "event_study_factor_level_out_of_range"), false, content);
+  }
+  for (const unsafeNumlist of ["-1000000000 1000000000", "9007199254740992"]) {
+    const unsafe = await client.tool("lint_do_file", { content: `reghdfe outcome i(${unsafeNumlist}).year#1.treated, absorb(firm_id year)` });
+    assert.ok(unsafe.findings.some((row) => row.rule === "event_study_compact_numlist_invalid"), unsafeNumlist);
+  }
+  const repeatedRanges = Array.from({ length: 201 }, () => "0/10000").join(" ");
+  const repeated = await client.tool("lint_do_file", { content: `reghdfe outcome i(${repeatedRanges}).year#1.treated, absorb(firm_id year)` });
+  assert.ok(repeated.findings.some((row) => row.rule === "event_study_compact_numlist_invalid"));
   const invalidIbnNumlist = await client.tool("lint_do_file", { content: "reghdfe outcome ibn(2015/2018 2020/2024).year#1.treat2019, absorb(firm_id year##c.baseline_control)" });
   assert.ok(invalidIbnNumlist.findings.some((row) => row.rule === "event_study_single_hash_base_not_explicit"));
   const permitted = await client.tool("lint_do_file", { content: "reghdfe outcome 2015bn.year#1.treat2019 2016bn.year#1.treat2019 2017bn.year#1.treat2019 2018bn.year#1.treat2019 2020bn.year#1.treat2019 2021bn.year#1.treat2019 2022bn.year#1.treat2019 2023bn.year#1.treat2019 2024bn.year#1.treat2019, absorb(firm_id year##c.baseline_control)" });
   assert.equal(permitted.findings.some((row) => row.rule === "event_study_double_hash_main_effects"), false);
   assert.equal(permitted.findings.some((row) => row.rule === "event_study_single_hash_base_not_explicit"), false);
-  const macroImplicitSecondBase = await client.tool("lint_do_file", { content: 'local event_rhs "i(2015/2018 2020/2024).year#1.treat2019"\nreghdfe outcome `event_rhs\', absorb(firm_id year)' });
-  assert.ok(macroImplicitSecondBase.findings.some((row) => row.rule === "event_study_single_hash_base_not_explicit"));
-  const macroPermitted = await client.tool("lint_do_file", { content: 'local event_rhs "2015bn.year#1.treat2019 2016bn.year#1.treat2019 2017bn.year#1.treat2019 2018bn.year#1.treat2019 2020bn.year#1.treat2019 2021bn.year#1.treat2019 2022bn.year#1.treat2019 2023bn.year#1.treat2019 2024bn.year#1.treat2019"\nreghdfe outcome `event_rhs\', absorb(firm_id year)' });
-  assert.equal(macroPermitted.findings.some((row) => row.rule === "event_study_single_hash_base_not_explicit"), false);
+  const macroCompact = await client.tool("lint_do_file", { content: 'local event_rhs "i(2015/2018 2020/2024).year#1.treat2019"\nreghdfe outcome `event_rhs\', absorb(firm_id year)', authoring_state: "new" });
+  assert.equal(macroCompact.findings.some((row) => row.rule === "event_study_single_hash_base_not_explicit"), false);
+  assert.ok(macroCompact.findings.some((row) => row.rule === "local_macro_without_lexical_need"));
+  assert.ok(macroCompact.findings.some((row) => row.rule === "regression_substantive_indirection"));
+  const macroLevelList = await client.tool("lint_do_file", { content: 'global event_rhs "2015bn.year#1.treat2019 2016bn.year#1.treat2019 2017bn.year#1.treat2019 2018bn.year#1.treat2019 2020bn.year#1.treat2019 2021bn.year#1.treat2019 2022bn.year#1.treat2019 2023bn.year#1.treat2019 2024bn.year#1.treat2019"\nreghdfe outcome $event_rhs, absorb(firm_id year)', authoring_state: "new" });
+  assert.equal(macroLevelList.findings.some((row) => row.rule === "event_study_single_hash_base_not_explicit"), false);
+  assert.ok(macroLevelList.findings.some((row) => row.rule === "regression_substantive_indirection"));
   const selectorFixture = fs.readFileSync(path.join(__dirname, "fixtures", "event_reference_slot_runtime.do"), "utf8");
   const selectorOnly = await client.tool("lint_do_file", { content: selectorFixture });
   assert.equal(selectorOnly.findings.some((row) => row.rule === "event_study_single_hash_base_not_explicit"), false);
@@ -2580,6 +2689,519 @@ test("event-study RHS preserves every declared nonreference level and forbids do
   assert.ok(levelDoubleHash.findings.some((row) => row.rule === "event_study_double_hash_main_effects"));
   const reversedMissingBase = await client.tool("lint_do_file", { content: "reghdfe outcome 1.treat2019#i.year, absorb(firm_id year)" });
   assert.ok(reversedMissingBase.findings.some((row) => row.rule === "event_study_single_hash_base_not_explicit"));
+});
+
+test("newly authored regressions keep substantive choices at zero reference depth", async (t) => {
+  const client = new McpClient();
+  t.after(() => client.close());
+  const readable = [
+    "global outcomes female_bm sales_growth_real",
+    "foreach outcome of global outcomes {",
+    "    reghdfe `outcome' i(2015/2018 2020/2024).year#1.treat2019 x1 x2, absorb(fid year) vce(cluster fid)",
+    "}",
+  ].join("\n");
+  const passed = await client.tool("lint_do_file", { content: readable, authoring_state: "new" });
+  assert.equal(passed.findings.some((row) => row.rule === "regression_substantive_indirection"), false, JSON.stringify(passed.findings));
+  assert.equal(passed.findings.some((row) => row.rule === "local_macro_without_lexical_need"), false, JSON.stringify(passed.findings));
+
+  const hidden = [
+    "global controls_current x1 x2",
+    "global sample_current analysis_sample == 1",
+    "reghdfe outcome $controls_current if $sample_current, absorb(fid year) vce(cluster fid)",
+  ].join("\n");
+  const blocked = await client.tool("lint_do_file", { content: hidden, authoring_state: "new" });
+  assert.equal(blocked.status, "blocked");
+  assert.ok(blocked.findings.some((row) => row.rule === "regression_substantive_indirection"));
+
+  const escapedIterator = await client.tool("lint_do_file", {
+    content: "foreach outcome in y1 y2 {\n    display `\"`outcome'\"'\n}\nregress `outcome' x, vce(cluster id)",
+    authoring_state: "new",
+  });
+  assert.equal(escapedIterator.status, "blocked");
+  assert.ok(escapedIterator.findings.some((row) => row.rule === "regression_substantive_indirection"));
+
+  for (const commandMacro of [
+    "global estimator regress\n$estimator outcome i.year##i.treated",
+    "global model reghdfe\n$model outcome i.year#1.treated, absorb(fid year)",
+    "global cmd regress\nglobal controls_current x1 x2\n$cmd outcome $controls_current",
+    "global estimator regress\nversion 18: $estimator outcome i.year##i.treated",
+    "global estimator regress\nmi estimate: $estimator outcome i.year##i.treated",
+    "global estimator regress\nmi est: $estimator outcome i.year##i.treated",
+    "global estimator regress\nmi esti: $estimator outcome i.year##i.treated",
+    "global estimator regress\nby fid: $estimator outcome i.year##i.treated",
+    "global estimator regress\nbys fid: $estimator outcome i.year##i.treated",
+    "global estimator regress\nbyso fid: $estimator outcome i.year##i.treated",
+    "global estimator regress\ncollect: $estimator outcome i.year##i.treated",
+    "global estimator regress\nstepwise: $estimator outcome i.year##i.treated",
+  ]) {
+    const hiddenCommand = await client.tool("lint_do_file", { content: commandMacro, authoring_state: "new" });
+    assert.equal(hiddenCommand.status, "blocked");
+    assert.ok(hiddenCommand.findings.some((row) => row.rule === "command_position_macro_indirection"));
+  }
+
+  const existingHiddenCommand = await client.tool("lint_do_file", { content: "global cmd erase\n$cmd source.dta" });
+  assert.equal(existingHiddenCommand.status, "needs_review");
+  assert.ok(existingHiddenCommand.findings.some((row) => row.rule === "command_position_macro_indirection"));
+
+  for (const content of ["`1' source.dta", "`=\"erase\"' source.dta"]) {
+    const positionalCommand = await client.tool("lint_do_file", { content, authoring_state: "new" });
+    assert.equal(positionalCommand.status, "blocked");
+    assert.ok(positionalCommand.findings.some((row) => row.rule === "command_position_macro_indirection"));
+  }
+
+  for (const content of ["``cmd'' source.dta", "quietly: ``cmd'' source.dta"]) {
+    const nestedCommand = await client.tool("lint_do_file", { content, authoring_state: "new" });
+    assert.equal(nestedCommand.status, "blocked");
+    assert.ok(nestedCommand.findings.some((row) => row.rule === "command_position_macro_indirection"));
+  }
+
+  for (const [content, rule] of [
+    ["global cardinality m:m\nmerge $cardinality id using bad.dta", "merge_contract_macro_indirection"],
+    ["global destructive force\nduplicates drop id, $destructive", "destructive_option_macro_indirection"],
+    ["global verb install\nssc $verb outreg2", "runtime_install_macro_indirection"],
+    ["global rowfilter keep(x)\noutreg2 using \"table.xls\", excel replace nor2 $rowfilter", "outreg2_option_macro_indirection"],
+    ["global terms *year*\ncoefplot, keep($terms) order($terms) vertical", "coefplot_selector_not_exact"],
+    ["merge `1' id using bad.dta", "merge_contract_macro_indirection"],
+    ["outreg2 using \"table.xls\", excel replace nor2 `1'", "outreg2_option_macro_indirection"],
+    ["global comma ,\noutreg2 using \"table.xls\" $comma excel replace nor2 nocons", "outreg2_option_macro_indirection"],
+    ["local comma ,\noutreg2 using \"table.xls\" `comma' excel replace nor2 nocons", "outreg2_option_macro_indirection"],
+    ["global comma ,\noutreg2 using table.xls$comma excel replace nor2 nocons", "outreg2_option_macro_indirection"],
+    ["global target table.xls,\noutreg2 using $target excel replace nor2 nocons", "outreg2_option_macro_indirection"],
+    ["global comma ,\noutreg2 using table$comma.xls excel replace nor2 nocons", "outreg2_option_macro_indirection"],
+    ["global target table,\noutreg2 using ${target}.xls excel replace nor2 nocons", "outreg2_option_macro_indirection"],
+  ]) {
+    const criticalMacro = await client.tool("lint_do_file", { content, authoring_state: "new" });
+    assert.equal(criticalMacro.status, "blocked");
+    assert.ok(criticalMacro.findings.some((row) => row.rule === rule), rule);
+  }
+
+  for (const [content, rule] of [
+    ["quietly: merge m:m id using bad.dta", "merge_m_m"],
+    ["capture: erase \"source.dta\"", "destructive_delete"],
+    ["quietly: shell del important.dta", "process_escape"],
+    ["version 18: merge m:m id using bad.dta", "merge_m_m"],
+    ["vers 18: merge m:m id using bad.dta", "merge_m_m"],
+    ["bys id: regress y i.year##i.treated", "event_study_double_hash_main_effects"],
+    ["byso id: regress y i.year##i.treated", "event_study_double_hash_main_effects"],
+    ["capture noisily: ssc install outreg2", "runtime_install"],
+    ["capture: run \"do/stage.do\"", "broad_capture"],
+    ["capture ru \"do/stage.do\"", "broad_capture"],
+    ["cap include \"do/stage.do\"", "broad_capture"],
+    ["quietly capture do \"do/stage.do\"", "broad_capture"],
+    ["quietly capture ru \"do/stage.do\"", "broad_capture"],
+    ["noisily: cap include \"do/stage.do\"", "broad_capture"],
+    ["version 18: capture run \"do/stage.do\"", "broad_capture"],
+    ["quietly: duplicates drop id, force", "duplicates_drop_force"],
+    ["quietly: outreg2 using \"table.xlsx\", excel replace keep(x)", "outreg2_raw_rows_modified"],
+  ]) {
+    const prefixedSafety = await client.tool("lint_do_file", { content, authoring_state: "new" });
+    assert.ok(prefixedSafety.findings.some((row) => row.rule === rule), `${rule}: ${content}`);
+  }
+  const benignCapture = await client.tool("lint_do_file", { content: "quietly capture confirm variable optional_id", authoring_state: "new" });
+  assert.equal(benignCapture.findings.some((row) => row.rule === "broad_capture"), false);
+  for (const modifier of ["qui", "quie", "quiet", "quietl", "quietly"]) {
+    const abbreviated = await client.tool("lint_do_file", { content: `${modifier} capture ru "do/stage.do"`, authoring_state: "new" });
+    assert.ok(abbreviated.findings.some((row) => row.rule === "broad_capture"), modifier);
+  }
+  for (const modifier of ["n", "no", "noi", "nois", "noisi", "noisil", "noisily"]) {
+    const abbreviated = await client.tool("lint_do_file", { content: `${modifier} capture include "do/stage.do"`, authoring_state: "new" });
+    assert.ok(abbreviated.findings.some((row) => row.rule === "broad_capture"), modifier);
+  }
+  for (const modifier of ["cap", "capt", "captu", "captur", "capture"]) {
+    const abbreviated = await client.tool("lint_do_file", { content: `quietly ${modifier} run "do/stage.do"`, authoring_state: "new" });
+    assert.ok(abbreviated.findings.some((row) => row.rule === "broad_capture"), modifier);
+  }
+  for (const modifier of ["qu", "noisilyx", "ca"]) {
+    const nearMiss = await client.tool("lint_do_file", { content: `${modifier} capture ru "do/stage.do"`, authoring_state: "new" });
+    assert.equal(nearMiss.findings.some((row) => row.rule === "broad_capture"), false, modifier);
+  }
+  for (const command of [
+    "do \"do/stage.do\", nostop",
+    "run \"do/stage.do\", nostop",
+    "ru \"do/stage.do\", nostop",
+    "quietly: do \"do/stage.do\", nostop",
+    "version 18: run \"do/stage.do\", nostop",
+  ]) {
+    const failMaskingCall = await client.tool("lint_do_file", { content: command, role: "master", authoring_state: "new" });
+    assert.equal(failMaskingCall.status, "blocked", command);
+    assert.ok(failMaskingCall.findings.some((row) => row.rule === "master_call_nostop"), command);
+  }
+  for (const command of [
+    "do \"do/nostop.do\"",
+    "run \"do/nostop, stage.do\"",
+    "ru do/nostop.do",
+    "do \"$do/stage.do\"",
+    "run \"${do}/stage.do\"",
+  ]) {
+    const filenameSibling = await client.tool("lint_do_file", { content: command, role: "master", authoring_state: "new" });
+    assert.equal(filenameSibling.findings.some((row) => row.rule === "master_call_nostop"), false, command);
+    assert.equal(filenameSibling.findings.some((row) => row.rule === "master_call_option_macro_indirection"), false, command);
+  }
+  for (const command of [
+    "do \"do/stage.do\" $callopts",
+    "run \"do/stage.do\" ${callopts}",
+    "ru \"$do/stage.do\" $callopts",
+    "do \"do/stage.do\", $callopts",
+    "run \"do/stage.do\" `callopts'",
+  ]) {
+    const hiddenCallOptions = await client.tool("lint_do_file", { content: command, role: "master", authoring_state: "new" });
+    assert.equal(hiddenCallOptions.status, "blocked", command);
+    assert.ok(hiddenCallOptions.findings.some((row) => row.rule === "master_call_option_macro_indirection"), command);
+  }
+  for (const command of [
+    "do $target",
+    "run ${target}",
+    "ru `target'",
+    "do `1'",
+    "run `2'",
+    "do \"`0'/stage.do\"",
+    "run \"`1'/stage.do\"",
+    "ru \"`12'/stage.do\"",
+    "do `=cond(1,\"do/stage.do, nostop\",\"\")'",
+    "do \"$stagefile\"",
+    "run \"${target}\"",
+    "ru \"do/$stagefile\"",
+    "do \"$root/$stage.do\"",
+    "run \"${root}/do/${stage}.do\"",
+    "ru \"$root/stage`ext'.do\"",
+  ]) {
+    const hiddenWholeTarget = await client.tool("lint_do_file", { content: command, role: "master", authoring_state: "new" });
+    assert.equal(hiddenWholeTarget.status, "blocked", command);
+    assert.ok(hiddenWholeTarget.findings.some((row) => row.rule === "master_call_option_macro_indirection"), command);
+  }
+  for (const role of ["helper", "auto"]) {
+    for (const command of ["do $target", "run `target'", "do `1'"]) {
+      const helperWholeTarget = await client.tool("lint_do_file", { content: command, role, authoring_state: "new" });
+      assert.ok(helperWholeTarget.findings.some((row) => row.rule === "master_call_option_macro_indirection"), `${role}: ${command}`);
+    }
+  }
+  for (const command of [
+    "do \"$PROJECT_ROOT/do/stage.do\"",
+    "run ${PROJECT_ROOT}/do/stage.do",
+    "ru `root'/do/stage.do",
+  ]) {
+    const explicitRootPath = await client.tool("lint_do_file", { content: command, role: "master", authoring_state: "new" });
+    assert.equal(explicitRootPath.findings.some((row) => row.rule === "master_call_option_macro_indirection"), false, command);
+  }
+  const helperArguments = await client.tool("lint_do_file", {
+    content: "do \"worker.do\" $dataset",
+    role: "helper",
+    authoring_state: "new",
+  });
+  assert.equal(helperArguments.findings.some((row) => row.rule === "master_call_option_macro_indirection"), false);
+  for (const role of ["helper", "auto"]) {
+    const helperNostop = await client.tool("lint_do_file", {
+      content: "do \"worker.do\", nostop",
+      role,
+      authoring_state: "new",
+    });
+    assert.equal(helperNostop.status, "blocked", role);
+    assert.ok(helperNostop.findings.some((row) => row.rule === "master_call_nostop"), role);
+  }
+  for (const content of [
+    "global callopts nostop\ndo \"worker.do\", $callopts",
+    "local callopts nostop\nrun \"worker.do\", `callopts'",
+    "global callopts , nostop\ndo \"worker.do\" $callopts",
+    "global callopts = \", nostop\"\ndo \"worker.do\" $callopts",
+    "global callopts=\", nostop\"\ndo \"worker.do\" $callopts",
+    "local callopts=\", nostop\"\nrun \"worker.do\" `callopts'",
+    "global callopts = \", \" + \"no\" + \"stop\"\nrun \"worker.do\" $callopts",
+  ]) {
+    const helperMacroNostop = await client.tool("lint_do_file", { content, role: "helper", authoring_state: "new" });
+    assert.equal(helperMacroNostop.status, "blocked", content);
+    assert.ok(helperMacroNostop.findings.some((row) => ["master_call_nostop", "master_call_option_macro_indirection"].includes(row.rule)), content);
+  }
+  for (const command of ["gl", "glo", "glob", "globa", "global", "loc", "loca", "local"]) {
+    const sigil = command.startsWith("g") ? "$callopts" : "`callopts'";
+    const abbreviatedMacro = await client.tool("lint_do_file", {
+      content: `${command} callopts=", nostop"\ndo "worker.do" ${sigil}`,
+      role: "helper",
+      authoring_state: "new",
+    });
+    assert.ok(abbreviatedMacro.findings.some((row) => row.rule === "master_call_nostop"), command);
+  }
+  for (const command of ["g", "lo"]) {
+    const nearMissMacro = await client.tool("lint_do_file", {
+      content: `${command} callopts=", nostop"\ndo "worker.do" $callopts`,
+      role: "helper",
+      authoring_state: "new",
+    });
+    assert.equal(nearMissMacro.findings.some((row) => row.rule === "master_call_nostop"), false, command);
+  }
+  for (const content of [
+    "args callopts\ndo \"worker.do\" `callopts'",
+    "do \"worker.do\" `1'",
+  ]) {
+    const positionalOption = await client.tool("lint_do_file", { content, role: "helper", authoring_state: "new" });
+    assert.ok(positionalOption.findings.some((row) => row.rule === "master_call_option_macro_indirection"), content);
+  }
+  for (const content of [
+    "global callopts : environment STATA_CALL_OPTS\ndo \"worker.do\" $callopts",
+    "gl callopts : copy global upstream\ndo \"worker.do\" $callopts",
+    "local callopts : subinstr global upstream \"safe\" \"\", all\ndo \"worker.do\" `callopts'",
+  ]) {
+    const extendedMacro = await client.tool("lint_do_file", { content, role: "helper", authoring_state: "new" });
+    assert.ok(extendedMacro.findings.some((row) => row.rule === "master_call_option_macro_indirection"), content);
+  }
+  const quotedColonLiteral = await client.tool("lint_do_file", {
+    content: "global callopts \": safe_arg\"\ndo \"worker.do\" $callopts",
+    role: "helper",
+    authoring_state: "new",
+  });
+  assert.equal(quotedColonLiteral.findings.some((row) => ["master_call_nostop", "master_call_option_macro_indirection"].includes(row.rule)), false);
+  const programScopedLocal = await client.tool("lint_do_file", {
+    content: "program define p\nlocal callopts , nostop\ndo \"inside.do\" `callopts'\nend\np\ndo \"outside.do\" `callopts'",
+    role: "helper",
+    authoring_state: "new",
+  });
+  assert.ok(programScopedLocal.findings.some((row) => row.line === 3 && row.rule === "master_call_nostop"));
+  assert.equal(programScopedLocal.findings.some((row) => row.line === 6 && row.rule === "master_call_nostop"), false);
+  const outerLocalRestored = await client.tool("lint_do_file", {
+    content: "local callopts safe_arg\nprogram define p\nlocal callopts , nostop\nend\ndo \"outside.do\" `callopts'",
+    role: "helper",
+    authoring_state: "new",
+  });
+  assert.equal(outerLocalRestored.findings.some((row) => row.rule === "master_call_nostop"), false);
+  const lateUnsafeProgram = await client.tool("lint_do_file", {
+    content: "global callopts safe_arg\nprogram define p\ndo \"worker.do\" $callopts\nend\nglobal callopts=\", nostop\"\np",
+    role: "helper",
+    authoring_state: "new",
+  });
+  assert.ok(lateUnsafeProgram.findings.some((row) => row.line === 3 && row.rule === "master_call_nostop"));
+  const lateSafeProgram = await client.tool("lint_do_file", {
+    content: "global callopts , nostop\nprogram define p\ndo \"worker.do\" $callopts\nend\nglobal callopts safe_arg\np",
+    role: "helper",
+    authoring_state: "new",
+  });
+  assert.equal(lateSafeProgram.findings.some((row) => row.rule === "master_call_nostop"), false);
+  const programSetsGlobal = await client.tool("lint_do_file", {
+    content: "program define p\nglobal callopts , nostop\nend\np\ndo \"worker.do\" $callopts",
+    role: "helper",
+    authoring_state: "new",
+  });
+  assert.ok(programSetsGlobal.findings.some((row) => row.line === 5 && row.rule === "master_call_nostop"));
+  const uninvokedLiteralProgram = await client.tool("lint_do_file", {
+    content: "program define p\ndo \"worker.do\", nostop\nend",
+    role: "helper",
+    authoring_state: "new",
+  });
+  assert.ok(uninvokedLiteralProgram.findings.some((row) => row.line === 2 && row.rule === "master_call_nostop"));
+  for (const header of ["pr def p", "pro de p", "prog defi p", "program p", "program define p"]) {
+    const officialProgramSyntax = await client.tool("lint_do_file", {
+      content: `${header}\nlocal callopts , nostop\ndo \"worker.do\" \`callopts'\nend`,
+      role: "helper",
+      authoring_state: "new",
+    });
+    assert.ok(officialProgramSyntax.findings.some((row) => row.line === 3 && row.rule === "master_call_nostop"), header);
+  }
+  for (const header of ["version 18: program define p", "version 18, user: program define p", "program ///\n    define p", "vers 18: pr ///\n    def p"]) {
+    const logicalProgramHeader = await client.tool("lint_do_file", {
+      content: `${header}\ndo \"worker.do\", nostop\nend`,
+      role: "helper",
+      authoring_state: "new",
+    });
+    assert.equal(logicalProgramHeader.summary.program_definitions, 1, header);
+    assert.ok(logicalProgramHeader.findings.some((row) => row.rule === "master_call_nostop"), header);
+  }
+  const nestedProgramCall = await client.tool("lint_do_file", {
+    content: "pr def q\ndo \"worker.do\", nostop\nend\npr def p\nq\nend\np",
+    role: "helper",
+    authoring_state: "new",
+  });
+  assert.ok(nestedProgramCall.findings.some((row) => row.line === 2 && row.rule === "master_call_nostop"));
+  for (const dropCommand of ["pr drop p q", "pro drop p q", "program drop p q", "pr drop _all", "pro drop _all", "program drop _all"]) {
+    const droppedPrograms = await client.tool("lint_do_file", {
+      content: `global opts safe_arg\nprogram p\nglobal opts , nostop\nend\nprogram q\nend\n${dropCommand}\ncapture p\ndo \"worker.do\" $opts`,
+      role: "helper",
+      authoring_state: "new",
+    });
+    assert.equal(droppedPrograms.findings.some((row) => row.line === 9 && row.rule === "master_call_nostop"), false, dropCommand);
+  }
+  const dropAllAdoKeepsDoFilePrograms = await client.tool("lint_do_file", {
+    content: "global opts safe_arg\nprogram p\nglobal opts , nostop\nend\nprogram drop _allado\np\ndo \"worker.do\" $opts",
+    role: "helper",
+    authoring_state: "new",
+  });
+  assert.ok(dropAllAdoKeepsDoFilePrograms.findings.some((row) => row.line === 7 && row.rule === "master_call_nostop"));
+  for (const syntaxLine of ["syntax anything", "syntax anything(name=callopts)"]) {
+    const syntaxCarrier = await client.tool("lint_do_file", {
+      content: `program define p\n${syntaxLine}\ndo \"worker.do\" \`${syntaxLine.includes("name=") ? "callopts" : "anything"}'\nend\np`,
+      role: "helper",
+      authoring_state: "new",
+    });
+    assert.ok(syntaxCarrier.findings.some((row) => row.rule === "master_call_option_macro_indirection"), syntaxLine);
+  }
+  for (const content of [
+    "global opts safe_arg\nglobal opts = cond(1, \", nostop\", \"\")\ndo \"worker.do\" $opts",
+    "global opts , nostop\nglobal opts = cond(1, \"safe_arg\", \"safe_arg\")\ndo \"worker.do\" $opts",
+  ]) {
+    const redefinedMacro = await client.tool("lint_do_file", { content, role: "helper", authoring_state: "new" });
+    assert.ok(redefinedMacro.findings.some((row) => row.rule === "master_call_option_macro_indirection"), content);
+    assert.equal(redefinedMacro.findings.some((row) => row.rule === "master_call_nostop"), false, content);
+  }
+  for (const command of [
+    "do \"do/stage.do\" skip_checks",
+    "run \"do/stage.do\" \"alternate sample\"",
+    "ru \"do/stage.do\" 1",
+    "include \"do/defs.do\", adopath",
+  ]) {
+    const indirectMasterCall = await client.tool("lint_do_file", { content: command, role: "master", authoring_state: "new" });
+    assert.equal(indirectMasterCall.status, "blocked", command);
+    assert.ok(indirectMasterCall.findings.some((row) => row.rule === "master_call_not_direct"), command);
+  }
+
+  for (const [content, rule] of [
+    ["/* audit */ /* rationale */ merge m:m id using bad.dta", "merge_m_m"],
+    ["/* a */ /* b */ erase \"source.dta\"", "destructive_delete"],
+    ["/* a */ /* b */ shell del important.dta", "process_escape"],
+    ["/* a */ /* b */ ssc install outreg2", "runtime_install"],
+    ["/* a */ /* b */ regress y i.year##i.treated", "event_study_double_hash_main_effects"],
+    ["display \"prefix /* suffix\"\nshell del important.dta", "process_escape"],
+    ["reghdfe y /// event\ni.year##i.treated, absorb(id year)", "event_study_double_hash_main_effects"],
+    ["merge /// dangerous cardinality\nm:m id using bad.dta", "merge_m_m"],
+    ["outreg2 using \"table.xls\", excel replace nor2 /// mutate rows\nkeep(x)", "outreg2_raw_rows_modified"],
+  ]) {
+    const parsedSafety = await client.tool("lint_do_file", { content, authoring_state: "new" });
+    assert.ok(parsedSafety.findings.some((row) => row.rule === rule), `${rule}: ${content}`);
+  }
+
+  for (const content of [
+    "#delimit ;\nregress outcome\n i.year##i.treated\n;\n#delimit cr",
+    "#delimit ;\nmerge\n m:m id year\n using bad.dta\n;\n#delimit cr",
+  ]) {
+    const delimited = await client.tool("lint_do_file", { content, authoring_state: "new" });
+    assert.equal(delimited.status, "blocked");
+    assert.ok(delimited.findings.some((row) => row.rule === "nonstandard_command_delimiter"));
+  }
+  const existingDelimited = await client.tool("lint_do_file", {
+    content: "#delimit ;\ndisplay 1; merge m:m id using bad.dta; erase source.dta;\n#delimit cr",
+  });
+  assert.equal(existingDelimited.status, "blocked");
+  assert.ok(existingDelimited.findings.some((row) => row.rule === "nonstandard_command_delimiter"));
+
+  for (const option of ["ctitle(\"Model 1\")", "nocons", "nonotes", "addnote(\"Custom\")", "sortvar(x y)"]) {
+    const changedRawTable = await client.tool("lint_do_file", {
+      content: `outreg2 using "table.xls", excel replace nor2 ${option}`,
+      authoring_state: "new",
+    });
+    assert.equal(changedRawTable.status, "blocked");
+    assert.ok(changedRawTable.findings.some((row) => row.rule === "outreg2_option_not_approved"), option);
+  }
+
+
+  for (const content of [
+    'outreg2 using "table,final.xls", excel replace nor2',
+  ]) {
+    const commaBeforeOptions = await client.tool("lint_do_file", { content, authoring_state: "new" });
+    assert.ok(!commaBeforeOptions.findings.some((row) => row.rule === "outreg2_option_not_approved"), content);
+  }
+
+  for (const command of [
+    "logit outcome $controls_current",
+    "qreg outcome $controls_current",
+    "mixed outcome $controls_current || entity_id:",
+    "mi estimate: regress outcome $controls_current",
+    "mi est: regress outcome $controls_current",
+    "mi esti: regress outcome $controls_current",
+    "bootstrap: regress outcome $controls_current",
+    "jackknife: regress outcome $controls_current",
+    "statsby: regress outcome $controls_current",
+    "xi: regress outcome $controls_current",
+    "stepwise: regress outcome $controls_current",
+    "rolling _b, window(10): regress outcome $controls_current",
+    "permute treated _b[treated], reps(2): regress outcome $controls_current",
+    "stepwise, pr(`p'): regress outcome $controls_current",
+    "rolling `p', window(10): regress outcome $controls_current",
+    "collect: regress outcome $controls_current",
+    "frame other: regress outcome $controls_current",
+    "simulate b=_b[treated], reps(10): regress outcome $controls_current",
+    "version 18: regress outcome $controls_current",
+    "bayes: regress outcome $controls_current",
+    "fmm 2: regress outcome $controls_current",
+    "mfp: regress outcome $controls_current",
+    "bayesboot: regress outcome $controls_current",
+  ]) {
+    const result = await client.tool("lint_do_file", { content: command, authoring_state: "new" });
+    assert.ok(result.findings.some((row) => row.rule === "regression_substantive_indirection"), command);
+  }
+  for (const command of [
+    "mi estimate: regress outcome i.year##i.treated",
+    "bootstrap: regress outcome i.year##i.treated",
+    "by cohort: regress outcome i.year##i.treated",
+    "xi: regress outcome i.year##i.treated",
+    "stepwise: regress outcome i.year##i.treated",
+    "rolling _b, window(10): regress outcome i.year##i.treated",
+    "permute treated _b[treated], reps(2): regress outcome i.year##i.treated",
+    "stepwise, pr(`p'): regress outcome i.year##i.treated",
+    "rolling `p', window(10): regress outcome i.year##i.treated",
+    "collect: regress outcome i.year##i.treated",
+    "frame other: regress outcome i.year##i.treated",
+    "simulate b=_b[treated], reps(10): regress outcome i.year##i.treated",
+    "version 18: regress outcome i.year##i.treated",
+    "bayes: regress outcome i.year##i.treated",
+    "fmm 2: regress outcome i.year##i.treated",
+    "mfp: regress outcome i.year##i.treated",
+    "bayesboot: regress outcome i.year##i.treated",
+  ]) {
+    const result = await client.tool("lint_do_file", { content: command, authoring_state: "new" });
+    assert.ok(result.findings.some((row) => row.rule === "event_study_double_hash_main_effects"), command);
+  }
+  for (const nonEstimator of [
+    'display "note: regress y i.year##i.treated"',
+    'file write handle "note: regress y i.year##i.treated"',
+  ]) {
+    const result = await client.tool("lint_do_file", { content: nonEstimator, authoring_state: "new" });
+    assert.equal(result.findings.some((row) => /event_study_|regression_substantive_indirection/.test(row.rule)), false, nonEstimator);
+  }
+});
+
+test("substantive macro alias chains are blocked but directory roots may compose", async (t) => {
+  const client = new McpClient();
+  t.after(() => client.close());
+  const aliases = await client.tool("lint_do_file", {
+    content: [
+      "global controls_base x1 x2",
+      "global controls_2019 $controls_base x3",
+      "global controls_current $controls_2019",
+      'display "$controls_current"',
+    ].join("\n"),
+    authoring_state: "new",
+  });
+  assert.equal(aliases.status, "blocked");
+  assert.equal(aliases.findings.filter((row) => row.rule === "substantive_macro_alias_chain").length, 2);
+  const directories = await client.tool("lint_do_file", {
+    content: 'global project "C:/research"\nglobal data "$project/data"\nuse "$data/source.dta", clear',
+    authoring_state: "new",
+  });
+  assert.equal(directories.findings.some((row) => row.rule === "substantive_macro_alias_chain"), false);
+});
+
+test("local macros require lexical scope while program, loop, and immediate returned results remain allowed", async (t) => {
+  const client = new McpClient();
+  t.after(() => client.close());
+  const blocked = await client.tool("lint_do_file", {
+    content: 'local controls "x1 x2"\nregress outcome `controls\'',
+    authoring_state: "new",
+  });
+  assert.ok(blocked.findings.some((row) => row.rule === "local_macro_without_lexical_need"));
+  const allowed = await client.tool("lint_do_file", {
+    content: [
+      "foreach outcome in y1 y2 {",
+      "    local graph_name \"`outcome'_plot\"",
+      "    display \"`graph_name'\"",
+      "}",
+      "quietly summarize y1, meanonly",
+      "local ymean = r(mean)",
+      "display `ymean'",
+      "program define narrow_helper",
+      "    syntax, Name(string)",
+      "    local shown \"`name'\"",
+      "    display \"`shown'\"",
+      "end",
+    ].join("\n"),
+    authoring_state: "new",
+  });
+  assert.equal(allowed.findings.some((row) => row.rule === "local_macro_without_lexical_need"), false, JSON.stringify(allowed.findings));
 });
 
 test("fallback provenance markers are forbidden in research do-files", async (t) => {
@@ -2606,6 +3228,9 @@ test("line continuation is present only when the same command continues on the n
     "reghdfe y x, ///\n    absorb(firm_id year) ///\nestimates save result.ster, replace",
     "outreg2 using result.xls, ///\nregress y x",
     "display 1 ///\nkeep if sample_flag",
+    "display 1 ///\ngl callopts safe_arg",
+    "display 1 ///\nloc callopts safe_arg",
+    "display 1 ///\npr def p",
     "custom_estimator y x, ///\nanother_custom_command y x",
   ]) {
     const result = await client.tool("lint_do_file", { content });
@@ -2639,7 +3264,7 @@ test("canonical event snapshots have no dangling line-continuation finding", asy
   }
 });
 
-test("project audit identifies specification globals with only one consumer", async (t) => {
+test("project audit identifies substantive globals defined remotely from their consumer", async (t) => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-macro-scope-"));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   fs.writeFileSync(path.join(root, "master.do"), [
@@ -2662,12 +3287,13 @@ test("project audit identifies specification globals with only one consumer", as
   t.after(() => client.close());
   const result = await client.tool("audit_stata_project", { path: root, strict_structure: false });
   const localizable = result.structural_findings
-    .filter((row) => row.rule === "single_consumer_specification_global")
+    .filter((row) => row.rule === "remote_specification_global")
     .map((row) => `${row.file}:${row.line}`);
-  assert.deepEqual(localizable.sort(), ["figure.do:1", "setup.do:1", "setup.do:2"]);
+  assert.deepEqual(localizable.sort(), ["setup.do:1", "setup.do:2"]);
+  assert.equal(result.structural_findings.some((row) => row.file === "figure.do" && row.rule === "remote_specification_global"), false);
 });
 
-test("project audit localizes single-consumer leaf filenames but preserves shared roots and artifacts", async (t) => {
+test("project audit moves remote single-consumer leaf filenames but preserves shared roots and artifacts", async (t) => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-file-binding-scope-"));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   fs.writeFileSync(path.join(root, "master.do"), [
@@ -2693,11 +3319,11 @@ test("project audit localizes single-consumer leaf filenames but preserves share
   t.after(() => client.close());
   const result = await client.tool("audit_stata_project", { path: root, strict_structure: false });
   const localizable = result.structural_findings
-    .filter((row) => row.rule === "single_consumer_file_binding_global")
+    .filter((row) => row.rule === "remote_leaf_file_binding_global")
     .map((row) => `${row.file}:${row.line}:${row.message}:${row.suggestion}`);
   assert.equal(localizable.length, 1);
-  assert.match(localizable[0], /^setup\.do:2:summary_excel leaf 파일 global은 export\.do 한 파일에서만 소비됩니다\./);
-  assert.match(localizable[0], /export\.do의 첫 사용 직전에 local summary_excel/);
+  assert.match(localizable[0], /^setup\.do:2:summary_excel leaf 파일 global이 정의 파일과 다른 export\.do에서 소비됩니다\./);
+  assert.match(localizable[0], /소비 do-file에서 literal 또는 descriptive global/);
   assert.equal(result.structural_findings.some((row) => /\btable\b/.test(row.message)), false);
   assert.equal(result.structural_findings.some((row) => /\bshared_data\b/.test(row.message)), false);
 });
@@ -2713,6 +3339,13 @@ test("event-study graph requires raw outcome title, bottom legend, and immediate
   assert.equal(passed.findings.some((row) => /event_study_(raw_outcome_title|bottom_legend|pdf_not_immediate)/.test(row.rule)), false);
   const ordinaryInteraction = await client.tool("lint_do_file", { content: "coefplot (model, label(Main model)), keep(1.treated#2015.year)" });
   assert.equal(ordinaryInteraction.findings.some((row) => /event_study_(raw_outcome_title|bottom_legend|pdf_not_immediate)/.test(row.rule)), false);
+  const reversedEvent = await client.tool("lint_do_file", {
+    content: "coefplot, keep(1.treat2019#2015.year 1.treat2019#2016.year)",
+    authoring_state: "new",
+  });
+  assert.ok(reversedEvent.findings.some((row) => row.rule === "event_study_raw_outcome_title"));
+  assert.ok(reversedEvent.findings.some((row) => row.rule === "event_study_selector_not_exact") === false);
+  assert.ok(reversedEvent.findings.some((row) => row.rule === "event_study_reference_slot_missing"));
   for (const [name, content, rule] of [
     ["title", complete.replace("title(\"`outcome'\", size(medsmall))", "title(\"Outcome effect\", size(medsmall))"), "event_study_raw_outcome_title"],
     ["legend", complete.replace("legend(position(6) rows(1))", "legend(off)"), "event_study_bottom_legend"],
@@ -2721,6 +3354,28 @@ test("event-study graph requires raw outcome title, bottom legend, and immediate
     const result = await client.tool("lint_do_file", { content });
     assert.ok(result.findings.some((row) => row.rule === rule), name);
   }
+  const authoredWildcard = await client.tool("lint_do_file", { content: complete, authoring_state: "new" });
+  assert.ok(authoredWildcard.findings.some((row) => row.rule === "event_study_selector_not_exact"));
+  assert.ok(authoredWildcard.findings.some((row) => row.rule === "event_study_reference_slot_missing"));
+  assert.ok(authoredWildcard.findings.some((row) => row.rule === "event_study_reference_coordinates_missing"));
+  assert.ok(authoredWildcard.findings.some((row) => row.rule === "event_study_vertical_missing"));
+
+  const exactButIncomplete = [
+    "coefplot, keep(2015b.year#1.treat2019 2016.year#1.treat2019) title(y) legend(position(6) rows(1))",
+    'graph export "figures/y.pdf", replace',
+  ].join("\n");
+  const exactDetected = await client.tool("lint_do_file", { content: exactButIncomplete, authoring_state: "new" });
+  assert.ok(exactDetected.findings.some((row) => row.rule === "event_study_reference_slot_missing"));
+  assert.ok(exactDetected.findings.some((row) => row.rule === "event_study_vertical_missing"));
+  const inconsistentCoordinates = await client.tool("lint_do_file", {
+    content: [
+      'coefplot, keep(2015b.year#1.treat2019 2016.year#1.treat2019) order(foo . bar) xlabel(99 "junk") addplot(scatteri 0 999) xline(-999) vertical title(y) legend(position(6) rows(1))',
+      'graph export "figures/y.pdf", replace',
+    ].join("\n"),
+    authoring_state: "new",
+  });
+  assert.ok(inconsistentCoordinates.findings.some((row) => row.rule === "event_study_selector_order_mismatch"));
+  assert.ok(inconsistentCoordinates.findings.some((row) => row.rule === "event_study_reference_coordinates_missing"));
 });
 
 test("blueprint covers masters, compact result paths, README outline, and planned variables", async (t) => {
@@ -2742,8 +3397,10 @@ test("blueprint covers masters, compact result paths, README outline, and planne
   assert.deepEqual(result.stage_contracts.map((row) => row.stage), [
     "import", "integrity_audit", "cleaning_labels", "merge_reshape", "panel_construction", "descriptives_balance_sample_flow", "estimation", "robustness", "figures", "exports", "master_orchestration",
   ]);
-  assert.ok(result.recommended_tree.some((row) => row.includes("10_prep_master.do")));
-  assert.ok(result.recommended_tree.some((row) => row.includes("20_analysis_master.do")));
+  assert.ok(result.recommended_tree.includes("project/masters.do"));
+  assert.ok(result.recommended_tree.includes("project/do/build_analysis_panel.do"));
+  assert.ok(result.recommended_tree.includes("project/do/build_summary.do"));
+  assert.ok(result.recommended_tree.includes("project/do/run_regressions.do"));
   assert.ok(result.recommended_tree.some((row) => row.includes("data/raw")));
   assert.ok(result.sample_flow_contract.length >= 5);
   assert.ok(result.recommended_tree.includes("project/README.md"));
@@ -2758,15 +3415,88 @@ test("blueprint covers masters, compact result paths, README outline, and planne
   assert.equal(result.variables_pending_user_definition, false);
   assert.equal(result.readme_contract.path, "README.md");
   assert.ok(result.readme_contract.outline.some((row) => row.section === "새로 생성되는 파일 구조"));
-  assert.deepEqual(result.master_sequence, ["do/00_config.do", "do/10_prep_master.do", "do/20_analysis_master.do"]);
+  assert.deepEqual(result.master_sequence, ["do/build_analysis_panel.do", "do/build_summary.do", "do/run_regressions.do"]);
   assert.ok(result.research_output_contract.readme_sections.some((row) => row.includes("file tree")));
   assert.ok(result.research_output_contract.deliverable_evidence.some((row) => row.includes("names and counts")));
+  assert.ok(result.research_output_contract.deliverable_evidence.some((row) => row.includes("descriptive PDFs")));
+  assert.ok(result.research_output_contract.deliverable_evidence.some((row) => row.includes("event-study PDFs")));
   assert.ok(result.research_output_contract.verdicts.some((row) => row.includes("needs_revision")));
   assert.equal(result.structure_policy.standard_tree_applies, true);
   assert.equal(result.write_approval_contract.required_before_any_project_write, true);
   assert.ok(result.write_approval_contract.proposal_must_list.includes("files to modify"));
   assert.ok(result.write_approval_contract.proposal_must_list.includes("entrypoint and execution command"));
   assert.ok(result.write_approval_contract.proposal_must_list.includes("new persistent variable names and reader-facing descriptions"));
+});
+
+test("new-project blueprint emits only stages and outputs supported by the requested profile", async (t) => {
+  const client = new McpClient();
+  t.after(() => client.close());
+  const crossSection = await client.tool("workflow_blueprint", {
+    project_mode: "new",
+    new_project_confirmed: true,
+    analysis_type: "descriptive",
+    data_shape: "cross_section",
+    expected_stages: ["import", "cleaning_labels"],
+    outputs: ["tables"],
+    no_new_persistent_variables: true,
+  });
+  assert.deepEqual(crossSection.master_sequence, ["do/build_analysis_data.do"]);
+  assert.equal(crossSection.recommended_tree.some((row) => /build_analysis_panel|build_summary|run_regressions|project\/ster\/|project\/figures\//.test(row)), false);
+  assert.equal(crossSection.structure_policy.standard_tree_applies, false);
+
+  const summaryPdf = await client.tool("workflow_blueprint", {
+    project_mode: "new",
+    new_project_confirmed: true,
+    analysis_type: "descriptive",
+    data_shape: "cross_section",
+    expected_stages: ["descriptives_balance_sample_flow"],
+    outputs: ["one descriptive pdf"],
+    no_new_persistent_variables: true,
+  });
+  assert.deepEqual(summaryPdf.master_sequence, ["do/build_summary.do"]);
+  assert.ok(summaryPdf.recommended_tree.includes("project/figures/"));
+  assert.equal(summaryPdf.recommended_tree.includes("project/table/"), false);
+
+  const sterOnly = await client.tool("workflow_blueprint", {
+    project_mode: "new",
+    new_project_confirmed: true,
+    analysis_type: "applied_micro",
+    data_shape: "panel",
+    expected_stages: ["estimation"],
+    outputs: ["one ster only"],
+    no_new_persistent_variables: true,
+  });
+  assert.deepEqual(sterOnly.master_sequence, ["do/run_regressions.do"]);
+  assert.ok(sterOnly.recommended_tree.includes("project/ster/"));
+  assert.equal(sterOnly.recommended_tree.includes("project/table/"), false);
+});
+
+test("default readable-project fixture locks unnumbered stages, master file contracts, and visible regressions", async (t) => {
+  const client = new McpClient();
+  t.after(() => client.close());
+  const fixture = path.join(__dirname, "fixtures", "readable_default_project");
+  const master = fs.readFileSync(path.join(fixture, "masters.do"), "utf8");
+  const regression = fs.readFileSync(path.join(fixture, "do", "run_regressions.do"), "utf8");
+  const masterLint = await client.tool("lint_do_file", { content: master, role: "master", authoring_state: "new" });
+  assert.equal(masterLint.status, "static_clean", JSON.stringify(masterLint.findings));
+  assert.equal(masterLint.strengths.filter((row) => row.rule === "master_call_role_comment").length, 3);
+  const regressionLint = await client.tool("lint_do_file", { content: regression, authoring_state: "new" });
+  assert.equal(regressionLint.status, "static_clean", JSON.stringify(regressionLint.findings));
+  assert.equal(regressionLint.findings.some((row) => row.rule === "regression_substantive_indirection"), false, JSON.stringify(regressionLint.findings));
+  assert.equal(regressionLint.findings.some((row) => row.rule === "local_macro_without_lexical_need"), false, JSON.stringify(regressionLint.findings));
+  assert.equal(regressionLint.findings.some((row) => row.rule === "event_study_single_hash_base_not_explicit"), false, JSON.stringify(regressionLint.findings));
+  assert.match(master, /do\/build_analysis_panel\.do/);
+  assert.doesNotMatch(master, /do\/[0-9]+_/);
+  const panel = fs.readFileSync(path.join(fixture, "do", "build_analysis_panel.do"), "utf8");
+  const summary = fs.readFileSync(path.join(fixture, "do", "build_summary.do"), "utf8");
+  assert.match(panel, /save "\$data\/final\/analysis_panel\.dta", replace/);
+  assert.match(summary, /use "\$data\/final\/analysis_panel\.dta", clear/);
+  assert.match(regression, /use "\$data\/final\/analysis_panel\.dta", clear/);
+  assert.match(summary, /summary_statistics\.xlsx/);
+  assert.match(summary, /summary_bar\.pdf/);
+  assert.match(regression, /regressions\.xls/);
+  assert.match(regression, /estimates save "\$ster\/`outcome'\.ster"/);
+  assert.doesNotMatch(regression, /coefplot|graph export/);
 });
 
 test("new-project standard tree requires explicit first-build confirmation", async (t) => {
@@ -3290,11 +4020,112 @@ test("project audit blocks missing masters and unresolved calls", async (t) => {
 
   const unresolved = path.join(temp, "unresolved");
   fs.mkdirSync(unresolved);
-  fs.writeFileSync(path.join(unresolved, "00_master.do"), "version 18.0\nglobal PROJECT_ROOT = c(pwd)\ndo \"missing_prep.do\"\ndo \"missing_analysis.do\"\n", "utf8");
+  fs.writeFileSync(path.join(unresolved, "00_master.do"), "version 18.0\nglobal PROJECT_ROOT = c(pwd)\ndo \"missing_prep.do\"\ndo \"missing_analysis.do\"\nru \"missing_ru.do\"\nquietly: ru \"missing_quiet_ru.do\"\nquie ru \"missing_quie_ru.do\"\nqui include ///\n    \"existing_helper.do\"\nnoisil include \"existing_helper.do\"\n", "utf8");
   fs.writeFileSync(path.join(unresolved, "helper.do"), "summarize y\n", "utf8");
+  fs.writeFileSync(path.join(unresolved, "existing_helper.do"), "summarize y\n", "utf8");
   const brokenGraph = await client.tool("audit_stata_project", { path: unresolved, expected_stages: ["master_orchestration"] });
   assert.equal(brokenGraph.status, "blocked");
   assert.ok(brokenGraph.structural_findings.some((row) => row.rule === "unresolved_call"));
+  assert.ok(brokenGraph.structural_findings.some((row) => row.rule === "unresolved_call" && /missing_ru\.do/.test(row.message)));
+  assert.ok(brokenGraph.structural_findings.some((row) => row.rule === "unresolved_call" && /missing_quiet_ru\.do/.test(row.message)));
+  assert.ok(brokenGraph.structural_findings.some((row) => row.rule === "unresolved_call" && /missing_quie_ru\.do/.test(row.message)));
+  assert.ok(brokenGraph.call_graph.some((row) => row.target === "existing_helper.do" && row.status === "resolved"));
+  assert.ok(brokenGraph.call_graph.some((row) => row.target === "existing_helper.do" && row.status === "resolved" && row.line > 8));
+
+  const failFast = path.join(temp, "fail-fast");
+  fs.mkdirSync(failFast);
+  fs.writeFileSync(path.join(failFast, "00_master.do"), "version 18.0\nglobal PROJECT_ROOT = c(pwd)\ndo \"stage.do\", nostop\n", "utf8");
+  fs.writeFileSync(path.join(failFast, "stage.do"), "summarize y\n", "utf8");
+  const failMaskingMaster = await client.tool("audit_stata_project", { path: failFast, expected_stages: ["master_orchestration"] });
+  assert.equal(failMaskingMaster.status, "needs_review");
+  assert.ok(failMaskingMaster.file_findings.some((row) => row.rule === "master_call_nostop"));
+
+  const transitiveFailFast = path.join(temp, "transitive-fail-fast");
+  fs.mkdirSync(transitiveFailFast);
+  fs.writeFileSync(path.join(transitiveFailFast, "00_master.do"), "version 18.0\nglobal PROJECT_ROOT = c(pwd)\nglobal callopts=\", nostop\"\ndo \"helper.do\"\nglobal callopts safe_arg\n", "utf8");
+  fs.writeFileSync(path.join(transitiveFailFast, "helper.do"), "do \"stage.do\" $callopts\n", "utf8");
+  fs.writeFileSync(path.join(transitiveFailFast, "stage.do"), "summarize y\n", "utf8");
+  const hiddenHelperNostop = await client.tool("audit_stata_project", { path: transitiveFailFast, expected_stages: ["master_orchestration"] });
+  assert.equal(hiddenHelperNostop.status, "needs_review", JSON.stringify({ findings: hiddenHelperNostop.file_findings, scope: hiddenHelperNostop.scope, graph: hiddenHelperNostop.call_graph }));
+  assert.ok(hiddenHelperNostop.file_findings.some((row) => row.file === "helper.do" && row.rule === "master_call_nostop"));
+
+  const laterUnsafe = path.join(temp, "later-unsafe");
+  fs.mkdirSync(laterUnsafe);
+  fs.writeFileSync(path.join(laterUnsafe, "00_master.do"), "version 18.0\nglobal PROJECT_ROOT = c(pwd)\nglobal callopts safe_arg\ndo \"helper.do\"\nglobal callopts , nostop\n", "utf8");
+  fs.writeFileSync(path.join(laterUnsafe, "helper.do"), "do \"stage.do\" $callopts\n", "utf8");
+  fs.writeFileSync(path.join(laterUnsafe, "stage.do"), "summarize y\n", "utf8");
+  const laterUnsafeAudit = await client.tool("audit_stata_project", { path: laterUnsafe, expected_stages: ["master_orchestration"] });
+  assert.equal(laterUnsafeAudit.file_findings.some((row) => row.file === "helper.do" && row.rule === "master_call_nostop"), false);
+
+  const programFailFast = path.join(temp, "program-fail-fast");
+  fs.mkdirSync(programFailFast);
+  fs.writeFileSync(path.join(programFailFast, "00_master.do"), "version 18.0\nglobal PROJECT_ROOT = c(pwd)\nglobal callopts=\", nostop\"\ndo \"helper.do\"\n", "utf8");
+  fs.writeFileSync(path.join(programFailFast, "helper.do"), "program define p\ndo \"worker.do\" $callopts\nend\np\n", "utf8");
+  fs.writeFileSync(path.join(programFailFast, "worker.do"), "summarize y\n", "utf8");
+  const programAudit = await client.tool("audit_stata_project", { path: programFailFast, expected_stages: ["master_orchestration"] });
+  assert.ok(programAudit.file_findings.some((row) => row.file === "helper.do" && row.line === 2 && row.rule === "master_call_nostop"));
+
+  fs.writeFileSync(path.join(programFailFast, "helper.do"), "global callopts safe_arg\nprogram define p\ndo \"worker.do\" $callopts\nend\nglobal callopts=\", nostop\"\np\n", "utf8");
+  const lateUnsafeProgramAudit = await client.tool("audit_stata_project", { path: programFailFast, expected_stages: ["master_orchestration"] });
+  assert.ok(lateUnsafeProgramAudit.file_findings.some((row) => row.file === "helper.do" && row.line === 3 && row.rule === "master_call_nostop"));
+  fs.writeFileSync(path.join(programFailFast, "helper.do"), "global callopts , nostop\nprogram define p\ndo \"worker.do\" $callopts\nend\nglobal callopts safe_arg\np\n", "utf8");
+  const lateSafeProgramAudit = await client.tool("audit_stata_project", { path: programFailFast, expected_stages: ["master_orchestration"] });
+  assert.equal(lateSafeProgramAudit.file_findings.some((row) => row.file === "helper.do" && row.rule === "master_call_nostop"), false);
+
+  const crossFileProgram = path.join(temp, "cross-file-program");
+  fs.mkdirSync(crossFileProgram);
+  fs.writeFileSync(path.join(crossFileProgram, "00_master.do"), "version 18.0\nglobal PROJECT_ROOT = c(pwd)\nglobal callopts=\", nostop\"\ndo \"define.do\"\np\n", "utf8");
+  fs.writeFileSync(path.join(crossFileProgram, "define.do"), "pr def p\ndo \"worker.do\" $callopts\nend\n", "utf8");
+  fs.writeFileSync(path.join(crossFileProgram, "worker.do"), "summarize y\n", "utf8");
+  const crossFileProgramAudit = await client.tool("audit_stata_project", { path: crossFileProgram, expected_stages: ["master_orchestration"] });
+  assert.ok(crossFileProgramAudit.file_findings.some((row) => row.file === "define.do" && row.line === 2 && row.rule === "master_call_nostop"), JSON.stringify(crossFileProgramAudit.file_findings));
+
+  fs.writeFileSync(path.join(crossFileProgram, "00_master.do"), "version 18.0\nglobal PROJECT_ROOT = c(pwd)\nglobal callopts=\", nostop\"\ndo \"define.do\"\nprogram drop p\ndo \"safe.do\"\np\n", "utf8");
+  fs.writeFileSync(path.join(crossFileProgram, "safe.do"), "program p\ndo \"worker.do\" safe_arg\nend\n", "utf8");
+  const dropRedefineAudit = await client.tool("audit_stata_project", { path: crossFileProgram, expected_stages: ["master_orchestration"] });
+  assert.equal(dropRedefineAudit.file_findings.some((row) => row.file === "safe.do" && row.rule === "master_call_nostop"), false, JSON.stringify(dropRedefineAudit.file_findings));
+
+  fs.writeFileSync(path.join(crossFileProgram, "00_master.do"), "version 18.0\nglobal PROJECT_ROOT = c(pwd)\ndo \"q.do\"\ndo \"p.do\"\np\n", "utf8");
+  fs.writeFileSync(path.join(crossFileProgram, "q.do"), "program q\ndo \"worker.do\", nostop\nend\n", "utf8");
+  fs.writeFileSync(path.join(crossFileProgram, "p.do"), "program p\nq\nend\n", "utf8");
+  const nestedCrossFileAudit = await client.tool("audit_stata_project", { path: crossFileProgram, expected_stages: ["master_orchestration"] });
+  assert.ok(nestedCrossFileAudit.file_findings.some((row) => row.file === "q.do" && row.line === 2 && row.rule === "master_call_nostop"), JSON.stringify(nestedCrossFileAudit.file_findings));
+
+  fs.writeFileSync(path.join(crossFileProgram, "00_master.do"), "version 18.0\nglobal PROJECT_ROOT = c(pwd)\nglobal opts safe_arg\ndo \"p.do\"\ndo \"q.do\"\nprogram drop p q\ncapture p\ndo \"worker.do\" $opts\n", "utf8");
+  fs.writeFileSync(path.join(crossFileProgram, "p.do"), "program p\nglobal opts , nostop\nend\n", "utf8");
+  fs.writeFileSync(path.join(crossFileProgram, "q.do"), "program q\nend\n", "utf8");
+  const multiDropAudit = await client.tool("audit_stata_project", { path: crossFileProgram, expected_stages: ["master_orchestration"] });
+  assert.equal(multiDropAudit.file_findings.some((row) => row.file === "00_master.do" && row.line === 8 && row.rule === "master_call_nostop"), false, JSON.stringify(multiDropAudit.file_findings));
+
+  fs.writeFileSync(path.join(crossFileProgram, "00_master.do"), "version 18.0\nglobal PROJECT_ROOT = c(pwd)\nglobal opts safe_arg\ndo \"p.do\"\nprogram drop _all\ncapture p\ndo \"worker.do\" $opts\n", "utf8");
+  const dropAllAudit = await client.tool("audit_stata_project", { path: crossFileProgram, expected_stages: ["master_orchestration"] });
+  assert.equal(dropAllAudit.file_findings.some((row) => row.file === "00_master.do" && row.line === 7 && row.rule === "master_call_nostop"), false, JSON.stringify(dropAllAudit.file_findings));
+
+  const extendedMacroFailFast = path.join(temp, "extended-macro-fail-fast");
+  fs.mkdirSync(extendedMacroFailFast);
+  fs.writeFileSync(path.join(extendedMacroFailFast, "00_master.do"), "version 18.0\nglobal PROJECT_ROOT = c(pwd)\nglobal callopts : environment STATA_CALL_OPTS\ndo \"helper.do\"\n", "utf8");
+  fs.writeFileSync(path.join(extendedMacroFailFast, "helper.do"), "do \"stage.do\" $callopts\n", "utf8");
+  fs.writeFileSync(path.join(extendedMacroFailFast, "stage.do"), "summarize y\n", "utf8");
+  const extendedMacroAudit = await client.tool("audit_stata_project", { path: extendedMacroFailFast, expected_stages: ["master_orchestration"] });
+  assert.ok(extendedMacroAudit.file_findings.some((row) => row.file === "helper.do" && row.rule === "master_call_option_macro_indirection"));
+
+  const includeCallerLocal = path.join(temp, "include-caller-local");
+  fs.mkdirSync(includeCallerLocal);
+  fs.writeFileSync(path.join(includeCallerLocal, "00_master.do"), "version 18.0\nglobal PROJECT_ROOT = c(pwd)\nlocal callopts , nostop\ninclude \"included.do\"\n", "utf8");
+  fs.writeFileSync(path.join(includeCallerLocal, "included.do"), "do \"stage.do\" `callopts'\n", "utf8");
+  fs.writeFileSync(path.join(includeCallerLocal, "stage.do"), "summarize y\n", "utf8");
+  const includeCallerAudit = await client.tool("audit_stata_project", { path: includeCallerLocal, expected_stages: ["master_orchestration"] });
+  assert.ok(includeCallerAudit.file_findings.some((row) => row.file === "included.do" && row.rule === "master_call_nostop"));
+
+  const includeReturnsLocal = path.join(temp, "include-returns-local");
+  fs.mkdirSync(includeReturnsLocal);
+  fs.mkdirSync(path.join(includeReturnsLocal, "do"));
+  fs.writeFileSync(path.join(includeReturnsLocal, "00_master.do"), "version 18.0\nglobal PROJECT_ROOT = c(pwd)\ndo \"do/driver.do\"\n", "utf8");
+  fs.writeFileSync(path.join(includeReturnsLocal, "do", "driver.do"), "include \"included.do\"\ndo \"stage.do\" `callopts'\n", "utf8");
+  fs.writeFileSync(path.join(includeReturnsLocal, "do", "included.do"), "local callopts , nostop\n", "utf8");
+  fs.writeFileSync(path.join(includeReturnsLocal, "do", "stage.do"), "summarize y\n", "utf8");
+  const includeReturnAudit = await client.tool("audit_stata_project", { path: includeReturnsLocal, expected_stages: ["master_orchestration"] });
+  assert.ok(includeReturnAudit.file_findings.some((row) => row.file === "do/driver.do" && row.line === 2 && row.rule === "master_call_nostop"), JSON.stringify(includeReturnAudit.file_findings));
 });
 
 test("project audit evaluates the canonical outreg2 sheet helper with project-wide literal globals", async (t) => {
@@ -3350,6 +4181,67 @@ test("project audit evaluates the canonical outreg2 sheet helper with project-wi
   assert.equal(unresolved.program_policy.outreg2_helper_multiplicity.unresolved_placement, false);
   assert.equal(unresolved.program_policy.outreg2_helper_multiplicity.necessary, true);
   assert.equal(unresolved.file_findings.some((row) => row.rule === "unnecessary_outreg2_program"), false);
+
+  fs.writeFileSync(path.join(project, "code", "10_models.do"), "regress y x\nestimates store m1\nregress z x\nestimates store m2\n", "utf8");
+  fs.writeFileSync(path.join(project, "code", "40_tables.do"), [
+    formatter,
+    'outreg2_xlsx, estimates("m1") workbook("$wb") sheet("$sheet_a") adjdec(3) meandec(6) replace',
+    'outreg2_xlsx, estimates("m2") workbook("$wb") sheet("$sheet_b") adjdec(3) meandec(6)',
+  ].join("\n"), "utf8");
+  fs.writeFileSync(path.join(project, "code", "90_late_defs.do"), 'global wb "table.xlsx"\nglobal sheet_a "family_a"\nglobal sheet_b "family_b"\n', "utf8");
+  fs.writeFileSync(path.join(project, "00_master.do"), [
+    "version 18.0",
+    "global PROJECT_ROOT = c(pwd)",
+    'do "$PROJECT_ROOT/code/10_models.do"',
+    'do "$PROJECT_ROOT/code/40_tables.do"',
+    'do "$PROJECT_ROOT/code/90_late_defs.do"',
+  ].join("\n"), "utf8");
+  const lateDefinitions = await client.tool("audit_stata_project", { path: project, expected_stages: ["exports", "master_orchestration"] });
+  assert.equal(lateDefinitions.program_policy.outreg2_helper_multiplicity.unresolved_placement, true);
+  assert.equal(lateDefinitions.file_findings.some((row) => row.rule === "unnecessary_outreg2_program"), false);
+
+  fs.writeFileSync(path.join(project, "00_master.do"), [
+    "version 18.0",
+    "global PROJECT_ROOT = c(pwd)",
+    'do "$PROJECT_ROOT/code/10_models.do"',
+    'do "$PROJECT_ROOT/code/90_late_defs.do"',
+    'do "$PROJECT_ROOT/code/40_tables.do"',
+  ].join("\n"), "utf8");
+  const earlyDefinitions = await client.tool("audit_stata_project", { path: project, expected_stages: ["exports", "master_orchestration"] });
+  assert.equal(earlyDefinitions.program_policy.outreg2_helper_multiplicity.unresolved_placement, false);
+  assert.equal(earlyDefinitions.program_policy.outreg2_helper_multiplicity.necessary, true);
+
+  fs.writeFileSync(path.join(project, "00_master.do"), [
+    "version 18.0",
+    "global PROJECT_ROOT = c(pwd)",
+    'do "$PROJECT_ROOT/code/10_models.do"',
+    'do "$PROJECT_ROOT/code/40_tables.do"',
+    'global wb "table.xlsx"',
+    'global sheet_a "family_a"',
+    'global sheet_b "family_b"',
+  ].join("\n"), "utf8");
+  const callerLateDefinitions = await client.tool("audit_stata_project", { path: project, expected_stages: ["exports", "master_orchestration"] });
+  assert.equal(callerLateDefinitions.program_policy.outreg2_helper_multiplicity.unresolved_placement, true);
+  assert.equal(callerLateDefinitions.file_findings.some((row) => row.rule === "unnecessary_outreg2_program"), false);
+
+  fs.writeFileSync(path.join(project, "code", "20_uninvoked_seed.do"), [
+    "program seed_output",
+    "estimates store m1",
+    'global wb "table.xlsx"',
+    'global sheet_a "family_a"',
+    'global sheet_b "family_b"',
+    "end",
+  ].join("\n"), "utf8");
+  fs.writeFileSync(path.join(project, "00_master.do"), [
+    "version 18.0",
+    "global PROJECT_ROOT = c(pwd)",
+    'do "$PROJECT_ROOT/code/20_uninvoked_seed.do"',
+    'do "$PROJECT_ROOT/code/40_tables.do"',
+  ].join("\n"), "utf8");
+  const uninvokedSeed = await client.tool("audit_stata_project", { path: project, expected_stages: ["exports", "master_orchestration"] });
+  assert.equal(uninvokedSeed.program_policy.outreg2_helper_multiplicity.unresolved_placement, true);
+  assert.ok(uninvokedSeed.program_policy.outreg2_helper_multiplicity.missing_producer_names.includes("m1"));
+  assert.equal(uninvokedSeed.file_findings.some((row) => row.rule === "unnecessary_outreg2_program"), false);
 });
 
 test("project audit accepts a Makefile that orchestrates multiple Stata do-files", async (t) => {
@@ -3377,6 +4269,33 @@ test("project audit accepts a Makefile that orchestrates multiple Stata do-files
   assert.equal(result.structural_findings.some((row) => row.rule === "missing_master_orchestration"), false);
   assert.equal(result.stage_coverage.find((row) => row.stage === "master_orchestration").status, "present");
   assert.ok(result.call_graph.filter((row) => row.from === "Makefile" && row.status === "resolved").length === 3);
+});
+
+test("Makefile Stata recipes remain separate execution sessions", async (t) => {
+  const client = new McpClient();
+  t.after(() => client.close());
+  const project = fs.mkdtempSync(path.join(os.tmpdir(), "stata-make-session-isolation-"));
+  t.after(() => fs.rmSync(project, { recursive: true, force: true }));
+  const formatter = fs.readFileSync(path.join(ROOT, "annotations", "source_snapshots", "default_style_outreg2_xlsx.do"), "utf8");
+  fs.writeFileSync(path.join(project, "alpha.do"), "global callopts , nostop\nregress y x\nestimates store m1\n", "utf8");
+  fs.writeFileSync(path.join(project, "beta.do"), [
+    formatter,
+    'outreg2_xlsx, estimates("m1") workbook("table.xlsx") sheet("a") adjdec(3) meandec(6) replace',
+    'outreg2_xlsx, estimates("m1") workbook("table.xlsx") sheet("b") adjdec(3) meandec(6)',
+    'do "worker.do" $callopts',
+  ].join("\n"), "utf8");
+  fs.writeFileSync(path.join(project, "worker.do"), "summarize y\n", "utf8");
+  fs.writeFileSync(path.join(project, "Makefile"), [
+    "all: alpha beta",
+    "alpha:",
+    "\t$(STATA_CLI) -b do alpha.do",
+    "beta:",
+    "\t$(STATA_CLI) -b do beta.do",
+  ].join("\n"), "utf8");
+  const result = await client.tool("audit_stata_project", { path: project, expected_stages: ["exports", "master_orchestration"] });
+  assert.equal(result.program_policy.outreg2_helper_multiplicity.producer_consumer_status, "missing_active_producer");
+  assert.ok(result.program_policy.outreg2_helper_multiplicity.missing_producer_names.includes("m1"));
+  assert.equal(result.file_findings.some((row) => row.file === "beta.do" && row.rule === "master_call_nostop"), false, JSON.stringify(result.file_findings));
 });
 
 function buildWorkflowReproductionFixture(root) {
@@ -3614,6 +4533,7 @@ test("reachable project audit isolates inactive files while all-files scope reta
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   fs.mkdirSync(path.join(root, "code"));
   fs.mkdirSync(path.join(root, "archive"));
+  fs.mkdirSync(path.join(root, "alt"));
   fs.writeFileSync(path.join(root, "00_master.do"), [
     "version 18.0",
     "global PROJECT_ROOT = c(pwd)",
@@ -3622,6 +4542,9 @@ test("reachable project audit isolates inactive files while all-files scope reta
   ].join("\n"), "utf8");
   fs.writeFileSync(path.join(root, "code", "10_model.do"), "sysuse auto, clear\nregress price mpg\n", "utf8");
   fs.writeFileSync(path.join(root, "archive", "old_attempt.do"), "merge m:m id using legacy.dta\n", "utf8");
+  fs.writeFileSync(path.join(root, "alt", "launcher.do"), "global callopts , nostop\ndo \"helper.do\"\n", "utf8");
+  fs.writeFileSync(path.join(root, "alt", "helper.do"), "do \"stage.do\" $callopts\n", "utf8");
+  fs.writeFileSync(path.join(root, "alt", "stage.do"), "summarize price\n", "utf8");
   const client = new McpClient();
   t.after(() => client.close());
 
@@ -3638,6 +4561,7 @@ test("reachable project audit isolates inactive files while all-files scope reta
   assert.equal(all.scope.mode, "all");
   assert.equal(all.static_status, "blocked");
   assert.ok(all.file_findings.some((row) => row.file === "archive/old_attempt.do" && row.rule === "merge_m_m"));
+  assert.ok(all.file_findings.some((row) => row.file === "alt/helper.do" && row.rule === "master_call_nostop"));
 });
 
 test("explicit reachable entrypoint avoids inactive missing-master blocks and full lint across more than one thousand discovered files", async (t) => {
@@ -3938,6 +4862,34 @@ test("estimability readback reports substantive review separately from static wo
     readback.runtime_estimability.models[0].terms.find((row) => row.declared === "2020bn.year#1.treated").status,
     "omitted",
   );
+  assert.equal(readback.selector_readiness.status, "incomplete");
+
+  const rawMismatch = await client.tool("audit_stata_project", {
+    path: root,
+    expected_stages: ["import", "estimation"],
+    estimability_readback: { models: [{
+      model_id: "compact_first_token",
+      declared_nonreference_terms: ["2015bn.year#1.treated"],
+      observed_eb_terms: ["2015b.year#1.treated"],
+    }] },
+  });
+  assert.equal(rawMismatch.runtime_estimability.status, "incomplete");
+  assert.equal(rawMismatch.selector_readiness.status, "incomplete");
+  assert.ok(rawMismatch.substantive_validity.issues.some((row) => row.status === "raw_name_mismatch"));
+
+  const presentReference = await client.tool("audit_stata_project", {
+    path: root,
+    expected_stages: ["import", "estimation"],
+    estimability_readback: { models: [{
+      model_id: "present_reference",
+      declared_nonreference_terms: ["2018bn.year#1.treated"],
+      declared_reference_terms: ["2019bn.year#1.treated"],
+      observed_eb_terms: ["2018bn.year#1.treated", "2019bn.year#1.treated"],
+    }] },
+  });
+  assert.equal(presentReference.runtime_estimability.status, "incomplete");
+  assert.equal(presentReference.selector_readiness.status, "incomplete");
+  assert.ok(presentReference.substantive_validity.issues.some((row) => row.status === "reference_present"));
 
   const emptyDeclaration = await client.tool("audit_stata_project", {
     path: root,
@@ -4035,6 +4987,18 @@ test("report policy can disable report and authored-span coverage while retainin
   assert.equal(disabledPlan.work_report_contract.report_policy, "disabled");
   assert.equal(disabledPlan.work_report_contract.required_after_code_write, false);
   assert.ok(disabledPlan.interventions.every((row) => row.general_rule_policy.report_required === false));
+  assert.ok(disabledPlan.interventions.every((row) => row.general_rule_policy.rules.some((rule) => /Do not create or modify report\.md/.test(rule))));
+  assert.ok(disabledPlan.interventions.every((row) => row.general_rule_policy.rules.every((rule) => !/Record every substantive general-rule span/.test(rule))));
+
+  const optionalPlan = await client.tool("plan_dictionary_repairs", {
+    path: root,
+    request: "Add an Excel output.",
+    report_policy: "optional",
+  });
+  assert.equal(optionalPlan.work_report_contract.report_policy, "optional");
+  assert.equal(optionalPlan.work_report_contract.required_after_code_write, false);
+  assert.match(optionalPlan.work_report_contract.rule, /may be omitted/);
+  assert.ok(optionalPlan.interventions.every((row) => row.general_rule_policy.rules.some((rule) => /may be omitted/.test(rule))));
 });
 
 test("source reuse planner clones a canonical do-file and blocks every undeclared edit", async (t) => {

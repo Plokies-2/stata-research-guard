@@ -111,7 +111,7 @@ function mixedAxisProfile(explicit) {
   return profile;
 }
 
-test("one-outcome event study retrieves the direct automatic-axis figure rather than a one-item loop", async (t) => {
+test("one-outcome event study retains the older direct automatic-axis figure as reference-only mechanics", async (t) => {
   const client = new McpClient();
   t.after(() => client.close());
 
@@ -128,8 +128,8 @@ test("one-outcome event study retrieves the direct automatic-axis figure rather 
 
   assert.equal(result.stage_gate.mode, "ranking_only_with_exact_checkpoint");
   const row = resultById(result, "figure.event_study_single_automatic.v1");
-  assert.ok(["preferred_candidate", "conditional_candidate"].includes(row.rubric_classification));
-  assert.equal(row.auto_select_allowed, true);
+  assert.equal(row.rubric_classification, "reference_only");
+  assert.equal(row.auto_select_allowed, false);
   assert.match(row.code, /estimates\s+use\b/i);
   assert.match(row.code, /estimates\s+store\b/i);
   assert.match(row.code, /coefplot\b/i);
@@ -164,7 +164,8 @@ test("a fixed-only close-outcome request retains the dedicated flat-loop variant
   });
 
   const fixed = resultById(result, "figure.event_study_flat_loop_fixed_group.v1");
-  assert.equal(fixed.auto_select_allowed, true);
+  assert.equal(fixed.rubric_classification, "reference_only");
+  assert.equal(fixed.auto_select_allowed, false);
   assert.match(fixed.code, /\byscale\s*\(/i);
   assert.match(fixed.code, /\bylabel\s*\(/i);
   assert.ok(!result.results.some((row) => row.label_id === "figure.event_study_flat_loop_mixed_axis.v1" && row.auto_select_allowed));
@@ -217,8 +218,10 @@ test("axis-profile metadata strictly selects automatic fixed or explicit mixed r
     assert.equal(result.event_study_axis_pattern_gate.status, scenario.status, scenario.name);
     assert.deepEqual(result.event_study_axis_pattern_gate.required_patterns, [scenario.pattern], scenario.name);
     assert.equal(result.event_outcome_cardinality_selection.decision_source, "event_study_axis_profile", scenario.name);
-    assert.deepEqual(result.results.filter((row) => row.auto_select_allowed).map((row) => row.label_id), [scenario.label], scenario.name);
+    assert.deepEqual(result.results.filter((row) => row.auto_select_allowed).map((row) => row.label_id), [], scenario.name);
     const selected = resultById(result, scenario.label);
+    assert.equal(selected.rubric_classification, "reference_only", scenario.name);
+    assert.equal(selected.auto_select_allowed, false, scenario.name);
     assert.equal(selected.transition_role, "alternative", scenario.name);
     assert.equal(selected.selector_taxonomy.artifact_roles.inputs[0], "ster", scenario.name);
     assert.deepEqual(selected.selector_taxonomy.artifact_roles.required_outputs, ["pdf"], scenario.name);
@@ -287,7 +290,9 @@ for (const scenario of [
 
     assert.equal(result.event_outcome_cardinality_selection.requested, scenario.requested);
     assert.equal(result.event_outcome_cardinality_selection.decision_source, "task_text");
-    assert.ok(resultById(result, scenario.selected).auto_select_allowed);
+    const selected = resultById(result, scenario.selected);
+    assert.equal(selected.rubric_classification, "reference_only");
+    assert.equal(selected.auto_select_allowed, false);
     assert.ok(result.event_outcome_cardinality_selection.excluded_label_ids.includes(scenario.excluded),
       JSON.stringify(result.event_outcome_cardinality_selection));
     assert.ok(!result.results.some((row) => row.label_id === scenario.excluded && row.auto_select_allowed),

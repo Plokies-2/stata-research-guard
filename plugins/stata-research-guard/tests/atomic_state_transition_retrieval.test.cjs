@@ -50,7 +50,7 @@ function resultById(result, labelId) {
   return row;
 }
 
-test("fixed e(sample) standardization retrieves one flat, component-complete loop", async (t) => {
+test("fixed e(sample) standardization remains a complete reference-only mechanics block", async (t) => {
   const client = new McpClient();
   t.after(() => client.close());
 
@@ -65,8 +65,8 @@ test("fixed e(sample) standardization retrieves one flat, component-complete loo
   });
 
   const row = resultById(result, "clean.standardize_fixed_esample_complete_components.v1");
-  assert.ok(["preferred_candidate", "conditional_candidate"].includes(row.rubric_classification));
-  assert.equal(row.auto_select_allowed, true);
+  assert.equal(row.rubric_classification, "reference_only");
+  assert.equal(row.auto_select_allowed, false);
   assert.match(row.code, /^\s*foreach\s+\w+\s+of\s+(?:local|global)\b/im);
   assert.match(row.code, /^\s*(?:quietly\s+)?summarize\s+`\w+'\s+if\s+\S+/im);
   assert.match(row.code, /^\s*assert\s+r\(N\)\s*>\s*1\b/im);

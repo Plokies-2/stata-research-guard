@@ -1141,7 +1141,7 @@
       "input_contract": [
         "named event-time coefficients with one declared design reference",
         "validated event window and estimation sample",
-        "native Stata coefficient names retained; a conventional treatment-time RHS writes one flat <level>bn.time#1.treatment term for every nonreference level, keeps the design reference absent, verifies every declared term in e(b), and retains any estimator-created actual omission as its raw token",
+        "native Stata coefficient names retained; a conventional treatment-time RHS uses compact selected-level i(numlist).time#1.treatment when readable or a flat level-specific no-base list for an irregular window, keeps the design reference absent, discovers exact raw e(b) tokens, and retains any estimator-created actual omission as its raw token",
         "sheet_group declared independently from axis_group",
         "an axis_group with fixed range and ticks only when directly comparing closely related outcomes; automatic axis otherwise"
       ],

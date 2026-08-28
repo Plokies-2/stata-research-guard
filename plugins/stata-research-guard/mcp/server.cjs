@@ -36,15 +36,12 @@ const STAGES = [
 const NEW_PROJECT_TREE = [
   "project/README.md",
   "project/report.md",
-  "project/00_master.do",
-  "project/do/00_config.do",
-  "project/do/10_prep_master.do",
-  "project/do/prep/",
-  "project/do/20_analysis_master.do",
-  "project/do/analysis/",
+  "project/masters.do",
+  "project/do/build_analysis_panel.do",
+  "project/do/build_summary.do",
+  "project/do/run_regressions.do",
   "project/do/main.log",
   "project/data/raw/ (read-only)",
-  "project/data/generated/",
   "project/data/final/",
   "project/ster/",
   "project/table/",
@@ -54,17 +51,14 @@ const NEW_PROJECT_TREE_MARKDOWN = [
   "project/",
   "├─ README.md",
   "├─ report.md",
-  "├─ 00_master.do",
+  "├─ masters.do",
   "├─ do/",
-  "│  ├─ 00_config.do",
-  "│  ├─ 10_prep_master.do",
-  "│  ├─ prep/",
-  "│  ├─ 20_analysis_master.do",
-  "│  ├─ analysis/",
+  "│  ├─ build_analysis_panel.do",
+  "│  ├─ build_summary.do",
+  "│  ├─ run_regressions.do",
   "│  └─ main.log",
   "├─ data/",
   "│  ├─ raw/",
-  "│  ├─ generated/",
   "│  └─ final/",
   "├─ ster/",
   "├─ table/",
@@ -74,7 +68,7 @@ const README_OUTLINE = [
   { section: "개요", required: true, contents: ["연구 질문과 분석 단위", "정본 entrypoint"] },
   { section: "새로 생성되는 파일 구조", required: true, contents: ["사용자 승인 전 제시한 실제 폴더·파일 tree", "각 폴더와 주요 파일의 역할"] },
   { section: "분석 변수 안내", required: true, contents: ["영구 저장되거나 분석에 쓰이는 신규 변수의 이름과 사용자용 설명", "분석 역할", "원자료 또는 생성 방식", "단위·관측단위", "기간·지리", "값 코딩과 결측 처리"] },
-  { section: "실행 방법", required: true, contents: ["00_master.do부터의 실행 순서", "사용자가 바꿔야 하는 경로 또는 입력값"] },
+  { section: "실행 방법", required: true, contents: ["masters.do부터의 실행 순서", "사용자가 바꿔야 하는 경로 또는 입력값"] },
   { section: "산출물과 생성 코드", required: true, contents: ["표·그림·.ster와 생성 do-file의 대응"] },
 ];
 const VARIABLE_DICTIONARY_COLUMNS = [
@@ -108,12 +102,12 @@ const INSTRUCTIONS = [
   "Use this server whenever generating or revising Stata research code.",
   "When explaining a Top 100 command or auditing example coverage, call inspect_top100_command_examples. It returns the full complexity-weighted set of materially distinct guide blocks for that command and keeps paper code context separate from exact reusable support. Continue to use resolve_transition_evidence for one concrete atomic authoring transition.",
   "For every substantive atomic transition, call resolve_transition_evidence first. It uses two non-competing evidence layers: guide mechanics are always returned when a matching guide card exists and are never auto-selectable, while deposited or genuinely independent research usage may supply at most one audited usage template. Guide mechanics explain syntax and state handling only; they never supply or resolve a sample, estimand, model, treatment, merge key, VCE, event axis, workbook sheet, or output placement. Keep search_labeled_checkpoints, search_stata_manual, and search_approved_patterns only for compatibility, diagnosis, or a deliberately broader inspection after the resolver reports general-rule implementation, mismatch, or missing coverage.",
-  "For every atomic implementation step, write only the statements required by the current concrete input-to-output contract. Do not design for future outcomes, sheets, callers, options, or reuse. Do not add unused syntax options, one-item loops, one-use programs, registries, dispatchers, optional branches, or generic interfaces. Repetition is abstracted only when that repetition exists in the current request and a direct block cannot provide the required interface.",
-  "Reserve globals for intentional cross-do-file contracts. Keep shared directory roots such as project, data, table, figures, and ster in setup when multiple stages consume them. Do not hoist a leaf filename such as summary_excel = $table/file.xlsx into setup when only one child do-file consumes it; declare it as a local in that child near its first use, or write the literal directly when it appears once and is clearer. A leaf file binding may remain global only when two or more do-files intentionally share that exact producer-consumer artifact contract. Put repeated regression-specific controls, sample restrictions, event-study RHS terms, fixed effects, clustering choices, and other single-consumer specification bindings in local macros inside the do-file that consumes them, close to the estimation block; keep a one-use list explicit in the command when clearer. Put same-file event selectors, display order, reference position, and notes in locals as well. Fingerprinted macro names are evidence to classify their scope, not a reason to preserve private or single-consumer globals. Format long variable, outcome, estimate, or option lists as meaningfully grouped multiline blocks: use whitespace to align comparable entries, indent continuation lines, and keep short lists on one line. Never align or reflow quoted labels, paths, or other text where whitespace is data. Use /// only when the command continues on the immediately following physical line, indent continuation lines beyond the command start, and omit /// from the final physical line.",
+  "For every atomic implementation step, prioritize correctness, point-of-use readability, artifact-based restartability, and only then brevity, DRY, or modularity. Write only the statements required by the current concrete input-to-output contract. Assume a reader may jump directly to the middle of a do-file: the active sample, transformation, model, and output must be understandable there without tracing a chain of aliases upward. Do not design for future outcomes, sheets, callers, options, or reuse. Do not add unused syntax options, one-item loops, one-use programs, registries, dispatchers, optional branches, or generic interfaces. Repetition is abstracted only when it exists in the current request and a direct block cannot provide the required interface.",
+  "Use a direct literal for a one-use binding and for the substantive core of a regression. Otherwise prefer a descriptive global defined or redefined in the consuming do-file; outcome-list globals belong in the regression do-file. Do not place regression controls, samples, event windows, fixed effects, clustering choices, or outcome lists in setup merely to shorten a later command, and never chain aliases such as controls_current -> controls_2019 -> controls_base. A regression has zero substantive reference depth: outcome, treatment or event window, controls, sample, fixed effects, weights, and VCE are visible in the estimation block. The only mechanical indirection normally allowed there is a single local outcome iterator in one flat outcome loop. Use local macros only when lexical scope is necessary, including loop iterators, program syntax or internal state, tempfile/tempvar/tempname handling, per-iteration scratch state, and immediately consumed r() or e() results. Shared directory-root globals may remain in masters.do; a durable leaf artifact global is justified only by a real producer-consumer contract and should otherwise be declared beside its consumer. Format long variable, outcome, estimate, or option lists as meaningfully grouped multiline blocks: align comparable entries, indent continuation lines, and keep short lists on one line. Never reflow quoted text where whitespace is data. Use /// only when the command continues on the next physical line and omit it from the final physical line.",
   "First decide whether the request needs code. Korean or English review, audit, inspection, assessment, diagnosis, analysis, explanation, and explicit no-change requests are review_only and load no writable code; caller checkpoints cannot override that write boundary. A separate unnegated write clause authorizes only its stated mutation scope. If code is needed, classify its state-transition footprint and resolve only that bounded footprint using bilingual aliases, exact command anchors, input/output state, and target input signature. Call resolve_transition_evidence first. Within the independent research-usage layer, use guide+usage_template only for one exact audited usage variant with no known profile contradiction and complete atomic-transition coverage. Otherwise use guide+general_rule or guide_informed_general_rule, and stop at selection_required whenever a substantive choice or material variant remains unresolved. Guide cards never compete with usage examples and never authorize template-mode reuse.",
   "Apply the general rules to every substantive transition, including template selection, binding, adaptation, and verification. Select a template only when permitted bindings leave the complete atomic transition intact. If frame, algorithm, control flow, interface, or output contract must change, stop calling the result a template: split at a natural state boundary when possible, otherwise use general_rule for the already-declared transition. A highest-ranked inspected candidate may be retained only as a nonbinding hint and may still be absolutely distant or incompatible. Record nearest_template_hint=<label_id|none>, template_status=<no_suitable_template|wrong_selection|project_specific_contract>, and hint_used=<borrowed command, ordering, state handling, or output idiom|none>. The general rules never supply an unresolved sample, estimand, merge key, treatment rule, model, event axis, sheet group, or output placement. Keep one readable final path and shallow indentation. Prefer one active loop; permit exactly two active loop levels only when both axes are plain named lists or numeric ranges, the same mechanical body is repeated, the reduction is substantial, and sample, estimand, specification, grouping, and output placement remain visible at the loop site. Loop depth three is always blocked. Do not use a registry, dispatcher, positional job string, one-use program, unused interface, dependency probe, manual event dummy, or coefficient reconstruction.",
   "Iteration is allowed; judge the final frozen source, not the number of drafts. Revise only from concrete lint, runtime, or output evidence. For a binding-only failure inside declared minimal edits, delete the affected span and cleanly re-render it from the same selected block. If frame, algorithm, control flow, interface, or output contract must change, discard that span and reselect a complete variant or use general_rule. Never stack patches, wrappers, compatibility branches, stale provenance residue, or dead helpers on already modified generated code. Before freezing, leave exactly one final implementation path per atomic transition.",
-  "Inspect the project structure read-only before planning any write. Preserve a compatible existing layout; use the default-style tree only for an explicitly new first build.",
+  "Inspect the project structure read-only before planning any write. Preserve a compatible existing layout during a partial repair. For a new applied-micro panel project or explicitly approved overhaul that actually needs preparation, summary, and estimation, default to masters.do plus do/build_analysis_panel.do, do/build_summary.do, and do/run_regressions.do, without numeric filename prefixes. Otherwise create only the requested stages and outputs. In the full spine, the panel builder completes all preprocessing shared by summaries and regressions, labels and checks the persistent variables, and saves one analysis-ready cleaned panel. Summary and regression do-files each reopen that panel independently; neither inherits an incidental in-memory dataset, estimate, frame, or matrix from a prior stage. Summary outputs may include Excel and descriptive PDFs such as bar charts. Regression outputs may include Excel, reusable .ster estimates, and event-study PDFs.",
   "Audit scope defaults to scope.mode reachable from scope.entrypoints or the selected top-level master. Only active files are fully linted and contribute to blocking status; inactive files are listed as informational discoveries until scope.mode all or project-relative scope.include_paths promotes them. Multiple plausible top-level masters produce a review finding asking for explicit scope.entrypoints.",
   "Before creating or modifying any project file or folder, show the exact folders to create, files to create, modify, move, rename, delete, or overwrite, and the entrypoint and execution command, then wait for explicit user approval.",
   "For an overhaul, present a display-ready proposed file tree, every new persistent analysis variable with its reader-facing description, and whether the root README.md will be created or amended. Put the approved tree and variable dictionary in that root README. If there are no new persistent variables, say so explicitly. Do not write until the user approves this preview, and show a revised preview if the plan changes.",
@@ -130,9 +124,11 @@ const INSTRUCTIONS = [
   "Derived canonical and template material remains implementation evidence but has independent_support false and must never be counted as independent external support. Deposited external packages are reported as external evidence; this tool does not perform target-relative package-lineage comparison, so independent_support must not be read as proof of target-lineage independence.",
   "Final Excel must preserve the complete raw outreg2 coefficient, standard-error, omitted/base, and note rows and may add only adjusted R-squared and the e(sample)-derived dependent-variable mean. Do not filter, relabel, or reconstruct rows. A workbook with one sheet uses direct outreg2 replace/append code with an explicit .xls target and without a program: quietly summarize the dependent variable if e(sample), meanonly, bind r(mean) to a local, and use only adjr2 addstat(Dep. variable mean, that local). Use the canonical outreg2_xlsx formatter with .xlsx only when one workbook requires two or more sheets. Apply the same sheet-cardinality rule to separately grouped 2SLS first-stage results, without extra diagnostic rows.",
   "Before final Excel assembly, trace outcome meaning, unit, transform, sample, estimand, estimate handoff, and specification order. Define semantic sheet_groups from reader-facing evidence, then give every sheet_plan placement an ordered readable estimate_names list. Do not create a helper for a one-sheet workbook: keep regressions and direct outreg2 replace/append calls visible, compute each mean on e(sample), save the active estimate directly when only one durable result is needed, and avoid unnecessary globals, store/restore cycles, scratch import/export, Mata formatting, and one-use programs. The canonical outreg2_xlsx formatter is reserved for two or more sheets in the same workbook.",
-  "Treat event-study axis_groups independently from Excel sheet_groups. Automatic vertical axes are the default. Use one fixed common vertical range only for a declared group of genuinely close, directly comparable outcomes with the same specification, sample comparison, coefficient unit, and transform. Keep the omitted base out of keep(), retain it as exactly one blank display-order slot, and derive the explicit x labels, zero reference position, and base-to-post policy boundary from that slot. For exactly one outcome use the direct no-loop figure variant; for two or more outcomes use one flat outcome loop. Put the comparison/sample legend below the axis, put the raw outcome variable name alone at the top, and export each PDF immediately after its graph.",
-  "A mixed event-study axis loop is an opt-in exception: rendering_mode single_flat_mixed_axis_loop requires exactly one evidenced fixed_group, one or more automatic groups, complete expected_plots coverage, and one explicit mixed_loop_binding. Select only a label carrying the same event_axis_pattern. Keep one flat outcome loop, clear the bound axis-options local on every iteration, set it only under direct fixed-outcome membership, and use that local in the graph. Never replace this with plot_jobs, a generic dispatcher, or positional research-spec strings.",
-  "When the caller has already approved one master log path and the exact ordered do-file paths, write only log using, flat direct do calls in that exact order, log close, and optionally the exact approved completion display. Immediately above every individual do call, write one Korean comment sentence that states the called do-file's project-local role. This prompt-only shell uses no template, ledger, or provenance marker. Do not infer stages, paths, or order; do not add loops, programs, registries, dispatchers, conditionals, positional strings, dependency probes, captured stage-failure handling, or alternate setup. Every approved do target must already exist. Lint a newly created master with lint_do_file role master and authoring_state new; modified master omissions are warnings and existing audits are not retroactively blocked. Existing master labels remain reference-only.",
+  "Treat event-study axis_groups independently from Excel sheet_groups. Automatic vertical axes are the default. Use one fixed common vertical range only for a declared group of genuinely close, directly comparable outcomes with the same specification, sample comparison, coefficient unit, and transform. Keep the omitted base out of keep(), retain it as exactly one blank display-order slot, and derive the explicit x labels, zero reference position, and base-to-post policy boundary from that slot. For exactly one outcome use a direct no-loop general-rule implementation; for two or more outcomes use one flat outcome loop. Put the comparison/sample legend below the axis, put the raw outcome variable name alone at the top, and export each PDF immediately after its graph.",
+  "A mixed event-study axis loop is an opt-in exception: rendering_mode single_flat_mixed_axis_loop requires exactly one evidenced fixed_group, one or more automatic groups, and complete expected_plots coverage. Treat any matching event-axis label and legacy mixed_loop_binding as reference-only mechanics evidence; implement the declared mixed-axis contract under the general rules. Keep one flat outcome loop, use a consuming-file descriptive global or a direct literal for the outcome and fixed-group lists, clear one per-iteration axis-options local every iteration, set it only under direct fixed-outcome membership, and use that local in the graph. Never replace this with plot_jobs, a generic dispatcher, or positional research-spec strings.",
+  "When the caller has approved one master log path and the exact ordered do-file paths, write only shared directory-root setup, log using, flat direct `do`, `run`, or `include` calls in that exact order, log close, and optionally the exact approved completion display. At the top of masters.do, list the exact persistent project Input files and Output files in comments. Immediately above every such call, keep one contiguous comment block containing exact `Input: ...`, exact `Output: ...` or `Output: none`, and one language-appropriate complete sentence stating the called file's project-local role. Folder-only paths and wildcard-only descriptions are not exact file contracts. This prompt-only shell uses no template, ledger, or provenance marker. Keep it fail-fast: never use capture, nostop, an opaque whole-target macro, or any literal or macro-expanded positional argument or option after a stage-call target; a shared directory-root macro is allowed only as a complete directory component inside an explicit literal leaf path such as `$do/stage.do`. Do not infer stages, paths, or order; do not add loops, programs, registries, dispatchers, conditionals, positional strings, dependency probes, captured stage-failure handling, or alternate setup. Every approved call target must already exist. Lint a newly created master with lint_do_file role master and authoring_state new; modified master omissions are warnings and existing audits are not retroactively blocked. Existing master labels remain reference-only.",
+  "Never use nostop on any do or run call, including a nested helper call. A non-master helper may retain documented positional arguments, while the master remains an exact target-only shell.",
+  "For a direct master call, exact `Output: active dataset` is allowed only as a transient in-memory handoff consumed by the immediately following call's exact `Input: active dataset`. Otherwise use exact persistent output files or `Output: none`; never list active dataset in the top-level persistent Project Inputs or Project Outputs inventory.",
   "Prefer explicit sequential blocks or one flat loop. Use a two-level loop only for plainly declared repeated axes when it materially removes an otherwise duplicated mechanical block without hiding a research choice. Block active loop depth three and positional strings that encode outcome, sample, specification, or graph jobs for later word parsing. Report braced structural depth four as a complexity warning on its separate scale; a longer directly readable block remains preferable to hidden research-spec dispatch.",
   "After Stata code creation or revision, apply report_policy required, optional, or disabled. Required records every selected template and substantive general_rule span in project-root report.md and passes authored_spans so confidently substantive changed lines are coverage-checked. Optional permits omission. Disabled, including an explicit no-report request, forbids creating or modifying report.md. require_report true is only a compatibility alias for required. Harmless primitives and untouched legacy code do not gain provenance requirements. Legacy general_rule_fallback rows and fallback_trigger fields are accepted only for read compatibility and are never emitted.",
   "For a new project call workflow_blueprint with project_mode new, then resolve_transition_evidence for every substantive atomic transition; use compatibility searches only when the resolver routes to general-rule implementation or diagnosis. Lint each authored do-file, apply the selected report_policy, and audit the active reachable workflow.",
@@ -141,7 +137,7 @@ const INSTRUCTIONS = [
   "For a source-isolated blind trial, use only the staged inputs, contract, installed plugin local data/manual/archive, and exposed stataResearchGuard calls. Do not use Browser, web search, external URLs, shell retrieval, external connectors, prior generated code, or evaluator answer assets. Source isolation protects evidence boundaries; it does not require template-only code. After local template and manual checks, harmless primitives and narrow general-rule implementations are allowed from the declared contract, with the rank-relative nearest inspected candidate retained only as a nonbinding hint and never presumed compatible. Stop only when a substantive research choice is unresolved, required input or execution capability is unavailable, or a hard safety/output contract would be violated.",
   "Native Stata python script with one declared .py path and optional args() is an explicit embedded-script integration, not a shell, winexec, bang, or inline Python process escape. Do not block it solely as process_escape, but verify its runtime exit evidence and concrete output effects separately. Continue to block arbitrary shell, winexec, Unix, bang, Java, Rscript, and inline Python escapes.",
   "For grouped summary statistics used by both a table and a figure, resolve the producer, Excel consumer, and figure consumer as separate atomic transitions unless their exact producer-consumer state is declared inseparable and bounded. Compose only source-backed deposited-paper usage atoms whose producer-consumer states connect, while consulting guide mechanics independently for each chosen command. Build one named canonical summary dataset with the complete declared statistic set and make both consumers read it. A one-off summarize or tabstat used only for inspection is harmless; a saved summary dataset, paper workbook, or figure is substantive.",
-  "Never manually generate treat_y2015, _y2015, or similar treatment-by-year event variables. For a conventional event-study RHS with a declared window, omit the design reference and list every nonreference level as a native level-specific no-base term such as 2015bn.time#1.treatment 2016bn.time#1.treatment; do not use plain i(<levels>), the invalid ibn(<levels>) form, or ## there. This does not prohibit a justified year##c.control heterogeneous slope inside absorb(). Runtime verification must find every declared nonreference level under the exact raw e(b) token Stata returns, including a retained first-term bn marker or an estimator-created o marker. Treat outreg2 output as the raw source of record and preserve native coefficient, standard-error, omitted/base, and note rows; if outreg2 emits 2024o.year#1o.treat2019, keep that exact row. Final Excel may only arrange placement and add adjusted R-squared plus dependent-variable mean. Event-study selectors must target native coefficient names.",
+  "Never manually generate treat_y2015, _y2015, or similar treatment-by-year event variables. For a conventional event-study RHS with a declared window, omit the design reference and use native single-# factor syntax. Prefer the compact selected-level form `i(2015/2018 2020/2024).year#1.treat2019` only when the displayed minimum-to-maximum support has exactly one omitted interior reference; for an irregular window or a boundary reference, use a flat level-by-level native no-base list such as 2015bn.year#1.treat2019. Stata categorical factor levels must be integers from 0 through 32,740: recode signed relative time to a valid nonnegative factor index and restore negative relative-time text only in graph labels. Do not use the invalid ibn(<levels>) form or ## on the event-study RHS. This does not prohibit a justified year##c.control heterogeneous slope inside absorb(). Runtime verification must inspect the exact raw e(b) names Stata returns rather than assuming that compact and level-by-level source forms spell coefficients identically. Treat outreg2 output as the raw source of record and preserve native coefficient, standard-error, omitted/base, and note rows, including an estimator-created row such as 2024o.year#1o.treat2019. Final Excel may only arrange placement and add adjusted R-squared plus dependent-variable mean. Event-study selectors must target observed native coefficient names.",
   "When an existing Dropbox or replication output is the declared baseline, compare every contracted outcome, sample, and specification for coefficient, standard error, and base/omitted status. A representative regression is only a smoke test. Keep the baseline immutable and write comparison evidence separately.",
   "For an existing project audit first.",
   "Never claim journal certification: results are aligned with practices observed in a reviewed replication corpus.",
@@ -305,8 +301,340 @@ function unique(values) {
   return [...new Set(values)];
 }
 
+function normalizeCommandMetadata(value) {
+  let command = String(value).trim();
+  let hasCapture = false;
+  const modifier = /^(qui(?:e(?:t(?:l(?:y)?)?)?)?|n(?:o(?:i(?:s(?:i(?:l(?:y)?)?)?)?)?)?|cap(?:t(?:u(?:r(?:e)?)?)?)?)\b\s*:?[ \t]*/i;
+  const colonPrefix = /^(?:mi\s+est(?:i(?:m(?:a(?:t(?:e)?)?)?)?)?|bootstrap|jackknife|statsby|svy|by(?:s(?:o(?:r(?:t)?)?)?)?|collect|frame|bayesboot|simulate|bayes|fmm|fp|mfp|vers(?:i(?:o(?:n)?)?)?|xi|stepwise|nestreg|rolling|permute)\b/i;
+  const unquotedColon = (text) => {
+    let inDoubleQuote = false;
+    for (let index = 0; index < text.length; index += 1) {
+      if (text[index] === '"') inDoubleQuote = !inDoubleQuote;
+      if (text[index] === ":" && !inDoubleQuote) return index;
+    }
+    return -1;
+  };
+  while (true) {
+    const modifierMatch = command.match(modifier);
+    if (modifierMatch) {
+      if (/^cap(?:t(?:u(?:r(?:e)?)?)?)?$/i.test(modifierMatch[1])) hasCapture = true;
+      command = command.slice(modifierMatch[0].length).trim();
+      continue;
+    }
+    if (!colonPrefix.test(command)) break;
+    const colon = unquotedColon(command);
+    if (colon < 0) break;
+    command = command.slice(colon + 1).trim();
+  }
+  return { command, has_capture: hasCapture };
+}
+
 function normalizeCommand(value) {
-  return String(value).replace(/^(?:(?:capture|cap|quietly|qui|noisily|noi)\s+)+/i, "");
+  return normalizeCommandMetadata(value).command;
+}
+
+const MASTER_CALL_START = /^(?:do|ru(?:n)?|include)\s+/i;
+const MASTER_CALL_TARGET = /^(?:do|ru(?:n)?|include)\s+(?:"([^"]+)"|([^\s,]+))/i;
+const MASTER_CALL_EXACT = /^(?:do|ru(?:n)?|include)\s+(?:"[^"]+"|'[^']+'|[^\s]+)\s*$/i;
+
+function isMasterCall(command) {
+  return MASTER_CALL_START.test(String(command || ""));
+}
+
+function matchMasterCallTarget(command) {
+  return String(command || "").match(MASTER_CALL_TARGET);
+}
+
+function stataOptionTail(command) {
+  const text = String(command || "");
+  let inDoubleQuote = false;
+  let macroDepth = 0;
+  let parenthesisDepth = 0;
+  for (let index = 0; index < text.length; index += 1) {
+    const character = text[index];
+    if (character === '"') {
+      inDoubleQuote = !inDoubleQuote;
+      continue;
+    }
+    if (inDoubleQuote) continue;
+    if (character === "`") {
+      macroDepth += 1;
+      continue;
+    }
+    if (character === "'" && macroDepth > 0) {
+      macroDepth -= 1;
+      continue;
+    }
+    if (macroDepth > 0) continue;
+    if (character === "(") {
+      parenthesisDepth += 1;
+      continue;
+    }
+    if (character === ")" && parenthesisDepth > 0) {
+      parenthesisDepth -= 1;
+      continue;
+    }
+    if (character === "," && parenthesisDepth === 0) return text.slice(index + 1);
+  }
+  return "";
+}
+
+function expandKnownStataMacros(value, bindings) {
+  return String(value || "")
+    .replace(/`([A-Za-z_][A-Za-z0-9_]*)'/g, (full, name) => bindings.get(`local:${name.toLowerCase()}`) ?? full)
+    .replace(/\$\{?([A-Za-z_][A-Za-z0-9_]*)\}?/g, (full, name) => bindings.get(`global:${name.toLowerCase()}`) ?? full);
+}
+
+function literalStataMacroBinding(rawValue, bindings) {
+  let value = expandKnownStataMacros(rawValue, bindings).trim();
+  if (!value || value.startsWith(":") || /[$`]/.test(value)) return null;
+  const unwrapSingleLiteral = (text) => {
+    const doubleQuoted = text.match(/^"([^"]*)"$/);
+    if (doubleQuoted) return doubleQuoted[1];
+    const singleQuoted = text.match(/^'([^']*)'$/);
+    return singleQuoted ? singleQuoted[1] : null;
+  };
+  if (value.startsWith("=")) {
+    const expression = value.slice(1).trim();
+    const literalExpression = unwrapSingleLiteral(expression);
+    if (literalExpression === null) return null;
+    value = literalExpression;
+  } else if (/^["']/.test(value)) {
+    const literal = unwrapSingleLiteral(value);
+    if (literal === null) return null;
+    value = literal;
+  }
+  if (!value || /[$`]/.test(value)) return null;
+  return value;
+}
+
+const STATA_GLOBAL_COMMAND = "gl(?:o(?:b(?:a(?:l)?)?)?)?";
+const STATA_LOCAL_COMMAND = "loc(?:a(?:l)?)?";
+const STATA_MACRO_COMMAND = `(?:${STATA_GLOBAL_COMMAND}|${STATA_LOCAL_COMMAND})`;
+const STATA_PROGRAM_COMMAND = "pr(?:o(?:g(?:r(?:a(?:m)?)?)?)?)?";
+const STATA_DEFINE_COMMAND = "de(?:f(?:i(?:n(?:e)?)?)?)?";
+
+function parseStataMacroDefinition(command) {
+  const definition = String(command || "").match(new RegExp(`^(${STATA_MACRO_COMMAND})\\s+([A-Za-z_][A-Za-z0-9_]*)(?:(\\s*=[\\s\\S]*)|\\s+([\\s\\S]+))$`, "i"));
+  if (!definition) return null;
+  return {
+    scope: /^gl/i.test(definition[1]) ? "global" : "local",
+    name: definition[2].toLowerCase(),
+    raw_value: definition[3] ?? definition[4],
+  };
+}
+
+function parseStataProgramDefinition(command) {
+  const match = String(command || "").match(new RegExp(`^${STATA_PROGRAM_COMMAND}\\s+(?:(${STATA_DEFINE_COMMAND})\\s+)?([A-Za-z_][A-Za-z0-9_]*)\\b(?:\\s*,[\\s\\S]*)?$`, "i"));
+  if (!match) return null;
+  const name = match[2].toLowerCase();
+  if (!match[1] && ["dir", "drop", "list", "plugin"].includes(name)) return null;
+  return { name };
+}
+
+function parseStataProgramDrop(command) {
+  const match = String(command || "").match(new RegExp(`^${STATA_PROGRAM_COMMAND}\\s+drop\\s+([A-Za-z_][A-Za-z0-9_]*(?:\\s+[A-Za-z_][A-Za-z0-9_]*)*)\\s*$`, "i"));
+  if (!match) return null;
+  const names = match[1].toLowerCase().split(/\s+/);
+  if (names.length === 1 && names[0] === "_all") return { all: true, all_ado: false, names: [] };
+  if (names.length === 1 && names[0] === "_allado") return { all: false, all_ado: true, names: [] };
+  if (names.some((name) => name === "_all" || name === "_allado")) return null;
+  return { all: false, all_ado: false, names };
+}
+
+function applyStataProgramDrop(programs, operation) {
+  if (!operation) return;
+  if (operation.all) {
+    programs.clear();
+    return;
+  }
+  // This registry contains only programs defined by the audited do-files.
+  // `_allado` targets loaded ado programs, which are not represented here.
+  if (operation.all_ado) return;
+  for (const name of operation.names) programs.delete(name);
+}
+
+function stataSyntaxGeneratedLocals(command) {
+  const syntax = String(command || "").match(/^syntax\b([\s\S]*)$/i);
+  if (!syntax) return [];
+  const generated = new Set();
+  for (const match of syntax[1].matchAll(/\b(anything|namelist|varlist|newvarlist|using|if|in|weight)\b(?:\s*\(\s*name\s*=\s*([A-Za-z_][A-Za-z0-9_]*)[^)]*\))?/gi)) {
+    generated.add((match[2] || match[1]).toLowerCase());
+  }
+  const optionSection = syntax[1].split(",").slice(1).join(",");
+  for (const match of optionSection.matchAll(/\b([A-Za-z_][A-Za-z0-9_]*)\b(?:\s*\([^)]*\))?/g)) generated.add(match[1].toLowerCase());
+  return [...generated];
+}
+
+function masterCallNostopFindings(content, role, authoringState = "existing_audit", macroEnvironment = null) {
+  const strictMaster = /^(?:master|entrypoint|new_master)$/i.test(String(role || ""));
+  const severity = authoringState === "new" ? "error" : "warning";
+  const outerBindings = new Map(macroEnvironment instanceof Map ? macroEnvironment : macroEnvironment?.resolved || []);
+  const outerInvalidated = new Set([
+    ...(macroEnvironment?.invalidated || []),
+    ...[...(macroEnvironment?.ambiguous || [])].map((name) => `global:${String(name).toLowerCase()}`),
+  ]);
+  const frames = [{ bindings: outerBindings, invalidated: outerInvalidated }];
+  const findings = [];
+  const programs = new Map();
+  const programBodies = [];
+  const executableEntries = [];
+  let programDefinition = null;
+  for (const entry of activeLogicalEntries(content)) {
+    const command = normalizeCommand(entry.text.trim());
+    const definitionStart = parseStataProgramDefinition(command);
+    if (!programDefinition && definitionStart) {
+      programDefinition = { name: definitionStart.name, entries: [], line: entry.line };
+      continue;
+    }
+    if (programDefinition) {
+      if (/^end\s*$/i.test(command)) {
+        executableEntries.push({ program_definition: programDefinition });
+        programBodies.push(programDefinition.entries);
+        programDefinition = null;
+      } else {
+        programDefinition.entries.push(entry);
+      }
+      continue;
+    }
+    executableEntries.push(entry);
+  }
+  const executeEntries = (entries, frame, programTrail = new Set(), safetyOnly = false) => {
+  for (const entry of entries) {
+    if (entry.program_definition) {
+      programs.set(entry.program_definition.name, entry.program_definition.entries);
+      continue;
+    }
+    const command = normalizeCommand(entry.text.trim());
+    const definition = parseStataMacroDefinition(command);
+    if (definition) {
+      const key = `${definition.scope}:${definition.name}`;
+      frame.bindings.delete(key);
+      frame.invalidated.add(key);
+      const literal = literalStataMacroBinding(definition.raw_value, frame.bindings);
+      if (literal !== null) {
+        frame.bindings.set(key, literal);
+        frame.invalidated.delete(key);
+      }
+      continue;
+    }
+    const args = command.match(/^args\s+([\s\S]+)$/i);
+    if (args) {
+      for (const name of args[1].split(/\s+/).filter((value) => /^[A-Za-z_][A-Za-z0-9_]*$/.test(value))) {
+        const key = `local:${name.toLowerCase()}`;
+        frame.bindings.delete(key);
+        frame.invalidated.add(key);
+      }
+      continue;
+    }
+    const syntaxLocals = stataSyntaxGeneratedLocals(command);
+    if (syntaxLocals.length) {
+      for (const name of syntaxLocals) {
+        const key = `local:${name}`;
+        frame.bindings.delete(key);
+        frame.invalidated.add(key);
+      }
+      continue;
+    }
+    const droppedProgram = parseStataProgramDrop(command);
+    if (droppedProgram) {
+      applyStataProgramDrop(programs, droppedProgram);
+      continue;
+    }
+    const invokedProgram = command.match(/^([A-Za-z_][A-Za-z0-9_]*)\b/i)?.[1]?.toLowerCase();
+    if (!safetyOnly && invokedProgram && programs.has(invokedProgram) && !programTrail.has(invokedProgram)) {
+      const bodyEntries = programs.get(invokedProgram);
+      const programFrame = {
+        bindings: new Map([...frame.bindings].filter(([key]) => key.startsWith("global:"))),
+        invalidated: new Set([...frame.invalidated].filter((key) => key.startsWith("global:"))),
+      };
+      const nextProgramTrail = new Set(programTrail);
+      nextProgramTrail.add(invokedProgram);
+      executeEntries(bodyEntries, programFrame, nextProgramTrail, false);
+      for (const key of [...frame.bindings.keys()].filter((key) => key.startsWith("global:"))) frame.bindings.delete(key);
+      for (const key of [...frame.invalidated].filter((key) => key.startsWith("global:"))) frame.invalidated.delete(key);
+      for (const [key, value] of programFrame.bindings) if (key.startsWith("global:")) frame.bindings.set(key, value);
+      for (const key of programFrame.invalidated) if (key.startsWith("global:")) frame.invalidated.add(key);
+      continue;
+    }
+    const target = matchMasterCallTarget(command);
+    if (!target) continue;
+    const remainder = command.slice(target[0].length);
+    const rows = [];
+    const targetText = target[1] ?? target[2] ?? "";
+    const targetContainsMacro = /[$`]/.test(targetText);
+    const simpleRootMacros = [...targetText.matchAll(/\$\{?[A-Za-z_][A-Za-z0-9_]*\}?|`[A-Za-z_][A-Za-z0-9_]*'/g)];
+    const targetWithoutSimpleRoots = targetText.replace(/\$\{?[A-Za-z_][A-Za-z0-9_]*\}?|`[A-Za-z_][A-Za-z0-9_]*'/g, "");
+    const everyMacroIsDirectoryComponent = simpleRootMacros.length > 0 && simpleRootMacros.every((match) => {
+      const before = match.index === 0 ? "" : targetText[match.index - 1];
+      const after = targetText[match.index + match[0].length] || "";
+      return (!before || /[\\/]/.test(before)) && /[\\/]/.test(after);
+    });
+    const lastSeparator = Math.max(targetText.lastIndexOf("/"), targetText.lastIndexOf("\\"));
+    const leaf = lastSeparator >= 0 ? targetText.slice(lastSeparator + 1) : "";
+    const explicitLeafAfterRoot = everyMacroIsDirectoryComponent
+      && !/[$`]/.test(targetWithoutSimpleRoots)
+      && Boolean(leaf)
+      && !/[$`]/.test(leaf);
+    const opaqueTargetMacro = targetContainsMacro && !explicitLeafAfterRoot;
+    const hiddenTailMacro = /\$\{?[A-Za-z_][A-Za-z0-9_]*\}?|`[^'\r\n]+'/.test(remainder);
+    const hiddenOptionMacro = /\$\{?[A-Za-z_][A-Za-z0-9_]*\}?|`[^'\r\n]+'/.test(stataOptionTail(command));
+    const expandedCommand = expandKnownStataMacros(command, frame.bindings);
+    const literalNostop = /\bnostop\b/i.test(stataOptionTail(expandedCommand));
+    const referencedTailKeys = [
+      ...[...remainder.matchAll(/\$\{?([A-Za-z_][A-Za-z0-9_]*)\}?/g)].map((match) => `global:${match[1].toLowerCase()}`),
+      ...[...remainder.matchAll(/`([A-Za-z_][A-Za-z0-9_]*)'/g)].map((match) => `local:${match[1].toLowerCase()}`),
+    ];
+    const opaqueTailLocal = [...remainder.matchAll(/`([^'\r\n]+)'/g)]
+      .some((match) => !/^[A-Za-z_][A-Za-z0-9_]*$/.test(match[1]));
+    const dynamicTailMacro = opaqueTailLocal || referencedTailKeys.some((key) => frame.invalidated.has(key));
+    const strictHere = strictMaster && programTrail.size === 0 && !safetyOnly;
+    if (!safetyOnly && (opaqueTargetMacro || (strictHere && hiddenTailMacro))) {
+      rows.push(finding(
+        "error",
+        "master_call_option_macro_indirection",
+        entry.line,
+        "master 호출의 전체 unquoted target 또는 target 뒤 argument/option이 macro 뒤에 숨겨져 오류 전파 계약을 검사할 수 없습니다.",
+        "directory-root macro는 `\"$do/stage.do\"`처럼 명시적 leaf path 안에서만 쓰고, 전체 target과 target 뒤 argument/option은 literal로 직접 쓰세요.",
+        "researcher_style_reference",
+      ));
+    } else if (!safetyOnly && (hiddenOptionMacro || dynamicTailMacro)) {
+      rows.push(finding(
+        "error",
+        "master_call_option_macro_indirection",
+        entry.line,
+        "do/run option tail이 macro 뒤에 숨겨져 nostop 금지 계약을 검사할 수 없습니다.",
+        "Helper의 positional argument는 comma 앞에 둘 수 있지만, comma 뒤 option은 literal로 직접 쓰고 nostop은 사용하지 마세요.",
+        "researcher_style_reference",
+      ));
+    } else if (literalNostop) {
+      rows.push(finding(
+        severity,
+        "master_call_nostop",
+        entry.line,
+        "do/run 호출이 nostop으로 하위 단계의 nonzero 오류 뒤에도 계속 실행됩니다.",
+        "nostop을 제거해 하위 단계 오류가 호출자 실행을 즉시 중단하도록 하세요.",
+        "stata_manual",
+        "https://www.stata.com/manuals/ddo.pdf",
+      ));
+    } else if (strictHere && remainder.trim()) {
+      rows.push(finding(
+        severity,
+        "master_call_not_direct",
+        entry.line,
+        "master stage call의 target 뒤에 positional argument 또는 option이 있어 승인된 direct 호출 계약을 벗어납니다.",
+        "master에서는 target만 직접 호출하세요. Argument가 필요한 wrapper는 master 밖의 명시적 helper interface로 분리하세요.",
+        "researcher_style_reference",
+      ));
+    }
+    findings.push(...rows);
+  }
+  };
+  executeEntries(executableEntries, frames[0]);
+  for (const body of programBodies) {
+    executeEntries(body, { bindings: new Map(), invalidated: new Set() }, new Set(), true);
+  }
+  return findings.filter((row, index, rows) => rows.findIndex((candidate) => candidate.rule === row.rule && candidate.line === row.line && candidate.message === row.message) === index);
 }
 
 function stripComments(content) {
@@ -314,22 +642,34 @@ function stripComments(content) {
   const active = [];
   let inBlock = false;
   for (let i = 0; i < lines.length; i += 1) {
-    let line = lines[i];
-    let work = line;
-    if (inBlock) {
-      const end = work.indexOf("*/");
-      if (end < 0) continue;
-      inBlock = false;
-      work = work.slice(end + 2);
-    }
-    const start = work.indexOf("/*");
-    if (start >= 0) {
-      const end = work.indexOf("*/", start + 2);
-      if (end >= 0) work = work.slice(0, start) + work.slice(end + 2);
-      else {
-        work = work.slice(0, start);
-        inBlock = true;
+    const line = lines[i];
+    let work = "";
+    let inDoubleQuote = false;
+    for (let index = 0; index < line.length; index += 1) {
+      const character = line[index];
+      const next = line[index + 1] || "";
+      if (inBlock) {
+        if (character === "*" && next === "/") {
+          inBlock = false;
+          index += 1;
+        }
+        continue;
       }
+      if (character === '"') {
+        inDoubleQuote = !inDoubleQuote;
+        work += character;
+        continue;
+      }
+      if (!inDoubleQuote && character === "/" && next === "*") {
+        inBlock = true;
+        index += 1;
+        continue;
+      }
+      if (!inDoubleQuote && character === "/" && next === "/") {
+        if (line[index + 2] === "/") work += "///";
+        break;
+      }
+      work += character;
     }
     const trimmed = work.trimStart();
     if (!trimmed || trimmed.startsWith("*") || trimmed.startsWith("//")) continue;
@@ -357,6 +697,19 @@ function activeLogicalEntries(content) {
   return logical;
 }
 
+function delimiterDirectiveFindings(content, authoringState = "existing_audit") {
+  return stripComments(content)
+    .filter((row) => /^#delimit\b/i.test(row.trimmed))
+    .map((row) => finding(
+      "error",
+      "nonstandard_command_delimiter",
+      row.line,
+      "#delimit가 line-oriented 안전·가독성 검사를 우회할 수 있는 세미콜론 명령 흐름을 만듭니다.",
+      "#delimit를 제거하고 각 명령을 직접 쓰되 긴 명령은 /// continuation으로만 이어 쓰세요.",
+      "researcher_style_reference",
+    ));
+}
+
 function activeLogicalLines(content) {
   return activeLogicalEntries(content).map((entry) => entry.text);
 }
@@ -366,12 +719,12 @@ function outreg2HelperMultiplicity(content) {
   const lines = activeLogicalLines(content);
   for (const line of lines) {
     const command = normalizeCommand(line.trim());
-    const match = command.match(/^(?:global|local)\s+([A-Za-z_][A-Za-z0-9_]*)\s+(.+)$/i);
-    if (!match) continue;
-    let value = match[2].trim();
+    const assignment = parseStataMacroDefinition(command);
+    if (!assignment) continue;
+    let value = String(assignment.raw_value || "").trim();
     const quoted = value.match(/^(["'])([\s\S]*)\1$/);
     if (quoted) value = quoted[2];
-    if (!/[`$]/.test(value)) macros.set(match[1].toLowerCase(), value);
+    if (!/[`$]/.test(value)) macros.set(assignment.name, value);
   }
   const resolve = (raw) => {
     let value = String(raw || "").trim().replace(/^(["'])([\s\S]*)\1$/, "$2");
@@ -429,10 +782,10 @@ function directOutreg2StatisticLines(content) {
     const meanMatch = command.match(/\baddstat\s*\(\s*Dep\.\s*variable\s*mean\s*,\s*`([A-Za-z_][A-Za-z0-9_]*)'\s*\)/i);
     if (!meanMatch) continue;
     const localName = meanMatch[1].toLowerCase();
-    const estimatorPattern = /^(?:reg|regress|areg|xtreg|reghdfe|ivregress|ivreg2|ivreghdfe|ppmlhdfe|poisson|logit|logistic|probit)\b/i;
+    const estimatorPattern = /^(?:reg|regress|areg|qreg|tobit|xtreg|reghdfe|ivregress|ivreg2|ivreghdfe|ppmlhdfe|poisson|logit|logistic|probit)\b/i;
     let localIndex = -1;
     for (let prior = index - 1; prior >= 0; prior -= 1) {
-      if (new RegExp(`^local\\s+${localName}\\s*=\\s*r\\(mean\\)\\s*$`, "i").test(entries[prior].command)) {
+      if (new RegExp(`^${STATA_LOCAL_COMMAND}\\s+${localName}\\s*=\\s*r\\(mean\\)\\s*$`, "i").test(entries[prior].command)) {
         localIndex = prior;
         break;
       }
@@ -442,7 +795,7 @@ function directOutreg2StatisticLines(content) {
     let sampleMeanIndex = -1;
     let sampleMean = null;
     for (let prior = localIndex - 1; prior >= 0; prior -= 1) {
-      sampleMean = entries[prior].command.match(/^(?:sum|summarize)\s+([A-Za-z_][A-Za-z0-9_]*)\s+if\s+e\(sample\)\s*,[\s\S]*\bmeanonly\b/i);
+      sampleMean = entries[prior].command.match(/^(?:sum|summarize)\s+(`?[A-Za-z_][A-Za-z0-9_]*'?)\s+if\s+e\(sample\)\s*,[\s\S]*\bmeanonly\b/i);
       if (sampleMean) {
         sampleMeanIndex = prior;
         break;
@@ -451,8 +804,10 @@ function directOutreg2StatisticLines(content) {
     }
     if (sampleMeanIndex < 0 || entries.slice(sampleMeanIndex + 1, index).some((row) => estimatorPattern.test(row.command))) continue;
     const estimator = entries.slice(0, sampleMeanIndex).reverse().find((row) => estimatorPattern.test(row.command));
-    const dependentVariable = estimator?.command.match(/^(?:reg|regress|areg|xtreg|reghdfe|ivregress(?:\s+\w+)?|ivreg2|ivreghdfe|ppmlhdfe|poisson|logit|logistic|probit)\s+([A-Za-z_][A-Za-z0-9_]*)\b/i)?.[1];
-    if (!dependentVariable || dependentVariable.toLowerCase() !== sampleMean[1].toLowerCase()) continue;
+    const dependentVariable = estimator?.command.match(/^(?:reg|regress|areg|qreg|tobit|xtreg|reghdfe|ivregress(?:\s+\w+)?|ivreg2|ivreghdfe|ppmlhdfe|poisson|logit|logistic|probit)\s+(`?[A-Za-z_][A-Za-z0-9_]*'?)/i)?.[1];
+    const normalizedDependent = String(dependentVariable || "").replace(/^`|'+$/g, "").toLowerCase();
+    const normalizedMean = String(sampleMean[1] || "").replace(/^`|'+$/g, "").toLowerCase();
+    if (!normalizedDependent || normalizedDependent !== normalizedMean) continue;
     allowed.add(entries[index].line);
   }
   return allowed;
@@ -471,7 +826,7 @@ function canonicalOutreg2ScratchContract(content) {
   }));
   const definitions = entries
     .map((entry, index) => ({ entry, index }))
-    .filter(({ entry }) => /^program\s+define\s+outreg2_xlsx\b/i.test(entry.command));
+    .filter(({ entry }) => parseStataProgramDefinition(entry.command)?.name === "outreg2_xlsx");
   if (!definitions.length) return { applies: false, valid: false, allowedEraseLines: new Set(), findings: [] };
 
   const findings = [];
@@ -485,11 +840,11 @@ function canonicalOutreg2ScratchContract(content) {
     }
   }
   const body = entries.slice(start, end + 1);
-  const localScratch = /^local\s+scratch\s+"\$table\/__outreg2_`sheet'"\s*$/i;
+  const localScratch = new RegExp("^" + STATA_LOCAL_COMMAND + "\\s+scratch\\s+\"\\$table/__outreg2_`sheet'\"\\s*$", "i");
   const outreg2Scratch = /^outreg2\s+using\s+"`scratch'"/i;
   const importScratch = /^import\s+delimited\s+using\s+"`scratch'\.txt"/i;
   const bareEraseScratch = /^erase\s+"`scratch'\.txt"\s*$/i;
-  const confirmScratch = /^(?:(?:capture|cap)\s+)?confirm\s+file\s+"`scratch'\.txt"\s*$/i;
+  const confirmScratch = /^(?:(?:cap(?:t(?:u(?:r(?:e)?)?)?)?)\s+)?confirm\s+file\s+"`scratch'\.txt"\s*$/i;
   const temporaryScratch = /^tempfile\s+scratch\b/i;
   if (!body.some((entry) => localScratch.test(entry.command))) findings.push({ contract: "named_table_scratch_local", line: definitions[0].entry.line });
   if (body.some((entry) => temporaryScratch.test(entry.command))) findings.push({ contract: "tempfile_scratch_not_allowed", line: body.find((entry) => temporaryScratch.test(entry.command)).line });
@@ -534,7 +889,7 @@ function invalidEreturnYmeanLines(content) {
   const programs = [];
   for (const entry of activeLogicalEntries(content)) {
     const command = normalizeCommand(entry.text.trim());
-    if (/^program\s+define\b/i.test(command)) {
+    if (parseStataProgramDefinition(command)) {
       programs.push({ eclass: /,\s*eclass\b/i.test(command) });
       continue;
     }
@@ -705,7 +1060,7 @@ function syntheticEventAliasFindings(content) {
     const constructed = knownAliases.filter((alias) => new RegExp(`(?<![A-Za-z0-9_])${alias}(?![A-Za-z0-9_])`, "i").test(String(value || "")));
     return [...new Set([...conventional, ...constructed])];
   };
-  const estimation = /^(?:(?:quietly|qui|noisily|noi|capture|cap)\s+)*(?:reg|regress|areg|xtreg|reghdfe|ivreg2|ivreghdfe|rdrobust|csdid|did_imputation|eventstudyinteract)\b/i;
+  const estimation = /^(?:(?:qui(?:e(?:t(?:l(?:y)?)?)?)?|n(?:o(?:i(?:s(?:i(?:l(?:y)?)?)?)?)?)?|cap(?:t(?:u(?:r(?:e)?)?)?)?)\s+)*(?:reg|regress|areg|xtreg|reghdfe|ivreg2|ivreghdfe|rdrobust|csdid|did_imputation|eventstudyinteract)\b/i;
   const interactionSignal = /\b(?:treat(?:ed)?[A-Za-z0-9_]*|event[A-Za-z0-9_]*|did[A-Za-z0-9_]*|post[A-Za-z0-9_]*|policy[A-Za-z0-9_]*|quota[A-Za-z0-9_]*|lead[A-Za-z0-9_]*|lag[A-Za-z0-9_]*|cohort[A-Za-z0-9_]*|shock[A-Za-z0-9_]*|expos(?:ed|ure)?[A-Za-z0-9_]*)\b/i;
 
   for (const row of statements) {
@@ -730,7 +1085,7 @@ function syntheticEventAliasFindings(content) {
     const aliases = aliasTokens(row.text);
     if (!aliases.length) continue;
     if (estimation.test(row.text)) add(row.line, `회귀식이 synthetic event term ${aliases.join(", ")}을 사용합니다.`);
-    const macroAssignment = row.text.match(/^(?:local|global)\s+([A-Za-z_][A-Za-z0-9_]*)\b/i);
+    const macroAssignment = row.text.match(new RegExp(`^${STATA_MACRO_COMMAND}\\s+([A-Za-z_][A-Za-z0-9_]*)\\b`, "i"));
     if (macroAssignment && /event|lead|lag|pre|post/i.test(macroAssignment[1])) {
       add(row.line, `event-term macro가 synthetic name ${aliases.join(", ")}을 나열합니다.`);
     }
@@ -742,7 +1097,7 @@ function syntheticEventAliasFindings(content) {
     if (metadata.knownEventTerm) continue;
     const usedAsCoefficient = statements.some((row) => estimation.test(row.text)
       && new RegExp(`\\s${alias}(?=\\s|,|$)`, "i").test(` ${row.text}`)
-      && !new RegExp(`^\\s*(?:(?:quietly|qui|noisily|noi|capture|cap)\\s+)*(?:reg|regress|areg|xtreg|reghdfe|ivreg2|ivreghdfe)\\s+${alias}(?=\\s|,|$)`, "i").test(row.text));
+      && !new RegExp(`^\\s*(?:(?:qui(?:e(?:t(?:l(?:y)?)?)?)?|n(?:o(?:i(?:s(?:i(?:l(?:y)?)?)?)?)?)?|cap(?:t(?:u(?:r(?:e)?)?)?)?)\\s+)*(?:reg|regress|areg|xtreg|reghdfe|ivreg2|ivreghdfe)\\s+${alias}(?=\\s|,|$)`, "i").test(row.text));
     const usedAsEventSelector = statements.some((row) => (/^(?:coefplot|event_plot|csdid_plot)\b/i.test(row.text) || /\b(?:keep|order|rename)\s*\(/i.test(row.text))
       && new RegExp(`(?<![A-Za-z0-9_])${alias}(?![A-Za-z0-9_])`, "i").test(row.text));
     if (usedAsCoefficient || usedAsEventSelector) {
@@ -754,9 +1109,9 @@ function syntheticEventAliasFindings(content) {
 
 function encodedResearchDispatcherFindings(content) {
   const statements = logicalStatements(content);
-  const registries = statements.filter((row) => /^(?:global|local)\s+[A-Za-z_][A-Za-z0-9_]*(?:jobs?|dispatch|registry|spec_jobs)[A-Za-z0-9_]*\b/i.test(row.text));
+  const registries = statements.filter((row) => new RegExp(`^${STATA_MACRO_COMMAND}\\s+[A-Za-z_][A-Za-z0-9_]*(?:jobs?|dispatch|registry|spec_jobs)[A-Za-z0-9_]*\\b`, "i").test(row.text));
   const dispatcherLoops = statements.filter((row) => /^(?:foreach|forv(?:al(?:ues)?)?)\b[^\r\n]*(?:jobs?|dispatch|registry|spec_jobs)/i.test(row.text));
-  const positionalParsers = statements.filter((row) => /^(?:local|global)\s+[A-Za-z_][A-Za-z0-9_]*\s*:\s*word\s+\d+\s+of\b/i.test(row.text));
+  const positionalParsers = statements.filter((row) => new RegExp(`^${STATA_MACRO_COMMAND}\\s+[A-Za-z_][A-Za-z0-9_]*\\s*:\\s*word\\s+\\d+\\s+of\\b`, "i").test(row.text));
   if (!registries.length || !dispatcherLoops.length || positionalParsers.length < 3) return [];
   const item = finding(
     "error",
@@ -772,9 +1127,35 @@ function encodedResearchDispatcherFindings(content) {
   return [item];
 }
 
+function normalizeEstimationInvocation(value) {
+  let command = normalizeCommand(String(value || "").trim());
+  command = command.replace(/^(?:(?:qui(?:e(?:t(?:l(?:y)?)?)?)?|n(?:o(?:i(?:s(?:i(?:l(?:y)?)?)?)?)?)?|cap(?:t(?:u(?:r(?:e)?)?)?)?)\s+)+/i, "");
+  const estimatorStart = /^(?:(?:qui(?:e(?:t(?:l(?:y)?)?)?)?|n(?:o(?:i(?:s(?:i(?:l(?:y)?)?)?)?)?)?|cap(?:t(?:u(?:r(?:e)?)?)?)?)\s+)*(?:reg|regr|regre|regres|regress|areg|qreg|tobit|intreg|heckman|xtreg|xtivreg|xtivreg2|reghdfe|ivregress|ivreg2|ivreghdfe|logit|logistic|clogit|xtlogit|probit|xtprobit|poisson|xtpoisson|nbreg|glm|fracreg|mixed|sem|gsem|cmp|ppmlhdfe|rdrobust|csdid|did_imputation|eventstudyinteract)\b/i;
+  const prefixStart = /^(?:qui(?:e(?:t(?:l(?:y)?)?)?)?|n(?:o(?:i(?:s(?:i(?:l(?:y)?)?)?)?)?)?|cap(?:t(?:u(?:r(?:e)?)?)?)?|mi\s+est(?:i(?:m(?:a(?:t(?:e)?)?)?)?)?|bootstrap|jackknife|statsby|svy|by(?:sort)?|collect|frame|bayesboot|simulate|bayes|fmm|fp|mfp|version|xi|stepwise|nestreg|rolling|permute)\b/i;
+  const unquotedColon = (text) => {
+    let quote = null;
+    for (let index = 0; index < text.length; index += 1) {
+      const character = text[index];
+      if (character === '"') quote = quote ? null : '"';
+      if (character === ":" && !quote) return index;
+    }
+    return -1;
+  };
+  while (prefixStart.test(command)) {
+    const colon = unquotedColon(command);
+    if (colon < 0) break;
+    const suffix = command.slice(colon + 1).trim();
+    if (!estimatorStart.test(suffix) && !prefixStart.test(suffix)) break;
+    command = suffix.replace(/^(?:(?:qui(?:e(?:t(?:l(?:y)?)?)?)?|n(?:o(?:i(?:s(?:i(?:l(?:y)?)?)?)?)?)?|cap(?:t(?:u(?:r(?:e)?)?)?)?)\s+)+/i, "");
+  }
+  command = command.replace(/^(?:(?:qui(?:e(?:t(?:l(?:y)?)?)?)?|n(?:o(?:i(?:s(?:i(?:l(?:y)?)?)?)?)?)?|cap(?:t(?:u(?:r(?:e)?)?)?)?)\s+)+/i, "");
+  return command;
+}
+
 function eventInteractionScope(row, estimation, estimationMacros) {
-  if (estimation.test(row.text)) return row.text.split(",", 1)[0];
-  const macro = row.text.match(/^(?:local|global)\s+([A-Za-z_][A-Za-z0-9_]*)\s+(?:"([^"]*)"|'([^']*)'|(.+))\s*$/i);
+  const command = normalizeEstimationInvocation(row.text);
+  if (estimation.test(command)) return command.split(",", 1)[0];
+  const macro = row.text.match(new RegExp(`^${STATA_MACRO_COMMAND}\\s+([A-Za-z_][A-Za-z0-9_]*)\\s+(?:"([^"]*)"|'([^']*)'|(.+))\\s*$`, "i"));
   if (!macro) return null;
   if (!estimationMacros.has(macro[1].toLowerCase())) return null;
   return macro[2] ?? macro[3] ?? macro[4];
@@ -783,8 +1164,9 @@ function eventInteractionScope(row, estimation, estimationMacros) {
 function macrosUsedByEstimation(content, estimation) {
   const names = new Set();
   for (const row of logicalStatements(content)) {
-    if (!estimation.test(row.text)) continue;
-    const rhs = row.text.split(",", 1)[0];
+    const command = normalizeEstimationInvocation(row.text);
+    if (!estimation.test(command)) continue;
+    const rhs = command.split(",", 1)[0];
     for (const pattern of [/\$\{?([A-Za-z_][A-Za-z0-9_]*)\}?/g, /`([A-Za-z_][A-Za-z0-9_]*)'/g]) {
       pattern.lastIndex = 0;
       let match;
@@ -796,10 +1178,10 @@ function macrosUsedByEstimation(content, estimation) {
 
 function eventStudyDoubleHashFindings(content) {
   const findings = [];
-  const estimation = /^(?:(?:quietly|qui|noisily|noi|capture|cap)\s+)*(?:reg|regress|areg|xtreg|xtivreg|xtivreg2|reghdfe|ivreg2|ivreghdfe)\b/i;
+  const estimation = /^(?:reg|regr|regre|regres|regress|areg|qreg|tobit|intreg|heckman|xtreg|xtivreg|xtivreg2|reghdfe|ivregress|ivreg2|ivreghdfe|logit|logistic|clogit|xtlogit|probit|xtprobit|poisson|xtpoisson|nbreg|glm|fracreg|mixed|sem|gsem|cmp|ppmlhdfe|rdrobust|csdid|did_imputation|eventstudyinteract)\b/i;
   const estimationMacros = macrosUsedByEstimation(content, estimation);
-  const interaction = /((?:(?:ibn|i)\([^)]*\)|\d+(?:bn|b|o)?|(?:ibn|bn|i|ib|b|o)\d*)\.)([A-Za-z_][A-Za-z0-9_]*)\s*##\s*((?:(?:ibn|i)\([^)]*\)|\d+(?:bn|b|o)?|(?:ibn|bn|i|ib|b|o)\d*)\.)([A-Za-z_][A-Za-z0-9_]*)/gi;
-  const timeLike = /^(?:year|yr|time|period|wave|event(?:_?(?:time|index|year))?)$/i;
+  const interaction = /(?<![A-Za-z0-9_.])((?:(?:(?:ibn|i)\([^)]*\)|\d+(?:bn|b|o)?|(?:ibn|bn|i|ib|b|o)\d*|c)\.)?([A-Za-z_][A-Za-z0-9_]*))\s*##\s*((?:(?:(?:ibn|i)\([^)]*\)|\d+(?:bn|b|o)?|(?:ibn|bn|i|ib|b|o)\d*|c)\.)?([A-Za-z_][A-Za-z0-9_]*))/gi;
+  const timeLike = /^(?:year|yr|time|period|wave|rel(?:ative)?_?time|event(?:_?(?:time|index|year))?)$/i;
   const treatmentLike = /^(?:treat(?:ed)?[A-Za-z0-9_]*|eligible[A-Za-z0-9_]*|expos(?:ed|ure)[A-Za-z0-9_]*|policy[A-Za-z0-9_]*|post[A-Za-z0-9_]*|did[A-Za-z0-9_]*|quota[A-Za-z0-9_]*|shock[A-Za-z0-9_]*)$/i;
 
   for (const row of logicalStatements(content)) {
@@ -810,13 +1192,14 @@ function eventStudyDoubleHashFindings(content) {
     while ((match = interaction.exec(rhs))) {
       const left = match[2];
       const right = match[4];
+      if (/^c\./i.test(match[1]) || /^c\./i.test(match[3])) continue;
       if (!((timeLike.test(left) && treatmentLike.test(right)) || (treatmentLike.test(left) && timeLike.test(right)))) continue;
       findings.push(finding(
         "error",
         "event_study_double_hash_main_effects",
         row.line,
         `event-study RHS가 ${match[0]}에 ##를 사용해 불필요한 factor main-effect row를 만듭니다.`,
-        "설계 기준기간을 빼고 2015bn.time#1.treatment 2016bn.time#1.treatment처럼 비기준 수준을 native 단일 # 항으로 나열하세요. absorb() 안의 별도 heterogeneous slope는 이 규칙의 대상이 아닙니다.",
+        "최소·최대 사이에 정확히 하나의 omitted interior reference가 있으면 `i(2015/2018 2020/2024).time#1.treatment` 같은 compact selected-level 단일 # 문법을 쓰고, irregular window 또는 boundary reference이면 level별 native no-base 항을 사용하세요. absorb() 안의 별도 heterogeneous slope는 이 규칙의 대상이 아닙니다.",
         "researcher_style_reference",
       ));
       break;
@@ -827,20 +1210,26 @@ function eventStudyDoubleHashFindings(content) {
 
 function eventStudySingleHashBaseFindings(content) {
   const findings = [];
-  const estimation = /^(?:(?:quietly|qui|noisily|noi|capture|cap)\s+)*(?:reg|regress|areg|xtreg|xtivreg|xtivreg2|reghdfe|ivreg2|ivreghdfe)\b/i;
+  const estimation = /^(?:reg|regr|regre|regres|regress|areg|qreg|tobit|intreg|heckman|xtreg|xtivreg|xtivreg2|reghdfe|ivregress|ivreg2|ivreghdfe|logit|logistic|clogit|xtlogit|probit|xtprobit|poisson|xtpoisson|nbreg|glm|fracreg|mixed|sem|gsem|cmp|ppmlhdfe|rdrobust|csdid|did_imputation|eventstudyinteract)\b/i;
   const estimationMacros = macrosUsedByEstimation(content, estimation);
-  const timeLike = /^(?:year|yr|time|period|wave|event(?:_?(?:time|index|year))?)$/i;
+  const timeLike = /^(?:year|yr|time|period|wave|rel(?:ative)?_?time|event(?:_?(?:time|index|year))?)$/i;
   const treatmentLike = /^(?:treat(?:ed)?[A-Za-z0-9_]*|eligible[A-Za-z0-9_]*|expos(?:ed|ure)[A-Za-z0-9_]*|policy[A-Za-z0-9_]*|post[A-Za-z0-9_]*|did[A-Za-z0-9_]*|quota[A-Za-z0-9_]*|shock[A-Za-z0-9_]*)$/i;
-  const factor = /((?:(?:ibn|i)\([^)]*\)|\d+(?:bn|b|o)?|(?:ibn|bn|i|ib|b|o)\d*)\.([A-Za-z_][A-Za-z0-9_]*))\s*#\s*((?:(?:ibn|i)\([^)]*\)|\d+(?:bn|b|o)?|(?:ibn|bn|i|ib|b|o)\d*)\.([A-Za-z_][A-Za-z0-9_]*))/gi;
+  const factor = /(?<![A-Za-z0-9_.])((?:(?:(?:ibn|i)\([^)]*\)|\d+(?:bn|b|o)?|(?:ibn|bn|i|ib|b|o)\d*|c)\.)?([A-Za-z_][A-Za-z0-9_]*))\s*#\s*((?:(?:(?:ibn|i)\([^)]*\)|\d+(?:bn|b|o)?|(?:ibn|bn|i|ib|b|o)\d*|c)\.)?([A-Za-z_][A-Za-z0-9_]*))/gi;
+  const negativeEventLevel = /(?:-\d+(?:bn|b|o)?\.(?:year|yr|time|period|wave|rel(?:ative)?_?time|event(?:_?(?:time|index|year))?)\s*#\s*(?:[01]|i)\.(?:treat(?:ed)?|eligible|exposed|policy|post|did|quota|shock)[A-Za-z0-9_]*|(?:[01]|i)\.(?:treat(?:ed)?|eligible|exposed|policy|post|did|quota|shock)[A-Za-z0-9_]*\s*#\s*-\d+(?:bn|b|o)?\.(?:year|yr|time|period|wave|rel(?:ative)?_?time|event(?:_?(?:time|index|year))?))/i;
 
   for (const row of logicalStatements(content)) {
     const rhs = eventInteractionScope(row, estimation, estimationMacros);
     if (!rhs) continue;
+    if (negativeEventLevel.test(rhs)) {
+      findings.push(finding("error", "event_study_negative_factor_level_invalid", row.line, "Stata factor-variable categorical level은 nonnegative integer여야 하므로 음수 event level을 native factor token으로 쓸 수 없습니다.", "event time을 nonnegative integer index로 recode하고 그래프 xlabel에서 음수 상대시점 라벨을 표시하세요.", "stata_manual", "https://www.stata.com/manuals/u11.pdf"));
+      continue;
+    }
     factor.lastIndex = 0;
     let match;
     while ((match = factor.exec(rhs))) {
       const timeName = match[2];
       const treatmentName = match[4];
+      if (/^c\./i.test(match[1]) || /^c\./i.test(match[3])) continue;
       const leftIsTime = timeLike.test(timeName);
       const rightIsTime = timeLike.test(treatmentName);
       const leftIsTreatment = treatmentLike.test(timeName);
@@ -849,13 +1238,82 @@ function eventStudySingleHashBaseFindings(content) {
       const timeFactor = leftIsTime ? match[1] : match[3];
       const hasLevelSpecificNoBase = /^\d+bn\./i.test(timeFactor);
       const hasFullSupportExplicitBase = /^ib\d+\./i.test(timeFactor);
+      const compact = timeFactor.match(/^i\(([^)]*)\)\./i);
+      if (compact) {
+        const tokens = compact[1].trim().split(/\s+/).filter(Boolean);
+        const validTokens = tokens.length > 0 && tokens.length <= 200 && tokens.every((token) => /^\d+(?:\/\d+)?$/.test(token));
+        if (!validTokens) {
+          findings.push(finding(
+            "error",
+            "event_study_compact_numlist_invalid",
+            row.line,
+            `event-study compact selected-level 목록 ${compact[1]}을 정수 또는 정수 범위 numlist로 검증할 수 없습니다.`,
+            "`i(2015/2018 2020/2024).year#1.treat2019`처럼 명시적인 정수 수준과 범위만 쓰고 실제 raw e(b) 이름을 runtime에서 확인하세요.",
+            "researcher_style_reference",
+          ));
+          break;
+        }
+        const selected = new Set();
+        let cumulativeLevels = 0;
+        for (const token of tokens) {
+          const [startText, endText] = token.split("/");
+          const start = Number(startText);
+          const end = endText === undefined ? start : Number(endText);
+          if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end)) {
+            findings.push(finding("error", "event_study_compact_numlist_invalid", row.line, "event-study compact numlist에 JavaScript와 Stata lint가 안전하게 열거할 수 없는 정수가 있습니다.", "안전한 유한 정수 수준만 직접 쓰세요.", "researcher_style_reference"));
+            break;
+          }
+          if (start > 32740 || end > 32740) {
+            findings.push(finding("error", "event_study_factor_level_out_of_range", row.line, "Stata factor-variable categorical level은 0부터 32,740까지만 허용됩니다.", "event-time factor index를 0..32740 범위의 정수로 recode하고 원래 상대시점은 그래프 라벨로 복원하세요.", "stata_manual", "https://www.stata.com/manuals/u11.pdf"));
+            break;
+          }
+          cumulativeLevels += Math.abs(end - start) + 1;
+          if (cumulativeLevels > 20000) {
+            findings.push(finding("error", "event_study_compact_numlist_invalid", row.line, "event-study compact numlist가 중복을 포함해 너무 많은 수준을 열거합니다.", "중복 없는 짧은 event window만 직접 쓰세요.", "researcher_style_reference"));
+            break;
+          }
+          const step = start <= end ? 1 : -1;
+          if (Math.abs(end - start) > 10000) {
+            findings.push(finding("error", "event_study_compact_numlist_invalid", row.line, "event-study compact numlist 범위가 비정상적으로 큽니다.", "설계된 event window의 유한한 정수 수준만 직접 쓰세요.", "researcher_style_reference"));
+            break;
+          }
+          for (let value = start; ; value += step) {
+            selected.add(value);
+            if (value === end) break;
+          }
+        }
+        const ordered = [...selected].sort((a, b) => a - b);
+        if (!ordered.length || ordered.length > 10001 || ordered.at(-1) - ordered[0] > 10000) {
+          findings.push(finding("error", "event_study_compact_numlist_invalid", row.line, "event-study compact numlist의 전체 수준 범위가 안전한 lint 한도를 넘습니다.", "설계된 event window의 유한한 수준만 직접 쓰고, irregular window이면 level-specific native 항을 사용하세요.", "researcher_style_reference"));
+          break;
+        }
+        const missingInterior = [];
+        for (let value = ordered[0]; value <= ordered.at(-1); value += 1) if (!selected.has(value)) missingInterior.push(value);
+        if (missingInterior.length !== 1) {
+          findings.push(finding(
+            "error",
+            "event_study_compact_reference_not_unique",
+            row.line,
+            `compact selected-level RHS의 최소·최대 수준 사이에서 빠진 기준기간 후보가 ${missingInterior.length}개라 하나의 설계 기준기간을 확인할 수 없습니다.`,
+            "omitted reference가 최소·최대 사이에 있으면 정확히 그 interior reference 하나만 selected-level 목록에서 빼세요. irregular window 또는 boundary reference이면 level-specific native no-base 항을 직접 쓰세요.",
+            "researcher_style_reference",
+          ));
+          break;
+        }
+        continue;
+      }
+      const explicitLevel = timeFactor.match(/^(?:ib(\d+)|(\d+)(?:bn|b|o)?)\./i);
+      if (explicitLevel && Number(explicitLevel[1] || explicitLevel[2]) > 32740) {
+        findings.push(finding("error", "event_study_factor_level_out_of_range", row.line, "Stata factor-variable categorical level은 0부터 32,740까지만 허용됩니다.", "event-time factor index를 0..32740 범위의 정수로 recode하고 원래 상대시점은 그래프 라벨로 복원하세요.", "stata_manual", "https://www.stata.com/manuals/u11.pdf"));
+        break;
+      }
       if (hasLevelSpecificNoBase || hasFullSupportExplicitBase) continue;
       findings.push(finding(
         "error",
         "event_study_single_hash_base_not_explicit",
         row.line,
         `event-study RHS가 ${match[0]}에 단일 #를 쓰지만 비기준 수준 전체를 보존하는 기준기간 문법이 없습니다.`,
-        "지정한 창은 2015bn.year#1.treat 2016bn.year#1.treat처럼 설계 기준기간을 뺀 level별 native 항으로 쓰세요. 전체 관측 support가 곧 event window일 때만 ib2019.year#1.treat를 사용할 수 있습니다.",
+        "최소·최대 사이에 exactly one omitted interior reference가 있는 창은 `i(2015/2018 2020/2024).year#1.treat`처럼 compact selected-level 문법으로 쓰고, irregular window 또는 boundary reference이면 설계 기준기간을 뺀 level별 native no-base 항으로 쓰세요. 전체 관측 support가 곧 event window일 때만 ib2019.year#1.treat를 사용할 수 있습니다.",
         "researcher_style_reference",
       ));
       break;
@@ -873,7 +1331,7 @@ function isSafeBindingStatement(raw) {
   if (/^confirm\s+(?:variable|numeric\s+variable|string\s+variable)\s+[A-Za-z_][A-Za-z0-9_]*\s*$/i.test(command)) return true;
   if (/^(?:describe|codebook|count)\b[^{}]*$/i.test(command)) return true;
   if (/^assert\s+[^{}]+$/i.test(command)) return true;
-  if (/^global\s+[A-Za-z_][A-Za-z0-9_]*\s+(?:"(?:[^"\s]+[\\/][^"]+)"|'(?:[^'\s]+[\\/][^']+)')\s*$/i.test(command)) return true;
+  if (new RegExp(`^${STATA_GLOBAL_COMMAND}\\s+[A-Za-z_][A-Za-z0-9_]*\\s+(?:"(?:[^"\\s]+[\\\\/][^"]+)"|'(?:[^'\\s]+[\\\\/][^']+)')\\s*$`, "i").test(command)) return true;
   if (/^encode\s+[A-Za-z_][A-Za-z0-9_]*\s*,\s*gen(?:erate)?\s*\(\s*[A-Za-z_][A-Za-z0-9_]*\s*\)\s*$/i.test(command)) return true;
   if (/^label\s+var(?:iable)?\s+[A-Za-z_][A-Za-z0-9_]*\s+(?:"[^"]*"|'[^']*')\s*$/i.test(command)) return true;
   if (/^graph\s+save\s+(?:"[^"]+\.gph"|'[^']+\.gph'|[^\s,]+\.gph)\s*,\s*replace\s*$/i.test(command)) return true;
@@ -881,8 +1339,8 @@ function isSafeBindingStatement(raw) {
   if (/^(?:sum|summarize)\s+[A-Za-z_][A-Za-z0-9_]*(?:\s+[A-Za-z_][A-Za-z0-9_]*)*\s*$/i.test(command)) return true;
   if (/^tabstat\s+[A-Za-z_][A-Za-z0-9_]*(?:\s+[A-Za-z_][A-Za-z0-9_]*)*(?:\s*,\s*(?:stat|statistics)\s*\([^)]*\)\s*)?$/i.test(command)) return true;
   if (/^estimates\s+clear\s*$/i.test(command)) return true;
-  if (/^do\s+(?:"[^"]+"|'[^']+'|[^\s]+)\s*$/i.test(command)) return true;
-  if (/^(?:(?:capture|cap)\s+)?log\s+close(?:\s+_all)?\s*$/i.test(command)) return true;
+  if (MASTER_CALL_EXACT.test(command)) return true;
+  if (/^(?:(?:cap(?:t(?:u(?:r(?:e)?)?)?)?)\s+)?log\s+close(?:\s+_all)?\s*$/i.test(command)) return true;
   if (/^log\s+using\s+(?:"[^"]+"|'[^']+'|[^\s,]+)\s*,\s*(?:replace|append)\s*$/i.test(command)) return true;
   return false;
 }
@@ -907,8 +1365,8 @@ function directFallbackMarkerFindings(content) {
 function danglingLineContinuationFindings(content) {
   const lines = String(content || "").split(/\r?\n/);
   const findings = [];
-  const commandStart = /^(?:(?:capture|cap|quietly|qui|noisily|noi)\s+)*(?:version|set|use|sysuse|import|append|merge|reshape|generate|gen|replace|recode|egen|clonevar|encode|decode|destring|tostring|rename|label|format|keep|drop|sort|order|collapse|contract|statsby|confirm|assert|describe|codebook|count|summarize|sum|tabstat|isid|xtset|regress|reg|areg|xtreg|reghdfe|ivreg2|ivreghdfe|rdrobust|csdid|did_imputation|eventstudyinteract|estadd|estimates|outreg2|putexcel|collect|coefplot|event_plot|csdid_plot|graph|twoway|save|log|local|global|matrix|scalar|postfile|post|postclose|foreach|forvalues|while|if|else|program|syntax|preserve|restore|erase|display|exit|do|run|include)\b/i;
-  const qualifierCommand = /^(?:(?:capture|cap|quietly|qui|noisily|noi)\s+)*(?:append|merge|reshape|generate|gen|replace|recode|egen|keep|drop|sort|collapse|contract|statsby|assert|count|summarize|sum|tabstat|regress|reg|areg|xtreg|reghdfe|ivreg2|ivreghdfe|rdrobust|csdid|did_imputation|eventstudyinteract|outreg2|coefplot|twoway)\b/i;
+  const commandStart = /^(?:(?:cap(?:t(?:u(?:r(?:e)?)?)?)?|qui(?:e(?:t(?:l(?:y)?)?)?)?|n(?:o(?:i(?:s(?:i(?:l(?:y)?)?)?)?)?)?)\s+)*(?:version|set|use|sysuse|import|append|merge|reshape|generate|gen|replace|recode|egen|clonevar|encode|decode|destring|tostring|rename|label|format|keep|drop|sort|order|collapse|contract|statsby|confirm|assert|describe|codebook|count|summarize|sum|tabstat|isid|xtset|regress|reg|areg|xtreg|reghdfe|ivreg2|ivreghdfe|rdrobust|csdid|did_imputation|eventstudyinteract|estadd|estimates|outreg2|putexcel|collect|coefplot|event_plot|csdid_plot|graph|twoway|save|log|loc(?:a(?:l)?)?|gl(?:o(?:b(?:a(?:l)?)?)?)?|matrix|scalar|postfile|post|postclose|foreach|forvalues|while|if|else|pr(?:o(?:g(?:r(?:a(?:m)?)?)?)?)?|syntax|preserve|restore|erase|display|exit|do|ru(?:n)?|include)\b/i;
+  const qualifierCommand = /^(?:(?:cap(?:t(?:u(?:r(?:e)?)?)?)?|qui(?:e(?:t(?:l(?:y)?)?)?)?|n(?:o(?:i(?:s(?:i(?:l(?:y)?)?)?)?)?)?)\s+)*(?:append|merge|reshape|generate|gen|replace|recode|egen|keep|drop|sort|collapse|contract|statsby|assert|count|summarize|sum|tabstat|regress|reg|areg|xtreg|reghdfe|ivreg2|ivreghdfe|rdrobust|csdid|did_imputation|eventstudyinteract|outreg2|coefplot|twoway)\b/i;
   for (let index = 0; index < lines.length; index += 1) {
     if (!/\/\/\/\s*$/.test(lines[index])) continue;
     let contextStart = index;
@@ -937,10 +1395,10 @@ function danglingLineContinuationFindings(content) {
     const qualifierContinues = qualifierCommand.test(commandContext)
       && /^(?:if|in)\b/i.test(next)
       && !/\{\s*$/.test(next);
-    const outreg2OptionContinues = /^(?:(?:capture|cap|quietly|qui|noisily|noi)\s+)*outreg2\b/i.test(commandContext)
+    const outreg2OptionContinues = /^(?:(?:cap(?:t(?:u(?:r(?:e)?)?)?)?|qui(?:e(?:t(?:l(?:y)?)?)?)?|n(?:o(?:i(?:s(?:i(?:l(?:y)?)?)?)?)?)?)\s+)*outreg2\b/i.test(commandContext)
       && /^(?:replace|append)\b/i.test(next)
       && !/=/.test(next);
-    const coefplotOptionContinues = /^(?:(?:capture|cap|quietly|qui|noisily|noi)\s+)*coefplot\b/i.test(commandContext)
+    const coefplotOptionContinues = /^(?:(?:cap(?:t(?:u(?:r(?:e)?)?)?)?|qui(?:e(?:t(?:l(?:y)?)?)?)?|n(?:o(?:i(?:s(?:i(?:l(?:y)?)?)?)?)?)?)\s+)*coefplot\b/i.test(commandContext)
       && /^(?:keep|order)\s*\(/i.test(next);
     const indentedOptionContinues = /,\s*$/.test(commandContext) && nextIndent > rootIndent;
     const alignedUnknownCommand = !commandStart.test(next)
@@ -962,18 +1420,19 @@ function danglingLineContinuationFindings(content) {
   return findings;
 }
 
-function eventStudyPresentationFindings(content) {
+function eventStudyPresentationFindings(content, authoringState = "existing_audit") {
   const statements = logicalStatements(content);
   const findings = [];
   const rawTitle = /\btitle\s*\(\s*"?(`?[A-Za-z_][A-Za-z0-9_]*'?)"?\s*(?:,\s*[^)]*(?:\([^)]*\)[^)]*)*)?\)/i;
   const bottomLegend = /\blegend\s*\([\s\S]*\bposition\s*\(\s*6\s*\)/i;
   const eventSignal = /\b(?:event|event_time|eventtime|rel_time|relative_time|pretrend|lead|lag|pre|post)[_A-Za-z0-9]*/i;
-  const eventSelector = /(?:\*\.(?:year|yr|time|period|wave|event(?:_?(?:time|index|year))?)#(?:[01]|i)\.(?:treat(?:ed)?|eligible|exposed|policy|post|did|quota|shock)[A-Za-z0-9_]*|(?:event|lead|lag|pretrend|rel_time|event_time)[A-Za-z0-9_]*\s*#)/i;
+  const eventSelector = /(?:(?:\*|-?\d+(?:bn|b|o)?)\.(?:year|yr|time|period|wave|rel(?:ative)?_?time|event(?:_?(?:time|index|year))?)#(?:[01]|i)\.(?:treat(?:ed)?[A-Za-z0-9_]*|eligible[A-Za-z0-9_]*|exposed[A-Za-z0-9_]*|policy[A-Za-z0-9_]*|post[A-Za-z0-9_]*|did[A-Za-z0-9_]*|quota[A-Za-z0-9_]*|shock[A-Za-z0-9_]*)|(?:event|lead|lag|pretrend|rel_time|relative_time|event_time)[A-Za-z0-9_]*\s*#)/i;
 
   for (let index = 0; index < statements.length; index += 1) {
     const row = statements[index];
+    const reverseEventTokens = row.text.match(/(?:[01]|i)\.(?:treat(?:ed)?[A-Za-z0-9_]*|eligible[A-Za-z0-9_]*|exposed[A-Za-z0-9_]*|policy[A-Za-z0-9_]*|post[A-Za-z0-9_]*|did[A-Za-z0-9_]*|quota[A-Za-z0-9_]*|shock[A-Za-z0-9_]*)#-?\d+(?:bn|b|o)?\.(?:year|yr|time|period|wave|rel(?:ative)?_?time|event(?:_?(?:time|index|year))?)/gi) || [];
     const isEventGraph = /^(?:event_plot|csdid_plot)\b/i.test(row.text)
-      || (/^coefplot\b/i.test(row.text) && (eventSignal.test(row.text) || eventSelector.test(row.text)));
+      || (/^coefplot\b/i.test(row.text) && (eventSignal.test(row.text) || eventSelector.test(row.text) || reverseEventTokens.length >= 2));
     if (!isEventGraph) continue;
     const title = row.text.match(rawTitle);
     if (!title || !/^(?:`[A-Za-z_][A-Za-z0-9_]*'|[A-Za-z_][A-Za-z0-9_]*)$/.test(title[1])) {
@@ -981,6 +1440,43 @@ function eventStudyPresentationFindings(content) {
     }
     if (!bottomLegend.test(row.text) || /\blegend\s*\(\s*off\s*\)/i.test(row.text)) {
       findings.push(finding("error", "event_study_bottom_legend", row.line, "event-study comparison/sample legend가 축 하단에 있지 않습니다.", "legend(position(6) rows(1))을 사용하고 비교 대상을 읽을 수 있는 label을 유지하세요.", "researcher_style_reference"));
+    }
+    if (authoringState !== "existing_audit" && /^coefplot\b/i.test(row.text)) {
+      const keep = row.text.match(/\bkeep\s*\(([^)]*)\)/i)?.[1] || "";
+      if (!keep || /[*?]/.test(keep) || /\$|`[A-Za-z_][A-Za-z0-9_]*'/.test(keep)) {
+        findings.push(finding("error", "event_study_selector_not_exact", row.line, "새 event-study graph의 keep()이 observed raw e(b) token의 literal exact 목록이 아닙니다.", "runtime에서 관측한 raw e(b) token을 wildcard나 macro 없이 keep()에 직접 쓰세요.", "researcher_style_reference"));
+      }
+      const order = row.text.match(/\border\s*\(([^)]*)\)/i)?.[1] || "";
+      const keepTokens = keep.trim().split(/\s+/).filter(Boolean);
+      const orderTokens = order.trim().split(/\s+/).filter(Boolean);
+      const blankSlots = orderTokens.filter((token) => token === ".").length;
+      if (blankSlots !== 1) {
+        findings.push(finding("error", "event_study_reference_slot_missing", row.line, "새 event-study graph의 order()에 omitted reference를 나타내는 blank `.` slot이 정확히 하나 있지 않습니다.", "exact raw coefficient order 사이의 설계 기준 위치에 `.` 하나를 넣으세요.", "researcher_style_reference"));
+      }
+      if (!/\bvertical\b/i.test(row.text)) {
+        findings.push(finding("error", "event_study_vertical_missing", row.line, "새 event-study graph가 event positions를 x축에 두는 vertical orientation을 명시하지 않았습니다.", "coefplot 옵션에 `vertical`을 직접 쓰고 x labels, reference point, policy boundary를 같은 x좌표계에 두세요.", "researcher_style_reference"));
+      }
+      const blankPosition = orderTokens.indexOf(".") + 1;
+      const orderedCoefficients = orderTokens.filter((token) => token !== ".");
+      const selectorOrderConsistent = blankSlots === 1
+        && keepTokens.length === orderedCoefficients.length
+        && keepTokens.every((token, position) => token === orderedCoefficients[position]);
+      if (!selectorOrderConsistent) {
+        findings.push(finding("error", "event_study_selector_order_mismatch", row.line, "event-study order()의 nonblank raw coefficient 목록이 keep()과 정확히 일치하지 않습니다.", "keep()의 observed raw e(b) token을 같은 목록과 순서로 order()에 쓰고 omitted reference 위치에만 `.` 하나를 삽입하세요.", "researcher_style_reference"));
+      }
+      const xlabel = row.text.match(/\bxlabel\s*\(([^)]*)\)/i)?.[1] || "";
+      const xlabelPositions = [...xlabel.matchAll(/(-?\d+(?:\.\d+)?)\s+"[^"]*"/g)].map((match) => Number(match[1]));
+      const expectedPositions = orderTokens.map((_token, position) => position + 1);
+      const scatterPosition = Number(row.text.match(/\baddplot\s*\(\s*scatteri\s+0\s+(-?\d+(?:\.\d+)?)/i)?.[1]);
+      const policyPosition = Number(row.text.match(/\bxline\s*\(\s*(-?\d+(?:\.\d+)?)/i)?.[1]);
+      const coordinatesConsistent = blankSlots === 1
+        && sameInventory(xlabelPositions, expectedPositions)
+        && xlabelPositions.length === expectedPositions.length
+        && scatterPosition === blankPosition
+        && policyPosition === blankPosition + 0.5;
+      if (!coordinatesConsistent) {
+        findings.push(finding("error", "event_study_reference_coordinates_missing", row.line, "새 event-study graph에 blank reference slot에서 파생된 x labels, zero reference point, 또는 policy boundary가 모두 보이지 않습니다.", "order()의 한 blank slot과 같은 좌표계를 쓰는 xlabel(), addplot(scatteri 0 ...), xline()을 직접 명시하세요.", "researcher_style_reference"));
+      }
     }
     const next = statements[index + 1];
     if (!next || !/^graph\s+export\b/i.test(next.text) || !/\.pdf(?:["']|\s|,|$)/i.test(next.text)) {
@@ -1051,34 +1547,344 @@ function finding(severity, rule, line, message, suggestion, basis = "replication
   return { severity, rule, line, message, suggestion, basis, source };
 }
 
+function parseMasterInventory(value, { allowNone = true, allowActiveDataset = true } = {}) {
+  const raw = String(value || "").trim();
+  if (!raw) return { valid: false, items: [] };
+  const tokens = raw.split(",").map((token) => token.trim()).filter(Boolean);
+  if (!tokens.length) return { valid: false, items: [] };
+  const normalized = [];
+  for (const token of tokens) {
+    if (allowNone && /^none\.?$/i.test(token)) {
+      if (tokens.length !== 1) return { valid: false, items: [] };
+      return { valid: true, items: [] };
+    }
+    if (allowActiveDataset && /^(?:active(?:-memory)?\s+dataset|dataset\s+in\s+memory)\.?$/i.test(token)) {
+      normalized.push("@active_dataset");
+      continue;
+    }
+    const unquoted = token.replace(/^(?:"([\s\S]*)"|'([\s\S]*)')$/, (_match, doubleQuoted, singleQuoted) => doubleQuoted ?? singleQuoted);
+    const slashNormalized = String(unquoted || "").replaceAll("\\", "/");
+    const base = slashNormalized.split("/").at(-1) || "";
+    if (!slashNormalized || /[*?]/.test(slashNormalized) || /\/$/.test(slashNormalized) || !/\.[^./\s]+$/.test(base)) {
+      return { valid: false, items: [] };
+    }
+    normalized.push(slashNormalized.toLowerCase());
+  }
+  return { valid: true, items: [...new Set(normalized)] };
+}
+
+function sameInventory(left, right) {
+  const a = [...new Set(left)].sort();
+  const b = [...new Set(right)].sort();
+  return a.length === b.length && a.every((value, index) => value === b[index]);
+}
+
+function completeRoleSentence(value) {
+  const text = String(value || "").trim();
+  return text.length >= 8 && /[.!?。！？]$/.test(text) && /[\p{L}\p{N}]/u.test(text);
+}
+
 function masterCallRoleCommentAudit(content, role, authoringState = "existing_audit") {
   if (!/^(?:master|entrypoint|new_master)$/i.test(String(role || ""))) return { findings: [], valid_lines: new Set() };
   if (authoringState === "existing_audit") return { findings: [], valid_lines: new Set() };
   const physicalLines = String(content || "").split(/\r?\n/);
   const findings = [];
   const validLines = new Set();
+  const severity = authoringState === "new" ? "error" : "warning";
+  const firstActiveLine = stripComments(content)[0]?.line || physicalLines.length + 1;
+  const header = physicalLines.slice(0, Math.max(0, firstActiveLine - 1)).join("\n");
+  const headerInputs = header.match(/^(?:\s*(?:\*|\/\/|\/\*)\s*)?Project\s+Inputs\s*:\s*(.+)$/im);
+  const headerOutputs = header.match(/^(?:\s*(?:\*|\/\/|\/\*)\s*)?Project\s+Outputs\s*:\s*(.+)$/im);
+  const parsedHeaderInputs = parseMasterInventory(headerInputs?.[1], { allowActiveDataset: false });
+  const parsedHeaderOutputs = parseMasterInventory(headerOutputs?.[1], { allowActiveDataset: false });
+  if (!headerInputs || !parsedHeaderInputs.valid) {
+    findings.push(finding(
+      severity,
+      "master_project_inputs_comment_missing",
+      1,
+      "masters.do 상단에 정확한 persistent project input 파일 목록이 없습니다.",
+      "첫 실행문 앞에 `* Project Inputs: data/raw/source.dta`처럼 comma-separated persistent 실제 파일명을 쓰세요. Fileless 시작이면 `Project Inputs: none`을 쓰세요. Top-level project inventory에는 active dataset을 쓰지 마세요.",
+      "researcher_style_reference",
+    ));
+  }
+  if (!headerOutputs || !parsedHeaderOutputs.valid) {
+    findings.push(finding(
+      severity,
+      "master_project_outputs_comment_missing",
+      1,
+      "masters.do 상단에 정확한 persistent project output 파일 목록이 없습니다.",
+      "첫 실행문 앞에 `* Project Outputs: data/final/analysis_panel.dta, table/results.xlsx, figures/event_study.pdf`처럼 실제 파일명을 쓰세요.",
+      "researcher_style_reference",
+    ));
+  }
+  const calls = [];
   for (const entry of activeLogicalEntries(content)) {
     const command = normalizeCommand(entry.text.trim());
-    if (!/^do\s+/i.test(command)) continue;
-    const previous = String(physicalLines[entry.line - 2] || "").trim();
-    const comment = previous.match(/^(?:\*|\/\/)\s*(.+)$/) || previous.match(/^\/\*\s*(.+?)\s*\*\/$/);
-    const body = String(comment?.[1] || "").trim();
-    const pathOnly = /^(?:do\s+)?["']?[^"']+\.do["']?\.?$/i.test(body);
-    if (!body || pathOnly) {
+    if (!isMasterCall(command)) continue;
+    const block = [];
+    for (let index = entry.line - 2; index >= 0; index -= 1) {
+      const line = String(physicalLines[index] || "").trim();
+      if (!line) break;
+      const comment = line.match(/^(?:\*|\/\/)\s*(.+)$/) || line.match(/^\/\*\s*(.+?)\s*\*\/$/);
+      if (!comment) break;
+      block.unshift(String(comment[1] || "").trim());
+    }
+    const input = block.find((line) => /^Input\s*:/i.test(line));
+    const output = block.find((line) => /^Output\s*:/i.test(line));
+    const roleLine = block.find((line) => !/^(?:Input|Output)\s*:/i.test(line) && completeRoleSentence(line));
+    const inputValue = String(input || "").replace(/^Input\s*:\s*/i, "");
+    const outputValue = String(output || "").replace(/^Output\s*:\s*/i, "");
+    const parsedInput = parseMasterInventory(inputValue);
+    const parsedOutput = parseMasterInventory(outputValue);
+    const exactInput = parsedInput.valid;
+    const exactOutput = parsedOutput.valid;
+    if (!exactInput) {
       findings.push(finding(
-        authoringState === "new" ? "error" : "warning",
-        "master_call_role_comment_missing",
+        severity,
+        "master_call_input_comment_missing",
         entry.line,
-        `${authoringState === "new" ? "새" : "수정 중인"} master do-file의 개별 do 호출 바로 위에 호출 파일의 역할을 설명하는 한 문장 주석이 없습니다.`,
-        "do 호출의 바로 앞 물리적 줄에 `* 원자료를 정리해 분석용 자료를 만든다.`처럼 프로젝트 안에서의 역할을 한 문장으로 쓰세요.",
+        "master do-file의 개별 direct do/run/include 호출 직전 block에 정확한 Input 파일 주석이 없습니다.",
+        "호출 직전의 연속 주석 block에 comma-separated 실제 파일명, `Input: none`, 또는 명시적 `Input: active dataset`을 쓰세요.",
         "researcher_style_reference",
       ));
-    } else validLines.add(entry.line);
+    }
+    if (!exactOutput) {
+      findings.push(finding(
+        severity,
+        "master_call_output_comment_missing",
+        entry.line,
+        "master do-file의 개별 direct do/run/include 호출 직전 block에 정확한 Output 파일 또는 Output: none 주석이 없습니다.",
+        "호출 직전의 연속 주석 block에 `* Output: table/summary.xlsx`, 명시적 `Output: active dataset`, 또는 `* Output: none`을 쓰세요.",
+        "researcher_style_reference",
+      ));
+    }
+    if (!roleLine) {
+      findings.push(finding(
+        severity,
+        "master_call_role_comment_missing",
+        entry.line,
+        `${authoringState === "new" ? "새" : "수정 중인"} master do-file의 개별 direct do/run/include 호출 바로 위에 호출 파일의 역할을 설명하는 완결된 한 문장 주석이 없습니다.`,
+        "direct do/run/include 호출 직전의 연속 주석 block에 `* 원자료를 정리해 분석용 패널을 만든다.`처럼 언어와 무관하게 마침표로 끝나는 설명적 한 문장을 쓰세요.",
+        "researcher_style_reference",
+      ));
+    }
+    if (exactInput && exactOutput && roleLine) validLines.add(entry.line);
+    if (exactInput && exactOutput) calls.push({ line: entry.line, inputs: parsedInput.items, outputs: parsedOutput.items });
+  }
+  if (headerInputs && headerOutputs && parsedHeaderInputs.valid && parsedHeaderOutputs.valid && calls.length) {
+    for (let index = 0; index < calls.length; index += 1) {
+      if (calls[index].inputs.includes("@active_dataset") && !calls[index - 1]?.outputs.includes("@active_dataset")) {
+        findings.push(finding(
+          severity,
+          "master_active_dataset_input_unproduced",
+          calls[index].line,
+          "Input: active dataset이 바로 앞 direct do/run/include 호출의 Output: active dataset에서 생산되지 않았습니다.",
+          "Input: active dataset은 바로 앞 호출이 Output: active dataset을 선언한 one-hop handoff에서만 쓰세요. 그 밖에는 persistent 파일을 명시적으로 다시 여세요.",
+          "researcher_style_reference",
+        ));
+      }
+      if (!calls[index].outputs.includes("@active_dataset")) continue;
+      if (calls[index + 1]?.inputs.includes("@active_dataset")) continue;
+      findings.push(finding(
+        severity,
+        "master_active_dataset_handoff_dangling",
+        calls[index].line,
+        "Output: active dataset이 바로 다음 direct do/run/include 호출의 Input: active dataset으로 소비되지 않습니다.",
+        "메모리 상태를 넘길 때만 Output: active dataset을 쓰고, 바로 다음 direct do/run/include 호출에 Input: active dataset을 명시하세요. 마지막 또는 소비되지 않는 결과는 persistent 파일로 저장하거나 Output: none으로 바로잡으세요.",
+        "researcher_style_reference",
+      ));
+    }
+    const produced = new Set();
+    const externalInputs = new Set();
+    const allOutputs = new Set();
+    for (const call of calls) {
+      for (const input of call.inputs) if (!produced.has(input)) externalInputs.add(input);
+      for (const output of call.outputs) {
+        produced.add(output);
+        if (output !== "@active_dataset") allOutputs.add(output);
+      }
+    }
+    if (!sameInventory(parsedHeaderInputs.items, [...externalInputs])) {
+      findings.push(finding(
+        severity,
+        "master_project_inputs_inventory_mismatch",
+        1,
+        "Project Inputs 목록이 실행순서상 앞선 call output에서 만들어지지 않는 개별 call input 전체와 일치하지 않습니다.",
+        "각 Input을 호출 순서대로 대조해 외부에서 들어오는 파일 또는 상태만 Project Inputs에 빠짐없이, 중복 없이 쓰세요.",
+        "researcher_style_reference",
+      ));
+    }
+    if (!sameInventory(parsedHeaderOutputs.items, [...allOutputs])) {
+      findings.push(finding(
+        severity,
+        "master_project_outputs_inventory_mismatch",
+        1,
+        "Project Outputs 목록이 개별 call의 persistent Output 전체와 일치하지 않습니다.",
+        "각 call의 Output을 합친 정확한 목록을 Project Outputs에 빠짐없이, 추가 항목 없이 쓰세요.",
+        "researcher_style_reference",
+      ));
+    }
   }
   return { findings, valid_lines: validLines };
 }
 
-function lintContent(content, role = "auto", source = "inline", authoringState = null) {
+function localMacroScopeFindings(content, authoringState = "existing_audit") {
+  if (authoringState === "existing_audit") return [];
+  const statements = logicalStatements(content);
+  const findings = [];
+  const blocks = [];
+  let inProgram = false;
+  for (let index = 0; index < statements.length; index += 1) {
+    const row = statements[index];
+    const command = normalizeCommand(row.text.trim());
+    for (let close = 0; close < structuralCloseCount(command); close += 1) blocks.pop();
+    if (parseStataProgramDefinition(command)) inProgram = true;
+    const local = command.match(new RegExp(`^${STATA_LOCAL_COMMAND}\\s+([A-Za-z_][A-Za-z0-9_]*)\\b(?:\\s+|=\\s*)?(.*)$`, "i"));
+    if (local) {
+      const inLoop = blocks.some((block) => block === "loop");
+      const returnedState = /\b[re]\s*\([^)]*\)/i.test(local[2] || "");
+      const nextCommand = statements[index + 1]?.text || "";
+      const escaped = local[1].replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const immediatelyConsumed = new RegExp("`" + escaped + "'", "i").test(nextCommand);
+      if (!inProgram && !inLoop && !(returnedState && immediatelyConsumed)) {
+        findings.push(finding(
+          authoringState === "new" ? "error" : "warning",
+          "local_macro_without_lexical_need",
+          row.line,
+          `local ${local[1]}은 program, loop, per-iteration scratch, 또는 즉시 소비되는 returned result의 lexical scope 안에 있지 않습니다.`,
+          "한 번 쓰는 값은 literal로 직접 쓰고, 반복되는 설명적 binding은 소비 do-file에서 descriptive global로 정의하세요. local은 lexical necessity가 있는 좁은 범위에만 두세요.",
+          "researcher_style_reference",
+        ));
+      }
+    }
+    const structuralCommand = normalizeCommand(structuralSyntax(command)).replace(/\{\s*$/, "").trim();
+    if (hasStructuralOpen(command)) blocks.push(/^(?:foreach|forv(?:al(?:ues)?)?|while)\b/i.test(structuralCommand) ? "loop" : "block");
+    if (/^end\s*$/i.test(command) && inProgram) inProgram = false;
+  }
+  return findings;
+}
+
+function commandPositionMacroFindings(content, authoringState = "existing_audit") {
+  const severity = authoringState === "new" ? "error" : "warning";
+  return logicalStatements(content).flatMap((row) => {
+    const command = normalizeCommand(row.text);
+    const commandMacro = command.match(/^(\$\{?[A-Za-z_][A-Za-z0-9_]*\}?|`\S*)/i);
+    if (!commandMacro) return [];
+    return [finding(
+      severity,
+      "command_position_macro_indirection",
+      row.line,
+      `실행할 명령 자체가 ${commandMacro[1]} macro 뒤에 숨겨져 안전성과 point-of-use 동작을 검사할 수 없습니다.`,
+      "명령 이름은 직접 쓰고 필요한 경로 macro는 명령의 file-path 인자 위치에서만 사용하세요.",
+      "researcher_style_reference",
+    )];
+  });
+}
+
+function safetyCriticalMacroIndirectionFindings(content) {
+  const findings = [];
+  const approvedDirectOutreg2Stats = directOutreg2StatisticLines(content);
+  for (const row of logicalStatements(content)) {
+    const command = normalizeCommand(row.text);
+    const macro = /\$\{?[A-Za-z_][A-Za-z0-9_]*\}?|`[^'\r\n]+'/;
+    const mergeHead = command.match(/^merge\s+([\s\S]*?)\busing\b/i)?.[1] || "";
+    const optionTail = stataOptionTail(command);
+    const outreg2TargetMatch = command.match(/^outreg2\s+using\s+(?:"([^"]*)"|(\S+))([\s\S]*)$/i);
+    const outreg2TargetQuoted = outreg2TargetMatch?.[1] !== undefined;
+    const outreg2Target = outreg2TargetMatch?.[1] ?? outreg2TargetMatch?.[2] ?? "";
+    const outreg2Remainder = outreg2TargetMatch?.[3] || "";
+    if (/^merge\b/i.test(command) && macro.test(mergeHead)) {
+      findings.push(finding("error", "merge_contract_macro_indirection", row.line, "merge cardinality 또는 key가 macro 뒤에 숨겨져 결합 계약을 검사할 수 없습니다.", "merge 1:1, 1:m, m:1과 key를 명령에 직접 쓰고 using 경로에만 directory macro를 사용하세요.", "researcher_style_reference"));
+    }
+    if (/^duplicates\s+drop\b/i.test(command) && macro.test(command)) {
+      findings.push(finding("error", "destructive_option_macro_indirection", row.line, "duplicates drop의 변수 또는 삭제 option이 macro 뒤에 숨겨져 있습니다.", "삭제 대상과 option을 명령에 직접 쓰고 force를 사용하지 마세요.", "researcher_style_reference"));
+    }
+    if (/^(?:ssc|net|github)\b/i.test(command) && macro.test(command)) {
+      findings.push(finding("error", "runtime_install_macro_indirection", row.line, "설치 verb 또는 package가 macro 뒤에 숨겨져 runtime 설치 검사를 우회합니다.", "연구 do-file에서 설치 명령을 제거하세요.", "researcher_style_reference"));
+    }
+    const outreg2TailForAudit = approvedDirectOutreg2Stats.has(row.line)
+      ? optionTail.replace(/\baddstat\s*\(\s*Dep\.\s*variable\s*mean\s*,\s*`[A-Za-z_][A-Za-z0-9_]*'\s*\)/i, "")
+      : optionTail;
+    const outreg2RemainderForAudit = approvedDirectOutreg2Stats.has(row.line)
+      ? outreg2Remainder.replace(/\baddstat\s*\(\s*Dep\.\s*variable\s*mean\s*,\s*`[A-Za-z_][A-Za-z0-9_]*'\s*\)/i, "")
+      : outreg2Remainder;
+    const outreg2TargetMacroCanHideSeparator = !outreg2TargetQuoted && macro.test(outreg2Target);
+    if (/^outreg2\b/i.test(command) && (outreg2TargetMacroCanHideSeparator || macro.test(outreg2TailForAudit) || macro.test(outreg2RemainderForAudit))) {
+      findings.push(finding("error", "outreg2_option_macro_indirection", row.line, "outreg2 option이 macro 뒤에 숨겨져 raw-row 보존 계약을 검사할 수 없습니다.", "replace/append, excel, nor2와 허용 통계 option을 호출부에 직접 쓰고 keep/drop/addstat 같은 row 변형을 숨기지 마세요.", "researcher_style_reference"));
+    }
+    if (/^coefplot\b/i.test(command)) {
+      const selectors = [...command.matchAll(/\b(?:keep|order)\s*\(([^)]*)\)/gi)].map((match) => match[1]);
+      if (selectors.some((selector) => macro.test(selector) || /[*?]/.test(selector))) {
+        findings.push(finding("error", "coefplot_selector_not_exact", row.line, "coefplot keep()/order()가 macro 또는 wildcard를 사용해 observed raw coefficient의 exact selector가 아닙니다.", "runtime e(b)에서 관측한 raw coefficient token을 keep()과 order()에 literal exact 목록으로 직접 쓰세요.", "researcher_style_reference"));
+      }
+    }
+  }
+  return findings;
+}
+
+function regressionSubstantiveIndirectionFindings(content, authoringState = "existing_audit") {
+  if (authoringState === "existing_audit") return [];
+  const findings = [];
+  const blocks = [];
+  const estimation = /^(?:reg|regr|regre|regres|regress|areg|qreg|tobit|intreg|heckman|xtreg|xtivreg|xtivreg2|reghdfe|ivregress|ivreg2|ivreghdfe|logit|logistic|clogit|xtlogit|probit|xtprobit|poisson|xtpoisson|nbreg|glm|fracreg|mixed|sem|gsem|cmp|ppmlhdfe|rdrobust|csdid|did_imputation|eventstudyinteract)\b/i;
+  for (const row of logicalStatements(content)) {
+    const rawCommand = normalizeCommand(row.text.trim());
+    for (let close = 0; close < structuralCloseCount(rawCommand); close += 1) blocks.pop();
+    const command = normalizeEstimationInvocation(rawCommand);
+    const estimator = command.match(estimation);
+    if (estimator) {
+      let remainder = command.slice(estimator[0].length).trimStart();
+      const outcome = remainder.match(/^`([A-Za-z_][A-Za-z0-9_]*)'/);
+      const activeLoops = blocks.filter((block) => block.kind === "loop");
+      const permittedOutcomeIterator = outcome
+        && activeLoops.length === 1
+        && activeLoops[0].iterator === outcome[1].toLowerCase();
+      if (permittedOutcomeIterator) remainder = remainder.slice(outcome[0].length);
+      const macro = remainder.match(/\$\{?[A-Za-z_][A-Za-z0-9_]*\}?|`[^'\r\n]+'/);
+      if (macro) {
+        findings.push(finding(
+          authoringState === "new" ? "error" : "warning",
+          "regression_substantive_indirection",
+          row.line,
+          `회귀의 substantive specification이 ${macro[0]} macro 뒤에 숨겨져 point-of-use reference depth가 0이 아닙니다.`,
+          "outcome iterator 하나만 그 iterator를 감싸는 flat loop 안에서 허용하고 treatment, event window, controls, sample, fixed effects, weights, VCE는 estimation block에 직접 쓰세요.",
+          "researcher_style_reference",
+        ));
+      }
+    }
+    const structuralCommand = normalizeCommand(structuralSyntax(rawCommand)).replace(/\{\s*$/, "").trim();
+    if (hasStructuralOpen(rawCommand)) {
+      const iterator = structuralCommand.match(/^foreach\s+([A-Za-z_][A-Za-z0-9_]*)\b/i)?.[1]?.toLowerCase() || null;
+      blocks.push({ kind: /^(?:foreach|forv(?:al(?:ues)?)?|while)\b/i.test(structuralCommand) ? "loop" : "block", iterator });
+    }
+  }
+  return findings;
+}
+
+function substantiveMacroAliasChainFindings(content, authoringState = "existing_audit") {
+  if (authoringState === "existing_audit") return [];
+  const findings = [];
+  const substantive = /(?:^|_)(?:outcomes?|depvars?|controls?|covariates?|samples?|events?|selectors?|keep|order|references?|clusters?|fixed_?effects?|rhs|absorb|vce|weights?|specs?|current)(?:_|$)/i;
+  for (const row of logicalStatements(content)) {
+    const command = normalizeCommand(row.text.trim());
+    const definition = command.match(new RegExp(`^${STATA_MACRO_COMMAND}\\s+([A-Za-z_][A-Za-z0-9_]*)\\b(?:\\s+|=\\s*)(.*)$`, "i"));
+    if (!definition) continue;
+    const referenced = [...String(definition[2] || "").matchAll(/\$\{?([A-Za-z_][A-Za-z0-9_]*)\}?|`([A-Za-z_][A-Za-z0-9_]*)'/g)]
+      .map((match) => match[1] || match[2]);
+    if (!referenced.length || !(substantive.test(definition[1]) || referenced.some((name) => substantive.test(name)))) continue;
+    findings.push(finding(
+      authoringState === "new" ? "error" : "warning",
+      "substantive_macro_alias_chain",
+      row.line,
+      `${definition[1]}이 다른 substantive macro (${referenced.join(", ")})를 다시 참조해 역방향 탐색이 필요한 alias chain을 만듭니다.`,
+      "최종 소비 지점에서 literal을 직접 쓰거나, 반복되는 binding이면 소비 do-file의 descriptive global 하나에 원시 변수 목록을 직접 정의하세요. Directory-root 조합은 이 규칙의 대상이 아닙니다.",
+      "researcher_style_reference",
+    ));
+  }
+  return findings;
+}
+
+function lintContent(content, role = "auto", source = "inline", authoringState = null, macroEnvironment = null) {
   const resolvedAuthoringState = authoringState || (/^new_master$/i.test(String(role || "")) ? "new" : "existing_audit");
   const active = stripComments(content);
   const logicalByStartLine = new Map(activeLogicalEntries(content).map((entry) => [entry.line, entry.text]));
@@ -1098,7 +1904,7 @@ function lintContent(content, role = "auto", source = "inline", authoringState =
       && /\bmeandec\(integer\)/i.test(command)
       && /\[replace\]/i.test(command);
   });
-  const canonicalOutreg2SheetHelperShape = /^program\s+define\s+outreg2_xlsx\b/im.test(activeText)
+  const canonicalOutreg2SheetHelperShape = activeLogicalEntries(content).some((entry) => parseStataProgramDefinition(normalizeCommand(entry.text.trim()))?.name === "outreg2_xlsx")
     && canonicalOutreg2Syntax
     && /^outreg2\b/im.test(activeText)
     && /^import\s+delimited\b/im.test(activeText)
@@ -1111,6 +1917,13 @@ function lintContent(content, role = "auto", source = "inline", authoringState =
   const strengths = [];
   const masterCallComments = masterCallRoleCommentAudit(content, role, resolvedAuthoringState);
   findings.push(...masterCallComments.findings);
+  findings.push(...masterCallNostopFindings(content, role, resolvedAuthoringState, macroEnvironment));
+  findings.push(...delimiterDirectiveFindings(content, resolvedAuthoringState));
+  findings.push(...commandPositionMacroFindings(content, resolvedAuthoringState));
+  findings.push(...safetyCriticalMacroIndirectionFindings(content));
+  findings.push(...localMacroScopeFindings(content, resolvedAuthoringState));
+  findings.push(...regressionSubstantiveIndirectionFindings(content, resolvedAuthoringState));
+  findings.push(...substantiveMacroAliasChainFindings(content, resolvedAuthoringState));
   const mergeLines = [];
   const programStack = [];
   const blockStack = [];
@@ -1119,8 +1932,8 @@ function lintContent(content, role = "auto", source = "inline", authoringState =
   let programDefinitions = 0;
   let approvedProgramExceptions = 0;
   const estimationPattern = /^(?:quietly\s+|capture\s+|cap\s+)*(?:reg|regress|areg|xtreg|reghdfe|ivreg2|ivreghdfe|rdrobust|csdid|did_imputation|eventstudyinteract)\b/i;
-  const hasCompleteGroupSummary = active.some((row) => {
-    const command = normalizeCommand(row.trimmed);
+  const hasCompleteGroupSummary = logicalStatements(content).some((row) => {
+    const command = normalizeCommand(row.text);
     return /^collapse\b/i.test(command) && /\(mean\)/i.test(command) && /\(sd\)/i.test(command) && /\(count\)/i.test(command) && /\bby\s*\(/i.test(command);
   });
   findings.push(...graphPolicyFindings(content));
@@ -1130,7 +1943,7 @@ function lintContent(content, role = "auto", source = "inline", authoringState =
   findings.push(...eventStudySingleHashBaseFindings(content));
   findings.push(...directFallbackMarkerFindings(content));
   findings.push(...danglingLineContinuationFindings(content));
-  findings.push(...eventStudyPresentationFindings(content));
+  findings.push(...eventStudyPresentationFindings(content, resolvedAuthoringState));
   findings.push(...estimabilityRiskFindings(content));
   if (scratchContract.applies && !scratchContract.valid) {
     findings.push(finding(
@@ -1152,16 +1965,16 @@ function lintContent(content, role = "auto", source = "inline", authoringState =
     const approvedScratchErase = scratchContract.allowedEraseLines.has(entry.line);
     const approvedDirectOutreg2Stats = directOutreg2Stats.has(entry.line);
 
-    if (/^(?:ssc|net|github)\s+install\b/i.test(command)) {
+    if (/^(?:ssc|net|github)\s+install\b/i.test(logicalCommand)) {
       findings.push(finding("error", "runtime_install", entry.line, "연구 do-file 실행 중 설치 명령을 호출합니다.", "설치 코드는 연구 workflow에서 제거하고 분석 명령만 남기세요."));
     }
-    if (/^(?:(?:capture|cap|quietly|qui|noisily|noi)\s+)*(?:which|findfile|ado\s+dir|confirm\s+(?:command|ado))\b/i.test(text)) {
+    if (/^(?:(?:cap(?:t(?:u(?:r(?:e)?)?)?)?|qui(?:e(?:t(?:l(?:y)?)?)?)?|n(?:o(?:i(?:s(?:i(?:l(?:y)?)?)?)?)?)?)\s+)*(?:which|findfile|ado\s+dir|confirm\s+(?:command|ado))\b/i.test(text)) {
       findings.push(finding("error", "installed_command_probe", entry.line, "분석 do-file에서 명령 설치 여부를 검사합니다.", "사전 탐색 분기를 제거하고 분석 명령을 직접 실행해 오류가 그대로 드러나게 하세요."));
     }
-    if (/^merge\s+m:m\b/i.test(command)) {
+    if (/^merge\s+m:m\b/i.test(logicalCommand)) {
       findings.push(finding("error", "merge_m_m", entry.line, "Stata 공식 manual은 m:m merge를 나쁜 생각이라고 명시하며 정렬 순서에 결과가 의존한다고 설명합니다.", "키의 유일성을 isid로 검증한 뒤 1:1, 1:m 또는 m:1을 명시하세요.", "stata_manual", "https://www.stata.com/manuals/dmerge.pdf"));
     }
-    if (/^duplicates\s+drop\b.*\bforce\b/i.test(command)) {
+    if (/^duplicates\s+drop\b.*\bforce\b/i.test(logicalCommand)) {
       findings.push(finding("error", "duplicates_drop_force", entry.line, "Stata 공식 manual도 force가 varlist 밖의 정보 손실을 일으킬 수 있다고 경고합니다. 선별 연구자 reference에서는 원인 확인 없는 강제 삭제를 생성하지 않습니다.", "duplicates report/tag와 키 검증 후 명시적 보존 규칙을 사용하세요.", "replication_safety", "https://www.stata.com/manuals/dduplicates.pdf"));
     }
     if (/^if\s+0\s*\{/i.test(command)) {
@@ -1172,7 +1985,7 @@ function lintContent(content, role = "auto", source = "inline", authoringState =
       findings.push(finding("error", "process_escape", entry.line, "외부 프로세스를 직접 호출해 이식성과 재현성이 낮아집니다.", "필수 외부 단계는 별도 스크립트와 README 계약으로 분리하세요."));
     }
     if (nativePythonScript) strengths.push({ rule: "stata_native_python_script", line: entry.line, runtime_verification: "required" });
-    if (/^(?:erase|rm|del)\b/i.test(command) && !approvedScratchErase) {
+    if (/^(?:erase|rm|del)\b/i.test(logicalCommand) && !approvedScratchErase) {
       findings.push(finding("error", "destructive_delete", entry.line, "do-file이 파일을 직접 삭제합니다.", "선언된 scratch 산출물만 정리하고 원본과 중간 산출물은 보존하세요."));
     }
     if (approvedScratchErase) strengths.push({ rule: "named_outreg2_scratch_cleanup", line: entry.line });
@@ -1192,7 +2005,8 @@ function lintContent(content, role = "auto", source = "inline", authoringState =
     if (/(?:[A-Z]:[\\/]|\/Users\/|\/home\/|~[\\/]|\\\\[^\\]+\\|Dropbox)/i.test(text)) {
       findings.push(finding("warning", "machine_path", entry.line, "개인 PC에 종속된 경로가 있습니다.", "master에서 프로젝트 root 하나만 설정하고 하위 경로를 파생하세요."));
     }
-    if (!approvedScratchErase && /^(?:capture|cap)\s+(?:erase|merge|reg|regress|reghdfe|use|do)\b/i.test(text)) {
+    const invocation = normalizeCommandMetadata(text);
+    if (!approvedScratchErase && invocation.has_capture && (/^(?:erase|merge|reg|regress|reghdfe|use)\b/i.test(invocation.command) || isMasterCall(invocation.command))) {
       findings.push(finding("warning", "broad_capture", entry.line, "핵심 단계의 오류를 capture가 숨길 수 있습니다.", "예상 가능한 비핵심 오류에만 capture를 좁게 사용하세요."));
     }
     if (/^postfile\b/i.test(command)) {
@@ -1239,6 +2053,25 @@ function lintContent(content, role = "auto", source = "inline", authoringState =
           "researcher_style_reference",
         ));
       }
+      let unapprovedOptions = stataOptionTail(logicalCommand);
+      if (approvedDirectOutreg2Stats) {
+        unapprovedOptions = unapprovedOptions.replace(/\baddstat\s*\(\s*Dep\.\s*variable\s*mean\s*,\s*`[A-Za-z_][A-Za-z0-9_]*'\s*\)/ig, " ");
+      }
+      unapprovedOptions = unapprovedOptions
+        .replace(/\b(?:replace|append|excel|nor2|adjr2)\b/ig, " ")
+        .replace(/\b(?:bdec|sdec)\s*\(\s*\d+\s*\)/ig, " ")
+        .replace(/[\s,]+/g, "")
+        .trim();
+      if (unapprovedOptions) {
+        findings.push(finding(
+          "error",
+          "outreg2_option_not_approved",
+          entry.line,
+          "outreg2 raw-source 호출에 승인되지 않은 표 변형 option이 있습니다.",
+          "direct raw output에는 replace/append, excel, nor2, bdec(), sdec()만 쓰세요. 단일-sheet direct 계약에서는 adjr2와 즉시 계산한 dependent-variable mean addstat만 추가할 수 있습니다.",
+          "researcher_style_reference",
+        ));
+      }
       if (!/\bnor2\b/i.test(logicalCommand) && !approvedDirectOutreg2Stats) {
         findings.push(finding(
           "error",
@@ -1254,8 +2087,8 @@ function lintContent(content, role = "auto", source = "inline", authoringState =
     if (/^rdrobust\b/i.test(command) && /\s&\s*\(/.test(command) && !/\bif\b/i.test(command)) {
       findings.push(finding("error", "malformed_rdrobust_sample", entry.line, "rdrobust 표본 조건 앞의 if가 누락된 것으로 보입니다.", "조건식 앞에 if를 명시하고 실행 로그로 확인하세요."));
     }
-    if (/^collapse\b/i.test(command) && /\(mean\)/i.test(command)) {
-      const complete = /\(sd\)/i.test(command) && /\(count\)/i.test(command) && /\bby\s*\(/i.test(command);
+    if (/^collapse\b/i.test(logicalCommand) && /\(mean\)/i.test(logicalCommand)) {
+      const complete = /\(sd\)/i.test(logicalCommand) && /\(count\)/i.test(logicalCommand) && /\bby\s*\(/i.test(logicalCommand);
       if (complete) {
         strengths.push({ rule: "complete_group_summary", line: entry.line, source: "https://www.stata.com/manuals/dcollapse.pdf" });
       } else {
@@ -1311,9 +2144,10 @@ function lintContent(content, role = "auto", source = "inline", authoringState =
       }
       blockStack.push({ kind: "loop", line: entry.line, command: structuralCommand });
     } else if (opensBlock) blockStack.push({ kind: "block", line: entry.line });
-    if (/^program\s+define\b/i.test(command)) {
+    const programDefinition = parseStataProgramDefinition(logicalCommand);
+    if (programDefinition) {
       programDefinitions += 1;
-      const outreg2Formatter = /^program\s+define\s+outreg2_xlsx\b/i.test(command);
+      const outreg2Formatter = programDefinition.name === "outreg2_xlsx";
       const approvedException = canonicalOutreg2SheetHelper && outreg2Formatter;
       const contextPending = pendingOutreg2SheetHelperContext && outreg2Formatter;
       if (approvedException) approvedProgramExceptions += 1;
@@ -1338,7 +2172,7 @@ function lintContent(content, role = "auto", source = "inline", authoringState =
     }
 
     if (/^version\s+\d/i.test(command)) strengths.push({ rule: "stata_version", line: entry.line });
-    if (/^(?:global|local)\s+(?:root|project_root|project|replication)\b/i.test(command)) strengths.push({ rule: "single_project_root", line: entry.line });
+    if (new RegExp(`^${STATA_MACRO_COMMAND}\\s+(?:root|project_root|project|replication)\\b`, "i").test(command)) strengths.push({ rule: "single_project_root", line: entry.line });
     if (/^isid\b/i.test(command)) strengths.push({ rule: "key_assertion", line: entry.line });
     if (/^(?:duplicates\s+(?:report|tag)|assert)\b/i.test(command)) strengths.push({ rule: "integrity_check", line: entry.line });
     if (/^label\s+var(?:iable)?\b/i.test(command)) strengths.push({ rule: "variable_labels", line: entry.line });
@@ -1346,7 +2180,7 @@ function lintContent(content, role = "auto", source = "inline", authoringState =
     if (estimationPattern.test(command) && /(?:vce\s*\(cluster|cluster\s*\(|,\s*cluster\s*\()/i.test(command)) strengths.push({ rule: "explicit_cluster", line: entry.line });
     if (/^(?:sum|summarize|tab|tabulate|tabstat|ttest)\b/i.test(command)) strengths.push({ rule: "descriptive_or_balance_check", line: entry.line });
     if (hasCompleteGroupSummary && /^save\b.*\.dta(?:[\"']|\s|,|$)/i.test(command)) strengths.push({ rule: "canonical_summary_dataset", line: entry.line, source: "https://www.stata.com/manuals/dsave.pdf" });
-    if (/^(?:do|run|include)\s+/i.test(command)) {
+    if (isMasterCall(command)) {
       strengths.push({ rule: "master_call", line: entry.line });
       if (masterCallComments.valid_lines.has(entry.line)) strengths.push({ rule: "master_call_role_comment", line: entry.line });
     }
@@ -1820,7 +2654,6 @@ const GENERAL_RULES = Object.freeze([
   "Preserve the active output contract: direct one-sheet outreg2 uses an explicit .xls target, multi-sheet output uses the canonical .xlsx formatter, figures use PDF, and durable estimates use .ster only when needed.",
   "Lint the completed target immediately, then verify runtime state and exact declared outputs. Remove superseded attempts before freezing.",
   "A highest-ranked inspected candidate may be retained only as a nonbinding hint. Nearest is rank-relative and may still be absolutely distant or incompatible. Record nearest_template_hint=<label_id|none>, template_status=<no_suitable_template|wrong_selection|project_specific_contract>, and hint_used=<borrowed idea|none>.",
-  "Record every substantive general-rule span in root report.md as general_rule with the actual .do path, one-based inclusive lines, checkpoint or unmapped, template status, and hint used.",
 ]);
 
 function generalRulePolicy(args, context = {}) {
@@ -1840,6 +2673,14 @@ function generalRulePolicy(args, context = {}) {
       hardStopReasons.push("two or more sheets in one workbook require the compatible canonical formatter; repair or reselect its declared interface rather than bypassing it");
     }
   }
+  const reportPolicy = context.reportPolicy || "caller_selected";
+  const reportRule = reportPolicy === "required"
+    ? "Record every selected template and substantive general-rule span in root report.md with the actual .do path and one-based inclusive lines."
+    : reportPolicy === "disabled"
+      ? "Do not create or modify report.md; retain template and general-rule evidence in the session only."
+      : reportPolicy === "optional"
+        ? "report.md may be omitted. If the project already maintains it or the caller chooses to create it, record selected template and substantive general-rule spans consistently."
+        : "Apply the caller-selected report_policy before deciding whether report.md is required, optional, or forbidden.";
   return {
     mode: "general_rule",
     always_applies: true,
@@ -1883,8 +2724,8 @@ function generalRulePolicy(args, context = {}) {
     },
     hard_stop_reasons: hardStopReasons,
     hard_stop_rule: "General rules never supply a missing substantive research choice and never bypass event-axis, raw-table, sheet-cardinality, merge-key, sample, estimator, or output contracts.",
-    rules: GENERAL_RULES,
-    report_policy: context.reportPolicy || "caller_selected",
+    rules: [...GENERAL_RULES, reportRule],
+    report_policy: reportPolicy,
     report_required: context.reportPolicy ? context.reportPolicy === "required" : null,
     report_path: "report.md",
   };
@@ -3037,11 +3878,12 @@ function scanProjectForDictionary(root, scopeInput = {}) {
     coefplot_named_estimates: /^\s*coefplot\b/im,
     stage_log_open: /^\s*log\s+using\b/im,
     stage_log_close: /^\s*log\s+close\b/im,
-    program_define: /^\s*program\s+define\b/im,
-    uses_globals: /^\s*global\s+/im,
-    uses_locals: /^\s*local\s+/im,
+    uses_globals: new RegExp(`^\\s*${STATA_GLOBAL_COMMAND}\\s+`, "im"),
+    uses_locals: new RegExp(`^\\s*${STATA_LOCAL_COMMAND}\\s+`, "im"),
   };
   const signals = Object.fromEntries(Object.entries(signalPatterns).map(([name, pattern]) => [name, pattern.test(activeText)]));
+  signals.program_define = records.some((record) => activeLogicalEntries(record.content)
+    .some((entry) => parseStataProgramDefinition(normalizeCommand(entry.text.trim()))));
   signals.ster_files = extensionCounts[".ster"] || 0;
   signals.dta_files = extensionCounts[".dta"] || 0;
   signals.xlsx_files = extensionCounts[".xlsx"] || 0;
@@ -3098,14 +3940,14 @@ function scanProjectForDictionary(root, scopeInput = {}) {
         targetSignatureEvidence.push({ file: record.path, line: row.line, signal: "csgvar_treatment_timing", command });
       }
       if (/^(?:use\b|import\s+(?:delimited|excel)\b)/i.test(command)) targetVariableCharacteristics.add("dataset input");
-      const call = command.match(/^(?:do|run|include)\s+(?:"([^"]+)"|([^\s,]+))/i);
+      const call = matchMasterCallTarget(command);
       if (call) callSites.push({ file: record.path, line: row.line, target: call[1] || call[2], command });
       if (/^(?:use\b|import\s+(?:delimited|excel)\b|merge\b|append\s+using\b)/i.test(command)) inputBindings.push({ file: record.path, line: row.line, command });
       if (/^(?:save\b|estimates\s+save\b|export\s+excel\b|graph\s+export\b|outreg2\b|putexcel\b)/i.test(command)) outputBindings.push({ file: record.path, line: row.line, command });
-      const macro = command.match(/^(global|local)\s+([A-Za-z_][A-Za-z0-9_]*)/i);
-      if (macro) macroDefinitions.push({ file: record.path, line: row.line, scope: macro[1].toLowerCase(), name: macro[2] });
-      const program = command.match(/^program\s+define\s+([A-Za-z_][A-Za-z0-9_]*)/i);
-      if (program) programInterfaces.push({ file: record.path, line: row.line, program: program[1] });
+      const macro = command.match(new RegExp(`^(${STATA_MACRO_COMMAND})\\s+([A-Za-z_][A-Za-z0-9_]*)`, "i"));
+      if (macro) macroDefinitions.push({ file: record.path, line: row.line, scope: /^gl/i.test(macro[1]) ? "global" : "local", name: macro[2] });
+      const program = parseStataProgramDefinition(command);
+      if (program) programInterfaces.push({ file: record.path, line: row.line, program: program.name });
       if (/^syntax\b/i.test(command) && programInterfaces.length) programInterfaces[programInterfaces.length - 1].syntax = command;
       const label = command.match(/^label\s+variable\s+([A-Za-z_][A-Za-z0-9_]*)\s+["']([^"']+)["']/i);
       if (label) variableLabels.set(label[1], label[2]);
@@ -4003,8 +4845,9 @@ function rankVariantForObservedState(row, observed, request, availableState) {
     score += 3;
     reasons.push("compatible canonical default used only as a final tie-break");
   }
-  if (observed.style_profile.helper_programs && /^\s*program\s+define\b/im.test(row.code)) score += 12;
-  if (!observed.style_profile.helper_programs && /^\s*program\s+define\b/im.test(row.code)) score -= 6;
+  const rowHasProgramDefinition = activeLogicalEntries(row.code).some((entry) => parseStataProgramDefinition(normalizeCommand(entry.text.trim())));
+  if (observed.style_profile.helper_programs && rowHasProgramDefinition) score += 12;
+  if (!observed.style_profile.helper_programs && rowHasProgramDefinition) score -= 6;
   if (reasons.length === 0) reasons.push("matched by checkpoint, task terms, and the variant's declared state contract");
   return { score, reasons, template_input_profile_comparison: templateInputProfileComparison };
 }
@@ -4487,7 +5330,7 @@ function planDictionaryRepairs(args) {
         existing_macro_names: observed.interface_fingerprint.macro_definitions,
         existing_program_signatures: observed.interface_fingerprint.program_interfaces,
       },
-      macro_scope_rule: "Macro fingerprints are classification evidence, not automatic public interfaces. Preserve globals only when they intentionally cross do-file boundaries. Setup may hold shared directory roots, but a leaf input or output filename with only one consuming do-file belongs as a local near that consumer's first use, or as a literal when used once. A private local or a regression/figure specification global with one consumer may likewise be moved into that consuming do-file and localized when the approved repair improves visibility without changing the research contract.",
+      macro_scope_rule: "Macro fingerprints are classification evidence, not automatic public interfaces. Use a literal for a one-use binding and otherwise define or redefine a descriptive global in the consuming do-file. Setup keeps shared directory roots, not outcome lists or regression specifications. A leaf artifact global belongs beside its consumer unless multiple files share a real producer-consumer contract. Use local only for lexical necessities such as loop iterators, program internals, temp objects, per-iteration scratch, or an immediately consumed r()/e() result. Regression treatment or event window, controls, sample, fixed effects, weights, and VCE remain literal at zero substantive reference depth; one local outcome iterator in one flat loop is the normal exception.",
       mutable_existing_files: mutableExistingFiles,
       safe_call_boundaries: safeCallBoundaries,
       allowed_integration_edits: [
@@ -4542,7 +5385,9 @@ function planDictionaryRepairs(args) {
       legacy_modes: ["general_rule_fallback"],
       rule: reportPolicy === "disabled"
         ? "The user explicitly disabled report.md. Do not create or modify it; retain template and general-rule evidence in the session only."
-        : "After creating or revising Stata code, record each selected template and each substantive general-rule implementation as a separate row with the actual project-relative .do path and one-based inclusive line range. Use - as the general_rule label_id and record nearest_template_hint=<label_id|none>; template_status=<no_suitable_template|wrong_selection|project_specific_contract>; hint_used=<borrowed idea|none>. Keep provenance out of the .do source. Never emit legacy general_rule_fallback or fallback_trigger values.",
+        : reportPolicy === "optional"
+          ? "report.md may be omitted. If it already exists or the caller elects to maintain it, keep every selected template and substantive general-rule row consistent with actual project-relative .do paths and one-based inclusive line ranges."
+          : "After creating or revising Stata code, record each selected template and each substantive general-rule implementation as a separate row with the actual project-relative .do path and one-based inclusive line range. Use - as the general_rule label_id and record nearest_template_hint=<label_id|none>; template_status=<no_suitable_template|wrong_selection|project_specific_contract>; hint_used=<borrowed idea|none>. Keep provenance out of the .do source. Never emit legacy general_rule_fallback or fallback_trigger values.",
     },
     user_summary: {
       decision: intent === "review_only" ? "review_only" : planningMode,
@@ -4584,9 +5429,84 @@ function stageContract(stage) {
     robustness: ["본문 사양과 위협의 대응관계 명시", "placebo, 대안 결과, 이질성은 사전 지정", "재표집은 seed와 반복 수 기록"],
     figures: ["그림 생성 입력과 표본을 명시", "축, 단위, 기준기간을 라벨링", "수동 편집 없이 재생성 가능"],
     exports: ["표는 Excel, 그림은 PDF, 추정치는 .ster 경로로 저장", "모든 결과가 생성 코드로 연결", "TeX 출력은 생성하거나 제안하지 않음"],
-    master_orchestration: ["version과 프로젝트 root 하나 설정", "입력, 중간, 분석용, ster, table, figures, do/log 역할의 경로를 기존 구조에 맞게 파생", "유효한 기존 호출 순서를 보존하고 새 프로젝트에서만 config, prep, analysis 표준 분리를 적용"],
+    master_orchestration: ["version과 공유 directory root 설정", "상단에 정확한 프로젝트 Input 및 Output 파일 목록 주석", "각 direct do/run/include 호출 직전의 정확한 Input, Output 또는 Output: none, 역할 주석", "기존 프로젝트는 유효한 호출 순서를 보존하고, 새 applied-micro panel project 또는 승인된 overhaul이 preparation, summary, estimation을 모두 필요로 할 때만 analysis panel을 먼저 만든 뒤 두 consumer를 독립 실행"],
   };
   return contracts[stage];
+}
+
+function requestedNewProjectLayout(args, stages) {
+  const analysisType = String(args.analysis_type || "applied_micro").toLowerCase();
+  const dataShape = String(args.data_shape || "unspecified").toLowerCase();
+  const hasPreparation = stages.some((stage) => ["import", "integrity_audit", "cleaning_labels", "merge_reshape", "panel_construction"].includes(stage));
+  const hasSummary = stages.includes("descriptives_balance_sample_flow");
+  const hasRegression = stages.some((stage) => ["estimation", "robustness"].includes(stage));
+  const outputs = (args.outputs && args.outputs.length ? args.outputs : ["tables", "figures", ...(hasRegression ? ["ster"] : [])]).map((value) => String(value).toLowerCase());
+  const wantsTable = outputs.some((value) => /table|excel|xls/.test(value));
+  const wantsFigure = outputs.some((value) => /figure|pdf|graph/.test(value));
+  const wantsSter = outputs.some((value) => /ster|estimate/.test(value));
+  const isPanel = dataShape === "panel" || dataShape === "longitudinal";
+  const isAppliedMicro = analysisType === "applied_micro" || analysisType === "applied micro";
+  const useReadablePanelSpine = isAppliedMicro && isPanel && hasPreparation && hasSummary && hasRegression;
+  if (useReadablePanelSpine) {
+    const paths = NEW_PROJECT_TREE.filter((item) => {
+      if (item === "project/figures/") return wantsFigure;
+      if (item === "project/table/") return wantsTable;
+      if (item === "project/ster/") return hasRegression && wantsSter;
+      return true;
+    });
+    return {
+      paths,
+      markdown: paths.length === NEW_PROJECT_TREE.length ? NEW_PROJECT_TREE_MARKDOWN : renderProposedPathTree(
+        paths.filter((item) => item.endsWith("/")).map((item) => item.replace(/^project\//, "").replace(/\/$/, "")),
+        paths.filter((item) => !item.endsWith("/")).map((item) => item.replace(/^project\//, "")),
+      ),
+      sequence: ["do/build_analysis_panel.do", "do/build_summary.do", "do/run_regressions.do"],
+      standard: true,
+    };
+  }
+  const relativeFolders = ["do", "data/raw"];
+  const relativeFiles = ["README.md", "masters.do", "do/main.log"];
+  const sequence = [];
+  if (hasPreparation) {
+    relativeFolders.push("data/final");
+    relativeFiles.push("do/build_analysis_data.do");
+    sequence.push("do/build_analysis_data.do");
+  }
+  if (hasSummary) {
+    if (wantsTable) relativeFolders.push("table");
+    if (wantsFigure) relativeFolders.push("figures");
+    relativeFiles.push("do/build_summary.do");
+    sequence.push("do/build_summary.do");
+  }
+  if (hasRegression) {
+    if (wantsTable) relativeFolders.push("table");
+    if (wantsSter) relativeFolders.push("ster");
+    if (wantsFigure) relativeFolders.push("figures");
+    relativeFiles.push("do/run_regressions.do");
+    sequence.push("do/run_regressions.do");
+  }
+  if (stages.includes("figures")) {
+    if (wantsFigure) relativeFolders.push("figures");
+    if (!relativeFiles.includes("do/run_regressions.do")) {
+      relativeFiles.push("do/build_figures.do");
+      sequence.push("do/build_figures.do");
+    }
+  }
+  if (stages.includes("exports") && !hasSummary && !hasRegression) {
+    relativeFiles.push("do/export_outputs.do");
+    sequence.push("do/export_outputs.do");
+    if (wantsTable) relativeFolders.push("table");
+    if (wantsFigure) relativeFolders.push("figures");
+    if (wantsSter) relativeFolders.push("ster");
+  }
+  const folders = unique(relativeFolders);
+  const files = unique(relativeFiles);
+  return {
+    paths: [...files.map((item) => `project/${item}`), ...folders.map((item) => `project/${item}/`)],
+    markdown: renderProposedPathTree(folders, files),
+    sequence,
+    standard: false,
+  };
 }
 
 function workflowBlueprint(args) {
@@ -4600,6 +5520,10 @@ function workflowBlueprint(args) {
   const noNewPersistentVariables = args.no_new_persistent_variables === true;
   if (plannedVariables.length && noNewPersistentVariables) throw new Error("planned_variables와 no_new_persistent_variables: true를 함께 지정할 수 없습니다.");
   const stages = STAGES.filter((stage) => requested.includes(stage));
+  const newLayout = projectMode === "new" ? requestedNewProjectLayout(args, stages) : null;
+  const requestedOutputs = (args.outputs && args.outputs.length
+    ? args.outputs
+    : ["tables", "figures", ...(stages.some((stage) => ["estimation", "robustness"].includes(stage)) ? ["ster"] : [])]).map(String);
   const structures = workflows.packages
     .filter((pkg) => ["gold_candidate", "partial_gold", "conditional_priority"].includes(pkg.corpus_role))
     .map((pkg) => ({
@@ -4611,9 +5535,9 @@ function workflowBlueprint(args) {
       master_files: pkg.files.filter((file) => file.stages.includes("master_orchestration")).map((file) => file.path),
     }));
   return {
-    profile: { analysis_type: args.analysis_type || "applied_micro", data_shape: args.data_shape || "unspecified", project_size: args.project_size || "medium", outputs: args.outputs || ["tables", "figures"], project_mode: projectMode },
-    recommended_tree: projectMode === "new" ? NEW_PROJECT_TREE : [],
-    proposed_file_tree: projectMode === "new" ? { paths: NEW_PROJECT_TREE, tree_markdown: NEW_PROJECT_TREE_MARKDOWN } : { paths: [], tree_markdown: null },
+    profile: { analysis_type: args.analysis_type || "applied_micro", data_shape: args.data_shape || "unspecified", project_size: args.project_size || "medium", outputs: requestedOutputs, project_mode: projectMode },
+    recommended_tree: projectMode === "new" ? newLayout.paths : [],
+    proposed_file_tree: projectMode === "new" ? { paths: newLayout.paths, tree_markdown: newLayout.markdown } : { paths: [], tree_markdown: null },
     planned_variables: plannedVariables,
     variables_pending_user_definition: projectMode === "new" && !plannedVariables.length && !noNewPersistentVariables,
     no_new_persistent_variables: noNewPersistentVariables,
@@ -4623,10 +5547,10 @@ function workflowBlueprint(args) {
       variable_dictionary_columns: VARIABLE_DICTIONARY_COLUMNS,
       scope: "Document every newly created persistent variable saved to an analysis dataset or used in a reported analysis. Exclude temporary loop, scratch, and Stata returned-state names.",
     },
-    master_sequence: projectMode === "new" ? ["do/00_config.do", "do/10_prep_master.do", "do/20_analysis_master.do"] : ["preserve the detected existing entrypoint and call order"],
+    master_sequence: projectMode === "new" ? newLayout.sequence : ["preserve the detected existing entrypoint and call order"],
     structure_policy: {
-      standard_tree_applies: projectMode === "new",
-      new_project: "Use the recommended tree only for the first build and only after explicit approval.",
+      standard_tree_applies: projectMode === "new" && newLayout.standard,
+      new_project: "Use the unnumbered masters.do plus build_analysis_panel, build_summary, and run_regressions spine only when a new applied-micro panel workflow actually requests preparation, summary, and estimation. Otherwise construct only the requested stages and outputs. A coherent do-file near 1000 lines may remain intact; split only for a durable artifact boundary, independent rerun, genuine reuse, ownership boundary, or distinct responsibility.",
       existing_project: "Inventory first and preserve compatible folder names, file names, entrypoint, and orchestration. Do not rename, move, or add standard folders merely to match the template.",
     },
     write_approval_contract: {
@@ -4638,10 +5562,19 @@ function workflowBlueprint(args) {
     stage_contracts: stages.map((stage) => ({ stage, requirements: stageContract(stage) })),
     sample_flow_contract: ["원자료 N", "키 또는 범위 오류 제외 N", "merge 성공 N", "변수 결측 제외 N", "분석 표본 N", "각 표와 그림의 실제 N"],
     research_output_contract: {
-      entrypoint: projectMode === "new" ? ["root 00_master.do or main.do", "dynamic project root", "config then prep master then analysis master", "substantive errors stop the run"] : ["preserve the detected existing entrypoint", "dynamic project root", "preserve a valid existing call order", "substantive errors stop the run"],
+      entrypoint: projectMode === "new" ? ["root masters.do", "dynamic project root", ...(newLayout.standard ? ["build analysis-ready cleaned panel, then independently reopen it for summaries and regressions"] : ["run only the caller-requested stages in their declared dependency order"]), "substantive errors stop the run"] : ["preserve the detected existing entrypoint", "dynamic project root", "preserve a valid existing call order", "substantive errors stop the run"],
       readme_sections: ["approved actual file tree", "new persistent-variable names and reader-facing descriptions, or an explicit none statement", "how to run the research entrypoint"],
       execution_evidence: ["actual main log when execution is requested", "no r(#) errors", "optional agreed completion marker"],
-      deliverable_evidence: ["user-specified names and counts", "direct SHA-256 evidence for generated artifacts", "all outputs regenerated without manual coefficient transfer"],
+      deliverable_evidence: [
+        "user-specified names and counts",
+        "direct SHA-256 evidence for generated artifacts",
+        ...(stages.includes("descriptives_balance_sample_flow") && requestedOutputs.some((value) => /table|excel|xls/i.test(value)) ? ["summary Excel"] : []),
+        ...(stages.includes("descriptives_balance_sample_flow") && requestedOutputs.some((value) => /figure|pdf|graph/i.test(value)) ? ["optional descriptive PDFs"] : []),
+        ...(stages.some((stage) => ["estimation", "robustness"].includes(stage)) && requestedOutputs.some((value) => /table|excel|xls/i.test(value)) ? ["regression Excel"] : []),
+        ...(stages.some((stage) => ["estimation", "robustness"].includes(stage)) && (requestedOutputs.some((value) => /ster|estimate/i.test(value)) || !args.outputs) ? ["reusable .ster"] : []),
+        ...(stages.includes("figures") && requestedOutputs.some((value) => /figure|pdf|graph/i.test(value)) ? ["optional event-study PDFs when an event-study figure is contracted"] : []),
+        "all outputs regenerated without manual coefficient transfer",
+      ],
       verdicts: ["verified only after the requested static, log, README, and output checks pass", "needs_revision with explicit blockers otherwise"],
     },
     observed_structure_references: structures,
@@ -5139,7 +6072,14 @@ function detectExternalOrchestrators(root, records) {
       }
     }
     const resolvedDoFiles = unique(calls.filter((call) => call.resolved).map((call) => call.resolved));
-    if (resolvedDoFiles.length >= 2) orchestrators.push({ path: relative, kind: "make", resolved_do_files: resolvedDoFiles, calls });
+    if (resolvedDoFiles.length >= 2) orchestrators.push({
+      path: relative,
+      kind: "make",
+      resolved_do_files: resolvedDoFiles,
+      execution_order_status: "not_inferred",
+      execution_session_contract: "each detected Stata CLI recipe is an isolated process",
+      calls,
+    });
   }
   return orchestrators;
 }
@@ -5164,11 +6104,11 @@ function detectStagesFromContent(file, content) {
 
 function scopedGlobalFindings(records) {
   const definitions = [];
-  const specificationName = /(?:^|_)(?:controls?|covariates?|sample|event|selector|keep|order|positions?|reference|notes?|cluster|fixed_effects?|rhs|absorb|vce)(?:_|$)/i;
+  const specificationName = /(?:^|_)(?:outcomes?|dependent|depvars?|controls?|covariates?|sample|event|selector|keep|order|positions?|reference|notes?|cluster|fixed_effects?|rhs|absorb|vce)(?:_|$)/i;
   const leafFileBinding = /\.(?:dta|ster|xlsx?|csv|pdf|gph|png|svg|json|log|smcl|txt)(?:["']?\s*)$/i;
   for (const record of records) {
     for (const row of stripComments(record.content)) {
-      const match = row.trimmed.match(/^global\s+([A-Za-z_][A-Za-z0-9_]*)\b(?:\s+(.+))?$/i);
+      const match = row.trimmed.match(new RegExp(`^${STATA_GLOBAL_COMMAND}\\s+([A-Za-z_][A-Za-z0-9_]*)\\b(?:\\s+(.+))?$`, "i"));
       if (!match) continue;
       const kind = specificationName.test(match[1])
         ? "specification"
@@ -5185,25 +6125,33 @@ function scopedGlobalFindings(records) {
   return definitions.flatMap((definition) => {
     const escaped = definition.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const reference = new RegExp(`\\$(?:\\{${escaped}\\}|${escaped}\\b)`);
-    const consumers = [...activeByFile.entries()].filter(([, content]) => reference.test(content)).map(([file]) => file);
-    if (consumers.length > 1) return [];
+    const foreachGlobal = new RegExp(`^\\s*foreach\\s+[A-Za-z_][A-Za-z0-9_]*\\s+of\\s+global\\s+${escaped}\\b`, "im");
+    const consumers = [...activeByFile.entries()].filter(([, content]) => reference.test(content) || foreachGlobal.test(content)).map(([file]) => file);
+    if (!consumers.length) {
+      return [{
+        severity: "warning",
+        rule: "unused_global",
+        file: definition.file,
+        line: definition.line,
+        message: `${definition.name} global의 소비 지점이 프로젝트에서 확인되지 않습니다.`,
+        suggestion: "사용하지 않는 global은 제거하고 향후 확장용 interface를 남기지 마세요.",
+      }];
+    }
+    if (consumers.includes(definition.file)) return [];
+    if (consumers.length > 1 && definition.kind === "file_binding") return [];
     const isFileBinding = definition.kind === "file_binding";
-    const message = consumers.length
-      ? isFileBinding
-        ? `${definition.name} leaf 파일 global은 ${consumers[0]} 한 파일에서만 소비됩니다.`
-        : `${definition.name} global은 ${consumers[0]} 한 파일에서만 소비됩니다.`
-      : `${definition.name} global의 소비 지점이 프로젝트에서 확인되지 않습니다.`;
+    const message = isFileBinding
+      ? `${definition.name} leaf 파일 global이 정의 파일과 다른 ${consumers.join(", ")}에서 소비됩니다.`
+      : `${definition.name} substantive global이 정의 파일과 다른 ${consumers.join(", ")}에서 소비됩니다.`;
     return [{
       severity: "warning",
-      rule: isFileBinding ? "single_consumer_file_binding_global" : "single_consumer_specification_global",
+      rule: isFileBinding ? "remote_leaf_file_binding_global" : "remote_specification_global",
       file: definition.file,
       line: definition.line,
       message,
-      suggestion: consumers.length
-        ? isFileBinding
-          ? `둘 이상의 do-file이 공유하는 정확한 파일 계약이 아니라면 ${consumers[0]}의 첫 사용 직전에 local ${definition.name}으로 두고 setup에는 공유 디렉터리 root만 남기세요.`
-          : `정말 cross-do-file 공개 계약이 아니라면 ${consumers[0]}의 첫 사용 직전에 local ${definition.name}으로 두세요.`
-        : "사용하지 않는 global은 제거하고, 향후 확장용 전역 인터페이스를 남기지 마세요.",
+      suggestion: isFileBinding
+        ? "실제 producer-consumer artifact contract가 아니라면 소비 do-file에서 literal 또는 descriptive global로 다시 정의하고 setup에는 공유 directory root만 남기세요."
+        : "outcome list와 반복되는 설명적 binding은 이를 소비하는 do-file에서 정의하거나 다시 정의하세요. 회귀의 substantive specification은 estimator block에 literal로 보이게 두세요.",
     }];
   });
 }
@@ -5231,6 +6179,7 @@ function assessEstimabilityReadback(readback, staticFindings = []) {
   const modelResults = models.map((model) => {
     const observed = (model.observed_eb_terms || []).map(String);
     const declaredTerms = (model.declared_nonreference_terms || []).map(String).filter(Boolean);
+    const declaredReferenceTerms = (model.declared_reference_terms || []).map(String).filter(Boolean);
     const terms = declaredTerms.map((declared) => {
       const exact = observed.find((item) => item === declared);
       const conceptual = observed.find((item) => conceptualFactorTerm(item) === conceptualFactorTerm(declared));
@@ -5242,11 +6191,23 @@ function assessEstimabilityReadback(readback, staticFindings = []) {
         exact_raw_match: Boolean(exact),
       };
     });
+    const references = declaredReferenceTerms.map((declared) => {
+      const exact = observed.find((item) => item === declared);
+      const conceptual = observed.find((item) => conceptualFactorTerm(item) === conceptualFactorTerm(declared));
+      const matched = exact || conceptual || null;
+      return {
+        declared,
+        observed: matched,
+        status: matched ? "reference_present" : "absent_as_declared",
+        exact_raw_match: Boolean(exact),
+      };
+    });
     return {
       model_id: String(model.model_id || "unnamed_model"),
       declaration_status: declaredTerms.length ? "declared" : "missing_nonreference_contract",
       terms,
-      declared_reference_terms: (model.declared_reference_terms || []).map(String),
+      declared_reference_terms: declaredReferenceTerms,
+      references,
       observed_eb_terms: observed,
     };
   });
@@ -5257,13 +6218,24 @@ function assessEstimabilityReadback(readback, staticFindings = []) {
     ...model.terms
       .filter((term) => term.status !== "estimated")
       .map((term) => ({ model_id: model.model_id, ...term })),
+    ...model.terms
+      .filter((term) => term.status === "estimated" && !term.exact_raw_match)
+      .map((term) => ({ model_id: model.model_id, ...term, status: "raw_name_mismatch", message: "The coefficient is conceptually present, but the declared raw token does not exactly match observed e(b)." })),
+    ...model.references
+      .filter((term) => term.status === "reference_present")
+      .map((term) => ({ model_id: model.model_id, ...term, message: "A declared reference term is present in observed e(b); verify the base or omitted-slot declaration before selector construction." })),
   ]);
-  const missing = issues.some((row) => row.status === "missing" || row.status === "undeclared");
+  const incomplete = issues.some((row) => ["missing", "undeclared", "raw_name_mismatch", "reference_present"].includes(row.status));
   return {
     runtime_estimability: {
-      status: missing ? "incomplete" : "complete",
+      status: incomplete ? "incomplete" : "complete",
       models: modelResults,
       boundary: "This consumes caller-supplied exact e(b) colfullnames; it does not claim that Stata execution or model interpretation passed unless separately evidenced.",
+    },
+    selector_readiness: {
+      status: modelResults.every((model) => model.terms.every((term) => term.status === "estimated" && term.exact_raw_match)
+        && model.references.every((term) => term.status === "absent_as_declared")) ? "complete" : "incomplete",
+      required_action: "Bind outreg2 rows and coefplot selectors to the exact observed raw e(b) tokens, not conceptual factor-name matches.",
     },
     substantive_validity: {
       status: issues.length ? "needs_review" : "supported_by_readback",
@@ -5292,9 +6264,12 @@ function auditProject(args) {
   const files = discovered.files;
   const records = files.map((file) => {
     const content = fs.readFileSync(file, "utf8");
-    const calls = stripComments(content).flatMap((row) => {
-      const match = row.trimmed.match(/^(?:do|run|include)\s+(?:"([^"]+)"|([^\s,]+))/i);
-      return match ? [{ line: row.line, target: match[1] || match[2] }] : [];
+    const calls = activeLogicalEntries(content).flatMap((entry) => {
+      const command = normalizeCommand(entry.text.trim());
+      const match = matchMasterCallTarget(command);
+      const rawKind = command.match(/^(do|ru(?:n)?|include)\b/i)?.[1]?.toLowerCase();
+      const kind = rawKind === "ru" || rawKind === "run" ? "run" : rawKind;
+      return match ? [{ line: entry.line, target: match[1] || match[2], kind }] : [];
     });
     return { path: path.relative(root, file).replaceAll("\\", "/"), absolute_path: file, content, stages: detectStagesFromContent(file, content), calls, lint: null };
   });
@@ -5330,7 +6305,7 @@ function auditProject(args) {
       const matches = exact ? [exact] : suffix.length ? suffix : baseMatches;
       const resolved = matches.length === 1 ? matches[0].path : null;
       const status = resolved ? "resolved" : matches.length > 1 ? "ambiguous" : "unresolved";
-      callGraph.push({ from: record.path, line: call.line, target: call.target, resolved, status, candidates: matches.map((row) => row.path) });
+      callGraph.push({ from: record.path, line: call.line, target: call.target, kind: call.kind, resolved, status, candidates: matches.map((row) => row.path) });
       if (status === "unresolved") structural.push({ severity: "error", rule: "unresolved_call", file: record.path, line: call.line, message: `호출 대상 ${call.target}을 찾을 수 없습니다.` });
       if (status === "ambiguous") structural.push({ severity: "warning", rule: "ambiguous_call", file: record.path, line: call.line, message: `호출 대상 ${call.target}이 여러 파일과 일치합니다.` });
       if (resolved && seen.has(resolved)) structural.push({ severity: "warning", rule: "duplicate_call", file: record.path, line: call.line, message: `${resolved}을 같은 파일에서 중복 호출합니다.` });
@@ -5359,12 +6334,22 @@ function auditProject(args) {
   }
   const masterPolicyTarget = explicitEntrypoints.find((record) => masters.includes(record)) || (!ambiguousDefaultEntrypoint ? namedTopMaster : null);
   if (masterPolicyTarget) {
-    masterPolicyTarget.lint = lintContent(masterPolicyTarget.content, "auto", masterPolicyTarget.absolute_path);
+    masterPolicyTarget.lint = lintContent(masterPolicyTarget.content, "master", masterPolicyTarget.absolute_path);
     const topEdges = callGraph.filter((edge) => edge.from === masterPolicyTarget.path && edge.resolved);
-    const prepIndex = topEdges.findIndex((edge) => /prep|clean|build/i.test(edge.resolved));
-    const analysisIndex = topEdges.findIndex((edge) => /analysis|table|figure|result/i.test(edge.resolved));
-    if (strictStructure && (prepIndex < 0 || analysisIndex < 0)) structural.push({ severity: "warning", rule: "prep_analysis_split", file: masterPolicyTarget.path, message: "새 프로젝트 표준 구조의 top master에서 전처리 master와 분석 master 호출이 모두 확인되지 않습니다." });
-    else if (prepIndex >= 0 && analysisIndex >= 0 && prepIndex > analysisIndex) structural.push({ severity: "error", rule: "master_order", file: masterPolicyTarget.path, message: "분석 master가 전처리 master보다 먼저 호출됩니다." });
+    const panelIndex = topEdges.findIndex((edge) => /build_analysis_panel/i.test(edge.resolved));
+    const summaryIndex = topEdges.findIndex((edge) => /build_summary/i.test(edge.resolved));
+    const regressionIndex = topEdges.findIndex((edge) => /run_regressions/i.test(edge.resolved));
+    const readableDefault = panelIndex >= 0 && summaryIndex >= 0 && regressionIndex >= 0;
+    const legacyPrepIndex = topEdges.findIndex((edge) => /prep|clean/i.test(edge.resolved));
+    const legacyAnalysisIndex = topEdges.findIndex((edge) => /analysis_master|table|figure|result/i.test(edge.resolved));
+    const compatibleLegacySplit = legacyPrepIndex >= 0 && legacyAnalysisIndex >= 0;
+    if (strictStructure && !readableDefault && !compatibleLegacySplit) {
+      structural.push({ severity: "warning", rule: "analysis_panel_summary_regression_split", file: masterPolicyTarget.path, message: "새 프로젝트 기본 구조의 analysis panel, summary, regressions 호출이 확인되지 않았고 보존 가능한 기존 prep-analysis split도 확인되지 않습니다." });
+    } else if (strictStructure && readableDefault && !(panelIndex < summaryIndex && panelIndex < regressionIndex)) {
+      structural.push({ severity: "error", rule: "master_order", file: masterPolicyTarget.path, message: "analysis panel producer가 summary와 regressions consumer보다 먼저 호출되지 않습니다." });
+    } else if (strictStructure && !readableDefault && compatibleLegacySplit && legacyPrepIndex > legacyAnalysisIndex) {
+      structural.push({ severity: "warning", rule: "legacy_master_order_name_hint", file: masterPolicyTarget.path, message: "파일명만 보면 기존 분석 단계가 전처리 단계보다 먼저일 수 있습니다. 실제 Input/Output 계약과 승인된 stage binding으로 순서를 확인하세요." });
+    }
     const strengthNames = new Set(masterPolicyTarget.lint.strengths.map((row) => row.rule));
     if (!strengthNames.has("stata_version")) structural.push({ severity: "warning", rule: "missing_version", file: masterPolicyTarget.path, message: "top master에 Stata version 선언이 없습니다." });
     if (!strengthNames.has("single_project_root")) structural.push({ severity: "warning", rule: "missing_project_root", file: masterPolicyTarget.path, message: "top master에 단일 프로젝트 root 설정이 없습니다." });
@@ -5376,7 +6361,15 @@ function auditProject(args) {
         if (called) pathContractRecords.push(called);
       }
       const lower = pathContractRecords.map((record) => record.content).join("\n").toLowerCase();
-      for (const tier of ["raw", "generated", "final", "ster", "table", "figures", "log"]) {
+      const requiredPathTiers = [
+        ...(requestedStages.includes("import") ? ["raw"] : []),
+        ...(requestedStages.some((stage) => ["cleaning_labels", "merge_reshape", "panel_construction"].includes(stage)) ? ["final"] : []),
+        ...(requestedStages.some((stage) => ["descriptives_balance_sample_flow", "estimation", "exports"].includes(stage)) ? ["table"] : []),
+        ...(requestedStages.includes("estimation") ? ["ster"] : []),
+        ...(requestedStages.includes("figures") ? ["figures"] : []),
+        ...(requestedStages.includes("master_orchestration") ? ["log"] : []),
+      ];
+      for (const tier of unique(requiredPathTiers)) {
         if (!lower.includes(tier)) structural.push({ severity: "warning", rule: `missing_path_${tier}`, file: masterPolicyTarget.path, message: `새 프로젝트 표준 구조의 ${tier} 경로 계약이 top master 또는 직접 호출된 config에서 확인되지 않습니다.` });
       }
     }
@@ -5432,6 +6425,183 @@ function auditProject(args) {
     .filter(Boolean)
     .map((record) => [record.absolute_path, record.content]));
   const projectGlobals = collectProjectGlobalEnvironment(projectContents, root);
+  const edgesByCallSite = new Map(callGraph
+    .filter((edge) => edge.resolved)
+    .map((edge) => [`${edge.from}:${edge.line}`, { resolved: edge.resolved, kind: edge.kind || "do" }]));
+  const appendInvocationFindings = (record, rows, actualLine) => {
+    for (const row of rows) {
+      const candidate = { ...row, line: actualLine };
+      if (!record.lint.findings.some((existing) => existing.rule === candidate.rule && existing.line === candidate.line && existing.message === candidate.message)) {
+        record.lint.findings.push(candidate);
+      }
+    }
+  };
+  const executionTrace = [];
+  const executeWithCallTimeGlobals = (recordPath, session, trail = new Set(), sharedLocalState = null) => {
+    if (trail.has(recordPath)) return;
+    const record = activeByPath.get(recordPath);
+    if (!record) return;
+    const nextTrail = new Set(trail);
+    nextTrail.add(recordPath);
+    const executableEntries = [];
+    let programDefinition = null;
+    for (const entry of activeLogicalEntries(record.content)) {
+      const command = normalizeCommand(entry.text.trim());
+      const definitionStart = parseStataProgramDefinition(command);
+      if (!programDefinition && definitionStart) {
+        programDefinition = { name: definitionStart.name, entries: [], record_path: record.path };
+        continue;
+      }
+      if (programDefinition) {
+        if (/^end\s*$/i.test(command)) {
+          executableEntries.push({ program_definition: programDefinition });
+          programDefinition = null;
+        } else {
+          programDefinition.entries.push(entry);
+        }
+        continue;
+      }
+      executableEntries.push(entry);
+    }
+    const executeEntries = (entries, currentGlobals, currentLocals, currentRecord, programTrail = new Set()) => {
+      for (const entry of entries) {
+        if (entry.program_definition) {
+          session.programs.set(entry.program_definition.name, entry.program_definition);
+          continue;
+        }
+        const command = normalizeCommand(entry.text.trim());
+        executionTrace.push({
+          file: currentRecord.absolute_path,
+          content: entry.text,
+          logical_line: entry.line,
+          component_id: session.id,
+          executed_trace: true,
+          resolved_environment: [...currentGlobals.resolved, ...currentLocals.resolved],
+        });
+        const definition = parseStataMacroDefinition(command);
+        if (definition) {
+          const scope = definition.scope;
+          const name = definition.name;
+          const key = `${scope}:${name}`;
+          const combined = new Map([...currentGlobals.resolved, ...currentLocals.resolved]);
+          const literal = literalStataMacroBinding(definition.raw_value, combined);
+          if (scope === "global") {
+            currentGlobals.resolved.delete(key);
+            currentGlobals.ambiguous.delete(name);
+            if (literal === null) currentGlobals.ambiguous.add(name);
+            else currentGlobals.resolved.set(key, literal);
+          } else {
+            currentLocals.resolved.delete(key);
+            currentLocals.ambiguous.delete(key);
+            if (literal === null) currentLocals.ambiguous.add(key);
+            else currentLocals.resolved.set(key, literal);
+          }
+          continue;
+        }
+        const args = command.match(/^args\s+([\s\S]+)$/i);
+        if (args) {
+          for (const name of args[1].split(/\s+/).filter((value) => /^[A-Za-z_][A-Za-z0-9_]*$/.test(value))) {
+            const key = `local:${name.toLowerCase()}`;
+            currentLocals.resolved.delete(key);
+            currentLocals.ambiguous.add(key);
+          }
+          continue;
+        }
+        const syntaxLocals = stataSyntaxGeneratedLocals(command);
+        if (syntaxLocals.length) {
+          for (const name of syntaxLocals) {
+            const key = `local:${name}`;
+            currentLocals.resolved.delete(key);
+            currentLocals.ambiguous.add(key);
+          }
+          continue;
+        }
+        const droppedProgram = parseStataProgramDrop(command);
+        if (droppedProgram) {
+          applyStataProgramDrop(session.programs, droppedProgram);
+          continue;
+        }
+        const invokedProgram = command.match(/^([A-Za-z_][A-Za-z0-9_]*)\b/i)?.[1]?.toLowerCase();
+        if (invokedProgram && session.programs.has(invokedProgram) && !programTrail.has(invokedProgram)) {
+          const definition = session.programs.get(invokedProgram);
+          const definitionRecord = activeByPath.get(definition.record_path) || currentRecord;
+          const nextProgramTrail = new Set(programTrail);
+          nextProgramTrail.add(invokedProgram);
+          executeEntries(definition.entries, currentGlobals, { resolved: new Map(), ambiguous: new Set() }, definitionRecord, nextProgramTrail);
+          continue;
+        }
+        if (!isMasterCall(command)) continue;
+        const environment = {
+          resolved: new Map([...currentGlobals.resolved, ...currentLocals.resolved]),
+          ambiguous: new Set(currentGlobals.ambiguous),
+          invalidated: new Set(currentLocals.ambiguous),
+        };
+        const role = programTrail.size || currentRecord !== masterPolicyTarget ? "auto" : "master";
+        const invocationRows = masterCallNostopFindings(entry.text, role, "existing_audit", environment);
+        appendInvocationFindings(currentRecord, invocationRows, entry.line);
+        const edge = edgesByCallSite.get(`${currentRecord.path}:${entry.line}`);
+        if (edge) executeWithCallTimeGlobals(edge.resolved, session, nextTrail, edge.kind === "include" ? currentLocals : null);
+      }
+    };
+    executeEntries(executableEntries, session.globals, sharedLocalState || { resolved: new Map(), ambiguous: new Set() }, record);
+  };
+  const activePaths = new Set(activeRecords.map((record) => record.path));
+  const weakAdjacency = new Map(activeRecords.map((record) => [record.path, new Set()]));
+  const incoming = new Map(activeRecords.map((record) => [record.path, 0]));
+  for (const edge of callGraph) {
+    if (!edge.resolved || !activePaths.has(edge.from) || !activePaths.has(edge.resolved)) continue;
+    weakAdjacency.get(edge.from).add(edge.resolved);
+    weakAdjacency.get(edge.resolved).add(edge.from);
+    incoming.set(edge.resolved, incoming.get(edge.resolved) + 1);
+  }
+  const weakComponents = [];
+  const componentSeen = new Set();
+  for (const record of activeRecords) {
+    if (componentSeen.has(record.path)) continue;
+    const members = [];
+    const pending = [record.path];
+    while (pending.length) {
+      const current = pending.pop();
+      if (componentSeen.has(current)) continue;
+      componentSeen.add(current);
+      members.push(current);
+      for (const neighbor of weakAdjacency.get(current) || []) pending.push(neighbor);
+    }
+    weakComponents.push(members);
+  }
+  const executionSessions = [];
+  const externallyCoveredComponents = new Set();
+  for (const orchestrator of externalOrchestrators) {
+    const orderedTargets = unique(orchestrator.resolved_do_files.filter((recordPath) => activePaths.has(recordPath)));
+    if (!orderedTargets.length) continue;
+    // Each Make recipe launches a separate Stata process. Discovery order is
+    // not a shared in-memory execution session and must not leak globals,
+    // programs, or stored estimates between targets.
+    for (const target of orderedTargets) executionSessions.push([target]);
+    for (let index = 0; index < weakComponents.length; index += 1) {
+      if (weakComponents[index].some((member) => orderedTargets.includes(member))) externallyCoveredComponents.add(index);
+    }
+  }
+  for (let index = 0; index < weakComponents.length; index += 1) {
+    if (externallyCoveredComponents.has(index)) continue;
+    const members = weakComponents[index];
+    const declaredRoots = members.filter((member) => traversalRoots.includes(member) || pathMatches(member, includePaths));
+    const zeroIncoming = members.filter((member) => incoming.get(member) === 0);
+    const selected = unique([...(scopeMode === "all" ? zeroIncoming : []), ...declaredRoots]);
+    if (selected.length) executionSessions.push(selected);
+    else if (scopeMode === "all" || members.some((member) => pathMatches(member, includePaths))) executionSessions.push([members[0]]);
+  }
+  for (const [sessionIndex, entrypoints] of executionSessions.entries()) {
+    const session = { id: `execution:${sessionIndex + 1}`, globals: { resolved: new Map(), ambiguous: new Set() }, programs: new Map() };
+    for (const entrypoint of entrypoints) executeWithCallTimeGlobals(entrypoint, session);
+  }
+  for (const record of activeRecords) {
+    const errors = record.lint.findings.filter((row) => row.severity === "error").length;
+    const warnings = record.lint.findings.filter((row) => row.severity === "warning").length;
+    record.lint.summary.errors = errors;
+    record.lint.summary.warnings = warnings;
+    record.lint.status = errors ? "blocked" : warnings ? "needs_review" : "static_clean";
+  }
   const undirected = new Map(activeRecords.map((record) => [record.path, new Set()]));
   for (const edge of callGraph) {
     if (!edge.resolved || !undirected.has(edge.resolved)) continue;
@@ -5467,10 +6637,16 @@ function auditProject(args) {
       .filter(([absolutePath]) => componentIdsByAbsolute.get(absolutePath) === componentId));
     projectGlobalsByComponent.set(componentId, collectProjectGlobalEnvironment(componentContents, root));
   }
-  const outreg2HelperMultiplicity = canonicalOutreg2HelperMultiplicity(projectContents, projectGlobals, componentIdsByAbsolute, projectGlobalsByComponent);
+  const executionContents = new Map(executionTrace.map((event, index) => [`execution:${index + 1}`, event]));
+  const outreg2HelperMultiplicity = canonicalOutreg2HelperMultiplicity(
+    executionContents.size ? executionContents : projectContents,
+    projectGlobals,
+    componentIdsByAbsolute,
+    projectGlobalsByComponent,
+  );
   for (const record of activeRecords) {
     const formatterLine = activeLogicalEntries(record.content)
-      .find((entry) => /^program\s+define\s+outreg2_xlsx\b/i.test(normalizeCommand(entry.text.trim())))?.line;
+      .find((entry) => parseStataProgramDefinition(normalizeCommand(entry.text.trim()))?.name === "outreg2_xlsx")?.line;
     if (!formatterLine) continue;
     record.lint.strengths = record.lint.strengths.filter((row) => row.rule !== "outreg2_sheet_program_project_context_pending");
     if (outreg2HelperMultiplicity.necessary) {
@@ -5550,6 +6726,7 @@ function auditProject(args) {
     status: staticStatus,
     static_status: staticStatus,
     runtime_estimability: estimability.runtime_estimability,
+    selector_readiness: estimability.selector_readiness,
     substantive_validity: estimability.substantive_validity,
     verification_level: "static_workflow_audit",
     structure_mode: strictStructure ? "standard_new_project" : "preserve_existing_project",
@@ -5855,7 +7032,7 @@ const TOOLS = [
       include_dropped: { type: "boolean" },
       include_project_specific: { type: "boolean" },
       output_flow_profile: { type: "object", additionalProperties: true, description: "Outcome lineage, semantic sheet_groups, and physical sheet_plan. Each sheet_group decision_source is user, existing_project, model_from_metadata, or caller_declared; common aliases user_contract, explicit_user_request, and semantic_definition are normalized. A documented object may put the value in source, type, or kind." },
-      event_study_axis_profile: { type: "object", additionalProperties: true, description: "Independent automatic or selective fixed_group axis plan. Opt-in rendering_mode single_flat_mixed_axis_loop additionally requires exactly one fixed_group, one or more automatic groups, complete expected_plots, and mixed_loop_binding {target_path,target_spans,outcome_loop_local,fixed_outcomes_local,axis_options_local}." },
+      event_study_axis_profile: { type: "object", additionalProperties: true, description: "Independent automatic or selective fixed_group axis plan. Opt-in rendering_mode single_flat_mixed_axis_loop requires exactly one fixed_group, one or more automatic groups, and complete expected_plots. Legacy mixed_loop_binding local-name fields are reference-only template-reuse diagnostics, not a new-authoring contract; general-rule code uses a consuming-file global or literal for outcome/group membership and only a per-iteration local for axis options." },
       target_input_signature: { type: "object", additionalProperties: true },
       target_input_profile: { type: "object", additionalProperties: true },
       limit: { type: "integer", minimum: 1, maximum: 20 },
@@ -5980,7 +7157,7 @@ const TOOLS = [
         estimate_state: { type: "string", enum: ["ster", "stored_in_memory", "active_eclass", "keyed_sample_dta", "unknown"] },
         output_path: { type: "string" },
         output_flow_profile: { type: "object", additionalProperties: true, description: "Outcome lineage, semantic sheet_groups, and physical sheet_plan. Each sheet_group decision_source is user, existing_project, model_from_metadata, or caller_declared; common aliases user_contract, explicit_user_request, and semantic_definition are normalized. A documented object may put the value in source, type, or kind." },
-        event_study_axis_profile: { type: "object", additionalProperties: true, description: "Independent axis plan. The opt-in single_flat_mixed_axis_loop mode requires exactly one fixed_group plus automatic complement groups and an explicit mixed_loop_binding to one flat outcome loop." },
+        event_study_axis_profile: { type: "object", additionalProperties: true, description: "Independent axis plan. The opt-in single_flat_mixed_axis_loop mode requires exactly one fixed_group plus automatic complement groups. A legacy mixed_loop_binding is used only when auditing reference-only template reuse; it is not a general-rule authoring requirement." },
         input_signature: { type: "object", additionalProperties: true },
         workflow_incompatibility: { type: "object", additionalProperties: false, properties: {
           confirmed: { type: "boolean" },
@@ -6017,7 +7194,7 @@ const TOOLS = [
   },
   {
     name: "lint_do_file",
-    description: "Statically lint one Stata do-file or inline code. role describes the file; authoring_state controls whether new-master readability is blocking, modified-master readability is advisory, or existing code is audited without retroactive comment enforcement.",
+    description: "Statically lint one Stata do-file or inline code. role describes the file; authoring_state controls whether new master file-contract comments, local-macro scope, and zero-depth regression readability are blocking, modified-file findings are advisory, or existing code is audited without retroactive house-style enforcement.",
     inputSchema: { type: "object", additionalProperties: false, properties: { path: { type: "string" }, content: { type: "string" }, role: { type: "string" }, authoring_state: { type: "string", enum: ["new", "modified", "existing_audit"] } }, oneOf: [{ required: ["path"] }, { required: ["content"] }] },
     outputSchema: { type: "object", additionalProperties: true },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },

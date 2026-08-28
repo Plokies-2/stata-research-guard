@@ -159,24 +159,30 @@ test("an already-declared direct master shell stays prompt-only and unmarked", a
     clientInfo: { name: "master-shell-contract", version: "1" },
   });
   assert.match(initialized.instructions, /prompt-only (?:master )?shell/i);
-  assert.match(initialized.instructions, /log using.*flat direct do calls.*log close/i);
+  assert.match(initialized.instructions, /log using.*flat direct `do`, `run`, or `include` calls.*log close/i);
   assert.match(initialized.instructions, /Do not infer stages, paths, or order/i);
-  assert.match(initialized.instructions, /above every individual do call.*one Korean comment sentence.*role/i);
+  assert.match(initialized.instructions, /Immediately above every such call.*Input:.*Output:.*language-appropriate complete sentence/i);
 
   const skill = fs.readFileSync(path.join(ROOT, "skills", "stata-replication-workflow", "SKILL.md"), "utf8");
   const authoring = fs.readFileSync(path.join(ROOT, "skills", "stata-replication-workflow", "references", "general-rule-authoring.md"), "utf8");
   for (const text of [skill, authoring]) {
     assert.match(text, /prompt-only (?:master |orchestration )?shell/i);
-    assert.match(text, /flat (?:caller-declared sequence|list) of (?:the caller-declared )?direct `do` calls/i);
+    assert.match(text, /flat (?:caller-declared sequence|list) of (?:the caller-declared )?direct `do`, `run`, or `include` calls/i);
     assert.match(text, /(?:without a|no) template, ledger row, (?:or )?provenance/i);
     assert.match(text, /Every (?:called file|target) must (?:already )?exist/i);
-    assert.match(text, /above each individual `do` call.*one Korean comment sentence.*role/i);
+    assert.match(text, /above each (?:individual )?(?:`do` )?call.*Input:.*Output:.*language-appropriate complete sentence/i);
   }
 
   const shell = [
+    "* Project Inputs: data/raw/source.dta",
+    "* Project Outputs: data/final/analysis_panel.dta, table/results.xlsx",
     'log using "$logs/master.log", replace text',
+    "* Input: data/raw/source.dta",
+    "* Output: data/final/analysis_panel.dta",
     '* 원자료를 정리해 분석용 자료를 만든다.',
     'do "$do/10_prepare.do"',
+    "* Input: data/final/analysis_panel.dta",
+    "* Output: table/results.xlsx",
     '* 분석 모형을 추정하고 결과를 저장한다.',
     'do "$do/20_analyze.do"',
     "log close",
@@ -188,8 +194,12 @@ test("an already-declared direct master shell stays prompt-only and unmarked", a
 
   const missingComment = await client.tool("lint_do_file", {
     content: [
+      "* Project Inputs: data/raw/source.dta",
+      "* Project Outputs: data/final/analysis_panel.dta, table/results.xlsx",
       'log using "$logs/master.log", replace text',
       'do "$do/10_prepare.do"',
+      "* Input: data/final/analysis_panel.dta",
+      "* Output: table/results.xlsx",
       '* 분석 모형을 추정하고 결과를 저장한다.',
       'do "$do/20_analyze.do"',
       "log close",
@@ -200,7 +210,7 @@ test("an already-declared direct master shell stays prompt-only and unmarked", a
   assert.equal(missingComment.status, "blocked");
   assert.deepEqual(
     missingComment.findings.filter((row) => row.rule === "master_call_role_comment_missing").map((row) => row.line),
-    [2],
+    [4],
   );
 
   const existingAutoAudit = await client.tool("lint_do_file", {
@@ -214,6 +224,144 @@ test("an already-declared direct master shell stays prompt-only and unmarked", a
     role: "master",
   });
   assert.equal(nonDoCall.findings.some((row) => row.rule === "master_call_role_comment_missing"), false);
+
+  for (const command of ['ru "do/prep.do"', 'run "do/prep.do"', 'include "do/prep.do"']) {
+    const undocumentedCall = await client.tool("lint_do_file", {
+      content: ["* Project Inputs: none", "* Project Outputs: none", command].join("\n"),
+      role: "master",
+      authoring_state: "new",
+    });
+    assert.equal(undocumentedCall.status, "blocked");
+    assert.ok(undocumentedCall.findings.some((row) => row.rule === "master_call_input_comment_missing"));
+    assert.ok(undocumentedCall.findings.some((row) => row.rule === "master_call_output_comment_missing"));
+    assert.ok(undocumentedCall.findings.some((row) => row.rule === "master_call_role_comment_missing"));
+  }
+});
+
+test("master file contracts validate exact tokens, complete sentences, and top-call inventory", async (t) => {
+  const client = new McpClient();
+  t.after(() => client.close());
+  const validFileless = [
+    "* Project Inputs: none",
+    "* Project Outputs: data/final/example.sav",
+    "* Input: none",
+    "* Output: data/final/example.sav",
+    "* This call creates a persistent example dataset.",
+    'do "do/simulate.do"',
+  ].join("\n");
+  const valid = await client.tool("lint_do_file", { content: validFileless, role: "master", authoring_state: "new" });
+  assert.equal(valid.findings.some((row) => /^master_/.test(row.rule)), false, JSON.stringify(valid.findings));
+
+  const malformed = [
+    "* Project Inputs: data/raw/source.sas7bdat, data/raw",
+    "* Project Outputs: table/result.xlsx, table",
+    "* Input: data/raw/source.sas7bdat, data/raw",
+    "* Output: table/result.xlsx, table",
+    "* Summary",
+    'do "do/build_summary.do"',
+  ].join("\n");
+  const invalid = await client.tool("lint_do_file", { content: malformed, role: "master", authoring_state: "new" });
+  assert.equal(invalid.status, "blocked");
+  assert.ok(invalid.findings.some((row) => row.rule === "master_project_inputs_comment_missing"));
+  assert.ok(invalid.findings.some((row) => row.rule === "master_project_outputs_comment_missing"));
+  assert.ok(invalid.findings.some((row) => row.rule === "master_call_input_comment_missing"));
+  assert.ok(invalid.findings.some((row) => row.rule === "master_call_output_comment_missing"));
+  assert.ok(invalid.findings.some((row) => row.rule === "master_call_role_comment_missing"));
+
+  const mismatch = [
+    "* Project Inputs: data/raw/a.parquet",
+    "* Project Outputs: data/final/analysis.dta",
+    "* Input: data/raw/a.parquet, data/raw/b.json",
+    "* Output: data/final/analysis.dta, table/summary.xlsx",
+    "* 두 입력을 정리하고 분석자료와 표를 만든다.",
+    'do "do/build.do"',
+  ].join("\n");
+  const inventory = await client.tool("lint_do_file", { content: mismatch, role: "master", authoring_state: "new" });
+  assert.ok(inventory.findings.some((row) => row.rule === "master_project_inputs_inventory_mismatch"));
+  assert.ok(inventory.findings.some((row) => row.rule === "master_project_outputs_inventory_mismatch"));
+
+  const memoryOutput = await client.tool("lint_do_file", {
+    content: [
+      "* Project Inputs: none",
+      "* Project Outputs: data/final/analysis.dta",
+      "* Input: none",
+      "* Output: active dataset",
+      "* 이 호출은 메모리 자료만 다음 단계로 넘긴다.",
+      'do "do/prep.do"',
+      "* Input: active dataset",
+      "* Output: data/final/analysis.dta",
+      "* This call saves the active data as the persistent analysis file.",
+      'do "do/save_analysis.do"',
+    ].join("\n"),
+    role: "master",
+    authoring_state: "new",
+  });
+  assert.equal(memoryOutput.findings.some((row) => /^master_/.test(row.rule)), false, JSON.stringify(memoryOutput.findings));
+
+  for (const content of [
+    [
+      "* Project Inputs: none",
+      "* Project Outputs: none",
+      "* Input: none",
+      "* Output: active dataset",
+      "* This call leaves data only in memory.",
+      'do "do/prep.do"',
+    ].join("\n"),
+    [
+      "* Project Inputs: none",
+      "* Project Outputs: none",
+      "* Input: none",
+      "* Output: active dataset",
+      "* This call creates transient data.",
+      'do "do/prep.do"',
+      "* Input: none",
+      "* Output: none",
+      "* This call does not consume the transient data.",
+      'do "do/other.do"',
+    ].join("\n"),
+  ]) {
+    const danglingMemory = await client.tool("lint_do_file", { content, role: "master", authoring_state: "new" });
+    assert.equal(danglingMemory.status, "blocked");
+    assert.ok(danglingMemory.findings.some((row) => row.rule === "master_active_dataset_handoff_dangling"));
+  }
+
+  const staleMemoryReuse = await client.tool("lint_do_file", {
+    content: [
+      "* Project Inputs: none",
+      "* Project Outputs: data/mid.dta, data/final.dta",
+      "* Input: none",
+      "* Output: active dataset",
+      "* This call creates transient data.",
+      'do "do/prep.do"',
+      "* Input: active dataset",
+      "* Output: data/mid.dta",
+      "* This call consumes and saves the transient data.",
+      'do "do/save_mid.do"',
+      "* Input: active dataset",
+      "* Output: data/final.dta",
+      "* This call incorrectly reuses stale active state.",
+      'do "do/save_final.do"',
+    ].join("\n"),
+    role: "master",
+    authoring_state: "new",
+  });
+  assert.equal(staleMemoryReuse.status, "blocked");
+  assert.ok(staleMemoryReuse.findings.some((row) => row.rule === "master_active_dataset_input_unproduced"));
+
+  const activeHeader = await client.tool("lint_do_file", {
+    content: [
+      "* Project Inputs: active dataset",
+      "* Project Outputs: none",
+      "* Input: active dataset",
+      "* Output: none",
+      "* This call inspects the incoming active data.",
+      'do "do/inspect.do"',
+    ].join("\n"),
+    role: "master",
+    authoring_state: "new",
+  });
+  assert.equal(activeHeader.status, "blocked");
+  assert.ok(activeHeader.findings.some((row) => row.rule === "master_project_inputs_comment_missing"));
 });
 
 test("primitive direct statements stay direct, while optioned variants remain research decisions", async (t) => {
@@ -316,12 +464,12 @@ test("generated tool schemas retain researcher documentation without packaging r
       reader_description: "원자료 자산 기준을 충족하는 기업 지표",
       source_or_formula: "asset_value [thousand currency units] -> asset_value >= 2,000,000 -> 0/1 indicator",
       unit_observation_level: "0/1 indicator, firm-year",
-      creation_file: "do/10_prep_master.do",
+      creation_file: "do/build_analysis_panel.do",
     }],
   });
   assert.ok(blueprint.recommended_tree.includes("project/README.md"));
   assert.equal(blueprint.planned_variables[0].name, "large_firm");
-  assert.equal(blueprint.planned_variables[0].creation_file, "do/10_prep_master.do");
+  assert.equal(blueprint.planned_variables[0].creation_file, "do/build_analysis_panel.do");
   assert.ok(blueprint.readme_contract.variable_dictionary_columns.includes("source_or_formula"));
   assert.ok(blueprint.readme_contract.variable_dictionary_columns.includes("unit_observation_level"));
   assert.ok(blueprint.readme_contract.variable_dictionary_columns.includes("creation_file"));
@@ -390,4 +538,31 @@ test("depth summary keeps loop nesting distinct from general structural nesting"
     review_threshold: 4,
     definition: "all simultaneously active braced blocks, including loops and conditionals",
   });
+});
+
+test("primary prompt surfaces retain the readable Stata house rules", () => {
+  const pluginPrompt = JSON.stringify(JSON.parse(fs.readFileSync(path.join(ROOT, ".codex-plugin", "plugin.json"), "utf8")));
+  const skillPrompt = fs.readFileSync(path.join(ROOT, "skills", "stata-replication-workflow", "agents", "openai.yaml"), "utf8");
+  const instructions = fs.readFileSync(path.join(ROOT, "INSTRUCTIONS.md"), "utf8");
+  const mcpPrompt = fs.readFileSync(path.join(ROOT, "mcp", "server.cjs"), "utf8");
+  for (const surface of [pluginPrompt, skillPrompt, instructions, mcpPrompt]) {
+    assert.match(surface, /applied-micro panel/i);
+    assert.match(surface, /Project Inputs/);
+    assert.match(surface, /i\(2015\/2018 2020\/2024\)/);
+    assert.match(surface, /nonnegative factor index/i);
+    assert.match(surface, /Output: active dataset/i);
+    assert.match(surface, /omitted interior reference/i);
+    assert.match(surface, /boundary reference/i);
+    assert.match(surface, /nostop/i);
+    assert.match(surface, /nostop[\s\S]{0,100}(?:every|any|non-master|helper)/i);
+    assert.match(surface, /macro-expanded/i);
+    assert.match(surface, /capture/i);
+    assert.doesNotMatch(surface, /regular (?:and )?readable/i);
+    assert.match(surface, /do[\s\S]{0,40}run[\s\S]{0,40}include/i);
+  }
+  assert.match(pluginPrompt, /descriptive global/i);
+  assert.match(pluginPrompt, /zero substantive reference depth/i);
+  assert.match(skillPrompt, /descriptive global/i);
+  assert.match(skillPrompt, /zero substantive reference depth/i);
+  assert.doesNotMatch(pluginPrompt, /Do not use plain i\(<numlist>\)/i);
 });

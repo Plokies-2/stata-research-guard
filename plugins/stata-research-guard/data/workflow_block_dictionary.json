@@ -3290,8 +3290,8 @@
       "name_en": "Finalize, label, and save analysis data",
       "purpose_ko": "후속 분석에 필요한 변수만 남기고 새 변수 라벨과 저장 위치를 확정한다.",
       "maturity": "comparative",
-      "auto_selectable_count": 1,
-      "reference_only_count": 3,
+      "auto_selectable_count": 0,
+      "reference_only_count": 4,
       "guide_mechanics_count": 0,
       "aliases": [
         "분석자료 저장",
@@ -4777,7 +4777,7 @@
             "panel_employeremployee.dta path"
           ],
           "reusable_core": "확정된 표본에서 선언한 변수만 남기고 표시 순서와 정렬키를 적용한 뒤 compress하여 최종 dta로 저장한다.",
-          "preferred_within_checkpoint": true,
+          "preferred_within_checkpoint": false,
           "explicit_canonical_exception": false,
           "quality_rubric_review": {
             "status": "external_evidence_rubric_reviewed",
@@ -4853,10 +4853,10 @@
               "minimal_adaptation": 5
             },
             "weighted_score": 100.0,
-            "classification": "preferred_candidate",
-            "reviewer_classification": "preferred_candidate",
-            "classification_calibration_override": null,
-            "preferred_eligible": true,
+            "classification": "reference_only",
+            "reviewer_classification": "reference_only",
+            "classification_calibration_override": "new-authoring continuation audit blocks the deposited physical-line span; retain only as mechanics evidence",
+            "preferred_eligible": false,
             "reviewer_notes_ko": "표본이 이미 확정된 경우 final dataset interface를 가장 읽기 쉽게 고정하는 직접 block이다.",
             "uncertainty": "retained inventory와 sort key의 연구상 완전성은 target README·consumer audit에서 확인한다.",
             "current_vs_recommended_changes": [],
@@ -8592,8 +8592,8 @@
       "name_en": "Conventional regression estimation",
       "purpose_ko": "결과변수·처치·통제·고정효과·군집을 드러낸 표준 회귀를 실행한다.",
       "maturity": "comparative",
-      "auto_selectable_count": 8,
-      "reference_only_count": 2,
+      "auto_selectable_count": 6,
+      "reference_only_count": 4,
       "guide_mechanics_count": 164,
       "aliases": [
         "회귀",
@@ -8612,9 +8612,9 @@
         "e(sample) or equivalent sample lineage"
       ],
       "common_commands": [
-        "local",
         "regress",
         "reghdfe",
+        "local",
         "estadd_obs",
         "estadd_mean_y",
         "xtreg",
@@ -9749,7 +9749,7 @@
           ],
           "tradeoffs": [
             "prevents nuisance main-effect rows in raw outreg2 output",
-            "requires one flat <level>bn.time#1.treatment term for every declared nonreference level, the design reference absent, and every declared term verified in e(b)"
+            "keeps one compact selected-level time#treatment expression visible, with the design reference absent; exact raw e(b) verification remains required before selector use"
           ],
           "relationships": {
             "alternatives": [],
@@ -9766,12 +9766,12 @@
             ],
             "observable_signals": [
               "reghdfe",
-              "flat level-specific bn single # factor interaction",
+              "compact selected-level single # factor interaction",
               "absorb",
               "cluster"
             ],
             "produces": [
-              "event-study estimate with every declared nonreference time#treatment level in e(b) under Stata's exact raw token, including a retained first-term bn or actual-omitted o marker, and no ## main-effect expansion"
+              "compact single-# event-study source form that still requires full reghdfe, raw e(b), outreg2-row, and coefplot-selector runtime checks before promotion"
             ]
           },
           "input_signature": {
@@ -9841,7 +9841,7 @@
               "source_spans": [
                 [
                   5,
-                  14
+                  10
                 ]
               ],
               "context_radius_lines": 120,
@@ -9849,16 +9849,14 @@
             }
           },
           "command_anchors": [
-            "local",
             "reghdfe"
           ],
           "required_signals": [
             "reghdfe",
-            "flat level-specific bn single # factor interaction",
+            "compact selected-level single # factor interaction",
             "absorb",
             "cluster",
-            "runs an estimation command",
-            "defines path or workflow macros"
+            "runs an estimation command"
           ],
           "forbidden_signals": [
             "nested_loop",
@@ -9874,7 +9872,7 @@
             "2019 example base",
             "treat2019"
           ],
-          "reusable_core": "기준기간을 제외한 각 수준을 명시적 bn 항으로 쓰고 time과 treatment를 단일 #로 연결하는 event-study RHS",
+          "reusable_core": "기준기간을 제외한 selected-level numlist를 time과 treatment의 단일 #로 직접 연결하는 event-study RHS",
           "preferred_within_checkpoint": true,
           "explicit_canonical_exception": false,
           "quality_rubric_review": {
@@ -9951,11 +9949,11 @@
               "minimal_adaptation": 5
             },
             "weighted_score": 97.4,
-            "classification": "conditional_candidate",
-            "reviewer_classification": "conditional_candidate",
+            "classification": "reference_only",
+            "reviewer_classification": "reference_only",
             "classification_calibration_override": null,
-            "preferred_eligible": true,
-            "reviewer_notes_ko": "Canonical flat bn single-hash mechanics retain every declared nonreference level, and project bindings are isolated.",
+            "preferred_eligible": false,
+            "reviewer_notes_ko": "Compact syntax itself is runtime-valid, but this reghdfe span has not yet passed the complete exact raw e(b), outreg2-row, and coefplot-selector promotion contract, so it remains reference-only.",
             "uncertainty": "정적 source-span 및 인접 상태 심사다. 대상 프로젝트의 실제 변수 의미, 표본, estimator state와 경로는 적용 직전 다시 확인한다.",
             "current_vs_recommended_changes": [
               "선택 조건과 input profile이 맞을 때만 사용한다.",
@@ -9967,11 +9965,11 @@
           "source_spans": [
             [
               5,
-              14
+              10
             ]
           ],
-          "source_file_sha256": "7039190e6b2d0bcb6a4d25eff30a8c294adb137690d733b56062b798a78f5eda",
-          "code_sha256": "e6a204c53156594a9b928693bc4f78078c4775128dfa2aadcdb02deb6e8e5206"
+          "source_file_sha256": "15d285b740068bbc04a5a6c0b847c1155b4fbf3ff2a6a737077427de38365c49",
+          "code_sha256": "26ad648f30c8952c1034140e9053c5c3ef6e0ed68073aed9f3ffca601f101398"
         },
         {
           "label_id": "estimation.ols_explicit_vce.v1",
@@ -10181,11 +10179,11 @@
               "minimal_adaptation": 5
             },
             "weighted_score": 100.0,
-            "classification": "preferred_candidate",
-            "reviewer_classification": "preferred_candidate",
+            "classification": "reference_only",
+            "reviewer_classification": "reference_only",
             "classification_calibration_override": null,
-            "preferred_eligible": true,
-            "reviewer_notes_ko": "추정기 하나만 담고 후속 mean·store·ster·Excel 전이를 분리한 가장 짧은 conventional OLS block이다.",
+            "preferred_eligible": false,
+            "reviewer_notes_ko": "회귀 covariate macro가 현재 zero-reference-depth house rule과 충돌하므로 참고 전용이다.",
             "uncertainty": "OLS와 VCE의 연구상 타당성은 target specification contract에서 확인한다.",
             "current_vs_recommended_changes": [],
             "canonical_exception_override": null
@@ -10851,8 +10849,8 @@
       "name_en": "Staggered-adoption DID estimation",
       "purpose_ko": "시차 도입 처치에 맞는 DID 또는 비교 TWFE 사양을 추정한다.",
       "maturity": "comparative",
-      "auto_selectable_count": 8,
-      "reference_only_count": 2,
+      "auto_selectable_count": 7,
+      "reference_only_count": 3,
       "guide_mechanics_count": 0,
       "aliases": [
         "staggered DID",
@@ -11587,7 +11585,7 @@
             "reviewer_classification": "reference_only",
             "classification_calibration_override": "independent over-templating audit: retain source provenance but exclude the broad coupled block from generator retrieval",
             "preferred_eligible": false,
-            "reviewer_notes_ko": "원문 span과 인접 명령을 확인했다. 변수·키·파일명·자료 형태는 expected_binding으로 기록했으며, 제어흐름을 넘는 author-only helper·숨은 표본/처치 판단·분산된 다중 파일 수정이 확인될 때만 harmful_coupling으로 판정한다.",
+            "reviewer_notes_ko": "회귀 사양이 macro 뒤에 숨겨져 현재 zero-reference-depth house rule과 충돌하므로 참고 전용이다.",
             "uncertainty": "정적 source-span 심사다. 실제 자료 의미·실행 성공·목표 workflow interface·target workflow interface와 source-span boundary는 적용 전 재검증이 필요하다.",
             "current_vs_recommended_changes": [
               "정본 annotation/source는 변경하지 않는다.",
@@ -12010,11 +12008,11 @@
               "sample_estimand_visibility": 4
             },
             "weighted_score": 71.3,
-            "classification": "conditional_candidate",
-            "reviewer_classification": "conditional_candidate",
+            "classification": "reference_only",
+            "reviewer_classification": "reference_only",
             "classification_calibration_override": null,
             "preferred_eligible": false,
-            "reviewer_notes_ko": "원문 span과 인접 명령을 확인했다. 변수·키·파일명·자료 형태는 expected_binding으로 기록했으며, 제어흐름을 넘는 author-only helper·숨은 표본/처치 판단·분산된 다중 파일 수정이 확인될 때만 harmful_coupling으로 판정한다.",
+            "reviewer_notes_ko": "회귀 사양이 macro 뒤에 숨겨져 현재 zero-reference-depth house rule과 충돌하므로 참고 전용이다.",
             "uncertainty": "정적 source-span 심사다. 실제 자료 의미·실행 성공·목표 workflow interface·target workflow interface와 source-span boundary는 적용 전 재검증이 필요하다.",
             "current_vs_recommended_changes": [
               "정본 annotation/source는 변경하지 않는다.",
@@ -15409,8 +15407,8 @@
       "name_en": "Named-estimate coefficient plot",
       "purpose_ko": "명명된 저장 추정치의 선언된 계수만 동일 척도의 신뢰구간 그림으로 묶어 PDF로 내보낸다.",
       "maturity": "prototype",
-      "auto_selectable_count": 1,
-      "reference_only_count": 0,
+      "auto_selectable_count": 0,
+      "reference_only_count": 1,
       "guide_mechanics_count": 2,
       "aliases": [
         "coefplot",
@@ -15600,7 +15598,7 @@
             "fixed -0.15 to 0.15 scale"
           ],
           "reusable_core": "named stored estimates, a declared coefficient filter/order, explicit coefficient labels, and common-axis confidence intervals form a reusable active-graph assembly.",
-          "preferred_within_checkpoint": true,
+          "preferred_within_checkpoint": false,
           "explicit_canonical_exception": false,
           "quality_rubric_review": {
             "status": "external_evidence_rubric_reviewed",
@@ -15676,10 +15674,10 @@
               "minimal_adaptation": 4
             },
             "weighted_score": 87.2,
-            "classification": "preferred_candidate",
-            "reviewer_classification": "preferred_candidate",
-            "classification_calibration_override": null,
-            "preferred_eligible": true,
+            "classification": "reference_only",
+            "reviewer_classification": "reference_only",
+            "classification_calibration_override": "new-authoring lint blocks wildcard coefplot selectors; retain only as mechanics evidence",
+            "preferred_eligible": false,
             "reviewer_notes_ko": "Figure 5의 548-559는 outer loop 없이 완결된 active-graph assembly block이다. 저장 추정치와 coefficient-name contract를 target에서 먼저 검증하면 변수 구조 자체는 harmful coupling이 아니다. 파일 내보내기와 editable graph 저장은 별도 전이다.",
             "uncertainty": "coefplot 버전 및 target stored-estimate compatibility는 실행 전 preflight가 필요하며, 정적 span review는 실제 그래프 렌더링을 증명하지 않는다.",
             "current_vs_recommended_changes": [
@@ -15706,8 +15704,8 @@
       "name_en": "Descriptive bar chart",
       "purpose_ko": "확정된 long 또는 grouped summary 상태에서 선언된 값과 범주를 막대그림으로 만든다.",
       "maturity": "prototype",
-      "auto_selectable_count": 1,
-      "reference_only_count": 0,
+      "auto_selectable_count": 0,
+      "reference_only_count": 1,
       "guide_mechanics_count": 0,
       "aliases": [
         "graph bar",
@@ -15887,7 +15885,7 @@
             "Moment Value title"
           ],
           "reusable_core": "long summary 값에서 두 over() 범주와 series를 직접 드러내는 grouped bar active graph를 만든다.",
-          "preferred_within_checkpoint": true,
+          "preferred_within_checkpoint": false,
           "explicit_canonical_exception": false,
           "quality_rubric_review": {
             "status": "external_evidence_rubric_reviewed",
@@ -15963,8 +15961,9 @@
               "minimal_adaptation": 5
             },
             "weighted_score": 95,
-            "classification": "conditional_candidate",
-            "reviewer_classification": "conditional_candidate",
+            "classification": "reference_only",
+            "reviewer_classification": "reference_only",
+            "classification_calibration_override": "new-authoring continuation audit blocks the deposited physical-line span; retain only as mechanics evidence",
             "preferred_eligible": false,
             "reviewer_notes_ko": "AER 원문의 grouped bar를 active-graph 원자로 분리했다.",
             "uncertainty": "text annotation과 색상은 렌더링 검증 없이 자동 이식하지 않는다."
@@ -16717,8 +16716,8 @@
       "name_en": "Event-study figure",
       "purpose_ko": "event-time 계수와 신뢰구간, 기준기간을 명시해 동태효과 PDF를 만든다.",
       "maturity": "comparative",
-      "auto_selectable_count": 4,
-      "reference_only_count": 5,
+      "auto_selectable_count": 0,
+      "reference_only_count": 9,
       "guide_mechanics_count": 6,
       "aliases": [
         "event study figure",
@@ -16730,7 +16729,7 @@
       "input_contract": [
         "named event-time coefficients with one declared design reference",
         "validated event window and estimation sample",
-        "native Stata coefficient names retained; a conventional treatment-time RHS writes one flat <level>bn.time#1.treatment term for every nonreference level, keeps the design reference absent, verifies every declared term in e(b), and retains any estimator-created actual omission as its raw token",
+        "native Stata coefficient names retained; a conventional treatment-time RHS uses compact selected-level i(numlist).time#1.treatment when readable or a flat level-specific no-base list for an irregular window, keeps the design reference absent, discovers exact raw e(b) tokens, and retains any estimator-created actual omission as its raw token",
         "sheet_group declared independently from axis_group",
         "an axis_group with fixed range and ticks only when directly comparing closely related outcomes; automatic axis otherwise"
       ],
@@ -16765,7 +16764,7 @@
         "post_estimation_export",
         "named event-time coefficients with one declared design reference",
         "validated event window and estimation sample",
-        "native Stata coefficient names retained; a conventional treatment-time RHS writes one flat <level>bn.time#1.treatment term for every nonreference level, keeps the design reference absent, verifies every declared term in e(b), and retains any estimator-created actual omission as its raw token",
+        "native Stata coefficient names retained; a conventional treatment-time RHS uses compact selected-level i(numlist).time#1.treatment when readable or a flat level-specific no-base list for an irregular window, keeps the design reference absent, discovers exact raw e(b) tokens, and retains any estimator-created actual omission as its raw token",
         "sheet_group declared independently from axis_group",
         "an axis_group with fixed range and ticks only when directly comparing closely related outcomes; automatic axis otherwise",
         "PDF event-study figure with English-only presentation text",
@@ -16825,7 +16824,7 @@
             "requires": [
               "named event-time coefficients with one declared design reference",
               "validated event window and estimation sample",
-              "native Stata coefficient names retained; a conventional treatment-time RHS writes one flat <level>bn.time#1.treatment term for every nonreference level, keeps the design reference absent, verifies every declared term in e(b), and retains any estimator-created actual omission as its raw token",
+              "native Stata coefficient names retained; a conventional treatment-time RHS uses compact selected-level i(numlist).time#1.treatment when readable or a flat level-specific no-base list for an irregular window, keeps the design reference absent, discovers exact raw e(b) tokens, and retains any estimator-created actual omission as its raw token",
               "sheet_group declared independently from axis_group",
               "an axis_group with fixed range and ticks only when directly comparing closely related outcomes; automatic axis otherwise"
             ],
@@ -18452,11 +18451,11 @@
               "minimal_adaptation": 5
             },
             "weighted_score": 97.4,
-            "classification": "conditional_candidate",
-            "reviewer_classification": "conditional_candidate",
+            "classification": "reference_only",
+            "reviewer_classification": "reference_only",
             "classification_calibration_override": null,
             "preferred_eligible": false,
-            "reviewer_notes_ko": "Flat event figure flow preserves raw coefficient identity and immediate PDF output.",
+            "reviewer_notes_ko": "File-level local bindings conflict with the current lexical-necessity house rule, so this older figure flow is reference-only.",
             "uncertainty": "정적 source-span 및 인접 상태 심사다. 대상 프로젝트의 실제 변수 의미, 표본, estimator state와 경로는 적용 직전 다시 확인한다.",
             "current_vs_recommended_changes": [
               "선택 조건과 input profile이 맞을 때만 사용한다.",
@@ -18664,11 +18663,11 @@
               "minimal_adaptation": 5
             },
             "weighted_score": 97.4,
-            "classification": "conditional_candidate",
-            "reviewer_classification": "conditional_candidate",
+            "classification": "reference_only",
+            "reviewer_classification": "reference_only",
             "classification_calibration_override": null,
             "preferred_eligible": false,
-            "reviewer_notes_ko": "Fixed-axis logic is direct, one-level, and guarded by close-outcome evidence.",
+            "reviewer_notes_ko": "File-level local bindings conflict with the current lexical-necessity house rule, so this older fixed-axis flow is reference-only.",
             "uncertainty": "정적 source-span 및 인접 상태 심사다. 대상 프로젝트의 실제 변수 의미, 표본, estimator state와 경로는 적용 직전 다시 확인한다.",
             "current_vs_recommended_changes": [
               "선택 조건과 input profile이 맞을 때만 사용한다.",
@@ -18873,11 +18872,11 @@
               "minimal_adaptation": 5
             },
             "weighted_score": 97.4,
-            "classification": "conditional_candidate",
-            "reviewer_classification": "conditional_candidate",
+            "classification": "reference_only",
+            "reviewer_classification": "reference_only",
             "classification_calibration_override": null,
             "preferred_eligible": false,
-            "reviewer_notes_ko": "한 outcome의 figure lifecycle을 loop 없이 직접 드러내고 automatic-axis 정책을 보존한다.",
+            "reviewer_notes_ko": "File-level local bindings conflict with the current lexical-necessity house rule, so this older single-outcome flow is reference-only.",
             "uncertainty": "raw e(b) token identity와 stored estimate compatibility는 target runtime 직전에 확인한다.",
             "current_vs_recommended_changes": [],
             "canonical_exception_override": null
@@ -19085,11 +19084,11 @@
               "minimal_adaptation": 5
             },
             "weighted_score": 97.4,
-            "classification": "conditional_candidate",
-            "reviewer_classification": "conditional_candidate",
+            "classification": "reference_only",
+            "reviewer_classification": "reference_only",
             "classification_calibration_override": null,
             "preferred_eligible": false,
-            "reviewer_notes_ko": "한 fixed subset과 automatic complement만 허용하는 얕은 분기는 두 graph body를 조립하는 것보다 짧고 최종 축 적용범위도 직접 읽힌다.",
+            "reviewer_notes_ko": "File-level local bindings conflict with the current lexical-necessity house rule, so this older mixed-axis flow is reference-only.",
             "uncertainty": "가까운 outcome 판정과 numeric range 근거는 target metadata 및 렌더링 검사에서 다시 확인한다.",
             "current_vs_recommended_changes": [],
             "canonical_exception_override": null
@@ -41326,8 +41325,8 @@
       "name_en": "Estimation-sample standardization",
       "purpose_ko": "이름 있는 추정표본에서 변수 또는 지수 구성요소를 표준화한다.",
       "maturity": "comparative",
-      "auto_selectable_count": 1,
-      "reference_only_count": 1,
+      "auto_selectable_count": 0,
+      "reference_only_count": 2,
       "guide_mechanics_count": 0,
       "aliases": [
         "standardize",
@@ -41917,11 +41916,11 @@
               "minimal_adaptation": 5
             },
             "weighted_score": 100,
-            "classification": "preferred_candidate",
-            "reviewer_classification": "preferred_candidate",
+            "classification": "reference_only",
+            "reviewer_classification": "reference_only",
             "classification_calibration_override": null,
-            "preferred_eligible": true,
-            "reviewer_notes_ko": "One flat loop preserves the useful repetition while explicit assertions prevent hidden standardization failures.",
+            "preferred_eligible": false,
+            "reviewer_notes_ko": "Pre-loop file-level locals, including a substantive sample alias, conflict with the current lexical-necessity and point-of-use house rules, so this block is reference-only.",
             "uncertainty": "Target variable meaning, sample, estimator assumptions, and state compatibility must be verified immediately before use.",
             "current_vs_recommended_changes": [],
             "canonical_exception_override": null
