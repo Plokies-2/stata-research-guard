@@ -4,7 +4,9 @@
 
 단순한 코드 조각 모음이 아닙니다. 독립 promotion audit을 거친 guide mechanics 454개(기존 262개와 Top 51–100 확장 192개), guide card 454개, 그리고 별도로 생성한 research-usage example 166개를 서로 다른 격으로 관리합니다. 두 evidence layer의 자동선택 가능 항목은 모두 0개입니다. 선택한 명령의 공식·maintainer 가이드는 항상 함께 보여 주되 template 점수 경쟁에는 넣지 않고, 연구 코드용례가 현재 데이터 구조와 작업 상태에 정확히 맞을 때만 별도 reference evidence로 함께 제공합니다. 모든 구현에는 general rules가 먼저 적용되며, template은 하나의 원자적 전이를 완전히 덮을 때만 선택합니다.
 
-현재 배포 버전은 `0.2.0+codex.20260828101650`입니다.
+현재 배포 버전은 `0.2.0+codex.20260828131350`입니다.
+
+이번 버전은 도구 기능을 줄이지 않고 기본 컨텍스트를 정리했습니다. Skill 진입문은 54,941바이트에서 11,476바이트로, MCP initialize 응답은 25,467자에서 5,976자로 줄었습니다. 72개 checkpoint enum을 로컬 JSON Schema 정의로 공유해 `tools/list`도 47,148자에서 39,376자로 줄였으며, 기존 14개 도구와 lint·audit·runtime 계약은 유지합니다.
 
 ## 무엇이 좋은가
 

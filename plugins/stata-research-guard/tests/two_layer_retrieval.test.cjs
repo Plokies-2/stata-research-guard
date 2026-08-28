@@ -412,7 +412,8 @@ test("MCP wrapper is listed first and initialization makes it the required first
   assert.equal(listed.tools[0].name, "resolve_transition_evidence");
   const initialized = await dispatch("initialize", {});
   assert.match(initialized.instructions, /call resolve_transition_evidence first/i);
-  assert.match(initialized.instructions, /Guide mechanics.*never supply or resolve a sample, estimand, model/i);
+  assert.match(initialized.instructions, /Guide mechanics are non-writable syntax and state evidence/i);
+  assert.match(initialized.instructions, /Neither templates nor general rules supply unresolved research or output choices/i);
 });
 
 test("evidence builder fails closed on duplicate IDs and ambiguous source tiers", (t) => {

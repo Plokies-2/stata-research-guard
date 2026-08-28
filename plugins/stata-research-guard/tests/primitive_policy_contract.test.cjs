@@ -58,15 +58,13 @@ test("iteration cleanly re-renders an atomic span and freezes one final path", a
     capabilities: {},
     clientInfo: { name: "iteration-policy-contract", version: "1" },
   });
-  assert.match(initialized.instructions, /Iteration is allowed; judge the final frozen source/i);
-  assert.match(initialized.instructions, /cleanly re-render it from the same selected block/i);
-  assert.match(initialized.instructions, /Never stack patches, wrappers/i);
-  assert.match(initialized.instructions, /one final implementation path per atomic transition/i);
+  assert.match(initialized.instructions, /Iteration is allowed/i);
+  assert.match(initialized.instructions, /one final implementation path per transition/i);
 
   const skill = fs.readFileSync(path.join(ROOT, "skills", "stata-replication-workflow", "SKILL.md"), "utf8");
   const authoring = fs.readFileSync(path.join(ROOT, "skills", "stata-replication-workflow", "references", "general-rule-authoring.md"), "utf8");
-  assert.match(skill, /number of drafts is not a failure criterion/i);
-  assert.match(skill, /canonical block rejected by the linter is a plugin defect/i);
+  assert.match(skill, /Revise from concrete lint, runtime, or output evidence/i);
+  assert.match(skill, /leave one final implementation path per transition/i);
   assert.match(authoring, /only the final frozen source is judged/i);
   assert.match(authoring, /leave exactly one implementation path for each atomic transition/i);
   assert.match(authoring, /Revision count is never a pass\/fail metric/i);
@@ -82,11 +80,9 @@ test("source-isolated trials preserve evidence boundaries without imposing templ
     clientInfo: { name: "source-isolation-contract", version: "1" },
   });
   assert.match(initialized.instructions, /source-isolated blind trial/i);
-  assert.match(initialized.instructions, /Do not use Browser, web search, external URLs/i);
+  assert.match(initialized.instructions, /do not use prior outputs as an answer key/i);
   assert.match(initialized.instructions, /does not require template-only code/i);
-  assert.match(initialized.instructions, /narrow general-rule implementations are allowed/i);
-  assert.match(initialized.instructions, /rank-relative nearest inspected candidate.*nonbinding hint/i);
-  assert.match(initialized.instructions, /Stop only when a substantive research choice is unresolved/i);
+  assert.match(initialized.instructions, /Stop only for an unresolved substantive choice/i);
 
   const evaluation = fs.readFileSync(
     path.join(ROOT, "skills", "stata-replication-workflow", "references", "workflow-reproduction-evaluation.md"),
@@ -109,7 +105,7 @@ test("general rules govern both complete template use and direct implementation"
   assert.match(initialized.instructions, /Apply the general rules to every substantive transition/i);
   assert.match(initialized.instructions, /template selection, binding, adaptation, and verification/i);
   assert.match(initialized.instructions, /permitted bindings leave the complete atomic transition intact/i);
-  assert.match(initialized.instructions, /stop calling the result a template/i);
+  assert.match(initialized.instructions, /stop calling it a template/i);
 
   const rules = fs.readFileSync(path.join(ROOT, "skills", "stata-replication-workflow", "references", "general-rules.md"), "utf8");
   assert.match(rules, /always apply/i);
@@ -127,7 +123,7 @@ test("safe one-statement bindings need neither fallback markers nor a third sche
     capabilities: {},
     clientInfo: { name: "primitive-policy-contract", version: "1" },
   });
-  assert.match(initialized.instructions, /Do not invent a primitive mode/i);
+  assert.match(initialized.instructions, /Direct primitives do not need a checkpoint/i);
 
   for (const [reason, statements] of [
     ["load declared built-in example", "sysuse auto, clear"],
@@ -158,20 +154,17 @@ test("an already-declared direct master shell stays prompt-only and unmarked", a
     capabilities: {},
     clientInfo: { name: "master-shell-contract", version: "1" },
   });
-  assert.match(initialized.instructions, /prompt-only (?:master )?shell/i);
+  assert.match(initialized.instructions, /prompt-only master shell/i);
   assert.match(initialized.instructions, /log using.*flat direct do calls.*log close/i);
-  assert.match(initialized.instructions, /Do not infer stages, paths, or order/i);
-  assert.match(initialized.instructions, /Associate every do call.*Input:.*Output:.*Korean comment/i);
+  assert.match(initialized.instructions, /do not infer stages, paths, or order/i);
+  assert.match(initialized.instructions, /Associate every direct do call.*Input.*Output.*Korean role comment/i);
 
   const skill = fs.readFileSync(path.join(ROOT, "skills", "stata-replication-workflow", "SKILL.md"), "utf8");
   const authoring = fs.readFileSync(path.join(ROOT, "skills", "stata-replication-workflow", "references", "general-rule-authoring.md"), "utf8");
-  for (const text of [skill, authoring]) {
-    assert.match(text, /prompt-only (?:master |orchestration )?shell/i);
-    assert.match(text, /flat (?:caller-declared sequence|list) of (?:the caller-declared )?direct `do` calls/i);
-    assert.match(text, /(?:without a|no) template, ledger row, (?:or )?provenance/i);
-    assert.match(text, /Every (?:called file|target) must (?:already )?exist/i);
-    assert.match(text, /Associate each (?:individual )?(?:`do` )?call.*Input:.*Output:.*Korean comment/i);
-  }
+  assert.match(skill, /Each direct `do` call has exact `Input:/i);
+  assert.match(authoring, /prompt-only (?:master |orchestration )?shell/i);
+  assert.match(authoring, /flat (?:caller-declared sequence|list) of (?:the caller-declared )?direct `do` calls/i);
+  assert.match(authoring, /Every (?:called file|target) must (?:already )?exist/i);
 
   const shell = [
     "* Project Inputs: data/raw/source.dta",
@@ -462,25 +455,24 @@ test("depth summary keeps loop nesting distinct from general structural nesting"
   });
 });
 
-test("primary prompt surfaces retain the readable Stata house rules", () => {
-  const pluginPrompt = JSON.stringify(JSON.parse(fs.readFileSync(path.join(ROOT, ".codex-plugin", "plugin.json"), "utf8")));
+test("entry surfaces stay concise and route detailed house rules to one maintained contract", () => {
+  const plugin = JSON.parse(fs.readFileSync(path.join(ROOT, ".codex-plugin", "plugin.json"), "utf8"));
+  const skillPath = path.join(ROOT, "skills", "stata-replication-workflow", "SKILL.md");
+  const skill = fs.readFileSync(skillPath, "utf8");
   const skillPrompt = fs.readFileSync(path.join(ROOT, "skills", "stata-replication-workflow", "agents", "openai.yaml"), "utf8");
   const instructions = fs.readFileSync(path.join(ROOT, "INSTRUCTIONS.md"), "utf8");
-  for (const surface of [pluginPrompt, skillPrompt, instructions]) {
-    assert.match(surface, /applied-micro panel/i);
-    assert.match(surface, /Project Inputs/);
-    assert.match(surface, /i\(2015\/2018 2020\/2024\)/);
-    assert.match(surface, /nonnegative factor index/i);
-  }
-  assert.match(pluginPrompt, /descriptive global/i);
-  assert.match(pluginPrompt, /zero substantive reference depth/i);
-  assert.match(skillPrompt, /descriptive global/i);
-  assert.match(skillPrompt, /zero substantive reference depth/i);
-  for (const surface of [pluginPrompt, skillPrompt, instructions]) {
-    assert.match(surface, /house style/i);
-    assert.match(surface, /(?:not|rather than) a universal Stata textbook rule/i);
-    assert.match(surface, /not a general auto-selection rule|do not auto-select/i);
-    assert.match(surface, /role (?:prose|grammar).*advisory/i);
-  }
-  assert.doesNotMatch(pluginPrompt, /Do not use plain i\(<numlist>\)/i);
+  const rules = fs.readFileSync(path.join(ROOT, "skills", "stata-replication-workflow", "references", "general-rules.md"), "utf8");
+
+  assert.equal(plugin.interface.defaultPrompt.length, 5);
+  assert.ok(plugin.interface.defaultPrompt.every((prompt) => prompt.length < 500));
+  assert.ok(plugin.interface.longDescription.length < 1000);
+  assert.ok(Buffer.byteLength(skill) < 16000);
+  assert.ok(Buffer.byteLength(skillPrompt) < 1000);
+  assert.ok(Buffer.byteLength(instructions) < 8000);
+  assert.match(skillPrompt, /\$stata-replication-workflow/);
+  assert.match(skill, /read \[general-rules\.md\]/i);
+  assert.match(rules, /descriptive `global`/i);
+  assert.match(rules, /zero substantive reference depth/i);
+  assert.match(rules, /not a universal Stata textbook rule/i);
+  assert.match(rules, /not a general auto-selection rule/i);
 });

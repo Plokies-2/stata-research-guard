@@ -96,6 +96,7 @@ These limits favor code a reader can follow, share, and verify, rather than gene
 
 ## Safety and estimation contracts
 
+- Record named observation counts after every consequential restriction and retained-state merge so the sample flow from raw input to each reported table and figure is auditable.
 - Do not probe or install dependencies. Do not use `capture` to swallow a core error; a legitimate narrowly scoped check must immediately handle `_rc` and surface failure.
 - Do not use `merge m:m`, force-drop records, or use `force` to silence a merge-type mismatch. Declare and check the intended key and match result instead. Stata documents explicit merge cardinalities and `assert()` expectations in its [merge manual](https://www.stata.com/manuals/dmerge.pdf); its community guidance warns that `m:m` is usually not the intended analysis join ([Statalist archive](https://www.stata.com/statalist/archive/2013-06/msg00077.html)).
 - Preserve native factor-variable expressions and the raw `e(b)` coefficient names. Do not create manual event dummies, rename event coefficients, or reconstruct coefficient tables. Inspect exact names with `coeflegend` or `e(b)`; Stata documents `coeflegend` for this purpose in its [factor-variable FAQ](https://www.stata.com/support/faqs/statistics/compute-standard-errors-with-margins/).

@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.2.0+codex.20260828101650"
+    "version": "0.2.0+codex.20260828131350"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
-      "bytes": 17723,
-      "sha256": "61fadae77e6941fa84c74757cf2f9aeb0e3e3e5dbcd8371353db78cf95aaab77"
+      "bytes": 2459,
+      "sha256": "4ba65b55cebef4848ceaa21a98bb30ecd0871f3410f97def50558578154923f2"
     },
     {
       "path": ".mcp.json",
@@ -282,8 +282,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 6425,
-      "sha256": "277a9580211ac5598bde9e563e7ef590d6ba970f9079edb66026e28cfbb00159"
+      "bytes": 7279,
+      "sha256": "582df63994f4d1e8319ce5ac6ddc0565a2b0e92be892b94b4b35af3c3a9f2900"
     },
     {
       "path": "data/guide_mechanics_cards.jsonl",
@@ -822,8 +822,8 @@
     },
     {
       "path": "INSTRUCTIONS.md",
-      "bytes": 27857,
-      "sha256": "5a997528232cd7ea27c404c64492e7c24e5922a2bf68788ed0d3f49af83dc4ed"
+      "bytes": 5551,
+      "sha256": "876a16f04004d85d60ad78794c02209d3265483e0d3a7628408a31bd2d5dd572"
     },
     {
       "path": "mcp/output_flow_contract.cjs",
@@ -832,8 +832,8 @@
     },
     {
       "path": "mcp/server.cjs",
-      "bytes": 441752,
-      "sha256": "3cb111d0d48e5097f643fc030bc1be01ca813bb0211afc50f64894ef51853fa1"
+      "bytes": 422233,
+      "sha256": "917df2dee45c4dda8a44113346cdb178d8e73e6182b61163fb43c01f626ad3a6"
     },
     {
       "path": "mcp/template_reuse.cjs",
@@ -1002,8 +1002,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/agents/openai.yaml",
-      "bytes": 3511,
-      "sha256": "64fa34af3fe7690dcc918e4990ca0df42261f3658008b85e45da0cf6e22d513c"
+      "bytes": 562,
+      "sha256": "834f77446de0b545c6985e6dc71f677025503aa1482cb8a667eff2beb4a87c07"
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rule-authoring.md",
@@ -1012,8 +1012,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rules.md",
-      "bytes": 15099,
-      "sha256": "a2a81249a53092dd8717753aa333dd30ffa41a71da025c8426235b5266a057d8"
+      "bytes": 15278,
+      "sha256": "1ddf0702526f75f9644a3e192ff7d252c8095206b39df63819b3c9d45c5021cf"
     },
     {
       "path": "skills/stata-replication-workflow/references/manual-first-policy.md",
@@ -1042,8 +1042,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/SKILL.md",
-      "bytes": 54941,
-      "sha256": "6e1cb60827398ab44e8b148f3f02dcc26a184f571a10f92d1f77288824664a10"
+      "bytes": 11476,
+      "sha256": "a09814be2e4e301f7ed4bce92a574af3ce24e159c8e0bbb26f1bac351cb81706"
     },
     {
       "path": "tests/atomic_estimator_retrieval.test.cjs",
@@ -1227,8 +1227,8 @@
     },
     {
       "path": "tests/primitive_policy_contract.test.cjs",
-      "bytes": 23364,
-      "sha256": "e6a1888c1c8ebad2337ad5ed0bf2ae7b7d6419265a8a961b6cbee1490f84f69b"
+      "bytes": 22826,
+      "sha256": "17ab6b377dfa5ab9ec4c265385553b7cbe2046399588a82e58900cc707225eef"
     },
     {
       "path": "tests/runtime/outreg2_excel/outreg2_excel_runtime.log",
@@ -1242,8 +1242,8 @@
     },
     {
       "path": "tests/server.test.cjs",
-      "bytes": 265769,
-      "sha256": "c94fbcc5cc406579465ea5691e0ac7991729263094dad8141bd2cd0d9c081599"
+      "bytes": 265983,
+      "sha256": "411681fecaf568854104269bfe6c52a0a26cb7b520ece0cd8209fe0530ccd828"
     },
     {
       "path": "tests/single_event_retrieval.test.cjs",
@@ -1322,8 +1322,8 @@
     },
     {
       "path": "tests/two_layer_retrieval.test.cjs",
-      "bytes": 25455,
-      "sha256": "39485b69ceaff6f233462e4d2b22bb74746d71bff60cb35fed9f78a459bce0e1"
+      "bytes": 25574,
+      "sha256": "54ec4203180994e2c848d6adccb3c28fe0f07a42ef694db387a3e70b5d02525a"
     }
   ],
   "semantic_anchors": [
@@ -1339,7 +1339,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.2.0+codex.20260828101650"
+      "value": "0.2.0+codex.20260828131350"
     },
     {
       "id": "readme.heading",
