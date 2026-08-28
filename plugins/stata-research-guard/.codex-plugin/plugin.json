@@ -1,6 +1,6 @@
 {
   "name": "stata-research-guard",
-  "version": "0.2.0+codex.20260828131350",
+  "version": "0.3.0+codex.20260828140733",
   "description": "Author Stata workflows under general research-code rules, optionally reuse complete compatible templates, then lint and audit them.",
   "author": {
     "name": "song7"

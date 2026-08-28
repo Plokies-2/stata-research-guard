@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.2.0+codex.20260828131350"
+    "version": "0.3.0+codex.20260828140733"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
       "bytes": 2459,
-      "sha256": "4ba65b55cebef4848ceaa21a98bb30ecd0871f3410f97def50558578154923f2"
+      "sha256": "3254b146f0aa5727ae9c646df9855631136e72537fce430762aaff9772228b3c"
     },
     {
       "path": ".mcp.json",
@@ -282,8 +282,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 7279,
-      "sha256": "582df63994f4d1e8319ce5ac6ddc0565a2b0e92be892b94b4b35af3c3a9f2900"
+      "bytes": 7757,
+      "sha256": "99691ac21bbd45df3469fe9d16170157a3b71034c6afcca6be584c9ff1805468"
     },
     {
       "path": "data/guide_mechanics_cards.jsonl",
@@ -842,8 +842,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 36907,
-      "sha256": "9d79c2674d40ccf9ea8553ae672608cafec860361d0f48ee8fea42a1d0e3beaf"
+      "bytes": 37718,
+      "sha256": "84630461d382d0bde44177cfb499c759d6c6764192ed530570f40c6fbad48390"
     },
     {
       "path": "review/coding_assistant_plugin_structure_review.md",
@@ -1339,7 +1339,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.2.0+codex.20260828131350"
+      "value": "0.3.0+codex.20260828140733"
     },
     {
       "id": "readme.heading",

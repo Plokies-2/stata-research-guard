@@ -4,11 +4,24 @@
 
 단순한 코드 조각 모음이 아닙니다. 독립 promotion audit을 거친 guide mechanics 454개(기존 262개와 Top 51–100 확장 192개), guide card 454개, 그리고 별도로 생성한 research-usage example 166개를 서로 다른 격으로 관리합니다. 두 evidence layer의 자동선택 가능 항목은 모두 0개입니다. 선택한 명령의 공식·maintainer 가이드는 항상 함께 보여 주되 template 점수 경쟁에는 넣지 않고, 연구 코드용례가 현재 데이터 구조와 작업 상태에 정확히 맞을 때만 별도 reference evidence로 함께 제공합니다. 모든 구현에는 general rules가 먼저 적용되며, template은 하나의 원자적 전이를 완전히 덮을 때만 선택합니다.
 
-현재 배포 버전은 `0.2.0+codex.20260828131350`입니다.
+현재 배포 버전은 `0.3.0+codex.20260828140733`입니다.
 
 이번 버전은 도구 기능을 줄이지 않고 기본 컨텍스트를 정리했습니다. Skill 진입문은 54,941바이트에서 11,476바이트로, MCP initialize 응답은 25,467자에서 5,976자로 줄었습니다. 72개 checkpoint enum을 로컬 JSON Schema 정의로 공유해 `tools/list`도 47,148자에서 39,376자로 줄였으며, 기존 14개 도구와 lint·audit·runtime 계약은 유지합니다.
 
 ## 무엇이 좋은가
+
+### 이 플러그인의 house style
+
+아래 규칙은 보편적인 Stata 교과서 규칙이나 AEA 적합성 판정이 아니라, 이 플러그인이 새로 생성하거나 범위를 정해 수정하는 코드에 적용하는 연구자 가독성 house style입니다.
+
+- 새 workflow는 전처리를 끝까지 수행해 cleaned analysis panel 하나를 먼저 만들고, summary와 regression이 이를 각각 독립적으로 다시 엽니다.
+- 새 `masters.do`에는 정확한 영구 Input/Output 파일과 각 `do` 호출의 Input/Output 계약을 적습니다.
+- 한 번만 쓰는 값은 직접 적고, 반복되는 이름은 소비 do-file에서 descriptive `global`로 정의합니다. 공통 경로는 master에, outcome global은 regression 파일에 둡니다.
+- 새로 생성하거나 수정하는 regression에서는 event window, controls, sample, fixed effects, weights와 VCE를 estimator block에 직접 보여 substantive reference depth를 0으로 둡니다. 기존 프로젝트 감사에서는 무조건 error로 만들지 않습니다.
+- `local`은 loop·program 상태, temp object, iteration scratch와 즉시 소비하는 `r()`·`e()` 값처럼 lexical 범위가 분명한 경우에만 사용합니다. 모든 Stata 문맥의 필요성을 기계적으로 판정하지 않습니다.
+- active loop는 한 단계의 평면 구조를 우선합니다. 약 1000줄의 응집된 do-file은 section heading으로 충분할 수 있으며, durable artifact·독립 재실행·실제 재사용·ownership·명확히 다른 책임이 있을 때만 나눕니다.
+- runtime과 exact raw `e(b)` 이름을 확인하지 않았다면 event-study는 level별 native 항을 사용합니다. compact selected-level 문법은 runtime 확인 뒤에만 고정된 프로젝트 형식으로 사용합니다.
+- 중요한 filter와 retained-state merge 뒤에는 이름 있는 관측치 수를 기록하고, direct one-sheet 회귀표의 종속변수 평균은 `quietly summarize <depvar> if e(sample), meanonly`로 계산합니다.
 
 ### Stata의 의미를 끝까지 보존합니다
 
