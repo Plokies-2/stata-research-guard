@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-08-29 — direct verification boundary
+
+- Prohibited one-off `capture confirm file`/`_rc`/`exit` blocks that manually re-check scratch cleanup or output existence inside project `.do` files; requested verification belongs in runtime or artifact inspection.
+
 ## 2026-08-29 — complete selected-command guides
 
 - Added a generic `full_command_guides` response channel that returns a stored complete guide only for exact `selected_commands`, with no character-limit truncation.

@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.3.0+codex.20260828220212"
+    "version": "0.3.0+codex.20260828221342"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
-      "bytes": 1735,
-      "sha256": "d1c4c30ab914deaffd47b14a51741b62b7e653134ec3b95a627e80519d382c3c"
+      "bytes": 1761,
+      "sha256": "7180ef883729ac463f33cb2a2610533a160ee759016f50d7c304d7a0dc8fc249"
     },
     {
       "path": ".mcp.json",
@@ -22,8 +22,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 3321,
-      "sha256": "1dc82a6c2be7ff7e4d8f7b75d7870a8288ae6e97ef7f6519075fb433bbe77157"
+      "bytes": 3587,
+      "sha256": "76c0da8686e226ddf62f5f6e9f74c9b46a95cb711651c20e1f0a2baf243b13a6"
     },
     {
       "path": "data/command_paper_index.json",
@@ -397,8 +397,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rules.md",
-      "bytes": 3333,
-      "sha256": "d7ecb2843badf6893fc49a779e77d1c11e9e710398d8f57ecff1bd79a974a667"
+      "bytes": 3762,
+      "sha256": "af02bfd996656800e5decb38839d4f8e4dc784014825c27a9e1727c0a677fc1d"
     },
     {
       "path": "skills/stata-replication-workflow/references/readme-contract.md",
@@ -464,7 +464,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.3.0+codex.20260828220212"
+      "value": "0.3.0+codex.20260828221342"
     },
     {
       "id": "readme.heading",

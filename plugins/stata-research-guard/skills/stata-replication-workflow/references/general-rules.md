@@ -16,6 +16,7 @@ Read these rules for every Stata code write or revision. They are concise prospe
 - Use literals for one-use bindings. Locals are allowed for iterators, `tempfile`, `tempvar`, `tempname`, per-iteration scratch values, immediately consumed `r()`/`e()` results, and lexical state of an approved program. Do not hide research specifications, controls, samples, FE, or VCE behind local aliases.
 - Use a descriptive global only for a shared root or a repeatedly consumed binding that is a cross-`.do`-file contract. A leaf one-use filename is literal.
 - A durable artifact, independently rerunnable stage, or real handoff is a module boundary; otherwise keep the work together.
+- Do not add one-off manual verification blocks to project `.do` files merely to re-check scratch cleanup or output existence, such as `capture confirm file` followed by `_rc`, `display as error`, and `exit`. Keep the required operation itself direct; when verification is requested, inspect the runtime state or produced artifacts through the execution or audit tools instead of embedding throwaway checks in the research code.
 
 ## Project contracts and outputs
 
