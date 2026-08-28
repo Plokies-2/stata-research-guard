@@ -23,8 +23,6 @@ REQUIRED = {
     "minimal_edit_fields",
     "tradeoffs",
     "relationships",
-    "source_path",
-    "source_spans",
     "source_kind",
     "review_notes",
     "reuse_scope",
@@ -112,117 +110,56 @@ COMMAND_ALIASES = {
     "cap": "capture",
 }
 COMMAND_NOISE = {"else", "forvalues", "forval", "forv", "foreach", "if", "timer", "while"}
+ALLOWED_DERIVED_CANONICAL_LABEL_IDS = {
+    "export.regression_excel.from_ster_default_style.v1",
+}
 
 
-def expand_compact_package_templates(
-    entries: list[dict],
-    hard_fail_rule_ids: list[str],
-    *,
-    source_path: str = "plugins/stata-research-guard/annotations/source_snapshots/package_first_atomic_templates.do",
-    batch_kind: str = "package_first_atomic_template_batch",
-) -> list[dict]:
-    """Expand a deliberately narrow, reviewable batch of derived atomic templates.
+def materialize_guide_mechanics(entry: dict) -> dict:
+    """Build one non-selectable official/maintainer-guide mechanics row.
 
-    The compact file is not a second source corpus.  It only prevents the same
-    provenance/rubric boilerplate from obscuring each package command's state
-    contract.  Every entry still points to an exact span in one auditable local
-    snapshot and is marked as non-independent derived support.
+    Guide atoms are deliberately kept separate from the canonical registry:
+    they document a command's supported mechanics but do not constitute
+    researcher-style evidence or an implementation default.
     """
-    expanded = []
-    for entry in entries:
-        label_id = entry["label_id"]
-        review_note = entry["review_notes"]
-        generation_class = entry.get("canonical_generation_class", "conditional_candidate")
-        if generation_class not in {"preferred_candidate", "conditional_candidate", "reference_only"}:
-            raise ValueError(f"invalid canonical_generation_class for {label_id}: {generation_class}")
-        is_reference = generation_class == "reference_only"
-        entry_source_kind = entry.get("source_kind", "derived_canonical_implementation")
-        provenance = {
-            "kind": batch_kind,
+    label_id = entry["label_id"]
+    generation_class = entry.get("canonical_generation_class", "reference_only")
+    if generation_class != "reference_only":
+        raise ValueError(f"guide mechanics must be reference_only: {label_id}")
+    return {
+        "decision": "conditional_keep",
+        "adaptation_mode": "structural_reference",
+        "relationships": {"alternatives": [], "duplicates": [], "supersedes": []},
+        "source_kind": entry.get("source_kind", "official_manual_derived_mechanics"),
+        "derivation_provenance": {
+            "kind": "guide_atomic_template_batch:audit",
             "independent_support": False,
             "researcher_style_evidence": False,
             "raw_source_bytes_claimed": False,
-            "reason": (
-                "The command contract is isolated from an official or maintainer guide as a mechanics atom; "
-                "the guide does not supply the research design, sample, estimand, fixed effects, or VCE choice."
-                if "guide" in batch_kind
-                else "The command contract is isolated as a canonical Stata atom; it is not represented as a verbatim deposited research span."
-            ),
-            "source_collection_next_step": "Add independent deposited research-code support when available without treating guide examples as researcher-style evidence.",
-        }
-        provenance.update(entry.get("derivation_provenance", {}))
-        hard_fails = [
-            {
-                "rule_id": rule_id,
-                "triggered": False,
-                "evidence": (
-                    "This compact package template has a bounded exact snapshot span; "
-                    "selection requires its declared state contract and edit fields."
-                ),
-            }
-            for rule_id in hard_fail_rule_ids
-        ]
-        expanded.append(
-            {
-                "decision": entry.get("decision", "conditional_keep"),
-                "adaptation_mode": entry.get("adaptation_mode", "structural_reference" if is_reference else "minimal_substitution"),
-                "relationships": {"alternatives": [], "duplicates": [], "supersedes": []},
-                "source_path": source_path,
-                "source_kind": entry_source_kind,
-                "derivation_provenance": provenance,
-                "promotion_status": entry.get(
-                    "promotion_status",
-                    "provisional_derived" if batch_kind == "package_first_atomic_template_batch" else "staged_pending_independent_audit",
-                ),
-                "reuse_scope": entry.get("reuse_scope", "general"),
-                "readability_score": entry.get("readability_score", 5),
-                "portability_score": entry.get("portability_score", 4),
-                "preferred_within_checkpoint": False,
-                "explicit_canonical_exception": False,
-                "generality_rationale_ko": entry["generality_rationale_ko"],
-                "generality_review": {
-                    "status": "external_evidence_rubric_reviewed",
-                    "version": "2.0",
-                    "criterion": "guide-derived or canonical command atom with explicit state and bounded substitutions",
-                    "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46",
-                },
-                "quality_rubric_review": {
-                    "status": "external_evidence_rubric_reviewed",
-                    "version": "1.1",
-                    "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46",
-                    "source_verification": {
-                        "source_file_sha256_match": True,
-                        "code_sha256_match": True,
-                        "context_read": True,
-                    },
-                    "hard_fails": hard_fails,
-                    "applicable_dimensions": [
-                        "state_visibility", "input_output_contract", "portability", "readability",
-                        "sample_estimand_visibility", "loop_program_abstraction", "reproducibility",
-                        "project_specific_coupling", "minimal_adaptation",
-                    ],
-                    "dimension_scores": {
-                        "state_visibility": 5, "input_output_contract": 5, "portability": 4,
-                        "readability": 5, "sample_estimand_visibility": 4,
-                        "loop_program_abstraction": 5, "reproducibility": 4,
-                        "project_specific_coupling": 4, "minimal_adaptation": 5,
-                    },
-                    "weighted_score": entry.get("weighted_score", 76 if is_reference else 84),
-                    "classification": generation_class,
-                    "reviewer_classification": generation_class,
-                    "classification_calibration_override": None,
-                    "preferred_eligible": generation_class == "preferred_candidate",
-                    "reviewer_notes_ko": "독립 연구 코드라고 주장하지 않는 derived package atom이다. 명령 선택, 입력 상태, 출력 경계와 수정 가능한 binding을 각각 확인한다.",
-                    "uncertainty": "패키지 설치 상태와 연구 설계의 타당성은 별도 target runtime 및 설계 검토가 필요하다.",
-                    "current_vs_recommended_changes": [],
-                    "canonical_exception_override": None,
-                },
-                **entry,
-                "source_path": source_path,
-                "review_notes": review_note + " Guide/canonical mechanics candidate; independent_support=false; promotion requires the separate audit ledger.",
-            }
-        )
-    return expanded
+            "reason": "Guide mechanics document a command contract, not a research-design default.",
+            "source_collection_next_step": "Add independent deposited research-code support before making a template selectable.",
+            **entry.get("derivation_provenance", {}),
+        },
+        "promotion_status": "staged_pending_independent_audit",
+        "reuse_scope": "method_specific" if entry.get("reuse_scope") == "negative" else entry.get("reuse_scope", "general"),
+        "readability_score": entry.get("readability_score", 5),
+        "portability_score": entry.get("portability_score", 4),
+        "preferred_within_checkpoint": False,
+        "explicit_canonical_exception": False,
+        "generality_rationale_ko": entry["generality_rationale_ko"],
+        "generality_review": {
+            "status": "external_evidence_rubric_reviewed",
+            "version": "2.0",
+            "criterion": "guide-derived mechanics with explicit state and bounded substitutions",
+            "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46",
+        },
+        "quality_rubric_review": {},
+        **entry,
+        "decision": "conditional_keep",
+        "adaptation_mode": "structural_reference",
+        "reuse_scope": "method_specific" if entry.get("reuse_scope") == "negative" else entry.get("reuse_scope", "general"),
+        "review_notes": entry["review_notes"] + " Guide mechanics are reference-only and never a canonical implementation default.",
+    }
 
 
 def read_text(path: Path) -> str:
@@ -284,20 +221,8 @@ def _require_exact_profile(label_id: str, name: str, observed: object, expected:
         raise ValueError(f"atomic promotion audit {name} mismatch for {label_id}")
 
 
-def audit_atomic_template_entry(
-    entry: dict,
-    record: dict,
-    *,
-    source_path: str,
-    snapshot_path: Path,
-) -> dict | None:
-    """Fail closed on one atomic candidate and apply its audited disposition.
-
-    Hash boundaries are deliberately distinct: ``candidate_inventory_sha256``
-    covers the complete compact JSON object, ``source.sha256`` covers the raw
-    snapshot bytes, and ``template_sha256`` covers the normalized exact span
-    returned by :func:`extract_block`.
-    """
+def audit_atomic_template_entry(entry: dict, record: dict) -> dict:
+    """Validate and materialize one code-free guide-metadata record."""
     label_id = entry.get("label_id")
     if not isinstance(label_id, str) or not label_id:
         raise ValueError("atomic candidate has no label_id")
@@ -309,14 +234,9 @@ def audit_atomic_template_entry(
     if record.get("candidate_inventory_sha256") != expected_entry_hash:
         raise ValueError(f"atomic promotion audit candidate_inventory_sha256 mismatch for {label_id}")
 
-    spans = entry.get("source_spans")
-    if not isinstance(spans, list) or not spans:
-        raise ValueError(f"atomic candidate {label_id} has no source_spans")
     source = record.get("source")
     if not isinstance(source, dict):
         raise ValueError(f"atomic promotion audit source missing for {label_id}")
-    if source.get("path") != source_path:
-        raise ValueError(f"atomic promotion audit source.path mismatch for {label_id}")
     if not isinstance(source.get("role"), str) or not source["role"].strip():
         raise ValueError(f"atomic promotion audit source.role missing for {label_id}")
     source_layers = record.get("source_layers")
@@ -325,15 +245,11 @@ def audit_atomic_template_entry(
         raise ValueError(f"atomic promotion audit source.role must identify a passed source layer for {label_id}")
     if source.get("kind") != entry.get("source_kind"):
         raise ValueError(f"atomic promotion audit source.kind mismatch for {label_id}")
-    if source.get("span") != source_span_spec(spans):
-        raise ValueError(f"atomic promotion audit source.span mismatch for {label_id}")
-    snapshot_bytes = snapshot_path.read_bytes()
-    if source.get("sha256") != hashlib.sha256(snapshot_bytes).hexdigest():
-        raise ValueError(f"atomic promotion audit source.sha256 mismatch for {label_id}")
-    source_text = read_text(snapshot_path)
-    template = extract_block(source_text, spans)
-    if record.get("template_sha256") != sha256_text(template):
-        raise ValueError(f"atomic promotion audit template_sha256 mismatch for {label_id}")
+    if not isinstance(source.get("source_id"), str) or not source["source_id"].strip():
+        raise ValueError(f"atomic promotion audit source.source_id missing for {label_id}")
+    declared_sources = entry.get("source_urls", [])
+    if declared_sources and source["source_id"] not in declared_sources:
+        raise ValueError(f"atomic promotion audit source.source_id mismatch for {label_id}")
 
     _require_exact_profile(
         label_id,
@@ -367,27 +283,16 @@ def audit_atomic_template_entry(
     ):
         raise ValueError(f"atomic promotion audit independence mismatch for {label_id}")
 
-    disposition = record.get("disposition")
-    if disposition == "rejected":
-        return None
-    expanded = expand_compact_package_templates(
-        [entry],
-        [],
-        source_path=source_path,
-        batch_kind="guide_atomic_template_batch:audit",
-    )[0]
-    # Candidate files may carry an explicitly pending producer-side review.  The
-    # independent promotion ledger is the authority that converts that pending
-    # metadata into the complete runtime row expected by the public builder.
-    generation_class = entry.get("canonical_generation_class", "conditional_candidate")
+    if record.get("disposition") != "reference_only" or record.get("auto_selectable") is not False:
+        raise ValueError(f"guide mechanics must remain reference_only and non-selectable: {label_id}")
+    expanded = materialize_guide_mechanics(entry)
     expanded["quality_rubric_review"] = {
         "status": "external_evidence_rubric_reviewed",
         "version": "1.1",
         "rubric_sha256": "81b41a0232c6bdcd4956ba7bfe5258afe9b6e0a71422430a177295a6d0bd2b46",
         "source_verification": {
-            "source_file_sha256_match": True,
-            "code_sha256_match": True,
-            "context_read": True,
+            "manual_source_declared": True,
+            "code_template_shipped": False,
         },
         "hard_fails": [],
         "applicable_dimensions": [
@@ -401,62 +306,30 @@ def audit_atomic_template_entry(
             "loop_program_abstraction": 5, "reproducibility": 4,
             "project_specific_coupling": 4, "minimal_adaptation": 5,
         },
-        "weighted_score": entry.get("weighted_score", 76 if generation_class == "reference_only" else 84),
-        "classification": generation_class,
-        "reviewer_classification": generation_class,
+        "weighted_score": 0,
+        "classification": "reference_only",
+        "reviewer_classification": "reference_only",
         "classification_calibration_override": None,
-        "preferred_eligible": generation_class == "preferred_candidate",
-        "reviewer_notes_ko": "독립 감사 ledger가 exact source, candidate, span, profile, state와 safety를 확인한 guide mechanics atom이다.",
-        "uncertainty": "연구 설계 타당성, package availability, runtime과 selector 승격은 별도 검증 대상이다.",
+        "preferred_eligible": False,
+        "reviewer_notes_ko": "독립 감사 ledger가 command metadata와 declared manual source를 확인한 reference-only guide mechanics record이다.",
+        "uncertainty": "가이드는 syntax/state 정보만 제공하며 연구 설계나 구현 기본값을 제공하지 않는다.",
         "current_vs_recommended_changes": [],
         "canonical_exception_override": None,
     }
-    if disposition == "reference_only":
-        runtime = record.get("runtime", {})
-        selector = record.get("selector", {})
-        if not runtime.get("reason") or not selector.get("reason"):
-            raise ValueError(f"reference_only runtime and selector reasons are required for {label_id}")
-        expanded["canonical_generation_class"] = "reference_only"
-        expanded["quality_rubric_review"]["classification"] = "reference_only"
-        expanded["quality_rubric_review"]["reviewer_classification"] = "reference_only"
-        expanded["quality_rubric_review"]["preferred_eligible"] = False
-        expanded["preferred_within_checkpoint"] = False
-        expanded["canonical_default"] = False
-        expanded["adaptation_mode"] = "structural_reference"
-        if expanded.get("reuse_scope") == "negative":
-            expanded["reuse_scope"] = "method_specific"
-        expanded["auto_selectable"] = False
-        expanded["promotion_status"] = "reference_only"
-        # Guide mechanics are returned through the non-competing companion
-        # layer, not the legacy selector relationship graph.  Candidate files
-        # may record human-facing alternative variant IDs, but those are not
-        # label IDs and therefore must not become selector edges.
-        expanded["relationships"] = {"alternatives": [], "duplicates": [], "supersedes": []}
-    elif disposition == "audited_template":
-        runtime = record.get("runtime")
-        selector = record.get("selector")
-        if not isinstance(runtime, dict) or runtime.get("status") != "pass" or not runtime.get("case_id"):
-            raise ValueError(f"audited_template runtime pass is required for {label_id}")
-        if not isinstance(selector, dict):
-            raise ValueError(f"audited_template selector checks are required for {label_id}")
-        for polarity in ("positive", "negative"):
-            check = selector.get(polarity)
-            if not isinstance(check, dict) or check.get("status") != "pass" or not check.get("case_id"):
-                raise ValueError(f"audited_template selector.{polarity} pass is required for {label_id}")
-        generation_class = entry.get("canonical_generation_class")
-        if generation_class not in {"preferred_candidate", "conditional_candidate"}:
-            raise ValueError(
-                f"audited_template must declare conditional/preferred canonical_generation_class for {label_id}"
-            )
-        expanded["auto_selectable"] = True
-        expanded["promotion_status"] = "audited_template"
-    else:
-        raise ValueError(f"invalid atomic promotion disposition for {label_id}: {disposition}")
-    expanded["audit_status"] = "passed"
+    runtime = record.get("runtime", {})
+    selector = record.get("selector", {})
+    if not runtime.get("reason") or not selector.get("reason"):
+        raise ValueError(f"reference_only runtime and selector reasons are required for {label_id}")
+    expanded["canonical_generation_class"] = "reference_only"
+    expanded["preferred_within_checkpoint"] = False
+    expanded["canonical_default"] = False
+    expanded["auto_selectable"] = False
+    expanded["promotion_status"] = "reference_only"
+    expanded["relationships"] = {"alternatives": [], "duplicates": [], "supersedes": []}
+    expanded["audit_status"] = "metadata_only"
     expanded["promotion_audit"] = {
-        "disposition": disposition,
+        "disposition": "reference_only",
         "candidate_inventory_sha256": expected_entry_hash,
-        "template_sha256": record["template_sha256"],
         "reviewer": auditor["reviewer"],
     }
     return expanded
@@ -468,24 +341,24 @@ def load_audited_atomic_template_sets(
     *,
     legacy_label_count: int,
 ) -> list[dict]:
-    """Load atomic sets only after an exact, complete promotion-ledger match."""
+    """Load code-free guide metadata only after an exact ledger match."""
     atomic_template_dir = plugin / "annotations" / "atomic_template_sets"
     if not atomic_template_dir.exists():
         return []
     audit = json.loads((plugin / "annotations" / "template_promotion_audit.json").read_text(encoding="utf-8"))
     requirements = json.loads((plugin / "annotations" / "command_template_requirements.json").read_text(encoding="utf-8"))
     validate_promotion_audit(audit, requirements, legacy_label_count)
+    commands_by_group = {
+        group["group_id"]: group["commands"]
+        for group in [*requirements["ranked_groups"], *requirements["supplemental_groups"]]
+    }
     audit_by_id = _audit_record_map(audit)
-    candidates: list[tuple[dict, str, Path]] = []
+    candidates: list[dict] = []
     seen: set[str] = set()
     for template_path in sorted(atomic_template_dir.glob("*.json")):
         values = json.loads(template_path.read_text(encoding="utf-8"))
         if not isinstance(values, list):
             raise ValueError(f"atomic template set must be a JSON array: {template_path}")
-        snapshot_path = plugin / "annotations" / "source_snapshots" / f"{template_path.stem}_guide_templates.do"
-        if not snapshot_path.exists():
-            raise ValueError(f"atomic template source snapshot is missing: {snapshot_path}")
-        source_path = f"plugins/stata-research-guard/annotations/source_snapshots/{snapshot_path.name}"
         for entry in values:
             label_id = entry.get("label_id") if isinstance(entry, dict) else None
             if not isinstance(label_id, str) or not label_id:
@@ -493,31 +366,36 @@ def load_audited_atomic_template_sets(
             if label_id in seen:
                 raise ValueError(f"duplicate atomic candidate label_id: {label_id}")
             seen.add(label_id)
-            candidates.append((entry, source_path, snapshot_path))
+            candidates.append(entry)
     if set(audit_by_id) != seen:
         missing = sorted(seen - set(audit_by_id))
         stale = sorted(set(audit_by_id) - seen)
         raise ValueError(f"atomic promotion audit label set mismatch: missing={missing}, stale={stale}")
 
     expanded: list[dict] = []
-    for entry, source_path, snapshot_path in candidates:
-        row = audit_atomic_template_entry(
-            entry,
-            audit_by_id[entry["label_id"]],
-            source_path=source_path,
-            snapshot_path=snapshot_path,
-        )
-        if row is not None:
-            # Recreate the hard-fail roster after the pure per-entry gate.
-            row["quality_rubric_review"]["hard_fails"] = [
-                {
-                    "rule_id": rule_id,
-                    "triggered": False,
-                    "evidence": "Exact audited atomic span; bounded substitutions and state contract are required.",
-                }
-                for rule_id in hard_fail_rule_ids
-            ]
-            expanded.append(row)
+    for entry in candidates:
+        urls = entry.get("source_urls")
+        if (
+            not isinstance(urls, list)
+            or not urls
+            or any(not isinstance(url, str) or not url.startswith(("https://", "http://")) for url in urls)
+        ):
+            raise ValueError(f"guide metadata requires an authoritative source URL: {entry['label_id']}")
+        row = audit_atomic_template_entry(entry, audit_by_id[entry["label_id"]])
+        row["command_anchors"] = list(dict.fromkeys(
+            command
+            for contract_id in entry.get("contract_ids", [])
+            for command in commands_by_group.get(contract_id.partition(".")[0], [])
+        ))
+        row["quality_rubric_review"]["hard_fails"] = [
+            {
+                "rule_id": rule_id,
+                "triggered": False,
+                "evidence": "Declared guide metadata; no code template is shipped.",
+            }
+            for rule_id in hard_fail_rule_ids
+        ]
+        expanded.append(row)
     return expanded
 
 
@@ -744,7 +622,10 @@ def validate_input_signature(label_id: str, signature: dict) -> None:
     if set(signature["field_evidence"]) != {"data_structure", "observation_unit", "time_structure", "required_keys", "variable_characteristics"}:
         raise ValueError(f"input signature evidence fields are incomplete: {label_id}")
     evidence = signature["evidence"]
-    if evidence.get("basis") != "bounded source context around exact labeled source spans":
+    if evidence.get("basis") not in {
+        "bounded source context around exact labeled source spans",
+        "declared official or maintainer manual metadata; no code template shipped",
+    }:
         raise ValueError(f"input signature has non-source evidence: {label_id}")
 
 
@@ -855,7 +736,6 @@ def main() -> None:
     plugin = (args.plugin or Path(__file__).resolve().parents[1]).resolve()
     workspace = (args.workspace or plugin.parents[1]).resolve()
     annotations_path = plugin / "annotations" / "labeled_checkpoints.json"
-    compact_templates_path = plugin / "annotations" / "package_first_atomic_templates.json"
     atomic_template_dir = plugin / "annotations" / "atomic_template_sets"
     contracts_path = plugin / "annotations" / "checkpoint_contracts.json"
     rubric_path = plugin / "annotations" / "generality_rubric.json"
@@ -869,11 +749,16 @@ def main() -> None:
     contract_document = json.loads(contracts_path.read_text(encoding="utf-8"))
     rubric_document = json.loads(rubric_path.read_text(encoding="utf-8"))
     active_hard_fail_rule_ids = [rule["id"] for rule in rubric_document["hard_fail_rules"]]
-    if compact_templates_path.exists():
-        compact_templates = json.loads(compact_templates_path.read_text(encoding="utf-8"))
-        if not isinstance(compact_templates, list):
-            raise ValueError("compact package templates must be a JSON array")
-        annotations.extend(expand_compact_package_templates(compact_templates, active_hard_fail_rule_ids))
+    derived_ids = {
+        row["label_id"]
+        for row in annotations
+        if row.get("source_kind") == "derived_canonical_implementation"
+    }
+    if derived_ids != ALLOWED_DERIVED_CANONICAL_LABEL_IDS:
+        raise ValueError(
+            "derived canonical implementations must be limited to the approved outreg2 formatter: "
+            f"{sorted(derived_ids)}"
+        )
     if atomic_template_dir.exists():
         legacy_label_count = len(annotations)
         annotations.extend(
@@ -943,13 +828,26 @@ def main() -> None:
         if checkpoint not in contracts:
             raise ValueError(f"missing checkpoint contract for {label_id}: {checkpoint}")
 
-        source = resolve_annotation_source(workspace, plugin, annotation["source_path"])
-        source_text = read_text(source)
-        code = extract_block(source_text, annotation["source_spans"])
-        command_anchors = extract_command_anchors(code)
-        inferred_signals = observable_signals(code, command_anchors)
-        max_loop_depth, unclosed_blocks = loop_structure(code)
-        tex_output = any(TEX_OUTPUT.search(line) for line in code.splitlines())
+        guide_mechanics = is_noncompeting_guide_mechanics(annotation)
+        if not guide_mechanics:
+            missing_source_fields = sorted({"source_path", "source_spans"} - set(annotation))
+            if missing_source_fields:
+                raise ValueError(f"annotation {position} missing source fields: {missing_source_fields}")
+        if guide_mechanics:
+            source = None
+            source_text = ""
+            code = None
+            command_anchors = list(annotation.get("command_anchors", []))
+            inferred_signals = []
+            max_loop_depth, unclosed_blocks, tex_output = 0, 0, False
+        else:
+            source = resolve_annotation_source(workspace, plugin, annotation["source_path"])
+            source_text = read_text(source)
+            code = extract_block(source_text, annotation["source_spans"])
+            command_anchors = extract_command_anchors(code)
+            inferred_signals = observable_signals(code, command_anchors)
+            max_loop_depth, unclosed_blocks = loop_structure(code)
+            tex_output = any(TEX_OUTPUT.search(line) for line in code.splitlines())
         enforce_reusable_block_safety(
             label_id,
             annotation["decision"],
@@ -964,7 +862,26 @@ def main() -> None:
             ),
         )
         enforce_event_plot_metadata(label_id, checkpoint, annotation["decision"], annotation)
-        signature = input_signature(annotation, source_text)
+        if guide_mechanics:
+            profile = annotation["template_input_profile"]
+            signature = {
+                "data_structure": profile["data_structure"] if profile["data_structure"] in INPUT_DATA_STRUCTURES else "unknown",
+                "observation_unit": profile["record_unit"],
+                "time_structure": profile["time_structure"],
+                "required_keys": profile["required_keys"],
+                "variable_characteristics": profile["variable_characteristics"],
+                "field_evidence": {
+                    "data_structure": [], "observation_unit": [], "time_structure": [],
+                    "required_keys": [], "variable_characteristics": [],
+                },
+                "evidence": {
+                    "source_urls": annotation["source_urls"],
+                    "context_radius_lines": 0,
+                    "basis": "declared official or maintainer manual metadata; no code template shipped",
+                },
+            }
+        else:
+            signature = input_signature(annotation, source_text)
         validate_input_signature(label_id, signature)
 
         checkpoint_contract = contracts[checkpoint]
@@ -1008,13 +925,15 @@ def main() -> None:
                 "state_confidence": annotation.get("state_confidence", "strong" if "state_signature" in annotation else "code_derived"),
                 **annotation,
                 "annotation_order": position,
-                "source_file_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
-                "code_sha256": sha256_text(code),
+                **({} if guide_mechanics else {
+                    "source_file_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+                    "code_sha256": sha256_text(code),
+                    "code": code,
+                }),
                 "input_signature": signature,
                 "max_loop_depth": max_loop_depth,
                 "unclosed_blocks": unclosed_blocks,
                 "tex_output": tex_output,
-                "code": code,
                 "human_labeled": True,
             }
         )
@@ -1161,10 +1080,10 @@ def main() -> None:
                         "preferred_within_checkpoint": row["preferred_within_checkpoint"],
                         "explicit_canonical_exception": bool(row.get("explicit_canonical_exception", False)),
                         "quality_rubric_review": row["quality_rubric_review"],
-                        "source_path": row["source_path"],
-                        "source_spans": row["source_spans"],
-                        "source_file_sha256": row["source_file_sha256"],
-                        "code_sha256": row["code_sha256"],
+                        "source_path": row.get("source_path"),
+                        "source_spans": row.get("source_spans", []),
+                        "source_file_sha256": row.get("source_file_sha256"),
+                        "code_sha256": row.get("code_sha256"),
                     }
                     for row in variants
                 ],
@@ -1251,7 +1170,8 @@ def main() -> None:
     ]
     for row in rows:
         state = row["state_signature"]
-        source_spans = ",".join(f"{start}-{end}" for start, end in row["source_spans"])
+        source_spans = ",".join(f"{start}-{end}" for start, end in row.get("source_spans", []))
+        source_reference = row.get("source_path") or "; ".join(row.get("source_urls", []))
         review_question = (
             "이 금지 판정과 대체 원칙의 근거가 충분한가?"
             if row["decision"] == "drop"
@@ -1269,7 +1189,7 @@ def main() -> None:
                     markdown_cell(state.get("requires", [])),
                     markdown_cell(state.get("produces", [])),
                     markdown_cell(row["minimal_edit_fields"]),
-                    f"`{row['source_path']}:{source_spans}`",
+                    f"`{source_reference}:{source_spans}`",
                     review_question,
                     markdown_cell(row["review_notes"]),
                 ]
@@ -1309,7 +1229,8 @@ def main() -> None:
         "|---|---|---|---|---|---:|---:|---:|---|---|---|---|---|",
     ]
     for row in rows:
-        source_spans = ",".join(f"{start}-{end}" for start, end in row["source_spans"])
+        source_spans = ",".join(f"{start}-{end}" for start, end in row.get("source_spans", []))
+        source_reference = row.get("source_path") or "; ".join(row.get("source_urls", []))
         preferred = "yes" if row["preferred_within_checkpoint"] else "no"
         if row.get("explicit_canonical_exception"):
             preferred += " (explicit canonical exception)"
@@ -1328,7 +1249,7 @@ def main() -> None:
                     markdown_cell(row["reusable_core"]),
                     markdown_cell(row["source_specific_elements"]),
                     markdown_cell(row["generality_rationale_ko"]),
-                    f"`{row['source_path']}:{source_spans}`",
+                    f"`{source_reference}:{source_spans}`",
                 ]
             ) + " |"
         )

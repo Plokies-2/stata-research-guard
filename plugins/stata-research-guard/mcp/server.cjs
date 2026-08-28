@@ -171,6 +171,9 @@ const LABELED_CHECKPOINTS = loadJsonl("labeled_checkpoints.jsonl");
 const COMMAND_EXAMPLE_AUDIT = fs.existsSync(path.join(ROOT, "annotations", "command_example_audit.json"))
   ? JSON.parse(fs.readFileSync(path.join(ROOT, "annotations", "command_example_audit.json"), "utf8"))
   : { label_overrides: {} };
+const CHECKPOINT_CONTRACTS = fs.existsSync(path.join(ROOT, "annotations", "checkpoint_contracts.json"))
+  ? JSON.parse(fs.readFileSync(path.join(ROOT, "annotations", "checkpoint_contracts.json"), "utf8"))
+  : { contracts: [] };
 const GUIDE_MECHANICS_CARDS = fs.existsSync(path.join(DATA, "guide_mechanics_cards.jsonl"))
   ? loadJsonl("guide_mechanics_cards.jsonl")
   : [];
@@ -209,6 +212,96 @@ function fail(message, details = {}) {
   };
 }
 
+function projectStateSignature(value) {
+  const row = value && typeof value === "object" ? value : {};
+  return {
+    requires: Array.isArray(row.requires) ? row.requires.map(String) : [],
+    observable_signals: Array.isArray(row.observable_signals) ? row.observable_signals.map(String) : [],
+    produces: Array.isArray(row.produces) ? row.produces.map(String) : [],
+  };
+}
+
+function projectGuideMetadata(row = {}) {
+  return {
+    label_id: row.label_id,
+    contract_ids: Array.isArray(row.contract_ids) ? row.contract_ids.map(String) : [],
+    counts_toward_complexity: Boolean(row.counts_toward_complexity),
+    code_available: false,
+    manual_urls: Array.isArray(row.manual_urls) ? row.manual_urls.map(String) : [],
+    command_anchors: Array.isArray(row.command_anchors) ? row.command_anchors.map(String) : [],
+    state_signature: projectStateSignature(row.state_signature),
+    source_kind: row.source_kind || null,
+  };
+}
+
+function projectMaterialContract(row = {}) {
+  return {
+    contract_id: row.contract_id,
+    policy: row.policy,
+    variant: row.variant,
+  };
+}
+
+function depositedPaperCode(row = {}) {
+  const sourceKind = String(row.source_kind || "").toLowerCase();
+  return /^deposited_research_code(?:_|$)/.test(sourceKind)
+    && !/canonical|guide|manual|project[_-]?snapshot/.test(sourceKind);
+}
+
+function projectPaperCodeItem(row = {}) {
+  const result = {
+    label_id: row.label_id,
+    classification: row.classification,
+    decision: row.decision,
+    rubric_classification: row.rubric_classification,
+    command_anchors: Array.isArray(row.command_anchors) ? row.command_anchors.map(String) : [],
+    anchor_mapped_group_ids: Array.isArray(row.anchor_mapped_group_ids) ? row.anchor_mapped_group_ids.map(String) : [],
+    mapping_scope: row.mapping_scope,
+    source_kind: row.source_kind,
+    source_path: row.source_path,
+    source_spans: Array.isArray(row.source_spans) ? row.source_spans : [],
+  };
+  if (depositedPaperCode(row)) {
+    result.code = row.code;
+    result.code_line_count = row.code_line_count;
+    result.code_sha256 = row.code_sha256;
+    result.source_file_sha256 = row.source_file_sha256;
+  } else {
+    result.code_available = false;
+  }
+  return result;
+}
+
+function projectPaperCodeContext(value = {}) {
+  return Object.fromEntries(["candidate", "reference", "excluded"].map((classification) => [
+    classification,
+    Array.isArray(value[classification]) ? value[classification].map(projectPaperCodeItem) : [],
+  ]));
+}
+
+function projectCodeFreePaperSupport(row = {}) {
+  return {
+    label_id: row.label_id,
+    evidence_role: row.evidence_role,
+    code_available: false,
+    contract_ids: Array.isArray(row.contract_ids) ? row.contract_ids.map(String) : [],
+    command_anchors: Array.isArray(row.command_anchors) ? row.command_anchors.map(String) : [],
+    runtime_status: row.runtime_status,
+    selector_status: row.selector_status,
+    source_kind: row.source_kind,
+    source_path: row.source_path,
+    source_spans: Array.isArray(row.source_spans) ? row.source_spans : [],
+    source_file_sha256: row.source_file_sha256,
+  };
+}
+
+function projectCodeFreePaperSupportMap(value = {}) {
+  return Object.fromEntries(Object.entries(value || {}).map(([contractId, rows]) => [
+    contractId,
+    Array.isArray(rows) ? rows.map(projectCodeFreePaperSupport) : [],
+  ]));
+}
+
 function inspectTop100CommandExamples(args = {}) {
   const evidence = top100CommandEvidence();
   const requestedGroups = new Set((args.group_ids || []).map((value) => String(value).trim().toLowerCase()).filter(Boolean));
@@ -226,17 +319,21 @@ function inspectTop100CommandExamples(args = {}) {
     const result = {
       rank: row.rank,
       group_id: row.group_id,
-      commands: row.commands,
-      complexity: row.complexity,
-      material_contracts: row.material_contracts,
-      guide_blocks: row.guide_blocks,
-      supplemental_guide_context: row.supplemental_guide_context,
-      guide_gap_contract_ids: row.guide_gap_contract_ids,
-      paper_exact_support_code_unavailable: row.paper_exact_support_code_unavailable,
-      paper_exact_support_gap_contract_ids: row.paper_exact_support_gap_contract_ids,
-      paper_code_template_exact_mapping_gap_contract_ids: row.paper_code_template_exact_mapping_gap_contract_ids,
+      commands: Array.isArray(row.commands) ? row.commands.map(String) : [],
+      complexity: {
+        example_count: Number(row.complexity?.example_count || 0),
+        decision: row.complexity?.decision,
+        coverage_status: row.complexity?.coverage_status,
+      },
+      material_contracts: Array.isArray(row.material_contracts) ? row.material_contracts.map(projectMaterialContract) : [],
+      guide_blocks: Array.isArray(row.guide_blocks) ? row.guide_blocks.map(projectGuideMetadata) : [],
+      supplemental_guide_context: Array.isArray(row.supplemental_guide_context) ? row.supplemental_guide_context.map(projectGuideMetadata) : [],
+      guide_gap_contract_ids: Array.isArray(row.guide_gap_contract_ids) ? row.guide_gap_contract_ids.map(String) : [],
+      paper_exact_support_code_unavailable: projectCodeFreePaperSupportMap(row.paper_exact_support_code_unavailable),
+      paper_exact_support_gap_contract_ids: Array.isArray(row.paper_exact_support_gap_contract_ids) ? row.paper_exact_support_gap_contract_ids.map(String) : [],
+      paper_code_template_exact_mapping_gap_contract_ids: Array.isArray(row.paper_code_template_exact_mapping_gap_contract_ids) ? row.paper_code_template_exact_mapping_gap_contract_ids.map(String) : [],
     };
-    if (args.include_paper_context === true) result.paper_code_context = row.paper_code_context;
+    if (args.include_paper_context === true) result.paper_code_context = projectPaperCodeContext(row.paper_code_context);
     return result;
   });
 
@@ -251,7 +348,7 @@ function inspectTop100CommandExamples(args = {}) {
     matched_group_count: rows.length,
     rows,
     claim_boundary: {
-      guide_blocks: "각 명령어의 물질적으로 다른 문법·상태·추정·추론·handoff를 덮는 reference-only 교과서 mechanics이며 자동 선택 근거가 아닙니다.",
+      guide_blocks: "각 명령어의 물질적으로 다른 문법·상태·추정·추론·handoff를 덮는 reference-only manual metadata입니다. 코드, 코드 hash, synthetic source span은 반환하지 않으며 자동 선택 근거가 아닙니다.",
       paper_code_context: "command anchor가 나타난 논문 코드 문맥일 뿐 exact contract template support가 아닙니다.",
       paper_exact_support_code_unavailable: "명시 contract support이나 원문 코드가 없어 코드 템플릿으로 사용할 수 없습니다.",
     },
@@ -569,10 +666,7 @@ function buildOutputFlowProfile(observed, availableState = {}) {
   return {
     ...decision,
     failures,
-    comparison_label_ids: [
-      "export.regression_excel.single_outcome_direct.v1",
-      "export.regression_excel.coherent_multioutcome_direct.v1",
-    ],
+    comparison_label_ids: [],
     source: declared ? "caller_declared_and_static_crosscheck" : "static_code_scan_only",
     outcomes: decision.outcomes.map((row) => ({
       ...row,
@@ -1945,15 +2039,27 @@ function getVerifiedExamples(args) {
   const command = String(args.command || "").toLowerCase();
   if (!command) throw new Error("command가 필요합니다.");
   const examples = verification.examples.filter((row) =>
-    row.passed && row.authority === "official" && row.return_code === 0 && row.error_codes.length === 0 && row.command.toLowerCase() === command
+    row.passed
+      && row.authority === "official"
+      && row.example_origin === "official_document_derived_runtime_fixture"
+      && row.verbatim === false
+      && row.selection_eligible === false
+      && row.independent_support === false
+      && row.return_code === 0
+      && row.error_codes.length === 0
+      && row.command.toLowerCase() === command
   );
   return {
     command,
-    pass_definition: "StataCorp 공식 문서에 근거한 쉬운 예제를 Stata에서 실제 실행했고 오류 코드 없이 pass marker까지 도달했습니다.",
+    pass_definition: "StataCorp 공식 문서에서 파생했지만 원문 그대로는 아닌 격리 runtime fixture를 Stata에서 실제 실행했고 오류 코드 없이 pass marker까지 도달했습니다. selector나 독립 근거로 사용하지 않습니다.",
     examples: examples.map((row) => ({
       example_id: row.example_id,
       command: row.command,
       authority: row.authority,
+      example_origin: row.example_origin,
+      verbatim: row.verbatim,
+      selection_eligible: row.selection_eligible,
+      independent_support: row.independent_support,
       source_file: row.source_file,
       source_url: row.source_url,
       page: row.page,
@@ -2068,8 +2174,36 @@ function rubricClassification(row) {
   return row.quality_rubric_review?.classification || (row.decision === "drop" ? "exclude" : "conditional_candidate");
 }
 
+const DERIVED_CANONICAL_FORMATTER_FINGERPRINT = Object.freeze({
+  label_id: "export.regression_excel.from_ster_default_style.v1",
+  source_path: "plugins/stata-research-guard/annotations/source_snapshots/default_style_outreg2_xlsx.do",
+  source_file_sha256: "e98c97dfd21e7e4cffd8a0b0520de256afd36dceae8437cbf8a774a2f2b1a473",
+  code_sha256: "a192f7487b4db889b2a656b60d88246c2f02c4d53bf86871d1ef26840ab0d827",
+});
+
+function derivedCanonicalFormatterAuthorized(row) {
+  return row.label_id === DERIVED_CANONICAL_FORMATTER_FINGERPRINT.label_id
+    && String(row.source_path || "").replace(/\\/g, "/") === DERIVED_CANONICAL_FORMATTER_FINGERPRINT.source_path
+    && row.source_file_sha256 === DERIVED_CANONICAL_FORMATTER_FINGERPRINT.source_file_sha256
+    && row.code_sha256 === DERIVED_CANONICAL_FORMATTER_FINGERPRINT.code_sha256;
+}
+
+function independentResearchSourceAuthorized(row) {
+  const sourceKind = String(row.source_kind || row.provenance?.source_kind || "").toLowerCase();
+  if (/canonical|guide|manual|project[_-]?snapshot/.test(sourceKind)) return false;
+  return ["deposited_research_code", "external_research_code", "independent_researcher_code"]
+    .some((prefix) => sourceKind === prefix || sourceKind.startsWith(`${prefix}_`));
+}
+
+function selectorSourceAuthorized(row) {
+  const sourceKind = String(row.source_kind || row.provenance?.source_kind || "").toLowerCase();
+  if (sourceKind === "derived_canonical_implementation") return derivedCanonicalFormatterAuthorized(row);
+  return independentResearchSourceAuthorized(row);
+}
+
 function rubricAutoSelectable(row) {
-  return row.transition_role !== "guidance_only"
+  return selectorSourceAuthorized(row)
+    && row.transition_role !== "guidance_only"
     && ["preferred_candidate", "conditional_candidate"].includes(rubricClassification(row));
 }
 
@@ -2324,7 +2458,29 @@ function sourcePackageReview(row) {
   };
 }
 
+function labelRankingMetadata(row) {
+  return JSON.stringify({
+    checkpoint: row.checkpoint,
+    variant_id: row.variant_id,
+    stage: row.stage,
+    unit_kind: row.unit_kind,
+    purpose_ko: row.purpose_ko,
+    aliases: row.aliases,
+    command_anchors: row.command_anchors,
+    research_situations: row.research_situations,
+    selection_conditions: row.selection_conditions,
+    input_contract: row.input_contract,
+    output_contract: row.output_contract,
+    required_signals: row.required_signals,
+    state_signature: row.state_signature,
+    template_input_profile: row.template_input_profile,
+    method_family: row.method_family,
+    specification_facet: row.specification_facet,
+  }).toLowerCase();
+}
+
 function scoreLabeledCheckpoint(row, args) {
+  if (!selectorSourceAuthorized(row)) return Number.NEGATIVE_INFINITY;
   let score = 0;
   if (args.checkpoint && row.checkpoint === args.checkpoint) score += 100;
   if (args.stage && row.stage === args.stage) score += 40;
@@ -2340,19 +2496,7 @@ function scoreLabeledCheckpoint(row, args) {
     ...tokenize(args.current_state || ""),
     ...tokenize(args.target_state || ""),
   ]);
-  const haystack = JSON.stringify({
-    checkpoint: row.checkpoint,
-    variant_id: row.variant_id,
-    stage: row.stage,
-    unit_kind: row.unit_kind,
-    purpose_ko: row.purpose_ko,
-    aliases: row.aliases,
-    research_situations: row.research_situations,
-    selection_conditions: row.selection_conditions,
-    input_contract: row.input_contract,
-    output_contract: row.output_contract,
-    required_signals: row.required_signals,
-  }).toLowerCase();
+  const haystack = labelRankingMetadata(row);
   for (const term of terms) if (haystack.includes(term)) score += 5;
   if (row.decision === "keep") score += 8;
   if (row.decision === "conditional_keep") score += 4;
@@ -2385,6 +2529,7 @@ function searchLabeledCheckpoints(args) {
     // always-present, non-competing companion layer.  They must never enter
     // the legacy template score or displace deposited/reusable examples.
     if (GUIDE_MECHANICS_LABEL_IDS.has(row.label_id)) return false;
+    if (!selectorSourceAuthorized(row)) return false;
     if (!includeDropped && row.decision === "drop") return false;
     if (!args.include_project_specific && row.reuse_scope === "project_specific" && !row.explicit_canonical_exception) return false;
     if (args.checkpoint && row.checkpoint !== args.checkpoint) return false;
@@ -2923,8 +3068,6 @@ function compareTemplateInputProfile(templateProfile, targetProfile) {
   };
 }
 
-const GUIDE_CODE_MAX_LINES = 12;
-const GUIDE_CODE_MAX_CHARS = 600;
 const MATERIAL_ALTERNATIVE_LIMIT = 2;
 
 function normalizeEvidenceCommand(value) {
@@ -2954,25 +3097,6 @@ function cardStateMatches(card, transition) {
     && target.every((signal) => availableTarget.has(signal));
 }
 
-function capGuideCode(value) {
-  const source = String(value || "");
-  const sourceLines = source.split(/\r?\n/);
-  let code = sourceLines.slice(0, GUIDE_CODE_MAX_LINES).join("\n");
-  let characterTruncated = false;
-  if (code.length > GUIDE_CODE_MAX_CHARS) {
-    code = code.slice(0, GUIDE_CODE_MAX_CHARS);
-    characterTruncated = true;
-  }
-  return {
-    code,
-    source_line_count: sourceLines.length,
-    returned_line_count: code ? code.split("\n").length : 0,
-    returned_character_count: code.length,
-    truncated: sourceLines.length > GUIDE_CODE_MAX_LINES || characterTruncated,
-    cap: { max_lines: GUIDE_CODE_MAX_LINES, max_characters: GUIDE_CODE_MAX_CHARS },
-  };
-}
-
 function materialAlternativeMetadata(card) {
   const stataCompatibility = cardStataCompatibility(card);
   return {
@@ -3000,7 +3124,6 @@ function materialAlternativeMetadata(card) {
 
 function publicGuideCard(card) {
   if (!card) return null;
-  const capped = capGuideCode(card.code);
   const stataCompatibility = cardStataCompatibility(card);
   return {
     layer_id: card.layer_id,
@@ -3017,14 +3140,8 @@ function publicGuideCard(card) {
     command_anchors: card.command_anchors || [],
     state_signature: card.state_signature || {},
     template_input_profile: card.template_input_profile || {},
-    code: capped.code,
-    context: {
-      source_line_count: capped.source_line_count,
-      returned_line_count: capped.returned_line_count,
-      returned_character_count: capped.returned_character_count,
-      truncated: capped.truncated,
-      cap: capped.cap,
-    },
+    manual_urls: card.manual_urls || [],
+    code_available: false,
     auto_selectable: false,
     research_decisions_supplied: false,
     provenance: card.provenance || null,
@@ -3309,7 +3426,7 @@ function resolveTransitionEvidence(args, sources = {}) {
     routeReason = "Multiple materially distinct guide mechanics variants remain; no guide code or usage template can be selected.";
   } else if (guideSelectionMissing) {
     routeMode = "selection_required";
-    routeReason = "Guide code requires simultaneous exact contract, variant, command-anchor, declared Stata compatibility, and material-facet declarations.";
+    routeReason = "Guide metadata requires simultaneous exact contract, variant, command-anchor, declared Stata compatibility, and material-facet declarations.";
   } else if (unresolved.length) {
     routeMode = "selection_required";
     routeReason = `Unresolved substantive choice(s): ${unresolved.join(", ")}`;
@@ -3340,7 +3457,7 @@ function resolveTransitionEvidence(args, sources = {}) {
       material_alternatives: guideAlternatives,
       ambiguity_state: guideAmbiguous ? "material_variants_remain"
         : guideSelectionMissing ? "exact_declaration_incomplete_or_mismatched" : "none",
-      selection_rule: "Guide mechanics remain a non-competing companion. Code is returned only for one exact contract, variant, command-anchor, declared Stata compatibility, and material-facet match; free-text manual/source-edition notes do not act as runtime gates, and material ambiguity fails closed.",
+      selection_rule: "Guide mechanics remain a non-competing metadata companion. Deposited research-usage code is returned only for one exact contract, variant, command-anchor, declared Stata compatibility, and material-facet match; free-text manual/source-edition notes do not act as runtime gates, and material ambiguity fails closed.",
     },
     usage_layer: {
       status: selectedUsage ? "audited_exact_match"
@@ -3376,7 +3493,6 @@ function resolveTransitionEvidence(args, sources = {}) {
       maximum_guide_cards: 1,
       maximum_material_alternatives: MATERIAL_ALTERNATIVE_LIMIT,
       maximum_usage_examples: 1,
-      guide_context_cap: { max_lines: GUIDE_CODE_MAX_LINES, max_characters: GUIDE_CODE_MAX_CHARS },
       bounded_composition: allowBoundedPartialCommandMatch,
       research_decisions_from_guide: false,
     },
@@ -4024,6 +4140,42 @@ const DYNAMIC_COMMAND_CHECKPOINTS = (() => {
   return mapping;
 })();
 
+// Guide cards carry only command/state metadata, but that metadata still
+// defines the atomic checkpoint for an exact command.  Keep this separate
+// from auto-selectable labels: it informs planning without making a guide
+// card a code candidate.
+const GUIDE_COMMAND_CHECKPOINTS = (() => {
+  const mapping = new Map();
+  const add = (anchor, checkpoint) => {
+    const key = normalizedCommandAnchor(anchor);
+    if (!key || !CHECKPOINTS.includes(checkpoint)) return;
+    if (!mapping.has(key)) mapping.set(key, new Set());
+    mapping.get(key).add(checkpoint);
+  };
+  for (const card of GUIDE_MECHANICS_CARDS) {
+    for (const anchor of card.command_anchors || []) add(anchor, card.checkpoint);
+  }
+  return mapping;
+})();
+
+// Contract aliases name the transition itself, independently of whether an
+// implementation example is selectable.  They resolve a direct command such
+// as `margins` even when guide cards for its downstream `marginsplot` variant
+// also list the producer command as required state.
+const CONTRACT_ALIAS_CHECKPOINTS = (() => {
+  const mapping = new Map();
+  const add = (anchor, checkpoint) => {
+    const key = normalizedCommandAnchor(anchor);
+    if (!key || !CHECKPOINTS.includes(checkpoint)) return;
+    if (!mapping.has(key)) mapping.set(key, new Set());
+    mapping.get(key).add(checkpoint);
+  };
+  for (const contract of CHECKPOINT_CONTRACTS.contracts || []) {
+    for (const alias of contract.aliases || []) add(alias, contract.checkpoint);
+  }
+  return mapping;
+})();
+
 const AUTO_LABEL_COMMAND_CHECKPOINTS = (() => {
   const mapping = new Map();
   for (const row of LABELED_CHECKPOINTS) {
@@ -4102,12 +4254,20 @@ function dynamicallyRoutedCheckpoints(request) {
   for (const anchor of requestCommandAnchors(value)) {
     const key = normalizedCommandAnchor(anchor);
     const autoLabelRoutes = [...(AUTO_LABEL_COMMAND_CHECKPOINTS.get(key) || [])];
-    let checkpoints = autoLabelRoutes.length
+    const guideRoutes = [...(GUIDE_COMMAND_CHECKPOINTS.get(key) || [])];
+    const contractRoutes = [...(CONTRACT_ALIAS_CHECKPOINTS.get(key) || [])];
+    const exactRoutes = autoLabelRoutes.length === 1
       ? autoLabelRoutes
-      : [...(DYNAMIC_COMMAND_CHECKPOINTS.get(key) || [])];
+      : contractRoutes.length === 1
+        ? contractRoutes
+        // A single guide contract gives an unambiguous semantic route.  Where
+        // multiple guide contracts share a command, retain the existing
+        // dictionary routing rather than guessing a variant from metadata.
+        : guideRoutes.length === 1 ? guideRoutes : null;
+    let checkpoints = exactRoutes || [...(DYNAMIC_COMMAND_CHECKPOINTS.get(key) || [])];
     if (!checkpoints.length) continue;
-    if (autoLabelRoutes.length === 1) {
-      checkpoints = autoLabelRoutes;
+    if (exactRoutes) {
+      checkpoints = exactRoutes;
     } else if (summaryContext) {
       const contextual = checkpoints.filter((checkpoint) => checkpoint === "descriptives.summary_dataset"
         || checkpoint === "descriptives.estpost_active_result"
@@ -4319,6 +4479,16 @@ function checkVariantCompatibility(row, observed, availableState, request = "") 
 }
 
 function rankVariantForObservedState(row, observed, request, availableState) {
+  if (!selectorSourceAuthorized(row)) {
+    return {
+      score: Number.NEGATIVE_INFINITY,
+      reasons: ["candidate failed the fail-closed research-source or exact formatter provenance allowlist"],
+      template_input_profile_comparison: compareTemplateInputProfile(
+        row.template_input_profile,
+        availableState?.input_profile || availableState?.target_input_profile || availableState?.input_signature || observed.input_signature,
+      ),
+    };
+  }
   let score = row.decision === "keep" ? 20 : row.decision === "conditional_keep" ? 10 : -100;
   const reasons = [];
   const inputSignatureComparison = compareInputSignatures(row.input_signature, availableState?.input_signature || observed.input_signature);
@@ -4354,7 +4524,7 @@ function rankVariantForObservedState(row, observed, request, availableState) {
     score -= 15;
     reasons.push("derived canonical template is non-independent implementation evidence");
   }
-  const haystack = `${row.variant_id} ${row.research_situations.join(" ")} ${row.selection_conditions.join(" ")} ${JSON.stringify(row.state_signature || {})} ${row.code}`.toLowerCase();
+  const haystack = labelRankingMetadata(row);
   for (const term of tokenize(request || "")) if (haystack.includes(term)) score += 2;
   const stateText = JSON.stringify(availableState || {}).toLowerCase();
   for (const term of tokenize(stateText)) if (haystack.includes(term)) score += 3;
@@ -4397,8 +4567,9 @@ function rankVariantForObservedState(row, observed, request, availableState) {
     score += 3;
     reasons.push("compatible canonical default used only as a final tie-break");
   }
-  if (observed.style_profile.helper_programs && /^\s*program\s+define\b/im.test(row.code)) score += 12;
-  if (!observed.style_profile.helper_programs && /^\s*program\s+define\b/im.test(row.code)) score -= 6;
+  const helperProgramDeclared = /\bhelper[_ -]?program\b|\bprogram[_ -]?defined\b/i.test(haystack);
+  if (observed.style_profile.helper_programs && helperProgramDeclared) score += 12;
+  if (!observed.style_profile.helper_programs && helperProgramDeclared) score -= 6;
   if (reasons.length === 0) reasons.push("matched by checkpoint, task terms, and the variant's declared state contract");
   return { score, reasons, template_input_profile_comparison: templateInputProfileComparison };
 }
@@ -4596,7 +4767,9 @@ function planDictionaryRepairs(args) {
 
   const interventions = headwords.map((checkpoint) => {
     const checkpointLabels = LABELED_CHECKPOINTS.filter((row) =>
-      row.checkpoint === checkpoint && !GUIDE_MECHANICS_LABEL_IDS.has(row.label_id));
+      row.checkpoint === checkpoint
+        && !GUIDE_MECHANICS_LABEL_IDS.has(row.label_id)
+        && selectorSourceAuthorized(row));
     const checkpointCommandAnchors = exactCommandAnchors.filter((anchor) => DYNAMIC_COMMAND_CHECKPOINTS.get(normalizedCommandAnchor(anchor))?.has(checkpoint));
     const finalExcelFlow = checkpoint === "final_excel_assembly"
       ? buildOutputFlowProfile(observed, args.available_state || {})
@@ -6255,7 +6428,7 @@ function workflowReproductionCheck(args) {
 const TOOLS = [
   {
     name: "resolve_transition_evidence",
-    description: "Resolve one substantive atomic Stata transition through two non-competing evidence layers. Guide code is never auto-selectable, is capped at 12 lines and 600 characters, and is returned only for one exact contract, variant, command-anchor, declared Stata compatibility, and material-facet match; free-text manual/source-edition notes remain provenance rather than runtime gates, guide ambiguity fails closed, and guides never supply research decisions. Separately, it may return at most one audited deposited/independent research-usage example that passed runtime plus selector positive and sibling-negative gates. Routes are guide+usage_template, guide+general_rule, guide_informed_general_rule, selection_required, or split_required.",
+    description: "Resolve one substantive atomic Stata transition through two non-competing evidence layers. The guide layer returns mechanics metadata only—never guide code, code hashes, or synthetic source spans—and only for an exact contract, variant, command-anchor, declared Stata compatibility, and material-facet match; free-text manual/source-edition notes remain provenance rather than runtime gates, guide ambiguity fails closed, and guides never supply research decisions. Separately, it may return at most one audited deposited/independent research-usage example that passed runtime plus selector positive and sibling-negative gates. Routes are guide+usage_template, guide+general_rule, guide_informed_general_rule, selection_required, or split_required.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -6332,7 +6505,7 @@ const TOOLS = [
   },
   {
     name: "inspect_top100_command_examples",
-    description: "Inspect the complexity-weighted textbook/guide example set and paper-evidence status for one or more Top 100 Stata commands. Unlike the atomic resolver, this command-level overview returns every distinct guide block judged necessary for the command. Paper code is returned only when include_paper_context=true and remains group context rather than exact reusable template support.",
+    description: "Inspect the complexity-weighted manual metadata and paper-evidence status for one or more Top 100 Stata commands. Unlike the atomic resolver, this command-level overview returns every distinct guide contract judged necessary for the command, but never guide code, code hashes, or synthetic source spans. Deposited paper code is returned only when include_paper_context=true and remains group context rather than exact reusable template support.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -6357,7 +6530,7 @@ const TOOLS = [
   },
   {
     name: "get_verified_stata_examples",
-    description: "Return only simple StataCorp-manual examples that were actually executed successfully in Stata, with source, page, code hash, runtime version, and log hash.",
+    description: "Return only official-document-derived runtime fixtures that were actually executed successfully in Stata. These fixtures are adapted rather than verbatim, are isolated from selectors, and are not independent research-style support; source, page, code hash, runtime version, and log hash are included for verification.",
     inputSchema: { type: "object", additionalProperties: false, required: ["command"], properties: { command: { type: "string" } } },
     outputSchema: { type: "object", additionalProperties: true },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
@@ -6762,12 +6935,10 @@ if (require.main === module) {
 }
 
 module.exports = {
-  GUIDE_CODE_MAX_CHARS,
-  GUIDE_CODE_MAX_LINES,
   MATERIAL_ALTERNATIVE_LIMIT,
   assessTransitionAtomicity,
-  capGuideCode,
   dispatch,
   filterEvidenceCards,
+  rubricAutoSelectable,
   resolveTransitionEvidence,
 };

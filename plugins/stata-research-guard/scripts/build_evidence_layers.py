@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 from collections import Counter
 from pathlib import Path
 from typing import Iterable
@@ -120,10 +121,32 @@ def audit_gate(row: dict) -> dict:
         and verification.get("code_sha256_match") is True
         and verification.get("source_file_sha256_match") is True
     )
-    passed = explicit_pass or legacy_pass
+    metadata_pass = (
+        row.get("audit_status") == "metadata_only"
+        and promotion_status == "reference_only"
+        and row.get("auto_selectable") is False
+        and not row.get("code")
+        and not row.get("code_sha256")
+        and not row.get("source_path")
+        and not row.get("source_spans")
+        and isinstance(row.get("source_urls"), list)
+        and bool(row["source_urls"])
+        and all(isinstance(url, str) and url.startswith(("https://", "http://")) for url in row["source_urls"])
+        and runtime_status in {"not_run", "not_available", "not_applicable"}
+        and row.get("selector_status") == "not_run"
+    )
+    passed = explicit_pass or legacy_pass or metadata_pass
     return {
         "passed": passed,
-        "basis": "audited_template" if explicit_pass else "legacy_external_evidence_rubric_review" if legacy_pass else "not_audited",
+        "basis": (
+            "audited_template"
+            if explicit_pass
+            else "legacy_external_evidence_rubric_review"
+            if legacy_pass
+            else "metadata_only_guide"
+            if metadata_pass
+            else "not_audited"
+        ),
         "promotion_status": promotion_status or None,
         "rubric_status": review.get("status"),
         "source_hash_verified": verification.get("source_file_sha256_match") is True,
@@ -147,6 +170,7 @@ def common_card(row: dict, tier: str) -> dict:
         "audit_gate": audit_gate(row),
         "input_row_sha256": canonical_json_sha256(row),
     }
+    provenance = {key: value for key, value in provenance.items() if value not in (None, [])}
     return {
         "schema_version": "1.0",
         "evidence_layer": tier,
@@ -180,6 +204,24 @@ def common_card(row: dict, tier: str) -> dict:
         "code": row.get("code") or "",
         "provenance": provenance,
     }
+
+
+def guide_manual_urls(row: dict) -> list[str]:
+    """Return declared guide URLs without carrying guide code into runtime cards."""
+    declared_urls = row.get("source_urls") or []
+    if not isinstance(declared_urls, list):
+        raise ValueError(f"guide source_urls must be a list: {row.get('label_id')}")
+    candidates = [
+        *declared_urls,
+        (row.get("template_input_profile") or {}).get("source_basis"),
+        (row.get("derivation_provenance") or {}).get("source_url"),
+    ]
+    urls: list[str] = []
+    for candidate in candidates:
+        for value in re.findall(r"https?://[^\s,)]+", str(candidate or "")):
+            if value not in urls:
+                urls.append(value)
+    return urls
 
 
 def research_usage_support_card(row: dict) -> dict:
@@ -472,10 +514,10 @@ def build_layers(
             if action == "suppress_semantic_duplicate":
                 if source_tier(row) != "guide_mechanics":
                     raise ValueError(f"only guide mechanics may be suppressed as semantic duplicates: {row['label_id']}")
-                continue
-            row["contract_ids"] = list(override.get("contract_ids", []))
-            if override.get("supplemental_contract_id"):
-                row["supplemental_contract_id"] = override["supplemental_contract_id"]
+            else:
+                row["contract_ids"] = list(override.get("contract_ids", []))
+                if override.get("supplemental_contract_id"):
+                    row["supplemental_contract_id"] = override["supplemental_contract_id"]
         tier = source_tier(row)
         if tier == "excluded_derived_or_unclassified":
             skipped[str(row.get("source_kind") or "<missing>")] += 1
@@ -494,8 +536,14 @@ def build_layers(
         if tier == "guide_mechanics":
             card["provenance"]["upstream_promotion_status"] = card["promotion_status"]
             card["provenance"]["upstream_rubric_classification"] = card["rubric_classification"]
+            # Official and maintainer guides are mechanics evidence only.  Keep
+            # their command/state metadata and source hashes for auditability,
+            # but never publish their example bodies as reusable code.
+            card.pop("code", None)
             card.update(
                 authority_tier=guide_authority_tier(row),
+                code_available=False,
+                manual_urls=guide_manual_urls(row),
                 auto_selectable=False,
                 promotion_status="reference_only",
                 rubric_classification="reference_only",
@@ -571,7 +619,9 @@ def build_layers(
             elif row.get("audit_decision") not in {"needs_manual_followup", "reject"}:
                 raise ValueError(f"unsupported corpus occurrence audit_decision: {row.get('audit_decision')}")
 
-    guide_cards = merge_duplicate_guide_cards(guide_cards)
+    # Preserve every audited metadata row in the complete guide ledger. Semantic
+    # duplicate suppression belongs to the command-mapping audit and must not
+    # erase provenance records from the canonical inventory.
     guide_cards.sort(key=lambda row: (row["checkpoint"] or "", row["variant_group"] or "", row["label_id"]))
     usage_cards.sort(key=lambda row: (row["checkpoint"] or "", row["variant_group"] or "", row["label_id"]))
     layer_ids = [row["layer_id"] for row in guide_cards + usage_cards]

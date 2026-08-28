@@ -9,12 +9,6 @@
     "variant_group": "guide.by_bysort",
     "variant_id": "by_group_sorted_sequence",
     "stage": "preparation",
-    "source_spans": [
-      [
-        3,
-        3
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/pby.pdf"
@@ -75,10 +69,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 51 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 51 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.by_bysort.bysort_group_count.v1",
@@ -90,12 +86,6 @@
     "variant_group": "guide.by_bysort",
     "variant_id": "bysort_group_count",
     "stage": "preparation",
-    "source_spans": [
-      [
-        4,
-        4
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/pby.pdf"
@@ -156,10 +146,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 51 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 51 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.by_bysort.by_group_replace_condition.v1",
@@ -171,12 +163,6 @@
     "variant_group": "guide.by_bysort",
     "variant_id": "by_group_replace_condition",
     "stage": "preparation",
-    "source_spans": [
-      [
-        5,
-        5
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/pby.pdf"
@@ -237,10 +223,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 51 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 51 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.if_in_qualifiers.if_qualifier_nonmissing_summary.v1",
@@ -252,12 +240,6 @@
     "variant_group": "guide.if_in_qualifiers",
     "variant_id": "if_qualifier_nonmissing_summary",
     "stage": "preparation",
-    "source_spans": [
-      [
-        6,
-        6
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/pifin.pdf"
@@ -316,10 +298,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 52 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 52 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.if_in_qualifiers.in_qualifier_observation_range.v1",
@@ -331,12 +315,6 @@
     "variant_group": "guide.if_in_qualifiers",
     "variant_id": "in_qualifier_observation_range",
     "stage": "preparation",
-    "source_spans": [
-      [
-        7,
-        7
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/pifin.pdf"
@@ -395,10 +373,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 52 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 52 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.if_in_qualifiers.if_qualifier_missing_replace.v1",
@@ -410,12 +390,6 @@
     "variant_group": "guide.if_in_qualifiers",
     "variant_id": "if_qualifier_missing_replace",
     "stage": "preparation",
-    "source_spans": [
-      [
-        8,
-        8
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/fnmissing.pdf"
@@ -474,10 +448,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 52 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 52 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.recode.recode_generate_ranges.v1",
@@ -489,12 +465,6 @@
     "variant_group": "guide.recode",
     "variant_id": "recode_generate_ranges",
     "stage": "preparation",
-    "source_spans": [
-      [
-        9,
-        9
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/drecode.pdf"
@@ -552,10 +522,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 53 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 53 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.recode.recode_generate_binary_test.v1",
@@ -567,12 +539,6 @@
     "variant_group": "guide.recode",
     "variant_id": "recode_generate_binary_test",
     "stage": "preparation",
-    "source_spans": [
-      [
-        10,
-        10
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/drecode.pdf"
@@ -630,10 +596,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 53 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 53 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.missing_mi.missing_function_indicator.v1",
@@ -645,12 +613,6 @@
     "variant_group": "guide.missing_mi",
     "variant_id": "missing_function_indicator",
     "stage": "validation",
-    "source_spans": [
-      [
-        11,
-        11
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/fnmissing.pdf"
@@ -710,10 +672,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 54 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 54 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.missing_mi.mi_set_mlong.v1",
@@ -725,12 +689,6 @@
     "variant_group": "guide.missing_mi",
     "variant_id": "mi_set_mlong",
     "stage": "validation",
-    "source_spans": [
-      [
-        12,
-        12
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/mi.pdf"
@@ -790,10 +748,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 54 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 54 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.missing_mi.mi_register_and_misstable.v1",
@@ -805,12 +765,6 @@
     "variant_group": "guide.missing_mi",
     "variant_id": "mi_register_and_misstable",
     "stage": "validation",
-    "source_spans": [
-      [
-        70,
-        73
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/miregister.pdf"
@@ -870,10 +824,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 54 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 54 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.clonevar_recast_compress.clonevar_preserve_metadata.v1",
@@ -885,12 +841,6 @@
     "variant_group": "guide.clonevar_recast_compress",
     "variant_id": "clonevar_preserve_metadata",
     "stage": "preparation",
-    "source_spans": [
-      [
-        14,
-        14
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dclonevar.pdf"
@@ -950,10 +900,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 55 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 55 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.clonevar_recast_compress.recast_declared_storage.v1",
@@ -965,12 +917,6 @@
     "variant_group": "guide.clonevar_recast_compress",
     "variant_id": "recast_declared_storage",
     "stage": "preparation",
-    "source_spans": [
-      [
-        15,
-        15
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/drecast.pdf"
@@ -1030,10 +976,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 55 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 55 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.clonevar_recast_compress.compress_declared_dataset.v1",
@@ -1045,12 +993,6 @@
     "variant_group": "guide.clonevar_recast_compress",
     "variant_id": "compress_declared_dataset",
     "stage": "preparation",
-    "source_spans": [
-      [
-        16,
-        16
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dcompress.pdf"
@@ -1110,10 +1052,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 55 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 55 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.format.format_numeric_currency.v1",
@@ -1125,12 +1069,6 @@
     "variant_group": "guide.format",
     "variant_id": "format_numeric_currency",
     "stage": "preparation",
-    "source_spans": [
-      [
-        17,
-        17
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dformat.pdf"
@@ -1188,10 +1126,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 56 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 56 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.format.format_date_display.v1",
@@ -1203,12 +1143,6 @@
     "variant_group": "guide.format",
     "variant_id": "format_date_display",
     "stage": "preparation",
-    "source_spans": [
-      [
-        125,
-        125
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dformat.pdf"
@@ -1265,10 +1199,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 56 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 56 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.format.format_string_width.v1",
@@ -1280,12 +1216,6 @@
     "variant_group": "guide.format",
     "variant_id": "format_string_width",
     "stage": "preparation",
-    "source_spans": [
-      [
-        126,
-        126
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dformat.pdf"
@@ -1342,10 +1272,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 56 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 56 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.ds_unab.ds_numeric_wildcard.v1",
@@ -1357,12 +1289,6 @@
     "variant_group": "guide.ds_unab",
     "variant_id": "ds_numeric_wildcard",
     "stage": "preparation",
-    "source_spans": [
-      [
-        74,
-        76
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dds.pdf"
@@ -1421,10 +1347,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 57 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 57 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.ds_unab.ds_not_string_wildcard.v1",
@@ -1436,12 +1364,6 @@
     "variant_group": "guide.ds_unab",
     "variant_id": "ds_not_string_wildcard",
     "stage": "preparation",
-    "source_spans": [
-      [
-        127,
-        128
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dds.pdf"
@@ -1501,10 +1423,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 57 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 57 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.ds_unab.unab_declared_controls.v1",
@@ -1516,12 +1440,6 @@
     "variant_group": "guide.ds_unab",
     "variant_id": "unab_declared_controls",
     "stage": "preparation",
-    "source_spans": [
-      [
-        19,
-        19
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/punab.pdf"
@@ -1580,10 +1498,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 57 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 57 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.temp_objects.tempfile_intermediate.v1",
@@ -1595,12 +1515,6 @@
     "variant_group": "guide.temp_objects",
     "variant_id": "tempfile_intermediate",
     "stage": "preparation",
-    "source_spans": [
-      [
-        77,
-        79
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/pmacro.pdf"
@@ -1660,10 +1574,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 58 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 58 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.temp_objects.tempvar_flag.v1",
@@ -1675,12 +1591,6 @@
     "variant_group": "guide.temp_objects",
     "variant_id": "tempvar_flag",
     "stage": "preparation",
-    "source_spans": [
-      [
-        80,
-        82
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/pmacro.pdf"
@@ -1740,10 +1650,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 58 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 58 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.temp_objects.tempname_matrix.v1",
@@ -1755,12 +1667,6 @@
     "variant_group": "guide.temp_objects",
     "variant_id": "tempname_matrix",
     "stage": "preparation",
-    "source_spans": [
-      [
-        83,
-        85
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/pmacro.pdf"
@@ -1820,10 +1726,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 58 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 58 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.capture_confirm.capture_confirm_variable.v1",
@@ -1835,12 +1743,6 @@
     "variant_group": "guide.capture_confirm",
     "variant_id": "capture_confirm_variable",
     "stage": "validation",
-    "source_spans": [
-      [
-        86,
-        90
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/pcapture.pdf"
@@ -1899,10 +1801,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 59 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 59 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.capture_confirm.capture_confirm_file.v1",
@@ -1914,12 +1818,6 @@
     "variant_group": "guide.capture_confirm",
     "variant_id": "capture_confirm_file",
     "stage": "validation",
-    "source_spans": [
-      [
-        91,
-        95
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/pconfirm.pdf"
@@ -1978,10 +1876,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 59 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 59 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.capture_confirm.capture_confirm_new_variable.v1",
@@ -1993,12 +1893,6 @@
     "variant_group": "guide.capture_confirm",
     "variant_id": "capture_confirm_new_variable",
     "stage": "validation",
-    "source_spans": [
-      [
-        96,
-        100
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/pconfirm.pdf"
@@ -2057,10 +1951,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 59 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 59 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.quietly_noisily.quietly_summary_return.v1",
@@ -2072,12 +1968,6 @@
     "variant_group": "guide.quietly_noisily",
     "variant_id": "quietly_summary_return",
     "stage": "preparation",
-    "source_spans": [
-      [
-        101,
-        103
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/pquietly.pdf"
@@ -2136,10 +2026,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 60 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 60 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.quietly_noisily.noisily_detail_summary.v1",
@@ -2151,12 +2043,6 @@
     "variant_group": "guide.quietly_noisily",
     "variant_id": "noisily_detail_summary",
     "stage": "preparation",
-    "source_spans": [
-      [
-        27,
-        27
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/pquietly.pdf"
@@ -2215,10 +2101,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 60 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 60 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.do_include.do_declared_file.v1",
@@ -2230,12 +2118,6 @@
     "variant_group": "guide.do_include",
     "variant_id": "do_declared_file",
     "stage": "orchestration",
-    "source_spans": [
-      [
-        28,
-        28
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/pdo.pdf"
@@ -2294,10 +2176,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 61 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 61 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.do_include.include_declared_source.v1",
@@ -2309,12 +2193,6 @@
     "variant_group": "guide.do_include",
     "variant_id": "include_declared_source",
     "stage": "orchestration",
-    "source_spans": [
-      [
-        29,
-        29
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/pinclude.pdf"
@@ -2373,10 +2251,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 61 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 61 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.postfile_post.postfile_typed_results.v1",
@@ -2388,12 +2268,6 @@
     "variant_group": "guide.postfile_post",
     "variant_id": "postfile_typed_results",
     "stage": "preparation",
-    "source_spans": [
-      [
-        104,
-        107
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/ppostfile.pdf"
@@ -2453,10 +2327,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 62 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 62 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.postfile_post.post_named_result_row.v1",
@@ -2468,12 +2344,6 @@
     "variant_group": "guide.postfile_post",
     "variant_id": "post_named_result_row",
     "stage": "preparation",
-    "source_spans": [
-      [
-        31,
-        31
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/ppost.pdf"
@@ -2533,10 +2403,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 62 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 62 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.postfile_post.postclose_consumer.v1",
@@ -2548,12 +2420,6 @@
     "variant_group": "guide.postfile_post",
     "variant_id": "postclose_consumer",
     "stage": "preparation",
-    "source_spans": [
-      [
-        108,
-        110
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/ppostfile.pdf"
@@ -2613,10 +2479,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 62 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 62 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.contract.contract_frequency.v1",
@@ -2628,12 +2496,6 @@
     "variant_group": "guide.contract",
     "variant_id": "contract_frequency",
     "stage": "preparation",
-    "source_spans": [
-      [
-        33,
-        33
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dcontract.pdf"
@@ -2691,10 +2553,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 63 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 63 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.contract.contract_frequency_percent_cumulative.v1",
@@ -2706,12 +2570,6 @@
     "variant_group": "guide.contract",
     "variant_id": "contract_frequency_percent_cumulative",
     "stage": "preparation",
-    "source_spans": [
-      [
-        34,
-        34
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dcontract.pdf"
@@ -2769,10 +2627,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 63 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 63 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.contract.contract_zero_nomiss.v1",
@@ -2784,12 +2644,6 @@
     "variant_group": "guide.contract",
     "variant_id": "contract_zero_nomiss",
     "stage": "preparation",
-    "source_spans": [
-      [
-        35,
-        35
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dcontract.pdf"
@@ -2847,10 +2701,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 63 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 63 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.cross_joinby.cross_cartesian_product.v1",
@@ -2862,12 +2718,6 @@
     "variant_group": "guide.cross_joinby",
     "variant_id": "cross_cartesian_product",
     "stage": "preparation",
-    "source_spans": [
-      [
-        36,
-        36
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dcross.pdf"
@@ -2928,10 +2778,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 64 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 64 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.cross_joinby.cross_with_declared_row_count_guard.v1",
@@ -2943,12 +2795,6 @@
     "variant_group": "guide.cross_joinby",
     "variant_id": "cross_with_declared_row_count_guard",
     "stage": "preparation",
-    "source_spans": [
-      [
-        129,
-        130
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dcross.pdf"
@@ -3010,10 +2856,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 64 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 64 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.cross_joinby.joinby_declared_key.v1",
@@ -3025,12 +2873,6 @@
     "variant_group": "guide.cross_joinby",
     "variant_id": "joinby_declared_key",
     "stage": "preparation",
-    "source_spans": [
-      [
-        37,
-        37
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/djoinby.pdf"
@@ -3091,10 +2933,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 64 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 64 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.cross_joinby.joinby_keep_unmatched.v1",
@@ -3106,12 +2950,6 @@
     "variant_group": "guide.cross_joinby",
     "variant_id": "joinby_keep_unmatched",
     "stage": "preparation",
-    "source_spans": [
-      [
-        38,
-        38
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/djoinby.pdf"
@@ -3172,10 +3010,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 64 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 64 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.frames.frame_create_named.v1",
@@ -3187,12 +3027,6 @@
     "variant_group": "guide.frames",
     "variant_id": "frame_create_named",
     "stage": "preparation",
-    "source_spans": [
-      [
-        39,
-        39
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dframe_create.pdf"
@@ -3254,10 +3088,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 65 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 65 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.frames.frame_put_selected.v1",
@@ -3269,12 +3105,6 @@
     "variant_group": "guide.frames",
     "variant_id": "frame_put_selected",
     "stage": "preparation",
-    "source_spans": [
-      [
-        40,
-        40
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dframe_put.pdf"
@@ -3336,10 +3166,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 65 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 65 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.frames.frame_post_to_target.v1",
@@ -3351,12 +3183,6 @@
     "variant_group": "guide.frames",
     "variant_id": "frame_post_to_target",
     "stage": "preparation",
-    "source_spans": [
-      [
-        41,
-        41
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dframe_post.pdf"
@@ -3418,10 +3244,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 65 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 65 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.frlink_frget.frlink_one_to_one.v1",
@@ -3433,12 +3261,6 @@
     "variant_group": "guide.frlink_frget",
     "variant_id": "frlink_one_to_one",
     "stage": "preparation",
-    "source_spans": [
-      [
-        42,
-        42
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dfrlink.pdf"
@@ -3500,10 +3322,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 66 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 66 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.frlink_frget.frlink_many_to_one.v1",
@@ -3515,12 +3339,6 @@
     "variant_group": "guide.frlink_frget",
     "variant_id": "frlink_many_to_one",
     "stage": "preparation",
-    "source_spans": [
-      [
-        43,
-        43
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dfrlink.pdf"
@@ -3582,10 +3400,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 66 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 66 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.frlink_frget.frget_or_fralias_lookup.v1",
@@ -3597,12 +3417,6 @@
     "variant_group": "guide.frlink_frget",
     "variant_id": "frget_or_fralias_lookup",
     "stage": "preparation",
-    "source_spans": [
-      [
-        111,
-        113
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dfrget.pdf"
@@ -3664,10 +3478,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 66 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 66 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.import_other_formats.import_sas_file.v1",
@@ -3679,12 +3495,6 @@
     "variant_group": "guide.import_other_formats",
     "variant_id": "import_sas_file",
     "stage": "preparation",
-    "source_spans": [
-      [
-        45,
-        45
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dimport.pdf"
@@ -3744,10 +3554,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 67 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 67 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.import_other_formats.import_spss_file.v1",
@@ -3759,12 +3571,6 @@
     "variant_group": "guide.import_other_formats",
     "variant_id": "import_spss_file",
     "stage": "preparation",
-    "source_spans": [
-      [
-        131,
-        131
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dimport.pdf"
@@ -3821,10 +3627,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 67 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 67 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.import_other_formats.import_fred_series.v1",
@@ -3836,12 +3644,6 @@
     "variant_group": "guide.import_other_formats",
     "variant_id": "import_fred_series",
     "stage": "preparation",
-    "source_spans": [
-      [
-        46,
-        46
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dimport_fred.pdf"
@@ -3901,10 +3703,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 67 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 67 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.xpose_stack_separate.xpose_clear_varname.v1",
@@ -3916,12 +3720,6 @@
     "variant_group": "guide.xpose_stack_separate",
     "variant_id": "xpose_clear_varname",
     "stage": "preparation",
-    "source_spans": [
-      [
-        47,
-        47
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dxpose.pdf"
@@ -3981,10 +3779,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 68 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 68 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.xpose_stack_separate.stack_into_value.v1",
@@ -3996,12 +3796,6 @@
     "variant_group": "guide.xpose_stack_separate",
     "variant_id": "stack_into_value",
     "stage": "preparation",
-    "source_spans": [
-      [
-        48,
-        48
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dstack.pdf"
@@ -4061,10 +3855,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 68 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 68 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.xpose_stack_separate.separate_by_group.v1",
@@ -4076,12 +3872,6 @@
     "variant_group": "guide.xpose_stack_separate",
     "variant_id": "separate_by_group",
     "stage": "preparation",
-    "source_spans": [
-      [
-        49,
-        49
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dseparate.pdf"
@@ -4141,10 +3931,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 68 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 68 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.tsfill.tsfill_gap_rows.v1",
@@ -4156,12 +3948,6 @@
     "variant_group": "guide.tsfill",
     "variant_id": "tsfill_gap_rows",
     "stage": "preparation",
-    "source_spans": [
-      [
-        114,
-        116
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/tstsfill.pdf"
@@ -4221,10 +4007,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 69 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 69 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.tsfill.tsfill_full_panel.v1",
@@ -4236,12 +4024,6 @@
     "variant_group": "guide.tsfill",
     "variant_id": "tsfill_full_panel",
     "stage": "preparation",
-    "source_spans": [
-      [
-        117,
-        119
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/tstsfill.pdf"
@@ -4301,10 +4083,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 69 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 69 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.time_series_operators.lag_operator_generate.v1",
@@ -4316,12 +4100,6 @@
     "variant_group": "guide.time_series_operators",
     "variant_id": "lag_operator_generate",
     "stage": "preparation",
-    "source_spans": [
-      [
-        120,
-        122
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/tsvarlist.pdf"
@@ -4383,10 +4161,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 70 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 70 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.time_series_operators.lead_operator_generate.v1",
@@ -4398,12 +4178,6 @@
     "variant_group": "guide.time_series_operators",
     "variant_id": "lead_operator_generate",
     "stage": "preparation",
-    "source_spans": [
-      [
-        132,
-        133
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/tsvarlist.pdf"
@@ -4463,10 +4237,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 70 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 70 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.time_series_operators.difference_operator_generate.v1",
@@ -4478,12 +4254,6 @@
     "variant_group": "guide.time_series_operators",
     "variant_id": "difference_operator_generate",
     "stage": "preparation",
-    "source_spans": [
-      [
-        53,
-        53
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/tsvarlist.pdf"
@@ -4545,10 +4315,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 70 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 70 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.time_series_operators.seasonal_difference_generate.v1",
@@ -4560,12 +4332,6 @@
     "variant_group": "guide.time_series_operators",
     "variant_id": "seasonal_difference_generate",
     "stage": "preparation",
-    "source_spans": [
-      [
-        134,
-        135
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/tsvarlist.pdf"
@@ -4625,10 +4391,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 70 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 70 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.time_series_operators.lag_interaction_estimate.v1",
@@ -4640,12 +4408,6 @@
     "variant_group": "guide.time_series_operators",
     "variant_id": "lag_interaction_estimate",
     "stage": "preparation",
-    "source_spans": [
-      [
-        54,
-        54
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/tsvarlist.pdf"
@@ -4707,10 +4469,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 70 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 70 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.rolling_statsby.rolling_summary_window.v1",
@@ -4722,12 +4486,6 @@
     "variant_group": "guide.rolling_statsby",
     "variant_id": "rolling_summary_window",
     "stage": "post_estimation",
-    "source_spans": [
-      [
-        55,
-        55
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/tsrolling.pdf"
@@ -4786,10 +4544,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 71 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 71 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.rolling_statsby.rolling_summary_stepped_window.v1",
@@ -4801,12 +4561,6 @@
     "variant_group": "guide.rolling_statsby",
     "variant_id": "rolling_summary_stepped_window",
     "stage": "post_estimation",
-    "source_spans": [
-      [
-        136,
-        137
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/tsrolling.pdf"
@@ -4868,10 +4622,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 71 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 71 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.rolling_statsby.rolling_saved_estimates.v1",
@@ -4883,12 +4639,6 @@
     "variant_group": "guide.rolling_statsby",
     "variant_id": "rolling_saved_estimates",
     "stage": "post_estimation",
-    "source_spans": [
-      [
-        56,
-        56
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/tsrolling.pdf"
@@ -4947,10 +4697,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 71 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 71 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.rolling_statsby.statsby_saved_results.v1",
@@ -4962,12 +4714,6 @@
     "variant_group": "guide.rolling_statsby",
     "variant_id": "statsby_saved_results",
     "stage": "post_estimation",
-    "source_spans": [
-      [
-        57,
-        57
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rstatsby.pdf"
@@ -5026,10 +4772,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 71 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 71 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.bootstrap_jackknife.bootstrap_summary_mean.v1",
@@ -5041,12 +4789,6 @@
     "variant_group": "guide.bootstrap_jackknife",
     "variant_id": "bootstrap_summary_mean",
     "stage": "post_estimation",
-    "source_spans": [
-      [
-        58,
-        58
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rbootstrap.pdf"
@@ -5105,10 +4847,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 72 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 72 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.bootstrap_jackknife.bootstrap_clustered_regression.v1",
@@ -5120,12 +4864,6 @@
     "variant_group": "guide.bootstrap_jackknife",
     "variant_id": "bootstrap_clustered_regression",
     "stage": "post_estimation",
-    "source_spans": [
-      [
-        59,
-        59
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rbootstrap.pdf"
@@ -5184,10 +4922,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 72 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 72 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.bootstrap_jackknife.jackknife_clustered_regression.v1",
@@ -5199,12 +4939,6 @@
     "variant_group": "guide.bootstrap_jackknife",
     "variant_id": "jackknife_clustered_regression",
     "stage": "post_estimation",
-    "source_spans": [
-      [
-        60,
-        60
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rjackknife.pdf"
@@ -5263,10 +4997,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 72 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 72 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.simulate_permute.simulate_regression_coefficient.v1",
@@ -5278,12 +5014,6 @@
     "variant_group": "guide.simulate_permute",
     "variant_id": "simulate_regression_coefficient",
     "stage": "post_estimation",
-    "source_spans": [
-      [
-        61,
-        61
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rsimulate.pdf"
@@ -5342,10 +5072,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 73 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 73 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.simulate_permute.simulate_summary_mean.v1",
@@ -5357,12 +5089,6 @@
     "variant_group": "guide.simulate_permute",
     "variant_id": "simulate_summary_mean",
     "stage": "post_estimation",
-    "source_spans": [
-      [
-        62,
-        62
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rsimulate.pdf"
@@ -5421,10 +5147,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 73 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 73 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.simulate_permute.permute_stratified_regression.v1",
@@ -5436,12 +5164,6 @@
     "variant_group": "guide.simulate_permute",
     "variant_id": "permute_stratified_regression",
     "stage": "post_estimation",
-    "source_spans": [
-      [
-        63,
-        63
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rpermute.pdf"
@@ -5500,10 +5222,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 73 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 73 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.svyset_svy.svyset_psu_weight_strata.v1",
@@ -5515,12 +5239,6 @@
     "variant_group": "guide.svyset_svy",
     "variant_id": "svyset_psu_weight_strata",
     "stage": "estimation",
-    "source_spans": [
-      [
-        64,
-        64
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/svysvyset.pdf"
@@ -5581,10 +5299,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 74 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 74 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.svyset_svy.svy_subpopulation_mean.v1",
@@ -5596,12 +5316,6 @@
     "variant_group": "guide.svyset_svy",
     "variant_id": "svy_subpopulation_mean",
     "stage": "estimation",
-    "source_spans": [
-      [
-        65,
-        65
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/svysvy.pdf"
@@ -5662,10 +5376,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 74 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 74 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.svyset_svy.svyset_replicate_weights.v1",
@@ -5677,12 +5393,6 @@
     "variant_group": "guide.svyset_svy",
     "variant_id": "svyset_replicate_weights",
     "stage": "estimation",
-    "source_spans": [
-      [
-        66,
-        66
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/svysvyset.pdf"
@@ -5743,9 +5453,11 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp 매뉴얼 rank 74 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp 매뉴얼 rank 74 후보이며 감사 전 reference-only다. 실제 논문 용례와 runtime/selector 검증은 별도다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   }
 ]

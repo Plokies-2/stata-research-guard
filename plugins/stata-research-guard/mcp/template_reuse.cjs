@@ -1053,7 +1053,39 @@ function rubricClassification(label) {
   return label.quality_rubric_review?.classification || (label.decision === "drop" ? "exclude" : "conditional_candidate");
 }
 
+const DERIVED_CANONICAL_AUTOSELECT_ALLOWLIST = new Map([
+  ["export.regression_excel.from_ster_default_style.v1", {
+    source_path: "plugins/stata-research-guard/annotations/source_snapshots/default_style_outreg2_xlsx.do",
+    source_file_sha256: "e98c97dfd21e7e4cffd8a0b0520de256afd36dceae8437cbf8a774a2f2b1a473",
+    code_sha256: "a192f7487b4db889b2a656b60d88246c2f02c4d53bf86871d1ef26840ab0d827",
+  }],
+]);
+const INDEPENDENT_RESEARCH_SOURCE_PREFIXES = [
+  "deposited_research_code",
+  "external_research_code",
+  "independent_researcher_code",
+];
+const NONINDEPENDENT_SOURCE_MARKERS = ["canonical", "guide", "manual", "project_snapshot"];
+
+function isApprovedDerivedCanonicalFormatter(label) {
+  const expected = DERIVED_CANONICAL_AUTOSELECT_ALLOWLIST.get(label.label_id);
+  if (!expected) return false;
+  const provenance = label.provenance || {};
+  return ["source_path", "source_file_sha256", "code_sha256"].every((field) => (
+    String(label[field] ?? provenance[field] ?? "") === expected[field]
+  ));
+}
+
+function isIndependentResearchUsageSource(sourceKind) {
+  return INDEPENDENT_RESEARCH_SOURCE_PREFIXES.some((prefix) => sourceKind.startsWith(prefix))
+    && !NONINDEPENDENT_SOURCE_MARKERS.some((marker) => sourceKind.includes(marker));
+}
+
 function isAutoSelectableLabel(label) {
+  const sourceKind = String(label.source_kind || label.provenance?.source_kind || "").toLowerCase();
+  if (sourceKind === "derived_canonical_implementation") {
+    if (!isApprovedDerivedCanonicalFormatter(label)) return false;
+  } else if (!isIndependentResearchUsageSource(sourceKind)) return false;
   return label.decision !== "drop"
     && label.adaptation_mode !== "do_not_reuse"
     && (label.reuse_scope !== "project_specific" || label.explicit_canonical_exception)

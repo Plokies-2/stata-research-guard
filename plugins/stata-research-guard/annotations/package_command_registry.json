@@ -1532,7 +1532,7 @@
   ],
   "top100_coverage": {
     "requirements_path": "annotations/command_template_requirements.json",
-    "requirements_sha256": "ade6fd29c05d3fcf130e2961cad5444fa4c903a9d1cfc6fef04266c0aab78cbd",
+    "requirements_sha256": "deb24382a6136c0f57dfa00c660d320569886813a88d1282324fb9787d5f7aa4",
     "policy": "Every ranked source command is bound to a detector token or an explicit language-element exemption; this index augments, but does not alter, the package-command catalog families.",
     "groups": [
       {

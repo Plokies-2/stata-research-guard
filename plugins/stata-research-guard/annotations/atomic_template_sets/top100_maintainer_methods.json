@@ -11,12 +11,6 @@
     "variant_id": "sharp_estimation",
     "stage": "estimation",
     "method_family": "rdrobust",
-    "source_spans": [
-      [
-        7,
-        7
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://rdpackages.github.io/rdrobust/",
@@ -36,7 +30,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the rdrobust_suite.sharp_estimation design and needs bounded rdrobust/rdbwselect/rdplot mechanics."
     ],
@@ -113,9 +106,9 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. Independent paper-corpus occurrence is retained as support metadata only; it does not promote this guide atom.",
     "paper_corpus_support": [
       {
@@ -132,7 +125,8 @@
         "exact_code_sha256": "22d561090f69edf43fc7699b586cee839c8648612df931bb3a5c10e2ff5b0caa",
         "note": "user-written RD call with declared cutoff c(1000); looped district restriction remains source-specific"
       }
-    ]
+    ],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.rdrobust_suite.fuzzy_estimation.v1",
@@ -146,12 +140,6 @@
     "variant_id": "fuzzy_estimation",
     "stage": "estimation",
     "method_family": "rdrobust",
-    "source_spans": [
-      [
-        9,
-        9
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://rdpackages.github.io/rdrobust/",
@@ -171,7 +159,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the rdrobust_suite.fuzzy_estimation design and needs bounded rdrobust/rdbwselect/rdplot mechanics."
     ],
@@ -250,9 +237,9 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. Independent paper-corpus occurrence is retained as support metadata only; it does not promote this guide atom.",
     "paper_corpus_support": [
       {
@@ -269,7 +256,8 @@
         "exact_code_sha256": "93cd0d285fddec6679e717c72195f52773c4007ddae395ea968b6a8adc57dd79",
         "note": "user-written clustered RD call with declared cutoff; no fuzzy option observed"
       }
-    ]
+    ],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.rdrobust_suite.bandwidth_selection.v1",
@@ -283,12 +271,6 @@
     "variant_id": "bandwidth_selection",
     "stage": "estimation",
     "method_family": "rdrobust",
-    "source_spans": [
-      [
-        11,
-        11
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://rdpackages.github.io/rdrobust/",
@@ -308,7 +290,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the rdrobust_suite.bandwidth_selection design and needs bounded rdrobust/rdbwselect/rdplot mechanics."
     ],
@@ -387,11 +368,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. No matching paper-corpus occurrence was found in the received corpus scan; retain reference-only.",
-    "paper_corpus_support": []
+    "paper_corpus_support": [],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.rdrobust_suite.covariate_cluster_estimation.v1",
@@ -405,12 +387,6 @@
     "variant_id": "covariate_cluster_estimation",
     "stage": "estimation",
     "method_family": "rdrobust",
-    "source_spans": [
-      [
-        13,
-        13
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://rdpackages.github.io/rdrobust/",
@@ -430,7 +406,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the rdrobust_suite.covariate_cluster_estimation design and needs bounded rdrobust/rdbwselect/rdplot mechanics."
     ],
@@ -507,9 +482,9 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. Independent paper-corpus occurrence is retained as support metadata only; it does not promote this guide atom.",
     "paper_corpus_support": [
       {
@@ -526,7 +501,8 @@
         "exact_code_sha256": "93cd0d285fddec6679e717c72195f52773c4007ddae395ea968b6a8adc57dd79",
         "note": "clustered VCE observed; covariate option not observed"
       }
-    ]
+    ],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.rdrobust_suite.rd_plot.v1",
@@ -540,12 +516,6 @@
     "variant_id": "rd_plot",
     "stage": "estimation",
     "method_family": "rdrobust",
-    "source_spans": [
-      [
-        15,
-        15
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://rdpackages.github.io/rdrobust/",
@@ -565,7 +535,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the rdrobust_suite.rd_plot design and needs bounded rdrobust/rdbwselect/rdplot mechanics."
     ],
@@ -644,11 +613,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. No matching paper-corpus occurrence was found in the received corpus scan; retain reference-only.",
-    "paper_corpus_support": []
+    "paper_corpus_support": [],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.rdrobust_suite.rd_plot_generated_bins.v1",
@@ -662,12 +632,6 @@
     "variant_id": "rd_plot_generated_bins",
     "stage": "estimation",
     "method_family": "rdrobust",
-    "source_spans": [
-      [
-        17,
-        17
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://rdpackages.github.io/rdrobust/",
@@ -687,7 +651,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the rdrobust_suite.rd_plot_generated_bins design and needs bounded rdrobust/rdbwselect/rdplot mechanics."
     ],
@@ -762,11 +725,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. No matching paper-corpus occurrence was found in the received corpus scan; retain reference-only.",
-    "paper_corpus_support": []
+    "paper_corpus_support": [],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.synth.baseline_predictor_path.v1",
@@ -780,12 +744,6 @@
     "variant_id": "baseline_predictor_path",
     "stage": "estimation",
     "method_family": "synth",
-    "source_spans": [
-      [
-        20,
-        20
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://www.mit.edu/~jhainm/synthpage.html",
@@ -805,7 +763,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the synth.baseline_predictor_path design and needs bounded synth mechanics."
     ],
@@ -879,11 +836,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. No matching paper-corpus occurrence was found in the received corpus scan; retain reference-only.",
-    "paper_corpus_support": []
+    "paper_corpus_support": [],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.synth.outcome_lag_predictors.v1",
@@ -897,12 +855,6 @@
     "variant_id": "outcome_lag_predictors",
     "stage": "estimation",
     "method_family": "synth",
-    "source_spans": [
-      [
-        22,
-        22
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://www.mit.edu/~jhainm/synthpage.html",
@@ -922,7 +874,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the synth.outcome_lag_predictors design and needs bounded synth mechanics."
     ],
@@ -994,11 +945,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. No matching paper-corpus occurrence was found in the received corpus scan; retain reference-only.",
-    "paper_corpus_support": []
+    "paper_corpus_support": [],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.synth.explicit_unit_time_panel.v1",
@@ -1012,12 +964,6 @@
     "variant_id": "explicit_unit_time_panel",
     "stage": "estimation",
     "method_family": "synth",
-    "source_spans": [
-      [
-        24,
-        24
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://www.mit.edu/~jhainm/synthpage.html",
@@ -1037,7 +983,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the synth.explicit_unit_time_panel design and needs bounded synth mechanics."
     ],
@@ -1115,11 +1060,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. No matching paper-corpus occurrence was found in the received corpus scan; retain reference-only.",
-    "paper_corpus_support": []
+    "paper_corpus_support": [],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.did2s_drdid.did2s_static.v1",
@@ -1133,12 +1079,6 @@
     "variant_id": "did2s_static",
     "stage": "estimation",
     "method_family": "did2s_drdid",
-    "source_spans": [
-      [
-        29,
-        29
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/kylebutts/did2s_stata",
@@ -1172,7 +1112,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the did2s_drdid.did2s_static design and needs bounded did2s/drdid mechanics."
     ],
@@ -1252,11 +1191,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. No matching paper-corpus occurrence was found in the received corpus scan; retain reference-only.",
-    "paper_corpus_support": []
+    "paper_corpus_support": [],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.did2s_drdid.did2s_event_study.v1",
@@ -1270,12 +1210,6 @@
     "variant_id": "did2s_event_study",
     "stage": "estimation",
     "method_family": "did2s_drdid",
-    "source_spans": [
-      [
-        31,
-        31
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/kylebutts/did2s_stata",
@@ -1309,7 +1243,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the did2s_drdid.did2s_event_study design and needs bounded did2s/drdid mechanics."
     ],
@@ -1385,11 +1318,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. No matching paper-corpus occurrence was found in the received corpus scan; retain reference-only.",
-    "paper_corpus_support": []
+    "paper_corpus_support": [],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.did2s_drdid.drdid_panel.v1",
@@ -1403,12 +1337,6 @@
     "variant_id": "drdid_panel",
     "stage": "estimation",
     "method_family": "did2s_drdid",
-    "source_spans": [
-      [
-        35,
-        35
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/kylebutts/did2s_stata",
@@ -1442,7 +1370,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the did2s_drdid.drdid_panel design and needs bounded did2s/drdid mechanics."
     ],
@@ -1520,11 +1447,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. No matching paper-corpus occurrence was found in the received corpus scan; retain reference-only.",
-    "paper_corpus_support": []
+    "paper_corpus_support": [],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.did2s_drdid.drdid_repeated_cross_section.v1",
@@ -1538,12 +1466,6 @@
     "variant_id": "drdid_repeated_cross_section",
     "stage": "estimation",
     "method_family": "did2s_drdid",
-    "source_spans": [
-      [
-        37,
-        37
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/kylebutts/did2s_stata",
@@ -1577,7 +1499,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the did2s_drdid.drdid_repeated_cross_section design and needs bounded did2s/drdid mechanics."
     ],
@@ -1653,11 +1574,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. No matching paper-corpus occurrence was found in the received corpus scan; retain reference-only.",
-    "paper_corpus_support": []
+    "paper_corpus_support": [],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.did2s_drdid.drdid_bootstrap_if.v1",
@@ -1671,12 +1593,6 @@
     "variant_id": "drdid_bootstrap_if",
     "stage": "estimation",
     "method_family": "did2s_drdid",
-    "source_spans": [
-      [
-        39,
-        39
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/kylebutts/did2s_stata",
@@ -1710,7 +1626,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the did2s_drdid.drdid_bootstrap_if design and needs bounded did2s/drdid mechanics."
     ],
@@ -1787,11 +1702,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. No matching paper-corpus occurrence was found in the received corpus scan; retain reference-only.",
-    "paper_corpus_support": []
+    "paper_corpus_support": [],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.honestdid.event_estimate_input.v1",
@@ -1805,12 +1721,6 @@
     "variant_id": "event_estimate_input",
     "stage": "post_estimation",
     "method_family": "honestdid",
-    "source_spans": [
-      [
-        42,
-        42
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/mcaceresb/stata-honestdid",
@@ -1830,7 +1740,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the honestdid.event_estimate_input design and needs bounded honestdid/honestdid_plot mechanics."
     ],
@@ -1900,11 +1809,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. No matching paper-corpus occurrence was found in the received corpus scan; retain reference-only.",
-    "paper_corpus_support": []
+    "paper_corpus_support": [],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.honestdid.custom_b_v_input.v1",
@@ -1918,12 +1828,6 @@
     "variant_id": "custom_b_v_input",
     "stage": "post_estimation",
     "method_family": "honestdid",
-    "source_spans": [
-      [
-        44,
-        44
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/mcaceresb/stata-honestdid",
@@ -1943,7 +1847,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the honestdid.custom_b_v_input design and needs bounded honestdid/honestdid_plot mechanics."
     ],
@@ -2017,11 +1920,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. No matching paper-corpus occurrence was found in the received corpus scan; retain reference-only.",
-    "paper_corpus_support": []
+    "paper_corpus_support": [],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.honestdid.numpre_input.v1",
@@ -2035,12 +1939,6 @@
     "variant_id": "numpre_input",
     "stage": "post_estimation",
     "method_family": "honestdid",
-    "source_spans": [
-      [
-        46,
-        46
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/mcaceresb/stata-honestdid",
@@ -2060,7 +1958,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the honestdid.numpre_input design and needs bounded honestdid/honestdid_plot mechanics."
     ],
@@ -2130,11 +2027,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. No matching paper-corpus occurrence was found in the received corpus scan; retain reference-only.",
-    "paper_corpus_support": []
+    "paper_corpus_support": [],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.honestdid.cached_plot.v1",
@@ -2148,12 +2046,6 @@
     "variant_id": "cached_plot",
     "stage": "post_estimation",
     "method_family": "honestdid",
-    "source_spans": [
-      [
-        48,
-        48
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/mcaceresb/stata-honestdid",
@@ -2173,7 +2065,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the honestdid.cached_plot design and needs bounded honestdid/honestdid_plot mechanics."
     ],
@@ -2243,11 +2134,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. No matching paper-corpus occurrence was found in the received corpus scan; retain reference-only.",
-    "paper_corpus_support": []
+    "paper_corpus_support": [],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.rwolf2.single_target_per_model.v1",
@@ -2261,12 +2153,6 @@
     "variant_id": "single_target_per_model",
     "stage": "post_estimation",
     "method_family": "rwolf2",
-    "source_spans": [
-      [
-        51,
-        51
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/damiancclarke/rwolf2",
@@ -2293,7 +2179,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the rwolf2.single_target_per_model design and needs bounded rwolf2 mechanics."
     ],
@@ -2364,11 +2249,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. No matching paper-corpus occurrence was found in the received corpus scan; retain reference-only.",
-    "paper_corpus_support": []
+    "paper_corpus_support": [],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.rwolf2.multiple_targets_per_model.v1",
@@ -2382,12 +2268,6 @@
     "variant_id": "multiple_targets_per_model",
     "stage": "post_estimation",
     "method_family": "rwolf2",
-    "source_spans": [
-      [
-        53,
-        53
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/damiancclarke/rwolf2",
@@ -2414,7 +2294,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the rwolf2.multiple_targets_per_model design and needs bounded rwolf2 mechanics."
     ],
@@ -2482,11 +2361,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. No matching paper-corpus occurrence was found in the received corpus scan; retain reference-only.",
-    "paper_corpus_support": []
+    "paper_corpus_support": [],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.rwolf2.clustered_resampling.v1",
@@ -2500,12 +2380,6 @@
     "variant_id": "clustered_resampling",
     "stage": "post_estimation",
     "method_family": "rwolf2",
-    "source_spans": [
-      [
-        55,
-        55
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/damiancclarke/rwolf2",
@@ -2532,7 +2406,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the rwolf2.clustered_resampling design and needs bounded rwolf2 mechanics."
     ],
@@ -2603,11 +2476,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. No matching paper-corpus occurrence was found in the received corpus scan; retain reference-only.",
-    "paper_corpus_support": []
+    "paper_corpus_support": [],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.rwolf2.stratified_resampling.v1",
@@ -2621,12 +2495,6 @@
     "variant_id": "stratified_resampling",
     "stage": "post_estimation",
     "method_family": "rwolf2",
-    "source_spans": [
-      [
-        57,
-        57
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/damiancclarke/rwolf2",
@@ -2653,7 +2521,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the rwolf2.stratified_resampling design and needs bounded rwolf2 mechanics."
     ],
@@ -2724,11 +2591,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. No matching paper-corpus occurrence was found in the received corpus scan; retain reference-only.",
-    "paper_corpus_support": []
+    "paper_corpus_support": [],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.binscatter.default_quantile_bins.v1",
@@ -2742,12 +2610,6 @@
     "variant_id": "default_quantile_bins",
     "stage": "figures",
     "method_family": "binscatter",
-    "source_spans": [
-      [
-        60,
-        60
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/michaelstepner/binscatter",
@@ -2767,7 +2629,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the binscatter.default_quantile_bins design and needs bounded binscatter mechanics."
     ],
@@ -2836,9 +2697,9 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. Independent paper-corpus occurrence is retained as support metadata only; it does not promote this guide atom.",
     "paper_corpus_support": [
       {
@@ -2855,7 +2716,8 @@
         "exact_code_sha256": "d6f0c384d053ba54f6bfb901b22c8641031f1db2fb32e348f1923c532949b470",
         "note": "user-written binscatter with declared sample, nquantiles(20), weights and savedata"
       }
-    ]
+    ],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.binscatter.declared_bin_count.v1",
@@ -2869,12 +2731,6 @@
     "variant_id": "declared_bin_count",
     "stage": "figures",
     "method_family": "binscatter",
-    "source_spans": [
-      [
-        62,
-        62
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/michaelstepner/binscatter",
@@ -2894,7 +2750,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the binscatter.declared_bin_count design and needs bounded binscatter mechanics."
     ],
@@ -2965,9 +2820,9 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. Independent paper-corpus occurrence is retained as support metadata only; it does not promote this guide atom.",
     "paper_corpus_support": [
       {
@@ -2984,7 +2839,8 @@
         "exact_code_sha256": "9a641944b4bd3259436a9c849ef03d7c4e79d241017bee64f68d12b93b8c1f46",
         "note": "user-written binscatter with nquantiles(20)"
       }
-    ]
+    ],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.binscatter.residualized_bins.v1",
@@ -2998,12 +2854,6 @@
     "variant_id": "residualized_bins",
     "stage": "figures",
     "method_family": "binscatter",
-    "source_spans": [
-      [
-        64,
-        64
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/michaelstepner/binscatter",
@@ -3023,7 +2873,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the binscatter.residualized_bins design and needs bounded binscatter mechanics."
     ],
@@ -3094,11 +2943,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. No matching paper-corpus occurrence was found in the received corpus scan; retain reference-only.",
-    "paper_corpus_support": []
+    "paper_corpus_support": [],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.binscatter.group_series.v1",
@@ -3112,12 +2962,6 @@
     "variant_id": "group_series",
     "stage": "figures",
     "method_family": "binscatter",
-    "source_spans": [
-      [
-        66,
-        66
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/michaelstepner/binscatter",
@@ -3137,7 +2981,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the binscatter.group_series design and needs bounded binscatter mechanics."
     ],
@@ -3208,11 +3051,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. No matching paper-corpus occurrence was found in the received corpus scan; retain reference-only.",
-    "paper_corpus_support": []
+    "paper_corpus_support": [],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.binscatter.precomputed_bins.v1",
@@ -3226,12 +3070,6 @@
     "variant_id": "precomputed_bins",
     "stage": "figures",
     "method_family": "binscatter",
-    "source_spans": [
-      [
-        68,
-        68
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/michaelstepner/binscatter",
@@ -3251,7 +3089,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the binscatter.precomputed_bins design and needs bounded binscatter mechanics."
     ],
@@ -3322,11 +3159,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. No matching paper-corpus occurrence was found in the received corpus scan; retain reference-only.",
-    "paper_corpus_support": []
+    "paper_corpus_support": [],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.binscatter.discrete_x.v1",
@@ -3340,12 +3178,6 @@
     "variant_id": "discrete_x",
     "stage": "figures",
     "method_family": "binscatter",
-    "source_spans": [
-      [
-        70,
-        70
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/michaelstepner/binscatter",
@@ -3365,7 +3197,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the binscatter.discrete_x design and needs bounded binscatter mechanics."
     ],
@@ -3434,11 +3265,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. No matching paper-corpus occurrence was found in the received corpus scan; retain reference-only.",
-    "paper_corpus_support": []
+    "paper_corpus_support": [],
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.binscatter.reuse_precomputed_bins.v1",
@@ -3452,12 +3284,6 @@
     "variant_id": "reuse_precomputed_bins",
     "stage": "figures",
     "method_family": "binscatter",
-    "source_spans": [
-      [
-        74,
-        74
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/michaelstepner/binscatter",
@@ -3477,7 +3303,6 @@
         "observed_at": "2026-08-26"
       }
     ],
-    "source_snapshot_path": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
     "research_situations": [
       "A researcher has already declared the binscatter.precomputed_bins design and needs bounded binscatter mechanics."
     ],
@@ -3548,10 +3373,11 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "Maintainer-guide mechanics only. Source authority/version availability is recorded separately; runtime and selector evidence are pending. No matching paper-corpus occurrence was found in the received corpus scan; retain reference-only.",
-    "paper_corpus_support": []
+    "paper_corpus_support": [],
+    "promotion_status": "reference_only"
   }
 ]

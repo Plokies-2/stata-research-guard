@@ -6,15 +6,9 @@
     "variant_id": "psmatch2_nearest_neighbor_att",
     "stage": "estimation",
     "method_family": "psmatch2",
-    "source_spans": [
-      [
-        9,
-        10
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "psmatch2.att_nearest_neighbor"
     ],
@@ -79,9 +73,15 @@
     "generality_rationale_ko": "매칭 명령과 필수 입력만 재사용하고 식별·표본 선택은 자동화하지 않는다.",
     "review_notes": "Guide-derived mechanics only; bootstrap standard errors and substantive comparability require separate decisions.",
     "variant_distinction": "Separate psmatch2_nearest_neighbor_att: observable mechanics [psmatch2, neighbor, outcome] produce one active psmatch2 matching result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/eleuven/psmatch2/blob/master/psmatch2.sthlp"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.psmatch2.kernel_ate.v1",
@@ -90,15 +90,9 @@
     "variant_id": "psmatch2_kernel_ate",
     "stage": "estimation",
     "method_family": "psmatch2",
-    "source_spans": [
-      [
-        12,
-        13
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "psmatch2.kernel_or_radius_reference"
     ],
@@ -168,9 +162,15 @@
     "generality_rationale_ko": "nearest-neighbor와 다른 smoothing 상태를 별도 variant로 유지한다.",
     "review_notes": "Guide-derived mechanics only; do not select kernel or bandwidth from data automatically.",
     "variant_distinction": "Separate psmatch2_kernel_ate: observable mechanics [psmatch2, kernel, bw] produce one active psmatch2 kernel result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/eleuven/psmatch2/blob/master/psmatch2.sthlp"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.psmatch2.pstest_balance_graph.v1",
@@ -179,15 +179,9 @@
     "variant_id": "pstest_balance_graph",
     "stage": "post_estimation",
     "method_family": "psmatch2",
-    "source_spans": [
-      [
-        15,
-        16
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "psmatch2.pstest_balance_graph"
     ],
@@ -244,9 +238,15 @@
     "generality_rationale_ko": "estimator와 diagnostic을 분리해 진단 결과가 추정식에 섞이지 않는다.",
     "review_notes": "Diagnostic only; never treat displayed balance as an automatic sample or model decision.",
     "variant_distinction": "Separate pstest_balance_graph: observable mechanics [pstest, both, graph] produce one active balance diagnostic; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/eleuven/psmatch2/blob/master/psmatch2.sthlp"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.xtabond2.difference_gmm_twostep.v1",
@@ -255,19 +255,9 @@
     "variant_id": "xtabond2_difference_gmm_twostep",
     "stage": "estimation",
     "method_family": "xtabond2",
-    "source_spans": [
-      [
-        18,
-        19
-      ],
-      [
-        98,
-        99
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "xtabond2.difference_gmm",
       "xtabond2.collapsed_lag_limited_instruments",
@@ -342,9 +332,16 @@
     "generality_rationale_ko": "system-GMM과 instrument level-equation 역할이 다른 variant를 분리한다.",
     "review_notes": "No automatic instrument proliferation remedy, identification claim, or lag choice.",
     "variant_distinction": "Separate xtabond2_difference_gmm_twostep: observable mechanics [xtabond2, gmm, lag] produce one active dynamic-panel e-class estimate; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://cdi.mecon.gob.ar/bases/doc/cgdev/wp103.pdf",
+      "https://github.com/droodman/xtabond2/blob/master/xtabond2.hlp"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.xtabond2.system_gmm_twostep.v1",
@@ -353,15 +350,9 @@
     "variant_id": "xtabond2_system_gmm_twostep",
     "stage": "estimation",
     "method_family": "xtabond2",
-    "source_spans": [
-      [
-        21,
-        22
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "xtabond2.system_gmm"
     ],
@@ -430,9 +421,16 @@
     "generality_rationale_ko": "difference-GMM과 다른 level-equation 상태를 별도 선택지로 보존한다.",
     "review_notes": "No automatic system-GMM validity or stationarity decision.",
     "variant_distinction": "Separate xtabond2_system_gmm_twostep: observable mechanics [xtabond2, eq(level), gmm] produce one active system-GMM e-class estimate; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://cdi.mecon.gob.ar/bases/doc/cgdev/wp103.pdf",
+      "https://github.com/droodman/xtabond2/blob/master/xtabond2.hlp"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.csdid.v182_panel_notyet.v1",
@@ -441,15 +439,9 @@
     "variant_id": "csdid_1_82_panel_notyet",
     "stage": "estimation",
     "method_family": "csdid",
-    "source_spans": [
-      [
-        24,
-        26
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "csdid.notyet_comparison"
     ],
@@ -521,9 +513,15 @@
     "generality_rationale_ko": "2.0과의 기본값 차이를 숨기지 않도록 버전별 variant를 분리한다.",
     "review_notes": "Version and cohort choices must be explicit; no automatic version upgrade or estimand selection.",
     "variant_distinction": "Separate csdid_1_82_panel_notyet: observable mechanics [version, csdid, ivar] produce one active csdid ATT result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://psantanna.com/csdid/"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.csdid.v182_simple_aggregation.v1",
@@ -532,15 +530,9 @@
     "variant_id": "csdid_1_82_simple_aggregation",
     "stage": "post_estimation",
     "method_family": "csdid",
-    "source_spans": [
-      [
-        28,
-        29
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "csdid.simple_aggregation"
     ],
@@ -596,9 +588,15 @@
     "generality_rationale_ko": "추정과 aggregation을 다른 state transition으로 유지한다.",
     "review_notes": "Do not infer the target estimand or aggregation weights.",
     "variant_distinction": "Separate csdid_1_82_simple_aggregation: observable mechanics [csdid_estat, simple] produce one active simple aggregation result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://psantanna.com/csdid/"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.csdid.v20_panel_notyet.v1",
@@ -607,15 +605,9 @@
     "variant_id": "csdid_2_0_panel_notyet",
     "stage": "estimation",
     "method_family": "csdid",
-    "source_spans": [
-      [
-        31,
-        33
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "csdid.notyet_comparison"
     ],
@@ -687,9 +679,15 @@
     "generality_rationale_ko": "2.0의 동시 band/bootstrap 기본값을 숨기지 않도록 별도 variant로 보존한다.",
     "review_notes": "Version split is mandatory; no automatic default carry-over from csdid 1.82.",
     "variant_distinction": "Separate csdid_2_0_panel_notyet: observable mechanics [version, csdid, ivar] produce one active csdid 2.0 ATT result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://psantanna.com/csdid/"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.csdid.v20_event_aggregation.v1",
@@ -698,15 +696,9 @@
     "variant_id": "csdid_2_0_event_aggregation",
     "stage": "post_estimation",
     "method_family": "csdid",
-    "source_spans": [
-      [
-        35,
-        36
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "csdid.event_aggregation"
     ],
@@ -768,9 +760,15 @@
     "generality_rationale_ko": "event aggregation을 estimator와 plot에서 분리한다.",
     "review_notes": "No automatic window, band, or estimand selection.",
     "variant_distinction": "Separate csdid_2_0_event_aggregation: observable mechanics [csdid_estat, event, window] produce one active event aggregation result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://psantanna.com/csdid/"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.did_imputation.horizons_pretrend.v1",
@@ -779,15 +777,9 @@
     "variant_id": "did_imputation_horizons_pretrend",
     "stage": "estimation",
     "method_family": "did_imputation",
-    "source_spans": [
-      [
-        38,
-        39
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "did_imputation.horizons_pretrend"
     ],
@@ -861,9 +853,15 @@
     "generality_rationale_ko": "imputation estimator와 event_plot 소비를 분리하고 autosample을 숨기지 않는다.",
     "review_notes": "No automatic treatment timing, horizon, or balance policy.",
     "variant_distinction": "Separate did_imputation_horizons_pretrend: observable mechanics [did_imputation, horizons, pretrend] produce one active imputation event-study result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/borusyak/did_imputation"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.eventstudyinteract.manual_event_dummies_reference.v1",
@@ -872,12 +870,6 @@
     "variant_id": "eventstudyinteract_manual_event_dummies",
     "stage": "estimation",
     "method_family": "eventstudyinteract",
-    "source_spans": [
-      [
-        44,
-        45
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "candidate_disposition": "reference_only",
     "canonical_generation_class": "reference_only",
@@ -950,9 +942,15 @@
     "generality_rationale_ko": "현재 producer contract와 충돌하므로 자동 선택 가능한 정식 template가 아니다.",
     "review_notes": "Reference-only until a producer contract and event-axis audit are implemented; never generate event dummies here.",
     "variant_distinction": "Separate eventstudyinteract_manual_event_dummies: observable mechanics [eventstudyinteract, cohort, control_cohort] produce one active interaction-weighted event-study result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/borusyak/eventstudyinteract"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.did_multiplegt_dyn.nonnormalized.v1",
@@ -961,15 +959,9 @@
     "variant_id": "did_multiplegt_dyn_nonnormalized",
     "stage": "estimation",
     "method_family": "did_multiplegt_dyn",
-    "source_spans": [
-      [
-        47,
-        48
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "did_multiplegt_dyn.nonnormalized"
     ],
@@ -1040,9 +1032,15 @@
     "generality_rationale_ko": "normalized와 다른 estimand state를 별도 variant로 유지한다.",
     "review_notes": "No automatic normalization, comparison group, or treatment-path decision.",
     "variant_distinction": "Separate did_multiplegt_dyn_nonnormalized: observable mechanics [did_multiplegt_dyn, effects, placebo] produce one active dynamic DID result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/chaisemartinPackages/did_multiplegt_dyn"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.did_multiplegt_dyn.normalized.v1",
@@ -1051,15 +1049,9 @@
     "variant_id": "did_multiplegt_dyn_normalized",
     "stage": "estimation",
     "method_family": "did_multiplegt_dyn",
-    "source_spans": [
-      [
-        50,
-        51
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "did_multiplegt_dyn.normalized"
     ],
@@ -1130,9 +1122,15 @@
     "generality_rationale_ko": "비정규화 variant와 혼합되지 않도록 정규화 여부를 명령 수준에서 고정한다.",
     "review_notes": "No automatic normalization denominator or estimand selection.",
     "variant_distinction": "Separate did_multiplegt_dyn_normalized: observable mechanics [did_multiplegt_dyn, normalized, effects] produce one active normalized dynamic DID result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/chaisemartinPackages/did_multiplegt_dyn"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.sdid.placebo_covariates.v1",
@@ -1141,15 +1139,9 @@
     "variant_id": "sdid_placebo_covariates",
     "stage": "estimation",
     "method_family": "sdid",
-    "source_spans": [
-      [
-        53,
-        54
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "sdid.placebo_covariates"
     ],
@@ -1221,9 +1213,15 @@
     "generality_rationale_ko": "bootstrap과 placebo inference를 서로 다른 state로 분리한다.",
     "review_notes": "No automatic placebo assignment, covariate selection, or treatment support decision.",
     "variant_distinction": "Separate sdid_placebo_covariates: observable mechanics [sdid, vce(placebo), covariates] produce one active synthetic-DID result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/Daniel-Pailanir/sdid"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.sdid.bootstrap.v1",
@@ -1232,15 +1230,9 @@
     "variant_id": "sdid_bootstrap",
     "stage": "post_estimation",
     "method_family": "sdid",
-    "source_spans": [
-      [
-        56,
-        57
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "sdid.bootstrap"
     ],
@@ -1304,9 +1296,15 @@
     "generality_rationale_ko": "추정과 inference의 material state transition을 분리한다.",
     "review_notes": "No automatic bootstrap unit, reps, or seed selection.",
     "variant_distinction": "Separate sdid_bootstrap: observable mechanics [sdid, vce(bootstrap), reps] produce one active bootstrap inference result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/Daniel-Pailanir/sdid"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.stackedev.manual_event_dummies_reference.v1",
@@ -1315,12 +1313,6 @@
     "variant_id": "stackedev_manual_event_dummies",
     "stage": "estimation",
     "method_family": "stackedev",
-    "source_spans": [
-      [
-        59,
-        60
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "candidate_disposition": "reference_only",
     "canonical_generation_class": "reference_only",
@@ -1393,9 +1385,15 @@
     "generality_rationale_ko": "현재 event-axis producer 계약과 충돌하므로 정식 자동 선택 template가 아니다.",
     "review_notes": "Reference-only until stacked-data and event-axis producer contracts are supplied; never generate indicators here.",
     "variant_distinction": "Separate stackedev_manual_event_dummies: observable mechanics [stackedev, cohort, never_treat] produce one active stacked event-study estimate; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/jonathantellis/stackedev"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.ritest.permutation_vce_cluster.v1",
@@ -1404,15 +1402,9 @@
     "variant_id": "ritest_permutation_vce_cluster",
     "stage": "post_estimation",
     "method_family": "ritest",
-    "source_spans": [
-      [
-        62,
-        63
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "ritest.permutation_vce_cluster"
     ],
@@ -1481,9 +1473,15 @@
     "generality_rationale_ko": "assignment cluster와 모델 VCE cluster를 혼동하지 않도록 variant를 고정한다.",
     "review_notes": "No automatic randomization, null, cluster, or seed selection.",
     "variant_distinction": "Separate ritest_permutation_vce_cluster: observable mechanics [ritest, _b[], reps] produce one active permutation-inference result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/martinhelso/ritest"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.ritest.assignment_strata_cluster.v1",
@@ -1492,15 +1490,9 @@
     "variant_id": "ritest_strata_assignment_cluster",
     "stage": "post_estimation",
     "method_family": "ritest",
-    "source_spans": [
-      [
-        65,
-        66
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "ritest.assignment_strata_cluster"
     ],
@@ -1570,9 +1562,15 @@
     "generality_rationale_ko": "cluster 역할이 다른 material variation을 별도 template로 보존한다.",
     "review_notes": "No automatic strata or assignment mechanism selection.",
     "variant_distinction": "Separate ritest_strata_assignment_cluster: observable mechanics [ritest, strata, cluster] produce one stratified permutation-inference result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/martinhelso/ritest"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.boottest.single_webb_cluster.v1",
@@ -1581,15 +1579,9 @@
     "variant_id": "boottest_single_webb_cluster",
     "stage": "post_estimation",
     "method_family": "boottest",
-    "source_spans": [
-      [
-        68,
-        69
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "boottest.single_coefficient"
     ],
@@ -1660,9 +1652,15 @@
     "generality_rationale_ko": "single coefficient와 joint test를 별도 inference state로 유지한다.",
     "review_notes": "No automatic coefficient, null, cluster, reps, or seed selection.",
     "variant_distinction": "Separate boottest_single_webb_cluster: observable mechanics [boottest, null, cluster] produce one active single-coefficient bootstrap inference result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/droodman/boottest"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.boottest.joint_cluster.v1",
@@ -1671,15 +1669,9 @@
     "variant_id": "boottest_joint_cluster",
     "stage": "post_estimation",
     "method_family": "boottest",
-    "source_spans": [
-      [
-        71,
-        72
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "boottest.joint_restriction"
     ],
@@ -1750,9 +1742,15 @@
     "generality_rationale_ko": "single test와 material하게 다른 joint restriction을 별도 template로 제공한다.",
     "review_notes": "No automatic coefficient-set or null selection.",
     "variant_distinction": "Separate boottest_joint_cluster: observable mechanics [boottest, joint, null] produce one active joint bootstrap inference result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/droodman/boottest"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.event_plot.did_imputation_active.v1",
@@ -1761,15 +1759,9 @@
     "variant_id": "event_plot_did_imputation_active",
     "stage": "figures",
     "method_family": "event_plot",
-    "source_spans": [
-      [
-        74,
-        75
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "event_plot.did_imputation_active"
     ],
@@ -1834,9 +1826,15 @@
     "generality_rationale_ko": "estimator·postestimation·plot 단계를 분리해 계수 재구성을 막는다.",
     "review_notes": "Use only with a compatible producer; export to PDF is a separate contract.",
     "variant_distinction": "Separate event_plot_did_imputation_active: observable mechanics [event_plot, stub_lag, stub_lead] produce one active event-study graph; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/borusyak/did_imputation"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.event_plot.generic_stored_reference.v1",
@@ -1845,12 +1843,6 @@
     "variant_id": "event_plot_generic_stored_reference",
     "stage": "figures",
     "method_family": "event_plot",
-    "source_spans": [
-      [
-        77,
-        78
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "candidate_disposition": "reference_only",
     "canonical_generation_class": "reference_only",
@@ -1914,9 +1906,15 @@
     "generality_rationale_ko": "임의 model의 계수명을 자동 해석하지 않도록 reference-only로 둔다.",
     "review_notes": "Reference-only until a producer contract is supplied; never use a manual coefficient/SE bridge.",
     "variant_distinction": "Separate event_plot_generic_stored_reference: observable mechanics [event_plot, stub_lag, stub_lead] produce one event-study graph from stored estimates; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/borusyak/did_imputation"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.psmatch2.ate_estimator.v1",
@@ -1925,15 +1923,9 @@
     "variant_id": "psmatch2_ate",
     "stage": "estimation",
     "method_family": "psmatch2",
-    "source_spans": [
-      [
-        80,
-        81
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "psmatch2.ate_or_atu"
     ],
@@ -1992,9 +1984,15 @@
     "generality_rationale_ko": "ATU와 다른 estimand 상태를 분리하고, 연구자의 estimand 선택을 자동화하지 않는다.",
     "review_notes": "Guide-derived mechanics only; no automatic estimand or support decision.",
     "variant_distinction": "Separate psmatch2_ate: observable mechanics [psmatch2, ate] produce one active ATE matching result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/eleuven/psmatch2/blob/master/psmatch2.sthlp"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.psmatch2.atu_estimator.v1",
@@ -2003,15 +2001,9 @@
     "variant_id": "psmatch2_atu",
     "stage": "estimation",
     "method_family": "psmatch2",
-    "source_spans": [
-      [
-        83,
-        84
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "psmatch2.ate_or_atu"
     ],
@@ -2070,9 +2062,15 @@
     "generality_rationale_ko": "ATE와 다른 estimand 상태를 별도 선택지로 유지한다.",
     "review_notes": "Guide-derived mechanics only; no automatic estimand or support decision.",
     "variant_distinction": "Separate psmatch2_atu: observable mechanics [psmatch2, atu] produce one active ATU matching result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/eleuven/psmatch2/blob/master/psmatch2.sthlp"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.psmatch2.supplied_pscore.v1",
@@ -2081,15 +2079,9 @@
     "variant_id": "psmatch2_supplied_propensity_score",
     "stage": "estimation",
     "method_family": "psmatch2",
-    "source_spans": [
-      [
-        86,
-        87
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "psmatch2.supplied_propensity_score"
     ],
@@ -2148,9 +2140,15 @@
     "generality_rationale_ko": "score 생성과 matching 소비를 분리해 숨은 추정 단계를 만들지 않는다.",
     "review_notes": "Score provenance and diagnostics remain outside this guide-derived atom.",
     "variant_distinction": "Separate psmatch2_supplied_propensity_score: observable mechanics [psmatch2, pscore] produce one active matching result using supplied score; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/eleuven/psmatch2/blob/master/psmatch2.sthlp"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.psmatch2.common_support_caliper.v1",
@@ -2159,15 +2157,9 @@
     "variant_id": "psmatch2_common_support_caliper",
     "stage": "estimation",
     "method_family": "psmatch2",
-    "source_spans": [
-      [
-        89,
-        90
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "psmatch2.common_support_caliper"
     ],
@@ -2229,9 +2221,15 @@
     "generality_rationale_ko": "지원영역 제한을 다른 matching variant와 material하게 분리한다.",
     "review_notes": "No automatic support trimming or caliper selection.",
     "variant_distinction": "Separate psmatch2_common_support_caliper: observable mechanics [psmatch2, common, caliper] produce one support-restricted matching result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/eleuven/psmatch2/blob/master/psmatch2.sthlp"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.psmatch2.generated_matching_state_reference.v1",
@@ -2240,12 +2238,6 @@
     "variant_id": "psmatch2_generated_weight_treated_support",
     "stage": "post_estimation",
     "method_family": "psmatch2",
-    "source_spans": [
-      [
-        92,
-        93
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "candidate_disposition": "reference_only",
     "canonical_generation_class": "reference_only",
@@ -2306,9 +2298,15 @@
     "generality_rationale_ko": "패키지 생성 변수의 의미와 버전별 동작을 자동 가정하지 않으므로 reference-only다.",
     "review_notes": "Reference-only; never use a manual coefficient or outcome reconstruction.",
     "variant_distinction": "Separate psmatch2_generated_weight_treated_support: observable mechanics [generate, _w, _t] produce package-generated matching-state variables; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/eleuven/psmatch2/blob/master/psmatch2.sthlp"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.xtabond2.one_step.v1",
@@ -2317,15 +2315,9 @@
     "variant_id": "xtabond2_one_step",
     "stage": "estimation",
     "method_family": "xtabond2",
-    "source_spans": [
-      [
-        95,
-        96
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "xtabond2.one_step"
     ],
@@ -2391,9 +2383,16 @@
     "generality_rationale_ko": "two-step과 다른 추정 상태를 별도 variant로 보존한다.",
     "review_notes": "No automatic one-step/two-step choice or diagnostic interpretation.",
     "variant_distinction": "Separate xtabond2_one_step: observable mechanics [xtabond2, onestep, gmm] produce one active one-step dynamic-panel estimate; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://cdi.mecon.gob.ar/bases/doc/cgdev/wp103.pdf",
+      "https://github.com/droodman/xtabond2/blob/master/xtabond2.hlp"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.xtabond2.ar_hansen_diagnostics_reference.v1",
@@ -2402,12 +2401,6 @@
     "variant_id": "xtabond2_ar_hansen_diagnostics",
     "stage": "post_estimation",
     "method_family": "xtabond2",
-    "source_spans": [
-      [
-        101,
-        103
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "candidate_disposition": "reference_only",
     "canonical_generation_class": "reference_only",
@@ -2467,9 +2460,16 @@
     "generality_rationale_ko": "진단 결과의 substantive 해석을 guide가 대신하지 않도록 reference-only다.",
     "review_notes": "Reference-only; no automatic instrument, lag, or validity decision.",
     "variant_distinction": "Separate xtabond2_ar_hansen_diagnostics: observable mechanics [xtabond2, estat abond] produce returned AR/Hansen diagnostic state; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://cdi.mecon.gob.ar/bases/doc/cgdev/wp103.pdf",
+      "https://github.com/droodman/xtabond2/blob/master/xtabond2.hlp"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.csdid.never_treated_comparison.v1",
@@ -2478,15 +2478,9 @@
     "variant_id": "csdid_never_treated_comparison",
     "stage": "estimation",
     "method_family": "csdid",
-    "source_spans": [
-      [
-        105,
-        106
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "csdid.never_treated_comparison"
     ],
@@ -2553,9 +2547,15 @@
     "generality_rationale_ko": "not-yet-treated 비교군과 material하게 다른 comparison state를 분리한다.",
     "review_notes": "No automatic cohort or comparison-group selection.",
     "variant_distinction": "Separate csdid_never_treated_comparison: observable mechanics [csdid, gvar, never] produce one active csdid never-treated ATT result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://psantanna.com/csdid/"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.csdid.pretrend_test.v1",
@@ -2564,15 +2564,9 @@
     "variant_id": "csdid_pretrend_test",
     "stage": "post_estimation",
     "method_family": "csdid",
-    "source_spans": [
-      [
-        108,
-        109
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "csdid.pretrend_test"
     ],
@@ -2629,9 +2623,15 @@
     "generality_rationale_ko": "추정·aggregation과 별개의 postestimation 진단으로 유지한다.",
     "review_notes": "No automatic pretrend window or substantive interpretation.",
     "variant_distinction": "Separate csdid_pretrend_test: observable mechanics [csdid_estat, pretrend] produce one active csdid pretrend diagnostic; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://psantanna.com/csdid/"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.boottest.confidence_interval.v1",
@@ -2640,15 +2640,9 @@
     "variant_id": "boottest_confidence_interval",
     "stage": "post_estimation",
     "method_family": "boottest",
-    "source_spans": [
-      [
-        111,
-        112
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
-    "candidate_disposition": "audit_pending",
-    "canonical_generation_class": "conditional_candidate",
+    "candidate_disposition": "reference_only",
+    "canonical_generation_class": "reference_only",
     "contract_ids": [
       "boottest.confidence_interval"
     ],
@@ -2712,9 +2706,15 @@
     "generality_rationale_ko": "단일 가설검정과 다른 interval 출력 상태를 별도 variant로 둔다.",
     "review_notes": "No automatic confidence level, coefficient, or bootstrap design.",
     "variant_distinction": "Separate boottest_confidence_interval: observable mechanics [boottest, level, cluster] produce one active wild-bootstrap confidence interval; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/droodman/boottest"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "method.boottest.restricted_unrestricted_reference.v1",
@@ -2723,12 +2723,6 @@
     "variant_id": "boottest_restricted_vs_unrestricted_reference",
     "stage": "post_estimation",
     "method_family": "boottest",
-    "source_spans": [
-      [
-        114,
-        115
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "candidate_disposition": "reference_only",
     "canonical_generation_class": "reference_only",
@@ -2795,8 +2789,14 @@
     "generality_rationale_ko": "guide가 substantive model comparison을 대신하지 않도록 reference-only로 둔다.",
     "review_notes": "Reference-only until producer contract, restriction, and runtime/selector checks pass.",
     "variant_distinction": "Separate boottest_restricted_vs_unrestricted_reference: observable mechanics [boottest, null, cluster] produce one reference wild-bootstrap restricted comparison; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/droodman/boottest"
+    ],
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   }
 ]

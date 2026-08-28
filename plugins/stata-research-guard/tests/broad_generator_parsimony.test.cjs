@@ -62,7 +62,6 @@ const BROAD_VARIANTS = [
   ["figure.event_study_csdid_event_plot.v1", "csdid_estat_event_named_result_plot"],
   ["figure.event_study_sun_abraham_event_plot.v1", "eventstudyinteract_named_stub_plot"],
   ["figure.event_study_twfe_event_plot.v1", "twfe_named_event_terms_active_result_plot"],
-  ["postest.iv_first_stage_handoff.v1", "xtivreg2_first_stage_restore_ymean_ster"],
   ["robustness.heterogeneity_nlcom_grid.v1", "nlcom_effect_grid_to_named_matrix"],
   ["setup.paths.manual_root_derived_folders.v1", "manual_root_with_derived_role_paths"],
   ["master.sequence.direct_calls.v1", "ordered_direct_do_calls"],
@@ -70,7 +69,6 @@ const BROAD_VARIANTS = [
   ["treatment.teacher_any_arm_mapping.v1", "combine_gain_and_loss_teacher_arms"],
   ["sample.arm_response_eligibility.testscore_observed.v1", "observed_score_and_declared_study_arms"],
   ["descriptives.depvar_arm_means_esample.v1", "treatment_arm_means_on_named_estimation_sample"],
-  ["figure.scatter_lfit_by_binary_group_pdf.v1", "common_sample_binary_group_scatter_lfit_pdf"],
 ];
 
 test("broad, project-bound generators remain reference evidence and are never automatically selectable", async (t) => {

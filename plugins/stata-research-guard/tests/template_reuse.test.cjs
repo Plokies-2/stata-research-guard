@@ -150,7 +150,7 @@ function fixture(t, labelId = "export.regression_excel.from_ster_default_style.v
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-template-reuse-"));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   fs.mkdirSync(path.join(root, "code"));
-  const label = LABELS.find((row) => row.label_id === labelId);
+  const label = typeof labelId === "string" ? LABELS.find((row) => row.label_id === labelId) : labelId;
   assert.ok(label, labelId);
   const target = path.join(root, "code", "module.do");
   fs.writeFileSync(target, label.code, "utf8");
@@ -186,6 +186,29 @@ function fixture(t, labelId = "export.regression_excel.from_ster_default_style.v
   }
   fs.writeFileSync(path.join(root, "template_reuse_manifest.json"), JSON.stringify(manifest, null, 2), "utf8");
   return { root, label, manifest, target };
+}
+
+function testLocalEventLabel(labelId, code) {
+  const bytes = Buffer.from(code, "utf8");
+  return {
+    label_id: labelId,
+    checkpoint: "figures.event_study",
+    variant_id: labelId,
+    source_kind: "test_local_stata_fixture",
+    source_path: `tests/fixtures/${labelId}.do`,
+    source_spans: [[1, code.split(/\r?\n/).length]],
+    source_file_sha256: hash(bytes),
+    code_sha256: hash(bytes),
+    code,
+    decision: "conditional_keep",
+    adaptation_mode: "adapt",
+    reuse_scope: "method_specific",
+    explicit_canonical_exception: true,
+    minimal_edit_fields: [],
+    required_changes: [],
+    selection_conditions: [],
+    quality_rubric_review: { classification: "conditional_candidate" },
+  };
 }
 
 function check(root, overrides = {}, contextOverrides = {}) {
@@ -227,7 +250,7 @@ function nativeTarget(root, id, content) {
 }
 
 function standardizationNativeClaim(t, transform) {
-  const current = fixture(t, "clean.standardize_fixed_esample_complete_components.v1");
+  const current = fixture(t, "clean.standardize_on_fixed_esample.v1");
   current.manifest.selections = [];
   const content = `${transform(current.label.code)}\ndisplay "zebra"`;
   useAtomicSubsteps(current.root, current.manifest, current.label, [{
@@ -303,15 +326,26 @@ const ATOMIC_TRANSITIONS = [
   ["merge.retain_matched_rows.v1", "merge 1:m firm_id year using \"$data/using.dta\", keep(match) nogen", ["merge cardinality", "key variables", "using file"], "merge"],
   ["integrity.assert_unique_key.v1", "isid firm_id year", ["key variables"], "isid"],
   ["integrity.declare_panel.v1", "xtset firm_id year, yearly", ["unit identifier", "time variable", "frequency option"], "xtset"],
-  ["descriptives.summarize_esample_mean.v1", "estadd ysumm, mean", [], "estadd"],
   ["postest.load_saved_ster.v1", "estimates use \"$ster/spec_1.ster\"", ["estimate path"], "estimates use"],
   ["postest.store_named_estimate.v1", "estimates store spec_1", ["estimate name"], "estimates store"],
 ];
 
-test("every archived label source span reproduces the builder code hash", () => {
+test("every code-bearing label is archive-backed, while guide metadata stays code-free", () => {
   const index = JSON.parse(fs.readFileSync(SOURCE_ARCHIVE_INDEX, "utf8"));
+  const archivedLabels = LABELS.filter((label) => typeof label.code === "string" && label.code.length > 0);
+  const guideMetadata = LABELS.filter((label) => label.audit_status === "metadata_only");
+  assert.equal(archivedLabels.length, 110, "only external code and the approved formatter are archive-backed");
+  assert.equal(Object.keys(index.sources).length, 49, "source archive is limited to corpus files plus the approved formatter");
+  assert.equal(guideMetadata.length, 454, "complete guide ledger is retained as metadata");
+  for (const guide of guideMetadata) {
+    assert.equal("code" in guide, false, guide.label_id);
+    assert.equal("code_sha256" in guide, false, guide.label_id);
+    assert.equal("source_path" in guide, false, guide.label_id);
+    assert.equal("source_spans" in guide, false, guide.label_id);
+    assert.ok(Array.isArray(guide.source_urls) && guide.source_urls.length > 0, guide.label_id);
+  }
   let multiSpanCount = 0;
-  for (const label of LABELS) {
+  for (const label of archivedLabels) {
     const entry = index.sources[label.source_path];
     assert.ok(entry, `archive entry missing for ${label.label_id}`);
     const bytes = fs.readFileSync(path.join(ROOT, ...entry.archive_path.split("/")));
@@ -341,7 +375,7 @@ test("atomic state-transition labels remain selectable while reference-only evid
   assert.ok(keyMatches.some((row) => row.label_id === "integrity.assert_unique_key.v1"));
   assert.ok(!keyMatches.some((row) => row.label_id === "integrity.panel_key_before_merge.v1"));
   const attachedMeanMatches = matchingAutoSelectableLabels(LABELS, "descriptives.sample_mean", { commands: ["estadd"], tokens: ["e(ymean)"] });
-  assert.ok(attachedMeanMatches.some((row) => row.label_id === "descriptives.summarize_esample_mean.v1"));
+  assert.deepEqual(attachedMeanMatches, []);
   const broadMeanMatches = matchingAutoSelectableLabels(LABELS, "descriptives.sample_mean", { commands: ["summarize"], tokens: ["e(sample)"] });
   assert.ok(!broadMeanMatches.some((row) => row.label_id === "descriptives.depvar_mean_esample.v1"));
   const referenceLabel = LABELS.find((row) => row.label_id === "cleanup.erase_named_spmon_intermediates.v1");
@@ -518,25 +552,8 @@ test("m:1 retained merge has a distinct atomic template and blocks cardinality d
     && row.matched_candidate_ids.includes("merge.retain_matched_rows_m1.v1")));
 });
 
-test("six v4-shaped reghdfe specifications select the estimator-only label at full retention", (t) => {
-  const specifications = Array.from({ length: 6 }, (_, index) =>
-    `reghdfe outcome_${index + 1} treatment control_a control_b if sample_${index + 1}, absorb(firm_id year) vce(cluster firm_id)`);
-  for (const code of specifications) {
-    const current = atomicSelectionFixture(t, "estimation.reghdfe_fe_clustered.v1", code,
-      ["outcome", "treatment", "controls", "sample restriction", "absorbed fixed effects", "cluster level"]);
-    const result = check(current.root, { min_command_retention: 0.75 });
-    assert.equal(result.status, "pass", JSON.stringify(result.blockers));
-    assert.equal(result.selection_checks[0].evidence.command_retention, 1);
-  }
-});
-
 test("native claims cannot bypass any exact atomic transition", (t) => {
-  const cases = [...ATOMIC_TRANSITIONS, [
-    "estimation.reghdfe_fe_clustered.v1",
-    "reghdfe outcome treatment controls, absorb(firm_id year) vce(cluster firm_id)",
-    [],
-    "reghdfe",
-  ]];
+  const cases = ATOMIC_TRANSITIONS;
   for (const [labelId, targetCode, , command] of cases) {
     const current = fixture(t, labelId);
     current.manifest.selections = [];
@@ -681,221 +698,65 @@ test("a second program is rejected even when the canonical helper is selected", 
   assert.ok(result.blockers.some((row) => row.rule === "unapproved_program_definition"));
 });
 
-test("event-study automatic axes stay automatic in the bound target", (t) => {
-  const current = fixture(t, "figure.event_study_flat_loop_automatic.v1");
-  current.manifest.event_study_axis_profile = automaticAxisProfile("code/module.do", current.manifest.selections[0].target_spans);
-  fs.writeFileSync(path.join(current.root, "template_reuse_manifest.json"), JSON.stringify(current.manifest, null, 2), "utf8");
-  const passed = check(current.root);
-  assert.equal(passed.status, "pass", JSON.stringify(passed.blockers));
+function replaceTarget(current, code) {
+  fs.writeFileSync(current.target, code, "utf8");
+  const spans = [[1, code.split(/\r?\n/).length]];
+  current.manifest.selections[0].target_spans = spans;
+  current.manifest.selections[0].target_span_sha256 = hash(Buffer.from(code, "utf8"));
+  return spans;
+}
 
-  const fixedTarget = current.label.code.replace(
-    'xtitle("Year")',
-    'yscale(range(-1 1)) ylabel(-1(.5)1) xtitle("Year")',
-  );
-  fs.writeFileSync(current.target, fixedTarget, "utf8");
-  current.manifest.selections[0].target_spans = [[1, fixedTarget.split(/\r?\n/).length]];
-  current.manifest.selections[0].target_span_sha256 = hash(Buffer.from(fixedTarget, "utf8"));
-  current.manifest.event_study_axis_profile.axis_groups[0].target_spans = current.manifest.selections[0].target_spans;
-  fs.writeFileSync(path.join(current.root, "template_reuse_manifest.json"), JSON.stringify(current.manifest, null, 2), "utf8");
-  const blocked = check(current.root);
-  assert.equal(blocked.status, "needs_revision");
-  assert.ok(blocked.blockers.some((row) => row.rule === "event_study_automatic_axis_forced"), JSON.stringify(blocked.blockers));
-});
-
-test("mixed event-study axes require one explicit flat loop with branch-local axis options and loop-scoped output", (t) => {
-  const passing = fixture(t, "figure.event_study_flat_loop_mixed_axis.v1");
-  passing.manifest.event_study_axis_profile = mixedAxisProfile("code/module.do", passing.manifest.selections[0].target_spans);
-  fs.writeFileSync(path.join(passing.root, "template_reuse_manifest.json"), JSON.stringify(passing.manifest, null, 2), "utf8");
-  const passed = check(passing.root);
-  assert.equal(passed.status, "pass", JSON.stringify(passed.blockers));
-
-  const cases = [
-    {
-      rule: "event_study_mixed_automatic_axis_not_cleared",
-      mutate: (code) => code.replace('    local axis_options ""\n', ""),
-    },
-    {
-      rule: "event_study_mixed_fixed_membership_condition_missing",
-      mutate: (code) => code.replace('if strpos(" `fixed_outcomes\' ", " `outcome\' ")', "if 1"),
-    },
-    {
-      rule: "event_study_mixed_axis_branch_count",
-      mutate: (code) => code.replace(
-        "    estimates clear\n",
-        '    if 1 {\n        display "extra branch"\n    }\n\n    estimates clear\n',
-      ),
-    },
-    {
-      rule: "event_study_mixed_fixed_axis_options_missing",
-      mutate: (code) => code
-        .replace(
-          "        local axis_options \"yscale(range(`axis_min' `axis_max') noextend) ylabel(`axis_min'(`axis_step')`axis_max')\"\n",
-          "",
-        )
-        .replace(
-          "    }\n\n    estimates clear",
-          "    }\n    local axis_options \"yscale(range(`axis_min' `axis_max') noextend) ylabel(`axis_min'(`axis_step')`axis_max')\"\n\n    estimates clear",
-        ),
-    },
-    {
-      rule: "event_study_mixed_fixed_membership_condition_missing",
-      mutate: (code) => code.replace(
-        'if strpos(" `fixed_outcomes\' ", " `outcome\' ") {',
-        'if strpos(" `fixed_outcomes\' ", " `outcome\' ") | 1 {',
-      ),
-    },
-    {
-      rule: "event_study_mixed_fixed_membership_condition_missing",
-      mutate: (code) => code.replace(
-        'if strpos(" `fixed_outcomes\' ", " `outcome\' ") {',
-        'if strpos("`fixed_outcomes\'", "`outcome\'") {',
-      ),
-    },
-    {
-      rule: "event_study_mixed_graph_axis_binding_missing",
-      mutate: (code) => code.replace("        `axis_options' ///\n", ""),
-    },
-    {
-      rule: "event_study_mixed_raw_title_missing",
-      mutate: (code) => code.replace('title("`outcome\'")', 'title("Event study")'),
-    },
-    {
-      rule: "event_study_mixed_bottom_legend_missing",
-      mutate: (code) => code.replace("legend(position(6) rows(1))", "legend(position(3) rows(1))"),
-    },
-    {
-      rule: "event_study_mixed_pdf_export_scope",
-      mutate: (code) => code.replace('    graph export "$figures/`outcome\'_event.pdf", replace\n', ""),
-    },
-    {
-      rule: "event_study_mixed_loop_dispatcher_forbidden",
-      mutate: (code) => `global plot_jobs "encoded registry"\n${code}`,
-    },
-  ];
-  for (const item of cases) {
-    const current = fixture(t, "figure.event_study_flat_loop_mixed_axis.v1");
-    const changed = item.mutate(current.label.code);
-    fs.writeFileSync(current.target, changed, "utf8");
-    const spans = [[1, changed.split(/\r?\n/).length]];
-    current.manifest.selections[0].target_spans = spans;
-    current.manifest.selections[0].target_span_sha256 = hash(Buffer.from(changed, "utf8"));
-    current.manifest.event_study_axis_profile = mixedAxisProfile("code/module.do", spans);
-    fs.writeFileSync(path.join(current.root, "template_reuse_manifest.json"), JSON.stringify(current.manifest, null, 2), "utf8");
-    const blocked = check(current.root);
-    assert.equal(blocked.status, "needs_revision");
-    assert.ok(blocked.blockers.some((row) => row.rule === item.rule), `${item.rule}: ${JSON.stringify(blocked.blockers)}`);
-  }
-});
-
-test("axis bindings follow selected local-macro branches without a loop initializer", (t) => {
-  const fixed = fixture(t, "figure.event_study_flat_loop_fixed_group.v1");
-  const fixedTarget = [
-    'local metrics "Yvol Yinvol"',
-    'foreach metric of local metrics {',
-    '    local axis_opts "yscale(range(-.1 .1)) ylabel(-.1(.05).1)"',
-    fixed.label.code
-      .replace('local fixed_outcomes "close_outcome_a close_outcome_b"', 'local fixed_outcomes "Yvol Yinvol"')
-      .replace('xtitle("Year")', "`axis_opts' xtitle(\"Year\")"),
-    '}',
+test("event-axis verification uses test-local Stata fixtures, not reusable template evidence", (t) => {
+  const automaticCode = [
+    'local all_outcomes "Y"',
+    "foreach outcome of local all_outcomes {",
+    "    coefplot model, title(\"`outcome'\") legend(position(6) rows(1))",
+    "    graph export \"$figures/`outcome'_event.pdf\", replace",
+    "}",
   ].join("\n");
-  fs.writeFileSync(fixed.target, fixedTarget, "utf8");
-  fixed.manifest.selections[0].target_spans = [[1, fixedTarget.split(/\r?\n/).length]];
-  fixed.manifest.selections[0].target_span_sha256 = hash(Buffer.from(fixedTarget, "utf8"));
-  fixed.manifest.event_study_axis_profile = {
-    expected_plots: [
-      { outcome: "Yvol", specification: "TWFE", sample_comparison: "analysis sample" },
-      { outcome: "Yinvol", specification: "TWFE", sample_comparison: "analysis sample" },
-    ],
-    axis_groups: [{
-      axis_group_id: "close_pair",
-      axis_mode: "fixed_group",
-      outcomes: ["Yvol", "Yinvol"],
-      specification: "TWFE",
-      sample_comparison: "analysis sample",
-      coefficient_family: "event-time treatment effects",
-      unit: "percentage points",
-      transform: "level",
-      grouping_reason: "two directly comparable outcomes",
-      decision_source: "model_from_metadata",
-      grouping_evidence: ["the two outcomes are declared as a close pair"],
-      range_basis: "one readable range covers the pair",
-      range: { min: -0.1, max: 0.1, step: 0.05 },
-      target_path: "code/module.do",
-      target_spans: fixed.manifest.selections[0].target_spans,
-    }],
-  };
-  fs.writeFileSync(path.join(fixed.root, "template_reuse_manifest.json"), JSON.stringify(fixed.manifest, null, 2), "utf8");
-  const fixedPassed = check(fixed.root);
-  assert.equal(fixedPassed.status, "pass", JSON.stringify(fixedPassed.blockers));
-
-  const automatic = fixture(t, "figure.event_study_flat_loop_automatic.v1");
-  const automaticTarget = [
-    'local metrics "Y"',
-    'foreach metric of local metrics {',
-    '    local axis_opts "yscale(range(-.2 .2)) ylabel(-.2(.1).2)"',
-    '    local axis_opts',
-    automatic.label.code.replace('xtitle("Year")', "`axis_opts' xtitle(\"Year\")"),
-    '}',
-  ].join("\n");
-  fs.writeFileSync(automatic.target, automaticTarget, "utf8");
-  automatic.manifest.selections[0].target_spans = [[1, automaticTarget.split(/\r?\n/).length]];
-  automatic.manifest.selections[0].target_span_sha256 = hash(Buffer.from(automaticTarget, "utf8"));
-  automatic.manifest.event_study_axis_profile = automaticAxisProfile("code/module.do", automatic.manifest.selections[0].target_spans);
+  const automaticLabel = testLocalEventLabel("test.event_axis.automatic", automaticCode);
+  const automaticLabels = [...LABELS, automaticLabel];
+  const automatic = fixture(t, automaticLabel);
+  automatic.manifest.event_study_axis_profile = automaticAxisProfile("code/module.do", replaceTarget(automatic, automaticCode));
   fs.writeFileSync(path.join(automatic.root, "template_reuse_manifest.json"), JSON.stringify(automatic.manifest, null, 2), "utf8");
-  const automaticPassed = check(automatic.root);
-  assert.equal(automaticPassed.status, "pass", JSON.stringify(automaticPassed.blockers));
+  const automaticPass = check(automatic.root, {}, { labels: automaticLabels });
+  assert.equal(automaticPass.status, "pass", JSON.stringify(automaticPass.blockers));
 
-  const forcedTarget = automaticTarget.replace('    local axis_opts\n', '    local axis_opts "yscale(range(-.2 .2)) ylabel(-.2(.1).2)"\n');
-  fs.writeFileSync(automatic.target, forcedTarget, "utf8");
-  automatic.manifest.selections[0].target_span_sha256 = hash(Buffer.from(forcedTarget, "utf8"));
+  const forcedCode = automaticCode.replace('coefplot model,', 'coefplot model, yscale(range(-1 1)) ylabel(-1(.5)1)');
+  automatic.manifest.event_study_axis_profile.axis_groups[0].target_spans = replaceTarget(automatic, forcedCode);
   fs.writeFileSync(path.join(automatic.root, "template_reuse_manifest.json"), JSON.stringify(automatic.manifest, null, 2), "utf8");
-  const automaticBlocked = check(automatic.root);
-  assert.equal(automaticBlocked.status, "needs_revision");
+  const automaticBlocked = check(automatic.root, {}, { labels: automaticLabels });
   assert.ok(automaticBlocked.blockers.some((row) => row.rule === "event_study_automatic_axis_forced"), JSON.stringify(automaticBlocked.blockers));
-});
 
-test("close-related event-study outcomes share the declared fixed range and ticks", (t) => {
-  const current = fixture(t, "figure.event_study_flat_loop_fixed_group.v1");
-  const fixedTarget = current.label.code
-    .replace('local fixed_outcomes "close_outcome_a close_outcome_b"', 'local fixed_outcomes "Yvol Yinvol"');
-  fs.writeFileSync(current.target, fixedTarget, "utf8");
-  current.manifest.selections[0].target_spans = [[1, fixedTarget.split(/\r?\n/).length]];
-  current.manifest.selections[0].target_span_sha256 = hash(Buffer.from(fixedTarget, "utf8"));
-  current.manifest.selections[0].edited_fields = current.label.minimal_edit_fields;
-  current.manifest.event_study_axis_profile = {
-    expected_plots: [
-      { outcome: "Yvol", specification: "TWFE", sample_comparison: "analysis sample" },
-      { outcome: "Yinvol", specification: "TWFE", sample_comparison: "analysis sample" },
-    ],
-    axis_groups: [{
-      axis_group_id: "unemployment_pair",
-      axis_mode: "fixed_group",
-      outcomes: ["Yvol", "Yinvol"],
-      specification: "TWFE",
-      sample_comparison: "analysis sample",
-      coefficient_family: "event-time treatment effects",
-      unit: "percentage points",
-      transform: "level",
-      grouping_reason: "direct decomposition into voluntary and involuntary unemployment",
-      decision_source: "model_from_metadata",
-      grouping_evidence: ["the outcome definitions are two margins of the same unemployment concept"],
-      range_basis: "one range covers both series and their confidence intervals",
-      range: { min: -0.1, max: 0.1, step: 0.05 },
-      target_path: "code/module.do",
-      target_spans: current.manifest.selections[0].target_spans,
-    }],
-  };
-  fs.writeFileSync(path.join(current.root, "template_reuse_manifest.json"), JSON.stringify(current.manifest, null, 2), "utf8");
-  const passed = check(current.root);
-  assert.equal(passed.status, "pass", JSON.stringify(passed.blockers));
+  const mixedCode = [
+    'local all_outcomes "close_outcome_a close_outcome_b other_outcome_a other_outcome_b"',
+    'local fixed_outcomes "close_outcome_a close_outcome_b"',
+    "local axis_min -0.10",
+    "local axis_max 0.10",
+    "local axis_step 0.05",
+    "foreach outcome of local all_outcomes {",
+    '    local axis_options ""',
+    "    if strpos(\" `fixed_outcomes' \", \" `outcome' \") {",
+    "        local axis_options \"yscale(range(`axis_min' `axis_max') noextend) ylabel(`axis_min'(`axis_step')`axis_max')\"",
+    "    }",
+    "    coefplot model, `axis_options' title(\"`outcome'\") legend(position(6) rows(1))",
+    "    graph export \"$figures/`outcome'_event.pdf\", replace",
+    "}",
+  ].join("\n");
+  const mixedLabel = testLocalEventLabel("test.event_axis.mixed", mixedCode);
+  const mixedLabels = [...LABELS, mixedLabel];
+  const mixed = fixture(t, mixedLabel);
+  const mixedSpans = replaceTarget(mixed, mixedCode);
+  mixed.manifest.event_study_axis_profile = mixedAxisProfile("code/module.do", mixedSpans);
+  fs.writeFileSync(path.join(mixed.root, "template_reuse_manifest.json"), JSON.stringify(mixed.manifest, null, 2), "utf8");
+  const mixedPass = check(mixed.root, {}, { labels: mixedLabels });
+  assert.equal(mixedPass.status, "pass", JSON.stringify(mixedPass.blockers));
 
-  const mismatched = fixedTarget.replace("local axis_max   0.10", "local axis_max   0.20");
-  fs.writeFileSync(current.target, mismatched, "utf8");
-  current.manifest.selections[0].target_span_sha256 = hash(Buffer.from(mismatched, "utf8"));
-  fs.writeFileSync(path.join(current.root, "template_reuse_manifest.json"), JSON.stringify(current.manifest, null, 2), "utf8");
-  const blocked = check(current.root);
-  assert.equal(blocked.status, "needs_revision");
-  assert.ok(blocked.blockers.some((row) => row.rule === "event_study_fixed_axis_mismatch"), JSON.stringify(blocked.blockers));
+  const missingReset = mixedCode.replace('    local axis_options ""\n', "");
+  mixed.manifest.event_study_axis_profile.mixed_loop_binding.target_spans = replaceTarget(mixed, missingReset);
+  fs.writeFileSync(path.join(mixed.root, "template_reuse_manifest.json"), JSON.stringify(mixed.manifest, null, 2), "utf8");
+  const mixedBlocked = check(mixed.root, {}, { labels: mixedLabels });
+  assert.ok(mixedBlocked.blockers.some((row) => row.rule === "event_study_mixed_automatic_axis_not_cleared"), JSON.stringify(mixedBlocked.blockers));
 });
 
 test("a corpus label locks package ID and repository DOI", (t) => {
@@ -1025,14 +886,14 @@ test("a declared one-sheet workbook requires direct outreg2 and rejects the form
 });
 
 test("advisory native event study cannot omit the 4-way axis profile", (t) => {
-  const { root, label, manifest } = fixture(t, "figure.event_study_single_automatic.v1");
+  const { root, label, manifest } = fixture(t, "figure.event_study_did_imputation_event_plot.v1");
   manifest.selections = [];
   useAtomicSubsteps(root, manifest, label, [{
     substep_id: "direct_event_figure",
     mode: "general_rule",
     match: { commands: ["coefplot"], tokens: ["event study"] },
     ...nativeTarget(root, "direct_event_figure", "coefplot model\ngraph export event.pdf, replace"),
-    general_rule_justification: { kind: "template_mismatch", nearest_template_hint: "figure.event_study_single_automatic.v1", template_status: "wrong_selection", hint_used: "coefplot and PDF export idioms" },
+    general_rule_justification: { kind: "template_mismatch", nearest_template_hint: "figure.event_study_did_imputation_event_plot.v1", template_status: "wrong_selection", hint_used: "coefplot and PDF export idioms" },
   }]);
   const result = check(root, { enforce_template_reuse: false });
   assert.equal(result.template_reuse_enforcement, "advisory");
@@ -1041,7 +902,7 @@ test("advisory native event study cannot omit the 4-way axis profile", (t) => {
 });
 
 test("fallback nearest-template hints must exist and match the ranked candidate", (t) => {
-  const unknown = fixture(t, "figure.event_study_single_automatic.v1");
+  const unknown = fixture(t, "figure.event_study_did_imputation_event_plot.v1");
   unknown.manifest.selections = [];
   useAtomicSubsteps(unknown.root, unknown.manifest, unknown.label, [{
     substep_id: "unknown_hint",
@@ -1053,14 +914,14 @@ test("fallback nearest-template hints must exist and match the ranked candidate"
   const unknownResult = check(unknown.root, { enforce_template_reuse: false });
   assert.ok(unknownResult.blockers.some((row) => row.rule === "template_mismatch_nearest_template_hint_unknown"));
 
-  const nonNearest = fixture(t, "figure.event_study_single_automatic.v1");
+  const nonNearest = fixture(t, "figure.event_study_did_imputation_event_plot.v1");
   nonNearest.manifest.selections = [];
   useAtomicSubsteps(nonNearest.root, nonNearest.manifest, nonNearest.label, [{
     substep_id: "non_nearest_hint",
     mode: "general_rule",
     match: { commands: ["coefplot"], tokens: ["event study"] },
     ...nativeTarget(nonNearest.root, "non_nearest_hint", "coefplot model\ngraph export event.pdf, replace"),
-    general_rule_justification: { kind: "template_mismatch", nearest_template_hint: "figure.event_study_flat_loop_fixed_group.v1", template_status: "wrong_selection", hint_used: "none" },
+    general_rule_justification: { kind: "template_mismatch", nearest_template_hint: "figure.event_study_did_multiplegt_event_plot.v1", template_status: "wrong_selection", hint_used: "none" },
   }]);
   const nonNearestResult = check(nonNearest.root, { enforce_template_reuse: false });
   assert.ok(!nonNearestResult.blockers.some((row) => row.rule === "template_mismatch_nearest_template_hint_unknown"));
@@ -1098,18 +959,18 @@ test("schema 2.0 composes one template and one justified native substep under a 
   assert.deepEqual(result.substep_checks[1].matched_candidate_ids, []);
 });
 
-test("schema 2.0 blocks native bypass when an auto-selectable matching LEGO exists", (t) => {
-  const { root, label, manifest } = fixture(t, "descriptives.summarize_esample_mean.v1");
+test("schema 2.0 blocks native bypass when an external auto-selectable matching LEGO exists", (t) => {
+  const { root, label, manifest } = fixture(t, "merge.retain_matched_rows.v1");
   manifest.selections = [];
   useAtomicSubsteps(root, manifest, label, [{
-    substep_id: "dependent_variable_mean_on_esample",
+    substep_id: "retained_matched_merge",
     mode: "general_rule",
-    match: { commands: ["estadd"], tokens: ["e(ymean)"] },
-    ...nativeTarget(root, "dependent_variable_mean_on_esample", label.code),
+    match: { commands: ["merge"], tokens: ["keep(match)"] },
+    ...nativeTarget(root, "retained_matched_merge", label.code),
     general_rule_justification: {
       kind: "dictionary_gap",
       search_evidence: {
-        query: "dependent-variable mean on e(sample)",
+        query: "retained matched merge",
         searched_checkpoints: [label.checkpoint],
         result_label_ids: [label.label_id],
       },
@@ -1123,13 +984,13 @@ test("schema 2.0 blocks native bypass when an auto-selectable matching LEGO exis
 });
 
 test("schema 2.0 derives native search evidence from the target and blocks self-declared nonmatching terms", (t) => {
-  const { root, label, manifest } = fixture(t, "descriptives.summarize_esample_mean.v1");
+  const { root, label, manifest } = fixture(t, "merge.retain_matched_rows.v1");
   manifest.selections = [];
   useAtomicSubsteps(root, manifest, label, [{
-    substep_id: "disguised_esample_mean",
+    substep_id: "disguised_retained_merge",
     mode: "general_rule",
     match: { commands: ["rename"], tokens: ["zebra bypass"], query: "rename zebra bypass" },
-    ...nativeTarget(root, "disguised_esample_mean", label.code),
+    ...nativeTarget(root, "disguised_retained_merge", label.code),
     general_rule_justification: {
       kind: "dictionary_gap",
       search_evidence: {
@@ -1144,7 +1005,7 @@ test("schema 2.0 derives native search evidence from the target and blocks self-
   assert.ok(result.blockers.some((row) => row.rule === "general_rule_target_declared_commands_missing"));
   assert.ok(result.blockers.some((row) => row.rule === "general_rule_target_declared_tokens_missing"));
   assert.ok(result.blockers.some((row) => row.rule === "general_rule_substep_template_available" && row.matched_candidate_ids.includes(label.label_id)));
-  assert.ok(result.substep_checks[0].general_rule_target_evidence.observed_commands.includes("estadd"));
+  assert.ok(result.substep_checks[0].general_rule_target_evidence.observed_commands.includes("merge"));
   assert.ok(result.substep_checks[0].general_rule_target_evidence.observed_candidate_ids.includes(label.label_id));
 });
 
@@ -1309,11 +1170,8 @@ test("schema 2.0 requires the raw source-file hash while schema 1.0 only warns",
   assert.ok(legacyResult.warnings.some((row) => row.rule === "legacy_source_file_hash_missing"));
 });
 
-test("schema 2.0 resolves canonical snapshots from the approved workspace or installed archive", (t) => {
-  for (const labelId of [
-    "setup.paths.default_style_roles.v1",
-    "export.regression_excel.from_ster_default_style.v1",
-  ]) {
+test("schema 2.0 resolves the retained outreg2 formatter source from the approved workspace or archive", (t) => {
+  for (const labelId of ["export.regression_excel.from_ster_default_style.v1"]) {
     const current = fixture(t, labelId);
     useAtomicSubsteps(current.root, current.manifest, current.label, [{
       substep_id: `snapshot_${labelId.replace(/[^a-z0-9]+/gi, "_")}`,

@@ -262,18 +262,21 @@ class CorpusUsageExtractionTests(unittest.TestCase):
         self.assertTrue(all(row["rubric_classification"] == "reference_only" for row in guides))
         self.assertTrue(all(row["auto_selectable"] is False for row in guides))
         by_label = {row["label_id"]: row for row in guides}
-        self.assertIsNone(by_label["input.delimited_single_source_clear.v1"]["provenance"]["upstream_promotion_status"])
+        metadata_card = by_label["guide.recode.recode_generate_binary_test.v1"]
         self.assertEqual(
-            by_label["input.delimited_single_source_clear.v1"]["provenance"]["upstream_rubric_classification"],
-            "preferred_candidate",
+            metadata_card["provenance"]["upstream_promotion_status"],
+            "reference_only",
         )
-        self.assertIsNone(by_label["descriptives.named_sample_flow_dataset.v1"]["provenance"]["upstream_promotion_status"])
         self.assertEqual(
-            by_label["descriptives.named_sample_flow_dataset.v1"]["provenance"]["upstream_rubric_classification"],
-            "conditional_candidate",
+            metadata_card["provenance"]["upstream_rubric_classification"],
+            "reference_only",
         )
-        self.assertNotIn("data.generate_indicator.v1", by_label)
-        self.assertNotIn("reporting.graph_export_pdf.separate.v1", by_label)
+        # Suppression is recorded as audit metadata; the source guide ledger
+        # remains complete and both cards stay code-free reference metadata.
+        for label_id in ("data.generate_indicator.v1", "reporting.graph_export_pdf.separate.v1"):
+            self.assertIn(label_id, by_label)
+            self.assertFalse(by_label[label_id]["code_available"])
+            self.assertNotIn("code", by_label[label_id])
         self.assertEqual(
             by_label["reporting.winsor2_pooled_replace.v1"]["contract_ids"],
             ["winsor2.two_sided_replace"],

@@ -9,8 +9,6 @@ const test = require("node:test");
 
 const ROOT = path.resolve(__dirname, "..");
 const {
-  GUIDE_CODE_MAX_CHARS,
-  GUIDE_CODE_MAX_LINES,
   MATERIAL_ALTERNATIVE_LIMIT,
   dispatch,
   resolveTransitionEvidence,
@@ -55,7 +53,8 @@ function guide(overrides = {}) {
     command_anchors: ["regress"],
     state_signature: { requires: ["fixed sample"], observable_signals: ["regress"], produces: ["active estimate"] },
     template_input_profile: { data_structure: "panel", record_unit: "unit-period", required_keys: [], source_basis: "manual", time_structure: "panel", variable_characteristics: [] },
-    code: "regress outcome treatment",
+    manual_urls: ["https://www.stata.com/manuals/rregress.pdf"],
+    code_available: false,
     auto_selectable: false,
     research_decisions_supplied: false,
     provenance: provenance("official_manual_guide_derived_mechanics"),
@@ -121,6 +120,8 @@ test("exact audited usage returns guide and one separately selected usage templa
   assert.equal(result.safety.guide_and_usage_scores_combined, false);
   assert.equal(result.safety.guide_auto_selectable_count, 0);
   assert.equal("score" in result.guide_layer.primary_card, false);
+  assert.equal(result.guide_layer.primary_card.code_available, false);
+  assert.equal("code" in result.guide_layer.primary_card, false);
   assert.equal("score" in result.usage_layer.example, false);
 });
 
@@ -236,17 +237,24 @@ test("unknown guide compatibility does not contradict a known request, but decla
   assert.equal(compatible.guide_layer.primary_card.version_semantics, "stata_runtime_compatibility");
 });
 
-test("all 192 new Top100 guides are retrievable at Stata 18 by exact contract and facets", () => {
+test("complete 454-row guide metadata ledger is retained, and every routable guide resolves by exact contract and facets", () => {
   const guides = fs.readFileSync(path.join(ROOT, "data", "guide_mechanics_cards.jsonl"), "utf8")
     .split(/\r?\n/).filter(Boolean).map(JSON.parse);
-  const top100Guides = guides.filter((card) => {
-    const sourcePath = card.provenance?.source_path || "";
-    return /source_snapshots\/top100_(?:official_data_programming|official_models|maintainer_methods)_guide_templates\.do$/.test(sourcePath);
-  });
-  assert.equal(top100Guides.length, 192);
-  assert.ok(top100Guides.filter((card) => card.version === null).length >= 93);
+  const metadataGuides = guides.filter((card) => card.provenance?.audit_gate?.basis === "metadata_only_guide");
+  assert.equal(metadataGuides.length, 454);
+  assert.equal(metadataGuides.length, guides.length, "all guide cards are metadata-only");
+  const routableGuides = metadataGuides.filter((card) => card.contract_ids.length > 0 && card.command_anchors.length > 0);
+  assert.equal(routableGuides.length, 439);
+  assert.equal(metadataGuides.length - routableGuides.length, 15, "unmapped reference records remain in the complete ledger");
 
-  for (const card of top100Guides) {
+  for (const card of routableGuides) {
+    assert.equal(card.code_available, false, card.label_id);
+    assert.equal("code" in card, false, card.label_id);
+    assert.ok(Array.isArray(card.manual_urls) && card.manual_urls.length > 0, card.label_id);
+    assert.ok(!card.manual_urls.includes("https://www.stata.com/manuals/"), card.label_id);
+  }
+
+  for (const card of routableGuides) {
     const result = resolveTransitionEvidence({
       transition: {
         checkpoint: card.checkpoint,
@@ -257,6 +265,8 @@ test("all 192 new Top100 guides are retrievable at Stata 18 by exact contract an
         commands: card.command_anchors,
         contract_ids: card.contract_ids,
         variant_facets: card.variant_facets || {},
+        // Narrative version notes are not runtime gates; request a declared
+        // compatible runtime for every routable guide.
         version: { stata: "18" },
       },
     }, {
@@ -314,13 +324,14 @@ test("an unresolved substantive choice stops both template and general-rule rout
   assert.equal(result.guide_layer.primary_card.research_decisions_supplied, false);
 });
 
-test("guide context and alternative metadata obey hard caps", () => {
+test("guide cards expose mechanics metadata but never guide code", () => {
   const longCode = Array.from({ length: 20 }, (_, index) => `${index + 1} ${"x".repeat(80)}`).join("\n");
   const result = resolve({}, { guideCards: [guide({ label_id: "guide.a", code: longCode })], usageCards: [] });
   const primary = result.guide_layer.primary_card;
-  assert.ok(primary.context.returned_line_count <= GUIDE_CODE_MAX_LINES);
-  assert.ok(primary.context.returned_character_count <= GUIDE_CODE_MAX_CHARS);
-  assert.equal(primary.context.truncated, true);
+  assert.equal(primary.code_available, false);
+  assert.equal("code" in primary, false);
+  assert.equal("context" in primary, false);
+  assert.deepEqual(primary.manual_urls, ["https://www.stata.com/manuals/rregress.pdf"]);
   assert.equal(result.usage_layer.example, null);
 
   const ambiguous = resolve({ transition: { variant_id: null, variant_facets: null } }, { guideCards: [
@@ -361,6 +372,8 @@ test("generated evidence layers have disjoint source tiers and guide auto-select
   assert.ok(guides.length > 0);
   assert.ok(usages.length > 0);
   assert.equal(guides.filter((card) => card.auto_selectable).length, 0);
+  assert.ok(guides.every((card) => card.code_available === false));
+  assert.ok(guides.every((card) => !("code" in card)));
   assert.ok(guides.every((card) => card.evidence_layer === "guide_mechanics"));
   assert.ok(usages.every((card) => card.evidence_layer === "research_usage"));
   assert.ok(usages.every((card) => /^deposited_research_code|^external_research_code|^independent_researcher_code/.test(card.provenance.source_kind)));
@@ -484,15 +497,42 @@ test("evidence builder preserves contract metadata, merges exact guide provenanc
     version: { stata: "18" },
     command_anchors: ["regress"],
     source_spans: [[1, 1]],
+    source_urls: ["https://www.stata.com/manuals/rregress.pdf"],
     source_file_sha256: "a".repeat(64),
     code_sha256: "b".repeat(64),
     code: "regress outcome treatment, vce(cluster id)",
     decision: "conditional_keep",
     quality_rubric_review: review(),
   };
+  const {
+    code: _guideCode,
+    code_sha256: _guideCodeSha256,
+    source_file_sha256: _guideSourceFileSha256,
+    source_spans: _guideSourceSpans,
+    quality_rubric_review: _guideQualityReview,
+    ...guideCommon
+  } = common;
   const rows = [
-    { ...common, label_id: "guide.one", source_kind: "official_manual_mechanics", source_path: "manual-a.txt" },
-    { ...common, label_id: "guide.two", source_kind: "official_manual_mechanics", source_path: "manual-b.txt" },
+    {
+      ...guideCommon,
+      label_id: "guide.one",
+      source_kind: "official_manual_mechanics",
+      audit_status: "metadata_only",
+      promotion_status: "reference_only",
+      auto_selectable: false,
+      runtime_status: "not_run",
+      selector_status: "not_run",
+    },
+    {
+      ...guideCommon,
+      label_id: "guide.two",
+      source_kind: "official_manual_mechanics",
+      audit_status: "metadata_only",
+      promotion_status: "reference_only",
+      auto_selectable: false,
+      runtime_status: "not_run",
+      selector_status: "not_run",
+    },
     {
       ...common,
       label_id: "usage.audited",
@@ -530,12 +570,16 @@ test("evidence builder preserves contract metadata, merges exact guide provenanc
   assert.equal(run.status, 0, `${run.stdout}\n${run.stderr}`);
   const guides = fs.readFileSync(guideOutput, "utf8").trim().split(/\r?\n/).map(JSON.parse);
   const usages = fs.readFileSync(usageOutput, "utf8").trim().split(/\r?\n/).map(JSON.parse);
-  assert.equal(guides.length, 1);
-  assert.deepEqual(guides[0].contract_ids, ["regress.clustered"]);
-  assert.deepEqual(guides[0].variant_facets, { vce: "cluster" });
-  assert.deepEqual(guides[0].version, { stata: "18" });
-  assert.deepEqual(guides[0].merged_duplicate_label_ids, ["guide.one", "guide.two"]);
-  assert.equal(guides[0].provenance.supporting_provenance.length, 2);
+  assert.equal(guides.length, 2, "the complete metadata ledger must not suppress guide records");
+  for (const guide of guides) {
+    assert.deepEqual(guide.contract_ids, ["regress.clustered"]);
+    assert.deepEqual(guide.variant_facets, { vce: "cluster" });
+    assert.deepEqual(guide.version, { stata: "18" });
+    assert.equal(guide.code_available, false);
+    assert.equal("code" in guide, false);
+    assert.deepEqual(guide.manual_urls, ["https://www.stata.com/manuals/rregress.pdf"]);
+    assert.equal(guide.provenance.audit_gate.basis, "metadata_only_guide");
+  }
   assert.equal(usages.find((row) => row.label_id === "usage.audited").auto_selectable, true);
   assert.equal(usages.find((row) => row.label_id === "usage.legacy").auto_selectable, false);
   const supplemental = usages.find((row) => row.label_id === "usage.supplemental");

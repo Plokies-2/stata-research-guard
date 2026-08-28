@@ -46,9 +46,9 @@
   },
   "guide_absorption_policy": {
     "scope": "bounded_comprehensive_mechanics",
-    "rule": "For every required variant, retain at least one bounded official-manual or maintainer-guide mechanics atom. Also retain a contract-adjacent guide variant only when it changes observable input state, output state, estimator, inference, weight, support, persistence, or output ownership.",
+    "rule": "For every required variant, retain at least one bounded official-manual or maintainer-guide mechanics metadata record. Also retain a contract-adjacent record only when it changes observable input state, output state, estimator, inference, weight, support, persistence, or output ownership. Do not ship a synthesized guide code body.",
     "exclude": [
-      "whole-guide copies or long narrative examples",
+      "whole-guide copies, synthesized guide code, or long narrative examples",
       "installation or dependency-probe commands",
       "duplicate examples with the same executable state transition",
       "guide-supplied sample, estimand, fixed-effect, cluster, instrument, sheet-placement, or interpretation decisions"
@@ -56,13 +56,13 @@
     "source_requirements": [
       "source kind and authority",
       "official URL and release or package version when available",
-      "raw source and local snapshot SHA-256",
-      "exact page, section, or line span",
+      "authoritative manual or maintainer URL and stable source identifier",
+      "exact page or section when available",
       "six-field input profile and three-field state signature",
       "material variant distinction"
     ],
     "retrieval_tiers": {
-      "guide_mechanics": "A noncompeting companion layer for syntax, options, and state mechanics; never auto-selectable by itself.",
+      "guide_mechanics": "A code-free noncompeting companion layer for syntax, options, and state mechanics; never auto-selectable by itself.",
       "research_usage": "A separately matched deposited-paper or other independent researcher-code example; it cannot replace command authority.",
       "implementation": "Use an audited exact usage template when compatible, otherwise a guide-informed fallback that supplies no unresolved research decision."
     },
@@ -70,8 +70,9 @@
       "primary_guide_cards": 1,
       "guide_alternative_metadata": 2,
       "research_usage_examples": 1,
-      "guide_excerpt_max_lines": 12,
-      "guide_excerpt_max_characters": 600
+      "guide_code_body": "forbidden",
+      "guide_excerpt_max_lines": 0,
+      "guide_excerpt_max_characters": 0
     }
   },
   "ranked_groups": [
@@ -1919,7 +1920,6 @@
         "rdrobust_suite.rd_plot_generated_bins"
       ],
       "guide_atom_file": "plugins/stata-research-guard/annotations/atomic_template_sets/top100_maintainer_methods.json",
-      "guide_snapshot_file": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
       "usage_observed_variants": [
         "sharp_estimation",
         "fuzzy_estimation",
@@ -1946,7 +1946,6 @@
         "synth.explicit_unit_time_panel"
       ],
       "guide_atom_file": "plugins/stata-research-guard/annotations/atomic_template_sets/top100_maintainer_methods.json",
-      "guide_snapshot_file": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
       "usage_observed_variants": [],
       "usage_observed_note": "Paper-corpus occurrence metadata is support-only and does not authorize generation."
     },
@@ -1974,7 +1973,6 @@
         "did2s_drdid.drdid_bootstrap_if"
       ],
       "guide_atom_file": "plugins/stata-research-guard/annotations/atomic_template_sets/top100_maintainer_methods.json",
-      "guide_snapshot_file": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
       "usage_observed_variants": [],
       "usage_observed_note": "Paper-corpus occurrence metadata is support-only and does not authorize generation."
     },
@@ -2000,7 +1998,6 @@
         "honestdid.cached_plot"
       ],
       "guide_atom_file": "plugins/stata-research-guard/annotations/atomic_template_sets/top100_maintainer_methods.json",
-      "guide_snapshot_file": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
       "usage_observed_variants": [],
       "usage_observed_note": "Paper-corpus occurrence metadata is support-only and does not authorize generation."
     },
@@ -2025,7 +2022,6 @@
         "rwolf2.stratified_resampling"
       ],
       "guide_atom_file": "plugins/stata-research-guard/annotations/atomic_template_sets/top100_maintainer_methods.json",
-      "guide_snapshot_file": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
       "usage_observed_variants": [],
       "usage_observed_note": "Paper-corpus occurrence metadata is support-only and does not authorize generation."
     },
@@ -2056,7 +2052,6 @@
         "binscatter.discrete_x"
       ],
       "guide_atom_file": "plugins/stata-research-guard/annotations/atomic_template_sets/top100_maintainer_methods.json",
-      "guide_snapshot_file": "plugins/stata-research-guard/annotations/source_snapshots/top100_maintainer_methods_guide_templates.do",
       "usage_observed_variants": [
         "default_quantile_bins",
         "declared_bin_count"
@@ -2255,5 +2250,6 @@
         "generic_stored_reference"
       ]
     }
-  ]
+  ],
+  "legacy_status": "current_code_free_registry"
 }

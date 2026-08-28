@@ -64,11 +64,6 @@ const CASES = [
     command: /^\s*jwdid\b/im,
   },
   {
-    labelId: "estimation.twfe_ppmlhdfe_active.v1",
-    variantId: "twfe_ppmlhdfe_active",
-    command: /^\s*ppmlhdfe\b/im,
-  },
-  {
     labelId: "estimation.did_imputation_active_result.v1",
     variantId: "did_imputation_active_result",
     command: /^\s*did_imputation\b/im,
@@ -119,22 +114,14 @@ test("csdid event handoff is retrieved exactly and retains only csdid plus estat
   assertAtomicHandoff(row.code, /^\s*csdid\b/im);
 });
 
-test("canonical reghdfe atom exposes one-use controls instead of an author global", async (t) => {
+test("removed internal estimator examples are not retrievable", async (t) => {
   const client = new McpClient();
   t.after(() => client.close());
 
-  const result = await client.tool("search_labeled_checkpoints", {
-    variant_id: "reghdfe_visible_fe_cluster",
-    limit: 5,
-  });
-  assert.equal(result.results.length, 1);
-  const row = result.results[0];
-  assert.equal(row.label_id, "estimation.reghdfe_fe_clustered.v1");
-  assert.equal(row.source_kind, "derived_canonical_implementation");
-  assert.match(row.source, /research_practice_reghdfe_fe_clustered_visible\.do:1-1$/);
-  assert.match(row.code, /\bbaseline_control_1\s+baseline_control_2\b/);
-  assert.doesNotMatch(row.code, /\$(?:controls|covariates)|\$\{(?:controls|covariates)\}/i);
-  assertAtomicHandoff(row.code, /^\s*reghdfe\b/im);
+  for (const variantId of ["reghdfe_visible_fe_cluster", "twfe_ppmlhdfe_active"]) {
+    const result = await client.tool("search_labeled_checkpoints", { variant_id: variantId, limit: 5 });
+    assert.deepEqual(result.results, [], variantId);
+  }
 });
 
 test("every auto-selectable panel FE OLS or IV estimator is a pure one-command atom", async (t) => {

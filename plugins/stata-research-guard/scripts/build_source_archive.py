@@ -10,7 +10,7 @@ import re
 import tempfile
 from pathlib import Path, PurePosixPath
 
-from build_labeled_checkpoints import expand_compact_package_templates, load_audited_atomic_template_sets
+from build_labeled_checkpoints import load_audited_atomic_template_sets
 
 
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -20,10 +20,22 @@ SHARED_FIELDS = (
     "checkpoint",
     "decision",
     "adaptation_mode",
-    "source_path",
-    "source_spans",
     "source_kind",
 )
+
+
+def is_code_free_guide_metadata(row: dict[str, object]) -> bool:
+    return (
+        row.get("audit_status") == "metadata_only"
+        and row.get("promotion_status") == "reference_only"
+        and row.get("auto_selectable") is False
+        and not row.get("code")
+        and not row.get("code_sha256")
+        and not row.get("source_path")
+        and not row.get("source_spans")
+        and isinstance(row.get("source_urls"), list)
+        and bool(row["source_urls"])
+    )
 
 
 def sha256_bytes(value: bytes) -> str:
@@ -84,6 +96,13 @@ def cross_check_labels(
                 raise ValueError(f"shared field {field} missing for {label_id}")
             if left[field] != right[field]:
                 raise ValueError(f"annotation/runtime {field} mismatch for {label_id}")
+        left_is_guide = is_code_free_guide_metadata(left)
+        right_is_guide = is_code_free_guide_metadata(right)
+        if left_is_guide != right_is_guide:
+            raise ValueError(f"annotation/runtime guide metadata classification mismatch for {label_id}")
+        if not left_is_guide:
+            if left.get("source_path") != right.get("source_path"):
+                raise ValueError(f"annotation/runtime source_path mismatch for {label_id}")
 
 
 def is_inside(root: Path, candidate: Path) -> bool:
@@ -142,7 +161,6 @@ def build() -> dict[str, int]:
         plugin_root.parents[1],
     )
     annotation_path = plugin_root / "annotations" / "labeled_checkpoints.json"
-    compact_annotation_path = plugin_root / "annotations" / "package_first_atomic_templates.json"
     atomic_template_dir = plugin_root / "annotations" / "atomic_template_sets"
     rubric_path = plugin_root / "annotations" / "generality_rubric.json"
     runtime_path = plugin_root / "data" / "labeled_checkpoints.jsonl"
@@ -150,11 +168,6 @@ def build() -> dict[str, int]:
     files_root = archive_root / "files"
 
     annotation_values = read_json(annotation_path)
-    if compact_annotation_path.exists():
-        compact_values = read_json(compact_annotation_path)
-        rubric = read_json(rubric_path)
-        hard_fail_rule_ids = [row["id"] for row in rubric["hard_fail_rules"]]
-        annotation_values.extend(expand_compact_package_templates(compact_values, hard_fail_rule_ids))
     if atomic_template_dir.exists():
         rubric = read_json(rubric_path)
         hard_fail_rule_ids = [row["id"] for row in rubric["hard_fail_rules"]]
@@ -174,7 +187,15 @@ def build() -> dict[str, int]:
     bytes_by_hash: dict[str, bytes] = {}
     for label_id in sorted(runtime_rows):
         row = runtime_rows[label_id]
+        if is_code_free_guide_metadata(row):
+            # Guide metadata cites manuals by URL and owns no executable source
+            # bytes, source span, or synthetic archive entry.
+            continue
         source_path = row.get("source_path")
+        if isinstance(source_path, str) and source_path.startswith("manual://"):
+            # Manuals are provenance metadata, not bundled source code.  They
+            # must never enter the byte archive or acquire a synthetic hash.
+            continue
         expected_hash = row.get("source_file_sha256")
         code_hash = row.get("code_sha256")
         if not isinstance(source_path, str) or not source_path:

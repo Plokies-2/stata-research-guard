@@ -9,12 +9,6 @@
     "variant_group": "input_load.use_save",
     "variant_id": "use_declared_dataset_clear",
     "stage": "preparation",
-    "source_spans": [
-      [
-        3,
-        3
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/duse.pdf"
@@ -67,10 +61,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. clear와 입력 경로의 소유권은 호출자가 명시해야 하며 guide는 표본이나 분석 설계를 결정하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. clear와 입력 경로의 소유권은 호출자가 명시해야 하며 guide는 표본이나 분석 설계를 결정하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "output.save_intermediate_replace.v1",
@@ -82,12 +78,6 @@
     "variant_group": "input_load.use_save",
     "variant_id": "save_declared_intermediate_replace",
     "stage": "exports",
-    "source_spans": [
-      [
-        4,
-        4
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dsave.pdf"
@@ -142,10 +132,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. replace는 승인된 intermediate 경로에만 허용된다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. replace는 승인된 intermediate 경로에만 허용된다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "output.save_final_inventory_order_sort.v1",
@@ -157,12 +149,6 @@
     "variant_group": "input_load.use_save",
     "variant_id": "final_inventory_order_sort_save",
     "stage": "exports",
-    "source_spans": [
-      [
-        5,
-        9
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dkeep.pdf",
@@ -228,10 +214,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. keep와 replace의 파괴적 효과는 호출자의 명시적 final-state 계약이 있어야 한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. keep와 replace의 파괴적 효과는 호출자의 명시적 final-state 계약이 있어야 한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "input.import_multiple_append.v1",
@@ -243,12 +231,6 @@
     "variant_group": "input_load.import_append",
     "variant_id": "use_two_declared_sources_append",
     "stage": "preparation",
-    "source_spans": [
-      [
-        10,
-        11
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/duse.pdf",
@@ -304,10 +286,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. append 전 schema compatibility와 key policy가 명시되어야 한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. append 전 schema compatibility와 key policy가 명시되어야 한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "export.excel_additional_sheet.v1",
@@ -319,12 +303,6 @@
     "variant_group": "exports.excel",
     "variant_id": "export_excel_additional_sheet_modify",
     "stage": "exports",
-    "source_spans": [
-      [
-        12,
-        12
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dexportexcel.pdf"
@@ -380,10 +358,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. 기존 workbook·sheet 소유권을 명시적으로 확인해야 한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. 기존 workbook·sheet 소유권을 명시적으로 확인해야 한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "descriptives.summarize_esample_mean_capture.v1",
@@ -395,12 +375,6 @@
     "variant_group": "descriptives.summarize",
     "variant_id": "esample_meanonly_immediate_local",
     "stage": "descriptives",
-    "source_spans": [
-      [
-        13,
-        14
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rsummarize.pdf"
@@ -455,10 +429,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. active estimate와 outcome 선택은 guide가 결정하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. active estimate와 outcome 선택은 guide가 결정하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "descriptives.summarize_detail_percentiles_capture.v1",
@@ -470,12 +446,6 @@
     "variant_group": "descriptives.summarize",
     "variant_id": "esample_detail_percentile_locals",
     "stage": "descriptives",
-    "source_spans": [
-      [
-        15,
-        17
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rsummarize.pdf"
@@ -533,10 +503,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. percentile과 표본 해석은 연구자가 선언한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. percentile과 표본 해석은 연구자가 선언한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "descriptives.tabulate_two_way_grouped_output.v1",
@@ -548,12 +520,6 @@
     "variant_group": "descriptives.tabulate",
     "variant_id": "two_way_counts_missing_visible",
     "stage": "descriptives",
-    "source_spans": [
-      [
-        18,
-        18
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rtabulate.pdf"
@@ -606,10 +572,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. 범주 정의와 표본은 호출자가 정한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. 범주 정의와 표본은 호출자가 정한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "descriptives.tabulate_row_percent_contract.v1",
@@ -621,12 +589,6 @@
     "variant_group": "descriptives.tabulate",
     "variant_id": "two_way_row_percent_missing",
     "stage": "descriptives",
-    "source_spans": [
-      [
-        19,
-        19
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rtabulate.pdf"
@@ -683,10 +645,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. row/column/cell denominator 선택은 guide가 공급하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. row/column/cell denominator 선택은 guide가 공급하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.generate_declared_formula.v1",
@@ -698,12 +662,6 @@
     "variant_group": "preparation.generate",
     "variant_id": "generate_formula_positive_domain",
     "stage": "preparation",
-    "source_spans": [
-      [
-        20,
-        20
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dgenerate.pdf"
@@ -761,10 +719,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. 공식의 실질적 타당성은 별도 감사 대상이다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. 공식의 실질적 타당성은 별도 감사 대상이다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.generate_missing_preserving_indicator.v1",
@@ -776,12 +736,6 @@
     "variant_group": "preparation.generate",
     "variant_id": "generate_indicator_nonmissing_source",
     "stage": "preparation",
-    "source_spans": [
-      [
-        21,
-        21
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dgenerate.pdf"
@@ -837,10 +791,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. indicator 정의는 연구자가 정한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. indicator 정의는 연구자가 정한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.generate_missing_preserving_interaction.v1",
@@ -852,12 +808,6 @@
     "variant_group": "preparation.generate",
     "variant_id": "generate_interaction_both_observed",
     "stage": "preparation",
-    "source_spans": [
-      [
-        22,
-        22
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dgenerate.pdf"
@@ -913,10 +863,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. 회귀 factor-variable 대체용으로 쓰면 안 된다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. 회귀 factor-variable 대체용으로 쓰면 안 된다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.replace_declared_value_map.v1",
@@ -928,12 +880,6 @@
     "variant_group": "preparation.replace",
     "variant_id": "replace_one_declared_value_mapping",
     "stage": "preparation",
-    "source_spans": [
-      [
-        23,
-        23
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dreplace.pdf"
@@ -991,10 +937,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. mapping의 연구적 의미와 overwrite 승인은 별도 검토한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. mapping의 연구적 의미와 overwrite 승인은 별도 검토한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.replace_declared_missing_map.v1",
@@ -1006,12 +954,6 @@
     "variant_group": "preparation.replace",
     "variant_id": "replace_missing_with_declared_flag",
     "stage": "preparation",
-    "source_spans": [
-      [
-        24,
-        24
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dreplace.pdf"
@@ -1068,10 +1010,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. imputation rule은 guide가 공급하지 않으며 감사 전 자동 선택 금지다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. imputation rule은 guide가 공급하지 않으며 감사 전 자동 선택 금지다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.egen_rowmax.v1",
@@ -1083,12 +1027,6 @@
     "variant_group": "preparation.egen",
     "variant_id": "egen_rowmax_declared_components",
     "stage": "preparation",
-    "source_spans": [
-      [
-        25,
-        25
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/degen.pdf"
@@ -1141,10 +1079,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. component의 실질적 선택은 호출자가 선언한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. component의 실질적 선택은 호출자가 선언한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.egen_group_total.v1",
@@ -1156,12 +1096,6 @@
     "variant_group": "preparation.egen",
     "variant_id": "egen_total_by_declared_group",
     "stage": "preparation",
-    "source_spans": [
-      [
-        26,
-        26
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/degen.pdf"
@@ -1220,10 +1154,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. group definition과 total 의미는 연구자가 공급한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. group definition과 total 의미는 연구자가 공급한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.egen_group_tag.v1",
@@ -1235,12 +1171,6 @@
     "variant_group": "preparation.egen",
     "variant_id": "egen_tag_declared_group",
     "stage": "preparation",
-    "source_spans": [
-      [
-        27,
-        27
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/degen.pdf"
@@ -1296,10 +1226,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. tag를 근거 없이 표본 삭제에 사용하면 안 된다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. tag를 근거 없이 표본 삭제에 사용하면 안 된다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "sample.keep_declared_time_window.v1",
@@ -1311,12 +1243,6 @@
     "variant_group": "sample.keep_drop",
     "variant_id": "keep_inrange_declared_year_window",
     "stage": "preparation",
-    "source_spans": [
-      [
-        28,
-        28
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dkeep.pdf"
@@ -1374,10 +1300,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. time window의 연구적 정당화는 guide가 제공하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. time window의 연구적 정당화는 guide가 제공하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "output.final_sort_before_save.v1",
@@ -1389,12 +1317,6 @@
     "variant_group": "preparation.sort_gsort",
     "variant_id": "isid_sort_final_save",
     "stage": "exports",
-    "source_spans": [
-      [
-        29,
-        31
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/disid.pdf",
@@ -1456,10 +1378,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. final file overwrite와 key 계약은 명시적으로 승인되어야 한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. final file overwrite와 key 계약은 명시적으로 승인되어야 한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.gsort_descending_group_rank_tie_rule.v1",
@@ -1471,12 +1395,6 @@
     "variant_group": "preparation.sort_gsort",
     "variant_id": "gsort_descending_with_declared_tie_break",
     "stage": "preparation",
-    "source_spans": [
-      [
-        32,
-        33
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dgsort.pdf",
@@ -1540,10 +1458,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. ranking metric와 tie rule은 연구자가 명시해야 한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. ranking metric와 tie rule은 연구자가 명시해야 한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "merge.using_retained_declared_reason.v1",
@@ -1555,12 +1475,6 @@
     "variant_group": "integration.merge",
     "variant_id": "m1_keep_master_match_assert",
     "stage": "preparation",
-    "source_spans": [
-      [
-        34,
-        36
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dmerge.pdf",
@@ -1625,10 +1539,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. master/match retain 이유와 m:1 cardinality는 guide가 정하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. master/match retain 이유와 m:1 cardinality는 guide가 정하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "input.append_schema_harmonization.v1",
@@ -1640,12 +1556,6 @@
     "variant_group": "input_load.import_append",
     "variant_id": "rename_keep_then_append_harmonized",
     "stage": "preparation",
-    "source_spans": [
-      [
-        37,
-        41
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/drename.pdf",
@@ -1710,10 +1620,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. schema equivalence와 key policy는 독립 감사 전 자동 선택할 수 없다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. schema equivalence와 key policy는 독립 감사 전 자동 선택할 수 없다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "descriptives.collapse_mean_count.v1",
@@ -1725,12 +1637,6 @@
     "variant_group": "descriptives.collapse",
     "variant_id": "preserve_collapse_mean_count_restore",
     "stage": "descriptives",
-    "source_spans": [
-      [
-        42,
-        44
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dcollapse.pdf",
@@ -1793,10 +1699,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. group과 summary consumer는 호출자가 지정한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. group과 summary consumer는 호출자가 지정한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "descriptives.collapse_weighted_aggregation.v1",
@@ -1808,12 +1716,6 @@
     "variant_group": "descriptives.collapse",
     "variant_id": "preserve_weighted_mean_collapse_restore",
     "stage": "descriptives",
-    "source_spans": [
-      [
-        45,
-        47
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dcollapse.pdf",
@@ -1876,10 +1778,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. weight의 종류·설계 해석은 guide가 결정하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. weight의 종류·설계 해석은 guide가 결정하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "descriptives.collapse_percentile_aggregation.v1",
@@ -1891,12 +1795,6 @@
     "variant_group": "descriptives.collapse",
     "variant_id": "preserve_group_p50_p90_restore",
     "stage": "descriptives",
-    "source_spans": [
-      [
-        48,
-        50
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dcollapse.pdf"
@@ -1959,10 +1857,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. percentile 선택과 보고 목적은 연구자가 선언한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. percentile 선택과 보고 목적은 연구자가 선언한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "descriptives.collapse_label_roundtrip.v1",
@@ -1974,12 +1874,6 @@
     "variant_group": "descriptives.collapse",
     "variant_id": "capture_label_collapse_relabel_restore",
     "stage": "descriptives",
-    "source_spans": [
-      [
-        51,
-        55
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dcollapse.pdf",
@@ -2042,10 +1936,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. label이 statistic 의미를 대신 설명하지 않도록 별도 문서화가 필요하다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. label이 statistic 의미를 대신 설명하지 않도록 별도 문서화가 필요하다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.label_variable_near_creation.v1",
@@ -2057,12 +1953,6 @@
     "variant_group": "preparation.labels",
     "variant_id": "generate_then_label_variable",
     "stage": "preparation",
-    "source_spans": [
-      [
-        56,
-        57
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dgenerate.pdf",
@@ -2119,10 +2009,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. label text와 formula의 연구적 의미는 호출자가 공급한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. label text와 formula의 연구적 의미는 호출자가 공급한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.label_value_extend_modify.v1",
@@ -2134,12 +2026,6 @@
     "variant_group": "preparation.labels",
     "variant_id": "label_define_add_modify_declared_code",
     "stage": "preparation",
-    "source_spans": [
-      [
-        58,
-        58
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dlabel.pdf"
@@ -2197,10 +2083,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. 기존 value label의 코드 체계와 수정 권한을 확인해야 한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. 기존 value label의 코드 체계와 수정 권한을 확인해야 한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.destring_decimal_comma_reference.v1",
@@ -2212,12 +2100,6 @@
     "variant_group": "preparation.type_conversion",
     "variant_id": "destring_generate_dpcomma",
     "stage": "preparation",
-    "source_spans": [
-      [
-        59,
-        59
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/ddestring.pdf"
@@ -2274,10 +2156,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. locale and invalid-token policy는 source inspection으로 확인해야 한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. locale and invalid-token policy는 source inspection으로 확인해야 한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "integrity.isid_direct_diagnostic.v1",
@@ -2289,12 +2173,6 @@
     "variant_group": "integrity.assert_isid",
     "variant_id": "isid_declared_key",
     "stage": "validation",
-    "source_spans": [
-      [
-        60,
-        60
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/disid.pdf"
@@ -2348,10 +2226,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. 실패 시 duplicate를 force-drop하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. 실패 시 duplicate를 force-drop하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "integrity.transition_bound_assert.v1",
@@ -2363,12 +2243,6 @@
     "variant_group": "integrity.assert_isid",
     "variant_id": "assert_declared_time_bounds_nonmissing",
     "stage": "validation",
-    "source_spans": [
-      [
-        61,
-        61
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dassert.pdf"
@@ -2429,10 +2303,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. bounds와 missing policy의 분석적 근거는 호출자가 제공한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. bounds와 missing policy의 분석적 근거는 호출자가 제공한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "panel.tsset_single_time_series.v1",
@@ -2444,12 +2320,6 @@
     "variant_group": "preparation.panel_index",
     "variant_id": "tsset_single_time_index",
     "stage": "preparation",
-    "source_spans": [
-      [
-        62,
-        62
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/tstsset.pdf"
@@ -2503,10 +2373,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. time frequency와 gap 의미는 source documentation으로 검증해야 한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. time frequency와 gap 의미는 source documentation으로 검증해야 한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "panel.tsset_declared_delta.v1",
@@ -2518,12 +2390,6 @@
     "variant_group": "preparation.panel_index",
     "variant_id": "tsset_single_time_declared_delta",
     "stage": "preparation",
-    "source_spans": [
-      [
-        63,
-        63
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/tstsset.pdf"
@@ -2581,10 +2447,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. declared delta가 실제 calendar/storage unit과 일치하는지 별도 검증한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. declared delta가 실제 calendar/storage unit과 일치하는지 별도 검증한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "merge.one_to_one_complete_match.v1",
@@ -2596,12 +2464,6 @@
     "variant_group": "integration.merge_complete_match",
     "variant_id": "merge_11_master_using_isid_assert_drop",
     "stage": "preparation",
-    "source_spans": [
-      [
-        64,
-        71
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dmerge.pdf",
@@ -2667,10 +2529,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. complete-match의 연구적 정당화와 key 의미는 guide가 공급하지 않으며, assert 실패를 keep/drop으로 우회하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. complete-match의 연구적 정당화와 key 의미는 guide가 공급하지 않으며, assert 실패를 keep/drop으로 우회하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "merge.many_to_one_complete_match.v1",
@@ -2682,12 +2546,6 @@
     "variant_group": "integration.merge_complete_match",
     "variant_id": "merge_m1_master_key_using_isid_assert_drop",
     "stage": "preparation",
-    "source_spans": [
-      [
-        72,
-        79
-      ]
-    ],
     "source_kind": "official_stata_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/dmerge.pdf",
@@ -2754,9 +2612,11 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. lookup cardinality와 complete-match의 실질적 근거는 호출자가 제공하며 unmatched rows를 사후 제거하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. lookup cardinality와 complete-match의 실질적 근거는 호출자가 제공하며 unmatched rows를 사후 제거하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   }
 ]

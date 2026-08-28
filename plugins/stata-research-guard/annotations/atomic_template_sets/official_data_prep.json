@@ -5,12 +5,6 @@
     "variant_group": "input_load.import_delimited",
     "variant_id": "import_delimited_header_clear",
     "stage": "preparation",
-    "source_spans": [
-      [
-        3,
-        3
-      ]
-    ],
     "research_situations": [
       "한 개의 명시된 CSV 원천을 변수명 행과 함께 새 Stata 자료로 읽어야 한다"
     ],
@@ -62,14 +56,21 @@
     "generality_rationale_ko": "원천 경로와 delimiter만 바꾸는 입력 상태 전이이며 변수의 의미나 표본을 추론하지 않는다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. source semantics, encoding, and schema checks are separate.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "import.delimited_header_delimiter_encoding_id_types"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate import_delimited_header_clear: observable mechanics [import, delimited, varnames] produce active imported dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/dimportdelimited.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "input.import_delimited_noheader.v1",
@@ -77,12 +78,6 @@
     "variant_group": "input_load.import_delimited",
     "variant_id": "import_delimited_no_header_clear",
     "stage": "preparation",
-    "source_spans": [
-      [
-        4,
-        4
-      ]
-    ],
     "research_situations": [
       "헤더가 없는 구분 파일을 명시한 변수명 계약으로 읽어야 한다"
     ],
@@ -134,13 +129,20 @@
     "generality_rationale_ko": "헤더 유무가 다른 입력 상태를 별도 계약으로 보존한다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Never invent names from data values.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [],
     "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate import_delimited_no_header_clear: observable mechanics [import, delimited, varnames] produce active imported dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "unmapped_reason": "Bounded guide mechanics retained in the noncompeting reference reservoir; no current Top 50 or additional user-written contract claims this variant."
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "unmapped_reason": "Bounded guide mechanics retained in the noncompeting reference reservoir; no current Top 50 or additional user-written contract claims this variant.",
+    "source_urls": [
+      "https://www.stata.com/manuals/dimportdelimited.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "input.import_excel_sheet_firstrow.v1",
@@ -148,12 +150,6 @@
     "variant_group": "input_load.import_excel",
     "variant_id": "import_excel_sheet_firstrow",
     "stage": "preparation",
-    "source_spans": [
-      [
-        5,
-        5
-      ]
-    ],
     "research_situations": [
       "지정한 Excel sheet의 첫 행을 변수명으로 읽어야 한다"
     ],
@@ -207,14 +203,21 @@
     "generality_rationale_ko": "sheet 선택과 header 처리만 고정하며 분석 표본을 선택하지 않는다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Check dates, numeric coercion, and duplicate header names separately.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "import.excel_firstrow_sheet"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate import_excel_sheet_firstrow: observable mechanics [import, excel, sheet] produce active imported dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/dimportexcel.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "input.import_excel_cellrange.v1",
@@ -222,12 +225,6 @@
     "variant_group": "input_load.import_excel",
     "variant_id": "import_excel_cellrange_firstrow",
     "stage": "preparation",
-    "source_spans": [
-      [
-        6,
-        6
-      ]
-    ],
     "research_situations": [
       "worksheet 전체가 아니라 문서화한 cell range만 읽어야 한다"
     ],
@@ -282,14 +279,21 @@
     "generality_rationale_ko": "전체 sheet 입력과 범위 제한 입력은 자료 상태가 달라 별도 템플릿으로 둔다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Range endpoints must be fixed from source documentation.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "import.excel_fixed_cellrange"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate import_excel_cellrange_firstrow: observable mechanics [import, excel, cellrange] produce active range-limited dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/dimportexcel.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "export.delimited_replace.v1",
@@ -297,12 +301,6 @@
     "variant_group": "exports.delimited",
     "variant_id": "export_delimited_replace",
     "stage": "exports",
-    "source_spans": [
-      [
-        7,
-        7
-      ]
-    ],
     "research_situations": [
       "현재 자료를 선언한 delimited 파일로 내보내야 한다"
     ],
@@ -353,14 +351,21 @@
     "generality_rationale_ko": "자료 선택과 파일 출력 역할을 분리해 export 경로만 재사용한다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Never use for final Excel workbook output.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "export.delimited_replace_with_declared_schema"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate export_delimited_replace: observable mechanics [export, delimited, replace] produce one delimited output file; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/dimportdelimited.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "export.excel_firstrow_replace.v1",
@@ -368,12 +373,6 @@
     "variant_group": "exports.excel",
     "variant_id": "export_excel_firstrow_variables_replace",
     "stage": "exports",
-    "source_spans": [
-      [
-        8,
-        8
-      ]
-    ],
     "research_situations": [
       "active 자료를 새 Excel sheet에 변수명을 포함해 내보내야 한다"
     ],
@@ -425,14 +424,21 @@
     "generality_rationale_ko": "Excel 출력과 delimited 출력의 파일 계약을 분리한다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. This is generic data export, not a regression-table exporter.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "export.excel_new_workbook_first_sheet"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate export_excel_firstrow_variables_replace: observable mechanics [export, excel, firstrow] produce one Excel worksheet; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/dimportexcel.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.generate_indicator.v1",
@@ -440,12 +446,6 @@
     "variant_group": "preparation.generate_replace",
     "variant_id": "generate_declared_indicator",
     "stage": "preparation",
-    "source_spans": [
-      [
-        9,
-        9
-      ]
-    ],
     "research_situations": [
       "고정된 원변수로 이진 indicator를 새 변수로 생성해야 한다"
     ],
@@ -498,14 +498,21 @@
     "generality_rationale_ko": "분석 의미를 추론하지 않고 명시된 조건식만 재사용한다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Missing-value behavior must be explicit.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "generate.missing_preserving_indicator"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate generate_declared_indicator: observable mechanics [generate, ==, replace] produce one new indicator variable; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/dgenerate.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.replace_conditional.v1",
@@ -513,12 +520,6 @@
     "variant_group": "preparation.generate_replace",
     "variant_id": "replace_declared_condition",
     "stage": "preparation",
-    "source_spans": [
-      [
-        10,
-        10
-      ]
-    ],
     "research_situations": [
       "기존 변수의 승인된 값 일부를 조건부로 수정해야 한다"
     ],
@@ -569,14 +570,21 @@
     "generality_rationale_ko": "생성(generate)과 기존 값 수정(replace)은 자료 상태가 달라 분리한다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. No inferred data cleaning or winsorization.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "replace.conditional_update_preserving_other_values"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate replace_declared_condition: observable mechanics [replace, if] produce modified target variable; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/dgenerate.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.egen_rowtotal.v1",
@@ -584,12 +592,6 @@
     "variant_group": "preparation.egen",
     "variant_id": "egen_rowtotal_declared_vars",
     "stage": "preparation",
-    "source_spans": [
-      [
-        11,
-        11
-      ]
-    ],
     "research_situations": [
       "행 단위로 선언된 구성요소의 합계 변수를 만들어야 한다"
     ],
@@ -640,14 +642,21 @@
     "generality_rationale_ko": "행 집계와 group 집계의 키·출력 상태가 다르므로 별도 variant다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Do not infer whether missing equals zero.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "egen.rowtotal_missing_rule"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate egen_rowtotal_declared_vars: observable mechanics [egen, rowtotal] produce one row-total variable; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/degen.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.egen_group_id.v1",
@@ -655,12 +664,6 @@
     "variant_group": "preparation.egen",
     "variant_id": "egen_group_identifier",
     "stage": "preparation",
-    "source_spans": [
-      [
-        12,
-        12
-      ]
-    ],
     "research_situations": [
       "복합 키의 고유 group identifier가 필요하다"
     ],
@@ -710,14 +713,21 @@
     "generality_rationale_ko": "키를 숫자 id로 압축하는 기계적 변환이며 그룹의 의미는 선택자가 제공해야 한다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Do not use as a substitute for uniqueness validation.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "egen.group_id"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate egen_group_identifier: observable mechanics [egen, group] produce one group identifier variable; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/degen.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.egen_group_mean_by.v1",
@@ -725,12 +735,6 @@
     "variant_group": "preparation.egen",
     "variant_id": "egen_group_mean_by_key",
     "stage": "preparation",
-    "source_spans": [
-      [
-        13,
-        13
-      ]
-    ],
     "research_situations": [
       "각 group의 평균을 원자료 각 행에 병합한 변수가 필요하다"
     ],
@@ -785,14 +789,21 @@
     "generality_rationale_ko": "collapse의 group-level output과 달리 원자료 행을 보존하는 variant다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Do not infer a causal peer effect.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "egen.group_mean"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate egen_group_mean_by_key: observable mechanics [egen, mean, by] produce one row-preserving group-mean variable; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/degen.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "sample.keep_if_declared.v1",
@@ -800,12 +811,6 @@
     "variant_group": "sample.restriction",
     "variant_id": "keep_if_declared_sample",
     "stage": "preparation",
-    "source_spans": [
-      [
-        14,
-        14
-      ]
-    ],
     "research_situations": [
       "사전에 승인된 분석 표본 조건만 남겨야 한다"
     ],
@@ -853,14 +858,21 @@
     "generality_rationale_ko": "표본 제한은 명령은 단순해도 연구 판단이 들어가므로 조건을 반드시 외부에서 선언한다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Selection is conditional and never inferred from outcome availability.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "keep_drop.declared_eligibility_restriction"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate keep_if_declared_sample: observable mechanics [keep, if] produce restricted active dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/dkeep.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "sample.drop_if_missing.v1",
@@ -868,12 +880,6 @@
     "variant_group": "sample.restriction",
     "variant_id": "drop_if_declared_missing",
     "stage": "preparation",
-    "source_spans": [
-      [
-        15,
-        15
-      ]
-    ],
     "research_situations": [
       "분석 변수 결측 행을 사전 승인된 규칙으로 제외해야 한다"
     ],
@@ -921,14 +927,21 @@
     "generality_rationale_ko": "keep if 조건과 complete-case drop은 표본 상태와 감사 신호가 다르다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Do not present complete-case deletion as missing-data correction.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "keep_drop.declared_required_missing_exclusion"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate drop_if_declared_missing: observable mechanics [drop, missing] produce complete-case active dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/dkeep.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.sort_ascending_keys.v1",
@@ -936,12 +949,6 @@
     "variant_group": "preparation.sort_order",
     "variant_id": "sort_ascending_declared_keys",
     "stage": "preparation",
-    "source_spans": [
-      [
-        16,
-        16
-      ]
-    ],
     "research_situations": [
       "자료를 선언한 복합 키의 오름차순으로 정렬해야 한다"
     ],
@@ -989,13 +996,20 @@
     "generality_rationale_ko": "gsort의 내림차순과 정렬 방향이 달라 별도 variant다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Check uniqueness separately.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [],
     "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate sort_ascending_declared_keys: observable mechanics [sort] produce active dataset ordered by keys; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "unmapped_reason": "Bounded guide mechanics retained in the noncompeting reference reservoir; no current Top 50 or additional user-written contract claims this variant."
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "unmapped_reason": "Bounded guide mechanics retained in the noncompeting reference reservoir; no current Top 50 or additional user-written contract claims this variant.",
+    "source_urls": [
+      "https://www.stata.com/manuals/dsort.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.gsort_descending_key.v1",
@@ -1003,12 +1017,6 @@
     "variant_group": "preparation.sort_order",
     "variant_id": "gsort_descending_declared_key",
     "stage": "preparation",
-    "source_spans": [
-      [
-        17,
-        17
-      ]
-    ],
     "research_situations": [
       "순위나 최신값을 기준으로 내림차순 정렬해야 한다"
     ],
@@ -1058,13 +1066,20 @@
     "generality_rationale_ko": "정렬 방향이 분석 후속 상태에 영향을 주므로 sort와 분리한다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Do not use sorting as a ranking estimator.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [],
     "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate gsort_descending_declared_key: observable mechanics [gsort, -] produce active dataset ordered descending; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "unmapped_reason": "Bounded guide mechanics retained in the noncompeting reference reservoir; no current Top 50 or additional user-written contract claims this variant."
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "unmapped_reason": "Bounded guide mechanics retained in the noncompeting reference reservoir; no current Top 50 or additional user-written contract claims this variant.",
+    "source_urls": [
+      "https://www.stata.com/manuals/dgsort.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "input.merge_11_assert_keep.v1",
@@ -1072,12 +1087,6 @@
     "variant_group": "input_load.merge",
     "variant_id": "merge_11_assert_match_master_using",
     "stage": "preparation",
-    "source_spans": [
-      [
-        18,
-        18
-      ]
-    ],
     "research_situations": [
       "두 자료를 1:1 키로 결합하면서 match 상태를 명시적으로 점검해야 한다"
     ],
@@ -1132,14 +1141,21 @@
     "generality_rationale_ko": "1:1과 m:1은 허용되는 중복 구조가 달라 별도 variant다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. No m:m merge, update, or forced conflict resolution.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "merge.one_to_one_master_retained"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate merge_11_assert_match_master_using: observable mechanics [merge, 1:1, assert] produce merged active dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/dmerge.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "input.merge_m1_keepusing.v1",
@@ -1147,12 +1163,6 @@
     "variant_group": "input_load.merge",
     "variant_id": "merge_m1_keepusing",
     "stage": "preparation",
-    "source_spans": [
-      [
-        19,
-        19
-      ]
-    ],
     "research_situations": [
       "반복되는 master key에 using 자료의 한 행을 붙여야 한다"
     ],
@@ -1207,14 +1217,21 @@
     "generality_rationale_ko": "1:1 템플릿과 달리 master 중복을 허용하고 using payload를 제한한다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. No m:m merge or update semantics.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "merge.many_to_one_master_retained"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate merge_m1_keepusing: observable mechanics [merge, m:1, keepusing] produce merged active dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/dmerge.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "input.append_multi_source_id.v1",
@@ -1222,12 +1239,6 @@
     "variant_group": "input_load.append",
     "variant_id": "append_multiple_sources_with_id",
     "stage": "preparation",
-    "source_spans": [
-      [
-        20,
-        21
-      ]
-    ],
     "research_situations": [
       "동일 schema의 여러 source를 순차 결합하면서 source id를 보존해야 한다"
     ],
@@ -1278,14 +1289,21 @@
     "generality_rationale_ko": "단일 source append와 여러 source의 상태 및 provenance가 달라 분리한다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Preflight schema checks are mandatory.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "append.multiple_sources_with_provenance_id"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate append_multiple_sources_with_id: observable mechanics [append, generate] produce combined active dataset with source id; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/dappend.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.reshape_long_panel.v1",
@@ -1293,12 +1311,6 @@
     "variant_group": "preparation.reshape",
     "variant_id": "reshape_long_i_j",
     "stage": "preparation",
-    "source_spans": [
-      [
-        22,
-        22
-      ]
-    ],
     "research_situations": [
       "wide 반복 변수들을 i-j long panel로 바꿔야 한다"
     ],
@@ -1352,14 +1364,21 @@
     "generality_rationale_ko": "long과 wide는 서로 역방향의 자료 구조와 key 계약을 가지므로 별도 variant다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Do not infer time meaning from suffixes.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "reshape.wide_to_long_declared_i_j"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate reshape_long_i_j: observable mechanics [reshape, long] produce long active dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/dreshape.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.reshape_wide_panel.v1",
@@ -1367,12 +1386,6 @@
     "variant_group": "preparation.reshape",
     "variant_id": "reshape_wide_i_j",
     "stage": "preparation",
-    "source_spans": [
-      [
-        23,
-        23
-      ]
-    ],
     "research_situations": [
       "long unit-time 자료를 wide 변수 구조로 펼쳐야 한다"
     ],
@@ -1426,14 +1439,21 @@
     "generality_rationale_ko": "wide 출력은 long 출력과 역방향이며 key uniqueness 요구가 달라 별도 계약이다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. No implicit aggregation of duplicate i-j keys.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "reshape.long_to_wide_declared_i_j"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate reshape_wide_i_j: observable mechanics [reshape, wide] produce wide active dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/dreshape.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.collapse_mean_by.v1",
@@ -1441,12 +1461,6 @@
     "variant_group": "preparation.collapse",
     "variant_id": "collapse_mean_by_key",
     "stage": "preparation",
-    "source_spans": [
-      [
-        24,
-        24
-      ]
-    ],
     "research_situations": [
       "group-level 평균 자료만 남기는 집계를 수행해야 한다"
     ],
@@ -1499,13 +1513,20 @@
     "generality_rationale_ko": "sum/count와 statistic 및 출력 구조가 달라 별도 variant다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Preserve the microdata when later consumers need it.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [],
     "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate collapse_mean_by_key: observable mechanics [collapse, mean, by] produce group-level active dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "unmapped_reason": "Bounded guide mechanics retained in the noncompeting reference reservoir; no current Top 50 or additional user-written contract claims this variant."
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "unmapped_reason": "Bounded guide mechanics retained in the noncompeting reference reservoir; no current Top 50 or additional user-written contract claims this variant.",
+    "source_urls": [
+      "https://www.stata.com/manuals/dcollapse.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.collapse_sum_count_by.v1",
@@ -1513,12 +1534,6 @@
     "variant_group": "preparation.collapse",
     "variant_id": "collapse_sum_count_by_key",
     "stage": "preparation",
-    "source_spans": [
-      [
-        25,
-        25
-      ]
-    ],
     "research_situations": [
       "group별 합계와 관측치 수를 집계해야 한다"
     ],
@@ -1574,13 +1589,20 @@
     "generality_rationale_ko": "mean 집계와 출력 통계·해석이 달라 별도 variant다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Count and missingness interpretation require explicit review.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [],
     "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate collapse_sum_count_by_key: observable mechanics [collapse, sum, count] produce group-level sum-count dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "unmapped_reason": "Bounded guide mechanics retained in the noncompeting reference reservoir; no current Top 50 or additional user-written contract claims this variant."
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "unmapped_reason": "Bounded guide mechanics retained in the noncompeting reference reservoir; no current Top 50 or additional user-written contract claims this variant.",
+    "source_urls": [
+      "https://www.stata.com/manuals/dcollapse.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "labels.define_values.v1",
@@ -1588,12 +1610,6 @@
     "variant_group": "preparation.labels",
     "variant_id": "label_define_values",
     "stage": "preparation",
-    "source_spans": [
-      [
-        26,
-        27
-      ]
-    ],
     "research_situations": [
       "범주 코드와 표시값을 명시한 value label을 부여해야 한다"
     ],
@@ -1644,14 +1660,21 @@
     "generality_rationale_ko": "label metadata만 추가하며 코드값·표본·분석 의미를 추론하지 않는다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Do not rewrite imported source labels without an explicit contract.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "label.value_label_define_attach"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate label_define_values: observable mechanics [label, define, values] produce labeled active variable; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/dlabel.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.destring_generate.v1",
@@ -1659,12 +1682,6 @@
     "variant_group": "preparation.type_conversion",
     "variant_id": "destring_generate_numeric",
     "stage": "preparation",
-    "source_spans": [
-      [
-        28,
-        28
-      ]
-    ],
     "research_situations": [
       "숫자처럼 저장된 문자열을 새 numeric 변수로 변환해야 한다"
     ],
@@ -1715,14 +1732,21 @@
     "generality_rationale_ko": "overwrite 변환과 원변수 보존 변환은 자료 안전성이 달라 원변수 보존 variant로 고정한다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Do not silently coerce identifiers with leading zeros.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "type_conversion.destring_generate_validated"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate destring_generate_numeric: observable mechanics [destring, generate] produce new numeric variable; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/ddestring.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.tostring_generate.v1",
@@ -1730,12 +1754,6 @@
     "variant_group": "preparation.type_conversion",
     "variant_id": "tostring_generate_string",
     "stage": "preparation",
-    "source_spans": [
-      [
-        29,
-        29
-      ]
-    ],
     "research_situations": [
       "숫자 identifier를 표시·결합용 문자열로 새 변수에 저장해야 한다"
     ],
@@ -1786,14 +1804,21 @@
     "generality_rationale_ko": "destring의 반대 방향이며 보존 변수와 format 계약이 달라 분리한다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Never use display strings as numeric measures.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "type_conversion.tostring_generate_format_preserved"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate tostring_generate_string: observable mechanics [tostring, generate] produce new string variable; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/ddestring.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.encode_generate.v1",
@@ -1801,12 +1826,6 @@
     "variant_group": "preparation.type_conversion",
     "variant_id": "encode_string_category",
     "stage": "preparation",
-    "source_spans": [
-      [
-        30,
-        30
-      ]
-    ],
     "research_situations": [
       "문자열 범주를 numeric code와 value label로 변환해야 한다"
     ],
@@ -1855,14 +1874,21 @@
     "generality_rationale_ko": "문자열→numeric과 numeric→문자열은 변환 방향과 label 상태가 달라 별도 variant다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Do not infer ordinal meaning from encoded values.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "type_conversion.encode_declared_categories_direct"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate encode_string_category: observable mechanics [encode, generate] produce numeric labeled category; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/dencode.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "data.decode_generate.v1",
@@ -1870,12 +1896,6 @@
     "variant_group": "preparation.type_conversion",
     "variant_id": "decode_labeled_numeric",
     "stage": "preparation",
-    "source_spans": [
-      [
-        31,
-        31
-      ]
-    ],
     "research_situations": [
       "value label이 붙은 numeric code를 표시 문자열로 새 변수에 복원해야 한다"
     ],
@@ -1925,14 +1945,21 @@
     "generality_rationale_ko": "encode와 역방향 변환이며 label dictionary가 필수라 별도 template이다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Preserve the coded variable for analysis.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "type_conversion.decode_to_new_string"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate decode_labeled_numeric: observable mechanics [decode, generate] produce new string label text variable; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/dencode.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "integrity.duplicates_report_key.v1",
@@ -1940,12 +1967,6 @@
     "variant_group": "integrity.duplicates",
     "variant_id": "duplicates_report_declared_key",
     "stage": "validation",
-    "source_spans": [
-      [
-        32,
-        32
-      ]
-    ],
     "research_situations": [
       "선언한 key의 중복 분포를 자료 변경 없이 감사해야 한다"
     ],
@@ -1995,14 +2016,21 @@
     "generality_rationale_ko": "tag로 flag를 생성하는 변형과 달리 비파괴적 표시만 수행하므로 별도 audit variant다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Do not treat a report as proof of uniqueness without reading counts.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "duplicates.report_list_tag_direct"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate duplicates_report_declared_key: observable mechanics [duplicates, report] produce visible duplicate audit; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/dduplicates.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "integrity.duplicates_tag_flag.v1",
@@ -2010,12 +2038,6 @@
     "variant_group": "integrity.duplicates",
     "variant_id": "duplicates_tag_generate_flag",
     "stage": "validation",
-    "source_spans": [
-      [
-        33,
-        33
-      ]
-    ],
     "research_situations": [
       "중복 key 행을 후속 검토할 flag로 표시해야 한다"
     ],
@@ -2069,14 +2091,21 @@
     "generality_rationale_ko": "report-only audit와 달리 후속 검토 상태를 자료에 남기는 variant다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. No automatic drop based on this flag.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "duplicates.report_list_tag_direct"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate duplicates_tag_generate_flag: observable mechanics [duplicates, tag, generate] produce duplicate flag variable; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/dduplicates.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "integrity.preserve_restore_transaction.v1",
@@ -2084,12 +2113,6 @@
     "variant_group": "integrity.preserve_restore",
     "variant_id": "preserve_restore_non_destructive_audit",
     "stage": "validation",
-    "source_spans": [
-      [
-        34,
-        36
-      ]
-    ],
     "research_situations": [
       "임시 진단 뒤 원자료 상태를 정확히 복원해야 한다"
     ],
@@ -2139,14 +2162,21 @@
     "generality_rationale_ko": "단순 진단과 달리 자료 상태 복원을 보장하는 paired transaction이라 별도 template다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Keep the pair contiguous; no nested preserve or destructive cleanup.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "preserve_restore.paired_state_guard_embedded_in_consumer"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate preserve_restore_non_destructive_audit: observable mechanics [preserve, restore] produce original active dataset restored; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/ppreserve.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "panel.tsset_unit_time.v1",
@@ -2154,12 +2184,6 @@
     "variant_group": "preparation.panel_index",
     "variant_id": "tsset_unit_time",
     "stage": "preparation",
-    "source_spans": [
-      [
-        37,
-        37
-      ]
-    ],
     "research_situations": [
       "자료의 panel unit과 time variable을 선언해야 한다"
     ],
@@ -2211,14 +2235,21 @@
     "generality_rationale_ko": "xtset은 panel-specific declaration interface가 달라 별도 variant다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Check duplicate unit-time keys before use.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "xtset_tsset.panel_id_time"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate tsset_unit_time: observable mechanics [tsset] produce declared panel-time settings; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/tstsset.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "panel.xtset_unit_time.v1",
@@ -2226,12 +2257,6 @@
     "variant_group": "preparation.panel_index",
     "variant_id": "xtset_unit_time",
     "stage": "preparation",
-    "source_spans": [
-      [
-        38,
-        38
-      ]
-    ],
     "research_situations": [
       "Stata panel 명령에 사용할 panel variable과 time variable을 선언해야 한다"
     ],
@@ -2283,14 +2308,21 @@
     "generality_rationale_ko": "tsset과 같은 정보지만 사용 interface와 후속 소비자가 달라 별도 template다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Check duplicate panel-time keys before use.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "xtset_tsset.panel_id_time"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate xtset_unit_time: observable mechanics [xtset] produce declared panel-time settings; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/xtxtset.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "integrity.contract_frequency.v1",
@@ -2298,12 +2330,6 @@
     "variant_group": "integrity.contract",
     "variant_id": "contract_frequency_key",
     "stage": "validation",
-    "source_spans": [
-      [
-        39,
-        39
-      ]
-    ],
     "research_situations": [
       "선언된 범주 조합의 빈도 자료를 만들어 중복·분포를 점검해야 한다"
     ],
@@ -2354,14 +2380,21 @@
     "generality_rationale_ko": "tabulate 표시와 달리 active dataset 자체를 frequency data로 바꾸므로 별도 상태 계약이다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Use preserve/save when the original row-level data is needed later.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "collapse.frequency_contract"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate contract_frequency_key: observable mechanics [contract] produce frequency dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/dcontract.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "sample.random_predeclared.v1",
@@ -2369,12 +2402,6 @@
     "variant_group": "sample.random",
     "variant_id": "set_seed_sample_count",
     "stage": "preparation",
-    "source_spans": [
-      [
-        40,
-        41
-      ]
-    ],
     "research_situations": [
       "사전에 정한 크기의 재현 가능한 무작위 표본을 추출해야 한다"
     ],
@@ -2425,13 +2452,21 @@
     "generality_rationale_ko": "sample은 단순 명령이지만 표본선택을 직접 바꾸므로 별도 강한 조건을 둔다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Reference-only unless sampling design and seed are explicit.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [],
     "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate set_seed_sample_count: observable mechanics [set seed, sample] produce reproducibly restricted active dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "unmapped_reason": "Bounded guide mechanics retained in the noncompeting reference reservoir; no current Top 50 or additional user-written contract claims this variant."
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "unmapped_reason": "Bounded guide mechanics retained in the noncompeting reference reservoir; no current Top 50 or additional user-written contract claims this variant.",
+    "source_urls": [
+      "https://www.stata.com/manuals/dsample.pdf",
+      "https://www.stata.com/manuals/rsetseed.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "descriptives.correlate_pairwise.v1",
@@ -2439,12 +2474,6 @@
     "variant_group": "descriptives.correlation",
     "variant_id": "correlate_complete_pairwise",
     "stage": "descriptives",
-    "source_spans": [
-      [
-        42,
-        42
-      ]
-    ],
     "research_situations": [
       "선언한 numeric 변수들의 complete-case 상관행렬을 보고해야 한다"
     ],
@@ -2491,14 +2520,21 @@
     "generality_rationale_ko": "pwcorr의 significance·observation 표시 variant와 출력 계약이 달라 분리한다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Descriptive correlation is not a causal estimate.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "correlate_pwcorr_tabstat.correlate_direct"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate correlate_complete_pairwise: observable mechanics [correlate] produce visible correlation matrix; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rcorrelate.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "descriptives.pwcorr_sig_obs.v1",
@@ -2506,12 +2542,6 @@
     "variant_group": "descriptives.correlation",
     "variant_id": "pwcorr_significance_observations",
     "stage": "descriptives",
-    "source_spans": [
-      [
-        43,
-        43
-      ]
-    ],
     "research_situations": [
       "상관계수와 significance 및 pairwise 관측치 수를 함께 점검해야 한다"
     ],
@@ -2562,13 +2592,20 @@
     "generality_rationale_ko": "단순 correlate보다 출력·결측 상태가 풍부한 별도 variant다.",
     "review_notes": "Git 후보이며 정식 삽입 전 감사가 필요하다. Never infer causality from p-values.",
     "source_kind": "official_manual_guide_derived_mechanics",
-    "audit_status": "candidate_pre_audit",
+    "audit_status": "metadata_only",
     "contract_ids": [
       "correlate_pwcorr_tabstat.pwcorr_observations_significance"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate pwcorr_significance_observations: observable mechanics [pwcorr, sig, obs] produce visible pairwise correlation and N matrix; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rcorrelate.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   }
 ]

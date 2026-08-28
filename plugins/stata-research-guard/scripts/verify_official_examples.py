@@ -11,6 +11,25 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+RUNTIME_FIXTURE_POLICY = {
+    "example_origin": "official_document_derived_runtime_fixture",
+    "verbatim": False,
+    "selection_eligible": False,
+    "independent_support": False,
+}
+
+
+def validate_runtime_fixture(example: dict[str, object]) -> None:
+    mismatches = [
+        key for key, expected in RUNTIME_FIXTURE_POLICY.items()
+        if example.get(key) != expected
+    ]
+    if mismatches:
+        raise ValueError(
+            f"{example.get('example_id', '<missing example_id>')} is not an isolated "
+            f"official-document-derived runtime fixture: {', '.join(mismatches)}"
+        )
+
 
 def find_stata(explicit: str | None) -> Path:
     candidates = [
@@ -67,6 +86,7 @@ def main() -> None:
     with tempfile.TemporaryDirectory(prefix="stata-official-examples-") as temp_value:
         temp_root = Path(temp_value)
         for position, example in enumerate(examples, start=1):
+            validate_runtime_fixture(example)
             case_root = temp_root / f"case_{position:02d}"
             case_root.mkdir()
             marker = f"__OFFICIAL_EXAMPLE_PASS__{example['example_id']}"

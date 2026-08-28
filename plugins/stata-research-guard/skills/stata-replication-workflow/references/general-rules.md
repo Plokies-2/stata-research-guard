@@ -47,48 +47,15 @@ Do not mechanically apply this layout to a partial repair of a compatible existi
 
 Write the shortest readable Stata sequence with one final implementation path and shallow indentation. Prefer one active loop. A flat `foreach` or `forvalues` loop may bind a real plain list; Stata's programming manual specifies its brace layout and recommends direct varlist iteration over tokenized numbered macros ([`[P] Programming`](https://www.stata.com/manuals/p.pdf)). Exactly two active loop levels are allowed only when both axes are plain named lists or numeric ranges, the same mechanical body repeats, the reduction is substantial, and sample, estimand, specification, grouping, and output placement remain visible at the loop site. Never use loop depth 3 or hide another loop in a helper.
 
-For long macro varlists and other long enumerations, use whitespace and multiline alignment to expose meaningful groups. A typical shape is:
+For long macro varlists and other long enumerations, use whitespace and multiline alignment to expose meaningful groups. Keep short lists on one line. Do not align or reflow quoted labels, paths, notes, or other strings where whitespace is data. Every `///` must continue on the immediately following physical line, and the final line must omit it. Consult Stata's official programming documentation for executable continuation syntax; this policy does not ship an internally synthesized example.
 
-```stata
-global outcomes_all ///
-    female_bm       female_bmo       female_bmi       ///
-    female_ratio_bm female_ratio_bmo female_ratio_bmi
-```
-
-Keep short lists on one line. Do not align or reflow quoted labels, paths, notes, or other strings where whitespace is data. Every `///` must continue on the immediately following physical line, and the final line must omit it.
-
-Use a direct literal for a one-use binding. Otherwise prefer a descriptive `global` defined or redefined in the do-file that consumes it. Setup may keep shared directory roots, but it must not be the remote home of outcome lists, regression controls, samples, event windows, fixed effects, clustering choices, or other specification shortcuts. Outcome-list globals belong in `run_regressions.do`. Put a leaf artifact binding beside its consumer unless two or more files share a real producer-consumer contract:
-
-```stata
-* masters.do
-global table "$project/table"
-
-* do/build_summary.do
-global summary_excel "$table/summary_statistics.xlsx"
-```
+Use a direct literal for a one-use binding. Otherwise prefer a descriptive `global` defined or redefined in the do-file that consumes it. Setup may keep shared directory roots, but it must not be the remote home of outcome lists, regression controls, samples, event windows, fixed effects, clustering choices, or other specification shortcuts. Outcome-list globals belong in `run_regressions.do`. Put a leaf artifact binding beside its consumer unless two or more files share a real producer-consumer contract. This placement rule is a house-style constraint, not an executable template.
 
 Never chain aliases such as `controls_current -> controls_2019 -> controls_base`. In newly generated or currently revised regression code, use zero substantive reference depth: treatment or event window, controls, sample, fixed effects, weights, and VCE appear literally in the estimator block. The only normal mechanical indirection is one local outcome iterator in one flat outcome loop. If those substantive choices differ, use separate visible blocks instead of a conditional `current` alias. In a read-only audit of untouched existing code, treat deeper reference structure as an advisory for the relevant repair scope, not an automatic blocking error.
 
 For newly generated or currently revised regression code, reserve `local` for obvious lexical cases such as loop iterators, `program` syntax or internal state, tempfile/tempvar/tempname handling, per-iteration scratch state, and an immediately consumed `r()` or `e()` result. These examples do not authorize hiding a model specification. Do not try to infer lexical necessity across every Stata context or execution state, and do not block an untouched existing project on that basis. Existing approved multi-sheet or graph helpers may retain necessary locals inside their programs and loops. Stata defines `///` as joining the next line to the current command, so use it only when the immediately following physical line continues that command, indent continuation lines beyond the command start, and omit it from the final option or line ([Stata User's Guide](https://www.stata.com/manuals/u.pdf)). A blank line, comment-only line, closing brace, `end`, or new command must not follow `///`.
 
-The following point-of-use example deliberately keeps the two model specifications visible. Its variable names are illustrative bindings, not a required project schema:
-
-```stata
-reghdfe female_bm                                      ///
-    i(2015/2018 2020/2024).year#1.treat2019           ///
-    absorb(fid year##c.(ln_AT_real_2019 DR_2019       ///
-                        ln_age_2019 ln_sales_real_2019 ///
-                        cashflow_rate_2019))           ///
-    vce(cluster fid)
-
-reghdfe sales_growth_real                              ///
-    i(2015/2018 2020/2024).year#1.treat2019           ///
-    absorb(fid year##c.(ln_AT_real_2019 DR_2019       ///
-                        ln_age_2019 cashflow_rate_2019)) ///
-    vce(cluster fid)
-```
-
-The compact `i(numlist).var` form is official factor-variable syntax and the block above remains a good official example. It is not a general auto-selection rule: use it as the frozen project form only after Stata runtime confirms the actual factor support, omitted level, and exact raw `e(b)` names. Stata factor levels must be nonnegative integers, so recode a signed relative-time variable to a nonnegative index and restore negative relative-time text only in graph labels. A confirmed compact form fits a regular displayed window whose minimum-to-maximum support has exactly one omitted interior reference. Use a level-by-level native no-base list for an irregular window, a boundary reference, or a case whose runtime coefficient contract is not yet confirmed. Use one `#` on the event-study RHS. Source syntax never authorizes guessed coefficient tokens.
+Keep different model specifications visible at the estimator call site rather than hiding them behind aliases or helper control flow. The compact `i(numlist).var` form is official factor-variable syntax, but it is not a general auto-selection rule: use it as the frozen project form only after Stata runtime confirms the actual factor support, omitted level, and exact raw `e(b)` names. Stata factor levels must be nonnegative integers, so recode a signed relative-time variable to a nonnegative index and restore negative relative-time text only in graph labels. A confirmed compact form fits a regular displayed window whose minimum-to-maximum support has exactly one omitted interior reference. Use a level-by-level native no-base list for an irregular window, a boundary reference, or a case whose runtime coefficient contract is not yet confirmed. Use one `#` on the event-study RHS. Source syntax never authorizes guessed coefficient tokens.
 
 Do not add a registry, dispatcher, positional job string with downstream `word` parsing, wrapper, one-use `program`, hidden branch, unused option, future-facing interface, or needless intermediate variable. Repeatedly defining a program inside a `foreach` is also structurally unsafe because Stata parses `end` as the end of the enclosing do-file; the community discussion demonstrates why that definition must be outside the brace block ([Statalist](https://www.statalist.org/forums/forum/general-stata-discussion/general/1681139-writing-a-program-within-a-foreach-loop-in-stata-avoiding-error-r-1)). The one standing program exception is the canonical `outreg2_xlsx` formatter for a workbook with two or more sheets.
 

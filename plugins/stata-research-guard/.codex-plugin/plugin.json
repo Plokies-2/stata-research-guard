@@ -1,7 +1,7 @@
 {
   "name": "stata-research-guard",
-  "version": "0.3.0+codex.20260828140733",
-  "description": "Author Stata workflows under general research-code rules, optionally reuse complete compatible templates, then lint and audit them.",
+  "version": "0.3.0+codex.20260828164500",
+  "description": "Author Stata workflows under general rules with code-free guide metadata and audited research evidence.",
   "author": {
     "name": "song7"
   },
@@ -9,7 +9,7 @@
   "interface": {
     "displayName": "Stata Research Guard",
     "shortDescription": "General-rule Stata authoring with optional complete templates.",
-    "longDescription": "Creates, revises, and audits researcher-readable Stata workflows. General rules govern every implementation, while curated guide and research-usage evidence may support one complete compatible transition without supplying unresolved research choices. The plugin preserves existing project interfaces, favors point-of-use readability and shallow control flow, builds a cleaned analysis panel before summaries and regressions in compatible new workflows, and validates native factor-variable, raw outreg2, Excel, PDF, .ster, master Input/Output, report-policy, and runtime-versus-static contracts.",
+    "longDescription": "Creates, revises, and audits researcher-readable Stata workflows. General rules govern every implementation. Code-free manual and maintainer metadata supplies command facts, while separately audited deposited research usage may support one complete compatible transition without supplying unresolved research choices. The plugin preserves existing project interfaces, favors point-of-use readability and shallow control flow, builds a cleaned analysis panel before summaries and regressions in compatible new workflows, and validates native factor-variable, raw outreg2, Excel, PDF, .ster, master Input/Output, report-policy, and runtime-versus-static contracts.",
     "developerName": "song7",
     "category": "Developer Tools",
     "capabilities": [
@@ -20,7 +20,7 @@
     "defaultPrompt": [
       "Create or revise this Stata workflow within the exact approved scope. Preserve compatible project interfaces, apply the skill's general rules, keep research specifications readable at point of use, lint changed do-files, and verify only the declared outputs.",
       "Audit this Stata project read-only from its active reachable entrypoint. Keep runtime success, static audit, and substantive validity separate; report inactive files as advisories unless I explicitly widen scope.",
-      "Resolve evidence for this bounded Stata transition. Keep guide mechanics non-writable, select a usage template only when it completely fits after permitted bindings, and otherwise implement only the already-declared contract under the general rules.",
+      "Resolve evidence for this bounded Stata transition. Use guide mechanics only as code-free command metadata, select a deposited usage template only when it completely fits after permitted bindings, and otherwise implement only the already-declared contract under the general rules.",
       "Check this workflow's master Input/Output contracts and Excel, PDF, .ster, event-study, and raw outreg2 output flow without adding dependency, packaging, deployment, or TeX artifacts.",
       "Build or evaluate this Stata workflow from the supplied research contract in a source-isolated trial, using the plugin's local evidence and general rules without treating templates as mandatory or prior outputs as an answer key."
     ]

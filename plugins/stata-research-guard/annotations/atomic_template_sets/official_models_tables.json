@@ -6,12 +6,6 @@
     "variant_id": "regress_robust",
     "stage": "estimation",
     "method_family": "regress",
-    "source_spans": [
-      [
-        3,
-        3
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official regress mechanics shown in the bounded guide snapshot"
     ],
@@ -63,11 +57,18 @@
     "contract_ids": [
       "regress.robust"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate regress_robust: observable mechanics [regress] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rregress.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.regress_cluster.v1",
@@ -76,12 +77,6 @@
     "variant_id": "regress_cluster",
     "stage": "estimation",
     "method_family": "regress",
-    "source_spans": [
-      [
-        4,
-        4
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official regress mechanics shown in the bounded guide snapshot"
     ],
@@ -133,11 +128,18 @@
     "contract_ids": [
       "regress.clustered"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate regress_cluster: observable mechanics [regress] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rregress.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.regress_aw_robust.v1",
@@ -146,12 +148,6 @@
     "variant_id": "regress_aw_robust",
     "stage": "estimation",
     "method_family": "regress",
-    "source_spans": [
-      [
-        5,
-        5
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official regress mechanics shown in the bounded guide snapshot"
     ],
@@ -204,11 +200,18 @@
       "regress.aweight",
       "regress.robust"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate regress_aw_robust: observable mechanics [regress] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rregress.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.regress_factor_interaction_cluster.v1",
@@ -217,12 +220,6 @@
     "variant_id": "regress_factor_interaction_cluster",
     "stage": "estimation",
     "method_family": "regress",
-    "source_spans": [
-      [
-        6,
-        6
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official regress mechanics shown in the bounded guide snapshot"
     ],
@@ -274,11 +271,18 @@
     "contract_ids": [
       "regress.clustered"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate regress_factor_interaction_cluster: observable mechanics [regress] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rregress.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.areg_absorb_robust.v1",
@@ -287,12 +291,6 @@
     "variant_id": "areg_absorb_robust",
     "stage": "estimation",
     "method_family": "areg",
-    "source_spans": [
-      [
-        7,
-        7
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official areg mechanics shown in the bounded guide snapshot"
     ],
@@ -344,11 +342,18 @@
     "contract_ids": [
       "areg.absorb_robust"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate areg_absorb_robust: observable mechanics [areg] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rareg.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.xtreg_fe_cluster.v1",
@@ -357,12 +362,6 @@
     "variant_id": "xtreg_fe_cluster",
     "stage": "estimation",
     "method_family": "xtreg",
-    "source_spans": [
-      [
-        9,
-        9
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official xtreg mechanics shown in the bounded guide snapshot"
     ],
@@ -417,11 +416,18 @@
     "contract_ids": [
       "xtreg.fixed_effects_clustered"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate xtreg_fe_cluster: observable mechanics [xtreg] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/xtxtreg.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.xtreg_re_robust.v1",
@@ -430,12 +436,6 @@
     "variant_id": "xtreg_re_robust",
     "stage": "estimation",
     "method_family": "xtreg",
-    "source_spans": [
-      [
-        10,
-        10
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official xtreg mechanics shown in the bounded guide snapshot"
     ],
@@ -490,11 +490,18 @@
     "contract_ids": [
       "xtreg.random_effects"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate xtreg_re_robust: observable mechanics [xtreg] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/xtxtreg.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.xtreg_re_pw_cluster.v1",
@@ -503,12 +510,6 @@
     "variant_id": "xtreg_re_pw_cluster",
     "stage": "estimation",
     "method_family": "xtreg",
-    "source_spans": [
-      [
-        11,
-        11
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official xtreg mechanics shown in the bounded guide snapshot"
     ],
@@ -564,9 +565,16 @@
     "supplemental_contract_id": "xtreg.random_effects_weighted_clustered",
     "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate xtreg_re_pw_cluster: observable mechanics [xtreg] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/xtxtreg.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.logit_robust.v1",
@@ -575,12 +583,6 @@
     "variant_id": "logit_robust",
     "stage": "estimation",
     "method_family": "logit",
-    "source_spans": [
-      [
-        12,
-        12
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official logit mechanics shown in the bounded guide snapshot"
     ],
@@ -634,11 +636,18 @@
       "logit_logistic.coefficient_scale",
       "logit_logistic.robust"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate logit_robust: observable mechanics [logit] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rlogit.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.logistic_cluster_odds_ratio.v1",
@@ -647,12 +656,6 @@
     "variant_id": "logistic_cluster_odds_ratio",
     "stage": "estimation",
     "method_family": "logistic",
-    "source_spans": [
-      [
-        13,
-        13
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official logistic mechanics shown in the bounded guide snapshot"
     ],
@@ -706,11 +709,18 @@
       "logit_logistic.odds_ratio_scale",
       "logit_logistic.clustered"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate logistic_cluster_odds_ratio: observable mechanics [logistic] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rlogit.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.probit_pw_robust.v1",
@@ -719,12 +729,6 @@
     "variant_id": "probit_pw_robust",
     "stage": "estimation",
     "method_family": "probit",
-    "source_spans": [
-      [
-        14,
-        14
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official probit mechanics shown in the bounded guide snapshot"
     ],
@@ -778,11 +782,18 @@
       "probit.weighted",
       "probit.robust_or_clustered"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate probit_pw_robust: observable mechanics [probit] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rprobit.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.probit_cluster.v1",
@@ -791,12 +802,6 @@
     "variant_id": "probit_cluster",
     "stage": "estimation",
     "method_family": "probit",
-    "source_spans": [
-      [
-        15,
-        15
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official probit mechanics shown in the bounded guide snapshot"
     ],
@@ -849,11 +854,18 @@
     "contract_ids": [
       "probit.robust_or_clustered"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate probit_cluster: observable mechanics [probit] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rprobit.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.poisson_exposure_cluster.v1",
@@ -862,12 +874,6 @@
     "variant_id": "poisson_exposure_cluster",
     "stage": "estimation",
     "method_family": "poisson",
-    "source_spans": [
-      [
-        16,
-        16
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official poisson mechanics shown in the bounded guide snapshot"
     ],
@@ -921,11 +927,18 @@
       "poisson_nbreg.poisson_default_or_clustered",
       "poisson_nbreg.poisson_exposure_or_offset"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate poisson_exposure_cluster: observable mechanics [poisson] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rpoisson.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.poisson_offset_robust.v1",
@@ -934,12 +947,6 @@
     "variant_id": "poisson_offset_robust",
     "stage": "estimation",
     "method_family": "poisson",
-    "source_spans": [
-      [
-        17,
-        17
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official poisson mechanics shown in the bounded guide snapshot"
     ],
@@ -993,11 +1000,18 @@
       "poisson_nbreg.poisson_exposure_or_offset",
       "poisson_nbreg.poisson_default_or_clustered"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate poisson_offset_robust: observable mechanics [poisson] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rpoisson.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.nbreg_exposure_cluster.v1",
@@ -1006,12 +1020,6 @@
     "variant_id": "nbreg_exposure_cluster",
     "stage": "estimation",
     "method_family": "nbreg",
-    "source_spans": [
-      [
-        18,
-        18
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official nbreg mechanics shown in the bounded guide snapshot"
     ],
@@ -1065,11 +1073,18 @@
       "poisson_nbreg.nbreg_mean_dispersion",
       "poisson_nbreg.nbreg_exposure_or_offset"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate nbreg_exposure_cluster: observable mechanics [nbreg] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rnbreg.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.nbreg_offset_robust.v1",
@@ -1078,12 +1093,6 @@
     "variant_id": "nbreg_offset_robust",
     "stage": "estimation",
     "method_family": "nbreg",
-    "source_spans": [
-      [
-        19,
-        19
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official nbreg mechanics shown in the bounded guide snapshot"
     ],
@@ -1137,11 +1146,18 @@
       "poisson_nbreg.nbreg_mean_dispersion",
       "poisson_nbreg.nbreg_exposure_or_offset"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate nbreg_offset_robust: observable mechanics [nbreg] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rnbreg.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.ivregress_2sls_robust.v1",
@@ -1150,12 +1166,6 @@
     "variant_id": "ivregress_2sls_robust",
     "stage": "estimation",
     "method_family": "ivregress",
-    "source_spans": [
-      [
-        20,
-        20
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official ivregress mechanics shown in the bounded guide snapshot"
     ],
@@ -1208,11 +1218,18 @@
       "ivregress.multiple_endogenous_or_instruments",
       "ivregress.robust_or_hac"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate ivregress_2sls_robust: observable mechanics [ivregress] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rivregress.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.ivregress_2sls_cluster_first.v1",
@@ -1221,12 +1238,6 @@
     "variant_id": "ivregress_2sls_cluster_first",
     "stage": "estimation",
     "method_family": "ivregress",
-    "source_spans": [
-      [
-        21,
-        21
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official ivregress mechanics shown in the bounded guide snapshot"
     ],
@@ -1279,11 +1290,18 @@
       "ivregress.two_stage_least_squares_clustered",
       "ivregress.first_stage_diagnostics"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate ivregress_2sls_cluster_first: observable mechanics [ivregress] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rivregress.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.predict_xb.v1",
@@ -1292,12 +1310,6 @@
     "variant_id": "predict_xb",
     "stage": "post_estimation",
     "method_family": "predict",
-    "source_spans": [
-      [
-        22,
-        22
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official predict mechanics shown in the bounded guide snapshot"
     ],
@@ -1349,11 +1361,18 @@
     "contract_ids": [
       "predict.linear_prediction_xb_esample"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate predict_xb: observable mechanics [predict] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rpredict.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.predict_pr.v1",
@@ -1362,12 +1381,6 @@
     "variant_id": "predict_pr",
     "stage": "post_estimation",
     "method_family": "predict",
-    "source_spans": [
-      [
-        23,
-        23
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official predict mechanics shown in the bounded guide snapshot"
     ],
@@ -1419,11 +1432,18 @@
     "contract_ids": [
       "predict.probability_esample"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate predict_pr: observable mechanics [predict] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rpredict.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.predict_n.v1",
@@ -1432,12 +1452,6 @@
     "variant_id": "predict_n",
     "stage": "post_estimation",
     "method_family": "predict",
-    "source_spans": [
-      [
-        24,
-        24
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official predict mechanics shown in the bounded guide snapshot"
     ],
@@ -1489,11 +1503,18 @@
     "contract_ids": [
       "predict.count_mean_esample"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate predict_n: observable mechanics [predict] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rpredict.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.predict_residuals.v1",
@@ -1502,12 +1523,6 @@
     "variant_id": "predict_residuals",
     "stage": "post_estimation",
     "method_family": "predict",
-    "source_spans": [
-      [
-        25,
-        25
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official predict mechanics shown in the bounded guide snapshot"
     ],
@@ -1559,11 +1574,18 @@
     "contract_ids": [
       "predict.residuals_esample"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate predict_residuals: observable mechanics [predict] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rpredict.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.test_joint_zero.v1",
@@ -1572,12 +1594,6 @@
     "variant_id": "test_joint_zero",
     "stage": "post_estimation",
     "method_family": "test",
-    "source_spans": [
-      [
-        26,
-        26
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official test mechanics shown in the bounded guide snapshot"
     ],
@@ -1629,11 +1645,18 @@
     "contract_ids": [
       "test_testparm_lincom.joint_coefficients"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate test_joint_zero: observable mechanics [test] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rtest.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.testparm_factor_block.v1",
@@ -1642,12 +1665,6 @@
     "variant_id": "testparm_factor_block",
     "stage": "post_estimation",
     "method_family": "testparm",
-    "source_spans": [
-      [
-        27,
-        27
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official testparm mechanics shown in the bounded guide snapshot"
     ],
@@ -1699,11 +1716,18 @@
     "contract_ids": [
       "test_testparm_lincom.factor_interaction_joint_zero"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate testparm_factor_block: observable mechanics [testparm] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rtest.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.lincom_sum.v1",
@@ -1712,12 +1736,6 @@
     "variant_id": "lincom_sum",
     "stage": "post_estimation",
     "method_family": "lincom",
-    "source_spans": [
-      [
-        28,
-        28
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official lincom mechanics shown in the bounded guide snapshot"
     ],
@@ -1769,11 +1787,18 @@
     "contract_ids": [
       "test_testparm_lincom.lincom_sum_difference"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate lincom_sum: observable mechanics [lincom] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rtest.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.lincom_factor_difference.v1",
@@ -1782,12 +1807,6 @@
     "variant_id": "lincom_factor_difference",
     "stage": "post_estimation",
     "method_family": "lincom",
-    "source_spans": [
-      [
-        29,
-        29
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official lincom mechanics shown in the bounded guide snapshot"
     ],
@@ -1839,11 +1858,18 @@
     "contract_ids": [
       "test_testparm_lincom.lincom_sum_difference"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate lincom_factor_difference: observable mechanics [lincom] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rtest.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.table_statistic_modern.v1",
@@ -1852,12 +1878,6 @@
     "variant_id": "table_statistic_modern",
     "stage": "exports",
     "method_family": "table",
-    "source_spans": [
-      [
-        30,
-        30
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official table mechanics shown in the bounded guide snapshot"
     ],
@@ -1909,12 +1929,19 @@
     "contract_ids": [
       "table_dtable.modern_table_one_way_statistics"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "version_condition": "stata>=17",
     "variant_distinction": "Separate table_statistic_modern: observable mechanics [table] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rtable.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.table_legacy_c_reference.v1",
@@ -1923,12 +1950,6 @@
     "variant_id": "table_legacy_c_reference",
     "stage": "exports",
     "method_family": "table",
-    "source_spans": [
-      [
-        31,
-        31
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official table mechanics shown in the bounded guide snapshot"
     ],
@@ -1983,9 +2004,16 @@
     "canonical_generation_class": "reference_only",
     "version_condition": "legacy",
     "variant_distinction": "Separate table_legacy_c_reference: observable mechanics [table] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rtable.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.dtable_by_statistics.v1",
@@ -1994,12 +2022,6 @@
     "variant_id": "dtable_by_statistics",
     "stage": "exports",
     "method_family": "dtable",
-    "source_spans": [
-      [
-        32,
-        32
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official dtable mechanics shown in the bounded guide snapshot"
     ],
@@ -2052,12 +2074,19 @@
       "table_dtable.dtable_grouped_by",
       "table_dtable.dtable_continuous_categorical"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "version_condition": "stata>=18",
     "variant_distinction": "Separate dtable_by_statistics: observable mechanics [dtable] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rdtable.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.dtable_export_xlsx.v1",
@@ -2066,12 +2095,6 @@
     "variant_id": "dtable_export_xlsx",
     "stage": "exports",
     "method_family": "dtable",
-    "source_spans": [
-      [
-        33,
-        33
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official dtable mechanics shown in the bounded guide snapshot"
     ],
@@ -2123,12 +2146,19 @@
     "contract_ids": [
       "table_dtable.dtable_grouped_by"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "version_condition": "stata>=18",
     "variant_distinction": "Separate dtable_export_xlsx: observable mechanics [dtable] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rdtable.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.collect_get_results.v1",
@@ -2137,12 +2167,6 @@
     "variant_id": "collect_get_results",
     "stage": "post_estimation",
     "method_family": "collect",
-    "source_spans": [
-      [
-        34,
-        34
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official collect mechanics shown in the bounded guide snapshot"
     ],
@@ -2194,12 +2218,19 @@
     "contract_ids": [
       "putexcel_collect_etable.collect_get_results"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "version_condition": "stata>=17",
     "variant_distinction": "Separate collect_get_results: observable mechanics [collect] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/tablescollectget.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.collect_style_nformat.v1",
@@ -2208,12 +2239,6 @@
     "variant_id": "collect_style_nformat",
     "stage": "exports",
     "method_family": "collect",
-    "source_spans": [
-      [
-        35,
-        35
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official collect mechanics shown in the bounded guide snapshot"
     ],
@@ -2265,12 +2290,19 @@
     "contract_ids": [
       "putexcel_collect_etable.collect_style_number_format"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "version_condition": "stata>=17",
     "variant_distinction": "Separate collect_style_nformat: observable mechanics [collect] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/tablescollectstylecell.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.etable_estimates_xlsx.v1",
@@ -2279,12 +2311,6 @@
     "variant_id": "etable_estimates_xlsx",
     "stage": "exports",
     "method_family": "etable",
-    "source_spans": [
-      [
-        37,
-        37
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official etable mechanics shown in the bounded guide snapshot"
     ],
@@ -2338,9 +2364,16 @@
     "canonical_generation_class": "reference_only",
     "version_condition": "stata>=17",
     "variant_distinction": "Separate etable_estimates_xlsx: observable mechanics [etable] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/retable.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.putexcel_modify_sheet.v1",
@@ -2349,12 +2382,6 @@
     "variant_id": "putexcel_modify_sheet",
     "stage": "exports",
     "method_family": "putexcel",
-    "source_spans": [
-      [
-        38,
-        38
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official putexcel mechanics shown in the bounded guide snapshot"
     ],
@@ -2406,11 +2433,18 @@
     "contract_ids": [
       "putexcel_collect_etable.putexcel_matrix"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate putexcel_modify_sheet: observable mechanics [putexcel] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rptputexcel.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.putexcel_cell_values_format.v1",
@@ -2419,12 +2453,6 @@
     "variant_id": "putexcel_cell_values_format",
     "stage": "exports",
     "method_family": "putexcel",
-    "source_spans": [
-      [
-        40,
-        40
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official putexcel mechanics shown in the bounded guide snapshot"
     ],
@@ -2476,11 +2504,18 @@
     "contract_ids": [
       "putexcel_collect_etable.putexcel_scalar_and_format"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate putexcel_cell_values_format: observable mechanics [putexcel] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rptputexcel.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.twoway_line_single_sorted.v1",
@@ -2489,12 +2524,6 @@
     "variant_id": "twoway_line_single_sorted",
     "stage": "figures",
     "method_family": "twoway",
-    "source_spans": [
-      [
-        41,
-        41
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official twoway mechanics shown in the bounded guide snapshot"
     ],
@@ -2546,11 +2575,18 @@
     "contract_ids": [
       "twoway.line_single_series"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate twoway_line_single_sorted: observable mechanics [twoway] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/g-2graphtwoway.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.twoway_line_overlay.v1",
@@ -2559,12 +2595,6 @@
     "variant_id": "twoway_line_overlay",
     "stage": "figures",
     "method_family": "twoway",
-    "source_spans": [
-      [
-        42,
-        42
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official twoway mechanics shown in the bounded guide snapshot"
     ],
@@ -2616,11 +2646,18 @@
     "contract_ids": [
       "twoway.multiple_series"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate twoway_line_overlay: observable mechanics [twoway] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/g-2graphtwoway.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.twoway_scatter_lfit.v1",
@@ -2629,12 +2666,6 @@
     "variant_id": "twoway_scatter_lfit",
     "stage": "figures",
     "method_family": "twoway",
-    "source_spans": [
-      [
-        43,
-        43
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official twoway mechanics shown in the bounded guide snapshot"
     ],
@@ -2686,11 +2717,18 @@
     "contract_ids": [
       "twoway.scatter_with_lfit"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate twoway_scatter_lfit: observable mechanics [twoway] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/g-2graphtwoway.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.twoway_scatter_mlabel.v1",
@@ -2699,12 +2737,6 @@
     "variant_id": "twoway_scatter_mlabel",
     "stage": "figures",
     "method_family": "twoway",
-    "source_spans": [
-      [
-        44,
-        44
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official twoway mechanics shown in the bounded guide snapshot"
     ],
@@ -2756,11 +2788,18 @@
     "contract_ids": [
       "twoway.scatter"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate twoway_scatter_mlabel: observable mechanics [twoway] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/g-2graphtwoway.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.twoway_rarea_upper_lower.v1",
@@ -2769,12 +2808,6 @@
     "variant_id": "twoway_rarea_upper_lower",
     "stage": "figures",
     "method_family": "twoway",
-    "source_spans": [
-      [
-        45,
-        45
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official twoway mechanics shown in the bounded guide snapshot"
     ],
@@ -2826,11 +2859,18 @@
     "contract_ids": [
       "twoway.confidence_band_with_line"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate twoway_rarea_upper_lower: observable mechanics [twoway] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/g-2graphtwoway.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.histogram_fraction_discrete.v1",
@@ -2839,12 +2879,6 @@
     "variant_id": "histogram_fraction_discrete",
     "stage": "figures",
     "method_family": "histogram",
-    "source_spans": [
-      [
-        46,
-        46
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official histogram mechanics shown in the bounded guide snapshot"
     ],
@@ -2896,11 +2930,18 @@
     "contract_ids": [
       "twoway.histogram_discrete"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate histogram_fraction_discrete: observable mechanics [histogram] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rhistogram.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.histogram_percent_normal.v1",
@@ -2909,12 +2950,6 @@
     "variant_id": "histogram_percent_normal",
     "stage": "figures",
     "method_family": "histogram",
-    "source_spans": [
-      [
-        47,
-        47
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official histogram mechanics shown in the bounded guide snapshot"
     ],
@@ -2966,11 +3001,18 @@
     "contract_ids": [
       "twoway.histogram_continuous"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate histogram_percent_normal: observable mechanics [histogram] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rhistogram.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.graph_export_pdf_replace.v1",
@@ -2979,12 +3021,6 @@
     "variant_id": "graph_export_pdf_replace",
     "stage": "exports",
     "method_family": "graph export",
-    "source_spans": [
-      [
-        48,
-        48
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official graph export mechanics shown in the bounded guide snapshot"
     ],
@@ -3036,11 +3072,18 @@
     "contract_ids": [
       "graph_export.active_graph_to_pdf"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate graph_export_pdf_replace: observable mechanics [graph export] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/g-2graphexport.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.margins_dydx_atmeans.v1",
@@ -3049,12 +3092,6 @@
     "variant_id": "margins_dydx_atmeans",
     "stage": "post_estimation",
     "method_family": "margins",
-    "source_spans": [
-      [
-        49,
-        49
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official margins mechanics shown in the bounded guide snapshot"
     ],
@@ -3106,11 +3143,18 @@
     "contract_ids": [
       "margins_marginsplot.dydx_at"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate margins_dydx_atmeans: observable mechanics [margins] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rmargins.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "official.margins_by_at_levels.v1",
@@ -3119,12 +3163,6 @@
     "variant_id": "margins_by_at_levels",
     "stage": "post_estimation",
     "method_family": "margins",
-    "source_spans": [
-      [
-        50,
-        50
-      ]
-    ],
     "research_situations": [
       "a declared task needs the official margins mechanics shown in the bounded guide snapshot"
     ],
@@ -3176,10 +3214,17 @@
     "contract_ids": [
       "margins_marginsplot.at_values"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "variant_distinction": "Separate margins_by_at_levels: observable mechanics [margins] produce one explicit command state transition; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/rmargins.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false,
+    "promotion_status": "reference_only"
   }
 ]

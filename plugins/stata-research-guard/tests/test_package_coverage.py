@@ -85,7 +85,9 @@ class PackageCoverageTests(unittest.TestCase):
     def test_coverage_label_associations_match_current_dictionary_data(self) -> None:
         labels_by_package: dict[str, list[dict]] = defaultdict(list)
         for label in self.labels:
-            source_path = label["source_path"].replace("\\", "/")
+            # Guide metadata and formatter records intentionally have no raw
+            # source path; package coverage concerns deposited package code.
+            source_path = label.get("source_path", "").replace("\\", "/")
             if source_path.startswith("corpus/packages/"):
                 labels_by_package[source_path.split("/", 3)[2]].append(label)
 

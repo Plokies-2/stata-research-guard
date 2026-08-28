@@ -50,7 +50,7 @@ function resultById(result, labelId) {
   return row;
 }
 
-test("fixed e(sample) standardization remains a complete reference-only mechanics block", async (t) => {
+test("external fixed e(sample) standardization remains inspectable but nonselectable", async (t) => {
   const client = new McpClient();
   t.after(() => client.close());
 
@@ -64,22 +64,15 @@ test("fixed e(sample) standardization remains a complete reference-only mechanic
     limit: 20,
   });
 
-  const row = resultById(result, "clean.standardize_fixed_esample_complete_components.v1");
+  const row = resultById(result, "clean.standardize_on_fixed_esample.v1");
   assert.equal(row.rubric_classification, "reference_only");
   assert.equal(row.auto_select_allowed, false);
-  assert.match(row.code, /^\s*foreach\s+\w+\s+of\s+(?:local|global)\b/im);
-  assert.match(row.code, /^\s*(?:quietly\s+)?summarize\s+`\w+'\s+if\s+\S+/im);
-  assert.match(row.code, /^\s*assert\s+r\(N\)\s*>\s*1\b/im);
-  assert.match(row.code, /^\s*assert\s+r\(sd\)\s*>\s*0\b/im);
-  assert.match(row.code, /^\s*gen(?:erate)?\s+z_`\w+'\s*=\s*\(/im);
-  assert.match(row.code, /^\s*assert\s+`\w+'\s*==\s*0\s+if\s+`\w+'/im);
-  assert.match(row.code, /^\s*egen\s+\w+\s*=\s*rowmean\(`\w+'\)\s+if\s+`\w+'/im);
-  assert.doesNotMatch(row.code, /^\s*(?:foreach|forvalues|while)\b[\s\S]*^\s*(?:foreach|forvalues|while)\b/im);
-  assert.doesNotMatch(row.code, /\bcap(?:ture)?\b/i);
-  assert.doesNotMatch(row.code, /^\s*program\s+define\b/im);
+  assert.equal(row.source_kind, "deposited_research_code_partial_reference");
+  assert.match(row.code, /foreach\s+var\b/i);
+  assert.match(row.code, /if\s+sample2\s*==\s*1/i);
 });
 
-test("1:1 master-retained merge retrieves the explicit marker assertion transition", async (t) => {
+test("external merge atom remains selectable while the internal 1:1 example is gone", async (t) => {
   const client = new McpClient();
   t.after(() => client.close());
 
@@ -93,15 +86,15 @@ test("1:1 master-retained merge retrieves the explicit marker assertion transiti
     limit: 20,
   });
 
-  const row = resultById(result, "merge.11_require_using_match_allow_master_only.v1");
-  assert.ok(["preferred_candidate", "conditional_candidate"].includes(row.rubric_classification));
+  const row = resultById(result, "merge.retain_matched_rows.v1");
+  assert.equal(row.rubric_classification, "preferred_candidate");
   assert.equal(row.auto_select_allowed, true);
-  assert.match(row.code, /^\s*merge\s+1:1\s+\S+.*\bgen\(\w+\)/im);
-  const marker = row.code.match(/^\s*merge\s+1:1\s+\S+.*\bgen\((\w+)\)/im)?.[1];
-  assert.ok(marker, `expected explicit merge marker: ${row.code}`);
-  assert.match(row.code, new RegExp(`^\\s*assert\\s+${marker}\\s*!=\\s*2\\b`, "im"));
-  assert.match(row.code, new RegExp(`^\\s*drop\\s+${marker}\\b`, "im"));
-  assert.doesNotMatch(row.code, /\bkeep\s*\(/i);
-  assert.doesNotMatch(row.code, /\bnogen\b/i);
-  assert.doesNotMatch(row.code, /^\s*(?:rename|save|keep|drop\s+if|drop\s+in)\b/im);
+  assert.match(row.code, /^\s*merge\s+1:m\b/im);
+  assert.match(row.code, /\bkeep\(match\)\s+nogen\b/i);
+
+  const removed = await client.tool("search_labeled_checkpoints", {
+    variant_id: "merge_11_require_using_match_allow_master_only",
+    limit: 5,
+  });
+  assert.deepEqual(removed.results, []);
 });

@@ -2,11 +2,11 @@
 
 연구자가 읽을 수 있는 Stata 코드를 만들고, 재현성을 해치는 실수를 작업 전반에서 막아 주는 Codex 플러그인입니다.
 
-단순한 코드 조각 모음이 아닙니다. 독립 promotion audit을 거친 guide mechanics 454개(기존 262개와 Top 51–100 확장 192개), guide card 454개, 그리고 별도로 생성한 research-usage example 166개를 서로 다른 격으로 관리합니다. 두 evidence layer의 자동선택 가능 항목은 모두 0개입니다. 선택한 명령의 공식·maintainer 가이드는 항상 함께 보여 주되 template 점수 경쟁에는 넣지 않고, 연구 코드용례가 현재 데이터 구조와 작업 상태에 정확히 맞을 때만 별도 reference evidence로 함께 제공합니다. 모든 구현에는 general rules가 먼저 적용되며, template은 하나의 원자적 전이를 완전히 덮을 때만 선택합니다.
+단순한 코드 조각 모음이 아닙니다. 공식 manual과 maintainer 문서에서 확인한 454개 command mechanics는 코드 없는 metadata로만 관리하고, 109개 deposited research-code block과 57개 code-unavailable support record는 별도 research-usage layer에 둡니다. 가이드 metadata는 template 점수나 선택 가중치에 들어가지 않으며, 연구 코드도 정확한 상태 계약과 provenance gate를 모두 통과할 때만 제한적으로 검토됩니다. 내부 작성 실행 코드는 사용자 승인 `outreg2_xlsx` 다중-sheet formatter 하나만 예외로 남습니다.
 
-현재 배포 버전은 `0.3.0+codex.20260828140733`입니다.
+현재 배포 버전은 `0.3.0+codex.20260828164500`입니다.
 
-이번 버전은 도구 기능을 줄이지 않고 기본 컨텍스트를 정리했습니다. Skill 진입문은 54,941바이트에서 11,476바이트로, MCP initialize 응답은 25,467자에서 5,976자로 줄었습니다. 72개 checkpoint enum을 로컬 JSON Schema 정의로 공유해 `tools/list`도 47,148자에서 39,376자로 줄였으며, 기존 14개 도구와 lint·audit·runtime 계약은 유지합니다.
+이번 버전은 내부·합성 command example을 전수 정리했습니다. 승인 formatter 외 derived implementation 35개, project snapshot 1개, legacy manual-derived label 2개와 관련 source/archive bytes를 제거했고, 454개 guide record를 authoritative URL 기반 code-free metadata로 다시 만들었습니다. 명령어별 정리본은 100개 command group과 395개 material contract를 계속 전수 기록합니다.
 
 ## 무엇이 좋은가
 
@@ -40,7 +40,7 @@
 ### general rules를 따르고, 맞는 template만 선택합니다
 
 - `resolve_transition_evidence`가 가이드 1개와 연구용례 최대 1개를 서로 독립적으로 돌려줍니다.
-- 가이드 코드는 문법과 상태 전이의 교과서 역할만 하며 표본·estimand·모형·FE·VCE·sheet 같은 연구 결정을 대신하지 않습니다.
+- 가이드 metadata는 명령이 지원하는 문법과 상태 전이만 설명하며 코드 본문을 제공하지 않고, 표본·estimand·모형·FE·VCE·sheet 같은 연구 결정을 대신하지 않습니다.
 - general rules는 직접 구현뿐 아니라 template 선택·binding·변형·검증에도 항상 적용됩니다.
 - 입력 자료의 형태, 관측 단위, 시간 구조, key와 변수 특성을 비교하고, 허용된 binding 뒤에도 원자적 전이 전체가 유지될 때만 template을 고릅니다.
 - 서로 다른 대안 template을 임의로 이어 붙이지 않습니다.
@@ -75,8 +75,8 @@ general rules는 예외 경로가 아니라 모든 Stata 코드 작성의 기본
 
 ### 회귀 앞뒤의 연구 workflow도 다룹니다
 
-- StataCorp 공식 manual을 페이지 단위로 찾고, 실제 실행으로 확인한 official example과 code hash를 별도 증거로 제공합니다.
-- Top 100 명령군의 395개 주요 변형과 추가 user-written 명령군 15개의 48개 변형을 계약으로 관리합니다. 단순 명령은 하나의 교과서 예시로 충분할 수 있지만, 복잡 명령은 입력 상태·문법·추정·추론·반환 상태·후속 handoff가 달라질 때마다 서로 다른 가이드 예시를 요구합니다. 단일 Markdown 정본에는 454개 guide와 109개 논문 코드블록의 전체 코드·span·hash를 보존하고 candidate/reference/excluded, unmapped, code-free exact support와 gap을 분리합니다.
+- StataCorp 공식 manual을 페이지 단위로 찾습니다. 공식 문서에서 변형한 runtime fixture 9개는 비원문·비선택·비독립 검증 입력으로 격리하고, 일반 template이나 command authority로 사용하지 않습니다.
+- Top 100 명령군의 395개 주요 변형과 추가 user-written 명령군 15개의 48개 변형을 계약으로 관리합니다. 단순 명령은 하나의 mechanics record로 충분할 수 있지만, 복잡 명령은 입력 상태·문법·추정·추론·반환 상태·후속 handoff가 달라질 때마다 서로 다른 metadata record를 요구합니다. 단일 Markdown 정본에는 454개 guide metadata와 별도의 109개 deposited paper-code block을 보존하고 candidate/reference/excluded, unmapped, code-free exact support와 gap을 분리합니다.
 - 공식 명령과 주요 community package를 43개 명령군·109개 canonical command anchor로 관리하며, 개별 estimator 이름을 끝없이 탐지기에 추가하지 않고 상태 호환 원자 template으로 확장합니다.
 - import, integrity check, cleaning·label, merge·reshape, panel 구성, descriptive statistics, sample flow, estimation·robustness, figure·table export와 master orchestration을 한 흐름으로 점검합니다.
 - summary 작업은 평균·표준편차·관측치 수를 하나의 named dataset에 저장하고, Excel 표와 PDF 그림이 같은 자료를 읽도록 설계할 수 있습니다.
@@ -92,25 +92,6 @@ general rules는 예외 경로가 아니라 모든 Stata 코드 작성의 기본
 - factor-variable 기반 event study와 raw coefficient selector 검증
 - 2SLS first stage를 포함한 여러 sheet의 Excel 결과 정리
 - summary dataset, descriptive Excel과 PDF figure 사이의 일관성 점검
-
-## Toy example: 자동차 가격 robust 회귀
-
-[`examples/auto-price-robust/`](examples/auto-price-robust/)에는 Stata 내장 `auto` 자료로 실행하는 작은 예시를 두었습니다. `price`를 결과변수로 놓고 설명변수를 단계적으로 추가한 네 개의 OLS 사양을 `vce(robust)`로 비교합니다.
-
-이 예시는 다음 흐름을 짧게 보여 줍니다.
-
-```text
-내장 자료 로드 → key·결측 점검 → 네 개 사양 추정
-→ 각 e(sample)의 종속변수 평균 계산 → 한 sheet Excel 표 조립
-```
-
-Stata의 현재 작업 폴더를 예시 폴더로 맞춘 뒤 실행합니다.
-
-```stata
-do price_models.do
-```
-
-실행하면 `price_robust_models.xls`가 생성됩니다. 예시에 포함된 [`report.md`](examples/auto-price-robust/report.md)에서는 어느 줄이 template이고 어느 줄이 substantive `general_rule` 구현인지 확인할 수 있습니다. 이 toy workflow는 기능과 코드 구조를 보여 주기 위한 것이며, 실증 결과의 일반성이나 학술적 타당성을 주장하지 않습니다.
 
 ## 설치
 
@@ -164,15 +145,18 @@ node plugins/stata-research-guard/scripts/verify_plugin_bundle.cjs `
 
 현재 배포본의 검증 상태는 다음과 같습니다.
 
-- bundle manifest: 264개 파일, 통과
-- Node regression test: 280/280 통과(실제 Stata runtime fixture 포함)
+- bundle manifest: 207개 파일, 통과
+- Node regression test: 277/277 통과(실제 Stata runtime fixture 포함)
 - bundle-manifest regression test: 5/5 통과
-- Python test: 67/67 통과
+- Python test: 55/55 통과
 - Top 100 coverage: 100개 명령군·395개 variant 전부 적재, frozen Top 50은 50개 명령군·203개 variant로 보존
 - supplemental coverage: 15개 명령군·48개 variant, 전체 계약 443개
-- guide promotion audit: 454/454 reference-only(기존 262개와 신규 192개), 자동선택 0
-- generated evidence: guide card 454개, research-usage example 166개, 두 layer 자동선택 0
-- Top 100 full-code ledger: guide 454개, 논문 109개(candidate 46·reference 53·excluded 10), command-context mapped/unmapped 96/13, code-free exact support 33개
+- runtime label index: 564개 중 code-bearing 110개(외부 deposited research code 109개와 승인 formatter 1개)
+- guide promotion audit: code-free metadata 454/454 reference-only, 자동선택 0
+- generated evidence: guide metadata card 454개, research-usage record 166개, 두 layer 자동선택 0
+- source archive: 외부 corpus 원문 48개와 승인 formatter 1개, 합계 49개
+- Top 100 metadata ledger: guide 454개; 별도 deposited paper-code ledger 109개(candidate 46·reference 53·excluded 10), command-context mapped/unmapped 96/13, code-free exact support 33개
+- official runtime fixtures: adapted 9개, 전부 비원문·비선택·비독립으로 격리
 - paper corpus occurrence audit: 132개 후보 중 통과 38개·추가 검토 13개·제외 81개; 통과 항목만 support evidence로 적재
 
 MCP launcher는 `CODEX_MCP_NODE_PATH`, Codex에 포함된 Node.js, `PATH`의 `node.exe` 순서로 실행 파일을 찾습니다.

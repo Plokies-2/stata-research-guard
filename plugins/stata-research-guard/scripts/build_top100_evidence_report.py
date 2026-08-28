@@ -159,33 +159,65 @@ def validate_card(
     if not isinstance(label_id, str) or not label_id:
         raise ValueError(f"{layer_name} card has no label_id")
     code = card.get("code")
-    if not isinstance(code, str) or (code_required and not code):
+    if code is not None and not isinstance(code, str):
         raise ValueError(f"{label_id} has invalid code availability")
+    if code_required and not code:
+        raise ValueError(f"{label_id} has invalid code availability")
+    if layer_name == "guide" and (code not in {None, ""} or card.get("code_available") is not False):
+        raise ValueError(f"{label_id} guide mechanics must remain code-free")
     provenance = card.get("provenance")
     if not isinstance(provenance, dict):
         raise ValueError(f"{label_id} has no provenance object")
+    if layer_name == "guide":
+        manual_urls = card.get("manual_urls")
+        if (
+            not isinstance(manual_urls, list)
+            or not manual_urls
+            or not all(isinstance(url, str) and url.startswith(("https://", "http://")) for url in manual_urls)
+        ):
+            raise ValueError(f"{label_id} guide metadata has no authoritative manual URL")
+        forbidden_provenance = {
+            key
+            for key in ("source_path", "file", "source_spans", "line_span", "source_file_sha256", "code_sha256")
+            if provenance.get(key) not in (None, [], "")
+        }
+        if forbidden_provenance:
+            raise ValueError(
+                f"{label_id} guide metadata carries forbidden code-source provenance: {sorted(forbidden_provenance)}"
+            )
+        gate = provenance.get("audit_gate") or {}
+        if gate.get("passed") is not True or gate.get("basis") != "metadata_only_guide":
+            raise ValueError(f"{label_id} guide metadata audit gate is not verified")
+        return
     source_path = provenance.get("source_path") or provenance.get("file")
     if not isinstance(source_path, str) or not source_path:
         raise ValueError(f"{label_id} has no source path")
+    if layer_name == "research_usage" and not code:
+        if card.get("code_available") not in {False, None}:
+            raise ValueError(f"{label_id} code-free usage support has inconsistent availability")
+        if card.get("evidence_role") not in {"exact_usage_support", "occurrence_support"}:
+            raise ValueError(f"{label_id} code-free usage support has no bounded evidence role")
+        _require_sha(provenance.get("source_file_sha256"), f"{label_id}.source_file_sha256")
+        return
     raw_spans = provenance.get("source_spans", provenance.get("line_span"))
     spans = normalize_spans(raw_spans, f"{label_id}.source_spans")
     source_hash = _require_sha(provenance.get("source_file_sha256"), f"{label_id}.source_file_sha256")
+    source_lines = _validated_source_lines(
+        plugin=plugin,
+        source_path=source_path,
+        source_hash=source_hash,
+        label_id=label_id,
+    )
+    line_count = len(source_lines)
+    if any(end > line_count for _, end in spans):
+        raise ValueError(f"{label_id} source span exceeds source file")
+    source_readback = "\n".join(
+        "\n".join(source_lines[start - 1 : end]) for start, end in spans
+    )
     if code:
         code_hash = _require_sha(provenance.get("code_sha256"), f"{label_id}.code_sha256")
         if sha256_bytes(code.encode("utf-8")) != code_hash:
             raise ValueError(f"{label_id} code SHA-256 mismatch")
-        source_lines = _validated_source_lines(
-            plugin=plugin,
-            source_path=source_path,
-            source_hash=source_hash,
-            label_id=label_id,
-        )
-        line_count = len(source_lines)
-        if any(end > line_count for _, end in spans):
-            raise ValueError(f"{label_id} source span exceeds source file")
-        source_readback = "\n".join(
-            "\n".join(source_lines[start - 1 : end]) for start, end in spans
-        )
         if normalized_block_text(source_readback) != normalized_block_text(code):
             raise ValueError(f"{label_id} code does not match its declared source spans")
 
@@ -344,10 +376,11 @@ def guide_view(card: dict[str, Any], ranked_contracts: set[str], nondirect: set[
         "label_id": card["label_id"],
         "contract_ids": covered,
         "counts_toward_complexity": bool(set(covered) & nondirect),
-        "code": card["code"],
-        "code_line_count": len(card["code"].splitlines()),
-        "code_sha256": card["provenance"]["code_sha256"],
-        **card_source(card),
+        "code_available": False,
+        "authority_tier": card.get("authority_tier"),
+        "manual_urls": list(card.get("manual_urls", [])),
+        "command_anchors": list(card.get("command_anchors", [])),
+        "state_signature": copy.deepcopy(card.get("state_signature") or {}),
     }
 
 
@@ -389,7 +422,7 @@ def paper_support_view(card: dict[str, Any]) -> dict[str, Any]:
 
 
 def guide_ledger_view(card: dict[str, Any], override: Any) -> dict[str, Any]:
-    """Keep every raw guide block, including audit-suppressed blocks, in the canonical ledger."""
+    """Keep every code-free guide record, including audit-suppressed metadata."""
     view = guide_view(card, set(card.get("contract_ids", [])), set())
     audit_action = override.get("action") if isinstance(override, dict) else None
     view["audit_action"] = audit_action or "retained_no_override"
@@ -419,7 +452,7 @@ def build_report(
         raise ValueError("every evidence row must have a label_id")
 
     for card in guide_cards:
-        validate_card(card, plugin=plugin, layer_name="guide", code_required=True)
+        validate_card(card, plugin=plugin, layer_name="guide", code_required=False)
     for card in usage_cards:
         validate_card(card, plugin=plugin, layer_name="research_usage", code_required=bool(card.get("code")))
         if card.get("code") and card.get("contract_ids"):
@@ -594,7 +627,7 @@ def build_report(
         raise ValueError("legacy paper-code accounting is incomplete")
     if mapped_legacy_ids & unmapped_legacy_ids:
         raise ValueError("legacy paper-code block is both mapped and unmapped")
-    all_guide_code_blocks = sorted(
+    all_guide_mechanics_metadata = sorted(
         (guide_ledger_view(card, guide_overrides.get(card["label_id"])) for card in guide_cards),
         key=lambda item: item["label_id"],
     )
@@ -620,7 +653,7 @@ def build_report(
             "direct_policy_example_count": 0,
             "legacy_paper_anchor_mapping": "group_context_only_not_exact_contract_support",
             "codefree_contract_mapping": "exact_support_or_occurrence_support_only",
-            "guide_code_storage": "full_code_embedded_in_this_matrix_and_markdown",
+            "guide_mechanics_storage": "metadata_only_no_code_body",
             "paper_code_storage": "full_code_embedded_in_this_matrix_and_markdown",
         },
         "source_files": {
@@ -653,7 +686,7 @@ def build_report(
             "unique_guide_blocks_displayed": len({
                 item["label_id"] for row in rows for item in row["guide_blocks"]
             }),
-            "guide_code_blocks_in_complete_ledger": len(all_guide_code_blocks),
+            "guide_mechanics_records_in_complete_ledger": len(all_guide_mechanics_metadata),
             "legacy_paper_code_blocks": len(all_legacy_ids),
             "legacy_paper_code_blocks_anchor_mapped": len(mapped_legacy_ids),
             "legacy_paper_code_blocks_unmapped": len(unmapped_legacy_ids),
@@ -673,12 +706,12 @@ def build_report(
             "declared_guide_gaps": sorted(declared_guide_gaps),
             "direct_missing_guide_allowed": True,
             "code_spans_hashes_validated": True,
-            "code_matches_source_span_readback": True,
+            "guide_provenance_hashes_validated_without_outputting_code": True,
             "unique_labels_validated": True,
             "registry_mapping_validated": True,
             "all_legacy_paper_blocks_accounted": mapped_legacy_ids | unmapped_legacy_ids == all_legacy_ids,
-            "all_guide_blocks_in_complete_ledger": {
-                item["label_id"] for item in all_guide_code_blocks
+            "all_guide_mechanics_metadata_in_complete_ledger": {
+                item["label_id"] for item in all_guide_mechanics_metadata
             } == {item["label_id"] for item in guide_cards},
             "all_legacy_paper_blocks_in_complete_ledger": {
                 item["label_id"] for item in all_legacy_paper_code_blocks
@@ -687,7 +720,7 @@ def build_report(
         "language_element_exemptions": exemptions,
         "applied_guide_audit_overrides": applied_overrides,
         "rows": rows,
-        "all_guide_code_blocks": all_guide_code_blocks,
+        "all_guide_mechanics_metadata": all_guide_mechanics_metadata,
         "all_legacy_paper_code_blocks": all_legacy_paper_code_blocks,
         "unmapped_legacy_paper_blocks": sorted(unmapped_legacy, key=lambda item: item["label_id"]),
         "unmapped_codefree_research_usage": sorted(unmapped_codefree, key=lambda item: item["label_id"]),
@@ -711,6 +744,14 @@ def _details(item: dict[str, Any], *, title_suffix: str = "") -> str:
     )
     if item.get("code_sha256"):
         metadata += f"; code_sha256={item['code_sha256']}"
+    if item.get("manual_urls"):
+        metadata += f"; manual_urls={','.join(item['manual_urls'])}"
+    if item.get("code_available") is False:
+        metadata += "; code_available=false"
+        return (
+            f"<details><summary><code>{_cell(label)}</code></summary>"
+            f"<small>{_cell(metadata)}</small></details>"
+        )
     code = _cell(item.get("code", "")) or "(code unavailable)"
     return (
         f"<details><summary><code>{_cell(label)}</code></summary>"
@@ -740,7 +781,7 @@ def render_markdown(report: dict[str, Any]) -> str:
         "- `N multiple`은 입력·문법·추정·추론·returned state·handoff가 달라 여러 guide atom이 필요하다.",
         "- 논문 실제 코드는 registry token/command anchor로 그룹 문맥에만 연결한다. exact contract template support로 승격하지 않는다.",
         "- 코드 비공개 research usage만 명시 `contract_ids`가 있을 때 exact/occurrence support로 별도 표시한다.",
-        "- 아래 guide와 legacy paper code block은 source span readback으로 검증한 전체 원문을 `<details><pre>`에 보존한다.",
+        "- guide mechanics는 manual URL·command·state와 source-span hash 메타데이터만 보존하며 코드 본문을 출력하지 않는다.",
         "- code-free research usage는 원문 코드가 없으므로 exact/occurrence support와 group context만 표시한다.",
         "",
         "## 검증 요약",
@@ -748,7 +789,7 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- rows: {summary['ranked_groups']}; material contracts: {summary['material_contracts']}",
         f"- guide-required/direct-policy contracts: {summary['guide_required_contracts']}/{summary['direct_policy_contracts']}",
         f"- declared guide gaps: {summary['declared_guide_gap_contracts']}; legacy paper code mapped/unmapped: {summary['legacy_paper_code_blocks_anchor_mapped']}/{summary['legacy_paper_code_blocks_unmapped']}",
-        f"- complete raw code ledger: guide blocks {summary['guide_code_blocks_in_complete_ledger']}; legacy paper blocks {summary['legacy_paper_code_blocks']}",
+        f"- complete mechanics metadata ledger: guide records {summary['guide_mechanics_records_in_complete_ledger']}; legacy paper blocks {summary['legacy_paper_code_blocks']}",
         f"- registry requirements hash match: `{str(report['registry_requirements_hash_check']['matches']).lower()}`",
         "",
         "## 명령어별 증거",
@@ -813,12 +854,12 @@ def render_markdown(report: dict[str, Any]) -> str:
             ])
             + " |"
         )
-    lines.extend(["", "## Complete guide mechanics code ledger", ""])
+    lines.extend(["", "## Complete guide mechanics metadata ledger", ""])
     lines.append(
-        "All 454 source-validated guide blocks are retained here, including audit-suppressed and supplemental-only blocks. "
+        "All source-validated guide records are retained here without code bodies, including audit-suppressed and supplemental-only cards. "
         "`audit_action` distinguishes their audit disposition from command-row display eligibility."
     )
-    for item in report["all_guide_code_blocks"]:
+    for item in report["all_guide_mechanics_metadata"]:
         lines.append("- " + _details(item, title_suffix=f" [audit_action={item['audit_action']}]"))
     lines.extend(["", "## Guide audit actions", ""])
     lines.append(

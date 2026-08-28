@@ -173,7 +173,13 @@ test("MCP handshake and tool inventory", async (t) => {
   assert.ok(listed.tools.every((tool) => tool.outputSchema?.type === "object"));
   const transitionResolver = listed.tools.find((tool) => tool.name === "resolve_transition_evidence");
   assert.match(transitionResolver.description, /two non-competing evidence layers/i);
-  assert.match(transitionResolver.description, /guide code is never auto-selectable/i);
+  assert.match(transitionResolver.description, /guide layer returns mechanics metadata only/i);
+  assert.match(transitionResolver.description, /never guide code, code hashes, or synthetic source spans/i);
+  const top100Tool = listed.tools.find((tool) => tool.name === "inspect_top100_command_examples");
+  assert.match(top100Tool.description, /never guide code, code hashes, or synthetic source spans/i);
+  const verifiedFixtureTool = listed.tools.find((tool) => tool.name === "get_verified_stata_examples");
+  assert.match(verifiedFixtureTool.description, /official-document-derived runtime fixtures/i);
+  assert.match(verifiedFixtureTool.description, /adapted rather than verbatim/i);
   const reuseTool = listed.tools.find((tool) => tool.name === "template_reuse_check");
   assert.equal(reuseTool.inputSchema.properties.min_command_retention.minimum, 0.75);
   assert.equal(reuseTool.inputSchema.properties.enforce_template_reuse.default, false);
@@ -209,6 +215,47 @@ test("Top 100 command overview returns every complexity-weighted guide block and
   });
   assert.ok(withPaper.structuredContent.rows[0].paper_code_context);
   assert.match(withPaper.structuredContent.claim_boundary.paper_code_context, /exact contract template support/i);
+});
+
+test("Top 100 MCP projection masks stale guide code, hashes, and synthetic source spans", async (t) => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "stata-top100-stale-guide-"));
+  const preload = path.join(temp, "poison-top100-guide.cjs");
+  fs.writeFileSync(preload, [
+    '"use strict";',
+    'const fs = require("node:fs");',
+    'const path = require("node:path");',
+    'const originalReadFileSync = fs.readFileSync;',
+    'fs.readFileSync = function poisonedReadFileSync(target, ...args) {',
+    '  const value = originalReadFileSync.call(this, target, ...args);',
+    '  if (path.basename(String(target)) !== "top100_command_evidence_matrix.json") return value;',
+    '  const payload = JSON.parse(String(value));',
+    '  const row = payload.rows.find((item) => item.group_id === "regress");',
+    '  const poison = { code: "GUIDE_SECRET", code_sha256: "a".repeat(64), source_path: "synthetic/guide.do", source_spans: [[1, 99]], source_file_sha256: "b".repeat(64) };',
+    '  row.guide_blocks = (row.guide_blocks || []).map((item) => ({ ...item, ...poison }));',
+    '  row.supplemental_guide_context = [{ label_id: "stale.supplemental", contract_ids: [], ...poison }];',
+    '  row.paper_code_context = row.paper_code_context || { candidate: [], reference: [], excluded: [] };',
+    '  row.paper_code_context.candidate.push({ label_id: "stale.internal.paper", classification: "candidate", source_kind: "deposited_research_code_guide_derived", ...poison });',
+    '  return JSON.stringify(payload);',
+    '};',
+  ].join("\n"), "utf8");
+  const client = new McpClient({ execArgs: ["--require", preload] });
+  t.after(() => {
+    client.close();
+    fs.rmSync(temp, { recursive: true, force: true });
+  });
+
+  const result = await client.tool("inspect_top100_command_examples", { commands: ["regress"], include_paper_context: true });
+  const guidePayload = JSON.stringify([
+    result.rows[0].guide_blocks,
+    result.rows[0].supplemental_guide_context,
+  ]);
+  assert.doesNotMatch(guidePayload, /GUIDE_SECRET|code_sha256|source_path|source_spans|source_file_sha256/);
+  assert.ok(result.rows[0].guide_blocks.every((row) => row.code_available === false));
+  assert.ok(result.rows[0].supplemental_guide_context.every((row) => row.code_available === false));
+  const stalePaper = result.rows[0].paper_code_context.candidate.find((row) => row.label_id === "stale.internal.paper");
+  assert.equal(stalePaper.code_available, false);
+  assert.equal(Object.hasOwn(stalePaper, "code"), false);
+  assert.equal(Object.hasOwn(stalePaper, "code_sha256"), false);
 });
 
 test("Windows plugin launcher starts the MCP server", async (t) => {
@@ -469,7 +516,7 @@ test("an exact checkpoint is not hidden by a broader project-stage hint", async 
   assert.ok(loaded.results.some((row) => row.label_id === "postest.load_saved_ster.v1"));
 });
 
-test("estimate persistence exposes separate seed append numbered-load store and restore transitions", async (t) => {
+test("estimate persistence retains externally sourced seed, store, and restore transitions", async (t) => {
   const client = new McpClient();
   t.after(() => client.close());
 
@@ -480,8 +527,6 @@ test("estimate persistence exposes separate seed append numbered-load store and 
   const ids = new Set(result.results.map((row) => row.label_id));
   for (const labelId of [
     "postest.save_active_result_ster.v1",
-    "postest.append_active_result_to_ster_collection.v1",
-    "postest.load_numbered_ster.v1",
     "postest.store_named_estimate.v1",
     "postest.restore_named_estimate.v1",
   ]) assert.ok(ids.has(labelId), labelId);
@@ -491,18 +536,13 @@ test("estimate persistence exposes separate seed append numbered-load store and 
   assert.doesNotMatch(seed.reusable_core, /append/i);
   const byId = new Map(result.results.map((row) => [row.label_id, row]));
   assert.equal(byId.get("postest.save_active_result_ster.v1").variant_group, "postest.ster_seed");
-  assert.equal(byId.get("postest.append_active_result_to_ster_collection.v1").variant_group, "postest.ster_append");
-  assert.equal(byId.get("postest.load_numbered_ster.v1").variant_group, "postest.load_estimate");
   assert.equal(byId.get("postest.store_named_estimate.v1").variant_group, "postest.store_estimate");
   assert.equal(byId.get("postest.restore_named_estimate.v1").variant_group, "postest.restore_estimate");
-  assert.notEqual(byId.get("postest.save_active_result_ster.v1").variant_group, byId.get("postest.append_active_result_to_ster_collection.v1").variant_group);
   assert.match(result.variant_group_rule, /at most one alternative within a variant_group/i);
   assert.match(result.variant_group_rule, /sequential transitions/i);
 
   const variants = [
     ["persist_active_estimate_as_ster", "postest.save_active_result_ster.v1"],
-    ["append_active_estimate_to_ordered_ster", "postest.append_active_result_to_ster_collection.v1"],
-    ["load_declared_numbered_ster_state", "postest.load_numbered_ster.v1"],
     ["restore_declared_in_memory_estimate", "postest.restore_named_estimate.v1"],
   ];
   for (const [variantId, labelId] of variants) {
@@ -511,12 +551,11 @@ test("estimate persistence exposes separate seed append numbered-load store and 
   }
 });
 
-test("new sample-flow reshape time-grid and graph-combine transitions remain independently retrievable", async (t) => {
+test("external reshape time-grid and graph-combine transitions remain independently retrievable", async (t) => {
   const client = new McpClient();
   t.after(() => client.close());
 
   const cases = [
-    ["typed_checkpoint_count_postfile", "descriptives.named_sample_flow_dataset.v1"],
     ["validated_long_key_to_wide_stub", "reshape.long_stubs_to_wide.v1"],
     ["aligned_multi_stub_wide_to_long", "reshape.multi_stub_wide_to_long.v1"],
     ["entity_observed_range_internal_gaps", "panel.materialize_declared_time_grid_tsfill.v1"],
@@ -529,14 +568,14 @@ test("new sample-flow reshape time-grid and graph-combine transitions remain ind
     assert.ok(exact.results[0].template_input_profile);
   }
 
-  const sampleFlow = await client.tool("search_labeled_checkpoints", {
+  const removedSampleFlow = await client.tool("search_labeled_checkpoints", {
     checkpoint: "descriptives.sample_flow",
     commands: ["postfile", "post", "postclose"],
     task: "write an ordered checkpoint and observation-count dataset",
     limit: 5,
   });
-  assert.equal(sampleFlow.results[0].label_id, "descriptives.named_sample_flow_dataset.v1");
-  assert.match(sampleFlow.results[0].template_input_profile.variable_characteristics.join(" "), /no coefficient/i);
+  assert.deepEqual(removedSampleFlow.results, []);
+  assert.equal(removedSampleFlow.general_rule_policy.closest_template_evidence.hint_role, "none");
 
   const reshape = await client.tool("search_labeled_checkpoints", {
     checkpoint: "merge_reshape.integration",
@@ -563,7 +602,7 @@ test("collapse aggregation alternatives can compose with the separate label-roun
   assert.match(byId.get("descriptives.collapse_preserve_retained_labels.v1").required_changes.join(" "), /explicit retained/i);
 });
 
-test("event RHS is a sequential adjunct and direct master shell remains guidance-only", async (t) => {
+test("removed internal event RHS is unavailable and direct master shell remains guidance-only", async (t) => {
   const client = new McpClient();
   t.after(() => client.close());
 
@@ -571,10 +610,7 @@ test("event RHS is a sequential adjunct and direct master shell remains guidance
     variant_id: "event_levels_base_excluded_single_hash",
     limit: 5,
   });
-  const rhs = event.results[0];
-  assert.equal(rhs.label_id, "estimation.event_rhs_single_hash_base_excluded.v1");
-  assert.equal(rhs.variant_group, "estimation.event_rhs");
-  assert.equal(rhs.transition_role, "sequential_adjunct");
+  assert.deepEqual(event.results, []);
 
   const master = await client.tool("search_labeled_checkpoints", {
     variant_id: "ordered_direct_do_calls",
@@ -618,25 +654,25 @@ test("staggered-DID retrieval exposes atomic method alternatives separately from
   const client = new McpClient();
   t.after(() => client.close());
   const result = await client.tool("search_labeled_checkpoints", { checkpoint: "estimation.staggered_did", limit: 20 });
-  assert.equal(result.results.length, 10);
+  assert.equal(result.results.length, 9);
 
   const atomic = result.results.filter((row) => row.variant_group === "estimation.staggered_did_method");
   const legacy = result.results.filter((row) => row.variant_group === "estimation.staggered_did_legacy");
-  assert.equal(atomic.length, 8, JSON.stringify(result.results.map((row) => ({ label_id: row.label_id, variant_group: row.variant_group }))));
+  assert.equal(atomic.length, 7, JSON.stringify(result.results.map((row) => ({ label_id: row.label_id, variant_group: row.variant_group }))));
   assert.equal(legacy.length, 2, JSON.stringify(result.results.map((row) => ({ label_id: row.label_id, variant_group: row.variant_group }))));
   const demotedTwfeControls = atomic.find((row) => row.label_id === "estimation.twfe_did_both_control_sets.v1");
   assert.equal(demotedTwfeControls.rubric_classification, "reference_only");
   assert.equal(demotedTwfeControls.auto_select_allowed, false);
   assert.ok(atomic.filter((row) => row !== demotedTwfeControls).every((row) => row.auto_select_allowed), JSON.stringify(atomic));
   assert.ok(atomic.filter((row) => row !== demotedTwfeControls).every((row) => ["preferred_candidate", "conditional_candidate"].includes(row.rubric_classification)), JSON.stringify(atomic));
-  assert.equal(new Set(atomic.map((row) => row.label_id)).size, 8);
-  assert.equal(new Set(atomic.map((row) => row.variant_id)).size, 8);
+  assert.equal(new Set(atomic.map((row) => row.label_id)).size, 7);
+  assert.equal(new Set(atomic.map((row) => row.variant_id)).size, 7);
   assert.ok(legacy.every((row) => row.rubric_classification === "reference_only" && !row.auto_select_allowed), JSON.stringify(legacy));
   assert.deepEqual(new Set(legacy.map((row) => row.label_id)), new Set([
     "estimation.staggered_jwdid_ppmlhdfe.v1",
     "estimation.twfe_ppmlhdfe.v1",
   ]));
-  assert.equal(result.variant_groups["estimation.staggered_did_method"].length, 8);
+  assert.equal(result.variant_groups["estimation.staggered_did_method"].length, 7);
   assert.equal(result.variant_groups["estimation.staggered_did_legacy"].length, 2);
 });
 
@@ -673,6 +709,44 @@ test("repair planner applies explicit method contract before generic scope bonus
   assert.equal(intervention.evidence_progress.specificity_gate.active, true);
   assert.equal(intervention.chosen_variant.variant_id, "weighted_entity_means_with_first_constant_field");
   assert.ok(intervention.evidence_progress.method_mismatch_labeled_variants.some((row) => row.variant_id === "collapse_means_and_max_to_student"));
+});
+
+test("label ranking is invariant to code bytes when declared metadata is unchanged", async (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-ranking-code-invariance-"));
+  const preload = path.join(root, "mutate-label-code.cjs");
+  fs.writeFileSync(path.join(root, "main.do"), "version 18.0\nuse city_panel.dta, clear\n", "utf8");
+  fs.writeFileSync(preload, [
+    '"use strict";',
+    'const fs = require("node:fs");',
+    'const path = require("node:path");',
+    'const originalReadFileSync = fs.readFileSync;',
+    'fs.readFileSync = function mutatedLabelReadFileSync(target, ...args) {',
+    '  const value = originalReadFileSync.call(this, target, ...args);',
+    '  if (path.basename(String(target)) !== "labeled_checkpoints.jsonl") return value;',
+    '  return String(value).split(/\\r?\\n/).filter(Boolean).map((line) => {',
+    '    const row = JSON.parse(line);',
+    '    if (row.label_id === "descriptives.weighted_city_entity_means.v1") row.code = `${row.code || ""}\\n* rankpoison`;',
+    '    return JSON.stringify(row);',
+    '  }).join("\\n") + "\\n";',
+    '};',
+  ].join("\n"), "utf8");
+  const baselineClient = new McpClient();
+  const mutatedClient = new McpClient({ execArgs: ["--require", preload] });
+  t.after(() => {
+    baselineClient.close();
+    mutatedClient.close();
+    fs.rmSync(root, { recursive: true, force: true });
+  });
+  const request = {
+    path: root,
+    request: "weighted city entity means summary rankpoison을 추가해줘",
+    requested_checkpoints: ["descriptives.entity_collapse"],
+  };
+  const baseline = await baselineClient.tool("plan_dictionary_repairs", request);
+  const mutated = await mutatedClient.tool("plan_dictionary_repairs", request);
+  assert.equal(baseline.interventions[0].chosen_variant.label_id, "descriptives.weighted_city_entity_means.v1");
+  assert.equal(mutated.interventions[0].chosen_variant.label_id, baseline.interventions[0].chosen_variant.label_id);
+  assert.equal(mutated.interventions[0].chosen_variant.state_match_score, baseline.interventions[0].chosen_variant.state_match_score);
 });
 
 test("repair planner exposes template and native recommendations for atomic substeps of one broad headword", async (t) => {
@@ -932,7 +1006,7 @@ test("workflow dictionary groups code snippets under stage headwords", () => {
     assert.ok(dictionary.entries.some((row) => row.headword === split));
   }
   const finalExcel = dictionary.entries.find((row) => row.headword === "final_excel_assembly");
-  assert.equal(finalExcel.variants.length, 5);
+  assert.equal(finalExcel.variants.length, 3);
   assert.ok(dictionary.retrieval_guide.order.some((row) => /official Stata manual/i.test(row)));
   assert.ok(dictionary.command_index.outreg2.includes("final_excel_assembly"));
   assert.ok(dictionary.alias_index["경로 설정"].includes("project_setup.paths"));
@@ -1024,25 +1098,27 @@ test("repair planning rejects incompatible variants but permits a bounded direct
   assert.match(intervention.general_rule_evidence_chain.join(" "), /official Stata manual was searched/i);
 });
 
-test("every labeled block exposes commands and observable state signals", () => {
+test("external implementation labels expose commands and every evidence card exposes observable state signals", () => {
   const rows = fs.readFileSync(path.join(ROOT, "data", "labeled_checkpoints.jsonl"), "utf8").trim().split(/\r?\n/).map((line) => JSON.parse(line));
   assert.ok(rows.length >= 73);
   for (const row of rows) {
-    assert.ok(row.command_anchors.length > 0, row.label_id);
     assert.ok(row.state_signature.observable_signals.length > 0, row.label_id);
+    if (/^(?:deposited_research_code|external_research_code|independent_researcher_code)/.test(row.source_kind)) {
+      assert.ok(row.command_anchors.length > 0, row.label_id);
+    }
   }
   const pathDefaults = rows.filter((row) => row.checkpoint === "project_setup.paths" && row.canonical_default);
-  assert.equal(pathDefaults.length, 1);
-  assert.equal(pathDefaults[0].variant_id, "default_style_project_role_globals");
+  assert.deepEqual(pathDefaults, []);
 });
 
-test("default style path variant is canonical only for a first build", async (t) => {
+test("internal default path snapshot is not returned while external path evidence remains reference-only", async (t) => {
   const client = new McpClient();
   t.after(() => client.close());
   const labeled = await client.tool("search_labeled_checkpoints", { checkpoint: "project_setup.paths", limit: 20 });
   const defaults = labeled.results.filter((row) => row.canonical_default);
-  assert.equal(defaults.length, 1);
-  assert.equal(defaults[0].variant_id, "default_style_project_role_globals");
+  assert.deepEqual(defaults, []);
+  assert.deepEqual(labeled.results.map((row) => row.label_id), ["setup.paths.manual_root_derived_folders.v1"]);
+  assert.equal(labeled.results[0].auto_select_allowed, false);
 
   const existing = fs.mkdtempSync(path.join(os.tmpdir(), "stata-existing-paths-"));
   t.after(() => fs.rmSync(existing, { recursive: true, force: true }));
@@ -1054,7 +1130,7 @@ test("default style path variant is canonical only for a first build", async (t)
     target_files: ["runall.do"],
   });
   assert.equal(plan.interventions[0].chosen_variant, null);
-  assert.ok(plan.interventions[0].evidence_progress.incompatible_labeled_variants.some((row) => row.variant_id === "default_style_project_role_globals"));
+  assert.equal(plan.interventions[0].evidence_progress.incompatible_labeled_variants.some((row) => row.variant_id === "default_style_project_role_globals"), false);
   assert.ok(plan.interventions[0].evidence_progress.rubric_reference_only_variants.some((row) => row.variant_id === "manual_root_with_derived_role_paths"));
 });
 
@@ -1461,13 +1537,17 @@ test("manual search separates official and community authority", async (t) => {
   assert.ok(postfile.results.every((row) => row.source_url === "https://www.stata.com/manuals/ppostfile.pdf"));
 });
 
-test("only runtime-verified official examples are declared passed", async (t) => {
+test("only isolated official-document-derived runtime fixtures are declared passed", async (t) => {
   const client = new McpClient();
   t.after(() => client.close());
   const regress = await client.tool("get_verified_stata_examples", { command: "regress" });
   assert.equal(regress.examples.length, 1);
   assert.equal(regress.examples[0].passed, true);
   assert.equal(regress.examples[0].stata_version, "18.0");
+  assert.equal(regress.examples[0].example_origin, "official_document_derived_runtime_fixture");
+  assert.equal(regress.examples[0].verbatim, false);
+  assert.equal(regress.examples[0].selection_eligible, false);
+  assert.equal(regress.examples[0].independent_support, false);
   assert.match(regress.examples[0].code_sha256, /^[0-9a-f]{64}$/);
   assert.match(regress.examples[0].log_sha256, /^[0-9a-f]{64}$/);
   const durableLog = path.join(ROOT, "data", regress.examples[0].log_file);
@@ -1478,6 +1558,18 @@ test("only runtime-verified official examples are declared passed", async (t) =>
   const merge = await client.tool("get_verified_stata_examples", { command: "merge" });
   assert.equal(merge.unavailable, true);
   assert.deepEqual(merge.examples, []);
+
+  for (const filename of ["official_examples.json", "official_example_verification.json"]) {
+    const payload = JSON.parse(fs.readFileSync(path.join(ROOT, "data", filename), "utf8"));
+    const rows = Array.isArray(payload) ? payload : payload.examples;
+    assert.equal(rows.length, 9, filename);
+    for (const row of rows) {
+      assert.equal(row.example_origin, "official_document_derived_runtime_fixture", `${filename}:${row.example_id}`);
+      assert.equal(row.verbatim, false, `${filename}:${row.example_id}`);
+      assert.equal(row.selection_eligible, false, `${filename}:${row.example_id}`);
+      assert.equal(row.independent_support, false, `${filename}:${row.example_id}`);
+    }
+  }
 });
 
 test("official result access and putexcel are not blanket warnings", async (t) => {
@@ -2001,56 +2093,43 @@ test("whole-flow profile uses direct outreg2 for one-sheet workbooks and the for
   assert.ok(unresolved.general_rule_policy.hard_stop_reasons.some((reason) => /output_flow_profile is incomplete/i.test(reason)));
 });
 
-test("new import, reshape, event-study, and IV handoff labels are retrievable with input profiles", async (t) => {
+test("external import and reshape labels retain input profiles while internal examples are unavailable", async (t) => {
   const client = new McpClient();
   t.after(() => client.close());
   for (const variant_id of [
-    "delimited_single_source_clear",
     "excel_sheet_firstrow_clear",
     "wide_year_stub_to_long",
+  ]) {
+    const result = await client.tool("search_labeled_checkpoints", { variant_id, limit: 5 });
+    assert.equal(result.results.length, 1, variant_id);
+    assert.ok(result.results[0].template_input_profile, variant_id);
+    assert.match(result.results[0].source_kind, /^(?:deposited_research_code|external_research_code|independent_researcher_code)/, variant_id);
+  }
+  for (const variant_id of [
+    "delimited_single_source_clear",
     "event_levels_base_excluded_single_hash",
     "stored_samples_flat_outcome_loop_automatic_axis_pdf",
     "xtivreg2_first_stage_restore_ymean_ster",
   ]) {
     const result = await client.tool("search_labeled_checkpoints", { variant_id, limit: 5 });
-    assert.equal(result.results.length, 1, variant_id);
-    assert.ok(result.results[0].template_input_profile, variant_id);
-    if (variant_id === "delimited_single_source_clear") {
-      assert.equal(result.results[0].source_kind, "official_manual_derived_mechanics");
-      assert.equal(result.results[0].code.trim(), 'import delimited using "$raw/source_file.csv", clear');
-    }
-    if (variant_id === "xtivreg2_first_stage_restore_ymean_ster") {
-      assert.equal((result.results[0].code.match(/estadd ysumm, mean/g) || []).length, 2);
-      assert.doesNotMatch(result.results[0].code, /estadd scalar|ereturn scalar/);
-    }
+    assert.deepEqual(result.results, [], variant_id);
   }
 });
 
-test("template input profiles rank compatible new labels and narrowly exclude declared contradictions", async (t) => {
+test("template input profiles rank compatible external labels and narrowly exclude declared contradictions", async (t) => {
   const client = new McpClient();
   t.after(() => client.close());
   const variants = [
-    "delimited_single_source_clear",
     "excel_sheet_firstrow_clear",
     "wide_year_stub_to_long",
-    "event_levels_base_excluded_single_hash",
-    "stored_samples_flat_outcome_loop_automatic_axis_pdf",
-    "stored_samples_flat_close_group_fixed_axis_pdf",
-    "xtivreg2_first_stage_restore_ymean_ster",
   ];
   for (const variant_id of variants) {
     const baseline = await client.tool("search_labeled_checkpoints", { variant_id, limit: 5 });
     const profile = baseline.results[0].template_input_profile;
     const matched = await client.tool("search_labeled_checkpoints", { variant_id, target_input_profile: profile, limit: 5 });
     assert.equal(matched.results.length, 1, variant_id);
-    if (variant_id === "delimited_single_source_clear") {
-      assert.equal(matched.results[0].template_input_profile_comparison.status, "neutral", variant_id);
-      assert.ok(!matched.template_input_profile_gate.excluded_label_ids.includes("input.delimited_single_source_clear.v1"));
-    }
-    else {
-      assert.equal(matched.results[0].template_input_profile_comparison.status, "aligned", variant_id);
-      assert.ok(matched.results[0].score > baseline.results[0].score, variant_id);
-    }
+    assert.equal(matched.results[0].template_input_profile_comparison.status, "aligned", variant_id);
+    assert.ok(matched.results[0].score > baseline.results[0].score, variant_id);
   }
   const wrongTopology = await client.tool("search_labeled_checkpoints", {
     variant_id: "excel_sheet_firstrow_clear",
@@ -2064,13 +2143,6 @@ test("template input profiles rank compatible new labels and narrowly exclude de
   assert.equal(wrongTopology.general_rule_policy.closest_template_evidence.auto_select_allowed, false);
   assert.equal(wrongTopology.general_rule_policy.closest_template_evidence.template_input_profile_comparison.status, "incompatible");
   assert.match(wrongTopology.general_rule_policy.closest_template_evidence.code, /import excel/i);
-  const missingInstrument = await client.tool("search_labeled_checkpoints", {
-    variant_id: "xtivreg2_first_stage_restore_ymean_ster",
-    target_input_profile: { data_structure: "panel", variable_characteristics: ["no excluded instrument"] },
-  });
-  assert.equal(missingInstrument.results.length, 0);
-  assert.ok(missingInstrument.template_input_profile_gate.excluded_label_ids.includes("postest.iv_first_stage_handoff.v1"));
-  assert.equal(missingInstrument.template_input_profile_gate.contradictions[0].contradictions[0].field, "variable_characteristics");
   const unknownTarget = await client.tool("search_labeled_checkpoints", {
     variant_id: "excel_sheet_firstrow_clear",
     target_input_profile: { data_structure: "unknown" },
@@ -2309,10 +2381,8 @@ test("sheet grouping is evidence-backed and independent from selective event-stu
   });
   assert.equal(mixed.event_study_axis_selection.selection_ready, true);
   assert.equal(mixed.event_study_axis_pattern_gate.active, true);
-  assert.deepEqual(mixed.results.map((row) => row.label_id), ["figure.event_study_flat_loop_mixed_axis.v1"]);
-  assert.equal(mixed.results[0].rubric_classification, "reference_only");
-  assert.equal(mixed.results[0].auto_select_allowed, false);
-  assert.ok(mixed.event_study_axis_pattern_gate.excluded_label_ids.includes("figure.event_study_flat_loop_automatic.v1"));
+  assert.ok(mixed.results.every((row) => row.label_id !== "figure.event_study_flat_loop_mixed_axis.v1"));
+  assert.ok(!mixed.event_study_axis_pattern_gate.excluded_label_ids.includes("figure.event_study_flat_loop_automatic.v1"));
 
   const invalidMixedProfile = mixedEventAxisProfile();
   invalidMixedProfile.axis_groups = invalidMixedProfile.axis_groups.filter((group) => group.axis_mode === "automatic");
@@ -2425,7 +2495,7 @@ test("planner makes the mixed-axis label writable only for a ready mixed loop pr
   assert.equal(mixedIntervention.status, "no_compatible_labeled_variant", JSON.stringify(mixedIntervention));
   assert.equal(mixedIntervention.chosen_variant, null);
   assert.equal(mixedIntervention.general_rule_policy.implementation_allowed, true);
-  assert.ok(mixedIntervention.evidence_progress.rubric_reference_only_variants.some((row) => row.label_id === "figure.event_study_flat_loop_mixed_axis.v1"));
+  assert.ok(!mixedIntervention.evidence_progress.rubric_reference_only_variants.some((row) => row.label_id === "figure.event_study_flat_loop_mixed_axis.v1"));
 
   const ordinary = await client.tool("plan_dictionary_repairs", {
     path: root,
@@ -2434,7 +2504,7 @@ test("planner makes the mixed-axis label writable only for a ready mixed loop pr
     available_state: { input_profile: { data_structure: "stored e-class estimates" } },
   });
   const ordinaryIntervention = ordinary.interventions.find((row) => row.headword === "figures.event_study");
-  assert.notEqual(ordinaryIntervention.chosen_variant?.label_id, "figure.event_study_flat_loop_mixed_axis.v1");
+  assert.ok(ordinaryIntervention.chosen_variant?.label_id !== "figure.event_study_flat_loop_mixed_axis.v1");
 });
 
 test("narrow requests cannot be forced into overhaul by caller flags", async (t) => {
@@ -2891,17 +2961,13 @@ test("line continuation is present only when the same command continues on the n
   }
 });
 
-test("canonical event snapshots have no dangling line-continuation finding", async (t) => {
-  const client = new McpClient();
-  t.after(() => client.close());
+test("removed canonical event snapshots are not retained as lint fixtures", () => {
   for (const name of [
     "research_practice_event_plot_flat_loops.do",
     "research_practice_event_plot_flat_mixed_axis.do",
     "research_practice_event_plot_single_automatic.do",
   ]) {
-    const content = fs.readFileSync(path.join(ROOT, "annotations", "source_snapshots", name), "utf8");
-    const result = await client.tool("lint_do_file", { content });
-    assert.equal(result.findings.some((row) => row.rule === "dangling_line_continuation"), false, name);
+    assert.equal(fs.existsSync(path.join(ROOT, "annotations", "source_snapshots", name)), false, name);
   }
 });
 
@@ -4541,16 +4607,16 @@ test("planner routes updates, summary artifacts, and exact package commands with
 
   const atomicRoutes = [
     ['append using "next.dta", generate(source_id)', "input_load.combine"],
-    ["eststo model_name", "postest.persist_estimate"],
+    ["eststo model_name", "estimation.conventional", "estimation.staggered_did"],
     ["margins treatment, at(time=(0 1 2))", "postest.margins"],
     ["marginsplot, recast(line) recastci(rarea)", "figures.marginsplot"],
     ['putexcel set "summary.xlsx", sheet("Summary") replace', "exports.matrix_excel"],
     ['collect export "summary.xlsx", replace', "exports.matrix_excel"],
     ["boottest treatment, null(0) cluster(cluster_id) reps(9999) seed(12345)", "robustness.bootstrap_inference"],
   ];
-  for (const [request, checkpoint] of atomicRoutes) {
+  for (const [request, ...checkpoints] of atomicRoutes) {
     const plan = await client.tool("plan_dictionary_repairs", { path: root, request });
-    assert.deepEqual(plan.dictionary_headwords, [checkpoint], `${request}: ${JSON.stringify(plan.dictionary_headwords)}`);
+    assert.deepEqual(plan.dictionary_headwords, checkpoints, `${request}: ${JSON.stringify(plan.dictionary_headwords)}`);
   }
 
   for (const request of [
@@ -4562,12 +4628,6 @@ test("planner routes updates, summary artifacts, and exact package commands with
     const plan = await client.tool("plan_dictionary_repairs", { path: root, request });
     assert.deepEqual(plan.dictionary_headwords, [], `${request}: ${JSON.stringify(plan.dictionary_headwords)}`);
   }
-
-  const sparseCellAudit = await client.tool("search_labeled_checkpoints", {
-    variant_id: "tabulate_twoway_row_chi2",
-  });
-  assert.ok(sparseCellAudit.results[0].selection_conditions.some((condition) => /cell support/i.test(condition)));
-  assert.match(sparseCellAudit.results[0].review_notes, /cell support/i);
 
   const csdid = await client.tool("plan_dictionary_repairs", {
     path: root,

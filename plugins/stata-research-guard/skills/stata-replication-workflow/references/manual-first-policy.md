@@ -1,6 +1,6 @@
 # Official-manual evidence policy
 
-For a Top 100 command explanation or example-coverage audit, call `inspect_top100_command_examples` to retrieve every materially distinct guide block required by the command's complexity and the separately classified paper-evidence status. For one concrete authoring transition, call `resolve_transition_evidence` first. Its bounded official/maintainer guide card is retained whenever available, while an independently matched usage row may supply at most one template. Search the legacy workflow dictionary and collected researcher examples only for diagnosis or a nearest nonbinding hint after the resolver reports general-rule implementation or mismatch; use deeper official-manual search only for syntax, returned results, and command-state mechanics. None of these guide sources supplies a researcher-style choice when usage evidence has none.
+For a Top 100 command explanation or coverage audit, call `inspect_top100_command_examples` to retrieve every materially distinct code-free guide record required by the command's complexity and the separately classified paper-evidence status. For one concrete authoring transition, call `resolve_transition_evidence` first. Its bounded official/maintainer guide card contains command, option/state contract, and authoritative URLs but no synthesized code body; an independently matched usage row may supply at most one template. Search the legacy workflow dictionary and collected researcher examples only for diagnosis or a nearest nonbinding hint after the resolver reports general-rule implementation or mismatch; use deeper official-manual search only for syntax, returned results, and command-state mechanics. None of these guide sources supplies a researcher-style choice when usage evidence has none.
 
 ## Three independent questions
 
@@ -14,9 +14,9 @@ Never collapse these questions. `foreach`, `forvalues`, macros, factor variables
 
 ## Complexity-weighted guide coverage
 
-Do not impose a fixed example quota per command. One bounded guide example can be sufficient for a simple command with one material syntax-and-state path. A complex command requires separate guide examples for each material dimension that changes its inputs, syntax, estimation choice, returned state, or downstream handoff. Mere spelling, placeholder, or cosmetic option changes do not count as additional coverage.
+Do not impose a fixed record quota per command. One bounded guide metadata record can be sufficient for a simple command with one material syntax-and-state path. A complex command requires separate records for each material dimension that changes its inputs, syntax, estimation choice, returned state, or downstream handoff. Mere spelling, placeholder, or cosmetic option changes do not count as additional coverage.
 
-For every ranked command group, record the material dimensions found in the official manual or maintainer guide and audit whether the retained examples cover them. Missing dimensions remain explicit gaps. Redundant examples are removed even when doing so lowers the raw example count. This mechanics-sufficiency decision is independent of whether the paper corpus contains a matching usage occurrence.
+For every ranked command group, record the material dimensions found in the official manual or maintainer guide and audit whether the retained code-free records cover them. Missing dimensions remain explicit gaps. Redundant records are removed even when doing so lowers the raw count. This mechanics-sufficiency decision is independent of whether the paper corpus contains a matching usage occurrence.
 
 ## Pass boundary
 

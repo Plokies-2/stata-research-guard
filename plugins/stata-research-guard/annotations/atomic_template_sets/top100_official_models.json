@@ -10,12 +10,6 @@
     "variant_id": "glm_family_link",
     "stage": "estimation",
     "method_family": "glm",
-    "source_spans": [
-      [
-        2,
-        2
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rglm.pdf"
@@ -94,10 +88,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rglm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rglm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.glm.glm_exposure.v1",
@@ -110,12 +106,6 @@
     "variant_id": "glm_exposure",
     "stage": "estimation",
     "method_family": "glm",
-    "source_spans": [
-      [
-        3,
-        3
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rglm.pdf"
@@ -194,10 +184,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rglm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rglm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.glm.glm_offset.v1",
@@ -210,12 +202,6 @@
     "variant_id": "glm_offset",
     "stage": "estimation",
     "method_family": "glm",
-    "source_spans": [
-      [
-        4,
-        4
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rglm.pdf"
@@ -294,10 +280,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rglm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rglm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.glm.glm_vce.v1",
@@ -310,12 +298,6 @@
     "variant_id": "glm_vce",
     "stage": "estimation",
     "method_family": "glm",
-    "source_spans": [
-      [
-        5,
-        5
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rglm.pdf"
@@ -394,10 +376,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rglm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rglm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.glm.glm_postest.v1",
@@ -410,12 +394,6 @@
     "variant_id": "glm_postest",
     "stage": "estimation",
     "method_family": "glm",
-    "source_spans": [
-      [
-        86,
-        86
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rglm.pdf"
@@ -494,10 +472,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "Official StataCorp bounded mechanics only; reference-only pending audit, runtime, and selector checks."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "Official StataCorp bounded mechanics only; reference-only pending audit, runtime, and selector checks.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.ordered_response.ordered_ologit.v1",
@@ -510,12 +490,6 @@
     "variant_id": "ordered_ologit",
     "stage": "estimation",
     "method_family": "ordered_response",
-    "source_spans": [
-      [
-        6,
-        6
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rologit.pdf",
@@ -595,10 +569,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rologit.pdf, https://www.stata.com/manuals/roprobit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rologit.pdf, https://www.stata.com/manuals/roprobit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.ordered_response.ordered_oprobit.v1",
@@ -611,12 +587,6 @@
     "variant_id": "ordered_oprobit",
     "stage": "estimation",
     "method_family": "ordered_response",
-    "source_spans": [
-      [
-        7,
-        7
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rologit.pdf",
@@ -696,10 +666,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rologit.pdf, https://www.stata.com/manuals/roprobit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rologit.pdf, https://www.stata.com/manuals/roprobit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.ordered_response.ordered_vce.v1",
@@ -712,12 +684,6 @@
     "variant_id": "ordered_vce",
     "stage": "estimation",
     "method_family": "ordered_response",
-    "source_spans": [
-      [
-        8,
-        8
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rologit.pdf",
@@ -797,10 +763,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rologit.pdf, https://www.stata.com/manuals/roprobit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rologit.pdf, https://www.stata.com/manuals/roprobit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.ordered_response.ordered_postest.v1",
@@ -813,12 +781,6 @@
     "variant_id": "ordered_postest",
     "stage": "estimation",
     "method_family": "ordered_response",
-    "source_spans": [
-      [
-        9,
-        9
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rologit.pdf",
@@ -898,10 +860,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rologit.pdf, https://www.stata.com/manuals/roprobit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rologit.pdf, https://www.stata.com/manuals/roprobit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.multinomial_response.multinomial_base.v1",
@@ -914,12 +878,6 @@
     "variant_id": "multinomial_base",
     "stage": "estimation",
     "method_family": "multinomial_response",
-    "source_spans": [
-      [
-        10,
-        10
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rmlogit.pdf",
@@ -999,10 +957,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rmlogit.pdf, https://www.stata.com/manuals/rmprobit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rmlogit.pdf, https://www.stata.com/manuals/rmprobit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.multinomial_response.multinomial_mprobit.v1",
@@ -1015,12 +975,6 @@
     "variant_id": "multinomial_mprobit",
     "stage": "estimation",
     "method_family": "multinomial_response",
-    "source_spans": [
-      [
-        11,
-        11
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rmlogit.pdf",
@@ -1100,10 +1054,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rmlogit.pdf, https://www.stata.com/manuals/rmprobit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rmlogit.pdf, https://www.stata.com/manuals/rmprobit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.multinomial_response.multinomial_rrr.v1",
@@ -1116,12 +1072,6 @@
     "variant_id": "multinomial_rrr",
     "stage": "estimation",
     "method_family": "multinomial_response",
-    "source_spans": [
-      [
-        12,
-        12
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rmlogit.pdf",
@@ -1201,10 +1151,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rmlogit.pdf, https://www.stata.com/manuals/rmprobit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rmlogit.pdf, https://www.stata.com/manuals/rmprobit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.multinomial_response.multinomial_probability.v1",
@@ -1217,12 +1169,6 @@
     "variant_id": "multinomial_probability",
     "stage": "estimation",
     "method_family": "multinomial_response",
-    "source_spans": [
-      [
-        13,
-        13
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rmlogit.pdf",
@@ -1302,10 +1248,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rmlogit.pdf, https://www.stata.com/manuals/rmprobit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rmlogit.pdf, https://www.stata.com/manuals/rmprobit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.conditional_binary_panel.binary_clogit.v1",
@@ -1318,12 +1266,6 @@
     "variant_id": "binary_clogit",
     "stage": "estimation",
     "method_family": "conditional_binary_panel",
-    "source_spans": [
-      [
-        14,
-        14
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rclogit.pdf",
@@ -1403,10 +1345,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rclogit.pdf, https://www.stata.com/manuals/xtxtlogit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rclogit.pdf, https://www.stata.com/manuals/xtxtlogit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.conditional_binary_panel.binary_xt_fe.v1",
@@ -1419,12 +1363,6 @@
     "variant_id": "binary_xt_fe",
     "stage": "estimation",
     "method_family": "conditional_binary_panel",
-    "source_spans": [
-      [
-        15,
-        15
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rclogit.pdf",
@@ -1504,10 +1442,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rclogit.pdf, https://www.stata.com/manuals/xtxtlogit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rclogit.pdf, https://www.stata.com/manuals/xtxtlogit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.conditional_binary_panel.binary_xt_re.v1",
@@ -1520,12 +1460,6 @@
     "variant_id": "binary_xt_re",
     "stage": "estimation",
     "method_family": "conditional_binary_panel",
-    "source_spans": [
-      [
-        16,
-        16
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rclogit.pdf",
@@ -1605,10 +1539,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rclogit.pdf, https://www.stata.com/manuals/xtxtlogit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rclogit.pdf, https://www.stata.com/manuals/xtxtlogit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.conditional_binary_panel.binary_xt_pa.v1",
@@ -1621,12 +1557,6 @@
     "variant_id": "binary_xt_pa",
     "stage": "estimation",
     "method_family": "conditional_binary_panel",
-    "source_spans": [
-      [
-        17,
-        17
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rclogit.pdf",
@@ -1706,10 +1636,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rclogit.pdf, https://www.stata.com/manuals/xtxtlogit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rclogit.pdf, https://www.stata.com/manuals/xtxtlogit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.censored_interval_truncated.censored_tobit.v1",
@@ -1722,12 +1654,6 @@
     "variant_id": "censored_tobit",
     "stage": "estimation",
     "method_family": "censored_interval_truncated",
-    "source_spans": [
-      [
-        18,
-        18
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rtobit.pdf",
@@ -1808,10 +1734,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rtobit.pdf, https://www.stata.com/manuals/rintreg.pdf, https://www.stata.com/manuals/rtruncreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rtobit.pdf, https://www.stata.com/manuals/rintreg.pdf, https://www.stata.com/manuals/rtruncreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.censored_interval_truncated.censored_intreg.v1",
@@ -1824,12 +1752,6 @@
     "variant_id": "censored_intreg",
     "stage": "estimation",
     "method_family": "censored_interval_truncated",
-    "source_spans": [
-      [
-        19,
-        19
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rtobit.pdf",
@@ -1910,10 +1832,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rtobit.pdf, https://www.stata.com/manuals/rintreg.pdf, https://www.stata.com/manuals/rtruncreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rtobit.pdf, https://www.stata.com/manuals/rintreg.pdf, https://www.stata.com/manuals/rtruncreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.censored_interval_truncated.censored_truncreg.v1",
@@ -1926,12 +1850,6 @@
     "variant_id": "censored_truncreg",
     "stage": "estimation",
     "method_family": "censored_interval_truncated",
-    "source_spans": [
-      [
-        20,
-        20
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rtobit.pdf",
@@ -2012,10 +1930,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rtobit.pdf, https://www.stata.com/manuals/rintreg.pdf, https://www.stata.com/manuals/rtruncreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rtobit.pdf, https://www.stata.com/manuals/rintreg.pdf, https://www.stata.com/manuals/rtruncreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.censored_interval_truncated.censored_tobit_right.v1",
@@ -2028,12 +1948,6 @@
     "variant_id": "censored_tobit_right",
     "stage": "estimation",
     "method_family": "censored_interval_truncated",
-    "source_spans": [
-      [
-        21,
-        21
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rtobit.pdf",
@@ -2114,10 +2028,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rtobit.pdf, https://www.stata.com/manuals/rintreg.pdf, https://www.stata.com/manuals/rtruncreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rtobit.pdf, https://www.stata.com/manuals/rintreg.pdf, https://www.stata.com/manuals/rtruncreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.censored_interval_truncated.censored_prediction.v1",
@@ -2130,12 +2046,6 @@
     "variant_id": "censored_prediction",
     "stage": "estimation",
     "method_family": "censored_interval_truncated",
-    "source_spans": [
-      [
-        82,
-        82
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rtobit.pdf",
@@ -2219,10 +2129,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "Official StataCorp bounded mechanics only; reference-only pending audit, runtime, and selector checks."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "Official StataCorp bounded mechanics only; reference-only pending audit, runtime, and selector checks.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.sample_selection.selection_heckman_twostep.v1",
@@ -2235,12 +2147,6 @@
     "variant_id": "selection_heckman_twostep",
     "stage": "estimation",
     "method_family": "sample_selection",
-    "source_spans": [
-      [
-        22,
-        22
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rheckman.pdf",
@@ -2320,10 +2226,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rheckman.pdf, https://www.stata.com/manuals/rheckprobit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rheckman.pdf, https://www.stata.com/manuals/rheckprobit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.sample_selection.selection_heckman_mle.v1",
@@ -2336,12 +2244,6 @@
     "variant_id": "selection_heckman_mle",
     "stage": "estimation",
     "method_family": "sample_selection",
-    "source_spans": [
-      [
-        23,
-        23
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rheckman.pdf",
@@ -2421,10 +2323,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rheckman.pdf, https://www.stata.com/manuals/rheckprobit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rheckman.pdf, https://www.stata.com/manuals/rheckprobit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.sample_selection.selection_heckprobit.v1",
@@ -2437,12 +2341,6 @@
     "variant_id": "selection_heckprobit",
     "stage": "estimation",
     "method_family": "sample_selection",
-    "source_spans": [
-      [
-        24,
-        24
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rheckman.pdf",
@@ -2522,10 +2420,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rheckman.pdf, https://www.stata.com/manuals/rheckprobit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rheckman.pdf, https://www.stata.com/manuals/rheckprobit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.sample_selection.selection_prediction.v1",
@@ -2538,12 +2438,6 @@
     "variant_id": "selection_prediction",
     "stage": "estimation",
     "method_family": "sample_selection",
-    "source_spans": [
-      [
-        25,
-        25
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rheckman.pdf",
@@ -2623,10 +2517,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rheckman.pdf, https://www.stata.com/manuals/rheckprobit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rheckman.pdf, https://www.stata.com/manuals/rheckprobit.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.quantile_regression.quantile_qreg.v1",
@@ -2639,12 +2535,6 @@
     "variant_id": "quantile_qreg",
     "stage": "estimation",
     "method_family": "quantile_regression",
-    "source_spans": [
-      [
-        26,
-        26
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rqreg.pdf",
@@ -2725,10 +2615,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rqreg.pdf, https://www.stata.com/manuals/riqreg.pdf, https://www.stata.com/manuals/rsqreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rqreg.pdf, https://www.stata.com/manuals/riqreg.pdf, https://www.stata.com/manuals/rsqreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.quantile_regression.quantile_iqreg.v1",
@@ -2741,12 +2633,6 @@
     "variant_id": "quantile_iqreg",
     "stage": "estimation",
     "method_family": "quantile_regression",
-    "source_spans": [
-      [
-        27,
-        27
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rqreg.pdf",
@@ -2827,10 +2713,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rqreg.pdf, https://www.stata.com/manuals/riqreg.pdf, https://www.stata.com/manuals/rsqreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rqreg.pdf, https://www.stata.com/manuals/riqreg.pdf, https://www.stata.com/manuals/rsqreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.quantile_regression.quantile_sqreg.v1",
@@ -2843,12 +2731,6 @@
     "variant_id": "quantile_sqreg",
     "stage": "estimation",
     "method_family": "quantile_regression",
-    "source_spans": [
-      [
-        28,
-        28
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rqreg.pdf",
@@ -2929,10 +2811,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rqreg.pdf, https://www.stata.com/manuals/riqreg.pdf, https://www.stata.com/manuals/rsqreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rqreg.pdf, https://www.stata.com/manuals/riqreg.pdf, https://www.stata.com/manuals/rsqreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.quantile_regression.quantile_bootstrap.v1",
@@ -2945,12 +2829,6 @@
     "variant_id": "quantile_bootstrap",
     "stage": "estimation",
     "method_family": "quantile_regression",
-    "source_spans": [
-      [
-        29,
-        29
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rqreg.pdf",
@@ -3031,10 +2909,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rqreg.pdf, https://www.stata.com/manuals/riqreg.pdf, https://www.stata.com/manuals/rsqreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rqreg.pdf, https://www.stata.com/manuals/riqreg.pdf, https://www.stata.com/manuals/rsqreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.mixed_effects.mixed_random_intercept.v1",
@@ -3047,12 +2927,6 @@
     "variant_id": "mixed_random_intercept",
     "stage": "estimation",
     "method_family": "mixed_effects",
-    "source_spans": [
-      [
-        30,
-        30
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/me.pdf",
@@ -3135,10 +3009,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/me.pdf, https://www.stata.com/manuals/memixed.pdf, https://www.stata.com/manuals/memelogit.pdf, https://www.stata.com/manuals/memeglm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/me.pdf, https://www.stata.com/manuals/memixed.pdf, https://www.stata.com/manuals/memelogit.pdf, https://www.stata.com/manuals/memeglm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.mixed_effects.mixed_random_slope.v1",
@@ -3151,12 +3027,6 @@
     "variant_id": "mixed_random_slope",
     "stage": "estimation",
     "method_family": "mixed_effects",
-    "source_spans": [
-      [
-        31,
-        31
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/me.pdf",
@@ -3239,10 +3109,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/me.pdf, https://www.stata.com/manuals/memixed.pdf, https://www.stata.com/manuals/memelogit.pdf, https://www.stata.com/manuals/memeglm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/me.pdf, https://www.stata.com/manuals/memixed.pdf, https://www.stata.com/manuals/memelogit.pdf, https://www.stata.com/manuals/memeglm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.mixed_effects.mixed_covariance.v1",
@@ -3255,12 +3127,6 @@
     "variant_id": "mixed_covariance",
     "stage": "estimation",
     "method_family": "mixed_effects",
-    "source_spans": [
-      [
-        32,
-        32
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/me.pdf",
@@ -3344,10 +3210,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/me.pdf, https://www.stata.com/manuals/memixed.pdf, https://www.stata.com/manuals/memelogit.pdf, https://www.stata.com/manuals/memeglm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/me.pdf, https://www.stata.com/manuals/memixed.pdf, https://www.stata.com/manuals/memelogit.pdf, https://www.stata.com/manuals/memeglm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.mixed_effects.mixed_meglm_family_link.v1",
@@ -3360,12 +3228,6 @@
     "variant_id": "mixed_meglm_family_link",
     "stage": "estimation",
     "method_family": "mixed_effects",
-    "source_spans": [
-      [
-        33,
-        33
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/me.pdf",
@@ -3447,10 +3309,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/me.pdf, https://www.stata.com/manuals/memixed.pdf, https://www.stata.com/manuals/memelogit.pdf, https://www.stata.com/manuals/memeglm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/me.pdf, https://www.stata.com/manuals/memixed.pdf, https://www.stata.com/manuals/memelogit.pdf, https://www.stata.com/manuals/memeglm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.sem_gsem.sem_linear_path.v1",
@@ -3463,12 +3327,6 @@
     "variant_id": "sem_linear_path",
     "stage": "estimation",
     "method_family": "sem_gsem",
-    "source_spans": [
-      [
-        34,
-        34
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/sem.pdf",
@@ -3549,10 +3407,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/sem.pdf, https://www.stata.com/manuals/semsem.pdf, https://www.stata.com/manuals/semgsem.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/sem.pdf, https://www.stata.com/manuals/semsem.pdf, https://www.stata.com/manuals/semgsem.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.sem_gsem.sem_generalized_link.v1",
@@ -3565,12 +3425,6 @@
     "variant_id": "sem_generalized_link",
     "stage": "estimation",
     "method_family": "sem_gsem",
-    "source_spans": [
-      [
-        35,
-        35
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/sem.pdf",
@@ -3651,10 +3505,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/sem.pdf, https://www.stata.com/manuals/semsem.pdf, https://www.stata.com/manuals/semgsem.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/sem.pdf, https://www.stata.com/manuals/semsem.pdf, https://www.stata.com/manuals/semgsem.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.sem_gsem.sem_latent_measurement.v1",
@@ -3667,12 +3523,6 @@
     "variant_id": "sem_latent_measurement",
     "stage": "estimation",
     "method_family": "sem_gsem",
-    "source_spans": [
-      [
-        36,
-        36
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/sem.pdf",
@@ -3753,10 +3603,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/sem.pdf, https://www.stata.com/manuals/semsem.pdf, https://www.stata.com/manuals/semgsem.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/sem.pdf, https://www.stata.com/manuals/semsem.pdf, https://www.stata.com/manuals/semgsem.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.sem_gsem.sem_group_level.v1",
@@ -3769,12 +3621,6 @@
     "variant_id": "sem_group_level",
     "stage": "estimation",
     "method_family": "sem_gsem",
-    "source_spans": [
-      [
-        37,
-        37
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/sem.pdf",
@@ -3855,10 +3701,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/sem.pdf, https://www.stata.com/manuals/semsem.pdf, https://www.stata.com/manuals/semgsem.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/sem.pdf, https://www.stata.com/manuals/semsem.pdf, https://www.stata.com/manuals/semgsem.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.systems_regression.systems_sureg.v1",
@@ -3871,12 +3719,6 @@
     "variant_id": "systems_sureg",
     "stage": "estimation",
     "method_family": "systems_regression",
-    "source_spans": [
-      [
-        38,
-        38
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rsureg.pdf",
@@ -3956,10 +3798,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rsureg.pdf, https://www.stata.com/manuals/rmvreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rsureg.pdf, https://www.stata.com/manuals/rmvreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.systems_regression.systems_mvreg.v1",
@@ -3972,12 +3816,6 @@
     "variant_id": "systems_mvreg",
     "stage": "estimation",
     "method_family": "systems_regression",
-    "source_spans": [
-      [
-        39,
-        39
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rsureg.pdf",
@@ -4057,10 +3895,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rsureg.pdf, https://www.stata.com/manuals/rmvreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rsureg.pdf, https://www.stata.com/manuals/rmvreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.systems_regression.systems_equation_lists.v1",
@@ -4073,12 +3913,6 @@
     "variant_id": "systems_equation_lists",
     "stage": "estimation",
     "method_family": "systems_regression",
-    "source_spans": [
-      [
-        40,
-        40
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rsureg.pdf",
@@ -4158,10 +3992,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rsureg.pdf, https://www.stata.com/manuals/rmvreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rsureg.pdf, https://www.stata.com/manuals/rmvreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.systems_regression.systems_cross_equation_test.v1",
@@ -4174,12 +4010,6 @@
     "variant_id": "systems_cross_equation_test",
     "stage": "estimation",
     "method_family": "systems_regression",
-    "source_spans": [
-      [
-        41,
-        41
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rsureg.pdf",
@@ -4259,10 +4089,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rsureg.pdf, https://www.stata.com/manuals/rmvreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rsureg.pdf, https://www.stata.com/manuals/rmvreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.systems_regression.systems_equation_prediction.v1",
@@ -4275,12 +4107,6 @@
     "variant_id": "systems_equation_prediction",
     "stage": "estimation",
     "method_family": "systems_regression",
-    "source_spans": [
-      [
-        89,
-        89
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rsureg.pdf",
@@ -4360,10 +4186,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rsureg.pdf, https://www.stata.com/manuals/rmvreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rsureg.pdf, https://www.stata.com/manuals/rmvreg.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.gmm.gmm_moments.v1",
@@ -4376,12 +4204,6 @@
     "variant_id": "gmm_moments",
     "stage": "estimation",
     "method_family": "gmm",
-    "source_spans": [
-      [
-        42,
-        42
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rgmm.pdf"
@@ -4460,10 +4282,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rgmm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rgmm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.gmm.gmm_instruments.v1",
@@ -4476,12 +4300,6 @@
     "variant_id": "gmm_instruments",
     "stage": "estimation",
     "method_family": "gmm",
-    "source_spans": [
-      [
-        43,
-        43
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rgmm.pdf"
@@ -4560,10 +4378,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rgmm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rgmm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.gmm.gmm_twostep.v1",
@@ -4576,12 +4396,6 @@
     "variant_id": "gmm_twostep",
     "stage": "estimation",
     "method_family": "gmm",
-    "source_spans": [
-      [
-        44,
-        44
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rgmm.pdf"
@@ -4660,10 +4474,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rgmm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rgmm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.gmm.gmm_vce.v1",
@@ -4676,12 +4492,6 @@
     "variant_id": "gmm_vce",
     "stage": "estimation",
     "method_family": "gmm",
-    "source_spans": [
-      [
-        45,
-        45
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rgmm.pdf"
@@ -4760,10 +4570,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rgmm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/rgmm.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.standard_did.did_repeated_cross_section.v1",
@@ -4776,12 +4588,6 @@
     "variant_id": "did_repeated_cross_section",
     "stage": "estimation",
     "method_family": "standard_did",
-    "source_spans": [
-      [
-        46,
-        46
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/causal.pdf",
@@ -4862,10 +4668,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causaldidregress.pdf, https://www.stata.com/stata17/difference-in-differences-DID-DDD/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causaldidregress.pdf, https://www.stata.com/stata17/difference-in-differences-DID-DDD/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.standard_did.did_panel.v1",
@@ -4878,12 +4686,6 @@
     "variant_id": "did_panel",
     "stage": "estimation",
     "method_family": "standard_did",
-    "source_spans": [
-      [
-        47,
-        47
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/causal.pdf",
@@ -4964,10 +4766,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causaldidregress.pdf, https://www.stata.com/stata17/difference-in-differences-DID-DDD/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causaldidregress.pdf, https://www.stata.com/stata17/difference-in-differences-DID-DDD/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.standard_did.did_ptrends.v1",
@@ -4980,12 +4784,6 @@
     "variant_id": "did_ptrends",
     "stage": "estimation",
     "method_family": "standard_did",
-    "source_spans": [
-      [
-        48,
-        48
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/causal.pdf",
@@ -5066,10 +4864,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causaldidregress.pdf, https://www.stata.com/stata17/difference-in-differences-DID-DDD/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causaldidregress.pdf, https://www.stata.com/stata17/difference-in-differences-DID-DDD/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.standard_did.did_trendplots.v1",
@@ -5082,12 +4882,6 @@
     "variant_id": "did_trendplots",
     "stage": "estimation",
     "method_family": "standard_did",
-    "source_spans": [
-      [
-        49,
-        49
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/causal.pdf",
@@ -5168,10 +4962,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causaldidregress.pdf, https://www.stata.com/stata17/difference-in-differences-DID-DDD/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causaldidregress.pdf, https://www.stata.com/stata17/difference-in-differences-DID-DDD/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.heterogeneous_did.hdid_repeated_cross_section.v1",
@@ -5184,12 +4980,6 @@
     "variant_id": "hdid_repeated_cross_section",
     "stage": "estimation",
     "method_family": "heterogeneous_did",
-    "source_spans": [
-      [
-        50,
-        50
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/causal.pdf",
@@ -5270,10 +5060,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causalxthdidregress.pdf, https://www.stata.com/features/overview/heterogeneous-difference-in-differences/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causalxthdidregress.pdf, https://www.stata.com/features/overview/heterogeneous-difference-in-differences/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.heterogeneous_did.hdid_panel.v1",
@@ -5286,12 +5078,6 @@
     "variant_id": "hdid_panel",
     "stage": "estimation",
     "method_family": "heterogeneous_did",
-    "source_spans": [
-      [
-        51,
-        51
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/causal.pdf",
@@ -5372,10 +5158,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causalxthdidregress.pdf, https://www.stata.com/features/overview/heterogeneous-difference-in-differences/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causalxthdidregress.pdf, https://www.stata.com/features/overview/heterogeneous-difference-in-differences/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.heterogeneous_did.hdid_aggregation.v1",
@@ -5388,12 +5176,6 @@
     "variant_id": "hdid_aggregation",
     "stage": "estimation",
     "method_family": "heterogeneous_did",
-    "source_spans": [
-      [
-        52,
-        52
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/causal.pdf",
@@ -5474,10 +5256,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causalxthdidregress.pdf, https://www.stata.com/features/overview/heterogeneous-difference-in-differences/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causalxthdidregress.pdf, https://www.stata.com/features/overview/heterogeneous-difference-in-differences/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.heterogeneous_did.hdid_atetplot.v1",
@@ -5490,12 +5274,6 @@
     "variant_id": "hdid_atetplot",
     "stage": "estimation",
     "method_family": "heterogeneous_did",
-    "source_spans": [
-      [
-        53,
-        53
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/causal.pdf",
@@ -5576,10 +5354,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causalxthdidregress.pdf, https://www.stata.com/features/overview/heterogeneous-difference-in-differences/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causalxthdidregress.pdf, https://www.stata.com/features/overview/heterogeneous-difference-in-differences/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.heterogeneous_did.hdid_ptrends.v1",
@@ -5592,12 +5372,6 @@
     "variant_id": "hdid_ptrends",
     "stage": "estimation",
     "method_family": "heterogeneous_did",
-    "source_spans": [
-      [
-        90,
-        90
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/causal.pdf",
@@ -5677,10 +5451,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causalxthdidregress.pdf, https://www.stata.com/features/overview/heterogeneous-difference-in-differences/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causalxthdidregress.pdf, https://www.stata.com/features/overview/heterogeneous-difference-in-differences/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.teffects.teffects_ra.v1",
@@ -5693,12 +5469,6 @@
     "variant_id": "teffects_ra",
     "stage": "estimation",
     "method_family": "teffects",
-    "source_spans": [
-      [
-        54,
-        54
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/causal.pdf",
@@ -5779,10 +5549,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causalteffects.pdf, https://www.stata.com/features/overview/causal-inference/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causalteffects.pdf, https://www.stata.com/features/overview/causal-inference/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.teffects.teffects_ipwra.v1",
@@ -5795,12 +5567,6 @@
     "variant_id": "teffects_ipwra",
     "stage": "estimation",
     "method_family": "teffects",
-    "source_spans": [
-      [
-        55,
-        55
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/causal.pdf",
@@ -5881,10 +5647,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causalteffects.pdf, https://www.stata.com/features/overview/causal-inference/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causalteffects.pdf, https://www.stata.com/features/overview/causal-inference/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.teffects.teffects_nnmatch.v1",
@@ -5897,12 +5665,6 @@
     "variant_id": "teffects_nnmatch",
     "stage": "estimation",
     "method_family": "teffects",
-    "source_spans": [
-      [
-        56,
-        56
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/causal.pdf",
@@ -5983,10 +5745,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causalteffects.pdf, https://www.stata.com/features/overview/causal-inference/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causalteffects.pdf, https://www.stata.com/features/overview/causal-inference/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.teffects.teffects_balance.v1",
@@ -5999,12 +5763,6 @@
     "variant_id": "teffects_balance",
     "stage": "estimation",
     "method_family": "teffects",
-    "source_spans": [
-      [
-        57,
-        57
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/causal.pdf",
@@ -6085,10 +5843,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causalteffects.pdf, https://www.stata.com/features/overview/causal-inference/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causalteffects.pdf, https://www.stata.com/features/overview/causal-inference/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.teffects.teffects_ipw.v1",
@@ -6101,12 +5861,6 @@
     "variant_id": "teffects_ipw",
     "stage": "estimation",
     "method_family": "teffects",
-    "source_spans": [
-      [
-        83,
-        83
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/causal.pdf",
@@ -6187,10 +5941,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "Official StataCorp bounded mechanics only; reference-only pending audit, runtime, and selector checks."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "Official StataCorp bounded mechanics only; reference-only pending audit, runtime, and selector checks.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.teffects.teffects_aipw.v1",
@@ -6203,12 +5959,6 @@
     "variant_id": "teffects_aipw",
     "stage": "estimation",
     "method_family": "teffects",
-    "source_spans": [
-      [
-        84,
-        84
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/causal.pdf",
@@ -6289,10 +6039,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "Official StataCorp bounded mechanics only; reference-only pending audit, runtime, and selector checks."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "Official StataCorp bounded mechanics only; reference-only pending audit, runtime, and selector checks.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.teffects.teffects_psmatch.v1",
@@ -6305,12 +6057,6 @@
     "variant_id": "teffects_psmatch",
     "stage": "estimation",
     "method_family": "teffects",
-    "source_spans": [
-      [
-        85,
-        85
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/causal.pdf",
@@ -6391,10 +6137,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "Official StataCorp bounded mechanics only; reference-only pending audit, runtime, and selector checks."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "Official StataCorp bounded mechanics only; reference-only pending audit, runtime, and selector checks.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.endogenous_treatment.endogenous_eteffects.v1",
@@ -6407,12 +6155,6 @@
     "variant_id": "endogenous_eteffects",
     "stage": "estimation",
     "method_family": "endogenous_treatment",
-    "source_spans": [
-      [
-        58,
-        58
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/causal.pdf",
@@ -6494,10 +6236,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causaleteffects.pdf, https://www.stata.com/manuals/causaletregress.pdf, https://www.stata.com/manuals/causaletpoisson.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causaleteffects.pdf, https://www.stata.com/manuals/causaletregress.pdf, https://www.stata.com/manuals/causaletpoisson.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.endogenous_treatment.endogenous_etregress.v1",
@@ -6510,12 +6254,6 @@
     "variant_id": "endogenous_etregress",
     "stage": "estimation",
     "method_family": "endogenous_treatment",
-    "source_spans": [
-      [
-        59,
-        59
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/causal.pdf",
@@ -6597,10 +6335,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causaleteffects.pdf, https://www.stata.com/manuals/causaletregress.pdf, https://www.stata.com/manuals/causaletpoisson.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causaleteffects.pdf, https://www.stata.com/manuals/causaletregress.pdf, https://www.stata.com/manuals/causaletpoisson.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.endogenous_treatment.endogenous_etpoisson.v1",
@@ -6613,12 +6353,6 @@
     "variant_id": "endogenous_etpoisson",
     "stage": "estimation",
     "method_family": "endogenous_treatment",
-    "source_spans": [
-      [
-        60,
-        60
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/causal.pdf",
@@ -6700,10 +6434,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causaleteffects.pdf, https://www.stata.com/manuals/causaletregress.pdf, https://www.stata.com/manuals/causaletpoisson.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causaleteffects.pdf, https://www.stata.com/manuals/causaletregress.pdf, https://www.stata.com/manuals/causaletpoisson.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.endogenous_treatment.endogenous_postestimation.v1",
@@ -6716,12 +6452,6 @@
     "variant_id": "endogenous_postestimation",
     "stage": "estimation",
     "method_family": "endogenous_treatment",
-    "source_spans": [
-      [
-        61,
-        61
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/causal.pdf",
@@ -6803,10 +6533,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causaleteffects.pdf, https://www.stata.com/manuals/causaletregress.pdf, https://www.stata.com/manuals/causaletpoisson.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/causal.pdf, https://www.stata.com/manuals/causaleteffects.pdf, https://www.stata.com/manuals/causaletregress.pdf, https://www.stata.com/manuals/causaletpoisson.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.survival_setup_split.survival_stset_basic.v1",
@@ -6819,12 +6551,6 @@
     "variant_id": "survival_stset_basic",
     "stage": "estimation_or_postestimation",
     "method_family": "survival_setup_split",
-    "source_spans": [
-      [
-        62,
-        62
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/st.pdf",
@@ -6906,10 +6632,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststset.pdf, https://www.stata.com/manuals/ststsplit.pdf, https://www.stata.com/manuals/ststjoin.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststset.pdf, https://www.stata.com/manuals/ststsplit.pdf, https://www.stata.com/manuals/ststjoin.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.survival_setup_split.survival_stset_enter_id.v1",
@@ -6922,12 +6650,6 @@
     "variant_id": "survival_stset_enter_id",
     "stage": "estimation_or_postestimation",
     "method_family": "survival_setup_split",
-    "source_spans": [
-      [
-        63,
-        63
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/st.pdf",
@@ -7009,10 +6731,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststset.pdf, https://www.stata.com/manuals/ststsplit.pdf, https://www.stata.com/manuals/ststjoin.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststset.pdf, https://www.stata.com/manuals/ststsplit.pdf, https://www.stata.com/manuals/ststjoin.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.survival_setup_split.survival_stset_origin_enter_id.v1",
@@ -7025,12 +6749,6 @@
     "variant_id": "survival_stset_origin_enter_id",
     "stage": "estimation_or_postestimation",
     "method_family": "survival_setup_split",
-    "source_spans": [
-      [
-        91,
-        91
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/st.pdf",
@@ -7116,10 +6834,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststset.pdf, https://www.stata.com/manuals/ststsplit.pdf, https://www.stata.com/manuals/ststjoin.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststset.pdf, https://www.stata.com/manuals/ststsplit.pdf, https://www.stata.com/manuals/ststjoin.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.survival_setup_split.survival_stsplit.v1",
@@ -7132,12 +6852,6 @@
     "variant_id": "survival_stsplit",
     "stage": "estimation_or_postestimation",
     "method_family": "survival_setup_split",
-    "source_spans": [
-      [
-        64,
-        64
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/st.pdf",
@@ -7219,10 +6933,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststset.pdf, https://www.stata.com/manuals/ststsplit.pdf, https://www.stata.com/manuals/ststjoin.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststset.pdf, https://www.stata.com/manuals/ststsplit.pdf, https://www.stata.com/manuals/ststjoin.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.survival_setup_split.survival_stjoin.v1",
@@ -7235,12 +6951,6 @@
     "variant_id": "survival_stjoin",
     "stage": "estimation_or_postestimation",
     "method_family": "survival_setup_split",
-    "source_spans": [
-      [
-        65,
-        65
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/st.pdf",
@@ -7322,10 +7032,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststset.pdf, https://www.stata.com/manuals/ststsplit.pdf, https://www.stata.com/manuals/ststjoin.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststset.pdf, https://www.stata.com/manuals/ststsplit.pdf, https://www.stata.com/manuals/ststjoin.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.survival_models.survival_stcox.v1",
@@ -7338,12 +7050,6 @@
     "variant_id": "survival_stcox",
     "stage": "estimation_or_postestimation",
     "method_family": "survival_models",
-    "source_spans": [
-      [
-        66,
-        66
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/st.pdf",
@@ -7426,10 +7132,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststcox.pdf, https://www.stata.com/manuals/ststreg.pdf, https://www.stata.com/manuals/ststsgraph.pdf, https://www.stata.com/manuals/stststest.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststcox.pdf, https://www.stata.com/manuals/ststreg.pdf, https://www.stata.com/manuals/ststsgraph.pdf, https://www.stata.com/manuals/stststest.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.survival_models.survival_stcox_tvc_texp_tvc_texp.v1",
@@ -7442,12 +7150,6 @@
     "variant_id": "survival_stcox_tvc_texp",
     "stage": "estimation_or_postestimation",
     "method_family": "survival_models",
-    "source_spans": [
-      [
-        92,
-        92
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/st.pdf",
@@ -7531,10 +7233,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststcox.pdf, https://www.stata.com/manuals/ststreg.pdf, https://www.stata.com/manuals/ststsgraph.pdf, https://www.stata.com/manuals/stststest.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststcox.pdf, https://www.stata.com/manuals/ststreg.pdf, https://www.stata.com/manuals/ststsgraph.pdf, https://www.stata.com/manuals/stststest.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.survival_models.survival_stcox_ph_diagnostic_ph_diagnostic.v1",
@@ -7547,12 +7251,6 @@
     "variant_id": "survival_stcox_ph_diagnostic",
     "stage": "estimation_or_postestimation",
     "method_family": "survival_models",
-    "source_spans": [
-      [
-        93,
-        93
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/st.pdf",
@@ -7635,10 +7333,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststcox.pdf, https://www.stata.com/manuals/ststreg.pdf, https://www.stata.com/manuals/ststsgraph.pdf, https://www.stata.com/manuals/stststest.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststcox.pdf, https://www.stata.com/manuals/ststreg.pdf, https://www.stata.com/manuals/ststsgraph.pdf, https://www.stata.com/manuals/stststest.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.survival_models.survival_streg.v1",
@@ -7651,12 +7351,6 @@
     "variant_id": "survival_streg",
     "stage": "estimation_or_postestimation",
     "method_family": "survival_models",
-    "source_spans": [
-      [
-        67,
-        67
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/st.pdf",
@@ -7739,10 +7433,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststcox.pdf, https://www.stata.com/manuals/ststreg.pdf, https://www.stata.com/manuals/ststsgraph.pdf, https://www.stata.com/manuals/stststest.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststcox.pdf, https://www.stata.com/manuals/ststreg.pdf, https://www.stata.com/manuals/ststsgraph.pdf, https://www.stata.com/manuals/stststest.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.survival_models.survival_sts_graph.v1",
@@ -7755,12 +7451,6 @@
     "variant_id": "survival_sts_graph",
     "stage": "estimation_or_postestimation",
     "method_family": "survival_models",
-    "source_spans": [
-      [
-        68,
-        68
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/st.pdf",
@@ -7843,10 +7533,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststcox.pdf, https://www.stata.com/manuals/ststreg.pdf, https://www.stata.com/manuals/ststsgraph.pdf, https://www.stata.com/manuals/stststest.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststcox.pdf, https://www.stata.com/manuals/ststreg.pdf, https://www.stata.com/manuals/ststsgraph.pdf, https://www.stata.com/manuals/stststest.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.survival_models.survival_sts_test.v1",
@@ -7859,12 +7551,6 @@
     "variant_id": "survival_sts_test",
     "stage": "estimation_or_postestimation",
     "method_family": "survival_models",
-    "source_spans": [
-      [
-        69,
-        69
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/st.pdf",
@@ -7947,10 +7633,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststcox.pdf, https://www.stata.com/manuals/ststreg.pdf, https://www.stata.com/manuals/ststsgraph.pdf, https://www.stata.com/manuals/stststest.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/st.pdf, https://www.stata.com/manuals/ststcox.pdf, https://www.stata.com/manuals/ststreg.pdf, https://www.stata.com/manuals/ststsgraph.pdf, https://www.stata.com/manuals/stststest.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.meta.meta_set.v1",
@@ -7963,12 +7651,6 @@
     "variant_id": "meta_set",
     "stage": "estimation_or_postestimation",
     "method_family": "meta",
-    "source_spans": [
-      [
-        70,
-        70
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/meta.pdf",
@@ -8051,10 +7733,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/meta.pdf, https://www.stata.com/manuals/metametaset.pdf, https://www.stata.com/manuals/metametaesize.pdf, https://www.stata.com/manuals/metametasummarize.pdf, https://www.stata.com/manuals/metametaforestplot.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/meta.pdf, https://www.stata.com/manuals/metametaset.pdf, https://www.stata.com/manuals/metametaesize.pdf, https://www.stata.com/manuals/metametasummarize.pdf, https://www.stata.com/manuals/metametaforestplot.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.meta.meta_esize.v1",
@@ -8067,12 +7751,6 @@
     "variant_id": "meta_esize",
     "stage": "estimation_or_postestimation",
     "method_family": "meta",
-    "source_spans": [
-      [
-        71,
-        71
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/meta.pdf",
@@ -8155,10 +7833,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/meta.pdf, https://www.stata.com/manuals/metametaset.pdf, https://www.stata.com/manuals/metametaesize.pdf, https://www.stata.com/manuals/metametasummarize.pdf, https://www.stata.com/manuals/metametaforestplot.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/meta.pdf, https://www.stata.com/manuals/metametaset.pdf, https://www.stata.com/manuals/metametaesize.pdf, https://www.stata.com/manuals/metametasummarize.pdf, https://www.stata.com/manuals/metametaforestplot.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.meta.meta_summarize.v1",
@@ -8171,12 +7851,6 @@
     "variant_id": "meta_summarize",
     "stage": "estimation_or_postestimation",
     "method_family": "meta",
-    "source_spans": [
-      [
-        72,
-        72
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/meta.pdf",
@@ -8259,10 +7933,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/meta.pdf, https://www.stata.com/manuals/metametaset.pdf, https://www.stata.com/manuals/metametaesize.pdf, https://www.stata.com/manuals/metametasummarize.pdf, https://www.stata.com/manuals/metametaforestplot.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/meta.pdf, https://www.stata.com/manuals/metametaset.pdf, https://www.stata.com/manuals/metametaesize.pdf, https://www.stata.com/manuals/metametasummarize.pdf, https://www.stata.com/manuals/metametaforestplot.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.meta.meta_forestplot.v1",
@@ -8275,12 +7951,6 @@
     "variant_id": "meta_forestplot",
     "stage": "estimation_or_postestimation",
     "method_family": "meta",
-    "source_spans": [
-      [
-        73,
-        73
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/meta.pdf",
@@ -8363,10 +8033,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/meta.pdf, https://www.stata.com/manuals/metametaset.pdf, https://www.stata.com/manuals/metametaesize.pdf, https://www.stata.com/manuals/metametasummarize.pdf, https://www.stata.com/manuals/metametaforestplot.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/meta.pdf, https://www.stata.com/manuals/metametaset.pdf, https://www.stata.com/manuals/metametaesize.pdf, https://www.stata.com/manuals/metametasummarize.pdf, https://www.stata.com/manuals/metametaforestplot.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.multiple_imputation.mi_impute_chained_add_rseed_chained_add_rseed.v1",
@@ -8379,12 +8051,6 @@
     "variant_id": "mi_impute_chained_add_rseed",
     "stage": "estimation_or_postestimation",
     "method_family": "multiple_imputation",
-    "source_spans": [
-      [
-        74,
-        74
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/mi.pdf",
@@ -8467,10 +8133,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/mi.pdf, https://www.stata.com/manuals/mimiimpute.pdf, https://www.stata.com/manuals/mimiestimate.pdf, https://www.stata.com/manuals/mimipassive.pdf, https://www.stata.com/manuals/mimiextract.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/mi.pdf, https://www.stata.com/manuals/mimiimpute.pdf, https://www.stata.com/manuals/mimiestimate.pdf, https://www.stata.com/manuals/mimipassive.pdf, https://www.stata.com/manuals/mimiextract.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.multiple_imputation.mi_impute_monotone_add_rseed_chained_add_rseed.v1",
@@ -8483,12 +8151,6 @@
     "variant_id": "mi_impute_monotone_add_rseed",
     "stage": "estimation_or_postestimation",
     "method_family": "multiple_imputation",
-    "source_spans": [
-      [
-        94,
-        94
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/mi.pdf",
@@ -8575,10 +8237,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/mi.pdf, https://www.stata.com/manuals/mimiimpute.pdf, https://www.stata.com/manuals/mimiestimate.pdf, https://www.stata.com/manuals/mimipassive.pdf, https://www.stata.com/manuals/mimiextract.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/mi.pdf, https://www.stata.com/manuals/mimiimpute.pdf, https://www.stata.com/manuals/mimiestimate.pdf, https://www.stata.com/manuals/mimipassive.pdf, https://www.stata.com/manuals/mimiextract.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.multiple_imputation.mi_estimate.v1",
@@ -8591,12 +8255,6 @@
     "variant_id": "mi_estimate",
     "stage": "estimation_or_postestimation",
     "method_family": "multiple_imputation",
-    "source_spans": [
-      [
-        75,
-        75
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/mi.pdf",
@@ -8679,10 +8337,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/mi.pdf, https://www.stata.com/manuals/mimiimpute.pdf, https://www.stata.com/manuals/mimiestimate.pdf, https://www.stata.com/manuals/mimipassive.pdf, https://www.stata.com/manuals/mimiextract.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/mi.pdf, https://www.stata.com/manuals/mimiimpute.pdf, https://www.stata.com/manuals/mimiestimate.pdf, https://www.stata.com/manuals/mimipassive.pdf, https://www.stata.com/manuals/mimiextract.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.multiple_imputation.mi_passive.v1",
@@ -8695,12 +8355,6 @@
     "variant_id": "mi_passive",
     "stage": "estimation_or_postestimation",
     "method_family": "multiple_imputation",
-    "source_spans": [
-      [
-        76,
-        76
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/mi.pdf",
@@ -8783,10 +8437,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/mi.pdf, https://www.stata.com/manuals/mimiimpute.pdf, https://www.stata.com/manuals/mimiestimate.pdf, https://www.stata.com/manuals/mimipassive.pdf, https://www.stata.com/manuals/mimiextract.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/mi.pdf, https://www.stata.com/manuals/mimiimpute.pdf, https://www.stata.com/manuals/mimiestimate.pdf, https://www.stata.com/manuals/mimipassive.pdf, https://www.stata.com/manuals/mimiextract.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.multiple_imputation.mi_extract.v1",
@@ -8799,12 +8455,6 @@
     "variant_id": "mi_extract",
     "stage": "estimation_or_postestimation",
     "method_family": "multiple_imputation",
-    "source_spans": [
-      [
-        77,
-        77
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/mi.pdf",
@@ -8887,10 +8537,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/mi.pdf, https://www.stata.com/manuals/mimiimpute.pdf, https://www.stata.com/manuals/mimiestimate.pdf, https://www.stata.com/manuals/mimipassive.pdf, https://www.stata.com/manuals/mimiextract.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/mi.pdf, https://www.stata.com/manuals/mimiimpute.pdf, https://www.stata.com/manuals/mimiestimate.pdf, https://www.stata.com/manuals/mimipassive.pdf, https://www.stata.com/manuals/mimiextract.pdf에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.bayesian.bayes_wrapper.v1",
@@ -8903,12 +8555,6 @@
     "variant_id": "bayes_wrapper",
     "stage": "estimation_or_postestimation",
     "method_family": "bayesian",
-    "source_spans": [
-      [
-        78,
-        78
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/bayes.pdf",
@@ -8991,10 +8637,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/bayes.pdf, https://www.stata.com/manuals/bayesbayes.pdf, https://www.stata.com/manuals/bayesbayesmh.pdf, https://www.stata.com/manuals/bayesbayesstats.pdf, https://www.stata.com/features/overview/bayesian-analysis/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/bayes.pdf, https://www.stata.com/manuals/bayesbayes.pdf, https://www.stata.com/manuals/bayesbayesmh.pdf, https://www.stata.com/manuals/bayesbayesstats.pdf, https://www.stata.com/features/overview/bayesian-analysis/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.bayesian.bayesmh_model.v1",
@@ -9007,12 +8655,6 @@
     "variant_id": "bayesmh_model",
     "stage": "estimation_or_postestimation",
     "method_family": "bayesian",
-    "source_spans": [
-      [
-        79,
-        79
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/bayes.pdf",
@@ -9095,10 +8737,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/bayes.pdf, https://www.stata.com/manuals/bayesbayes.pdf, https://www.stata.com/manuals/bayesbayesmh.pdf, https://www.stata.com/manuals/bayesbayesstats.pdf, https://www.stata.com/features/overview/bayesian-analysis/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/bayes.pdf, https://www.stata.com/manuals/bayesbayes.pdf, https://www.stata.com/manuals/bayesbayesmh.pdf, https://www.stata.com/manuals/bayesbayesstats.pdf, https://www.stata.com/features/overview/bayesian-analysis/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.bayesian.bayes_mcmc.v1",
@@ -9111,12 +8755,6 @@
     "variant_id": "bayes_mcmc",
     "stage": "estimation_or_postestimation",
     "method_family": "bayesian",
-    "source_spans": [
-      [
-        80,
-        80
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/bayes.pdf",
@@ -9199,10 +8837,12 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/bayes.pdf, https://www.stata.com/manuals/bayesbayes.pdf, https://www.stata.com/manuals/bayesbayesmh.pdf, https://www.stata.com/manuals/bayesbayesstats.pdf, https://www.stata.com/features/overview/bayesian-analysis/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/bayes.pdf, https://www.stata.com/manuals/bayesbayes.pdf, https://www.stata.com/manuals/bayesbayesmh.pdf, https://www.stata.com/manuals/bayesbayesstats.pdf, https://www.stata.com/features/overview/bayesian-analysis/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "guide.bayesian.bayesstats_postestimation.v1",
@@ -9215,12 +8855,6 @@
     "variant_id": "bayesstats_postestimation",
     "stage": "estimation_or_postestimation",
     "method_family": "bayesian",
-    "source_spans": [
-      [
-        81,
-        81
-      ]
-    ],
     "source_kind": "official_manual_guide_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/bayes.pdf",
@@ -9303,9 +8937,11 @@
       "no TeX/Word output",
       "no unsafe merge or forced duplicate deletion"
     ],
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/bayes.pdf, https://www.stata.com/manuals/bayesbayes.pdf, https://www.stata.com/manuals/bayesbayesmh.pdf, https://www.stata.com/manuals/bayesbayesstats.pdf, https://www.stata.com/features/overview/bayesian-analysis/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 StataCorp URL https://www.stata.com/manuals/bayes.pdf, https://www.stata.com/manuals/bayesbayes.pdf, https://www.stata.com/manuals/bayesbayesmh.pdf, https://www.stata.com/manuals/bayesbayesstats.pdf, https://www.stata.com/features/overview/bayesian-analysis/에 근거한 단일 bounded guide atom이다. 논문 용례나 runtime/selector 승격 근거를 공급하지 않으며 감사 전 reference-only다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   }
 ]

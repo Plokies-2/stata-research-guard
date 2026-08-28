@@ -7,16 +7,10 @@
     "contract_ids": [
       "outreg2.single_sheet_seed_replace"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "exports",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        12,
-        14
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://ideas.repec.org/c/boc/bocode/s456416.html",
@@ -92,7 +86,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -107,9 +101,16 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate outreg2_excel_seed_replace: observable mechanics [outreg2, excel, replace] produce one native outreg2 Excel column; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://ideas.repec.org/c/boc/bocode/s456416.html",
+      "https://www.stata.com/meeting/wcsug07/Rapid_Formation_article.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.outreg2_excel_append.v1",
@@ -119,16 +120,10 @@
     "contract_ids": [
       "outreg2.single_sheet_append"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "exports",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        16,
-        18
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://ideas.repec.org/c/boc/bocode/s456416.html",
@@ -199,7 +194,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -214,9 +209,16 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate outreg2_excel_append: observable mechanics [outreg2, excel, append] produce one appended native coefficient column; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://ideas.repec.org/c/boc/bocode/s456416.html",
+      "https://www.stata.com/meeting/wcsug07/Rapid_Formation_article.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.outreg2_restored_estimate_append.v1",
@@ -226,16 +228,10 @@
     "contract_ids": [
       "outreg2.single_sheet_append"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "exports",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        20,
-        22
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://ideas.repec.org/c/boc/bocode/s456416.html"
@@ -302,7 +298,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -317,9 +313,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate outreg2_estimates_restore_append: observable mechanics [estimates restore, outreg2, append] produce restored active estimate; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://ideas.repec.org/c/boc/bocode/s456416.html"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.outreg2_native_raw_rows.v1",
@@ -329,16 +331,10 @@
     "contract_ids": [
       "outreg2.single_sheet_seed_replace"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "exports",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        24,
-        25
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://ideas.repec.org/c/boc/bocode/s456416.html"
@@ -401,7 +397,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -416,9 +412,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate outreg2_native_keep_omitted_base: observable mechanics [outreg2, unfiltered native rows, declared sample label] produce raw coefficient and omitted/base rows in Excel; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://ideas.repec.org/c/boc/bocode/s456416.html"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.eststo_named_active.v1",
@@ -428,16 +430,10 @@
     "contract_ids": [
       "estout_family.eststo_named_active_result"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "post_estimation",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        27,
-        29
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://github.com/benjann/estout"
@@ -499,7 +495,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -514,9 +510,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate eststo_named_active: observable mechanics [eststo] produce named in-memory estimate; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/benjann/estout"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.estpost_summary_active.v1",
@@ -526,16 +528,10 @@
     "contract_ids": [
       "estout_family.estpost_summarize"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "descriptives",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        31,
-        32
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://github.com/benjann/estout"
@@ -598,7 +594,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -613,9 +609,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate estpost_summarize_active: observable mechanics [estpost, summarize] produce active estpost summary result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/benjann/estout"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.estpost_tabstat_active.v1",
@@ -625,16 +627,10 @@
     "contract_ids": [
       "estout_family.estpost_tabstat"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "descriptives",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        34,
-        35
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://github.com/benjann/estout"
@@ -698,7 +694,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -713,9 +709,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate estpost_tabstat_count_mean_sd: observable mechanics [estpost, tabstat] produce active estpost tabstat result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/benjann/estout"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.esttab_named_csv.v1",
@@ -725,16 +727,10 @@
     "contract_ids": [
       "estout_family.esttab_csv_or_excel"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "exports",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        37,
-        38
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://github.com/benjann/estout"
@@ -799,7 +795,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -814,9 +810,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate esttab_named_models_csv: observable mechanics [esttab, csv] produce one CSV estimate table; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/benjann/estout"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.estout_named_csv.v1",
@@ -830,12 +832,6 @@
     "stage": "exports",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        40,
-        41
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://github.com/benjann/estout"
@@ -900,7 +896,7 @@
     "readability_score": 4,
     "portability_score": 3,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -917,9 +913,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate estout_named_models_csv: observable mechanics [estout, cells, csv] produce one non-TeX CSV export; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/benjann/estout"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.coefplot_active_native.v1",
@@ -929,16 +931,10 @@
     "contract_ids": [
       "coefplot.active_estimate_selected_coefficients"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "figures",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        43,
-        44
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://github.com/benjann/coefplot"
@@ -1002,7 +998,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -1017,9 +1013,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate coefplot_active_native_coefficients: observable mechanics [coefplot, keep] produce active coefficient graph; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/benjann/coefplot"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.coefplot_named_native.v1",
@@ -1029,16 +1031,10 @@
     "contract_ids": [
       "coefplot.multiple_named_estimates"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "figures",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        46,
-        47
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://github.com/benjann/coefplot"
@@ -1104,7 +1100,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -1119,9 +1115,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate coefplot_named_estimates: observable mechanics [coefplot, parenthesized model names, keep] produce active comparison graph; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/benjann/coefplot"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.graph_export_pdf.separate.v1",
@@ -1131,16 +1133,10 @@
     "contract_ids": [
       "graph_export.active_graph_to_pdf"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "exports",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        49,
-        50
-      ]
-    ],
     "source_kind": "official_guide_derived_mechanics",
     "source_references": [
       "https://www.stata.com/manuals/g-2graphexport.pdf"
@@ -1201,7 +1197,7 @@
     "readability_score": 5,
     "portability_score": 5,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -1216,9 +1212,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate graph_export_pdf_replace: observable mechanics [graph export, as(pdf)] produce one PDF figure; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://www.stata.com/manuals/g-2graphexport.pdf"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.asdoc_word_reference_only.v1",
@@ -1232,12 +1234,6 @@
     "stage": "exports",
     "decision": "conditional_keep",
     "adaptation_mode": "structural_reference",
-    "source_spans": [
-      [
-        52,
-        54
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://ideas.repec.org/c/boc/bocode/s458279.html"
@@ -1301,7 +1297,7 @@
     "readability_score": 4,
     "portability_score": 2,
     "preferred_within_checkpoint": false,
-    "promotion_status": "reference_only_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -1318,9 +1314,15 @@
       "selector_status": "must_be_blocked"
     },
     "variant_distinction": "Separate asdoc_word_reference_only: observable mechanics [asdoc, save, doc] produce noncanonical Word reference artifact; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://ideas.repec.org/c/boc/bocode/s458279.html"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.winsor2_pooled_newvars.v1",
@@ -1330,16 +1332,10 @@
     "contract_ids": [
       "winsor2.generate_preserving_original"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "preparation",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        56,
-        57
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://ideas.repec.org/c/boc/bocode/s457765.html"
@@ -1408,7 +1404,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -1423,9 +1419,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate winsor2_pooled_newvars: observable mechanics [winsor2, cuts, suffix] produce new pooled winsorized variables; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://ideas.repec.org/c/boc/bocode/s457765.html"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.winsor2_by_newvars.v1",
@@ -1436,16 +1438,10 @@
       "winsor2.by_group",
       "winsor2.generate_preserving_original"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "preparation",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        59,
-        60
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://ideas.repec.org/c/boc/bocode/s457765.html"
@@ -1516,7 +1512,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -1531,9 +1527,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate winsor2_by_group_newvars: observable mechanics [winsor2, by, suffix] produce new group-wise winsorized variables; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://ideas.repec.org/c/boc/bocode/s457765.html"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.winsor2_pooled_replace.v1",
@@ -1544,16 +1546,10 @@
       "winsor2.upper_tail_replace",
       "winsor2.two_sided_replace"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "preparation",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        62,
-        63
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://ideas.repec.org/c/boc/bocode/s457765.html"
@@ -1617,7 +1613,7 @@
     "readability_score": 4,
     "portability_score": 3,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -1634,9 +1630,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate winsor2_pooled_replace: observable mechanics [winsor2, replace] produce in-place pooled transformed variables; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://ideas.repec.org/c/boc/bocode/s457765.html"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.winsor2_pooled_trim.v1",
@@ -1646,16 +1648,10 @@
     "contract_ids": [
       "winsor2.trim_separate_variant"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "preparation",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        65,
-        66
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://ideas.repec.org/c/boc/bocode/s457765.html"
@@ -1721,7 +1717,7 @@
     "readability_score": 4,
     "portability_score": 3,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -1738,9 +1734,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate winsor2_pooled_trim_newvars: observable mechanics [winsor2, trim] produce trimmed/derived variables and changed sample risk; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://ideas.repec.org/c/boc/bocode/s457765.html"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.gtools_gegen_mean.v1",
@@ -1750,16 +1752,10 @@
     "contract_ids": [
       "gtools.gegen_counterparts"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "preparation",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        68,
-        69
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://github.com/mcaceresb/stata-gtools"
@@ -1828,7 +1824,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -1843,9 +1839,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate gegen_group_mean: observable mechanics [gegen, mean, by] produce one group mean variable; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/mcaceresb/stata-gtools"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.gtools_gegen_count.v1",
@@ -1855,16 +1857,10 @@
     "contract_ids": [
       "gtools.gegen_counterparts"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "preparation",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        71,
-        72
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://github.com/mcaceresb/stata-gtools"
@@ -1933,7 +1929,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -1948,9 +1944,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate gegen_group_count: observable mechanics [gegen, count, by] produce one group count variable; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/mcaceresb/stata-gtools"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.gtools_gegen_group_tag.v1",
@@ -1960,16 +1962,10 @@
     "contract_ids": [
       "gtools.gegen_counterparts"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "preparation",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        74,
-        76
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://github.com/mcaceresb/stata-gtools"
@@ -2034,7 +2030,7 @@
     "readability_score": 4,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -2049,9 +2045,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate gegen_group_id_and_tag: observable mechanics [gegen, group, tag] produce group id or first-row tag; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/mcaceresb/stata-gtools"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.gtools_gcollapse_reduce.v1",
@@ -2061,16 +2063,10 @@
     "contract_ids": [
       "gtools.gcollapse_counterparts"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "preparation",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        78,
-        79
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://github.com/mcaceresb/stata-gtools"
@@ -2136,7 +2132,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -2153,9 +2149,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate gcollapse_reduce_by: observable mechanics [gcollapse, by] produce one row per group dataset; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/mcaceresb/stata-gtools"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.gtools_gcollapse_merge_reference.v1",
@@ -2169,12 +2171,6 @@
     "stage": "preparation",
     "decision": "conditional_keep",
     "adaptation_mode": "structural_reference",
-    "source_spans": [
-      [
-        81,
-        82
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://github.com/mcaceresb/stata-gtools"
@@ -2241,7 +2237,7 @@
     "readability_score": 3,
     "portability_score": 2,
     "preferred_within_checkpoint": false,
-    "promotion_status": "reference_only_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -2258,9 +2254,15 @@
       "selector_status": "must_be_blocked"
     },
     "variant_distinction": "Separate gcollapse_merge_back_reference: observable mechanics [gcollapse, merge] produce conditional merge-back summary state; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/mcaceresb/stata-gtools"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.gtools_greshape_long.v1",
@@ -2270,16 +2272,10 @@
     "contract_ids": [
       "gtools.greshape_counterparts"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "preparation",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        84,
-        85
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://github.com/mcaceresb/stata-gtools"
@@ -2346,7 +2342,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -2361,9 +2357,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate greshape_long: observable mechanics [greshape, long] produce long data layout; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/mcaceresb/stata-gtools"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.gtools_greshape_wide.v1",
@@ -2373,16 +2375,10 @@
     "contract_ids": [
       "gtools.greshape_counterparts"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "preparation",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        87,
-        88
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://github.com/mcaceresb/stata-gtools"
@@ -2449,7 +2445,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -2464,9 +2460,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate greshape_wide: observable mechanics [greshape, wide] produce wide data layout; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/mcaceresb/stata-gtools"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.gtools_gstats_sum_by.v1",
@@ -2476,16 +2478,10 @@
     "contract_ids": [
       "gtools.gstats_subcommands"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "descriptives",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        90,
-        91
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://github.com/mcaceresb/stata-gtools"
@@ -2552,7 +2548,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -2567,9 +2563,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate gstats_sum_by: observable mechanics [gstats, sum, by] produce group summary display/result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/mcaceresb/stata-gtools"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.gtools_gstats_tab.v1",
@@ -2579,16 +2581,10 @@
     "contract_ids": [
       "gtools.gstats_subcommands"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "descriptives",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        93,
-        94
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://github.com/mcaceresb/stata-gtools"
@@ -2650,7 +2646,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -2665,9 +2661,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate gstats_tab_missing: observable mechanics [gstats, tab, missing] produce visible frequency diagnostic; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/mcaceresb/stata-gtools"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.gtools_gquantiles_xtile.v1",
@@ -2677,16 +2679,10 @@
     "contract_ids": [
       "gtools.gquantiles_cutpoints_and_groups"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "preparation",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        96,
-        97
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://github.com/mcaceresb/stata-gtools"
@@ -2752,7 +2748,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -2767,9 +2763,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate gquantiles_xtile_nq: observable mechanics [gquantiles, xtile, nq] produce quantile-bin variable; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/mcaceresb/stata-gtools"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.gtools_gquantiles_pctile.v1",
@@ -2779,16 +2781,10 @@
     "contract_ids": [
       "gtools.gquantiles_cutpoints_and_groups"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "descriptives",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        99,
-        100
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://github.com/mcaceresb/stata-gtools"
@@ -2852,7 +2848,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -2867,9 +2863,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate gquantiles_pctile_cutpoints: observable mechanics [gquantiles, pctile] produce declared percentile cutpoints; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/mcaceresb/stata-gtools"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.rangestat_fixed_rolling.v1",
@@ -2879,16 +2881,10 @@
     "contract_ids": [
       "rangestat.inclusive_window_by_key"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "post_estimation",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        102,
-        103
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://ideas.repec.org/c/boc/bocode/s458161.html"
@@ -2963,7 +2959,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -2978,9 +2974,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate rangestat_fixed_window: observable mechanics [rangestat, interval, by] produce rolling mean and count variables; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://ideas.repec.org/c/boc/bocode/s458161.html"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.rangestat_expanding.v1",
@@ -2990,16 +2992,10 @@
     "contract_ids": [
       "rangestat.cumulative_window"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "post_estimation",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        105,
-        106
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://ideas.repec.org/c/boc/bocode/s458161.html"
@@ -3071,7 +3067,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -3086,9 +3082,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate rangestat_expanding_window: observable mechanics [rangestat, interval, . 0] produce expanding mean and count variables; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://ideas.repec.org/c/boc/bocode/s458161.html"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.rangestat_variable_bounds.v1",
@@ -3098,16 +3100,10 @@
     "contract_ids": [
       "rangestat.declared_endpoints"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "post_estimation",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        108,
-        109
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://ideas.repec.org/c/boc/bocode/s458161.html"
@@ -3180,7 +3176,7 @@
     "readability_score": 4,
     "portability_score": 3,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -3195,9 +3191,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate rangestat_variable_absolute_bounds: observable mechanics [rangestat, interval(year lower upper)] produce variable-window summary variable; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://ideas.repec.org/c/boc/bocode/s458161.html"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.rangestat_excludeself.v1",
@@ -3207,16 +3209,10 @@
     "contract_ids": [
       "rangestat.exclude_focal_observation"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "post_estimation",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        111,
-        112
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://ideas.repec.org/c/boc/bocode/s458161.html"
@@ -3287,7 +3283,7 @@
     "readability_score": 4,
     "portability_score": 3,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -3304,9 +3300,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate rangestat_fixed_excludeself: observable mechanics [rangestat, excludeself] produce leave-one-out rolling summary; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://ideas.repec.org/c/boc/bocode/s458161.html"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.rangestat_regression_reference.v1",
@@ -3320,12 +3322,6 @@
     "stage": "post_estimation",
     "decision": "conditional_keep",
     "adaptation_mode": "structural_reference",
-    "source_spans": [
-      [
-        114,
-        115
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://ideas.repec.org/c/boc/bocode/s458161.html"
@@ -3397,7 +3393,7 @@
     "readability_score": 3,
     "portability_score": 2,
     "preferred_within_checkpoint": false,
-    "promotion_status": "reference_only_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -3414,9 +3410,15 @@
       "selector_status": "must_be_blocked"
     },
     "variant_distinction": "Separate rangestat_regression_reference: observable mechanics [rangestat, reg, interval] produce rolling regression result variables; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://ideas.repec.org/c/boc/bocode/s458161.html"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.estpost_detail_active.v1",
@@ -3426,16 +3428,10 @@
     "contract_ids": [
       "estout_family.estpost_detail"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "descriptives",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        117,
-        118
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://github.com/benjann/estout"
@@ -3502,7 +3498,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -3517,9 +3513,15 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate estpost_summarize_detail_active: observable mechanics [estpost, summarize, detail] produce active detailed estpost result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/benjann/estout"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   },
   {
     "label_id": "reporting.estpost_ttest_active.v1",
@@ -3529,16 +3531,10 @@
     "contract_ids": [
       "estout_family.estpost_ttest"
     ],
-    "canonical_generation_class": "conditional_candidate",
+    "canonical_generation_class": "reference_only",
     "stage": "descriptives",
     "decision": "conditional_keep",
     "adaptation_mode": "minimal_substitution",
-    "source_spans": [
-      [
-        120,
-        121
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_references": [
       "https://github.com/benjann/estout"
@@ -3606,7 +3602,7 @@
     "readability_score": 5,
     "portability_score": 4,
     "preferred_within_checkpoint": false,
-    "promotion_status": "candidate_pre_audit",
+    "promotion_status": "reference_only",
     "derivation_provenance": {
       "independent_support": false,
       "researcher_style_evidence": false,
@@ -3621,8 +3617,14 @@
       "selector_status": "pending"
     },
     "variant_distinction": "Separate estpost_ttest_declared_binary_group: observable mechanics [estpost, ttest, by] produce active estpost two-group comparison result; sibling variants with different options or state contracts must not be substituted or spliced.",
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending"
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "source_urls": [
+      "https://github.com/benjann/estout"
+    ],
+    "candidate_disposition": "reference_only",
+    "independent_support": false,
+    "researcher_style_evidence": false
   }
 ]

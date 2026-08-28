@@ -143,10 +143,10 @@ test("schema 2.0 permits one exact staggered-DID estimator target but rejects tw
     && new Set(row.selected_label_ids).size === 2), JSON.stringify(competing.blockers));
 });
 
-test("the IV first-stage handoff remains reference-only and cannot be selected as a schema 2.0 shortcut", async (t) => {
+test("external reference-only estimator evidence cannot be selected as a schema 2.0 shortcut", async (t) => {
   const client = new McpClient();
   t.after(() => client.close());
-  const iv = label("postest.iv_first_stage_handoff.v1");
+  const iv = label("estimation.ols_visible_specs_eststo.v1");
   const retrieved = await client.tool("search_labeled_checkpoints", { variant_id: iv.variant_id, limit: 5 });
   assert.equal(retrieved.results.length, 1);
   assert.equal(retrieved.results[0].rubric_classification, "reference_only");

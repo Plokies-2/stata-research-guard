@@ -140,7 +140,7 @@ def validate_ranked_atomic_contract_coverage(requirements: dict[str, Any], atomi
         if (
             record.get("canonical_generation_class") != "reference_only"
             or record.get("candidate_disposition") not in {None, "reference_only"}
-            or record.get("audit_status") != "candidate_pre_audit"
+            or record.get("audit_status") != "metadata_only"
         ):
             raise ValueError(f"Top-100 guide atom must remain pre-audit reference_only: {label_id}")
         contracts = record.get("contract_ids")
@@ -168,11 +168,11 @@ def _require_nonempty_string(value: Any, context: str) -> None:
 
 
 def validate_promotion_audit(audit: dict[str, Any], requirements: dict[str, Any], legacy_label_count: int) -> None:
-    if audit.get("schema_version") != "1.0":
-        raise ValueError("promotion audit schema_version must be 1.0")
+    if audit.get("schema_version") != "2.0":
+        raise ValueError("promotion audit schema_version must be 2.0")
     legacy = audit.get("legacy_baseline")
-    if not isinstance(legacy, dict) or legacy.get("status") != "legacy_pre_policy":
-        raise ValueError("legacy baseline must be explicitly legacy_pre_policy")
+    if not isinstance(legacy, dict) or legacy.get("status") != "current_code_free_registry":
+        raise ValueError("registry baseline must be explicitly current_code_free_registry")
     if legacy.get("label_count") != legacy_label_count:
         raise ValueError("legacy baseline label_count must match labeled_checkpoints.jsonl")
     records = audit.get("candidate_records")
@@ -213,7 +213,6 @@ def validate_promotion_audit(audit: dict[str, Any], requirements: dict[str, Any]
         unknown = set(contract_ids) - known_contracts
         if unknown:
             raise ValueError(f"{label_id} references unknown contract ids: {sorted(unknown)}")
-        _require_sha(record.get("template_sha256"), f"{label_id}.template_sha256")
         _require_sha(record.get("candidate_inventory_sha256"), f"{label_id}.candidate_inventory_sha256")
         source_layers = record.get("source_layers")
         if not isinstance(source_layers, dict):
@@ -221,7 +220,7 @@ def validate_promotion_audit(audit: dict[str, Any], requirements: dict[str, Any]
         source = record.get("source")
         if not isinstance(source, dict):
             raise ValueError(f"{label_id}.source must be an object")
-        for key in ("path", "role", "kind"):
+        for key in ("source_id", "role", "kind"):
             _require_nonempty_string(source.get(key), f"{label_id}.source.{key}")
         if contract_ids:
             required_layer = (
@@ -238,28 +237,10 @@ def validate_promotion_audit(audit: dict[str, Any], requirements: dict[str, Any]
             raise ValueError(f"{label_id}.source_layers.{required_layer} must be a passed named source")
         if source["role"] != required_layer:
             raise ValueError(f"{label_id}.source.role must match required source layer {required_layer}")
-        _require_sha(source.get("sha256"), f"{label_id}.source.sha256")
-        if not isinstance(source.get("span"), str) or not SPAN_RE.fullmatch(source["span"]):
-            raise ValueError(f"{label_id}.source.span must be an exact line span")
         for key in ("independence", "input_profile", "state_signature", "variant_distinctness", "safety_checks", "auditor"):
             if not record.get(key):
                 raise ValueError(f"{label_id}.{key} is required")
-        if disposition == "audited_template":
-            duplicate = set(contract_ids) & seen_contracts
-            if duplicate:
-                raise ValueError(f"duplicate audited coverage for contracts: {sorted(duplicate)}")
-            seen_contracts.update(contract_ids)
-            runtime = record.get("runtime")
-            if not isinstance(runtime, dict) or runtime.get("status") != "pass":
-                raise ValueError(f"{label_id}.runtime.status must be pass for audited_template")
-            selector = record.get("selector")
-            if not isinstance(selector, dict):
-                raise ValueError(f"{label_id}.selector must record positive and negative cases")
-            for polarity in ("positive", "negative"):
-                result = selector.get(polarity)
-                if not isinstance(result, dict) or result.get("status") != "pass" or not result.get("case_id"):
-                    raise ValueError(f"{label_id}.selector.{polarity} must be a passed named case")
-        elif disposition == "reference_only":
+        if disposition == "reference_only":
             # Reference records remain useful, but must never satisfy auto-selection coverage.
             if record.get("auto_selectable") is not False:
                 raise ValueError(f"reference_only record must set auto_selectable=false: {label_id}")
@@ -271,6 +252,8 @@ def validate_promotion_audit(audit: dict[str, Any], requirements: dict[str, Any]
             if not isinstance(selector, dict) or selector.get("status") not in {"not_run", "not_applicable", "blocked"}:
                 raise ValueError(f"{label_id}.selector must record its reference-only gate status")
             _require_nonempty_string(selector.get("reason"), f"{label_id}.selector.reason")
+        else:
+            raise ValueError(f"code-free guide registry cannot contain {disposition}: {label_id}")
 
 
 def build_coverage(
@@ -281,6 +264,7 @@ def build_coverage(
     validate_requirements(requirements)
     audited_by_contract: dict[str, str] = {}
     reference_by_contract: dict[str, str] = {}
+    guide_metadata: dict[str, dict[str, object]] = {}
     overrides = (command_example_audit or {}).get("label_overrides", {})
     for record in audit["candidate_records"]:
         override = overrides.get(record["label_id"])
@@ -288,6 +272,15 @@ def build_coverage(
             continue
         if record["disposition"] == "rejected":
             continue
+        if record["disposition"] == "reference_only":
+            source = record.get("source")
+            if isinstance(source, dict) and source.get("role") and source.get("source_id"):
+                guide_metadata[record["label_id"]] = {
+                    "label_id": record["label_id"],
+                    "authority": source["role"],
+                    "source_url": source["source_id"],
+                    "code_available": False,
+                }
         target = audited_by_contract if record["disposition"] == "audited_template" else reference_by_contract
         contract_ids = override.get("contract_ids", []) if override else record["contract_ids"]
         for contract_id in contract_ids:
@@ -305,7 +298,10 @@ def build_coverage(
                 status, evidence = "reference_only", reference_by_contract[contract_id]
             else:
                 status, evidence = "uncovered", "no audited template record"
-            variants.append({"contract_id": contract_id, "variant": variant, "status": status, "evidence": evidence})
+            variants.append({
+                "contract_id": contract_id, "variant": variant, "status": status, "evidence": evidence,
+                "guide": guide_metadata.get(evidence) if status == "reference_only" else None,
+            })
         rows.append({
             "rank": group["rank"], "group_id": group["group_id"], "commands": group["commands"],
             "coverage_mode": group["coverage_mode"], "user_written_guide_required": bool(group.get("user_written_guide_required", False)),
@@ -324,7 +320,7 @@ def build_coverage(
             "top50_prefix_required_variants": sum(len(row["variants"]) for row in rows[:50]),
             "top50_prefix_status_counts": dict(sorted(Counter(variant["status"] for row in rows[:50] for variant in row["variants"]).items())),
             "status_counts": dict(sorted(counts.items())),
-            "audit_gate": "audited_template requires exact SHA, runtime pass, and selector positive plus negative pass; legacy_pre_policy labels do not count",
+            "audit_gate": "guide metadata requires a declared authoritative source URL, inventory/profile/auditor checks, and reference_only/non-selectable status; it ships no code template",
         },
         "groups": rows,
     }
@@ -335,7 +331,7 @@ def render_markdown(coverage: dict[str, Any]) -> str:
     lines = [
         "# Top 100 command-template coverage / Top 100 명령어 템플릿 범위",
         "",
-        "> 이 표는 명령어의 사용 빈도 순위 자체가 아니라, 현재 플러그인이 보유해야 할 변형 계약의 충족 상태입니다. `legacy_pre_policy` 라벨은 새 사전승격 감사를 통과한 것으로 계산하지 않습니다.",
+        "> 이 표는 명령어의 사용 빈도 순위 자체가 아니라, 현재 플러그인이 보유해야 할 변형 계약의 충족 상태입니다. guide metadata는 manual/maintainer authority를 가리키는 reference-only 정보이며 코드를 제공하지 않습니다.",
         "",
         "## 현재 판정",
         "",
@@ -355,7 +351,15 @@ def render_markdown(coverage: dict[str, Any]) -> str:
         "|---:|---|---|---|",
     ]
     for row in coverage["groups"]:
-        variants = "; ".join(f"`{item['variant']}`: {item['status']}" for item in row["variants"])
+        variants = "; ".join(
+            f"`{item['variant']}`: {item['status']}"
+            + (
+                f" (`{item['guide']['label_id']}`, {item['guide']['authority']}, "
+                f"{item['guide']['source_url']}, code_available=false)"
+                if item.get("guide") else ""
+            )
+            for item in row["variants"]
+        )
         lines.append(f"| {row['rank']} | `{row['group_id']}` | {', '.join(f'`{item}`' for item in row['commands'])} | {variants} |")
     lines.extend(["", "## 승격 경계", "", "- guide-derived mechanics는 `reference_only`로 시작합니다. 독립 연구 코드·정확한 source span·runtime·selector 검사가 누적되어야만 `audited_template`가 됩니다.", "- Top 50 prefix는 별도 hash로 고정합니다. guide card 수는 명령어별 고정 quota가 아니라 material state 차이로 결정합니다.", ""])
     return "\n".join(lines)
@@ -372,8 +376,7 @@ def main() -> None:
     command_example_audit_path = plugin / "annotations" / "command_example_audit.json"
     command_example_audit = load_json(command_example_audit_path) if command_example_audit_path.exists() else None
     legacy_labels = load_json(plugin / "annotations" / "labeled_checkpoints.json")
-    package_first = load_json(plugin / "annotations" / "package_first_atomic_templates.json")
-    validate_promotion_audit(audit, requirements, len(legacy_labels) + len(package_first))
+    validate_promotion_audit(audit, requirements, len(legacy_labels))
     coverage = build_coverage(requirements, audit, command_example_audit)
     if args.write_review:
         (plugin / "review" / "command_template_coverage.md").write_text(render_markdown(coverage), encoding="utf-8", newline="\n")

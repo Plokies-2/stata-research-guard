@@ -1,6 +1,26 @@
 {
   "schema_version": "1.0",
-  "purpose": "Independent complexity-weighted audit overrides for command-level guide display. The source labels remain preserved for provenance; this file only corrects command-contract presentation and retrieval.",
+  "purpose": "Independent complexity-weighted audit for command-level evidence. It governs the command-to-mechanics map without shipping internally synthesized guide code as an example or selection weight.",
+  "provenance_policy": {
+    "internal_code_allowlist": [
+      "export.regression_excel.from_ster_default_style.v1"
+    ],
+    "internal_code_exception_reason": "The user explicitly retains the canonical outreg2_xlsx multi-sheet formatter program; no other internally authored implementation is permitted.",
+    "guide_mechanics_storage": "metadata_only_no_code_body",
+    "guide_required_fields": [
+      "label_id",
+      "command_anchors",
+      "contract_ids",
+      "state_signature",
+      "template_input_profile",
+      "source_kind",
+      "source_urls"
+    ],
+    "guide_auto_selectable": false,
+    "runtime_verified_official_examples": "Kept in the separate official-example tool only when manual-linked, explicitly marked as adapted, and verified by a durable Stata run. They are not selector templates or research-usage evidence.",
+    "external_usage_policy": "Deposited researcher code remains a separate usage layer. It never replaces command authority and is writable only under the existing exact compatibility and promotion gates.",
+    "test_fixture_policy": "Plugin-owned fixtures may contain executable code solely to test policy or runtime behavior; they are never loaded as retrieval evidence."
+  },
   "label_overrides": {
     "data.generate_indicator.v1": {
       "action": "suppress_semantic_duplicate",

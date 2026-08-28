@@ -87,15 +87,7 @@ For each `sheet_group` or `axis_group`, use the tool-documented `decision_source
 
 ## Estimation mechanics when the dictionary has a documented gap
 
-Keep every requested specification directly inspectable and keep the research choice in the prompt, not in helper control flow. With `reghdfe`, list every fixed effect and heterogeneous slope in `absorb()` and the exact cluster identifier in `vce(cluster ...)`. For example, mechanics supported by the official `reghdfe` help include:
-
-```stata
-reghdfe outcome event_terms, absorb(fid year) vce(cluster fid)
-reghdfe outcome event_terms, absorb(fid year##c.baseline_control) vce(cluster fid)
-reghdfe outcome event_terms, absorb(year fid##c.linear_time) vce(cluster fid)
-```
-
-Bind the prompt's actual controls and never infer their inclusion. `group##c.continuous` includes the group intercepts and group-specific continuous slopes and is generally preferred by the command author to a slope-only `group#c.continuous` absorb term. When there are several baseline controls, keep each declared term visible. Use `estimation.reghdfe_fe_clustered.v1` for the ordinary one-command FE-and-cluster shape when its state contract matches; genuinely different heterogeneous-slope or project-formula shapes still require their own compatible label or an atomic native-gap justification. Source: [reghdfe author help](https://scorreia.com/help/reghdfe.html), especially the absorb and VCE syntax.
+Keep every requested specification directly inspectable and keep the research choice in the prompt, not in helper control flow. With `reghdfe`, list every fixed effect and heterogeneous slope in `absorb()` and the exact cluster identifier in `vce(cluster ...)`. Bind the prompt's actual controls and never infer their inclusion. `group##c.continuous` includes the group intercepts and group-specific continuous slopes and is generally preferred by the command author to a slope-only `group#c.continuous` absorb term. When there are several baseline controls, keep each declared term visible. Resolve executable syntax from the [reghdfe author help](https://scorreia.com/help/reghdfe.html), especially the absorb and VCE sections; no internally authored `reghdfe` label or code example is a selection authority.
 
 For a conventional event-study term on the estimation RHS with a declared window, use native single-hash factor syntax and leave the design reference absent. Compact selected levels such as `i(2015/2018 2020/2024).time#1.treatment` remain a good official example, but are not a general auto-selection rule before Stata runtime confirms the actual levels and exact raw `e(b)` names. Use a flat level-by-level no-base list for an irregular window or an unconfirmed coefficient contract. Do not use `ibn(<numlist>)`, another base marker, or `##` for this RHS, because `##` carries extra time and treatment main-effect rows into raw `outreg2` output. Runtime verification must discover every declared nonreference level in the exact raw `e(b)` token Stata returns before the event selector is frozen. This restriction is confined to the event-study RHS. It does not ban a separately justified heterogeneous slope such as `year##c.baseline_control` inside `absorb()`.
 

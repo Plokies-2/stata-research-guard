@@ -10,12 +10,6 @@
     "variant_id": "ster_seed_then_use",
     "stage": "post_estimation",
     "method_family": "estimates",
-    "source_spans": [
-      [
-        8,
-        11
-      ]
-    ],
     "source_kind": "official_stata_manual_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/restimates.pdf"
@@ -72,10 +66,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 매뉴얼 mechanics 후보다. .ster 파일명과 보존할 사양은 연구자가 선언하며, 감사 전 자동 선택하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 매뉴얼 mechanics 후보다. .ster 파일명과 보존할 사양은 연구자가 선언하며, 감사 전 자동 선택하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "reporting.estimates_numbered_store.v1",
@@ -88,12 +84,6 @@
     "variant_id": "numbered_in_memory_store",
     "stage": "post_estimation",
     "method_family": "estimates",
-    "source_spans": [
-      [
-        13,
-        17
-      ]
-    ],
     "source_kind": "official_stata_manual_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/restimates.pdf"
@@ -149,10 +139,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 매뉴얼 mechanics 후보다. numbered name은 연구 사양 순서를 숨기지 않는 선언일 때만 사용하며 감사 전 자동 선택하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 매뉴얼 mechanics 후보다. numbered name은 연구 사양 순서를 숨기지 않는 선언일 때만 사용하며 감사 전 자동 선택하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "reporting.estimates_reattach_active.v1",
@@ -165,12 +157,6 @@
     "variant_id": "restore_named_active_estimate",
     "stage": "post_estimation",
     "method_family": "estimates",
-    "source_spans": [
-      [
-        19,
-        20
-      ]
-    ],
     "source_kind": "official_stata_manual_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/restimates.pdf"
@@ -223,10 +209,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 매뉴얼 mechanics 후보다. 복원 대상과 consumer compatibility는 별도 감사 대상이다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 매뉴얼 mechanics 후보다. 복원 대상과 consumer compatibility는 별도 감사 대상이다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "reporting.tabstat_by_statistics.v1",
@@ -239,12 +227,6 @@
     "variant_id": "tabstat_by_declared_statistics",
     "stage": "descriptives",
     "method_family": "tabstat",
-    "source_spans": [
-      [
-        22,
-        23
-      ]
-    ],
     "source_kind": "official_stata_manual_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rtabstat.pdf"
@@ -306,10 +288,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 매뉴얼 mechanics 후보다. descriptive group 의미와 표본은 연구자가 선언한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 매뉴얼 mechanics 후보다. descriptive group 의미와 표본은 연구자가 선언한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "reporting.tabstat_weighted.v1",
@@ -322,12 +306,6 @@
     "variant_id": "tabstat_declared_analytic_weight",
     "stage": "descriptives",
     "method_family": "tabstat",
-    "source_spans": [
-      [
-        25,
-        26
-      ]
-    ],
     "source_kind": "official_stata_manual_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/rtabstat.pdf"
@@ -389,10 +367,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 매뉴얼 mechanics 후보다. weight type·정당성은 guide가 공급하지 않으며 감사 전 자동 선택하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 매뉴얼 mechanics 후보다. weight type·정당성은 guide가 공급하지 않으며 감사 전 자동 선택하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "figures.twoway_by_panel.v1",
@@ -405,12 +385,6 @@
     "variant_id": "twoway_scatter_by_declared_group",
     "stage": "figures",
     "method_family": "twoway",
-    "source_spans": [
-      [
-        28,
-        29
-      ]
-    ],
     "source_kind": "official_stata_manual_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/g-2graphtwoway.pdf"
@@ -472,10 +446,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 매뉴얼 mechanics 후보다. group choice·axis·interpretation은 별도 연구 결정이다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 매뉴얼 mechanics 후보다. group choice·axis·interpretation은 별도 연구 결정이다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "figures.graph_combine_pdf.v1",
@@ -488,12 +464,6 @@
     "variant_id": "combine_declared_gph_then_pdf",
     "stage": "figures",
     "method_family": "graph_export",
-    "source_spans": [
-      [
-        31,
-        33
-      ]
-    ],
     "source_kind": "official_stata_manual_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/g-2graphcombine.pdf",
@@ -556,10 +526,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 매뉴얼 mechanics 후보다. graph order/layout은 research-facing presentation decision이므로 guide가 정하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 매뉴얼 mechanics 후보다. graph order/layout은 research-facing presentation decision이므로 guide가 정하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "figures.graph_loop_immediate_pdf.v1",
@@ -572,12 +544,6 @@
     "variant_id": "flat_loop_construct_then_pdf",
     "stage": "figures",
     "method_family": "graph_export",
-    "source_spans": [
-      [
-        35,
-        39
-      ]
-    ],
     "source_kind": "official_stata_manual_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/pforeach.pdf",
@@ -641,10 +607,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 매뉴얼 mechanics 후보다. active loop depth는 1이며, declared list 밖의 research choice를 loop에 직렬화하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 매뉴얼 mechanics 후보다. active loop depth는 1이며, declared list 밖의 research choice를 loop에 직렬화하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "reporting.outreg2_coherent_multioutcome.v1",
@@ -657,12 +625,6 @@
     "variant_id": "ordered_multioutcome_replace_append",
     "stage": "exports",
     "method_family": "outreg2",
-    "source_spans": [
-      [
-        41,
-        45
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://ideas.repec.org/c/boc/bocode/s456416.html",
@@ -728,10 +690,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "maintainer-guide base mechanics 후보다. raw coefficient와 omitted/base rows는 native e(b) identity로 보존하며 수동 coefficient bridge는 금지한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "maintainer-guide base mechanics 후보다. raw coefficient와 omitted/base rows는 native e(b) identity로 보존하며 수동 coefficient bridge는 금지한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "reporting.outreg2_multi_sheet_xlsx_reference.v1",
@@ -744,12 +708,6 @@
     "variant_id": "outreg2_xlsx_declared_sheet_reference",
     "stage": "exports",
     "method_family": "outreg2",
-    "source_spans": [
-      [
-        47,
-        49
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://ideas.repec.org/c/boc/bocode/s456416.html",
@@ -810,10 +768,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "maintainer-guide base mechanics 후보다. outreg2 guide가 outreg2_xlsx의 multi-sheet API를 충분히 보장하지 않으므로 audit/runtime 전에는 reference-only이며 자동 선택 금지다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "maintainer-guide base mechanics 후보다. outreg2 guide가 outreg2_xlsx의 multi-sheet API를 충분히 보장하지 않으므로 audit/runtime 전에는 reference-only이며 자동 선택 금지다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "reporting.outreg2_iv_first_stage_raw.v1",
@@ -826,12 +786,6 @@
     "variant_id": "saved_first_stage_restore_native_excel",
     "stage": "exports",
     "method_family": "outreg2",
-    "source_spans": [
-      [
-        51,
-        54
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://ideas.repec.org/c/boc/bocode/s425401.html",
@@ -904,10 +858,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "maintainer-guide base mechanics 후보다. raw first-stage coefficient/omitted rows를 수동 재구성하지 않으며 IV identification·weak-IV 해석은 guide가 공급하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "maintainer-guide base mechanics 후보다. raw first-stage coefficient/omitted rows를 수동 재구성하지 않으며 IV identification·weak-IV 해석은 guide가 공급하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "figures.coefplot_event_single_auto_axis.v1",
@@ -920,12 +876,6 @@
     "variant_id": "single_event_auto_axis",
     "stage": "figures",
     "method_family": "coefplot",
-    "source_spans": [
-      [
-        56,
-        57
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/benjann/coefplot"
@@ -985,10 +935,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "maintainer-guide base mechanics 후보다. manual event dummy를 만들지 않고 raw e(b) selector를 유지하며 감사 전 자동 선택하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "maintainer-guide base mechanics 후보다. manual event dummy를 만들지 않고 raw e(b) selector를 유지하며 감사 전 자동 선택하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "figures.coefplot_event_multiple_auto_axis.v1",
@@ -1001,12 +953,6 @@
     "variant_id": "multiple_event_auto_axis",
     "stage": "figures",
     "method_family": "coefplot",
-    "source_spans": [
-      [
-        59,
-        60
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/benjann/coefplot"
@@ -1069,10 +1015,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "maintainer-guide base mechanics 후보다. series comparability와 labels는 연구자가 선언하며 raw e(b) identity를 바꾸지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "maintainer-guide base mechanics 후보다. series comparability와 labels는 연구자가 선언하며 raw e(b) identity를 바꾸지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "figures.coefplot_event_fixed_axis.v1",
@@ -1085,12 +1033,6 @@
     "variant_id": "event_declared_fixed_axis",
     "stage": "figures",
     "method_family": "coefplot",
-    "source_spans": [
-      [
-        62,
-        63
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/benjann/coefplot"
@@ -1149,10 +1091,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "maintainer-guide base mechanics 후보다. event window choice는 substantive reporting decision이며 automatic-axis variant로 대체하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "maintainer-guide base mechanics 후보다. event window choice는 substantive reporting decision이며 automatic-axis variant로 대체하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "figures.coefplot_mixed_family_reference.v1",
@@ -1165,12 +1109,6 @@
     "variant_id": "mixed_family_comparison_reference",
     "stage": "figures",
     "method_family": "coefplot",
-    "source_spans": [
-      [
-        65,
-        66
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/benjann/coefplot"
@@ -1234,10 +1172,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "maintainer-guide base mechanics 후보다. mixed scale의 interpretability가 별도 승인되지 않으면 reference로만 유지하며 selector는 차단한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "maintainer-guide base mechanics 후보다. mixed scale의 interpretability가 별도 승인되지 않으면 reference로만 유지하며 selector는 차단한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "reporting.winsor2_declared_arbitrary_cuts.v1",
@@ -1250,12 +1190,6 @@
     "variant_id": "pooled_nondefault_cuts_new_variables",
     "stage": "preparation",
     "method_family": "winsor2",
-    "source_spans": [
-      [
-        68,
-        69
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://ideas.repec.org/c/boc/bocode/s457765.html"
@@ -1315,10 +1249,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "maintainer-guide base mechanics 후보다. tail cut은 researcher decision이고 generated variable의 정의·label은 consumer workflow에서 명시해야 한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "maintainer-guide base mechanics 후보다. tail cut은 researcher decision이고 generated variable의 정의·label은 consumer workflow에서 명시해야 한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "reporting.etable_stored_estimates.v1",
@@ -1331,12 +1267,6 @@
     "variant_id": "etable_declared_stored_estimates",
     "stage": "exports",
     "method_family": "etable",
-    "source_spans": [
-      [
-        71,
-        72
-      ]
-    ],
     "source_kind": "official_stata_manual_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/features/overview/tables-of-estimation-results/"
@@ -1394,10 +1324,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 매뉴얼 mechanics 후보다. 수동 coefficient/SE bridge를 만들지 않으며 estimates/ordering choice는 별도 선언한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 매뉴얼 mechanics 후보다. 수동 coefficient/SE bridge를 만들지 않으며 estimates/ordering choice는 별도 선언한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "reporting.collect_style_layout.v1",
@@ -1410,12 +1342,6 @@
     "variant_id": "collect_declared_style_layout",
     "stage": "exports",
     "method_family": "collect",
-    "source_spans": [
-      [
-        74,
-        76
-      ]
-    ],
     "source_kind": "official_stata_manual_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/tablescollectstylecell.pdf"
@@ -1474,10 +1400,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 매뉴얼 mechanics 후보다. format precision·header visibility는 reader-facing reporting choice로 선언된 값만 대체한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 매뉴얼 mechanics 후보다. format precision·header visibility는 reader-facing reporting choice로 선언된 값만 대체한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "reporting.collect_export_xlsx.v1",
@@ -1490,12 +1418,6 @@
     "variant_id": "collect_active_to_declared_xlsx",
     "stage": "exports",
     "method_family": "collect",
-    "source_spans": [
-      [
-        78,
-        79
-      ]
-    ],
     "source_kind": "official_stata_manual_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/stata-news/news36-3/customizable-tables/"
@@ -1552,10 +1474,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 매뉴얼 mechanics 후보다. workbook ownership과 sheet policy는 외부 contract로 선언되어야 하며 Excel export만 사용한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 매뉴얼 mechanics 후보다. workbook ownership과 sheet policy는 외부 contract로 선언되어야 하며 Excel export만 사용한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "reporting.estimates_store_restore_paired.v1",
@@ -1568,12 +1492,6 @@
     "variant_id": "store_change_active_then_restore",
     "stage": "post_estimation",
     "method_family": "estimates",
-    "source_spans": [
-      [
-        81,
-        85
-      ]
-    ],
     "source_kind": "official_stata_manual_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals15/restimatesstore.pdf"
@@ -1634,10 +1552,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 매뉴얼 mechanics 후보다. named result의 substantive role과 consumer compatibility는 guide가 정하지 않으며 감사 전 자동 선택하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 매뉴얼 mechanics 후보다. named result의 substantive role과 consumer compatibility는 guide가 정하지 않으며 감사 전 자동 선택하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "reporting.etable_active_estimate.v1",
@@ -1650,12 +1570,6 @@
     "variant_id": "etable_active_eclass_no_estimates_option",
     "stage": "exports",
     "method_family": "etable",
-    "source_spans": [
-      [
-        87,
-        89
-      ]
-    ],
     "source_kind": "official_stata_manual_derived_mechanics",
     "source_urls": [
       "https://www.stata.com/manuals/retable.pdf"
@@ -1711,9 +1625,11 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "공식 매뉴얼 mechanics 후보다. stored-estimate etable variant와 합치지 않으며, active estimate의 substantive choice는 별도 contract로 선언한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "공식 매뉴얼 mechanics 후보다. stored-estimate etable variant와 합치지 않으며, active estimate의 substantive choice는 별도 contract로 선언한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   }
 ]

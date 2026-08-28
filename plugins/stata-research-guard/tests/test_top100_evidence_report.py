@@ -23,6 +23,15 @@ from build_top100_evidence_report import (  # noqa: E402
 )
 
 
+def source_bytes_for_card(card: dict) -> bytes:
+    provenance = card["provenance"]
+    local_source = PLUGIN.parents[1] / provenance["source_path"]
+    if local_source.is_file():
+        return local_source.read_bytes()
+    archive = PLUGIN / "data" / "source_archive" / "files" / f"{provenance['source_file_sha256']}.source"
+    return archive.read_bytes()
+
+
 class Top100EvidenceReportTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
@@ -51,7 +60,7 @@ class Top100EvidenceReportTests(unittest.TestCase):
         self.assertEqual(sum(len(row["material_contracts"]) for row in rows), expected_contracts)
         self.assertTrue(self.report["invariants"]["exactly_100_rows"])
         self.assertTrue(self.report["invariants"]["code_spans_hashes_validated"])
-        self.assertTrue(self.report["invariants"]["code_matches_source_span_readback"])
+        self.assertTrue(self.report["invariants"]["guide_provenance_hashes_validated_without_outputting_code"])
 
     def test_complexity_is_zero_for_direct_one_for_simple_and_multiple_for_complex(self) -> None:
         by_group = {row["group_id"]: row for row in self.report["rows"]}
@@ -111,17 +120,21 @@ class Top100EvidenceReportTests(unittest.TestCase):
                     self.assertEqual(item["code"], source["code"])
                     self.assertEqual(item["code_line_count"], len(source["code"].splitlines()))
 
-    def test_all_guide_and_legacy_code_blocks_are_preserved_in_full(self) -> None:
+    def test_guide_metadata_is_code_free_and_legacy_paper_code_is_preserved(self) -> None:
         guide_by_label = {card["label_id"]: card for card in self.guides}
         paper_by_label = {card["label_id"]: card for card in self.usage if card.get("code")}
-        rendered_guides = {item["label_id"]: item for item in self.report["all_guide_code_blocks"]}
+        rendered_guides = {item["label_id"]: item for item in self.report["all_guide_mechanics_metadata"]}
         rendered_papers = {item["label_id"]: item for item in self.report["all_legacy_paper_code_blocks"]}
         self.assertEqual(len(guide_by_label), 454)
         self.assertEqual(len(paper_by_label), 109)
         self.assertEqual(set(rendered_guides), set(guide_by_label))
         self.assertEqual(set(rendered_papers), set(paper_by_label))
         for label, source in guide_by_label.items():
-            self.assertEqual(rendered_guides[label]["code"], source["code"])
+            self.assertFalse(source["code_available"])
+            self.assertNotIn("code", source)
+            self.assertFalse(rendered_guides[label]["code_available"])
+            self.assertNotIn("code", rendered_guides[label])
+            self.assertEqual(rendered_guides[label]["manual_urls"], source["manual_urls"])
         for label, source in paper_by_label.items():
             self.assertEqual(rendered_papers[label]["code"], source["code"])
         self.assertTrue(all(item["audit_action"] for item in rendered_guides.values()))
@@ -133,7 +146,7 @@ class Top100EvidenceReportTests(unittest.TestCase):
             rendered_guides["official.table_legacy_c_reference.v1"]["audit_action"],
             "supplemental_only",
         )
-        self.assertTrue(self.report["invariants"]["all_guide_blocks_in_complete_ledger"])
+        self.assertTrue(self.report["invariants"]["all_guide_mechanics_metadata_in_complete_ledger"])
         self.assertTrue(self.report["invariants"]["all_legacy_paper_blocks_in_complete_ledger"])
 
     def test_exact_paper_support_is_code_free_and_gaps_are_contract_exact(self) -> None:
@@ -167,8 +180,8 @@ class Top100EvidenceReportTests(unittest.TestCase):
 
     def test_mutated_code_hash_is_rejected(self) -> None:
         broken = copy.deepcopy(self.guides)
-        broken[0]["code"] += "\ndisplay 1\n"
-        with self.assertRaisesRegex(ValueError, "code SHA-256 mismatch"):
+        broken[0]["code"] = "display 1\n"
+        with self.assertRaisesRegex(ValueError, "guide mechanics must remain code-free"):
             build_report(
                 plugin=PLUGIN,
                 requirements=self.requirements,
@@ -179,36 +192,38 @@ class Top100EvidenceReportTests(unittest.TestCase):
             )
 
     def test_clean_plugin_uses_only_hash_verified_source_archive(self) -> None:
-        card = copy.deepcopy(self.guides[0])
+        # Source-archive verification belongs to code-bearing external usage
+        # cards; guide cards are metadata-only and intentionally hash-free.
+        card = copy.deepcopy(next(card for card in self.usage if card.get("code")))
         provenance = card["provenance"]
         source_hash = provenance["source_file_sha256"]
         source_path = provenance["source_path"]
-        source_bytes = (PLUGIN.parents[1] / source_path).read_bytes()
+        source_bytes = source_bytes_for_card(card)
         with tempfile.TemporaryDirectory() as temporary:
             clean_plugin = Path(temporary) / "plugins" / "stata-research-guard"
             archive = clean_plugin / "data" / "source_archive" / "files" / f"{source_hash}.source"
             archive.parent.mkdir(parents=True)
             archive.write_bytes(source_bytes)
-            validate_card(card, plugin=clean_plugin, layer_name="guide", code_required=True)
+            validate_card(card, plugin=clean_plugin, layer_name="research_usage", code_required=True)
 
     def test_clean_plugin_rejects_missing_or_tampered_source_archive(self) -> None:
-        card = copy.deepcopy(self.guides[0])
+        card = copy.deepcopy(next(card for card in self.usage if card.get("code")))
         source_hash = card["provenance"]["source_file_sha256"]
         with tempfile.TemporaryDirectory() as temporary:
             clean_plugin = Path(temporary) / "plugins" / "stata-research-guard"
             with self.assertRaisesRegex(ValueError, "source archive file does not exist"):
-                validate_card(card, plugin=clean_plugin, layer_name="guide", code_required=True)
+                validate_card(card, plugin=clean_plugin, layer_name="research_usage", code_required=True)
             archive = clean_plugin / "data" / "source_archive" / "files" / f"{source_hash}.source"
             archive.parent.mkdir(parents=True)
             archive.write_text("tampered\n", encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "source archive SHA-256 mismatch"):
-                validate_card(card, plugin=clean_plugin, layer_name="guide", code_required=True)
+                validate_card(card, plugin=clean_plugin, layer_name="research_usage", code_required=True)
 
     def test_tampered_present_local_source_cannot_fall_back_to_archive(self) -> None:
-        card = copy.deepcopy(self.guides[0])
+        card = copy.deepcopy(next(card for card in self.usage if card.get("code")))
         source_hash = card["provenance"]["source_file_sha256"]
         source_path = card["provenance"]["source_path"]
-        source_bytes = (PLUGIN.parents[1] / source_path).read_bytes()
+        source_bytes = source_bytes_for_card(card)
         with tempfile.TemporaryDirectory() as temporary:
             clean_plugin = Path(temporary) / "plugins" / "stata-research-guard"
             archive = clean_plugin / "data" / "source_archive" / "files" / f"{source_hash}.source"
@@ -218,7 +233,7 @@ class Top100EvidenceReportTests(unittest.TestCase):
             local_source.parent.mkdir(parents=True)
             local_source.write_text("tampered local source\n", encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "source file SHA-256 mismatch"):
-                validate_card(card, plugin=clean_plugin, layer_name="guide", code_required=True)
+                validate_card(card, plugin=clean_plugin, layer_name="research_usage", code_required=True)
 
     def test_generated_json_and_markdown_are_current_and_table_safe(self) -> None:
         generated = json.loads(
@@ -233,18 +248,21 @@ class Top100EvidenceReportTests(unittest.TestCase):
         self.assertTrue(all(line.count(" | ") == 9 for line in rows))
         self.assertNotIn("\ufffd", markdown)
         self.assertNotIn("excerpt", markdown)
-        self.assertIn("## Complete guide mechanics code ledger", markdown)
+        self.assertIn("## Complete guide mechanics metadata ledger", markdown)
         self.assertIn("## Guide audit actions", markdown)
         self.assertIn("## Complete legacy paper code ledger", markdown)
         self.assertIn("data.generate_indicator.v1", markdown)
         self.assertIn("already_suppressed_upstream", markdown)
-        for item in self.report["all_guide_code_blocks"] + self.report["all_legacy_paper_code_blocks"]:
+        for item in self.report["all_guide_mechanics_metadata"]:
+            self.assertIn(html.escape(item["label_id"], quote=True), markdown)
+            self.assertNotIn(f"<pre>{html.escape(item.get('code', ''), quote=True)}</pre>", markdown)
+        for item in self.report["all_legacy_paper_code_blocks"]:
             self.assertIn(html.escape(item["label_id"], quote=True), markdown)
             full_code = html.escape(item["code"], quote=True).replace("|", "&#124;").replace("\n", "&#10;")
             self.assertIn(f"<pre>{full_code}</pre>", markdown)
         source_hashes = {
             (card["label_id"], card["provenance"]["code_sha256"])
-            for card in self.guides + [card for card in self.usage if card.get("code")]
+            for card in [card for card in self.usage if card.get("code")]
         }
         markdown_hashes = set(re.findall(
             r"<summary><code>([^ <]+)(?: \[[^<]*\])?</code></summary><small>[^<]*; code_sha256=([0-9a-f]{64})</small><pre>",

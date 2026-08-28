@@ -10,12 +10,6 @@
     "variant_id": "reghdfe_absorb_oneway_cluster",
     "stage": "estimation",
     "method_family": "reghdfe",
-    "source_spans": [
-      [
-        11,
-        11
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/sergiocorreia/reghdfe/blob/master/current-code/reghdfe.sthlp"
@@ -81,10 +75,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. FE, cluster, 식별과 연구 설계는 guide가 결정하지 않으며 감사 전에는 정식 template으로 선택하지 않는다. suest/margins/keepsingletons/savefe는 이 원자에 포함하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. FE, cluster, 식별과 연구 설계는 guide가 결정하지 않으며 감사 전에는 정식 template으로 선택하지 않는다. suest/margins/keepsingletons/savefe는 이 원자에 포함하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "estimation.reghdfe_multiway_cluster.v1",
@@ -97,12 +93,6 @@
     "variant_id": "reghdfe_absorb_multiway_cluster",
     "stage": "estimation",
     "method_family": "reghdfe",
-    "source_spans": [
-      [
-        13,
-        13
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/sergiocorreia/reghdfe/blob/master/current-code/reghdfe.sthlp"
@@ -166,10 +156,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. firm year와 firm#year의 의미를 자동 변환하지 않는다. 감사 전 정식 선택 금지."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. firm year와 firm#year의 의미를 자동 변환하지 않는다. 감사 전 정식 선택 금지.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "estimation.reghdfe_heterogeneous_slope.v1",
@@ -182,12 +174,6 @@
     "variant_id": "reghdfe_heterogeneous_slope",
     "stage": "estimation",
     "method_family": "reghdfe",
-    "source_spans": [
-      [
-        15,
-        15
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/sergiocorreia/reghdfe/blob/master/current-code/reghdfe.sthlp"
@@ -255,10 +241,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. slope specification의 연구적 필요성은 guide가 제공하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. slope specification의 연구적 필요성은 guide가 제공하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "estimation.reghdfe_group_individual_fe.v1",
@@ -271,12 +259,6 @@
     "variant_id": "reghdfe_group_level_outcome_individual_fe",
     "stage": "estimation",
     "method_family": "reghdfe",
-    "source_spans": [
-      [
-        17,
-        17
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/sergiocorreia/reghdfe/blob/master/current-code/reghdfe.sthlp"
@@ -340,10 +322,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. row unit과 identifier 구조는 사용자가 공급해야 하며 자동 추론하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. row unit과 identifier 구조는 사용자가 공급해야 하며 자동 추론하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "postest.reghdfe_predict_residuals.v1",
@@ -356,12 +340,6 @@
     "variant_id": "reghdfe_predict_residuals",
     "stage": "post_estimation",
     "method_family": "reghdfe",
-    "source_spans": [
-      [
-        19,
-        20
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/sergiocorreia/reghdfe/blob/master/current-code/reghdfe.sthlp"
@@ -421,10 +399,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. active result가 없으면 선택하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. active result가 없으면 선택하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "estimation.ivreg2_cluster_first.v1",
@@ -437,12 +417,6 @@
     "variant_id": "ivreg2_clustered_first",
     "stage": "estimation",
     "method_family": "ivreg2",
-    "source_spans": [
-      [
-        23,
-        23
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "http://fmwww.bc.edu/repec/bocode/i/ivreg2.html",
@@ -513,10 +487,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. noid, nocollin, bvclean, partial 옵션은 허용하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. noid, nocollin, bvclean, partial 옵션은 허용하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "estimation.ivreg2_ffirst_diagnostics.v1",
@@ -529,12 +505,6 @@
     "variant_id": "ivreg2_ffirst",
     "stage": "estimation",
     "method_family": "ivreg2",
-    "source_spans": [
-      [
-        25,
-        25
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "http://fmwww.bc.edu/repec/bocode/i/ivreg2.html"
@@ -597,10 +567,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. ffirst는 약한 도구변수 판단을 자동으로 대신하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. ffirst는 약한 도구변수 판단을 자동으로 대신하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "estimation.ivreg2_savefirst_prefix.v1",
@@ -613,12 +585,6 @@
     "variant_id": "ivreg2_savefirst_prefix",
     "stage": "estimation",
     "method_family": "ivreg2",
-    "source_spans": [
-      [
-        27,
-        27
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "http://fmwww.bc.edu/repec/bocode/i/ivreg2.html"
@@ -681,10 +647,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. prefix 충돌과 downstream consumer를 감사에서 확인한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. prefix 충돌과 downstream consumer를 감사에서 확인한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "estimation.ivreg2_gmm2s_hac.v1",
@@ -697,12 +665,6 @@
     "variant_id": "ivreg2_gmm2s_hac",
     "stage": "estimation",
     "method_family": "ivreg2",
-    "source_spans": [
-      [
-        29,
-        29
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "http://fmwww.bc.edu/repec/bocode/i/ivreg2.html"
@@ -767,10 +729,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. bandwidth와 kernel은 guide 기본값을 강제하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. bandwidth와 kernel은 guide 기본값을 강제하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "estimation.ivreg2_liml_fuller.v1",
@@ -783,12 +747,6 @@
     "variant_id": "ivreg2_liml_fuller",
     "stage": "estimation",
     "method_family": "ivreg2",
-    "source_spans": [
-      [
-        31,
-        31
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "http://fmwww.bc.edu/repec/bocode/i/ivreg2.html"
@@ -850,10 +808,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. guide는 LIML 선택의 실증적 정당화를 공급하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. guide는 LIML 선택의 실증적 정당화를 공급하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "estimation.ivreghdfe_cluster_absorb.v1",
@@ -866,12 +826,6 @@
     "variant_id": "ivreghdfe_absorb_cluster",
     "stage": "estimation",
     "method_family": "ivreghdfe",
-    "source_spans": [
-      [
-        34,
-        34
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/sergiocorreia/ivreghdfe/blob/master/ivreghdfe.sthlp"
@@ -940,10 +894,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. vce(cluster) 버전 호환성은 감사에서 확인하고 cluster() mechanics를 우선한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. vce(cluster) 버전 호환성은 감사에서 확인하고 cluster() mechanics를 우선한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "estimation.ivreghdfe_ffirst_savefirst.v1",
@@ -956,12 +912,6 @@
     "variant_id": "ivreghdfe_ffirst_savefirst",
     "stage": "estimation",
     "method_family": "ivreghdfe",
-    "source_spans": [
-      [
-        36,
-        36
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/sergiocorreia/ivreghdfe/blob/master/ivreghdfe.sthlp"
@@ -1026,10 +976,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. prefix collision과 installed-version support를 감사한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. prefix collision과 installed-version support를 감사한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "estimation.ivreghdfe_liml_fuller.v1",
@@ -1042,12 +994,6 @@
     "variant_id": "ivreghdfe_liml_fuller",
     "stage": "estimation",
     "method_family": "ivreghdfe",
-    "source_spans": [
-      [
-        38,
-        38
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/sergiocorreia/ivreghdfe/blob/master/ivreghdfe.sthlp"
@@ -1111,10 +1057,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. guide는 LIML 선택의 연구적 근거를 공급하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. guide는 LIML 선택의 연구적 근거를 공급하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "postest.ivreghdfe_predict_residuals.v1",
@@ -1127,12 +1075,6 @@
     "variant_id": "ivreghdfe_predict_residuals",
     "stage": "post_estimation",
     "method_family": "ivreghdfe",
-    "source_spans": [
-      [
-        40,
-        41
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/sergiocorreia/ivreghdfe/blob/master/ivreghdfe.sthlp"
@@ -1192,10 +1134,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. active result가 없으면 선택하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. active result가 없으면 선택하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "estimation.ppmlhdfe_cluster.v1",
@@ -1208,12 +1152,6 @@
     "variant_id": "ppmlhdfe_absorb_cluster",
     "stage": "estimation",
     "method_family": "ppmlhdfe",
-    "source_spans": [
-      [
-        44,
-        44
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/sergiocorreia/ppmlhdfe/blob/master/ppmlhdfe.sthlp"
@@ -1280,10 +1218,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. outcome nonnegativity와 weights 제한은 감사에서 확인한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. outcome nonnegativity와 weights 제한은 감사에서 확인한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "estimation.ppmlhdfe_exposure.v1",
@@ -1296,12 +1236,6 @@
     "variant_id": "ppmlhdfe_exposure",
     "stage": "estimation",
     "method_family": "ppmlhdfe",
-    "source_spans": [
-      [
-        46,
-        46
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/sergiocorreia/ppmlhdfe/blob/master/ppmlhdfe.sthlp"
@@ -1369,10 +1303,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. exposure가 0/음수인 경우 선택하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. exposure가 0/음수인 경우 선택하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "estimation.ppmlhdfe_offset.v1",
@@ -1385,12 +1321,6 @@
     "variant_id": "ppmlhdfe_offset",
     "stage": "estimation",
     "method_family": "ppmlhdfe",
-    "source_spans": [
-      [
-        48,
-        48
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/sergiocorreia/ppmlhdfe/blob/master/ppmlhdfe.sthlp"
@@ -1457,10 +1387,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. offset의 log-scale 의미를 자동 생성하거나 변환하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. offset의 log-scale 의미를 자동 생성하거나 변환하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "postest.ppmlhdfe_predict_d.v1",
@@ -1473,12 +1405,6 @@
     "variant_id": "ppmlhdfe_predict_d",
     "stage": "post_estimation",
     "method_family": "ppmlhdfe",
-    "source_spans": [
-      [
-        50,
-        51
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/sergiocorreia/ppmlhdfe/blob/master/ppmlhdfe.sthlp"
@@ -1538,10 +1464,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. d/xb/mu 선택은 연구자가 명시해야 한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. d/xb/mu 선택은 연구자가 명시해야 한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "aggregation.fcollapse_reduce_by.v1",
@@ -1554,12 +1482,6 @@
     "variant_id": "fcollapse_reduce_by",
     "stage": "preparation",
     "method_family": "fcollapse",
-    "source_spans": [
-      [
-        54,
-        54
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/mcaceresb/stata-gtools/blob/master/docs/usage/fcollapse.md"
@@ -1620,10 +1542,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. 원자료 보존이 필요하면 merge-back variant를 사용해야 한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. 원자료 보존이 필요하면 merge-back variant를 사용해야 한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "aggregation.fcollapse_merge_back.v1",
@@ -1636,12 +1560,6 @@
     "variant_id": "fcollapse_merge_back",
     "stage": "preparation",
     "method_family": "fcollapse",
-    "source_spans": [
-      [
-        56,
-        56
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/mcaceresb/stata-gtools/blob/master/docs/usage/fcollapse.md"
@@ -1703,10 +1621,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. 변수 충돌과 by-key 계약을 감사에서 확인한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. 변수 충돌과 by-key 계약을 감사에서 확인한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "merge.fmerge_one_to_one.v1",
@@ -1717,12 +1637,6 @@
     "variant_id": "fmerge_1to1",
     "stage": "preparation",
     "method_family": "fmerge",
-    "source_spans": [
-      [
-        59,
-        59
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/mcaceresb/stata-gtools/blob/master/docs/usage/fmerge.md"
@@ -1784,11 +1698,13 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "후보 단계다. 1:1 key uniqueness를 선행 검사하고 fast/update/replace/nogen을 추가하지 않는다.",
-    "supplemental_contract_id": "fmerge.one_to_one_complete_match"
+    "supplemental_contract_id": "fmerge.one_to_one_complete_match",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "merge.fmerge_many_to_one.v1",
@@ -1799,12 +1715,6 @@
     "variant_id": "fmerge_m1",
     "stage": "preparation",
     "method_family": "fmerge",
-    "source_spans": [
-      [
-        61,
-        61
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/mcaceresb/stata-gtools/blob/master/docs/usage/fmerge.md"
@@ -1866,11 +1776,13 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
     "review_notes": "후보 단계다. using-side uniqueness를 선행 검사하고 fast/update/replace/nogen을 추가하지 않는다.",
-    "supplemental_contract_id": "fmerge.many_to_one_complete_match"
+    "supplemental_contract_id": "fmerge.many_to_one_complete_match",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "estimation.reghdfe_robust.v1",
@@ -1883,12 +1795,6 @@
     "variant_id": "reghdfe_absorb_robust",
     "stage": "estimation",
     "method_family": "reghdfe",
-    "source_spans": [
-      [
-        64,
-        64
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/sergiocorreia/reghdfe/blob/master/current-code/reghdfe.sthlp"
@@ -1950,10 +1856,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. robust와 cluster를 자동 대체하지 않으며 감사 전 정식 선택 금지."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. robust와 cluster를 자동 대체하지 않으며 감사 전 정식 선택 금지.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "estimation.reghdfe_weighted_clustered.v1",
@@ -1966,12 +1874,6 @@
     "variant_id": "reghdfe_weighted_clustered",
     "stage": "estimation",
     "method_family": "reghdfe",
-    "source_spans": [
-      [
-        66,
-        66
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/sergiocorreia/reghdfe/blob/master/current-code/reghdfe.sthlp"
@@ -2039,10 +1941,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. weight type과 sampling interpretation은 사용자가 명시해야 한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. weight type과 sampling interpretation은 사용자가 명시해야 한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "estimation.ivreg2_robust_2sls.v1",
@@ -2055,12 +1959,6 @@
     "variant_id": "ivreg2_robust_2sls",
     "stage": "estimation",
     "method_family": "ivreg2",
-    "source_spans": [
-      [
-        69,
-        69
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "http://fmwww.bc.edu/repec/bocode/i/ivreg2.html"
@@ -2126,10 +2024,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. noid, nocollin, bvclean, partial 옵션은 허용하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. noid, nocollin, bvclean, partial 옵션은 허용하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "estimation.ivreghdfe_multiple_iv.v1",
@@ -2142,12 +2042,6 @@
     "variant_id": "ivreghdfe_multiple_endogenous_instruments",
     "stage": "estimation",
     "method_family": "ivreghdfe",
-    "source_spans": [
-      [
-        71,
-        71
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/sergiocorreia/ivreghdfe/blob/master/ivreghdfe.sthlp"
@@ -2219,10 +2113,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. 변수별 instrument mapping은 guide가 대신 결정하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. 변수별 instrument mapping은 guide가 대신 결정하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "estimation.ivreghdfe_weighted_clustered.v1",
@@ -2235,12 +2131,6 @@
     "variant_id": "ivreghdfe_weighted_clustered",
     "stage": "estimation",
     "method_family": "ivreghdfe",
-    "source_spans": [
-      [
-        73,
-        73
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/sergiocorreia/ivreghdfe/blob/master/ivreghdfe.sthlp"
@@ -2310,10 +2200,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. weight type과 sampling interpretation은 사용자가 명시해야 한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. weight type과 sampling interpretation은 사용자가 명시해야 한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "estimation.ivreghdfe_multiway_cluster.v1",
@@ -2326,12 +2218,6 @@
     "variant_id": "ivreghdfe_multiple_fe_multiway_cluster",
     "stage": "estimation",
     "method_family": "ivreghdfe",
-    "source_spans": [
-      [
-        75,
-        75
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/sergiocorreia/ivreghdfe/blob/master/ivreghdfe.sthlp"
@@ -2398,10 +2284,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. LIML variant와 중복시키지 않으며 firm year와 firm#year를 자동 변환하지 않는다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. LIML variant와 중복시키지 않으며 firm year와 firm#year를 자동 변환하지 않는다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "estimation.ppmlhdfe_weighted.v1",
@@ -2414,12 +2302,6 @@
     "variant_id": "ppmlhdfe_weighted_clustered",
     "stage": "estimation",
     "method_family": "ppmlhdfe",
-    "source_spans": [
-      [
-        78,
-        78
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/sergiocorreia/ppmlhdfe/blob/master/ppmlhdfe.sthlp"
@@ -2488,10 +2370,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. ppmlhdfe weight 지원과 weight semantics를 runtime/audit에서 확인한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. ppmlhdfe weight 지원과 weight semantics를 runtime/audit에서 확인한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "estimation.ppmlhdfe_multiway_cluster.v1",
@@ -2504,12 +2388,6 @@
     "variant_id": "ppmlhdfe_multiway_cluster",
     "stage": "estimation",
     "method_family": "ppmlhdfe",
-    "source_spans": [
-      [
-        80,
-        80
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/sergiocorreia/ppmlhdfe/blob/master/ppmlhdfe.sthlp"
@@ -2575,10 +2453,12 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. cluster dimensions의 독립성·적합성은 연구자가 정하고 감사에서 확인한다."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. cluster dimensions의 독립성·적합성은 연구자가 정하고 감사에서 확인한다.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   },
   {
     "label_id": "estimation.reghdfe_multiple_fe_clustered.v1",
@@ -2591,12 +2471,6 @@
     "variant_id": "reghdfe_absorb_multiple_fe_oneway_cluster",
     "stage": "estimation",
     "method_family": "reghdfe",
-    "source_spans": [
-      [
-        83,
-        83
-      ]
-    ],
     "source_kind": "user_written_command_guide_derived_mechanics",
     "source_urls": [
       "https://github.com/sergiocorreia/reghdfe/blob/master/current-code/reghdfe.sthlp"
@@ -2661,9 +2535,11 @@
     "independent_support": false,
     "researcher_style_evidence": false,
     "research_decisions_supplied_by_guide": false,
-    "audit_status": "candidate_pre_audit",
-    "runtime_status": "pending",
-    "selector_status": "pending",
-    "review_notes": "후보 단계다. one-way cluster와 multi-way cluster를 자동 변환하지 않으며 감사 전 정식 선택 금지."
+    "audit_status": "metadata_only",
+    "runtime_status": "not_run",
+    "selector_status": "not_run",
+    "review_notes": "후보 단계다. one-way cluster와 multi-way cluster를 자동 변환하지 않으며 감사 전 정식 선택 금지.",
+    "candidate_disposition": "reference_only",
+    "promotion_status": "reference_only"
   }
 ]
