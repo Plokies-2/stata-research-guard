@@ -12,6 +12,7 @@ const MANUAL_INDEX_PATH = path.join(DATA_ROOT, "manual_index.jsonl");
 const OFFICIAL_EXAMPLES_PATH = path.join(DATA_ROOT, "official_examples.json");
 const WEB_SOURCES_PATH = path.join(DATA_ROOT, "official_web_sources.json");
 const COMMAND_SOURCES_PATH = path.join(DATA_ROOT, "command_sources.json");
+const FULL_COMMAND_GUIDES_PATH = path.join(DATA_ROOT, "full_command_guides.json");
 const PAPER_USAGE_PATH = path.join(DATA_ROOT, "paper_usage_occurrences.jsonl");
 const PAPER_USAGE_INDEX_PATH = path.join(DATA_ROOT, "command_paper_index.json");
 const GENERAL_RULES_PATH = path.join(
@@ -70,6 +71,7 @@ const manualIndex = readJsonl(MANUAL_INDEX_PATH);
 const officialExamples = readJson(OFFICIAL_EXAMPLES_PATH);
 const webSources = readJson(WEB_SOURCES_PATH);
 const commandSources = readJson(COMMAND_SOURCES_PATH).sources;
+const fullCommandGuideIndex = readJson(FULL_COMMAND_GUIDES_PATH);
 const paperUsageFileAvailable = fs.existsSync(PAPER_USAGE_PATH);
 const paperUsageIndexFileAvailable = fs.existsSync(PAPER_USAGE_INDEX_PATH);
 if (paperUsageFileAvailable !== paperUsageIndexFileAvailable) {
@@ -80,6 +82,58 @@ const paperUsageIndex = paperUsageFileAvailable ? readJson(PAPER_USAGE_INDEX_PAT
 
 const familiesById = new Map(registry.families.map((family) => [family.family_id, family]));
 const commandsByName = new Map(registry.commands.map((command) => [command.command, command]));
+
+function dataFile(relative, label) {
+  if (typeof relative !== "string" || !relative.trim()) {
+    throw new Error(`${label} must be a non-empty data-relative path`);
+  }
+  const target = path.resolve(DATA_ROOT, ...relative.replaceAll("\\", "/").split("/"));
+  if (!isInside(DATA_ROOT, target) || target === path.resolve(DATA_ROOT)) {
+    throw new Error(`${label} escapes the plugin data directory`);
+  }
+  if (!fs.existsSync(target) || !fs.statSync(target).isFile()) {
+    throw new Error(`${label} points to a missing guide file`);
+  }
+  return target;
+}
+
+function buildFullCommandGuidesByCommand(indexPayload) {
+  if (!indexPayload || indexPayload.schema_version !== "1.0" || !Array.isArray(indexPayload.guides)) {
+    throw new Error("full_command_guides.json has an unexpected schema");
+  }
+  const byCommand = new Map();
+  for (const entry of indexPayload.guides) {
+    if (!entry || entry.record_type !== "full_command_guide" || !commandsByName.has(entry.command)) {
+      throw new Error("full_command_guides.json contains a noncanonical guide");
+    }
+    if (byCommand.has(entry.command)) {
+      throw new Error(`full_command_guides.json contains a duplicate guide for ${entry.command}`);
+    }
+    if (entry.authority !== "StataCorp official" && entry.authority !== "maintainer or package documentation") {
+      throw new Error(`full_command_guides.json has an invalid authority for ${entry.command}`);
+    }
+    if (typeof entry.source_url !== "string" || !entry.source_url.startsWith("https://")) {
+      throw new Error(`full_command_guides.json has an invalid source_url for ${entry.command}`);
+    }
+    if (entry.content_format !== "markdown" || entry.complete !== true) {
+      throw new Error(`full_command_guides.json must declare complete Markdown for ${entry.command}`);
+    }
+    const sourcePath = dataFile(entry.source_file, `${entry.command} source_file`);
+    const contentPath = dataFile(entry.content_file, `${entry.command} content_file`);
+    if (sha256File(sourcePath) !== entry.source_sha256) {
+      throw new Error(`full command guide source hash mismatch for ${entry.command}`);
+    }
+    if (sha256File(contentPath) !== entry.content_sha256) {
+      throw new Error(`full command guide content hash mismatch for ${entry.command}`);
+    }
+    const content = new TextDecoder("utf-8", { fatal: true }).decode(fs.readFileSync(contentPath));
+    if (!content.trim()) throw new Error(`full command guide content is empty for ${entry.command}`);
+    byCommand.set(entry.command, { ...entry, content });
+  }
+  return byCommand;
+}
+
+const fullCommandGuidesByCommand = buildFullCommandGuidesByCommand(fullCommandGuideIndex);
 
 function buildPaperUsageByCommand(indexPayload, occurrenceRows, occurrenceFileHash) {
   if (indexPayload === null) {
@@ -180,9 +234,29 @@ function manualRowsFor(command) {
   return manualIndex.filter((row) => Array.isArray(row.commands) && row.commands.includes(command));
 }
 
+function fullCommandGuidesFor(commands) {
+  return commands.flatMap((command) => {
+    const guide = fullCommandGuidesByCommand.get(command);
+    return guide ? [guide] : [];
+  });
+}
+
 function sourceCardsFor(command) {
   const cards = [];
   const seen = new Set();
+  for (const row of fullCommandGuidesFor([command])) {
+    seen.add(`${row.source_url}|`);
+    cards.push({
+      authority: row.authority,
+      source_url: row.source_url,
+      page_or_section: "complete help",
+      source_kind: row.source_kind,
+      source_version: row.source_version,
+      source_commit: row.source_commit,
+      source_hash: row.source_sha256,
+      full_content_available: true,
+    });
+  }
   for (const row of manualRowsFor(command)) {
     const key = `${row.source_url}|${row.page}`;
     if (seen.has(key)) continue;
@@ -270,7 +344,8 @@ function commandCard(commandName, paperRows = null) {
   const command = commandsByName.get(commandName);
   if (!command) return null;
   const family = familiesById.get(command.family_id) || {};
-  const readableSourceAvailable = manualRowsFor(command.command).length > 0;
+  const readableSourceAvailable = manualRowsFor(command.command).length > 0
+    || fullCommandGuidesByCommand.has(command.command);
   const paperAvailable = paperRows === null
     ? paperUsageRowsFor(command.command).length > 0
     : paperRows.some((row) => row?.command === command.command);
@@ -654,6 +729,7 @@ function buildCommandEvidence(args) {
     command_cards: cards,
     project_observations: projectObservations,
     authoritative_examples: examplesFor(selectedCommands),
+    full_command_guides: fullCommandGuidesFor(selectedCommands),
     paper_usage_cards: paperCards,
     related_artifacts: relatedArtifactsFor(selectedCommands),
     unresolved_facts: unique(unresolved),
@@ -665,7 +741,7 @@ function buildCommandEvidence(args) {
 const TOOL_DEFINITIONS = [
   {
     name: "get_stata_command_evidence",
-    description: "Two-stage exact-key Stata evidence router. First omit selected_commands to receive the complete canonical command dictionary without guide or paper bodies. Then call again with one or more exact canonical registry keys to receive evidence only for those commands. Empty, duplicate, alias, abbreviation, inferred, or unregistered keys abort with command_not_in_dictionary; if the needed command is absent from the dictionary, the calling skill must abort instead of guessing. Paper occurrences focus on the selected command; surrounding producer or downstream code is nonbinding reference context and does not replace user or project command choices. The tool never chooses a command or grades generated code.",
+    description: "Two-stage exact-key Stata evidence router. First omit selected_commands to receive the complete canonical command dictionary without guide or paper bodies. Then call again with one or more exact canonical registry keys to receive evidence only for those commands, including a complete cleaned official or maintainer guide in one response when stored. Empty, duplicate, alias, abbreviation, inferred, or unregistered keys abort with command_not_in_dictionary; if the needed command is absent from the dictionary, the calling skill must abort instead of guessing. Paper occurrences focus on the selected command; surrounding producer or downstream code is nonbinding reference context and does not replace user or project command choices. The tool never chooses a command or grades generated code.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -709,6 +785,7 @@ const TOOL_DEFINITIONS = [
             "command_cards",
             "project_observations",
             "authoritative_examples",
+            "full_command_guides",
             "paper_usage_cards",
             "related_artifacts",
             "unresolved_facts",
@@ -720,6 +797,7 @@ const TOOL_DEFINITIONS = [
             command_cards: { type: "array", items: { type: "object" } },
             project_observations: { type: "array", items: { type: "object" } },
             authoritative_examples: { type: "array", items: { type: "object" } },
+            full_command_guides: { type: "array", items: { type: "object" } },
             paper_usage_cards: { type: "array", items: { type: "object" } },
             related_artifacts: { type: "array", items: { type: "object" } },
             unresolved_facts: { type: "array", items: { type: "string" } },
@@ -796,6 +874,7 @@ module.exports = {
   TOOL_DEFINITIONS,
   assertNoForbiddenKeys,
   buildPaperUsageByCommand,
+  buildFullCommandGuidesByCommand,
   buildCommandEvidence,
   dispatch,
   logicalStatements,

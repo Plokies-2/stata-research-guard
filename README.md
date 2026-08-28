@@ -2,7 +2,7 @@
 
 Stata Research Guard는 모델이 Stata 코드를 스스로 판단해 작성할 수 있도록 근거를 공급하는 Codex 플러그인입니다. 모델이 쓴 코드를 채점하거나, 하나의 명령·template을 정답으로 승격하거나, 연구 설계를 자동 인증하지 않습니다.
 
-현재 배포 버전은 `0.3.0+codex.20260828211411`입니다.
+현재 배포 버전은 `0.3.0+codex.20260828214821`입니다.
 
 ## 제공하는 것
 
@@ -10,6 +10,7 @@ MCP 도구는 `get_stata_command_evidence` 하나입니다. 첫 호출은 109개
 
 - 109개 Stata command의 canonical key·invocation·기능 label
 - 선택된 명령의 package·alias·입출력 interface
+- 선택된 명령에 전체 가이드가 준비된 경우, source/version/raw hash/clean hash가 고정된 content-only Markdown 전문. discovery에는 본문을 싣지 않으며 선택 응답에서도 자르지 않음
 - StataCorp 공식 문서 또는 user-written command maintainer 문서의 실제 구문·예제 발췌
 - 기존 프로젝트에서 관찰한 파일, 줄, command, option, 입력·출력, do-file 호출과 estimate handoff
 - 함께 설치된 검수 occurrence·109-command index에서 선택 명령에 정확히 연결된 수정하지 않은 논문 원문 occurrence. 검수본이 없으면 guide-only fallback을 명시
@@ -43,6 +44,6 @@ codex plugin list
 
 ## 검증 범위
 
-배포 bundle은 80개 파일의 정확한 inventory와 SHA-256을 기록합니다. 현재 회귀 검증은 Node 23개와 Python 6개이며, MCP transport·2단계 schema·사전 밖 명령 abort·선택 명령만의 evidence·검수 occurrence/index의 hash·ID·command 연결·경로 containment·근거 비채점 계약·source hash·bundle 무결성을 확인합니다. `outreg2_xlsx`는 실제 StataMP smoke run도 포함합니다. 이 검증은 소프트웨어와 근거 전달 경계를 확인할 뿐, 생성된 연구 코드나 인과추론 결과를 채점하지 않습니다.
+배포 bundle은 84개 파일의 정확한 inventory와 SHA-256을 기록합니다. 현재 회귀 검증은 Node 24개와 Python 7개이며, MCP transport·2단계 schema·사전 밖 명령 abort·선택 명령만의 evidence·전체 guide의 source/content hash·무절단 전달·검수 occurrence/index의 hash·ID·command 연결·경로 containment·근거 비채점 계약·bundle 무결성을 확인합니다. `outreg2_xlsx`는 실제 StataMP smoke run도 포함합니다. 이 검증은 소프트웨어와 근거 전달 경계를 확인할 뿐, 생성된 연구 코드나 인과추론 결과를 채점하지 않습니다.
 
 플러그인 상세 계약은 [`plugins/stata-research-guard/README.md`](plugins/stata-research-guard/README.md)를 참고하세요.

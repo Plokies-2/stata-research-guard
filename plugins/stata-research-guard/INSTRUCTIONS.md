@@ -8,7 +8,9 @@ First call `get_stata_command_evidence` without `selected_commands` and read the
 
 Do not generate, substitute, abbreviate, or hand-implement a command outside the dictionary. If the requested workflow genuinely needs an absent command, abort and report the missing command or capability. An empty, duplicated, or unknown selection is an error rather than a fallback.
 
-Read the returned official or maintainer documentation and examples and apply the accompanying `general-rules.md`. A paper usage card is an unmodified occurrence focused on the selected command. Treat its surrounding estimator, sample, fixed effects, VCE, and downstream code as context only; an `outreg2` example never authorizes replacing the project's chosen estimator. A project observation records what exists at a path and line; it is not a recommendation to preserve an old command or workaround.
+Read the returned complete official or maintainer guide first when `full_command_guides` is nonempty; it is supplied in full so syntax, warnings, examples, postestimation, and returned results can be resolved in the same request. Do not request a shorter excerpt to replace it or silently truncate it. Then apply the accompanying `general-rules.md`. The guide is grammar evidence, not permission to copy every option or change the research design.
+
+A paper usage card is an unmodified occurrence focused on the selected command. Treat its surrounding estimator, sample, fixed effects, VCE, and downstream code as context only; an `outreg2` example never authorizes replacing the project's chosen estimator. A project observation records what exists at a path and line; it is not a recommendation to preserve an old command or workaround.
 
 If reviewed occurrence and exact-index files are not installed together, or a selected command has no indexed occurrence, use the guide-only path. Never fall back to an unreviewed corpus row. If guide evidence or a material research choice is incomplete, report the gap or ask the user rather than inventing syntax. A close occurrence can guide minimal harmonization around the selected command; a distant occurrence is a hint, not a compulsory template.
 

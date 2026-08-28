@@ -1,5 +1,8 @@
 import hashlib
 import json
+import subprocess
+import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -9,6 +12,7 @@ REGISTRY = ROOT / "data" / "command_registry.json"
 MANUAL_INDEX = ROOT / "data" / "manual_index.jsonl"
 OFFICIAL_EXAMPLES = ROOT / "data" / "official_examples.json"
 COMMAND_SOURCES = ROOT / "data" / "command_sources.json"
+FULL_COMMAND_GUIDES = ROOT / "data" / "full_command_guides.json"
 
 
 class CommandEvidenceTests(unittest.TestCase):
@@ -78,6 +82,48 @@ class CommandEvidenceTests(unittest.TestCase):
             self.assertNotIn("score", row)
             self.assertNotIn("priority", row)
             self.assertNotIn("promotion_status", row)
+
+    def test_full_command_guides_are_complete_hash_linked_and_reproducible(self):
+        payload = json.loads(FULL_COMMAND_GUIDES.read_text(encoding="utf-8"))
+        self.assertEqual(payload["schema_version"], "1.0")
+        rows = payload["guides"]
+        self.assertGreater(len(rows), 0)
+        self.assertEqual(len({row["command"] for row in rows}), len(rows))
+        reghdfe = next(row for row in rows if row["command"] == "reghdfe")
+        self.assertTrue(reghdfe["complete"])
+        self.assertEqual(reghdfe["content_format"], "markdown")
+        self.assertEqual(reghdfe["source_version"], "6.14.1 08Jul2026")
+
+        data_root = (ROOT / "data").resolve()
+        source = (data_root / reghdfe["source_file"]).resolve()
+        content_file = (data_root / reghdfe["content_file"]).resolve()
+        self.assertTrue(source.is_relative_to(data_root))
+        self.assertTrue(content_file.is_relative_to(data_root))
+        self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(), reghdfe["source_sha256"])
+        content_bytes = content_file.read_bytes()
+        self.assertEqual(hashlib.sha256(content_bytes).hexdigest(), reghdfe["content_sha256"])
+        content = content_bytes.decode("utf-8")
+        self.assertGreater(len(content), 30000)
+        for anchor in ("## Syntax", "## Postestimation Syntax", "## Examples", "## Stored results"):
+            self.assertIn(anchor, content)
+        self.assertNotRegex(content, r"8 10 10 2|\[\+\]|\{(?:cmd|synopt|title|p2col)")
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            rebuilt = Path(temp_dir) / "reghdfe.md"
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "scripts" / "build_clean_command_guide.py"),
+                    "--source",
+                    str(source),
+                    "--output",
+                    str(rebuilt),
+                    "--title",
+                    "reghdfe",
+                ],
+                check=True,
+            )
+            self.assertEqual(rebuilt.read_bytes(), content_bytes)
 
 
 if __name__ == "__main__":

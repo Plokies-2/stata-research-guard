@@ -65,6 +65,7 @@ test("discovery returns all 109 canonical dictionary entries without guide or pa
   }
   assert.equal("command_cards" in discovery, false);
   assert.equal("authoritative_examples" in discovery, false);
+  assert.equal("full_command_guides" in discovery, false);
   assert.equal("paper_usage_cards" in discovery, false);
   assertNoForbiddenKeys(discovery);
 });
@@ -97,6 +98,7 @@ test("evidence returns guide and paper payloads only for exact selected subset",
   assert.deepEqual(evidence.command_cards.map((card) => card.command), ["regress", "outreg2"]);
   assert.ok(evidence.authoritative_examples.length > 0);
   assert.ok(evidence.authoritative_examples.every((row) => ["regress", "outreg2"].includes(row.command)));
+  assert.ok(evidence.full_command_guides.every((row) => ["regress", "outreg2"].includes(row.command)));
   assert.ok(evidence.paper_usage_cards.every((row) => ["regress", "outreg2"].includes(row.command)));
   assert.deepEqual(evidence.related_artifacts.map((row) => row.artifact), ["outreg2_xlsx"]);
   assert.ok(evidence.related_artifacts[0].boundaries.some((row) => row.includes("does not choose or replace the estimator")));
@@ -122,6 +124,33 @@ test("dictionary exposes canonical multiword invocations and syntax-anchored out
 
   const regress = buildCommandEvidence({ request: "Use regress", selected_commands: ["regress"] });
   assert.deepEqual(regress.related_artifacts, []);
+  assert.deepEqual(regress.full_command_guides, []);
+});
+
+test("selected reghdfe receives the complete cleaned maintainer guide without truncation", () => {
+  const evidence = buildCommandEvidence({ request: "Use reghdfe", selected_commands: ["reghdfe"] });
+  assert.equal(evidence.full_command_guides.length, 1);
+  const guide = evidence.full_command_guides[0];
+  assert.equal(guide.command, "reghdfe");
+  assert.equal(guide.complete, true);
+  assert.equal(guide.content_format, "markdown");
+  assert.equal(guide.source_commit, "29b2b203f534413369d675d0c0f674d61291f536");
+  assert.match(guide.content, /Maintainer help version: 6\.14\.1 08Jul2026/);
+  assert.match(guide.content, /## Syntax/);
+  assert.match(guide.content, /## Postestimation Syntax/);
+  assert.match(guide.content, /## Examples/);
+  assert.match(guide.content, /## Stored results/);
+  assert.match(guide.content, /dk\[raay\]/);
+  assert.match(guide.content, /vce\(dkraay\)/);
+  assert.doesNotMatch(guide.content, /8 10 10 2|\[\+\]|\{(?:cmd|synopt|title|p2col)/);
+
+  const contentPath = path.join(ROOT, "data", ...guide.content_file.split("/"));
+  const sourcePath = path.join(ROOT, "data", ...guide.source_file.split("/"));
+  assert.equal(guide.content, fs.readFileSync(contentPath, "utf8"));
+  assert.equal(guide.content_sha256, crypto.createHash("sha256").update(guide.content).digest("hex"));
+  assert.equal(guide.source_sha256, crypto.createHash("sha256").update(fs.readFileSync(sourcePath)).digest("hex"));
+  assert.equal(evidence.command_cards[0].authority_sources[0].full_content_available, true);
+  assertNoForbiddenKeys(evidence);
 });
 
 test("selected commands reject empty, duplicate, unregistered, alias-like, and case-changed keys", () => {

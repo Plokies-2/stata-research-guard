@@ -13,7 +13,7 @@ get_stata_command_evidence
 The tool has two phases:
 
 1. Without `selected_commands`, it returns the complete command dictionary and concise task labels. The model may select one or more canonical command keys.
-2. With `selected_commands`, it returns guide and paper evidence only for those selected commands.
+2. With `selected_commands`, it returns guide and paper evidence only for those selected commands. When a complete cleaned official or maintainer guide is stored, the same response includes its entire body without an excerpt limit.
 
 Every response also carries the common `general-rules.md` authoring contract. An unknown, duplicated, or empty selected-command list aborts instead of being guessed, expanded from an abbreviation, or replaced with an unregistered command.
 
@@ -22,6 +22,7 @@ The response may contain:
 - a command dictionary with canonical keys, invocations, functional labels, and guide/paper availability;
 - task atoms that keep distinct functions such as estimation and Excel export separate without selecting a winner;
 - functional command cards with command, package, aliases, interfaces, and known tradeoffs;
+- complete content-only official or maintainer guides for selected commands when available, with version, source commit, raw hash, cleaned hash, and no silent truncation;
 - readable StataCorp or maintainer documentation excerpts and examples;
 - factual project observations with file, line, statement, options, input/output bindings, calls, and estimate handoffs;
 - reviewed paper usage cards when such cards exist; and
@@ -37,6 +38,8 @@ The response never contains a winner, numeric ranking, semantic pass, promotion 
 - Runtime output records what Stata executed and produced. It does not establish causal validity or select a research design.
 
 Documentation examples are readable and nonbinding. A document-derived fixture is labeled as derived rather than presented as a verbatim manual example. Reviewed paper data is installed only as the paired `paper_usage_occurrences.jsonl` and `command_paper_index.json`; a partial pair or broken exact-ID/hash link aborts at server start. When the pair is absent, or the selected command has no reviewed occurrence, the tool provides guide-only evidence and reports the gap honestly.
+
+Complete guides are separate from short documentation excerpts and paper occurrences. They are returned only for `selected_commands`; discovery never carries guide bodies. Each indexed complete guide is hash-linked to a preserved raw source and a cleaned Markdown file. Missing files, path escape, invalid UTF-8, or raw/clean hash mismatch aborts at server start. Cleaning removes viewer navigation and presentation markup but preserves source order, syntax and abbreviation boundaries, option descriptions, warnings, examples, postestimation, stored results, references, and external links. The guide supplies command grammar; `general-rules.md`, the user request, and the current project still govern authoring and research choices.
 
 ## Project observations
 

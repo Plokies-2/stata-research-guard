@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-29 — complete selected-command guides
+
+- Added a generic `full_command_guides` response channel that returns a stored complete guide only for exact `selected_commands`, with no character-limit truncation.
+- Added the full `reghdfe` v6.14.1 maintainer help pinned to commit `29b2b203`, preserving raw and cleaned hashes while removing SMCL viewer presentation.
+- Kept complete guides, short documentation excerpts, paper occurrences, and common general rules as separate evidence roles.
+- Made the full-guide index fail closed on noncanonical commands, path escape, invalid authority or format, missing source/content, and raw or cleaned hash mismatch.
+- Added deterministic rebuild and coverage checks for syntax, postestimation, examples, stored results, code formatting, and UI-residue removal.
+
 ## 2026-08-29 — closed command dictionary and on-demand paper delivery
 
 - Made the command dictionary the hard command boundary while the plugin is in use; unknown, duplicate, or empty selections abort instead of being guessed or substituted.

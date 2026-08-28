@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "guides": [
+    {
+      "record_type": "full_command_guide",
+      "command": "reghdfe",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer_stata_help",
+      "source_version": "6.14.1 08Jul2026",
+      "source_commit": "29b2b203f534413369d675d0c0f674d61291f536",
+      "source_url": "https://github.com/sergiocorreia/reghdfe/blob/29b2b203f534413369d675d0c0f674d61291f536/current-code/reghdfe.sthlp",
+      "rendered_url": "https://scorreia.com/help/reghdfe.html",
+      "retrieved_at": "2026-08-29",
+      "source_file": "full_command_guides/sources/reghdfe-29b2b203.sthlp",
+      "source_sha256": "5c99c4d0b34eebe53d6f1158ba093d693cf4d0c74a3f7eb9603c6b0972b072c1",
+      "content_file": "full_command_guides/reghdfe.md",
+      "content_sha256": "2c5506ddc0167ac3e5d165bb93c82a5178f7e448e10427f3e5c0b9d0ee26ff7c",
+      "content_format": "markdown",
+      "complete": true,
+      "transformation": "Removed SMCL viewer navigation and presentation markup; preserved source order, syntax, abbreviation boundaries, option descriptions, warnings, examples, stored results, references, and external links."
+    }
+  ]
+}

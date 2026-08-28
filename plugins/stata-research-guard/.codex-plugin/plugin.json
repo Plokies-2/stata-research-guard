@@ -1,15 +1,15 @@
 {
   "name": "stata-research-guard",
-  "version": "0.3.0+codex.20260828211411",
-  "description": "Provide a closed Stata command dictionary with on-demand official or maintainer guides, paper occurrences, general rules, and factual project observations.",
+  "version": "0.3.0+codex.20260828214821",
+  "description": "Provides a closed Stata command dictionary with complete selected-command guides, paper occurrences, general rules, and factual project observations.",
   "author": {
     "name": "song7"
   },
   "skills": "./skills/",
   "interface": {
     "displayName": "Stata Research Guard",
-    "shortDescription": "Closed Stata command dictionary with guide and paper evidence.",
-    "longDescription": "Lets the model inspect a closed Stata command dictionary, select one or more canonical commands, and retrieve only those commands' StataCorp or maintainer guides, factual project observations, unmodified paper occurrences, and common general rules. Commands outside the dictionary abort instead of being guessed or hand-implemented. The plugin does not rank candidates, promote templates, grade generated code, or certify a research design.",
+    "shortDescription": "Closed Stata dictionary with complete guides and paper evidence.",
+    "longDescription": "Lets the model inspect a closed Stata command dictionary, select one or more canonical commands, and retrieve only those commands' complete cleaned StataCorp or maintainer guides when stored, factual project observations, unmodified paper occurrences, and common general rules. Commands outside the dictionary abort instead of being guessed or hand-implemented. The plugin does not rank candidates, promote templates, grade generated code, or certify a research design.",
     "developerName": "song7",
     "category": "Developer Tools",
     "capabilities": [
@@ -17,7 +17,7 @@
       "Skills"
     ],
     "defaultPrompt": [
-      "Use the skill and get_stata_command_evidence to inspect the command dictionary, select the needed commands, and write readable Stata from their guides, paper occurrences, general rules, and the current project context.",
+      "Use the skill and get_stata_command_evidence to inspect the command dictionary, select the needed commands, read any complete selected-command guide, and write readable Stata from the guides, paper occurrences, general rules, and current project context.",
       "Inspect this Stata project read-only and report literal command, option, input, output, call, and estimate-handoff observations without ranking its existing practices.",
       "Choose one or more commands from the exposed dictionary, retrieve only their evidence, and abort if the required command is unavailable."
     ]
