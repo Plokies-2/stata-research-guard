@@ -347,7 +347,7 @@
     {
       "record_type": "command_help_guide",
       "command": "collect_style",
-      "help_status": "partial",
+      "help_status": "available",
       "authority": "StataCorp official",
       "source_kind": "installed official Stata help",
       "source_version": "Stata 18",
@@ -461,7 +461,7 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [
-        "Stata 18 does not provide the Stata 19 topics: collect_style_smcl, collect_style_txt"
+        "Stata 18 scope excludes the later Stata 19 topics: collect_style_smcl, collect_style_txt"
       ],
       "full_manual_available": true,
       "paper_examples_available": false,

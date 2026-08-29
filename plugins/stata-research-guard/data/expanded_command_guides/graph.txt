@@ -1,0 +1,87 @@
+graph — The graph command
+
+                   Description    Syntax       Remarks and examples         Also see
+
+
+Description
+   graph draws graphs.
+
+
+Syntax
+    graph . . .
+
+ The commands that draw graphs are
+ Command                             Description
+ graph twoway                        scatterplots, line plots, etc.
+ graph matrix                        scatterplot matrices
+ graph bar                           bar charts
+ graph dot                           dot charts
+ graph box                           box-and-whisker plots
+ graph pie                           pie charts
+ other                               more commands to draw statistical graphs
+
+
+ The commands that save a previously drawn graph, redisplay previously saved graphs, and combine
+   graphs are
+ Command                             Description
+ graph save                          save graph to disk
+ graph use                           redisplay graph stored on disk
+ graph display                       redisplay graph stored in memory
+ graph combine                       combine multiple graphs
+ graph replay                        redisplay graphs stored in memory and on disk
+
+
+ The commands for printing a graph are
+ Command                             Description
+ graph print                         print currently displayed graph
+ set printcolor                      set how colors are printed
+ graph export                        export .gph file to PostScript, etc.
+
+
+
+
+                                                   42
+
+The commands that deal with the graphs currently stored in memory are
+ Command                              Description
+ graph display                        display graph
+ graph dir                            list names
+ graph describe                       describe contents
+ graph rename                         rename memory graph
+ graph copy                           copy memory graph to new name
+ graph drop                           discard graphs in memory
+ graph close                          close Graph windows
+
+
+ The commands that describe available schemes and allow you to identify and set the default scheme are
+ Command                              Description
+ graph query, schemes                 list available schemes
+ query graphics                       identify default scheme
+ set scheme                           set default scheme
+
+
+ The command that lists available styles is
+ Command                              Description
+ graph query                          list available styles
+
+
+ The command for setting options for printing and exporting graphs is
+ Command                              Description
+ graph set                            set graphics options
+
+
+ The command that allows you to draw graphs without displaying them is
+ Command                              Description
+ set graphics                         set whether graphs are displayed
+
+
+
+Remarks and examples
+    See [G-1] Graph intro.
+
+
+Also see
+ [G-1] Graph intro — Introduction to graphics
+ [G-2] graph other — Other graphics commands
+ [G-2] graph export — Export current graph
+ [G-2] graph print — Print a graph

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-30 — Stata 18 combined expanded context
+
+- Added combined Phase 3 with `expanded: true`: it returns selected commands' expanded documentation and optional exact paper blocks in one call, while the model retains both expansion and block-selection judgment.
+- Replaced request-time Stata 19 official manuals with 63 whole command entries extracted from the PDF manuals installed with Stata 18. User-written maintainer help is not duplicated; `jregress` keeps its author PDF only as a syntax-limited supplement.
+- Marked all 19 Stata 18 `collect style` topics available for the Stata 18 target and kept later Stata 19-only `smcl` and `txt` topics out of the target grammar.
+- Slimmed paper cards to exact code, line spans, source provenance, and optional raw log/artifact excerpts. Removed duplicated parser occurrence structures from the payload and manually narrowed one 510-row nuisance-coefficient log to exact focal source ranges without an automatic length cutoff.
+- Defined a permissive model-side expansion rule: stop after help only when every requested action is explained, the code follows directly and is not difficult, and no material version, option interaction, returned-result, or downstream-interface issue remains.
+
 ## 2026-08-30 — help-first Phase 2
 
 - Replaced Phase 2 full-manual delivery with Stata-rendered plain-text help for all 109 dictionary commands: 106 available, `collect_style` partial, and `jregress` plus `jwdidstacked` unavailable.

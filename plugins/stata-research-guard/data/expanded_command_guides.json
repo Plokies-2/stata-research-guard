@@ -1,0 +1,2588 @@
+{
+  "schema_version": "1.0",
+  "target_runtime": "Stata 18",
+  "guides": [
+    {
+      "record_type": "expanded_command_guide",
+      "command": "sysuse",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "sysuse",
+          "physical_pdf_pages": [
+            892,
+            894
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/sysuse.txt",
+      "content_sha256": "b71b629b18e9cf06c51bb2eaa72f129092435df9738384bb88fd4ed56cc93906",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "acreg",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "December 2020 Beta Version (same SSC ado header)",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "append",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "append",
+          "physical_pdf_pages": [
+            15,
+            22
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/append.txt",
+      "content_sha256": "82a379c189874f737d2c3a660370bfa446cc425831ae866bd37e2406fb9010bb",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "areg",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/r.pdf",
+      "source_sha256": "3157e84c376103a42b73e72902c21c06ddb4d99e9663c6746ded6131d47b9073",
+      "components": [
+        {
+          "entry_title": "areg",
+          "physical_pdf_pages": [
+            86,
+            95
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/areg.txt",
+      "content_sha256": "c5fe69d39a6c7ea07f6ef8af73b15f617c4ef2aa6a3420c60253d1fb3a7fe319",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "assert",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "assert",
+          "physical_pdf_pages": [
+            23,
+            27
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/assert.txt",
+      "content_sha256": "4e300f54de09a597d1739bb5be989fcc4d437118efe9303f92e4829c59069da9",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "boottest",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "boottest 4.5.0, 17 June 2025; commit f2204620a61ba8872cc6af22d6fb6492128e6278",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "cgmreg",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer-distributed command help",
+      "source_kind": "public maintained distribution help",
+      "source_version": "cgmreg help 1.0.0; repository commit 1e3006e54d51ebf75077e0f969367bb4b4250cb9",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "codebook",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "codebook",
+          "physical_pdf_pages": [
+            60,
+            70
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/codebook.txt",
+      "content_sha256": "ffcfe0f7abc8b173b1ef7da02caf50fc56b695d8741d2d6498d557c9f3f18533",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "coefplot",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "coefplot 1.5.3, 28may2025; commit e8947d8b42c5b02029159b4f572780d3f7c0b085",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "collect_export",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/tables.pdf",
+      "source_sha256": "d7957b57ca742b4c770fa72bc2cacaf82e0aedd675f083c49e22d126d28c5535",
+      "components": [
+        {
+          "entry_title": "collect export",
+          "physical_pdf_pages": [
+            175,
+            181
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/collect_export.txt",
+      "content_sha256": "93e6c9430389cc040771df8460716072fc70aaafc19c30ebe7386f855b599102",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "collect_get",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/tables.pdf",
+      "source_sha256": "d7957b57ca742b4c770fa72bc2cacaf82e0aedd675f083c49e22d126d28c5535",
+      "components": [
+        {
+          "entry_title": "collect get",
+          "physical_pdf_pages": [
+            82,
+            89
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/collect_get.txt",
+      "content_sha256": "0d94c82fe346e32de65078c91303554393ec20857089a14dda9e95a3a175958e",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "collect_style",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/tables.pdf",
+      "source_sha256": "d7957b57ca742b4c770fa72bc2cacaf82e0aedd675f083c49e22d126d28c5535",
+      "components": [
+        {
+          "entry_title": "collect style autolevels",
+          "physical_pdf_pages": [
+            182,
+            184
+          ]
+        },
+        {
+          "entry_title": "collect style cell",
+          "physical_pdf_pages": [
+            185,
+            191
+          ]
+        },
+        {
+          "entry_title": "collect style clear",
+          "physical_pdf_pages": [
+            192,
+            192
+          ]
+        },
+        {
+          "entry_title": "collect style column",
+          "physical_pdf_pages": [
+            193,
+            198
+          ]
+        },
+        {
+          "entry_title": "collect style cons",
+          "physical_pdf_pages": [
+            199,
+            200
+          ]
+        },
+        {
+          "entry_title": "collect style header",
+          "physical_pdf_pages": [
+            201,
+            204
+          ]
+        },
+        {
+          "entry_title": "collect style html",
+          "physical_pdf_pages": [
+            205,
+            206
+          ]
+        },
+        {
+          "entry_title": "collect style notes",
+          "physical_pdf_pages": [
+            207,
+            211
+          ]
+        },
+        {
+          "entry_title": "collect style putdocx",
+          "physical_pdf_pages": [
+            212,
+            215
+          ]
+        },
+        {
+          "entry_title": "collect style putpdf",
+          "physical_pdf_pages": [
+            216,
+            218
+          ]
+        },
+        {
+          "entry_title": "collect style row",
+          "physical_pdf_pages": [
+            219,
+            227
+          ]
+        },
+        {
+          "entry_title": "collect style save",
+          "physical_pdf_pages": [
+            228,
+            229
+          ]
+        },
+        {
+          "entry_title": "collect style showbase",
+          "physical_pdf_pages": [
+            230,
+            232
+          ]
+        },
+        {
+          "entry_title": "collect style showempty",
+          "physical_pdf_pages": [
+            233,
+            235
+          ]
+        },
+        {
+          "entry_title": "collect style showomit",
+          "physical_pdf_pages": [
+            236,
+            237
+          ]
+        },
+        {
+          "entry_title": "collect style table",
+          "physical_pdf_pages": [
+            238,
+            241
+          ]
+        },
+        {
+          "entry_title": "collect style tex",
+          "physical_pdf_pages": [
+            242,
+            243
+          ]
+        },
+        {
+          "entry_title": "collect style title",
+          "physical_pdf_pages": [
+            244,
+            248
+          ]
+        },
+        {
+          "entry_title": "collect style use",
+          "physical_pdf_pages": [
+            249,
+            252
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/collect_style.txt",
+      "content_sha256": "cfe2573557fc4a2f6315c297d1e1fb267d909d9ad11d73b1aa3857156d671400",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "collapse",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "collapse",
+          "physical_pdf_pages": [
+            71,
+            80
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/collapse.txt",
+      "content_sha256": "520e0ceef1ee0916219c00fe0d1e7143d8f5d5df1572bb9777206757c9adf85c",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "contract",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "contract",
+          "physical_pdf_pages": [
+            85,
+            88
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/contract.txt",
+      "content_sha256": "ba8832048f5472f5707c67341439204393187228aaa530968e3b2cfd3fb6ef17",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "crossfit",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "crossfit v1.4.4; help date 30aug2024; commit acf344fa03f38f3b572b78b9680078562c489192",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "csdid",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "version not stated in help; commit cd9b0d43a839f9214c50f9478dc5b09556cbc11b (2025-10-03)",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "csdid_estat",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "2.0.0 28aug2026",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "ddml",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "6aug2023",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "did_imputation",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "3.1 2023-11-22",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "did_multiplegt_dyn",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "1 2026-06-26",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "dtable",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/r.pdf",
+      "source_sha256": "3157e84c376103a42b73e72902c21c06ddb4d99e9663c6746ded6131d47b9073",
+      "components": [
+        {
+          "entry_title": "dtable",
+          "physical_pdf_pages": [
+            606,
+            637
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/dtable.txt",
+      "content_sha256": "b5073781b61515cd64f941590551a3e62bf6b778b41a1f0d1fe3424f3a1b6c23",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "duplicates",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "duplicates",
+          "physical_pdf_pages": [
+            226,
+            232
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/duplicates.txt",
+      "content_sha256": "367940fcbb0712a67d22752c2a018624017f11714a090e910244f988a59f7125",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "egen",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "egen",
+          "physical_pdf_pages": [
+            243,
+            265
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/egen.txt",
+      "content_sha256": "8c892fa38f49054a5896bd3f5e51d3430eac52027b0a5388dc04fd5a7b57dc96",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "encode",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "encode",
+          "physical_pdf_pages": [
+            266,
+            273
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/encode.txt",
+      "content_sha256": "c1a2b00b6cb6b514013fb46b51a294eff0f329d801c14250aa428c969020b057",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "decode",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "encode",
+          "physical_pdf_pages": [
+            266,
+            273
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/decode.txt",
+      "content_sha256": "c1a2b00b6cb6b514013fb46b51a294eff0f329d801c14250aa428c969020b057",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "destring",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "destring",
+          "physical_pdf_pages": [
+            198,
+            206
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/destring.txt",
+      "content_sha256": "8bde93df3ed8add390516324694f8c13cbacf81210cd9bfff62eab19dfab98ab",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "estadd",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "command source date 01feb2017; package distribution date 20260413",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "estout",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "command source date 25mar2026; package distribution date 20260413",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "estpost",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "command source date 19may2021; package distribution date 20260413",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "eststo",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "command source date 01feb2017; package distribution date 20260413",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "esttab",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "command source date 25mar2026; package distribution date 20260413",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "etable",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/r.pdf",
+      "source_sha256": "3157e84c376103a42b73e72902c21c06ddb4d99e9663c6746ded6131d47b9073",
+      "components": [
+        {
+          "entry_title": "etable",
+          "physical_pdf_pages": [
+            809,
+            831
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/etable.txt",
+      "content_sha256": "fab0953effcae9313bc278786cd2df7b4ea24d3d5749be18475768441f560a86",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "eventdd",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "4.0",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "event_plot",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "1",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "eventstudyinteract",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "0.0",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "export_excel",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "import excel",
+          "physical_pdf_pages": [
+            491,
+            497
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/export_excel.txt",
+      "content_sha256": "bcace79474b67c57daa07e02d35c72b2078962709e8749753e34dfd5a1a8995e",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "export_delimited",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "import delimited",
+          "physical_pdf_pages": [
+            479,
+            490
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/export_delimited.txt",
+      "content_sha256": "2d303efcab6d4862bdd7e0c234f42bdb4f94c65c279602a467bb7807a093a7c3",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "gcollapse",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "1.2.1",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "gegen",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "1.4.2",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "generate",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "generate",
+          "physical_pdf_pages": [
+            394,
+            399
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/generate.txt",
+      "content_sha256": "691c4c8675db0a246c28d64e6c1b8dfc29e8e13889cd8592222b7968ebc9f46e",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "graph",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/g.pdf",
+      "source_sha256": "832b65408662eb46eb2629c0e33470a98addf5ff8cc050c48db8836ea54eff7b",
+      "components": [
+        {
+          "entry_title": "graph",
+          "physical_pdf_pages": [
+            49,
+            50
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/graph.txt",
+      "content_sha256": "4dc980a5dd040c8abc214f532cbaaf88a7ece06b8da80271ee83c16636e05695",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "graph_bar",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/g.pdf",
+      "source_sha256": "832b65408662eb46eb2629c0e33470a98addf5ff8cc050c48db8836ea54eff7b",
+      "components": [
+        {
+          "entry_title": "graph bar",
+          "physical_pdf_pages": [
+            51,
+            83
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/graph_bar.txt",
+      "content_sha256": "83a2f97ce21036c5543f57c2efaf17afba55786922b13548169ad21c00743279",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "greshape",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "0.5.0",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "gstats",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "0.4.0 + subcommand help",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "gquantiles",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "1.0.2",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "histogram",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/r.pdf",
+      "source_sha256": "3157e84c376103a42b73e72902c21c06ddb4d99e9663c6746ded6131d47b9073",
+      "components": [
+        {
+          "entry_title": "histogram",
+          "physical_pdf_pages": [
+            1217,
+            1228
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/histogram.txt",
+      "content_sha256": "552ba76508f81beee365ad0bab0275c679a0eb7f8d1055aa02ad7dd02b6b9d10",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "import",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "import",
+          "physical_pdf_pages": [
+            467,
+            475
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/import.txt",
+      "content_sha256": "091ea42f30db2902012e8b290bf15adf69709b40ec5919eeb8f54dfc1579cd39",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "import_delimited",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "import delimited",
+          "physical_pdf_pages": [
+            479,
+            490
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/import_delimited.txt",
+      "content_sha256": "2d303efcab6d4862bdd7e0c234f42bdb4f94c65c279602a467bb7807a093a7c3",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "import_excel",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "import excel",
+          "physical_pdf_pages": [
+            491,
+            497
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/import_excel.txt",
+      "content_sha256": "bcace79474b67c57daa07e02d35c72b2078962709e8749753e34dfd5a1a8995e",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "isid",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "isid",
+          "physical_pdf_pages": [
+            625,
+            627
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/isid.txt",
+      "content_sha256": "2b6956bf465e579235cd2330bc8a2f6045300451ac044fc812ff1187b7ba94a0",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "ivreg2",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "30July2015 help file; SSC record revised 14 Aug 2024",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "ivregress",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/r.pdf",
+      "source_sha256": "3157e84c376103a42b73e72902c21c06ddb4d99e9663c6746ded6131d47b9073",
+      "components": [
+        {
+          "entry_title": "ivregress",
+          "physical_pdf_pages": [
+            1376,
+            1394
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/ivregress.txt",
+      "content_sha256": "e4e7800ddd832249b226254eda38fbc35ca52cb4cd6c47cfa8d086c013d27eec",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "ivreghdfe",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "1.1.4 29nov2025",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "jwdid",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "2.0 May_4_2024",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "jwdidstacked",
+      "expanded_documentation_status": "unavailable",
+      "authority": null,
+      "source_kind": null,
+      "source_version": null,
+      "source_relation_to_help": "no authoritative help or expanded documentation available",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "Do not infer command syntax from paper examples or implementation code."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "jregress",
+      "expanded_documentation_status": "supplemental",
+      "authority": "maintainer or package documentation",
+      "source_kind": "author PDF command guide preserved inside Zenodo replication archive",
+      "source_version": "PDF creation metadata 20 Jul 2024; Zenodo record 17712099, no formal PDF version label",
+      "source_relation_to_help": "author supplement; authoritative command help unavailable",
+      "source_path": "full_command_guides/sources/jregress-zenodo-17712099-b0db4dc34ad7.pdf",
+      "source_sha256": "b0db4dc34ad7fb1b02cc0641a1a4317080331c4231ab160c1ba5e5bbd00e0b3b",
+      "components": [],
+      "content_file": "expanded_command_guides/jregress.txt",
+      "content_sha256": "0116da7e34c2348cc1dbb4edda74053078dbee39ec3faaea4d905aca257145f0",
+      "content_format": "markdown text extracted from author PDF",
+      "transformation": "Born-digital one-page author PDF inspected visually and extracted in reading order. Removed only the terminal PDF form-feed boundary; retained title, description, every example and command line in sequence, syntax, and all five option-table rows as UTF-8 Markdown.",
+      "limitations": [
+        "Use for conceptual and worked-example context only; it does not replace missing authoritative syntax help."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "label",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "label",
+          "physical_pdf_pages": [
+            645,
+            654
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/label.txt",
+      "content_sha256": "b2572ccb9e3a0521adbdf569b18aa3939401b64381d02b80ee3a3c1967f2e5b9",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "lincom",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/r.pdf",
+      "source_sha256": "3157e84c376103a42b73e72902c21c06ddb4d99e9663c6746ded6131d47b9073",
+      "components": [
+        {
+          "entry_title": "lincom",
+          "physical_pdf_pages": [
+            1508,
+            1515
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/lincom.txt",
+      "content_sha256": "ca5626dafb10e9a72a0374d56fc98a0c551194d2748675f3e92b6832017145c3",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "logit",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/r.pdf",
+      "source_sha256": "3157e84c376103a42b73e72902c21c06ddb4d99e9663c6746ded6131d47b9073",
+      "components": [
+        {
+          "entry_title": "logit",
+          "physical_pdf_pages": [
+            1556,
+            1569
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/logit.txt",
+      "content_sha256": "06300c2fca26cb56c21e2dec8d4a3433c7945e04a3a4245797ae890cad7540d2",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "logistic",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/r.pdf",
+      "source_sha256": "3157e84c376103a42b73e72902c21c06ddb4d99e9663c6746ded6131d47b9073",
+      "components": [
+        {
+          "entry_title": "logistic",
+          "physical_pdf_pages": [
+            1533,
+            1543
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/logistic.txt",
+      "content_sha256": "9c6f4e05b748eabb8daa46e0827899a8ca4bc847c521e0d1444b87e4bb56bbfa",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "margins",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/r.pdf",
+      "source_sha256": "3157e84c376103a42b73e72902c21c06ddb4d99e9663c6746ded6131d47b9073",
+      "components": [
+        {
+          "entry_title": "margins",
+          "physical_pdf_pages": [
+            1647,
+            1709
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/margins.txt",
+      "content_sha256": "dd3d893192eb49f1fa3690dfe5755f7976ef9c4b331d711cf0cf9aa175352192",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "marginsplot",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/r.pdf",
+      "source_sha256": "3157e84c376103a42b73e72902c21c06ddb4d99e9663c6746ded6131d47b9073",
+      "components": [
+        {
+          "entry_title": "marginsplot",
+          "physical_pdf_pages": [
+            1737,
+            1771
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/marginsplot.txt",
+      "content_sha256": "d43623c147ea55a3b51acd3826e7d9165fda2e3ed912fd803117b19d86d839c3",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "merge",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "merge",
+          "physical_pdf_pages": [
+            693,
+            717
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/merge.txt",
+      "content_sha256": "3b943254a6843544dcfd04c331137c3c7e82c4bbb2bc89e750dd0d0a040d425c",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "misstable",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/r.pdf",
+      "source_sha256": "3157e84c376103a42b73e72902c21c06ddb4d99e9663c6746ded6131d47b9073",
+      "components": [
+        {
+          "entry_title": "misstable",
+          "physical_pdf_pages": [
+            1814,
+            1824
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/misstable.txt",
+      "content_sha256": "a6c1f9eae4ae67ce27be368612d654b119345051edf77cf3b4681ec5be38b4b9",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "nbreg",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/r.pdf",
+      "source_sha256": "3157e84c376103a42b73e72902c21c06ddb4d99e9663c6746ded6131d47b9073",
+      "components": [
+        {
+          "entry_title": "nbreg",
+          "physical_pdf_pages": [
+            1915,
+            1929
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/nbreg.txt",
+      "content_sha256": "4b5c581a2f90bc4f0e4205438e6d0591dbd53ad87ad087f5a1d75d2d28d95e2b",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "outreg2",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "not_declared_in_selected_raw_help",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "poisson",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/r.pdf",
+      "source_sha256": "3157e84c376103a42b73e72902c21c06ddb4d99e9663c6746ded6131d47b9073",
+      "components": [
+        {
+          "entry_title": "poisson",
+          "physical_pdf_pages": [
+            2235,
+            2244
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/poisson.txt",
+      "content_sha256": "28726b225d5520f8ed4cbad0c511a7e2a09dd0575a43ea4e090755f8c736ce06",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "ppmlhdfe",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "2.3.4 11jan2025",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "predict",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/r.pdf",
+      "source_sha256": "3157e84c376103a42b73e72902c21c06ddb4d99e9663c6746ded6131d47b9073",
+      "components": [
+        {
+          "entry_title": "predict",
+          "physical_pdf_pages": [
+            2256,
+            2268
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/predict.txt",
+      "content_sha256": "586e70d9da252ab92f76408e0f595359a5371950e958055a051f90a358f16a4b",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "psmatch2",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "not_declared_in_selected_raw_help",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "pstest",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "not_declared_in_selected_raw_help",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "probit",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/r.pdf",
+      "source_sha256": "3157e84c376103a42b73e72902c21c06ddb4d99e9663c6746ded6131d47b9073",
+      "components": [
+        {
+          "entry_title": "probit",
+          "physical_pdf_pages": [
+            2282,
+            2295
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/probit.txt",
+      "content_sha256": "01739a54e201dcfe0ea99d99cf9f6d22b626ee945207e77b979ed63e026a0352",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "putexcel",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/rpt.pdf",
+      "source_sha256": "b13111e66e3430e929f0750a59119b9fca258f28b23e984f183eae0865cceea2",
+      "components": [
+        {
+          "entry_title": "putexcel",
+          "physical_pdf_pages": [
+            126,
+            151
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/putexcel.txt",
+      "content_sha256": "a8e3c542c87745ed9d6d2fce860b582f63dfb79a1a7087ef96219e1d05d2d337",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "qddml",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "30aug2024",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "rangestat",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "not_declared_in_selected_raw_help",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "rdbwselect",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "11.1.0  2026-05-22",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "rdplot",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "11.1.0  2026-05-22",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "rdrobust",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "11.1.0  2026-05-22",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "recode",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "recode",
+          "physical_pdf_pages": [
+            787,
+            795
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/recode.txt",
+      "content_sha256": "0226f83d93a1864a671f59f78e15d45cbb9d8560537eb421d5792690b9cb27d3",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "regress",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/r.pdf",
+      "source_sha256": "3157e84c376103a42b73e72902c21c06ddb4d99e9663c6746ded6131d47b9073",
+      "components": [
+        {
+          "entry_title": "regress",
+          "physical_pdf_pages": [
+            2487,
+            2516
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/regress.txt",
+      "content_sha256": "0cccef0cfb579d57dc2991c1d3118654e0412c408560835e9cb5900ca0bb80e0",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "reghdfe",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "6.14.1 08Jul2026",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "replace",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "generate",
+          "physical_pdf_pages": [
+            394,
+            399
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/replace.txt",
+      "content_sha256": "691c4c8675db0a246c28d64e6c1b8dfc29e8e13889cd8592222b7968ebc9f46e",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "reshape",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "reshape",
+          "physical_pdf_pages": [
+            809,
+            827
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/reshape.txt",
+      "content_sha256": "134f57e93b0f015b59569c2f0c3d54e83de73ed6b3f508cc89b4a1b0bf9eb70f",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "ritest",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "1.1.8 mar2021",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "save",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "save",
+          "physical_pdf_pages": [
+            835,
+            840
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/save.txt",
+      "content_sha256": "2fb64213eeda4dc4a4910b474dd7acae0a6fb76d067b7906a16288015fc2205c",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "sdid",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "2.0.3 May 14, 2025",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "stackedev",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "1.1 18dec2021",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "stcox",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/st.pdf",
+      "source_sha256": "e4d8656ebe36b52fc6521e993a2be718692db2dd106f53fe50344623d3266087",
+      "components": [
+        {
+          "entry_title": "stcox",
+          "physical_pdf_pages": [
+            117,
+            152
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/stcox.txt",
+      "content_sha256": "08ad7107d5a7a83c6a43ce61d11ff9ab4ddb13e77ca6fc7226057c769860ae8b",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "stset",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/st.pdf",
+      "source_sha256": "e4d8656ebe36b52fc6521e993a2be718692db2dd106f53fe50344623d3266087",
+      "components": [
+        {
+          "entry_title": "stset",
+          "physical_pdf_pages": [
+            544,
+            588
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/stset.txt",
+      "content_sha256": "68fddde72f95c4d3be262b4bedd225feb22e9ecb6043e6aa001affb95978dc37",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "summarize",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/r.pdf",
+      "source_sha256": "3157e84c376103a42b73e72902c21c06ddb4d99e9663c6746ded6131d47b9073",
+      "components": [
+        {
+          "entry_title": "summarize",
+          "physical_pdf_pages": [
+            2953,
+            2963
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/summarize.txt",
+      "content_sha256": "913b2d51bc454711eaf1d4d9533dbe1abd188968418a1fe3f8ecf47840e793d4",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "table",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/r.pdf",
+      "source_sha256": "3157e84c376103a42b73e72902c21c06ddb4d99e9663c6746ded6131d47b9073",
+      "components": [
+        {
+          "entry_title": "table",
+          "physical_pdf_pages": [
+            3073,
+            3090
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/table.txt",
+      "content_sha256": "a86a4405ad3e33d239a76e26a42d0bda7edc92ad31177aa2a9d5f86de2d8727e",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "tabstat",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/r.pdf",
+      "source_sha256": "3157e84c376103a42b73e72902c21c06ddb4d99e9663c6746ded6131d47b9073",
+      "components": [
+        {
+          "entry_title": "tabstat",
+          "physical_pdf_pages": [
+            3091,
+            3097
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/tabstat.txt",
+      "content_sha256": "d91b1341c67d656a7701a0f1ef880648d18c4c91b52f6571a3ac088ca59dd4bb",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "tabulate",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/r.pdf",
+      "source_sha256": "3157e84c376103a42b73e72902c21c06ddb4d99e9663c6746ded6131d47b9073",
+      "components": [
+        {
+          "entry_title": "tabulate oneway",
+          "physical_pdf_pages": [
+            3098,
+            3106
+          ]
+        },
+        {
+          "entry_title": "tabulate twoway",
+          "physical_pdf_pages": [
+            3107,
+            3125
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/tabulate.txt",
+      "content_sha256": "e1e8f2703b2d24fb93224ed67de11ffd137e6056c2df54a365fe197d62221747",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "testparm",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/r.pdf",
+      "source_sha256": "3157e84c376103a42b73e72902c21c06ddb4d99e9663c6746ded6131d47b9073",
+      "components": [
+        {
+          "entry_title": "test",
+          "physical_pdf_pages": [
+            3132,
+            3155
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/testparm.txt",
+      "content_sha256": "f34dab06775cad9e114dc85c6767003fa5f51909bc64460a28ade32223ddade1",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "test",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/r.pdf",
+      "source_sha256": "3157e84c376103a42b73e72902c21c06ddb4d99e9663c6746ded6131d47b9073",
+      "components": [
+        {
+          "entry_title": "test",
+          "physical_pdf_pages": [
+            3132,
+            3155
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/test.txt",
+      "content_sha256": "f34dab06775cad9e114dc85c6767003fa5f51909bc64460a28ade32223ddade1",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "tostring",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "destring",
+          "physical_pdf_pages": [
+            198,
+            206
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/tostring.txt",
+      "content_sha256": "8bde93df3ed8add390516324694f8c13cbacf81210cd9bfff62eab19dfab98ab",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "tsfill",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/ts.pdf",
+      "source_sha256": "08f7585f789702415297655bc46ae905e7c35fdcfb3ec75138399ae8219c0e41",
+      "components": [
+        {
+          "entry_title": "tsfill",
+          "physical_pdf_pages": [
+            647,
+            650
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/tsfill.txt",
+      "content_sha256": "a032b63cff4976ab840f02d381e430c77978907fb39d1140421e59e3faeadeda",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "tsset",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/ts.pdf",
+      "source_sha256": "08f7585f789702415297655bc46ae905e7c35fdcfb3ec75138399ae8219c0e41",
+      "components": [
+        {
+          "entry_title": "tsset",
+          "physical_pdf_pages": [
+            723,
+            740
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/tsset.txt",
+      "content_sha256": "be400e785ce32e6d9572d84ceedee4783dc3111b19f3d6d7da883e097ddd2bc4",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "twoway",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/g.pdf",
+      "source_sha256": "832b65408662eb46eb2629c0e33470a98addf5ff8cc050c48db8836ea54eff7b",
+      "components": [
+        {
+          "entry_title": "graph twoway",
+          "physical_pdf_pages": [
+            197,
+            204
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/twoway.txt",
+      "content_sha256": "b2d80c3fb964157abbb78daf0edf89050683267a2b914f1901830b1167e8abc8",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "ttest",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/r.pdf",
+      "source_sha256": "3157e84c376103a42b73e72902c21c06ddb4d99e9663c6746ded6131d47b9073",
+      "components": [
+        {
+          "entry_title": "ttest",
+          "physical_pdf_pages": [
+            3254,
+            3265
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/ttest.txt",
+      "content_sha256": "b807c7e2e93f8b6465524d8e1576e6de6e511f0316c9ba188b4bc888a73f1012",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "use",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/d.pdf",
+      "source_sha256": "7838a9a24b2392f2267eaaf774a8eb8ee0d76c24dab6e3118ee55806d6e4bb36",
+      "components": [
+        {
+          "entry_title": "use",
+          "physical_pdf_pages": [
+            925,
+            928
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/use.txt",
+      "content_sha256": "bd73706c04b62760d2d53ae967ac09ccad5011b6ae0c703a2a34ee8479d89af4",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "winsor2",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "2.0 2020/11/24",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "xtivreg",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/xt.pdf",
+      "source_sha256": "cd3bbcc3a1d6dcbc8dd6efe3032a8231a8576b9c1700f496ddadfc317caece03",
+      "components": [
+        {
+          "entry_title": "xtivreg",
+          "physical_pdf_pages": [
+            264,
+            288
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/xtivreg.txt",
+      "content_sha256": "935fbfa17fedc6a64f20dc513e20ff839ea81ce6018b8ffd6fdb7e1d32852fc5",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "xtreg",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/xt.pdf",
+      "source_sha256": "cd3bbcc3a1d6dcbc8dd6efe3032a8231a8576b9c1700f496ddadfc317caece03",
+      "components": [
+        {
+          "entry_title": "xtreg",
+          "physical_pdf_pages": [
+            487,
+            531
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/xtreg.txt",
+      "content_sha256": "3d9bead581f197ea924412ccc09c085ca097bd75ea7d163e1ff738452c5bb921",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "xtset",
+      "expanded_documentation_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed Stata PDF manual",
+      "source_version": "Stata 18 installation",
+      "source_relation_to_help": "same Stata 18 release; expanded manual entry",
+      "source_path": "Stata18/docs/xt.pdf",
+      "source_sha256": "cd3bbcc3a1d6dcbc8dd6efe3032a8231a8576b9c1700f496ddadfc317caece03",
+      "components": [
+        {
+          "entry_title": "xtset",
+          "physical_pdf_pages": [
+            564,
+            578
+          ]
+        }
+      ],
+      "content_file": "expanded_command_guides/xtset.txt",
+      "content_sha256": "463ee1cfa26db47dacc13dac9d24e0278eebf42f476eecbc8bdd5e183d28afac",
+      "content_format": "layout-preserving plain text",
+      "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
+      "limitations": []
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "xtabond2",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "repository commit a694533e395b0277ee2fffbde00a7111357c524f",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "asdoc",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "2.3.9.5; April 10, 2021",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "fcollapse",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "2.49.0 06may2022",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    },
+    {
+      "record_type": "expanded_command_guide",
+      "command": "fmerge",
+      "expanded_documentation_status": "same_source_as_help",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "2.10.0 3apr2017",
+      "source_relation_to_help": "Phase 2 already contains the authoritative maintainer help",
+      "source_path": null,
+      "source_sha256": null,
+      "components": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "transformation": null,
+      "limitations": [
+        "No duplicate text is injected in the expanded phase."
+      ]
+    }
+  ]
+}

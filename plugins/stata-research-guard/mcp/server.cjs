@@ -3,11 +3,13 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const readline = require("node:readline");
+const crypto = require("node:crypto");
 
 const PLUGIN_ROOT = path.resolve(__dirname, "..");
 const DATA_ROOT = path.join(PLUGIN_ROOT, "data");
 const REGISTRY_PATH = path.join(DATA_ROOT, "command_registry.json");
 const COMMAND_HELP_GUIDES_PATH = path.join(DATA_ROOT, "command_help_guides.json");
+const EXPANDED_COMMAND_GUIDES_PATH = path.join(DATA_ROOT, "expanded_command_guides.json");
 const PAPER_PROFILES_PATH = path.join(DATA_ROOT, "paper_example_profiles.jsonl");
 const PAPER_BLOCKS_PATH = path.join(DATA_ROOT, "high_quality_paper_blocks.jsonl");
 const PAPER_OCCURRENCES_PATH = path.join(DATA_ROOT, "paper_usage_occurrences.jsonl");
@@ -55,6 +57,9 @@ const commandsByName = new Map(registry.commands.map((row) => [row.command, row]
 const helpGuideIndex = readJson(COMMAND_HELP_GUIDES_PATH);
 const helpGuidesByCommand = new Map(helpGuideIndex.guides.map((row) => [row.command, row]));
 
+const expandedGuideIndex = readJson(EXPANDED_COMMAND_GUIDES_PATH);
+const expandedGuidesByCommand = new Map(expandedGuideIndex.guides.map((row) => [row.command, row]));
+
 const paperProfiles = readJsonl(PAPER_PROFILES_PATH);
 const paperBlocks = readJsonl(PAPER_BLOCKS_PATH);
 const paperOccurrences = readJsonl(PAPER_OCCURRENCES_PATH);
@@ -67,6 +72,19 @@ const profilesByCommand = groupBy(paperProfiles, "focus_command");
 const blocksById = new Map(paperBlocks.map((row) => [row.block_id, row]));
 const occurrencesById = new Map(paperOccurrences.map((row) => [row.occurrence_id, row]));
 const executionContextsByBlock = groupBy(paperExecutionContexts, "parent_block_id");
+
+// This one stored run contains 510 nuisance-coefficient rows.  These exact,
+// manually chosen source ranges retain the output header, focal coefficient,
+// and endogenous-variable footer.  There is no automatic size truncation.
+const CURATED_LOG_RANGES = new Map([
+  [
+    "ooe--isolated-fresh-run--manual-block-084--a8f9001897094243b29824cf764bbdf09651a5c6371d5274d992a7da43c0b082",
+    [
+      { source_span_id: "log-span-002", start: 473, end: 482 },
+      { source_span_id: "log-span-002", start: 992, end: 994 },
+    ],
+  ],
+]);
 
 function mainRules() {
   return {
@@ -109,6 +127,11 @@ function selectedBlockIdsFrom(args) {
   return [...args.selected_block_ids];
 }
 
+function optionalSelectedBlockIdsFrom(args) {
+  if (!Object.prototype.hasOwnProperty.call(args, "selected_block_ids")) return [];
+  return selectedBlockIdsFrom(args);
+}
+
 function validateArguments(args) {
   if (!args || typeof args !== "object" || Array.isArray(args)) {
     throw new Error("arguments must be an object");
@@ -119,24 +142,31 @@ function validateArguments(args) {
 
   const hasCommands = Object.prototype.hasOwnProperty.call(args, "selected_commands");
   const hasBlocks = Object.prototype.hasOwnProperty.call(args, "selected_block_ids");
-  const phase = hasBlocks ? "paper_examples" : hasCommands ? "selected_command_evidence" : "discovery";
+  const hasExpanded = Object.prototype.hasOwnProperty.call(args, "expanded");
+  if (hasExpanded && args.expanded !== true) {
+    throw new Error("ABORT invalid_phase_arguments: expanded must be true when supplied");
+  }
+  const phase = hasExpanded ? "expanded_context" : hasCommands ? "selected_command_evidence" : "discovery";
   const allowed = phase === "discovery"
     ? new Set(["request"])
     : phase === "selected_command_evidence"
       ? new Set(["request", "selected_commands"])
-      : new Set(["request", "selected_commands", "selected_block_ids"]);
+      : new Set(["request", "selected_commands", "expanded", "selected_block_ids"]);
   const unexpected = Object.keys(args).filter((key) => !allowed.has(key));
   if (unexpected.length > 0) {
     throw new Error(`ABORT invalid_phase_arguments: ${phase} does not allow ${unexpected.join(", ")}`);
   }
-  if (phase === "paper_examples" && !hasCommands) {
-    throw new Error("ABORT invalid_phase_arguments: paper_examples requires selected_commands");
+  if (phase === "expanded_context" && !hasCommands) {
+    throw new Error("ABORT invalid_phase_arguments: expanded_context requires selected_commands");
+  }
+  if (hasBlocks && phase !== "expanded_context") {
+    throw new Error("ABORT invalid_phase_arguments: selected_block_ids requires expanded: true");
   }
 
   return {
     phase,
     selectedCommands: phase === "discovery" ? null : selectedCommandsFrom(args),
-    selectedBlockIds: phase === "paper_examples" ? selectedBlockIdsFrom(args) : null,
+    selectedBlockIds: phase === "expanded_context" ? optionalSelectedBlockIdsFrom(args) : null,
   };
 }
 
@@ -154,9 +184,94 @@ function commandEvidence(command) {
     command,
     help_status: entry.help_status,
     command_help: commandHelp(command),
-    full_manual_available: entry.full_manual_available,
+    expanded_documentation: expandedDocumentationSummary(command),
     paper_example_catalog: profilesByCommand.get(command) || [],
   };
+}
+
+function expandedDocumentationSummary(command) {
+  const entry = expandedGuidesByCommand.get(command);
+  if (!entry) throw new Error(`expanded documentation index is missing registry command: ${command}`);
+  return {
+    status: entry.expanded_documentation_status,
+    authority: entry.authority,
+    source_kind: entry.source_kind,
+    source_version: entry.source_version,
+    source_relation_to_help: entry.source_relation_to_help,
+    limitations: entry.limitations,
+  };
+}
+
+function expandedDocumentation(command) {
+  const entry = expandedGuidesByCommand.get(command);
+  const content = entry?.content_file ? readUtf8(path.join(DATA_ROOT, entry.content_file)) : null;
+  return { ...entry, content };
+}
+
+function sha256Text(text) {
+  return crypto.createHash("sha256").update(text, "utf8").digest("hex");
+}
+
+function selectRawLogRange(span, selection) {
+  const lines = String(span.text || "").split(/\r?\n/);
+  const offsetStart = selection.start - span.start;
+  const offsetEnd = selection.end - span.start;
+  if (offsetStart < 0 || offsetEnd >= lines.length || offsetEnd < offsetStart) {
+    throw new Error(`curated log range falls outside ${selection.source_span_id}`);
+  }
+  const text = lines.slice(offsetStart, offsetEnd + 1).join("\n");
+  return {
+    span_id: `${span.span_id}-${selection.start}-${selection.end}`,
+    role: span.role,
+    unit: span.unit,
+    start: selection.start,
+    end: selection.end,
+    text,
+    text_sha256: sha256Text(text),
+    source_span_id: span.span_id,
+    source_span_sha256: span.text_sha256,
+  };
+}
+
+function projectedLogSpans(context) {
+  const selections = CURATED_LOG_RANGES.get(context.evidence_id);
+  if (!selections) return context.log_spans || [];
+  const selectedSourceIds = new Set(selections.map((row) => row.source_span_id));
+  const retained = (context.log_spans || []).filter((span) => !selectedSourceIds.has(span.span_id));
+  const curated = selections.map((selection) => {
+    const source = (context.log_spans || []).find((span) => span.span_id === selection.source_span_id);
+    if (!source) throw new Error(`curated log source span not found: ${selection.source_span_id}`);
+    return selectRawLogRange(source, selection);
+  });
+  return [...retained, ...curated];
+}
+
+function projectedExecutionContext(context) {
+  return {
+    evidence_id: context.evidence_id,
+    evidence_origin: context.evidence_origin,
+    source_archive_provenance: context.source_archive_provenance,
+    log_provenance: context.log_provenance,
+    log_spans: projectedLogSpans(context),
+    artifacts: context.artifacts || [],
+  };
+}
+
+function sourceProvenanceForBlock(block) {
+  return block.target_occurrence_ids.map((occurrenceId) => {
+    const occurrence = occurrencesById.get(occurrenceId);
+    const provenance = occurrence?.provenance || {};
+    return {
+      occurrence_id: occurrenceId,
+      title: provenance.title || null,
+      article_doi: provenance.article_doi || null,
+      article_url: provenance.article_url || null,
+      repository_doi: provenance.repository_doi || null,
+      repository_url: provenance.repository_url || null,
+      version: provenance.version || null,
+      original_path: provenance.original_path || provenance.project_path || block.source_path,
+    };
+  });
 }
 
 function paperCard(blockId) {
@@ -164,13 +279,17 @@ function paperCard(blockId) {
   if (!block) {
     throw new Error(`ABORT paper_block_not_in_catalog: ${JSON.stringify(blockId)}`);
   }
-  const paperOccurrencesForBlock = block.target_occurrence_ids
-    .map((occurrenceId) => occurrencesById.get(occurrenceId))
-    .filter(Boolean);
   return {
-    paper_block: block,
-    paper_occurrences: paperOccurrencesForBlock,
-    paper_log_contexts: executionContextsByBlock.get(blockId) || [],
+    block_id: block.block_id,
+    focus_command: block.focus_command,
+    source_provenance: sourceProvenanceForBlock(block),
+    source_path: block.source_path,
+    source_file_sha256: block.source_file_sha256,
+    source_line_span: { start: block.block_span_start, end: block.block_span_end },
+    paper_code: block.block_code,
+    paper_code_sha256: block.block_code_sha256,
+    target_spans: block.target_spans,
+    paper_log_contexts: (executionContextsByBlock.get(blockId) || []).map(projectedExecutionContext),
   };
 }
 
@@ -203,10 +322,14 @@ function buildCommandEvidence(args) {
     }
   }
   return {
-    phase: "paper_examples",
+    phase: "expanded_context",
     main_rules: mainRules(),
     selected_commands: selectedCommands,
     selected_block_ids: selectedBlockIds,
+    expanded_command_evidence: selectedCommands.map((command) => ({
+      command,
+      expanded_documentation: expandedDocumentation(command),
+    })),
     paper_usage_cards: selectedBlockIds.map(paperCard),
   };
 }
@@ -214,7 +337,7 @@ function buildCommandEvidence(args) {
 const TOOL_DEFINITIONS = [
   {
     name: "get_stata_command_evidence",
-    description: "Stateless three-phase exact-key Stata evidence lookup. Every phase includes the common main rules. Phase 1 returns the 109-command neutral dictionary. The model autonomously selects exact canonical commands. Phase 2 returns one independent packet per selected command with Stata-rendered official or maintainer help, factual help and full-manual availability, and a compact paper-profile catalog. It does not return the retained full manuals or raw paper code. Phase 3 currently returns only exact selected raw paper blocks, linked occurrences, and optional directly linked raw log or artifact context; any redesigned expanded manual-plus-paper phase remains deferred. Commands outside the dictionary abort. The server does not score, rank, recommend, promote, audit, semantically validate, or automatically choose commands, blocks, specifications, or outputs.",
+    description: "Stateless three-phase exact-key Stata evidence lookup. Every phase includes the common main rules. Phase 1 returns the 109-command neutral dictionary. The model autonomously selects exact canonical commands. Phase 2 returns Stata 18-rendered official or maintainer help, factual expanded-documentation status, and a compact paper-profile catalog. When help does not fully settle the requested action, Phase 3 combines the selected commands' Stata 18 official manual entries or limited author supplement with optional exact paper blocks and directly linked raw log or artifact excerpts. The model chooses whether to expand and which exact block IDs to request; the server never scores, ranks, recommends, promotes, audits, semantically validates, or automatically chooses commands, blocks, specifications, or outputs.",
     inputSchema: {
       oneOf: [
         {
@@ -235,13 +358,14 @@ const TOOL_DEFINITIONS = [
           },
         },
         {
-          title: "Phase 3 exact raw paper context",
+          title: "Phase 3 combined expanded documentation and paper context",
           type: "object",
           additionalProperties: false,
-          required: ["request", "selected_commands", "selected_block_ids"],
+          required: ["request", "selected_commands", "expanded"],
           properties: {
             request: { type: "string", minLength: 1 },
             selected_commands: { type: "array", minItems: 1, items: { type: "string", minLength: 1 } },
+            expanded: { const: true },
             selected_block_ids: { type: "array", minItems: 1, items: { type: "string", minLength: 1 } },
           },
         },
@@ -272,12 +396,12 @@ const TOOL_DEFINITIONS = [
               items: {
                 type: "object",
                 additionalProperties: false,
-                required: ["command", "help_status", "command_help", "full_manual_available", "paper_example_catalog"],
+                required: ["command", "help_status", "command_help", "expanded_documentation", "paper_example_catalog"],
                 properties: {
                   command: { type: "string" },
                   help_status: { enum: ["available", "partial", "unavailable"] },
                   command_help: { anyOf: [{ type: "object" }, { type: "null" }] },
-                  full_manual_available: { type: "boolean" },
+                  expanded_documentation: { type: "object" },
                   paper_example_catalog: { type: "array", items: { type: "object" } },
                 },
               },
@@ -287,12 +411,13 @@ const TOOL_DEFINITIONS = [
         {
           type: "object",
           additionalProperties: false,
-          required: ["phase", "main_rules", "selected_commands", "selected_block_ids", "paper_usage_cards"],
+          required: ["phase", "main_rules", "selected_commands", "selected_block_ids", "expanded_command_evidence", "paper_usage_cards"],
           properties: {
-            phase: { const: "paper_examples" },
+            phase: { const: "expanded_context" },
             main_rules: { type: "object" },
             selected_commands: { type: "array", items: { type: "string" } },
             selected_block_ids: { type: "array", items: { type: "string" } },
+            expanded_command_evidence: { type: "array", items: { type: "object" } },
             paper_usage_cards: { type: "array", items: { type: "object" } },
           },
         },

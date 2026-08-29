@@ -291,8 +291,8 @@ function prepare({ workDir, stataBase }) {
         record.components.push(componentPlan(topic, source, workDir, localMap, installedMap, stataBase, componentIndex++));
       }
       if (command === "collect_style") {
-        record.help_status = "partial";
-        record.limitations.push(`Stata 18 does not provide the Stata 19 topics: ${COLLECT_STYLE_MISSING_TOPICS.join(", ")}`);
+        record.help_status = record.components.length === COLLECT_STYLE_TOPICS.length ? "available" : "partial";
+        record.limitations.push(`Stata 18 scope excludes the later Stata 19 topics: ${COLLECT_STYLE_MISSING_TOPICS.join(", ")}`);
         record.related_online_sources = COLLECT_STYLE_ONLINE_SOURCES;
       } else if (record.components.length > 0) {
         record.help_status = "available";

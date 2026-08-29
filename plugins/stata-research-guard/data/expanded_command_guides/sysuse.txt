@@ -1,0 +1,111 @@
+sysuse — Use shipped dataset
+
+                  Description    Quick start                  Menu              Syntax
+                  Options        Remarks and examples         Stored results    Also see
+
+
+Description
+    sysuse filename loads the specified Stata-format dataset that was shipped with Stata or that is stored
+ along the ado-path. If filename is specified without a suffix, .dta is assumed.
+    sysuse dir lists the names of the datasets shipped with Stata plus any other datasets stored along the
+ ado-path. You can also see help dta examples for a list of datasets shipped with Stata.
+
+
+Quick start
+ List example datasets installed with Stata
+        sysuse dir
+ Use auto.dta example dataset installed with Stata
+       sysuse auto
+ Same as above, but clear current dataset from memory first
+      sysuse auto, clear
+
+
+Menu
+ File > Example datasets...
+
+
+
+
+                                                   885
+
+Syntax
+ Use example dataset installed with Stata
+    sysuse [”]filename[”] [ , clear ]
+
+ List example Stata datasets installed with Stata
+    sysuse dir [ , all ]
+
+
+Options
+ clear specifies that it is okay to replace the data in memory, even though the current data have not been
+   saved to disk.
+ all specifies that all datasets be listed, even those that include an underscore ( ) in their name. By
+   default, such datasets are not listed.
+
+
+Remarks and examples
+    Remarks are presented under the following headings:
+                 Typical use
+                 A note concerning shipped datasets
+                 Using user-installed datasets
+                 How sysuse works
+
+
+Typical use
+    A few datasets are included with Stata and are stored in the system directories. These datasets are
+ often used in the help files to demonstrate a certain feature.
+    Typing
+       . sysuse dir
+
+ lists the names of those datasets. One such dataset is lifeexp.dta. If you simply type use lifeexp,
+ you will see
+       . use lifeexp
+       file lifeexp.dta not found
+       r(601);
+
+    Type sysuse, however, and the dataset is loaded:
+       . sysuse lifeexp
+       (Life expectancy, 1998)
+
+ The datasets shipped with Stata are stored in different folders (directories) so that they do not become
+ confused with your datasets.
+
+A note concerning shipped datasets
+    Not all the datasets used in the manuals are shipped with Stata. To obtain the other datasets, see
+ [D] webuse.
+    The datasets used to demonstrate Stata are often fictional. If you want to know whether a dataset is
+ real or fictional, and its history, load the dataset and type
+       . notes
+
+    A few datasets have no notes. This means that the datasets are believed to be real, but that they were
+ created so long ago that information about their original source has been lost. Treat such datasets as if
+ they were fictional.
+
+
+Using user-installed datasets
+   Any datasets you have installed using net or ssc (see [R] net and [R] ssc) can be listed by typing
+ sysuse dir and can be loaded using sysuse filename.
+    Any datasets you store in your personal ado folder (see [P] sysdir) are also listed by sysuse dir and
+ can be loaded using sysuse filename.
+
+
+How sysuse works
+    sysuse simply looks across the ado-path for .dta files; see [P] sysdir.
+     By default, sysuse dir does not list a dataset that contains an underscore ( ) in its name. By con-
+ vention, such datasets are used by ado-files to achieve their ends and probably are not of interest to you.
+ If you type sysuse dir, all, then all datasets are listed.
+
+
+Stored results
+    sysuse dir stores in the macro r(files) the list of dataset names.
+    sysuse filename stores in the macro r(fn) the filename, including the full path specification.
+
+
+Also see
+ [D] frames use — Load a set of frames from disk
+ [D] use — Load Stata dataset
+ [D] webuse — Use dataset from Stata website
+ [P] findfile — Find file in path
+ [P] sysdir — Query and set system directories
+ [R] net — Install and manage community-contributed additions from the Internet
+ [R] ssc — Install and uninstall packages from SSC
