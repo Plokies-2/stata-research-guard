@@ -1,0 +1,163 @@
+[R] ttest -- t tests (mean-comparison tests)
+             (View complete PDF manual entry)
+
+
+Syntax
+
+    One-sample t test
+
+        ttest varname == # [if] [in] [, level(#)]
+
+
+    Two-sample t test using groups
+
+        ttest varname [if] [in] , by(groupvar) [options1]
+
+
+    Two-sample t test using variables
+
+        ttest varname1 == varname2 [if] [in], unpaired [unequal welch level(#)]
+
+
+    Paired t test
+
+        ttest varname1 == varname2 [if] [in] [, level(#)]
+
+
+    Immediate form of one-sample t test
+
+        ttesti #obs #mean #sd #val [, level(#)]
+
+
+    Immediate form of two-sample t test
+
+        ttesti #obs1 #mean1 #sd1 #obs2 #mean2 #sd2 [, options2]
+
+
+    options1          Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+    * by(groupvar)    variable defining the groups
+      reverse         reverse group order for mean difference computation
+      unequal         unpaired data have unequal variances
+      welch           use Welch's approximation
+      level(#)        set confidence level; default is level(95)
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    * by(groupvar) is required.
+
+    options2          Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      unequal         unpaired data have unequal variances
+      welch           use Welch's approximation
+      level(#)        set confidence level; default is level(95)
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    by and collect are allowed with ttest and ttesti; see prefix.
+
+
+Menu
+
+    ttest
+
+        Statistics > Summaries, tables, and tests > Classical tests of hypotheses > t test (mean-comparison test)
+
+    ttesti
+
+        Statistics > Summaries, tables, and tests > Classical tests of hypotheses > t test calculator
+
+
+Description
+
+    ttest performs t tests on the equality of means.  The test can be performed for one sample against a hypothesized population mean.  Two-sample tests can be conducted for paired and unpaired data.  The assumption of equal variances can be optionally
+    relaxed in the unpaired two-sample case.
+
+    ttesti is the immediate form of ttest; see immed.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+        Methods and formulas
+
+    The above sections are not included in this help file.
+
+
+Options
+
+        +------+
+    ----+ Main +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    by(groupvar) specifies the groupvar that defines the two groups that ttest will use to test the hypothesis that their means are equal.  Specifying by(groupvar) implies an unpaired (two sample) t test.  Do not confuse the by() option with the by
+        prefix; you can specify both.
+
+    reverse reverses the order of the mean difference between groups defined in by().  By default, the mean of the group corresponding to the largest value in the variable in by() is subtracted from the mean of the group with the smallest value in by().
+        reverse reverses this behavior and the order in which variables appear on the table.
+
+    unpaired specifies that the data be treated as unpaired.  The unpaired option is used when the two sets of values to be compared are in different variables.
+
+    unequal specifies that the unpaired data not be assumed to have equal variances.
+
+    welch specifies that the approximate degrees of freedom for the test be obtained from Welch's formula (1947) rather than from Satterthwaite's approximation formula (1946), which is the default when unequal is specified.  Specifying welch implies
+        unequal.
+
+    level(#) specifies the confidence level, as a percentage, for confidence intervals.  The default is level(95) or as set by set level.
+
+
+Examples
+
+    . sysuse auto             (setup)
+    . ttest mpg==20           (one-sample t test)
+
+    . webuse fuel3            (setup)
+    . ttest mpg, by(treated)  (two-sample t test using groups)
+
+    . webuse fuel             (setup)
+    . ttest mpg1==mpg2        (paired t test)
+
+                              (no setup required)
+    . ttesti 24 62.6 15.8 75  (immediate form; n=24, m=62.6, sd=15.8;
+                                    test m=75)
+
+Video examples
+
+    One-sample t test in Stata
+
+    t test for two independent samples in Stata
+
+    t test for two paired samples in Stata
+
+    One-sample t-test calculator
+
+    Two-sample t-test calculator
+
+
+Stored results
+
+    ttest and ttesti store the following in r():
+
+    Scalars   
+      r(N_1)         sample size n_1
+      r(N_2)         sample size n_2
+      r(p_l)         lower one-sided p-value
+      r(p_u)         upper one-sided p-value
+      r(p)           two-sided p-value
+      r(se)          estimate of standard error
+      r(t)           t statistic
+      r(sd_1)        standard deviation for first variable
+      r(sd_2)        standard deviation for second variable
+      r(sd)          combined standard deviation
+      r(mu_1)        x_1 bar, mean for population 1
+      r(mu_2)        x_2 bar, mean for population 2
+      r(df_t)        degrees of freedom
+      r(level)       confidence level
+
+
+References
+
+    Satterthwaite, F. E. 1946.  An approximate distribution of estimates of variance components.  Biometrics Bulletin 2: 110-114.
+
+    Welch, B. L. 1947.  The generalization of `student's' problem when several different population variances are involved. Biometrika 34: 28-35.

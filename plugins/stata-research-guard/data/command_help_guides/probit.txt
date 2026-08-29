@@ -1,0 +1,219 @@
+[R] probit -- Probit regression
+              (View complete PDF manual entry)
+
+
+Syntax
+
+        probit depvar [indepvars] [if] [in] [weight] [, options]
+
+    options                       Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Model
+      noconstant                  suppress constant term
+      offset(varname)             include varname in model with coefficient constrained to 1
+      asis                        retain perfect predictor variables
+      constraints(constraints)    apply specified linear constraints
+
+    SE/Robust
+      vce(vcetype)                vcetype may be oim, opg, robust, cluster clustvar, bootstrap, or jackknife
+
+    Reporting
+      level(#)                    set confidence level; default is level(95)
+      nocnsreport                 do not display constraints
+      display_options             control columns and column formats, row spacing, line width, display of omitted variables and base and empty cells, and factor-variable labeling
+
+
+    Maximization
+      maximize_options            control the maximization process; seldom used
+
+      nocoef                      do not display the coefficient table; seldom used
+      collinear                   keep collinear variables
+      coeflegend                  display legend instead of statistics
+
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    indepvars may contain factor variables; see fvvarlist.
+
+    depvar and indepvars may contain time-series operators; see tsvarlist.
+    bayes, bootstrap, by, collect, fmm, fp, jackknife, mfp, mi estimate, nestreg, rolling, statsby, stepwise, and svy are allowed; see prefix.  For more details, see [BAYES] bayes: probit and [FMM] fmm: probit.
+    vce(bootstrap) and vce(jackknife) are not allowed with the mi estimate prefix.
+
+    Weights are not allowed with the bootstrap prefix.
+    vce(), nocoef, and weights are not allowed with the svy prefix.
+    fweights, iweights, and pweights are allowed; see weight.
+    nocoef, collinear, and coeflegend do not appear in the dialog box.
+    See [R] probit postestimation for features available after estimation.
+
+
+Menu
+
+    Statistics > Binary outcomes > Probit regression
+
+
+Description
+
+    probit fits a probit model for a binary dependent variable, assuming that the probability of a positive outcome is determined by the standard normal cumulative distribution function. probit can compute robust and cluster-robust standard errors and
+    adjust results for complex survey designs.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+        Methods and formulas
+
+    The above sections are not included in this help file.
+
+
+Options
+
+        +-------+
+    ----+ Model +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    noconstant, offset(varname), constraints(constraints); see [R] Estimation options.
+
+    asis specifies that all specified variables and observations be retained in the maximization process.  This option is typically not specified and may introduce numerical instability.  Normally probit omits variables that perfectly predict success or
+        failure in the dependent variable along with their associated observations.  In those cases, the effective coefficient on the omitted variables is infinity (negative infinity) for variables that completely determine a success (failure).
+        Dropping the variable and perfectly predicted observations has no effect on the likelihood or estimates of the remaining coefficients and increases the numerical stability of the optimization process.  Specifying this option forces retention of
+        perfect predictor variables and their associated observations.
+
+        +-----------+
+    ----+ SE/Robust +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    vce(vcetype) specifies the type of standard error reported, which includes types that are derived from asymptotic theory (oim, opg), that are robust to some kinds of misspecification (robust), that allow for intragroup correlation (cluster
+        clustvar), and that use bootstrap or jackknife methods (bootstrap, jackknife); see [R] vce_option.
+
+
+        +-----------+
+    ----+ Reporting +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    level(#); see [R] Estimation options.
+
+    nocnsreport; see [R] Estimation options.
+
+    display_options:  noci, nopvalues, noomitted, vsquish, noemptycells, baselevels, allbaselevels, nofvlabel, fvwrap(#), fvwrapon(style), cformat(%fmt), pformat(%fmt), sformat(%fmt), and nolstretch; see [R] Estimation options.
+
+
+        +--------------+
+    ----+ Maximization +-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    maximize_options:  difficult, technique(algorithm_spec), iterate(#), [no]log, trace, gradient, showstep, hessian, showtolerance, tolerance(#), ltolerance(#), nrtolerance(#), nonrtolerance, and from(init_specs); see [R] Maximize.  These options are
+        seldom used.
+
+    The following options are available with probit but are not shown in the dialog box:
+
+    nocoef specifies that the coefficient table not be displayed.  This option is sometimes used by programmers but is of no use interactively.
+
+    collinear, coeflegend; see [R] Estimation options.
+
+
+Examples
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . sysuse auto
+
+    Probit regression
+        . probit foreign weight mpg
+
+    Same as above, but with robust standard errors
+        . probit foreign weight mpg, vce(robust)
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse union
+
+    Probit regression
+        . probit union age grade not_smsa south##c.year
+
+    Same as above, but adjust standard errors for clusters in id
+        . probit union age grade not_smsa south##c.year, vce(cluster id)
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse nhanes2d
+        . svyset
+
+    Probit regression using survey data
+        . svy: probit highbp height weight age female
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Video examples
+
+        Probit regression with categorical covariates
+
+        Probit regression with continuous covariates
+
+        Probit regression with categorical and continuous covariates
+
+
+Stored results
+
+    probit stores the following in e():
+
+    Scalars           
+      e(N)                   number of observations
+      e(N_cds)               number of completely determined successes
+      e(N_cdf)               number of completely determined failures
+      e(k)                   number of parameters
+      e(k_eq)                number of equations in e(b)
+      e(k_eq_model)          number of equations in overall model test
+      e(k_dv)                number of dependent variables
+      e(df_m)                model degrees of freedom
+      e(r2_p)                pseudo-R-squared
+      e(ll)                  log likelihood
+      e(ll_0)                log likelihood, constant-only model
+      e(N_clust)             number of clusters
+      e(chi2)                chi-squared
+      e(p)                   p-value for model test
+      e(rank)                rank of e(V)
+      e(ic)                  number of iterations
+      e(rc)                  return code
+      e(converged)           1 if converged, 0 otherwise
+
+    Macros            
+      e(cmd)                 probit
+      e(cmdline)             command as typed
+      e(depvar)              name of dependent variable
+      e(wtype)               weight type
+      e(wexp)                weight expression
+      e(title)               title in estimation output
+      e(clustvar)            name of cluster variable
+      e(offset)              linear offset variable
+      e(chi2type)            Wald or LR; type of model chi-squared test
+      e(vce)                 vcetype specified in vce()
+      e(vcetype)             title used to label Std. err.
+      e(opt)                 type of optimization
+      e(which)               max or min; whether optimizer is to perform maximization or minimization
+      e(ml_method)           type of ml method
+      e(user)                name of likelihood-evaluator program
+      e(technique)           maximization technique
+      e(properties)          b V
+      e(estat_cmd)           program used to implement estat
+      e(predict)             program used to implement predict
+      e(marginsok)           predictions allowed by margins
+      e(marginsnotok)        predictions disallowed by margins
+      e(asbalanced)          factor variables fvset as asbalanced
+      e(asobserved)          factor variables fvset as asobserved
+
+    Matrices          
+      e(b)                   coefficient vector
+      e(Cns)                 constraints matrix
+      e(ilog)                iteration log (up to 20 iterations)
+      e(gradient)            gradient vector
+      e(mns)                 vector of means of the independent variables
+      e(rules)               information about perfect predictors
+      e(V)                   variance-covariance matrix of the estimators
+      e(V_modelbased)        model-based variance
+
+    Functions         
+      e(sample)              marks estimation sample
+
+    In addition to the above, the following is stored in r():
+
+    Matrices          
+      r(table)               matrix containing the coefficients with their standard errors, test statistics, p-values, and confidence intervals
+
+    Note that results stored in r() are updated when the command is replayed and will be replaced when any r-class command is run after the estimation command.

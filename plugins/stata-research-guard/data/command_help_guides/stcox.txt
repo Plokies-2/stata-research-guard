@@ -1,0 +1,328 @@
+[ST] stcox -- Cox proportional hazards model
+              (View complete PDF manual entry)
+
+
+Syntax
+
+        stcox [indepvars] [if] [in] [, options]
+
+    options                Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Model
+      estimate             fit model without covariates
+      strata(varnames)     strata ID variables
+      shared(varname)      shared-frailty ID variable
+      offset(varname)      include varname in model with coefficient constrained to 1
+      breslow              use Breslow method to handle tied failures; the default
+      efron                use Efron method to handle tied failures
+      exactm               use exact marginal-likelihood method to handle tied failures
+      exactp               use exact partial-likelihood method to handle tied failures
+
+    Time varying
+      tvc(varlist)         specify covariates to be interacted with a function of time
+      texp(exp)            specify a function of time; default is texp(_t)
+
+    SE/Robust
+      vce(vcetype)         vcetype may be oim, robust, cluster clustvar, bootstrap, or jackknife
+      noadjust             do not use standard degree-of-freedom adjustment
+
+    Reporting
+      level(#)             set confidence level; default is level(95)
+      nohr                 report coefficients, not hazard ratios
+      noshow               do not show st setting information
+      display_options      control columns and column formats, row spacing, line width, display of omitted variables and base and empty cells, and factor-variable labeling
+
+
+    Maximization
+      maximize_options     control the maximization process; seldom used
+
+      coeflegend           display legend instead of statistics
+
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    You must stset your data before using stcox; see [ST] stset.
+    varlist may contain factor variables; see fvvarlist.
+    bootstrap, by, collect, fp, jackknife, mfp, mi estimate, nestreg, statsby, stepwise, and svy are allowed; see prefix.
+    vce(bootstrap) and vce(jackknife) are not allowed with the mi estimate prefix.
+
+    estimate, shared(), efron, exactm, exactp, tvc(), texp(), vce(), and noadjust are not allowed with the svy prefix.
+    fweights, iweights, and pweights may be specified using stset; see [ST] stset. Weights are not supported with efron and exactp.  Also weights may not be specified if you are using the bootstrap prefix with the stcox command.
+    coeflegend does not appear in the dialog box.
+    See [ST] stcox postestimation for features available after estimation.
+
+
+Menu
+
+    Statistics > Survival analysis > Regression models > Cox proportional hazards (PH) model
+
+
+Description
+
+    stcox fits, via maximum likelihood, proportional hazards models on st data.  stcox can be used with single- or multiple-record or single- or multiple-failure st data.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+        Methods and formulas
+
+    The above sections are not included in this help file.
+
+
+Options
+
+        +-------+
+    ----+ Model +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    estimate forces fitting of the null model.  All Stata estimation commands redisplay results when the command name is typed without arguments.  So does stcox.  What if you wish to fit a Cox model on xb, where xb is defined as 0?  Logic says that you
+        would type stcox.  There are no explanatory variables, so there is nothing to type after the command.  Unfortunately, this looks the same as stcox typed without arguments, which is a request to redisplay results.
+
+        To fit the null model, type stcox, estimate.
+
+    strata(varnames) specifies up to five strata variables.  Observations with equal values of the strata variables are assumed to be in the same stratum. Stratified estimates (equal coefficients across strata but with a baseline hazard distinct for
+        each stratum) are then obtained.
+
+    shared(varname) specifies that a Cox model with shared frailty be fit.  Observations with equal value of varname are assumed to have shared (the same) frailty.  Across groups, the frailties are assumed to be gamma-distributed latent random effects
+        that affect the hazard multiplicatively, or, equivalently, the logarithm of the frailty enters the linear predictor as a random offset.  Think of a shared-frailty model as a Cox model for panel data.  varname is a variable in the data that
+        identifies the groups.  shared() is not allowed in the presence of delayed entries or gaps.
+
+        Shared-frailty models are discussed more in Cox regression with shared frailty of [ST] stcox.
+
+    offset(varname); see [R] Estimation options.
+
+    breslow, efron, exactm, and exactp specify the method for handling tied failures in the calculation of the log partial likelihood (and residuals). breslow is the default.  Each method is described in Treatment of tied failure times in [ST] stcox.
+        efron and the exact methods require substantially more computer time than the default breslow option. exactm and exactp may not be specified with tvc(), vce(robust), or vce(cluster clustvar).
+
+        +---------------+
+    ----+  Time varying +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    tvc(varlist) specifies the variables to be included in the model as an interaction with a function of time to form time-varying covariates. During estimation, these variables are interacted with analysis time or with a function of analysis time
+        specified in the texp() option.  This is a convenience option used to speed up calculations and to avoid having to stsplit the data over many failure times.
+
+        Most predictions are not available after estimation with tvc().  These predictions require that the data be stsplit to generate the requested information; see tvc note.
+
+    texp(exp) is used in conjunction with tvc(varlist) to specify the function of analysis time that should be used to multiply covariates specified in the tvc() option to include in the model time-varying covariates that are deterministic functions of
+        time.  For example, specifying texp(ln(_t)) would cause the covariates in the tvc() option to be multiplied by the logarithm of analysis time.  If tvc(varlist) is used without texp(exp), Stata understands that you mean texp(_t) and thus
+        multiplies the covariates by the analysis time.
+
+        Both tvc(varlist) and texp(exp) are explained more in the section on Cox regression with time-varying covariates using option tvc() in [ST] stcox.
+
+        +------------+
+    ----+  SE/Robust +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    vce(vcetype) specifies the type of standard error reported, which includes types that are derived from asymptotic theory (oim), that are robust to some kinds of misspecification (robust), that allow for intragroup correlation (cluster clustvar), and
+        that use bootstrap or jackknife methods (bootstrap, jackknife); see [R] vce_option.
+
+    noadjust is for use with vce(robust) or vce(cluster clustvar). noadjust prevents the estimated variance matrix from being multiplied by N/(N-1) or g/(g-1), where g is the number of clusters.  The default adjustment is somewhat arbitrary because it
+        is not always clear how to count observations or clusters.  In such cases, however, the adjustment is likely to be biased toward 1, so we would still recommend making it.
+
+        +------------+
+    ----+  Reporting +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    level(#); see [R] Estimation options.
+
+    nohr specifies that coefficients be displayed rather than exponentiated coefficients or hazard ratios.  This option affects only how results are displayed and not how they are estimated.  nohr may be specified at estimation time or when redisplaying
+        previously estimated results (which you do by typing stcox without a variable list).
+
+    noshow prevents stcox from showing the key st variables.  This option is seldom used because most people type stset, show or stset, noshow to set whether they want to see these variables mentioned at the top of the output of every st command; see
+        [ST] stset.
+
+    display_options:  noci, nopvalues, noomitted, vsquish, noemptycells, baselevels, allbaselevels, nofvlabel, fvwrap(#), fvwrapon(style), cformat(%fmt), pformat(%fmt), sformat(%fmt), and nolstretch; see [R] Estimation options.
+
+
+        +--------------+
+    ----+ Maximization +-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 
+    maximize_options: iterate(#), [no]log, trace, tolerance(#), ltolerance(#), and nrtolerance(#), nonrtolerance; see [R] Maximize.  These options are seldom used.
+
+    The following option is available with stcox but is not shown in the dialog box:
+
+    coeflegend; see [R] Estimation options.
+
+ 
+Examples
+
+    Example of Cox regression with uncensored data
+ 
+    Setup
+        . webuse kva
+
+    List the data
+        . list
+
+    Declare data to be survival-time data
+        . stset failtime
+
+    Fit Cox proportional hazards model
+        . stcox load bearings
+
+    Replay results, but show coefficients rather than hazard ratios
+        . stcox, nohr
+
+
+    Example of Cox regression with censored data
+
+    Setup
+        . webuse drugtr
+
+    Show st settings
+        . stset
+
+    Fit Cox proportional hazards model
+        . stcox drug age
+
+
+    Example of Cox regression with discrete time-varying covariates
+
+    Setup
+        . webuse stan3
+        . stset
+
+    Fit Cox model
+        . stcox age posttran surg year
+
+    Obtain robust estimate of variance
+        . stcox age posttran surg year, vce(robust)
+
+
+    Example of Cox regression with continuous time-varying covariates
+
+    Setup
+        . webuse drugtr2
+
+    List some of the data
+        . list in 1/12, sep(0)
+
+    Declare data to be survival-time data
+        . stset time, failure(cured)
+
+    Fit Cox model
+        . stcox age drug1 drug2
+
+    Refit model taking into account that the actual level of the drug remaining in the body diminishes exponentially with time
+        . stcox age, tvc(drug1 drug2) texp(exp(-0.35*_t))
+
+
+    Example of Cox regression with multiple-failure data
+
+    Setup
+        . webuse mfail
+
+    Fit model with robust estimate of variance
+        . stcox x1 x2, vce(robust)
+
+
+    Example of stratified estimation
+
+    Setup
+        . webuse stan3
+
+    Modify data to reflect changes in treatment 1970 and 1973
+        . generate pgroup = year
+        . recode pgroup min/69=1 70/72=2 73/max=3
+
+    Fit Cox model
+        . stcox age posttran surg year, strata(pgroup)
+
+
+    Example of Cox regression with shared frailty
+
+    Setup
+        . webuse catheter, clear
+
+    List some of the data
+        . list in 1/10
+
+    Declare data to be survival-time data
+        . stset time, fail(infect)
+
+    Fit Cox model
+        . stcox age female, shared(patient)
+
+
+    Example of Cox regression with survey data
+
+    Setup
+        . webuse nhefs
+
+    Declare survey design for data
+        . svyset psu2 [pw=swgt2], strata(strata2)
+
+    Declare data to be survival-time data
+        . stset age_lung_cancer if age_lung_cancer < . [pw=swgt2], fail(lung_cancer)
+
+    Fit Cox model taking into account that data are survey data
+        . svy: stcox former_smoker smoker male urban1 rural
+
+
+Stored results
+
+    stcox stores the following in e():
+
+    Scalars           
+      e(N)                   number of observations
+      e(N_sub)               number of subjects
+      e(N_fail)              number of failures
+      e(N_g)                 number of groups
+      e(df_m)                model degrees of freedom
+      e(r2_p)                pseudo-R-squared
+      e(ll)                  log likelihood
+      e(ll_0)                log likelihood, constant-only model
+      e(ll_c)                log likelihood, comparison model
+      e(N_clust)             number of clusters
+      e(chi2)                chi-squared
+      e(chi2_c)              chi-squared, comparison test
+      e(risk)                total time at risk
+      e(g_min)               smallest group size
+      e(g_avg)               average group size
+      e(g_max)               largest group size
+      e(theta)               frailty parameter
+      e(se_theta)            standard error of theta
+      e(p_c)                 p-value for comparison test
+      e(rank)                rank of e(V)
+      e(converged)           1 if converged, 0 otherwise
+
+    Macros            
+      e(cmd)                 cox or stcox_fr
+      e(cmd2)                stcox
+      e(cmdline)             command as typed
+      e(depvar)              _t
+      e(t0)                  _t0
+      e(wtype)               weight type
+      e(wexp)                weight expression
+      e(texp)                function of time used for covariates from option tvc()
+      e(ties)                method used for handling ties
+      e(strata)              strata variables
+      e(shared)              frailty grouping variable
+      e(clustvar)            name of cluster variable
+      e(offset)              linear offset variable
+      e(chi2type)            Wald or LR; type of model chi-squared test
+      e(vce)                 vcetype specified in vce()
+      e(vcetype)             title used to label Std. err.
+      e(method)              requested estimation method
+      e(datasignature)       the checksum
+      e(datasignaturevars)   variables used in calculation of checksum
+      e(properties)          b V
+      e(estat_cmd)           program used to implement estat
+      e(predict)             program used to implement predict
+      e(footnote)            program used to implement the footnote display
+      e(marginsnotok)        predictions disallowed by margins
+      e(asbalanced)          factor variables fvset as asbalanced
+      e(asobserved)          factor variables fvset as asobserved
+
+    Matrices          
+      e(b)                   coefficient vector
+      e(V)                   variance-covariance matrix of the estimators
+      e(V_modelbased)        model-based variance estimators
+
+    Functions         
+      e(sample)              marks estimation sample
+
+    In addition to the above, the following is stored in r():
+
+    Matrices          
+      r(table)               matrix containing the coefficients with their standard errors, test statistics, p-values, and confidence intervals
+
+    Note that results stored in r() are updated when the command is replayed and will be replaced when any r-class command is run after the estimation command.

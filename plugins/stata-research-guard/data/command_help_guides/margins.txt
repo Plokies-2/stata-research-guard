@@ -1,0 +1,670 @@
+[R] margins -- Marginal means, predictive margins, and marginal effects
+               (View complete PDF manual entry)
+
+
+Syntax
+
+        margins [marginlist] [if] [in] [weight] [, response_options options]
+
+    where marginlist is a list of factor variables or interactions that appear in the current estimation results.  The variables may be typed with or without the i. prefix, and you may use any factor-variable syntax:
+
+                . margins i.sex i.group i.sex#i.group
+
+                . margins sex group sex#i.group
+
+                . margins sex##group
+
+    response_options        Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      predict(pred_opt)     estimate margins for predict, pred_opt
+      expression(pnl_exp)   estimate margins for pnl_exp
+      dydx(varlist)         estimate marginal effect of variables in varlist
+      eyex(varlist)         estimate elasticities of variables in varlist
+      dyex(varlist)         estimate semielasticity -- d(y)/d(ln x)
+      eydx(varlist)         estimate semielasticity -- d(ln y)/d(x)
+      continuous            treat factor-level indicators as continuous
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    options                 Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      grand                 add the overall margin; default if no marginlist
+
+    At
+      at(atspec)            estimate margins at specified values of covariates
+      atmeans               estimate margins at the means of covariates
+      asbalanced            treat all factor variables as balanced
+
+    if/in/over
+      over(varlist)         estimate margins at unique values of varlist
+      subpop(subspec)       estimate margins for subpopulation
+
+    Within
+      within(varlist)       estimate margins at unique values of the nesting factors in varlist
+
+    Contrast
+      contrast_options      any options documented in [R] margins, contrast
+
+    Pairwise comparisons
+      pwcompare_options     any options documented in [R] margins, pwcompare
+
+    SE
+      vce(delta)            estimate SEs using delta method; the default
+      vce(unconditional)    estimate SEs allowing for sampling of covariates
+      nose                  do not estimate SEs
+
+    Advanced
+      noweights             ignore weights specified in estimation
+      noesample             do not restrict margins to the estimation sample
+      emptycells(empspec)   treatment of empty cells for balanced factors
+      estimtolerance(tol)   specify numerical tolerance used to determine estimable functions; default is estimtolerance(1e-5)
+      noestimcheck          suppress estimability checks
+      force                 estimate margins despite potential problems
+      chainrule             use the chain rule when computing derivatives
+      nochainrule           do not use the chain rule
+
+    Reporting
+      level(#)              set confidence level; default is level(95)
+      mcompare(method)      adjust for multiple comparisons; default is mcompare(noadjust)
+      noatlegend            suppress legend of fixed covariate values
+      post                  post margins and their VCE as estimation results
+      display_options       control columns and column formats, row spacing, line width, and factor-variable labeling
+
+      df(#)                 use t distribution with # degrees of freedom for computing p-values and confidence intervals
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    method                  Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    noadjust                do not adjust for multiple comparisons; the default
+    bonferroni [adjustall]  Bonferroni's method; adjust across all terms
+    sidak [adjustall]       Sidak's method; adjust across all terms
+    scheffe                 Scheffe's method
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    Time-series operators are allowed if they were used in the estimation.
+    See at() under Options for a description of atspec.
+    collect is allowed; see prefix.
+    fweights, aweights, iweights, and pweights are allowed; see weight.
+    df(#) does not appear in the dialog box.
+
+
+Menu
+
+    Statistics > Postestimation
+
+
+Description
+
+    Margins are statistics calculated from predictions of a previously fit model at fixed values of some covariates and averaging or otherwise integrating over the remaining covariates.
+
+    The margins command estimates margins of responses for specified values of covariates and presents the results as a table.
+
+    Capabilities include estimated marginal means (also called least-squares means); adjusted predictions and adjusted treatment means; predictive margins (also called potential-outcome means); average and conditional adjusted predictions; and average
+    and conditional marginal and partial effects, which may be reported as derivatives or as elasticities.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+        Methods and formulas
+
+    The above sections are not included in this help file.
+
+
+Options
+
+    Warning:  The option descriptions are brief and use jargon.  Skip to Remarks and examples in [R] margins if you are reading about margins for the first time.
+
+        +------+
+    ----+ Main +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    predict(pred_opt) and expression(pnl_exp) are mutually exclusive; they specify the response.  If neither is specified, the response will be the default prediction that would be produced by predict after the underlying estimation command.  Some
+        estimation commands, such as mlogit, document a different default prediction for margins than for predict.
+
+        predict(pred_opt) specifies the option(s) to be specified with the predict command to produce the variable that will be used as the response.  After estimation by logistic, you could specify predict(xb) to obtain linear predictions rather than
+            the predict command's default, the probabilities.
+
+            Multiple predict() options can be specified to compute margins of multiple predictions simultaneously.
+
+        expression(pnl_exp) specifies the response as an expression.  See Description and Remarks and examples in [R] predictnl for a full description of pnl_exp.  After estimation by logistic, you might specify expression(exp(predict(xb))) to use
+            relative odds rather than probabilities as the response.  For examples, see Example 12: Margins of a specified expression in [R] margins.
+
+    dydx(varlist), eyex(varlist), dyex(varlist), and eydx(varlist) request that margins report derivatives of the response with respect to varlist rather than on the response itself.  eyex(), dyex(), and eydx() report derivatives as elasticities; see
+        Expressing derivatives as elasticities in [R] margins.
+
+    continuous is relevant only when one of dydx() or eydx() is also specified.  It specifies that the levels of factor variables be treated as continuous; see Derivatives versus discrete differences in [R] margins.  This option is implied if there is a
+        single-level factor variable specified in dydx() or eydx().
+
+    grand specifies that the overall margin be reported.  grand is assumed when marginlist is empty.
+
+        +----+
+    ----+ At +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    at(atspec) specifies values for covariates to be treated as fixed.  By default, margins are calculated using observed values of covariates.
+
+        at(age=20) fixes covariate age to the value specified.  at() may be used to fix continuous or factor covariates.
+
+        at(age=20 sex=1) simultaneously fixes covariates age and sex at the values specified.
+
+        at(age=(20 30 40 50)) fixes age first at 20, then at 30, ....  margins produces separate results for each specified value.
+
+        at(age=(20(10)50)) does the same as at(age=(20 30 40 50)); that is, you may specify a numlist.
+
+        at((mean) age  (median) distance) fixes the covariates at the summary statistics specified.  at((p25) _all) fixes all covariates at their 25th percentile values.  See Syntax of at() for the full list of summary-statistic modifiers.
+
+        at((mean) _all  (median) x  x2=1.2  z=(1 2 3)) is processed from general to specific, with settings for named covariates overriding general settings specified via _all.  Thus, all covariates are fixed at their means except for x (fixed at its
+            median), x2 (fixed at 1.2), and z (fixed first at 1, then at 2, and finally at 3).
+
+        at((means) _all  (asobserved) x2) is a convenient way to set all covariates except x2 to the mean.
+
+        Multiple at() options can be specified, and each will produce a different set of margins.
+
+        See Syntax of at() for more information.
+
+    atmeans specifies that covariates be fixed at their means and is shorthand for at((mean) _all).  atmeans differs from at((mean) _all) in that atmeans will affect subsequent at() options.  For instance,
+
+                . margins ..., atmeans  at((p25) x)  at((p75) x) 
+
+        produces two sets of margins with both sets evaluated at the means of all covariates except x.
+
+    asbalanced is shorthand for at((asbalanced) _factor) and specifies that factor covariates be evaluated as though there were an equal number of observations in each level; see Obtaining margins as though the data were balanced in [R] margins.
+        asbalanced differs from at((asbalanced) _factor) in that asbalanced will affect subsequent at() options in the same way as atmeans does.
+
+        When asbalanced is combined with the atmeans option, factor variables are treated as balanced, while continuous covariates are fixed at their means.  The resulting margin is known as an adjusted treatment mean.
+
+        +------------+
+    ----+ if/in/over +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    over(varlist) specifies that separate sets of margins be estimated for the groups defined by varlist.  The variables in varlist must contain nonnegative integer (or missing) values.  The variables need not be covariates in your model.  When over()
+        is combined with the vce(unconditional) option, each group is treated as a subpopulation; see [SVY] Subpopulation estimation.
+
+    subpop([varname] [if]) is intended for use with the vce(unconditional) option.  It specifies that margins be estimated for the single subpopulation identified by the indicator variable or by the if expression or by both.  Zero or missing indicates
+        that the observation be excluded; nonzero or nonmissing, that it be included.  See [SVY] Subpopulation estimation for why subpop() is preferred to if expressions and in ranges when also using vce(unconditional).  If subpop() is used without
+        vce(unconditional), it is treated merely as an additional if qualifier.
+
+        +--------+
+    ----+ Within +-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    within(varlist) allows for nested designs.  varlist contains the nesting variable(s) over which margins are to be estimated.  See Obtaining margins with nested designs in [R] margins.  As with over(varlist), when within(varlist) is combined with
+        vce(unconditional), each level of the variables in varlist is treated as a subpopulation.
+
+        +----------+
+    ----+ Contrast +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    contrast_options are any of the options documented in [R] margins, contrast.
+
+        +----------------------+
+    ----+ Pairwise comparisons +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    pwcompare_options are any of the options documented in [R] margins, pwcompare.
+
+        +----+
+    ----+ SE +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    vce(delta) and vce(unconditional) specify how the VCE and, correspondingly, standard errors are calculated.
+
+        vce(delta) is the default.  The delta method is applied to the formula for the response and the VCE of the estimation command.  This method assumes that values of the covariates used to calculate the response are given or, if all covariates are
+            not fixed using at(), that the data are given.
+
+        vce(unconditional) specifies that the covariates that are not fixed be treated in a way that accounts for their having been sampled.  The VCE is estimated using the linearization method.  This method allows for heteroskedasticity or other
+            violations of distributional assumptions and allows for correlation among the observations in the same manner as vce(robust) and vce(cluster ...), which may have been specified with the estimation command.  This method also accounts for
+            complex survey designs if the data are svyset. See Obtaining margins with survey data and representative samples in [R] margins.  When you use complex survey data, this method requires that the linearized variance estimation method be used
+            for the model.  See [SVY] svy postestimation for an example of margins with replication-based methods.
+
+    nose suppresses calculation of the VCE and standard errors.  See Requirements for model specification in [R] margins for an example of the use of this option.
+
+        +----------+
+    ----+ Advanced +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    noweights specifies that any weights specified on the previous estimation command be ignored by margins.  By default, margins uses the weights specified on the estimator to average responses and to compute summary statistics.  If weights are
+        specified on the margins command, they override previously specified weights, making it unnecessary to specify noweights.  The noweights option is not allowed after svy: estimation when the vce(unconditional) option is specified.
+
+        For multilevel models, such as meglm, the default behavior is to construct a single weight value for each observation by multiplying the corresponding multilevel weights within the given observation.
+
+    noesample specifies that margins not restrict its computations to the estimation sample used by the previous estimation command.  See Example 15: Margins evaluated out of sample in [R] margins.
+
+        With the default delta-method VCE, noesample margins may be estimated on samples other than the estimation sample; such results are valid under the assumption that the data used are treated as being given.
+
+        You can specify noesample and vce(unconditional) together, but if you do, you should be sure that the data in memory correspond to the original e(sample).  To show that you understand that, you must also specify the force option.  Be aware that
+        making the vce(unconditional) calculation on a sample different from the estimation sample would be equivalent to estimating the coefficients on one set of data and computing the scores used by the linearization on another set; see [P] _robust.
+
+    emptycells(strict) and emptycells(reweight) are relevant only when the asbalanced option is also specified.  emptycells() specifies how empty cells are handled in interactions involving factor variables that are being treated as balanced; see
+        Obtaining margins as though the data were balanced in [R] margins.
+
+        emptycells(strict) is the default; it specifies that margins involving empty cells be treated as not estimable.
+
+        emptycells(reweight) specifies that the effects of the observed cells be increased to accommodate any missing cells.  This makes the margin estimable but changes its interpretation.  emptycells(reweight) is implied when the within() option is
+            specified.
+
+    estimtolerance(tol) specifies the numerical tolerance used to determine estimable functions.  The default is estimtolerance(1e-5).
+
+        A linear combination of the model coefficients z is found to be not estimable if
+
+            mreldif(z, z*H) > tol
+
+        where H is defined in Methods and formulas.
+
+    noestimcheck specifies that margins not check for estimability.  By default, the requested margins are checked and those found not estimable are reported as such.  Nonestimability is usually caused by empty cells.  If noestimcheck is specified,
+        estimates are computed in the usual way and reported even though the resulting estimates are manipulable, which is to say they can differ across equivalent models having different parameterizations.  See Estimability of margins in [R] margins.
+
+    force instructs margins to proceed in some situations where it would otherwise issue an error message because of apparent violations of assumptions.  Do not be casual about specifying force.  You need to understand and fully evaluate the statistical
+        issues.  For an example of the use of force, see Using margins after the estimates use command in [R] margins.
+
+    chainrule and nochainrule specify whether margins uses the chain rule when numerically computing derivatives.  You need not specify these options when using margins after any official Stata estimator; margins will choose the appropriate method
+        automatically.
+
+        Specify nochainrule after estimation by a community-contributed command.  We recommend using nochainrule, even though chainrule is usually safe and is always faster.  nochainrule is safer because it makes no assumptions about how the parameters
+        and covariates join to form the response.
+
+        nochainrule is implied when the expression() option is specified.
+
+        +-----------+
+    ----+ Reporting +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    level(#) specifies the confidence level, as a percentage, for confidence intervals.  The default is level(95) or as set by set level.
+
+    mcompare(method) specifies the method for computing p-values and confidence intervals that account for multiple comparisons within a factor-variable term.
+
+        Most methods adjust the comparisonwise error rate, alpha_c, to achieve a prespecified experimentwise error rate, alpha_e.
+
+        mcompare(noadjust) is the default; it specifies no adjustment.
+
+                                                                                                                       alpha_c = alpha_e
+
+        mcompare(bonferroni) adjusts the comparisonwise error rate based on the upper limit of the Bonferroni inequality
+
+                                                                                                                     alpha_e <= m * alpha_c
+
+            where m is the number of comparisons within the term.
+
+            The adjusted comparisonwise error rate is
+
+                                                                                                                      alpha_c = alpha_e/m
+
+        mcompare(sidak) adjusts the comparisonwise error rate based on the upper limit of the probability inequality
+
+                                                                                                                alpha_e <= 1 - (1 - alpha_c)^m
+
+            where m is the number of comparisons within the term.
+
+            The adjusted comparisonwise error rate is
+
+                                                                                                               alpha_c = 1 - (1 - alpha_e)^(1/m)
+
+            This adjustment is exact when the m comparisons are independent.
+
+        mcompare(scheffe) controls the experimentwise error rate using the F or chi-squared distribution with degrees of freedom equal to the rank of the term.
+
+        mcompare(method adjustall) specifies that the multiple-comparison adjustments count all comparisons across all terms rather than performing multiple comparisons term by term. This leads to more conservative adjustments when multiple variables or
+            terms are specified in marginslist.  This option is compatible only with the bonferroni and sidak methods.
+
+    noatlegend specifies that the legend showing the fixed values of covariates be suppressed.
+
+    post causes margins to behave like a Stata estimation (e-class) command.  margins posts the vector of estimated margins along with the estimated variance-covariance matrix to e(), so you can treat the estimated margins just as you would results from
+        any other estimation command.  For example, you could use test to perform simultaneous tests of hypotheses on the margins, or you could use lincom to create linear combinations.  See Example 10: Testing margins -- contrasts of margins in [R]
+        margins.
+
+    display_options:  noci, nopvalues, vsquish, nofvlabel, fvwrap(#), fvwrapon(style), cformat(%fmt), pformat(%fmt), sformat(%fmt), and nolstretch.
+
+        noci suppresses confidence intervals from being reported in the coefficient table.
+
+        nopvalues suppresses p-values and their test statistics from being reported in the coefficient table.
+
+        vsquish specifies that the blank space separating factor-variable terms or time-series-operated variables from other variables in the model be suppressed.
+
+        nofvlabel displays factor-variable level values rather than attached value labels.  This option overrides the fvlabel setting; see [R] set showbaselevels.
+
+        fvwrap(#) allows long value labels to wrap the first # lines in the coefficient table.  This option overrides the fvwrap setting; see [R] set showbaselevels.
+
+        fvwrapon(style) specifies whether value labels that wrap will break at word boundaries or break based on available space.
+
+            fvwrapon(word), the default, specifies that value labels break at word boundaries.
+
+            fvwrapon(width) specifies that value labels break based on available space.
+
+            This option overrides the fvwrapon setting; see [R] set showbaselevels.
+
+        cformat(%fmt) specifies how to format margins, standard errors, and confidence limits in the table of estimated margins.
+
+        pformat(%fmt) specifies how to format p-values in the table of estimated margins.
+
+        sformat(%fmt) specifies how to format test statistics in the table of estimated margins.
+
+        nolstretch specifies that the width of the table of estimated margins not be automatically widened to accommodate longer variable names. The default, lstretch, is to automatically widen the table of estimated margins up to the width of the
+            Results window.  Specifying lstretch or nolstretch overrides the setting given by set lstretch.  If set lstretch has not been set, the default is lstretch.  nolstretch is not shown in the dialog box.
+
+    The following option is available with margins but is not shown in the dialog box:
+
+    df(#) specifies that the t distribution with # degrees of freedom be used for computing p-values and confidence intervals.  The default typically is to use the standard normal distribution.  However, if the estimation command computes the residual
+        degrees of freedom (e(df_r)) and predict(xb) is specified with margins, the default is to use the t distribution with e(df_r) degrees of freedom.
+
+
+Examples
+
+    These examples are intended for quick reference.  For a conceptual overview of margins and examples with discussion see Remarks and examples in [R] margins.
+
+
+Examples: obtaining margins of responses
+
+    Setup
+        . webuse margex
+
+    A simple case after regress
+        . regress y i.sex i.group
+        . margins sex
+
+    A simple case after logistic
+        . logistic outcome i.sex i.group
+        . margins sex
+
+    Average response versus response at average
+        . margins sex
+        . margins sex, atmeans
+
+    Multiple margins from one margins command
+        . margins sex group
+
+    Margins with interaction terms
+        . logistic outcome i.sex i.group sex#group
+        . margins sex group
+
+    Margins with continuous variables
+        . logistic outcome i.sex i.group sex#group age
+        . margins sex group
+
+    Margins of continuous variables
+        . logistic outcome i.sex i.group sex#group age
+        . margins sex group
+        . margins, at(age=40)
+        . margins, at(age=(30 35 40 45 50))
+            Or, equivalently
+        . margins, at(age=(30(5)50))
+
+    Margins of interactions
+        . margins sex#group
+
+    Margins of a specified prediction
+        . tobit ycn i.sex i.group sex#group age, ul(90)
+        . margins sex, predict(ystar(.,90))
+
+    Margins of a specified expression
+        . margins sex, expression( predict(ystar(.,90)) / predict(xb) )
+
+    Margins with multiple outcomes (responses)
+        . mlogit group i.sex age
+        . margins sex
+        . margins sex, predict(outcome(1))
+
+    Margins with multiple equations
+        . sureg (y = i.sex age) (distance = i.sex i.group)
+        . margins sex
+        . margins sex, predict(equation(y))
+        . margins sex, expression(predict(equation(y)) - predict(equation(distance)))
+
+    Margins evaluated out of sample
+        . webuse margex
+        . tobit ycn i.sex i.group sex#group age, ul(90)
+        . webuse peach
+        . margins sex, predict(ystar(.,90)) noesample
+
+
+Examples: obtaining marginal effects
+
+    Setup
+        . webuse margex
+        . logistic outcome treatment##group age c.age#c.age treatment#c.age
+
+    Average marginal effect (partial effects) of one covariate
+        . margins, dydx(treatment)
+
+    Average marginal effects of all covariates
+        . margins, dydx(*)
+
+    Marginal effects evaluated over the response surface
+        . margins group, dydx(treatment) at(age=(20(10)60))
+
+
+Examples: obtaining margins with survey data and representative samples
+
+    Inferences for populations, margins of response
+        . webuse margex
+        . logistic outcome i.sex i.group sex#group age, vce(robust)
+        . margins sex group, vce(unconditional)
+
+    Inferences for populations, marginal effects
+        . margins, dydx(*) vce(unconditional)
+
+    Inferences for populations with svyset data
+        . webuse nhanes2
+        . svyset
+        . svy: logistic highbp sex##agegrp##c.bmi
+        . margins agegrp, vce(unconditional)
+
+
+Examples: obtaining margins as though the data were balanced
+
+    Setup
+        . webuse acmemanuf
+
+    Balancing using asbalanced
+        . regress y pressure##temp
+        . margins, asbalanced
+
+    Balancing nonlinear responses
+        . logistic acceptable pressure##temp
+        . margins, asbalanced
+
+    Treating a subset of covariates as balanced
+        . webuse margex
+        . regress y arm##sex sex##agegroup
+        . margins, at((asbalanced) arm)
+        . margins, at((asbalanced) arm agegroup)
+        . margins, at((asbalanced) arm agegroup sex)
+
+    Balancing in the presence of empty cells
+        . webuse estimability
+        . regress y sex##group
+        . margins sex, asbalanced
+        . margins sex, asbalanced emptycells(reweight)
+
+
+Video examples
+
+    Introduction to margins, part 1: Categorical variables
+
+    Introduction to margins, part 2: Continuous variables
+
+    Introduction to margins, part 3: Interactions
+
+
+Addendum: Syntax of at()
+
+    In option at(atspec), atspec may contain one or more of the following specifications:
+
+            varlist
+
+            (stat) varlist
+
+            varname = #
+
+            varname = (numlist)
+
+            varname = generate(exp)
+
+    where
+
+            1. varnames must be covariates in the current estimation results.
+
+            2. Variable names (whether in varname or varlist) may be continuous variables, factor variables, or virtual level variables, such as age, group, or 3.group.
+
+            3. varlist may also be one of three standard lists:
+                   a. _all (all covariates),
+                   b. _factor (all factor-variable covariates), or
+                   c. _continuous (all continuous covariates).
+
+            4. stat can be any of the following:
+
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                                                                  Variables
+    stat              Description                                 allowed
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    asobserved        at observed values in the sample (default)  all
+    mean              means (default for varlist)                 all
+    median            medians                                     continuous
+    p1                1st percentile                              continuous
+    p2                2nd percentile                              continuous
+    ...               3rd-49th percentiles                        continuous
+    p50               50th percentile (same as median)            continuous
+    ...               51st-97th percentiles                       continuous
+    p98               98th percentile                             continuous
+    p99               99th percentile                             continuous
+    min               minimums                                    continuous
+    max               maximums                                    continuous
+    zero              fixed at zero                               continuous
+    base              base level                                  factors
+    asbalanced        all levels equally probable and sum to 1    factors
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+               Any stat except zero, base, and asbalanced may be prefixed with an o to get the overall statistic -- the sample over all over() groups.  For example, omean, omedian, and op25.  Overall statistics differ from their correspondingly named
+               statistics only when the over() or within() option is specified.  When no stat is specified, mean is assumed.  If stat is not followed by a varlist, stat is ignored.
+
+    atspec can involve multiple settings for one covariate as well as settings for multiple covariates. The following rules are applied when more than one covariate or value is included:
+
+        1. When more than one covariate is referenced in atspec but each covariate is set to only one value, all settings are applied in combination.  For example, at(x1=5 x2=0) results in margins being estimated under one scenario, with x1 set to 5, x2
+           set to 0, and all other covariates set to their observed values (the default).
+
+        2. When multiple values are specified for a covariate, the covariate will be set to each of the values in turn.  For example, at(x1=5 x1=10) or, equivalently, at(x1=(5 10)) specifies that x1 be set first to 5 and then to 10.
+
+        3. When multiple values are specified for more than one covariate, all possible combinations of settings are applied in turn.  For example, at(x1=(5 10) x2=(0 1)) results in margins being estimated under four scenarios: (x1=5 x2=0), (x1=5 x2=1),
+           (x1=10 x2=0), and (x1=10 x2=1).
+
+        4. Settings may be specified for groups of covariates using three general varlists -- _all, _factor, and _continuous.  When atspec includes both specifications with general varlists and specifications with named covariates, the specifications
+           for named covariates take precedence over general ones.  For example, at(x1=10 (means) _all) sets x1 to 10 while setting all other covariates to their means.
+
+        5. Only one (stat) varlist specification can be applied to a covariate.  If more than one is specified, the rightmost specification is respected.  For example, at((means) x1 x2 (medians) x1 x2) sets both x1 and x2 to their medians.
+
+        6. When both a (stat) specification and another specification are included for a named covariate, the other specification takes precedence.  For example, at(x1=5 (means) x1) sets x1 to 5.
+
+    In addition, at() can be repeated.  When multiple at() options are specified, atspecs are processed sequentially. For instance, at(x1=5) at(x2=0) results in margins being estimated under two scenarios. The first sets x1 to 5 and all other
+    covariates, including x2, to their observed values.  The second sets x2 to 0 and all other covariates to their observed values.  Note that this is different from the single at(x1=5 x2=0) specification, which sets x1 and x2 to the specified values
+    simultaneously.
+
+
+Stored results
+
+    margins stores the following in r():
+
+    Scalars        
+      r(N)                number of observations
+      r(N_sub)            subpopulation observations
+      r(N_clust)          number of clusters
+      r(N_psu)            number of sampled PSUs, survey data only
+      r(N_strata)         number of strata, survey data only
+      r(df_r)             variance degrees of freedom, survey data only
+      r(N_poststrata)     number of post strata, survey data only
+      r(k_predict)        number of predict() options
+      r(k_margins)        number of terms in marginlist
+      r(k_by)             number of subpopulations
+      r(k_at)             number of at() options
+      r(level)            confidence level of confidence intervals
+
+    Macros         
+      r(cmd)              margins
+      r(cmdline)          command as typed
+      r(est_cmd)          e(cmd) from original estimation results
+      r(est_cmdline)      e(cmdline) from original estimation results
+      r(title)            title in output
+      r(subpop)           subspec from subpop()
+      r(model_vce)        vcetype from estimation command
+      r(model_vcetype)    Std. err. title from estimation command
+      r(vce)              vcetype specified in vce()
+      r(vcetype)          title used to label Std. err.
+      r(clustvar)         name of cluster variable
+      r(margins)          marginlist
+      r(predict#_opts)    the #th predict() option
+      r(predict#_label)   label from the #th predict() option
+      r(expression)       response expression
+      r(xvars)            varlist from dydx(), dyex(), eydx(), or eyex()
+      r(derivatives)      "", "dy/dx", "dy/ex", "ey/dx", or "ey/ex"
+      r(over)             varlist from over()
+      r(within)           varlist from within()
+      r(by)               union of r(over) and r(within) lists
+      r(by#)              interaction notation identifying the #th subpopulation
+      r(atstats#)         the #th at() specification
+      r(emptycells)       empspec from emptycells()
+      r(mcmethod)         method from mcompare()
+      r(mcadjustall)      adjustall or empty
+
+    Matrices       
+      r(b)                estimates
+      r(V)                variance-covariance matrix of the estimates
+      r(Jacobian)         Jacobian matrix
+      r(_N)               sample size corresponding to each margin estimate
+      r(at)               matrix of values from the at() options
+      r(chainrule)        chain rule information from the fitted model
+      r(error)            margin estimability codes;
+                            0 means estimable,
+                            8 means not estimable
+      r(table)            matrix containing the margins with their standard errors, test statistics, p-values, and confidence intervals
+
+
+    margins with the post option also stores the following in e():
+
+    Scalars        
+      e(N)                number of observations
+      e(N_sub)            subpopulation observations
+      e(N_clust)          number of clusters
+      e(N_psu)            number of sampled PSUs, survey data only
+      e(N_strata)         number of strata, survey data only
+      e(df_r)             variance degrees of freedom, survey data only
+      e(N_poststrata)     number of post strata, survey data only
+      e(k_predict)        number of predict() options
+      e(k_margins)        number of terms in marginlist
+      e(k_by)             number of subpopulations
+      e(k_at)             number of at() options
+
+    Macros         
+      e(cmd)              margins
+      e(cmdline)          command as typed
+      e(est_cmd)          e(cmd) from original estimation results
+      e(est_cmdline)      e(cmdline) from original estimation results
+      e(wtype)            weight type
+      e(wexp)             weight expression
+      e(title)            title in estimation output
+      e(subpop)           subspec from subpop()
+      e(model_vce)        vcetype from estimation command
+      e(model_vcetype)    Std. err. title from estimation command
+      e(vce)              vcetype specified in vce()
+      e(vcetype)          title used to label Std. err.
+      e(clustvar)         name of cluster variable
+      e(properties)       b V, or just b if nose is specified
+      e(margins)          marginlist
+      e(asbalanced)       factor variables fvset as asbalanced
+      e(asobserved)       factor variables fvset as asobserved
+      e(predict#_opts)    the #th predict() option
+      e(predict#_label)   label from the #th predict() option
+      e(expression)       prediction expression
+      e(xvars)            varlist from dydx(), dyex(), eydx(), or eyex()
+      e(derivatives)      "", "dy/dx", "dy/ex", "ey/dx", or "ey/ex"
+      e(over)             varlist from over()
+      e(within)           varlist from within()
+      e(by)               union of r(over) and r(within) lists
+      e(by#)              interaction notation identifying the #th subpopulation
+      e(atstats#)         the #th at() specification
+      e(emptycells)       empspec from emptycells()
+
+    Matrices       
+      e(b)                estimates
+      e(V)                variance-covariance matrix of the estimates
+      e(Jacobian)         Jacobian matrix
+      e(_N)               sample size corresponding to each margin estimate
+      e(error)            error code corresponding to e(b)
+      e(at)               matrix of values from the at() options
+      e(chainrule)        chain rule information from the fitted model
+
+    Functions      
+      e(sample)           marks estimation sample

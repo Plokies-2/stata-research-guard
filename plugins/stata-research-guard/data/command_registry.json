@@ -503,19 +503,20 @@
       "stages": [
         "estimation"
       ],
-      "role": "Fit OLS regression with two-way cluster-robust standard errors.",
+      "role": "Fit OLS regression with one or more cluster dimensions using multiway cluster-robust standard errors.",
       "capabilities": [
-        "estimate a linear cross-section specification while accounting for two nonnested clustering dimensions"
+        "estimate a linear cross-section specification while accounting for an arbitrary number of clustering dimensions",
+        "optionally use the largest diagonal variance estimate from OLS, robust, and each one-way cluster calculation"
       ],
       "required_input_state": [
-        "A linear cross-section OLS specification and identifiers for two clustering dimensions."
+        "A linear OLS specification and at least one clustering variable supplied in cluster(varlist)."
       ],
       "output_interface": [
-        "OLS regression results with a two-way cluster-robust covariance; the exact stored-result interface is not established by an authoritative guide"
+        "e-class OLS results with the adjusted covariance, cluster metadata, e(b), e(V), e(sample), fit statistics, and a Wald chi-squared statistic"
       ],
       "tradeoffs_and_incompatibilities": [
-        "The maintainer overview identifies cgmreg for OLS and points instrumental-variables work to ivreg2.",
-        "Complete authoritative command help is unavailable, so exact syntax, options, and stored results remain unresolved and Phase 2 must fail closed."
+        "The maintained distribution does not allow pweights and documents cgmreg for linear OLS rather than instrumental-variables estimation.",
+        "The available help belongs to Judson Caskey's maintained distribution and may differ from an older original-author cgmreg.ado copied without its matching help file."
       ]
     },
     {
@@ -1758,7 +1759,7 @@
       "required_input_state": [],
       "output_interface": [],
       "tradeoffs_and_incompatibilities": [
-        "The Phase 2 full guide is unavailable; if this command is required, generation must abort rather than infer syntax, behavior, or a substitute command.",
+        "Phase 2 help and a retained full manual are unavailable; if this command is required, the missing grammar must be reported rather than inferred from paper code, implementation code, memory, or a substitute command.",
         "This is an explicit unavailable sentinel rather than a functional label and must remain coupled with guide_available=false during canonical integration."
       ]
     },

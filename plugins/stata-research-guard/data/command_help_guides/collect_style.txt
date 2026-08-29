@@ -1,0 +1,2081 @@
+===== Help topic: collect_style__cons =====
+
+[TABLES] collect style _cons -- Collection styles for intercept position
+                                (View complete PDF manual entry)
+
+
+Syntax
+
+        collect style _cons {first | last} [, name(cname)]
+
+    where cname is a collection name.
+
+
+Menu
+
+    Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+
+Description
+
+    collect style _cons specifies the position of the intercept for estimation results included in tables.  The intercept may be placed at the end of the list of covariates or at the beginning.
+
+
+Links to PDF documentation
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Option
+
+    name(cname) specifies a collection cname to which the style for the intercept position is applied.  By default, the style is applied to the current collection.
+
+
+Example
+
+    Setup
+        . collect clear
+        . webuse nhanes2
+        . collect _r_b: regress bpsystol i.agegrp
+        . collect layout (result) (colname)
+
+    Display regression constant first instead of last and preview table
+        . collect style _cons first
+        . collect preview
+
+
+Stored results
+
+    collect style _cons stores the following in s():
+
+    Macros            
+      s(collection)          name of collection
+
+===== Help topic: collect_style_autolevels =====
+
+[TABLES] collect style autolevels -- Collection styles for automatic dimension levels
+                                     (View complete PDF manual entry)
+
+Syntax
+
+        collect style autolevels dim [levels] [, name(cname) clear]
+
+    where cname is a collection name, dim is a dimension in the specified collection, and levels specifies one or more levels of this dimension.
+
+
+Menu
+
+    Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+
+Description
+
+    collect style autolevels specifies the levels of a dimension that will be automatically displayed when the dimension is included in a table.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+    name(cname) specifies a collection cname to which the style is applied.  By default, the style is applied to the current collection.
+
+    clear removes existing collect style autolevels properties.
+
+
+Example
+
+    Setup
+        . collect clear
+        . webuse nhanes2
+        . collect: regress bpsystol age weight
+        . collect: regress bpsystol age weight c.age#c.weight
+        . collect: logit diabetes age weight c.age#c.weight i.region
+
+    Specify that coefficients and confidence intervals be displayed automatically when including the dimension result in the table.  Then, lay out separate tables for each model fit.
+        . collect style autolevels result _r_b _r_ci
+        . collect layout (colname) (result) (cmdset)
+
+    Clear the automatic levels for the dimension result, and then preview the tables
+        . collect style autolevels result, clear
+        . collect preview
+
+
+Stored results
+
+    collect style autolevels stores the following in s():
+
+    Macros            
+      s(collection)          name of collection
+      s(dimname)             specified dimension
+      s(levels)              specified dimension levels
+
+===== Help topic: collect_style_cell =====
+
+[TABLES] collect style cell -- Collection styles for cells
+                               (View complete PDF manual entry)
+
+
+Syntax
+
+        collect style cell [taglist] [, options]
+
+    taglist is a list of tags that identify table cells to which styles are to be applied.  Within the taglist, if tags are joined by #, cells identified by all of these specified tags are selected; if tags are separated by a space, cells identified by
+        any of these tags are selected.  If no taglist is specified, styles are applied to all cells.
+
+        taglist contains
+
+            tagspec
+
+            tagspec taglist
+
+        tagspec contains
+
+            tag
+
+            tag#tag[#tag[...]]
+
+        tag contains
+
+            dimension
+
+            dimension[levels]
+
+        dimension is a dimension in the collection.
+
+        levels are levels of the corresponding dimension.
+
+        Distinguish between [], which are to be typed, and [], which indicate optional arguments.
+
+    options                              Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      name(cname)                        apply cell appearance styles to collection cname
+      basestyle                          update base style
+      [no]warn                           display or suppress notes about tags that are not recognized; default is to display
+
+    Borders
+      border(bspec)                      set pattern, color, and width for cell border; option may be repeated
+
+    Diagonals
+      dborder(dbspec)                    set direction, pattern, and color for cell diagonal border
+
+    Fonts
+      font([fontfamily][, font_opts])    set font style for cell text
+      smcl(smcl)                         specify formatting for SMCL files
+      latex(latex)                       specify LaTeX macro
+
+    Shading
+      shading(sspec)                     set background color, foreground color, and fill pattern for cells
+
+    Margins
+      margin(mspec)                      set margins for cells; option may be repeated
+
+    Alignments
+      halign(hvalue)                     set horizontal alignment for cells
+      valign(vvalue)                     set vertical alignment for cells
+
+    Formats
+      nformat(%fmt)                      specify numeric format for cell text
+      sformat(sfmt)                      specify string format for cell text
+      minimum([#][, label(string)])      specify minimum value to report
+      maximum([#][, label(string)])      specify maximum value to report
+      empty(string)                      specify text to place in empty cells
+      cidelimiter(char)                  use character as delimiter for confidence interval limits
+      cridelimiter(char)                 use character as delimiter for credible interval limits
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    font_opts             Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    size(# [unit])        specify font size
+    color(color)          specify font color
+    variant(variant)      specify font variant and capitalization
+    [no]bold              specify whether to format text as bold
+    [no]italic            specify whether to format text as italic
+    [no]strikeout         specify whether to strike out text
+    underline(upattern)   specify whether to underline text
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    bspec is
+
+        [borders] [, width(bwidth) pattern(bpattern) color(bcolor)]
+
+            borders specifies one or more border locations and identifies where to apply the border style edits.
+
+            bwidth is defined as #[unit] and specifies the border line width.  If # is specified without the optional unit, points is assumed.
+
+            bpattern is a keyword specifying the look of the border.  The default is single.  For a complete list of border patterns, see Border patterns of [TABLES] Appendix.  To remove an existing border, specify nil as the bpattern.
+
+            bcolor specifies the border color.
+
+    dbspec is
+
+        direction [, pattern(dbpattern) color(dbcolor)]
+
+            direction specifies the diagonal border direction and may be one of down, up, or both.
+
+            dbpattern is a keyword specifying the look of the diagonal border.  The default is thin.  For a complete list of diagonal border patterns, see Diagonal border patterns of [TABLES] Appendix.
+
+            dbcolor specifies the diagonal border line color.
+
+    sspec is
+
+        [background(bgcolor) foreground(fgcolor) pattern(fpattern)]
+
+            bgcolor specifies the background color.
+
+            fgcolor specifies the foreground color.
+
+            fpattern specifies the fill pattern.  A complete list of fill patterns is shown in Shading patterns of [TABLES] Appendix.
+
+    fontfamily specifies a valid font family.
+
+    unit may be in (inch), pt (point), or cm (centimeter).  An inch is equivalent to 72 points and 2.54 centimeters.  The default is pt.
+
+    variant may be allcaps, smallcaps, or normal.
+
+        variant(allcaps) changes the text to all uppercase letters; applicable when publishing items from a collection to Microsoft Word, PDF, LaTeX, and HTML files.
+
+        variant(smallcaps) changes the text to use large capitals for uppercase letters and smaller capitals for lowercase letters; applicable when publishing items from a collection to Microsoft Word, LaTeX, and HTML files.
+
+        variant(normal) changes the font variant back to normal and leaves the capitalization unchanged from the original text; applicable when publishing items from a collection to Microsoft Word, PDF, LaTeX, and HTML files.
+
+
+    bcolor, dbcolor, bgcolor, fgcolor, and color may be one of the colors listed in Colors of [TABLES] Appendix; a valid RGB value in the form ### ### ###, for example, 171 248 103; or a valid RRGGBB hex value in the form ######, for example, ABF867.
+
+
+Menu
+
+    Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+
+Description
+
+    collect style cell specifies the cell appearance styles in the collection.  This includes numeric formats, borders, bolding, italics, font, text color, cell color, margins, justification, and more.  These styles can be applied to all cells in the
+    collection, to cells of a particular dimension, or to specific cells of a particular dimension.  Certain appearance edits can be rendered only on certain export formats.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+        +------+
+    ----+ Main +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    name(cname) specifies a collection cname to which appearance styles are applied.
+
+    basestyle indicates that the appearance styles be applied to the base style, instead of overriding the current style for the specified cells.
+
+        Each cell begins with baseline style properties.  (You can view your table with these baseline style properties by first clearing out the collection styles with collect style clear.) The appearance of the cells is then updated with any changes
+        specified in the default style used by collect and table.  Any collect style cell command you issue will override the current style for the specified cells.  If you specify the basestyle option, the style changes will instead apply to the
+        baseline style and they will not override any current style edits targeted to specific tags.
+
+        For example, suppose you have created a table with coefficients, standard errors, p-values, confidence intervals, and R-squared values.  You then format your coefficients to display only two digits after the decimal.  If you then decide to
+        format all other statistics to display only three digits, you can type collect style cell result, basestyle nformat(%9.3f) to apply this change while retaining the formatting you applied to the coefficients.
+
+    warn and nowarn control the display of notes when collect encounters a tag it does not recognize.  The notes are displayed by default unless you used set collect_warn off to suppress them.  warn specifies that collect show the notes.  nowarn
+        specifies that collect not show the notes.  These options override the collect_warn setting; see set collect_warn.
+
+        +---------+
+    ----+ Borders +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    border([borders] [, width(bwidth) pattern(bpattern) color(bcolor)]) specifies line styles for cell borders.  borders specifies one or more border locations and identifies where to apply the border style edits.  The border locations are left, right,
+        top, bottom, or all.  If borders is not specified, all is assumed.  You may change the width, pattern, and color for the border by specifying bwidth, bpattern, and bcolor.
+
+        This option may be specified multiple times in a single command to accommodate different border settings.  If multiple border() options are specified, they are applied in the order specified from left to right.  Additionally, these border style
+        properties are applicable when publishing items from a collection to all file types, except Markdown.
+
+        +-----------+
+    ----+ Diagonals +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    dborder(direction [, pattern(dbpattern) color(dbcolor)]) specifies line styles for diagonal cell borders.  The direction of the diagonal border is specified by direction, which may be down, up, or both.  Optionally, you may change the pattern and
+        color for the border by specifying dbpattern and dbcolor.
+
+        These diagonal border style properties are applicable when publishing items from a collection to a Microsoft Excel file.
+
+        +-------+
+    ----+ Fonts +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    font([fontfamily] [, size(# [unit]) color(color) variant(variant) [no]bold [no]italic [no]strikeout [no]underline underline(upattern)]) specifies the font style for the cell text.
+
+        These font style properties are applicable when publishing items from a collection to Microsoft Word, Microsoft Excel, PDF, and HTML files, unless otherwise specified.
+
+        fontfamily specifies a valid font family.  This font style property is applicable when publishing items from a collection to Microsoft Word, Microsoft Excel, PDF, and HTML files.
+
+        size(#[unit]) specifies the font size as a number optionally followed by units.  If # is specified without the optional unit, points is assumed.  This font style property is applicable when publishing items from a collection to Microsoft Word,
+            Microsoft Excel, PDF, and HTML files.
+
+        variant(variant) specifies the font variant and capitalization.
+
+        bold and nobold specify the font weight.  bold changes the font weight to bold; nobold changes the font weight back to normal.
+
+        italic and noitalic specify the font style.  italic changes the font style to italic; noitalic changes the font style back to normal.
+
+        strikeout and nostrikeout specify whether to add a strikeout mark to the text.  strikeout adds a strikeout mark to the text; nostrikeout changes the text back to normal.
+
+            Only one of strikeout or underline is allowed when publishing to HTML files.
+
+        underline(upattern), underline, and nounderline specify how to underline the text.
+
+            underline(upattern) adds an underline to the text using a specified pattern.  upattern may be any of the patterns listed in Underline patterns of [TABLES] Appendix.  For example, underline(none) removes the underline from the statistic, and
+                underline(single) underlines the statistic.  All other upatterns are available only when publishing items from a collection to Microsoft Word.
+
+            Only one of strikeout or underline is allowed when publishing to HTML files.
+
+    smcl(smcl) specifies how to render cell text for SMCL output.  The supported SMCL directives are input, error, result, and text.  This style property is applicable only when publishing items from a collection to a SMCL file.
+
+    latex(latex) specifies the name of a LaTeX macro to render cell text for LaTeX output.  This style property is applicable only when publishing items from a collection to a LaTeX file.
+
+        Example LaTeX macro names are textbf, textsf, textrm, and texttt.  Custom LaTeX macros are also allowed.  If value is the value for a given cell, then latex is translated to the following when exporting to LaTeX:
+
+            \latex{value}
+
+        +---------+
+    ----+ Shading +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    shading([background(bgcolor) foreground(fgcolor) pattern(fpattern)]) sets the background color, foreground color, and fill pattern for cells.  The background color is applicable when exporting the table to Microsoft Word, Microsoft Excel, PDF, HTML,
+        and LaTeX files.  The foreground color and fill pattern are applicable when exporting the table to Microsoft Word and Microsoft Excel.
+
+        +---------+
+    ----+ Margins +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    margin([margins] [, width(#[unit])]) specifies margins inside the cell.
+
+        These margin style properties are applicable when publishing items from a collection to PDF and HTML files.
+
+        margins specifies one or more margin locations and identifies where to apply the margin style edits.  The margin locations are left, right, top, bottom, and all.  If margins is not specified, all is assumed.
+
+        width(#[unit]) specifies the margin width as a number optionally followed by units.
+
+        +------------+
+    ----+ Alignments +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    halign(hvalue) specifies the horizontal alignment for the cell text.  hvalue may be left, center, and right.
+
+        These alignment style properties are applicable when publishing items from a collection to all file types, except Markdown.
+
+    valign(vvalue) specifies the vertical alignment for the cell text.  vvalue may be top, bottom, or center.
+
+        These alignment style properties are applicable when publishing items from a collection to all file types, except Markdown.
+
+        +---------+
+    ----+ Formats +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    nformat(%fmt) applies the Stata numeric format %fmt to cell text constructed from numeric items.
+
+    sformat(sfmt) applies a string format to cell text.  You can, for instance, add symbols or text to the values reported in the collection by modifying the string format.
+
+        sfmt may contain a mix of text and %s.  Here %s refers to the numeric value that is formatted as specified using nformat().  The text will be placed around the numeric values in the collection as it is placed around %s in this option.  For
+        instance, to place parentheses around results, you can specify sformat("(%s)").
+
+        Two text characters must be specified using a special character sequence if you want them to be displayed in your collection.  To include %, type %%.  To include \, type \\.  For instance, to place a percent sign after results, you can specify
+        sformat("%s%%").
+
+    minimum([#][, label(string)]) specifies that numeric items less than # be displayed as "<#", where # is formatted according to nformat().
+
+        If suboption label(string) is specified, then "string" is used instead of "<#".  If string contains %s, then %s is replaced by # formatted according to nformat().
+
+        If suboption label() is not specified, it effectively defaults to label("<%s").
+
+    maximum([#][, label(string)]) specifies that numeric items greater than # be displayed as ">#", where # is formatted according to nformat().
+
+        If suboption label(string) is specified, then "string" is used instead of ">#".  If string contains %s, then %s is replaced by # formatted according to nformat().
+
+        If suboption label() is not specified, it effectively defaults to label(">%s").
+
+    empty(string) specifies text to place in empty cells.
+
+    cidelimiter(char) changes the delimiter between confidence interval limits.  The default is cidelimiter(" ").
+
+    cridelimiter(char) changes the delimiter between credible interval limits.  The default is cridelimiter(" ").
+
+
+Example
+
+    Setup
+        . collect clear
+        . webuse nhanes2
+        . collect: regress bpsystol age weight
+        . collect: regress bpsystol age weight c.age#c.weight
+        . collect: logit diabetes age weight c.age#c.weight i.region
+        . collect style autolevels result _r_b _r_se _r_ci
+
+    Format all cells with numeric content to display only two digits after the decimal
+        . collect style cell, nformat(%7.2f)
+
+    Use a comma as the delimiter for the upper and lower bounds of confidence intervals, and enclose intervals in brackets
+        . collect style cell result[_r_ci], cidelimiter(,) sformat("[%s]")
+
+    Enclose standard errors in parentheses
+        . collect style cell result[_r_se], sformat("(%s)")
+
+    Lay out separate tables for each regression model
+        . collect layout (colname) (result) (cmdset)
+
+
+Stored results
+
+    collect style cell stores the following in s():
+
+    Macros            
+      s(collection)          name of collection
+
+===== Help topic: collect_style_clear =====
+
+[TABLES] collect style clear -- Clear all collection styles
+                                (View complete PDF manual entry)
+
+
+Syntax
+
+        collect style clear
+
+
+Description
+
+    collect style clear clears all collection styles defined in the current (active) collection, including the default style, and specifies that collect use an empty style.
+
+
+Links to PDF documentation
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Example
+
+    Setup
+        . collect clear
+        . webuse nhanes2
+        . collect: regress bpsystol age weight
+        . collect: regress bpsystol age weight c.age#c.weight
+        . collect: logit diabetes age weight c.age#c.weight i.region
+        . collect style autolevels result _r_b _r_ci
+        . collect style cell result[_r_ci], cidelimiter(,)
+        . collect style cell result[_r_b _r_ci], nformat(%8.3f)
+        . collect layout (colname) (cmdset#result)
+
+    Clear all collection styles and preview the table
+        . collect style clear
+        . collect preview
+
+
+Stored results
+
+    collect style clear stores the following in s():
+
+    Macros            
+      s(collection)          name of collection
+
+===== Help topic: collect_style_column =====
+
+[TABLES] collect style column -- Collection styles for column headers
+                                 (View complete PDF manual entry)
+
+
+Syntax
+
+        collect style column [, options]
+
+    options                    Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      name(cname)              specify column header styles for collection cname
+      nodelimiter              place factor-variable and interaction elements in separate cells without a delimiter
+      delimiter(delim)         use delim to delimit interaction terms composed in a single cell
+      atdelimiter(atdelim)     use atdelim to delimit interaction terms containing the @ symbol
+      bardelimiter(bardelim)   use bardelim to delimit interaction terms containing the | symbol
+      binder(binder)           use binder to separate factor variables from their levels
+      dups(dups)               specify how duplicate headers are displayed
+      position(colpos)         specify the position of the column header to be filled first
+
+    SMCL/Text
+      extraspace(#)            specify the number of extra spaces between columns in SMCL and plain text
+      width(widthspec)         specify how to distribute column widths
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Menu
+
+    Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+
+Description
+
+    collect style column specifies column header style properties.  collect style column determines how factor variables are displayed in column headers, how duplicates are reported, whether headers are filled from top to bottom or from bottom to top,
+    and the width and spacing of columns.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+        +------+
+    ----+ Main +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    name(cname) specifies the collection to which column header style properties are to be applied.  By default, properties are applied to the current collection.
+
+    nodelimiter, delimiter(), atdelimiter(), and bardelimiter() control how to compose factor-variable and interaction terms in headers.
+
+        nodelimiter specifies that factor-variable and interaction term elements (matrix stripe elements) be split into separate cells.
+
+        delimiter(delim) specifies that factor-variable and interaction term elements (matrix stripe elements) be composed in a single cell.
+
+            The variables in an interaction term are composed in a single cell using delim as the delimiter.
+
+            Factor-variable terms serve as their own dimension nested within the stripe dimensions coleq, colname, roweq, and rowname.  Option binder() controls how levels of factor variables are composed within a single cell.
+
+        atdelimiter(atdelim) specifies that atdelim be used to delimit interaction terms containing the @ symbol.  This option is applicable when, for example, working with results from contrast, mean, proportion, ratio, and total.
+
+        bardelimiter(bardelim) specifies that bardelim be used to delimit interaction terms containing the | symbol.  This option is applicable when, for example, working with results from anova and manova.
+
+    binder(binder) specifies how to compose levels of factor variables within a single cell.  binder will be used to separate factor variables from their levels.
+
+        The binder will be applied as long as the factor variable and its levels are not hidden.  Note that the default style used by collect, which is style-default.stjson, will hide the dimension title from the headers.  You can use collect style
+            header to specify whether to display the label or name for a dimension and whether to display the label or value for the level of a dimension.
+
+    dups(dups) controls how to handle duplicate header elements.  dups is one of repeat, first, or center.
+
+        dups(repeat), the default, specifies that collect repeat duplicate header elements.
+
+        dups(first) specifies that collect hide all duplicate header elements, except the first.
+
+        dups(center) specifies that collect horizontally center duplicate header elements, where the header element spans the duplicate header cell locations.  When this style is not supported, such as when exporting to Markdown, dups(first) is used
+            instead.
+
+    position(colpos) specifies how column headers are filled in when one or more levels of a dimension occupy more than one cell.  This option is used when factor variables are displayed in the column headers.  colpos may be top or bottom.
+
+        position(top) is the default and specifies that collect fill in column headers starting with the topmost cell.  This will result in some empty cells on the bottom for unbalanced column dimensions.
+
+        position(bottom) specifies that collect shift the column header cells to the bottom so that the cells in the last row are all filled in.  This will result in some empty cells on the top for unbalanced column dimensions.
+
+        +-----------+
+    ----+ SMCL/Text +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    extraspace(#) specifies extra spaces to pad columns when exporting to SMCL and plain text.  The first column gets # extra spaces added on the right.  The last column gets # extra spaces added on the left.  The middle columns get # extra spaces added
+        on both sides.  The default is extraspace(0).
+
+    width(widthspec) specifies how to distribute the column widths for the items.  Row header widths are not affected by this option.
+
+        width(asis), the default, specifies that column widths be determined separately, with each column being as wide as necessary to accommodate the widest cell contents within that column.
+
+        width(equal) specifies that the item column widths all be equal to the widest cell contents among the items and column headers in all columns.
+
+
+Example
+
+    Setup
+        . collect clear
+        . webuse nhanes2
+        . collect _r_b _r_se: regress bpsystol i.agegrp
+        . collect _r_b _r_se: regress bpsystol i.agegrp i.sex
+        . collect label levels cmdset 1 "Model 1" 2 "Model 2"
+        . collect layout (colname) (cmdset#result)
+
+    Specify that headers for cmdset be displayed once, centered horizontally across the columns, and insert two additional spaces between columns
+        . collect style column, dups(center) extraspace(2)
+
+    Preview the table
+        . collect preview
+
+
+Stored results
+
+    collect style column stores the following in s():
+
+    Macros            
+      s(collection)          name of collection
+
+===== Help topic: collect_style_header =====
+
+[TABLES] collect style header -- Collection styles for hiding and showing header components
+                                 (View complete PDF manual entry)
+
+
+Syntax
+
+        collect style header [dimlist] [, options]
+
+    dimlist is a dimension in a collection, a dimension and its corresponding level or list of levels, or a combination of these:
+
+            dimension
+
+            dimension[level]
+
+            dimension[level1 level2 ... ]
+
+    options               Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    name(cname)           specify header styles for collection cname
+    title(tstyle)         specify dimension title header style
+    level(lstyle)         specify dimension level header style
+
+    basestyle             update basestyle properties
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    basestyle does not appear in the dialog box.
+
+
+Menu
+
+    Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+
+Description
+
+    collect style header edits the content of the table headers.  With this style, you can specify how the dimensions and levels are displayed in row, column, and table headers.  For each dimension, the name of the dimension, the label of the dimension,
+    or nothing may be displayed.  Likewise, for levels within a dimension, the label of that level, the value of the level, or nothing may be displayed.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+    name(cname) specifies the collection to which header style properties are to be applied.  By default, properties are applied to the current collection.
+
+    title(tstyle) specifies the dimension title header style to be used in row, column, and table headers.  tstyle may be label, name, or hide.
+
+        label specifies that collect use the dimension's label for headers.  If a dimension does not have a label, then collect will use the dimension's name.
+
+        name specifies that collect use the dimension's name for headers.
+
+        hide specifies that collect not show the dimension's label or name in the headers.
+
+        The default is title(hide).
+
+    level(lstyle) specifies the dimension's level header style to be used in row, column, and table headers.  lstyle may be label, value, or hide.
+
+        label specifies that collect use the level's value labels for headers.  If a level does not have a label, then collect will use the level's value.
+
+        value specifies that collect use the level's values for headers.
+
+        hide specifies that collect not show the level's labels or values in the headers.
+
+        The default is level(label).
+
+    basestyle indicates that the header style edits be applied to the base header style properties, instead of overriding the current style for the headers.
+
+        Each header begins with baseline header style properties.  (You can view your table with these baseline properties by first clearing out the collection styles with collect style clear.) The appearance of the headers is then updated with any
+        changes specified in the default style used by collect and table.  Any collect style header command you issue will override the current style for that header.  If you specify the basestyle option, the style changes will instead apply to the
+        baseline style and they will not override any current header style edits targeted to specific dimensions.
+
+        For example, suppose your current style displays values for levels of dimensions.  You then decide to display the labels for the levels of the dimension result, by typing collect style header result, level(label).  After you preview your table,
+        you choose to hide the values and labels for all other dimension levels.  You can type collect style header, level(hide) basestyle to make this change while continuing to display the labels for levels of the dimension result.
+
+
+Example
+
+    Setup
+        . collect clear
+        . webuse nhanes2
+        . collect _r_b: regress bpsystol bmi
+        . collect _r_b: regress bpsystol bmi age
+        . collect label levels cmdset 1 "Model 1" 2 "Model 2"
+        . collect label dim colname "Covariates", modify
+        . collect layout (colname) (cmdset#result)
+
+    Hide the label for the coefficients, which are levels of the dimension result
+        . collect style header result, level(hide)
+
+    Display the label for the dimension colname, and the values for its levels, meaning the variable names instead of the variable labels
+        . collect style header colname, title(label) level(value)
+
+    Preview the table
+        . collect preview
+
+
+Stored results
+
+    collect style header stores the following in s():
+
+    Macros            
+      s(collection)          name of collection
+
+===== Help topic: collect_style_html =====
+
+[TABLES] collect style html -- Collection styles for HTML files
+                               (View complete PDF manual entry)
+
+
+Syntax
+
+    Specify styles to be used when exporting a collection to an HTML file
+
+        collect style html [, options]
+
+
+    Clear existing HTML appearance styles
+
+        collect style html [, name(cname)]
+
+    options               Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    name(cname)           apply HTML styles to collection cname
+    [no]bcollapse         collapse adjacent cell borders
+    [no]useth             use HTML tag <th> for header cells
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Menu
+
+    Statistics > Summaries, tables, and tests > Tables and collections > Collect styles > Styles for HTML
+
+
+Description
+
+    collect style html specifies styles to be used when exporting a table from a collection to an HTML file.
+
+    collect style html, typed without any options, will clear the existing HTML appearance styles for the current collection.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+    name(cname) specifies that the HTML styles be applied to collection cname.
+
+        When name(cname) is specified without any other options, HTML styles are cleared from collection cname.
+
+        The default in both cases is to apply the style changes to the current collection.
+
+    bcollapse and nobcollapse control whether adjacent cell borders are collapsed into a single border.
+
+        bcollapse, the default, specifies that collect export collapse adjacent cell borders into a single border.
+
+        nobcollapse specifies that collect export not collapse adjacent cell borders into a single border.
+
+    useth and nouseth control which HTML tag to use for header cells.
+
+        useth specifies that collect export use the HTML tag <th> for header cells.
+
+        nouseth, the default, specifies that collect export use the HTML tag <td> rather than <th> for header cells.
+
+
+Example
+
+    Setup
+        . collect clear
+        . webuse nhanes2
+        . collect _r_b: regress bpsystol bmi
+        . collect _r_b: regress bpsystol bmi age
+        . collect layout (colname) (cmdset#result)
+
+    Specify that tables exported from the current collection to an HTML file use tag <th> for header cells, instead of the default tag <td>
+        . collect style html, useth
+
+    Export a table from the current collection to an HTML file
+        . collect export tworegs.html
+
+
+Stored results
+
+    collect style html stores the following in s():
+
+    Macros            
+      s(collection)          name of collection
+
+===== Help topic: collect_style_notes =====
+
+[TABLES] collect style notes -- Collection styles for table notes
+                                (View complete PDF manual entry)
+
+
+Syntax
+
+        collect style notes [, options]
+
+    options                           Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      name(cname)                     apply appearance styles to collection cname
+      clear                           remove table note styles
+
+    Fonts
+      font([fontfamily][, font_opts]) set font style for table notes
+      smcl(smcl)                      specify formatting for SMCL files
+      latex(latex)                    specify LaTeX macro
+
+    Shading
+      shading(sspec)                  set background color, foreground color, and fill pattern for notes
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    font_opts                  Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    size(# [unit])             specify font size
+    color(color)               specify font color
+    variant(variant)           specify font variant and capitalization
+    [no]bold                   specify whether to format notes as bold
+    [no]italic                 specify whether to format notes as italic
+    [no]strikeout              specify whether to strike out notes
+    [no]underline              specify whether to underline notes
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    fontfamily specifies a font family.
+
+    sspec is
+
+        [background(bgcolor) foreground(fgcolor) pattern(fpattern)]
+
+            bgcolor specifies the background color.
+
+            fgcolor specifies the foreground color.
+
+            fpattern specifies the fill pattern.  A complete list of fill patterns is shown in Shading patterns of [TABLES] Appendix.
+
+    bgcolor, fgcolor, and color may be one of the colors listed in Colors of [TABLES] Appendix; a valid RGB value in the form ### ### ###, for example, 171 248 103; or a valid RRGGBB hex value in the form ######, for example, ABF867.
+
+    unit may be in (inch), pt (point), or cm (centimeter).  An inch is equivalent to 72 points and 2.54 centimeters.  The default is pt.
+
+
+Menu
+
+    Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+
+Description
+
+    collect style notes specifies appearance styles for table notes in the collection.  This includes bolding, italics, font, text color, and shading.  Certain appearance edits can be rendered only on certain export formats.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+        +------+
+    ----+ Main +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    name(cname) specifies the collection to which note appearance styles are to be applied.  By default, the table note styles are applied to the current collection.
+
+    clear removes existing table note style properties.
+
+        +-------+
+    ----+ Fonts +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    font([fontfamily][, size(# [unit]) color(color) variant(variant) [no]bold [no]italic [no]strikeout [no]underline]) specifies the font style for the table notes.
+
+        These font style properties are applicable when publishing items from a collection to Microsoft Word, Microsoft Excel, PDF, HTML, and LaTeX files.
+
+        fontfamily specifies a font family.
+
+        size(# [unit]) specifies the font size as a number optionally followed by units.  If # is specified without the optional unit, points is assumed.
+
+        color(color) specifies the font color.
+
+        variant(variant) specifies the font variant and capitalization.  variant may be allcaps, smallcaps, or normal.  variant(allcaps) changes the text to all uppercase letters.  variant(smallcaps) changes the text to use large capitals for uppercase
+            letters and smaller capitals for lowercase letters.  variant(normal) changes the font variant back to normal; capitalization is unchanged from the original text.
+
+            This style property is applicable only when publishing to HTML and LaTeX files.
+
+        bold and nobold specify the font weight.  bold changes the font weight to bold; nobold changes the font weight back to normal.
+
+        italic and noitalic specify the font style.  italic changes the font style to italic; noitalic changes the font style back to normal.
+
+        strikeout and nostrikeout specify whether to add a strikeout mark to the notes.  strikeout adds a strikeout mark to the notes; nostrikeout changes the notes back to normal.
+
+            Only one of strikeout or underline is allowed when publishing to HTML files.
+
+        underline and nounderline specify whether to underline the notes.  underline adds a single line under each note; nounderline removes the underline.
+
+            Only one of strikeout or underline is allowed when publishing to HTML files.
+
+    smcl(smcl) specifies how to render notes for SMCL output.  The supported SMCL directives are input, error, result, and text.
+
+        This style property is applicable only when publishing to a SMCL file.
+
+    latex(latex) specifies the name of a LaTeX macro to render notes for LaTeX output.  This style property is applicable only when publishing to a LaTeX file.
+
+        Example LaTeX macro names are textbf, textsf, textrm, and texttt.  Custom LaTeX macros are also allowed.  If note is the table note, then latex is translated to the following when exporting to LaTeX:
+
+            \latex {note}
+
+        +---------+
+    ----+ Shading +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    shading([background(bgcolor) foreground(fgcolor) pattern(fpattern)]) sets the background color, foreground color, and fill pattern for notes.
+
+        These shading style properties are applicable when publishing to Microsoft Excel, Microsoft Word, PDF, and HTML.
+
+
+Examples
+
+    Setup
+        . webuse nhanes2
+        . collect: regress bpsystol weight i.agegrp
+        . collect stars _r_p 0.01 "***" 0.05 "**" 0.1 "*", attach(_r_b) shownote
+        . collect notes "Source: NHANES II"
+        . collect layout (colname) (result[_r_b])
+
+    Make the table notes bold
+        . collect style notes, font(, bold)
+
+    Remove the existing note style properties
+        . collect style notes, clear
+
+    Underline the table notes
+        . collect style notes, font(, underline)
+
+
+Stored results
+
+    collect style notes stores the following in s():
+
+    Macros            
+      s(collection)          name of collection
+
+===== Help topic: collect_style_putdocx =====
+
+[TABLES] collect style putdocx -- Collection styles for putdocx
+                                  (View complete PDF manual entry)
+
+
+Syntax
+
+    Specify styles to be used when exporting a collection with putdocx collect
+
+        collect style putdocx [, options]
+
+
+    Clear the current styles for putdocx collect
+
+        collect style putdocx [, name(cname)]
+
+
+    cname is the name of an existing collection.
+
+    options                         Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      name(cname)                   apply styles to collection cname
+      halign(hvalue)                set table horizontal alignment
+      width(#[unit | %] | matname)  set table width; option may be repeated
+      layout(layouttype)            adjust column width
+      indent(#[unit])               set table indentation
+      cellspacing(#[unit])          set spacing between adjacent cells and the edges of the table
+      headerrow(#)                  set number of the top rows that constitute the table header
+
+    Cell margins
+      cellmargin(cmarg, #[unit])    set margins for each table cell; option may be repeated
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    unit may be in (inch), pt (point), cm (centimeter), or twip (20th of a point).  An inch is equivalent to 72 points, 2.54 centimeters, or 1440 twips.  The default is in.
+
+
+Menu
+
+    Statistics > Summaries, tables, and tests > Tables and collections > Collect styles > Styles for putdocx
+
+
+Description
+
+    collect style putdocx specifies styles to be used by putdocx when exporting a table from a collection with putdocx collect.
+
+    collect style putdocx, typed without any options, will clear the current styles for the current collection.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+        +------+
+    ----+ Main +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    name(cname) specifies that styles for putdocx collect be applied to collection cname.
+
+        When name(cname) is specified without any other options, styles for putdocx collect are cleared from collection cname.
+
+        The default in both cases is to apply the style changes to the current collection.
+
+    halign(hvalue) sets the horizontal alignment of the table within the page.  hvalue may be left, right, or center.  The default is halign(left).
+
+    width(#[unit | %]) and width(matname) set the table width.  Any two of the types of width specifications can be combined.
+
+        width(#[unit | %]) sets the width based on a specified value.  # may be an absolute width or a percentage of the default table width, which is determined by the page width of the document.  When specifying the table width as a percentage, it
+            cannot be greater than 100%.  For example, width(50%) sets the table width to 50% of the default table width.  The default is width(100%).
+
+        width(matname) sets the table width based on the dimensions specified in the Stata matrix matname, which has contents in the form of (#_1, #_2, ..., #_n) to denote the percent of the default table width for each column.  n is the number of
+            columns of the table, and the sum of #_1 to #_n must be equal to 100.
+
+        width() may be specified multiple times in a single command to control the table width and individual column widths simultaneously.
+
+    layout(layouttype) adjusts the column width of the table.  layouttype may be fixed, autofitwindow, or autofitcontents.  fixed means the width is the same for all columns in the table.  When autofitwindow is specified, the column width automatically
+        resizes to fit the window.  When autofitcontents is specified, the table width is determined by the overall table layout algorithm, which automatically resizes the column width to fit the contents.  The default is layout(autofitwindow).
+
+    indent(#[unit]) specifies the table indentation from the left margin of the current document.
+
+    cellspacing(#[unit]) sets the spacing between adjacent cells and the edges of the table.
+
+    headerrow(#) sets the top # rows to be repeated as header rows at the top of each page on which the table is displayed.  This setting has a visible effect only when the table crosses multiple pages.
+
+        +--------------+
+    ----+ Cell margins +-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    cellmargin(cmarg, #[unit]) sets the cell margins for table cells.  cmarg may be top, bottom, left, or right.  This option may be specified multiple times in a single command to accommodate different margin settings.
+
+
+Example
+
+    Setup
+        . collect clear
+        . webuse nhanes2
+        . collect: regress bpsystol age weight
+        . collect: regress bpsystol age weight c.age#c.weight
+        . collect: regress bpsystol age c.weight##c.weight
+        . collect style autolevels result _r_b _r_se
+        . collect layout (colname) (cmdset#result)
+
+    Specify that tables exported from the current collection to a Word document have column widths resized to fit the contents
+        . collect style putdocx, layout(autofitcontents)
+
+    Export a table from the current collection to a Microsoft Word file
+        . collect export myfile.docx
+
+
+Stored results
+
+    collect style putdocx stores the following in s():
+
+    Macros            
+      s(collection)          name of collection
+
+===== Help topic: collect_style_putpdf =====
+
+[TABLES] collect style putpdf -- Collection styles for putpdf
+                                 (View complete PDF manual entry)
+
+
+Syntax
+
+    Specify styles to be used when exporting a collection with putpdf collect
+
+        collect style putpdf [, name(cname) options]
+
+
+    Clear the current styles for putpdf collect
+
+        collect style putpdf [, name(cname)]
+
+
+    cname is the name of an existing collection.
+
+    options                         Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      name(cname)                   apply styles to collection cname
+      width(#[unit | %] | matname)  set table width; option may be repeated
+      indent(#[unit])               set table indentation
+      halign(hvalue)                set table horizontal alignment
+
+    Spacing
+      spacing(position, #[unit])    set spacing before or after table; option may be repeated
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    unit may be in (inch), pt (point), cm (centimeter), or twip (20th of a point).  An inch is equivalent to 72 points, 2.54 centimeters, or 1440 twips.  The default is in.
+
+
+Menu
+
+    Statistics > Summaries, tables, and tests > Tables and collections > Collect styles > Styles for putpdf
+
+
+Description
+
+    collect style putpdf specifies the styles to be used by putpdf when exporting a table from a collection with putpdf collect.
+
+    collect style putpdf, typed without any options, will clear the current styles for the current collection.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+        +------+
+    ----+ Main +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    name(cname) specifies that styles for putpdf collect be applied to collection cname.
+
+        When name(cname) is specified without any other options, styles for putpdf collect are cleared from collection cname.
+
+        The default in both cases is to apply the style changes to the current collection.
+
+    width(#[unit | %]) and width(matname) set the table width.  Any two of the types of width specifications can be combined.
+
+        width(#[unit | %]) sets the width based on a specified value.  # may be an absolute width or a percentage of the default table width, which is determined by the page width of the document.  When specifying the table width as a percentage, it
+            cannot be greater than 100%.  For example, width(50%) sets the table width to 50% of the default table width.  The default is width(100%).
+
+        width(matname) sets the table width based on the dimensions specified in the Stata matrix matname, which has contents in the form of (#_1, #_2, ..., #_n) to denote the percent of the default table width for each column.  n is the number of
+            columns of the table, and the sum of #_1 to #_n must be equal to 100.
+
+        width() may be specified multiple times in a single command to control the table width and individual column widths simultaneously.
+
+    indent(#[unit]) specifies the table indentation from the left margin of the current document.
+
+    halign(hvalue) sets the horizontal alignment of the table within the page.  hvalue may be left, right, or center.  The default is halign(left).
+
+        +---------+
+    ----+ Spacing +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    spacing(position, #[unit]) sets the spacing before or after the table.  position may be before or after.  before specifies the space before the top of the current table, and after specifies the space after the bottom of the current table.  This
+        option may be specified multiple times in a single command to account for different space settings.
+
+
+Example
+
+    Setup
+        . collect clear
+        . webuse nhanes2
+        . collect _r_b _r_ci: regress bpsystol age weight
+        . collect layout (colname) (result)
+
+    Specify that tables exported from the current collection to a PDF file have a width 75% of the default
+        . collect style putpdf, width(75%)
+
+    Export a table from the current collection to a PDF file
+        . collect export myfile.pdf, replace
+
+
+Stored results
+
+    collect style putpdf stores the following in s():
+
+    Macros            
+      s(collection)          name of collection
+
+===== Help topic: collect_style_row =====
+
+[TABLES] collect style row -- Collection styles for row headers
+                              (View complete PDF manual entry)
+
+Syntax
+
+    Split row header elements across columns
+
+        collect style row split [, options split_options]
+
+
+    Stack row header elements in a single column
+
+        collect style row stack [, options stack_options]
+
+
+    options                    Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    name(cname)                specify row header styles for collection cname
+    nodelimiter                place factor-variable and interaction elements in separate cells without a delimiter
+    delimiter(delim)           use delim to delimit interaction terms composed in a single cell
+    atdelimiter(atdelim)       use atdelim to delimit interaction terms containing the @ symbol
+    bardelimiter(bardelim)     use bardelim to delimit interaction terms containing the | symbol
+    binder(binder)             use binder to separate factor variables from their levels
+    nobinder                   do not bind factor variables and their levels
+    [no]spacer                 add a blank line between stacked row dimensions
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    nobinder is only allowed with collect style row stack.
+
+
+    split_options              Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    dups(dups)                 specify how duplicate headers are displayed
+    position(rowpos)           specify the position of the row header to be filled first
+    [no]span                   span row headers into empty row header columns
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    stack_options              Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    [no]indent                 indent stacked headers
+    length(#)                  specify maximum length for stacked headers
+    wrapon(wrapon)             specify how to break long headers
+    wrap(#)                    specify number of lines to allow for long headers
+    truncate(truncate)         specify how to truncate headers that do not fit
+    [no]abbreviate             abbreviate long words that do not fit within the specified length
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Menu
+
+    Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+
+Description
+
+    collect style row specifies row header style properties.  collect style row determines how row headers are constructed, how factor variables are displayed, how duplicates are reported, and how labels wrap or truncate.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+        +------+
+    ----+ Main +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    name(cname) specifies the collection to which column header style properties are to be applied.  By default, properties are applied to the current collection.
+
+    nodelimiter, delimiter(), atdelimiter(), and bardelimiter() control how to compose factor-variable and interaction terms in headers.
+
+        nodelimiter specifies that factor-variable and interaction term elements (matrix stripe elements) be split into separate cells.
+
+        delimiter(delim) specifies that factor-variable and interaction term elements (matrix stripe elements) be composed in a single cell.
+
+            The variables in an interaction term are composed in a single cell using delim as the delimiter.
+
+            Factor-variable terms serve as their own dimension nested within the stripe dimensions coleq, colname, roweq, and rowname.  Option binder() controls how levels of factor variables are composed within a single cell.
+
+        atdelimiter(atdelim) specifies that atdelim be used to delimit interaction terms containing the @ symbol.  This option is applicable when, for example, working with results from contrast, mean, proportion, ratio, and total.
+
+        bardelimiter(bardelim) specifies that bardelim be used to delimit interaction terms containing the | symbol.  This option is applicable when, for example, working with results from anova and manova.
+
+    binder(binder) specifies how to compose levels of factor variables within a single cell.
+
+        The binder will be applied as long as the factor variable and its levels are not hidden.  Note that the default style used by collect, which is style-default.stjson, will hide the dimension title from the headers.  You can use collect style
+            header to specify whether to display the label or name for a dimension and whether to display the label or value for the level of a dimension.
+
+    nobinder specifies that factor variables should not be bound to their levels.  By default, when stacking row headers, factor variables are bound to their levels by an equal sign.
+
+        This option is only allowed with collect style row stack.
+
+    nospacer and spacer control whether a blank line is added between stacked row dimensions.
+
+        nospacer, the default, prevents the line from being added.
+
+        spacer adds the line.
+
+        +---------------+
+    ----+ Split options +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    dups(dups) controls how to handle duplicate header elements.  dups is one of repeat, first, or center.
+
+        dups(repeat), the default, specifies that collect repeat duplicate header elements.
+
+        dups(first) specifies that collect hide all duplicate header elements, except the first.
+
+        dups(center) specifies that collect horizontally center duplicate header elements, where the header element spans the duplicate header cell locations.  When this style is not supported, such as when exporting to Markdown, dups(first) is used
+            instead.
+
+    position(rowpos) specifies how split headers are filled in when one or more levels of a dimension occupy more than one cell.  This option is used when factor variables are displayed in the row headers.  rowpos may be left or right.
+
+        position(left) is the default and specifies that collect fill in row headers starting with the leftmost cell.  This will result in some empty cells on the right for unbalanced row dimensions.
+
+        position(right) specifies that collect shift the row header cells to the right so that the cells in the last column are all filled in.  This will result in some empty cells on the left for unbalanced row dimensions.
+
+    nospan and span control whether row headers span into empty row header columns.  This option is effective only when position(left) is in effect.
+
+        span, the default, specifies that row headers should span into empty row header columns.  This helps conserve horizontal space.  Otherwise, each column of the row header will be forced to be wide enough to accommodate all the cells.
+
+        nospan specifies that row headers should not span into empty row header columns.
+
+        +---------------+
+    ----+ Stack options +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    noindent and indent control indenting of stacked headers.
+
+        indent, the default, turns on indenting.
+
+        noindent turns off indenting.
+
+    length(#) specifies the maximum display length for stacked headers.
+
+        Long headers, ones that contain more than # display characters, are broken into multiple rows.  Values of # less than 5 are ignored.
+
+        If header elements are indented, each indent counts as 2 characters.  If # is too small to fit the indented headers, # is increased to accommodate the most indented header.  For example, if there is one level of indented headers, and length(5)
+        was specified, then # is increased to 7.
+
+        By default, there is no limit to the header length.
+
+    wrapon(wrapon) specifies how to break long headers.  wrapon may be word or length.
+
+        wrapon(word), the default, specifies that long headers break at word boundaries.
+
+        wrapon(length) specifies that headers break based on available space.
+
+    wrap(#) specifies how many lines to allow when long headers are broken into multiple lines.  Headers requiring more than # lines are truncated with ellipses.  Values of # less than 1 are ignored.
+
+        By default, there is no limit to the number of lines for wrapped headers.
+
+    truncate(truncate) specifies how to truncate headers that do not fit within the specified number of lines to wrap.  truncate may be tail, middle, or head.
+
+        truncate(tail), the default, specifies that long headers are truncated at the end.
+
+        truncate(middle) specifies that long headers are truncated in the middle.
+
+        truncate(head) specifies that long headers are truncated at the beginning.
+
+    noabbreviate and abbreviate control whether long words are abbreviated when wrapon(word) is in effect.
+
+        noabbreviate, the default, specifies that words that do not fit in the specified length should not be abbreviated.
+
+        abbreviate specifies that long words be abbreviated if they do not fit in the specified length.
+
+
+Example
+
+    Setup
+        . collect clear
+        . webuse nhanes2
+        . collect _r_b: regress bpsystol i.agegrp i.sex
+        . collect style header agegrp, title(label)
+        . collect layout (colname) (result)
+
+    Do not bind factor variables and their levels
+        . collect style row stack, nobinder
+        . collect preview
+
+    Display the labels for factor variables and their levels in separate cells.  Then, preview the table
+        . collect style row split
+        . collect preview
+
+    Hide all duplicate header elements, except the first.  Then, preview the table
+        . collect style row split, dups(first)
+        . collect preview
+
+
+Stored results
+
+    collect style row stores the following in s():
+
+    Macros            
+      s(collection)          name of collection
+
+===== Help topic: collect_style_save =====
+
+[TABLES] collect style save -- Save collection styles to disk
+                               (View complete PDF manual entry)
+
+
+Syntax
+
+        collect style save filename [, replace name(cname)]
+
+    where cname is a collection name.
+
+    If filename is specified without an extension, .stjson is assumed.  If filename contains embedded spaces, enclose it in double quotes.
+
+
+Menu
+
+    Statistics > Summaries, tables, and tests > Tables and collections > Collect styles > Save styles
+
+
+Description
+
+    collect style save saves the current collection's style and layout to a file.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+    replace specifies that filename be replaced if it already exists.
+
+    name(cname) specifies the collection from which the style and layout are to be saved.  By default, the style and layout from the current collection are saved.
+
+
+Example
+
+    Setup
+        . collect clear
+        . webuse nhanes2
+        . collect _r_b: regress bpsystol bmi
+        . collect _r_b: regress bpsystol bmi age
+        . collect label levels cmdset 1 "Model 1" 2 "Model 2"
+        . collect label dim colname "Covariates", modify
+        . collect style header result, level(hide)
+        . collect style header colname, level(value) title(label)
+        . collect layout (colname) (cmdset#result)
+
+    Save the style and layout from the current collection to the file regstyle.stjson
+        . collect style save regstyle
+
+
+Stored results
+
+    collect style save stores the following in s():
+
+    Macros            
+      s(collection)          name of collection
+      s(filename)            name of the new file
+
+===== Help topic: collect_style_showbase =====
+
+[TABLES] collect style showbase -- Collection styles for displaying base levels
+                                   (View complete PDF manual entry)
+
+
+Syntax
+
+        collect style showbase {off | factor | all} [, name(cname)]
+
+    where cname is a collection name.
+
+
+Menu
+
+    Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+
+Description
+
+    collect style showbase controls the visibility of coefficients and related statistics for base levels of factor variables and interactions in estimation results.  When results corresponding to factor variables are included in your collection, you
+    may specify that base levels are never shown, that base levels are shown in the main effects but not interactions, or that base levels are shown in both the main effects and interactions in your tables.
+
+
+Links to PDF documentation
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Option
+
+    name(cname) specifies a collection cname to which the style is applied.  By default, the style is applied to the current collection.
+
+
+Example
+
+    Setup
+        . collect clear
+        . webuse nhanes2
+        . collect _r_b _r_se : regress bpsystol sex##agegrp
+        . collect layout (colname) (result)
+
+    Suppress the base levels for the main effects of factor variables and base levels for interaction terms, then preview the table
+        . collect style showbase off
+        . collect preview
+
+    Display only the base levels for the main effects of factor variables but not for interaction terms, then preview the table
+        . collect style showbase factor
+        . collect preview
+
+
+Stored results
+
+    collect style showbase stores the following in s():
+
+    Macros            
+      s(collection)          name of collection
+
+===== Help topic: collect_style_showempty =====
+
+[TABLES] collect style showempty -- Collection styles for displaying empty cells
+                                    (View complete PDF manual entry)
+
+
+Syntax
+
+        collect style showempty {on | off} [, name(cname)]
+
+    where cname is a collection name.
+
+
+Menu
+
+    Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+
+Description
+
+    collect style showempty controls the visibility of coefficients and related statistics in empty cells of factor-variable interactions in estimation results.  When results corresponding to empty cells are included in a collection, you can specify
+    whether these should be shown or omitted from your tables.
+
+
+Links to PDF documentation
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Option
+
+    name(cname) specifies a collection cname to which the style is applied.  By default, the style is applied to the current collection.
+
+
+Example
+
+    Setup
+        . collect clear
+        . webuse nhanes2
+        . replace agegrp = . if race==3 & agegrp==6
+        . collect _r_b: regress bpsystol agegrp#race
+
+    Do not show empty cells in tables
+        . collect style showempty off
+        . collect layout (colname) (result)
+
+    Show empty cells in tables
+        . collect style showempty on
+        . collect preview
+
+
+Stored results
+
+    collect style showempty stores the following in s():
+
+    Macros            
+      s(collection)          name of collection
+
+===== Help topic: collect_style_showomit =====
+
+[TABLES] collect style showomit -- Collection styles for displaying omitted coefficients
+                                   (View complete PDF manual entry)
+
+
+Syntax
+
+        collect style showomit {on | off} [, name(cname)]
+
+    where cname is a collection name.
+
+
+Menu
+
+    Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+
+Description
+
+    collect style showomit controls the visibility of coefficients and related statistics for omitted covariates in estimation results.  When collecting results from a model in which covariates have been omitted, you can specify whether these omitted
+    covariates should be shown or omitted from your tables.
+
+
+
+Links to PDF documentation
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Option
+
+    name(cname) specifies a collection cname to which the style is applied.  By default, the style is applied to the current collection.
+
+
+Example
+
+    Setup
+        . collect clear
+        . webuse nhanes2
+        . generate toignore = weight
+        . collect _r_b: regress bpsystol agegrp#race weight toignore
+
+    Do not show omitted variables in tables
+        . collect style showomit off
+        . collect layout (colname) (result)
+
+
+Stored results
+
+    collect style showomit stores the following in s():
+
+    Macros            
+      s(collection)          name of collection
+
+===== Help topic: collect_style_table =====
+
+[TABLES] collect style table -- Collection styles for table headers
+                                (View complete PDF manual entry)
+
+
+Syntax
+
+        collect style table [, options]
+
+    options                    Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    name(cname)                specify table header styles for collection cname
+    nodelimiter                place factor-variable and interaction elements in separate cells without a delimiter
+    delimiter(delim)           use delim to delimit interaction terms composed in a single cell
+    atdelimiter(atdelim)       use atdelim to delimit interaction terms containing the @ symbol
+    bardelimiter(bardelim)     use bardelim to delimit interaction terms containing the | symbol
+    binder(binder)             use binder to separate factor variables from their levels
+    dimdelimiter(dimdelim)     use dimdelim to delimit table headers
+    dimbinder(dimbinder)       use dimbinder to separate dimensions from their levels
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Menu
+
+    Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+
+Description
+
+    collect style table specifies table header style properties.  When collect layout specifies that multiple tables be created, collect style table determines how the headers for each of the tables are displayed.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+    name(cname) specifies the collection to which table header style properties are to be applied.  By default, properties are applied to the current collection.
+
+    nodelimiter, delimiter(), atdelimiter(), and bardelimiter() control how to compose factor-variable and interaction terms in headers.
+
+        nodelimiter, the default, specifies that factor-variable and interaction term elements (matrix stripe elements) be split into separate cells.
+
+        delimiter(delim) specifies that factor-variable and interaction term elements (matrix stripe elements) be composed in a single cell.
+
+            The variables in an interaction term are composed in a single cell using delim as the delimiter.
+
+            Factor-variable terms serve as their own dimension nested within the stripe dimensions coleq, colname, roweq, and rowname.  Option binder() controls how levels of factor variables are composed within a single cell.
+
+        atdelimiter(atdelim) specifies that atdelim be used to delimit interaction terms containing the @ symbol.  This option is applicable when, for example, working with results from contrast, mean, proportion, ratio, and total.
+
+        bardelimiter(bardelim) specifies that bardelim be used to delimit interaction terms containing the | symbol.  This option is applicable when, for example, working with results from anova and manova.
+
+    binder(binder) specifies how to compose levels of factor variables within a single cell.
+
+        The binder will be applied as long as the factor variable and its levels are not hidden.  Note that the default style used by collect, which is style-default.stjson, will hide the dimension from the headers.  You can use collect style header to
+        specify whether to display the label or name for a dimension and whether to display the label or value for the level of a dimension.
+
+    dimdelimiter(dimdelim) specifies how to delimit table headers composed from multiple dimensions.  The default is to use a comma as the delimiter.
+
+    dimbinder(dimbinder) specifies how dimension-level pairs are composed within the table headers.
+
+
+Example
+
+    Setup
+        . collect clear
+        . webuse nhanes2
+        . collect _r_b _r_se: logit heartatk bpsystol bmi
+        . collect _r_b _r_se : logit heartatk bpsystol age
+        . collect label levels cmdset 1 "Model 1 (BMI adjusted)" 2 "Model 2 (age adjusted)"
+        . collect layout () (cmdset) (colname[bpsystol]#result)
+
+    Use a colon, with spaces on each side, to delimit the dimensions in the table header.  Then, preview the table
+        . collect style table, dimdelimiter(" : ")
+        . collect preview
+
+
+Stored results
+
+    collect style table stores the following in s():
+
+    Macros            
+      s(collection)          name of collection
+
+===== Help topic: collect_style_tex =====
+
+[TABLES] collect style tex -- Collection styles for LaTeX files
+                              (View complete PDF manual entry)
+
+
+Syntax
+
+    Specify styles to be used when exporting a collection to a LaTeX file
+
+        collect style tex [, options]
+
+
+    Clear existing LaTeX appearance styles
+
+        collect style tex [, name(cname)]
+
+
+    options                    Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    name(cname)                apply LaTeX styles to collection cname
+    [no]begintable             specify whether to use LaTeX table environment
+    [no]centering              specify whether to center table horizontally on the page
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Menu
+
+    Statistics > Summaries, tables, and tests > Tables and collections > Collect styles > Styles for LaTeX
+
+
+Description
+
+    collect style tex specifies styles to be used when exporting a table from a collection to a LaTeX file.
+
+    collect style tex, typed without any options, will clear the existing LaTeX appearance styles for the current collection.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+    name(cname) specifies that the LaTeX styles be applied to collection cname.
+
+        When name(cname) is specified without any other options, LaTeX styles are cleared from collection cname.
+
+        The default in both cases is to apply the style changes to the current collection.
+
+    begintable and nobegintable control whether to use the LaTeX table environment.
+
+        begintable specifies that collect export use the LaTeX table environment.  In addition, table titles are specified using \caption.
+
+        nobegintable specifies that collect export not use the LaTeX table environment.
+
+    centering and nocentering control whether to center the table horizontally on the page.
+
+        centering specifies that collect export center the table horizontally on the page.
+
+        nocentering specifies that collect export not center the table horizontally on the page.
+
+
+Examples
+
+    Setup
+        . sysuse auto
+        . collect: regress mpg price i.foreign
+        . collect: regress mpg price i.foreign##c.trunk
+        . collect layout (colname) (cmdset#result[_r_b _r_se])
+
+    Specify that the table not be centered on the page when exported to a LaTeX file
+        . collect style tex, nocentering
+
+    Export the table to a LaTeX file
+        . collect export tworegs.tex
+
+    Clear the current LaTeX appearance style
+        . collect style tex
+
+    Specify that collect export not use the LaTeX table environment
+        . collect style tex, nobegintable
+
+
+Stored results
+
+    collect style tex stores the following in s():
+
+    Macros            
+      s(collection)          name of collection
+
+===== Help topic: collect_style_title =====
+
+[TABLES] collect style title -- Collection styles for table titles
+                                (View complete PDF manual entry)
+
+Syntax
+
+        collect style title [, options]
+
+    options                              Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      name(cname)                        apply table title appearance styles to collection cname
+      clear                              remove table title styles
+
+    Fonts
+      font([fontfamily][, font_opts])    set font style for title text
+      smcl(smcl)                         specify formatting for SMCL files
+      latex(latex)                       specify LaTeX macro
+
+    Shading
+      shading(sspec)                     set background color, foreground color, and fill pattern for titles
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    font_opts                            Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    size(# [unit])                       specify font size
+    color(color)                         specify font color
+    variant(variant)                     specify font variant and capitalization
+    [no]bold                             specify whether to format text as bold
+    [no]italic                           specify whether to format text as italic
+    [no]strikeout                        specify whether to strike out text
+    [no]underline                        specify whether to underline text
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    fontfamily specifies a font family.
+
+    sspec is
+
+        [background(bgcolor) foreground(fgcolor) pattern(fpattern)]
+
+            bgcolor specifies the background color.
+
+            fgcolor specifies the foreground color.
+
+            fpattern specifies the fill pattern.  A complete list of fill patterns is shown in Shading patterns of [TABLES] Appendix.
+
+    bgcolor, fgcolor, and color may be one of the colors listed in Colors of [TABLES] Appendix; a valid RGB value in the form ### ### ###, for example, 171 248 103; or a valid RRGGBB hex value in the form ######, for example, ABF867.
+
+    unit may be in (inch), pt (point), or cm (centimeter).  An inch is equivalent to 72 points and 2.54 centimeters.  The default is pt.
+
+
+Menu
+
+    Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+
+Description
+
+    collect style title specifies appearance styles for table titles in the collection.  This includes bolding, italics, font, text color, and shading.  Certain appearance edits can be rendered only on certain export formats.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+        +------+
+    ----+ Main +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    name(cname) specifies the collection to which title appearance styles are to be applied.  By default, the title styles are applied to the current collection.
+
+    clear removes existing title style properties.
+
+        +-------+
+    ----+ Fonts +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    font([fontfamily][, size(# [unit]) color(color) variant(variant) [no]bold [no]italic [no]strikeout [no]underline]) specifies the font style for the title text.
+
+        These font style properties are applicable when publishing items from a collection to Microsoft Word, Microsoft Excel, PDF, HTML, and LaTeX files.
+
+        fontfamily specifies a font family.
+
+        size(# [unit]) specifies the font size as a number optionally followed by units.  If # is specified without the optional unit, points is assumed.
+
+        color(color) specifies the font color.
+
+        variant(variant) specifies the font variant and capitalization.  variant may be allcaps, smallcaps, or normal.  variant(allcaps) changes the text to all uppercase letters.  variant(smallcaps) changes the text to use large capitals for uppercase
+            letters and smaller capitals for lowercase letters.  variant(normal) changes the font variant back to normal; capitalization is unchanged from the original text.
+
+            This style property is applicable only when publishing to HTML and LaTeX files.
+
+        bold and nobold specify the font weight.  bold changes the font weight to bold; nobold changes the font weight back to normal.
+
+        italic and noitalic specify the font style.  italic changes the font style to italic; noitalic changes the font style back to normal.
+
+        strikeout and nostrikeout specify whether to add a strikeout mark to the text.  strikeout adds a strikeout mark to the text; nostrikeout changes the text back to normal.
+
+            Only one of strikeout or underline is allowed when publishing to HTML files.
+
+        underline and nounderline specify whether to underline the title.  underline adds a single line under the title; nounderline removes the underline.
+
+            Only one of strikeout or underline is allowed when publishing to HTML files.
+
+    smcl(smcl) specifies how to render title text for SMCL output.  The supported SMCL directives are input, error, result, and text.
+
+        This style property is applicable only when publishing to a SMCL file.
+
+    latex(latex) specifies the name of a LaTeX macro to render title text for LaTeX output.  This style property is applicable only when publishing to a LaTeX file.
+
+        Example LaTeX macro names are textbf, textsf, textrm, and texttt.  Custom LaTeX macros are also allowed.  If title is the table title, then latex is translated to the following when exporting to LaTeX:
+
+            \latex{title}
+
+        +---------+
+    ----+ Shading +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    shading([background(bgcolor) foreground(fgcolor) pattern(fpattern)]) sets the background color, foreground color, and fill pattern for title.
+
+        These shading style properties are applicable when publishing to Microsoft Excel, Microsoft Word, PDF, and HTML.
+
+
+Examples
+
+    Setup
+        . webuse nhanes2
+        . collect: regress bpsystol age weight
+        . collect: regress bpsystol age weight c.age#c.weight
+        . collect layout (colname#result[_r_b _r_se]) (cmdset)
+
+    Add a custom table title using the Times New Roman bold font
+        . collect title "Models for systolic blood pressure"
+        . collect style title, font("Times New Roman", bold)
+
+    Remove the existing title style properties
+        . collect style title, clear
+
+    Make the custom table title green and italic
+        . collect style title, font(, color(green) italic)
+
+
+Stored results
+
+    collect style title stores the following in s():
+
+    Macros            
+      s(collection)          name of collection
+
+===== Help topic: collect_style_use =====
+
+[TABLES] collect style use -- Use collection styles from disk
+                              (View complete PDF manual entry)
+
+
+Syntax
+
+        collect style use style [, options]
+
+    style specifies the name of a file that defines layout information and style properties.  If style is not a filename or a file path, then the following search logic is employed:
+
+        1.  search ado-path for style-style.stjson; use this file if found.
+
+        2.  search ado-path for style.stjson; use this file if found.
+
+    options          Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    name(cname)      apply style and layout information to collection cname
+    layout           replace current layout with the layout defined in style
+    override         give precedence to style information in style over the collection's current style
+    replace          replace the collection's style with the one defined in style
+    [no]warn         display or suppress notes about tags that are not recognized; default is to display
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Menu
+
+    Statistics > Summaries, tables, and tests > Tables and collections > Collect styles > Use styles
+
+
+Description
+
+    collect style use reads style properties and layout information from a file and applies them to a collection.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+    name(cname) specifies a collection cname to which the style and layout information are applied.  By default, the style and layout information are applied to the current collection.
+
+    layout replaces the collection's layout with the layout defined in style.
+
+    override specifies that style properties specified in style should take precedence over the styles in the collection.  The default is to give precedence to the styles in the collection if those styles are found both in style and in the collection.
+
+    replace specifies that the collection's style properties be replaced with the style properties defined in style.
+
+    warn and nowarn control the display of notes when collect encounters a tag it does not recognize.
+
+        warn, the default, specifies that collect display notes when it encounters a tag it does not recognize.
+
+        nowarn specifies that collect not show the notes.
+
+    These options override the collect_warn setting; see set collect_warn.
+
+
+Example
+
+    Setup
+        . collect clear
+        . webuse nhanes2
+        . collect _r_b: regress bpsystol age
+        . collect style cell, nformat(%5.2f)
+        . collect style _cons first
+        . collect layout (colname) (result)
+        . collect style save myreg, replace
+
+    Create a collection to store results from a logistic regression
+        . collect create logit
+        . collect _r_b: logit highbp age
+        . collect layout (result) (colname)
+
+    Replace the current style with the one specified in myreg.stjson, then preview the table
+        . collect style use myreg.stjson, replace
+        . collect preview
+
+    Same as above, but also replace the current layout with the one specified in myreg.stjson.  Then, preview the table
+        . collect style use myreg.stjson, replace layout
+        . collect preview
+
+
+Stored results
+
+    collect style use stores the following in s():
+
+    Macros            
+      s(collection)          name of collection
+      s(filename)            name of the file used

@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-08-30 — help-first Phase 2
+
+- Replaced Phase 2 full-manual delivery with Stata-rendered plain-text help for all 109 dictionary commands: 106 available, `collect_style` partial, and `jregress` plus `jwdidstacked` unavailable.
+- Rendered 63 official Stata 18 command topics and 43 stored maintainer help sources with Stata's documented `smcl2txt` translator after resolving their visible `INCLUDE help` sources in order.
+- Added the public maintained-distribution `cgmreg.hlp` pinned to repository commit `1e3006e54d51ebf75077e0f969367bb4b4250cb9`; its packet states that this is not the original authors' archived distribution alone.
+- Kept all 107 full manuals in the bundle for a later expansion design but stopped returning them in Phase 2. The combined expanded manual-plus-paper phase remains deferred.
+- Kept compact paper catalogs visible even when help is unavailable, while explicitly prohibiting their use as command-grammar authority.
+- Preserved the existing exact raw-paper Phase 3 interface without adding a new Phase 3–4 router, trigger, score, or semantic validator.
+
+## 2026-08-30 — independent multi-command evidence packets
+
+- Changed Phase 2 to return one ordered `command_evidence` packet per selected command so a missing full guide no longer aborts unrelated available commands.
+- Kept unavailable commands explicit with `guide_status=full_command_guide_unavailable`, a null guide, and an empty paper catalog without substitution.
+- Allowed Phase 3 paper cards for available commands to return when another selected command has no full guide.
+- Allowed the model to request and compare multiple command packets only when different stages need them or genuine alternatives remain; a clear command choice stays single-command to limit context.
+- Made core estimation calls literal at the call site: research-defining variables may not be hidden in macros, positional mappings, unnecessary programs, decorative indentation, or speculative abstractions.
+
 ## 2026-08-30 — direct guide and paper-context lookup
 
 - Removed `command_paper_index`, paper review summary, paper integrity audit, project scanning, and exhaustive paper hash/span gates from the product path.

@@ -1,0 +1,216 @@
+Title
+
+    eventstudyinteract --
+                    implements the interaction weighted (IW) estimator and constructs pointwise confidence interval for the estimation of dynamic treatment effects.  To estimate the dynamic effects of an absorbing treatment, researchers often use
+                    two-way fixed effects (TWFE) regressions that include leads and lags of the treatment (event study specification).  Units are categorized into different cohorts based on their initial treatment timing.  Sun and Abraham (2020)
+                    proposes this estimator as an alternative to the TWFE regression in the presence of treatment effects heterogeneous across cohorts.  Under treatment effects heterogeneity, the TWFE regression can result in estimates with
+                    uninterpretable weights, which can be assessed by the Stata module eventstudyweights.  The IW estimator is implemented in three steps.  First, estimate the interacted regression with reghdfe, where the interactions are between
+                    relative time indicators and cohort indicators.  Second, estimate the cohort shares underlying each relative time.  Third, take the weighted average of estimates from the first step, with weights set to the estimated cohort shares.
+ 
+Syntax
+
+        eventstudyinteract {y} {rel_time_list} [if] [in] [weight] , absorb(absvars) cohort(variable) control_cohort(variable) [options covariates(varlist)]
+
+    where rel_time_list is the list of relative time indicators as you would have included in the canonical two-way fixed effects regression, e.g.,
+ 
+                rel_time_1 [rel_time_2 [...]] 
+                
+    See illustration for an example of generating these relative time indicators.  The relative time indicators should take the value of zero for never treated units.
+ 
+
+    Users should shape their dataset to a long format where each observation is at the unit-time level.  See illustration for an example of specifying the syntax.  The syntax is similar to reghdfe in specifying fixed effects (with absorb) and the type
+    of standard error reported (with vcetype).  Regressors other than the relative time indicators need to be specified separately in covariates(varlist).  Furthermore, it also requires the user to specify the cohort categories as well as which cohort
+    is the control cohort (see important notes below).  Note that Sun and Abraham (2020) only establishes the validity of the IW estimators for balanced panel data without covariates. eventstudyinteract does not impose a balanced panel by dropping units
+    with observations that are missing in any time period.  Instead, it evaluates the IW estimators for unbalanced panel data by estimating the interacted regression using all observations.
+
+    eventstudyinteract requires avar (Baum and Schaffer, 2013) and reghdfe (Sergio, 2017) to be installed.  Installation of eventstudyinteract will install avar and reghdfe (and its dependencies) from ssc if necessary.
+
+  options                     Description
+  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Must specify
+cohort(varname)               categorical variable that corresponds to the initial treatment timing of each unit.  If there are units that receive multiple treatments, Sun and Abraham (2020) defines the initial treatment timing to be based on the first
+                                  treatment.  This categorical variable should be set to be missing for never treated units.
+control_cohort(varname)       binary variable that corresponds to the control cohort, which can be never-treated units or last-treated units.  If using last-treated unit as control cohort, exclude the time periods when the last cohort receives treatment.
+absorb(varlist)               specifies unit and time fixed effects.
+
+  Optional
+covariates(varlist)           specify covariates that lend validity to the parallel trends assumption, i.e. covariates you would have included in the canonical two-way fixed effects regressions.
+
+  VCE
+vce(vcetype [,opt])           vcetype may be unadjusted (default), robust or cluster fvvarlist (allowing two- and multi-way clustering)
+                              suboptions bw(#), kernel(str), dkraay(#) and kiefer allow for AC/HAC estimates; see the avar package
+
+  Saved Output
+    eventstudyinteract reports the IW estimates in e(b_iw) and standard error in e(V_iw).  Since the interacted regression is performed by reghdfe, e(b) keeps all results from reghdfe (unlabeled at the moment other than covariates, which can be accessed
+    via _b[covariates] and _se[covariates]). Stata's post-estimation commands such as test look for coefficients and variance covariance matrix stored in e(b) and e(V). To use these commands on the IW estimates only, a workaround is to run the following
+    before Stata's post-estimation commands:
+        . matrix b = e(b_iw)
+        . matrix V = e(V_iw)
+        . ereturn post b V
+    Additionally, the estimates of cohort-specific effect for the given relative time are extracted from e() and reported in e(b_interact) as well as the variance associated with each estimator in e(V_interact).  In summary, the following results are
+    stored in e():
+
+
+    Matrices
+      e(b_iw)                 IW estimate vector
+      e(V_iw)                 pointwise variance covariance estimate of the IW estimators, which can be used as input of pre-trend test such as pretrends
+      e(b_interact)           Each column vector contains estimates of cohort-specific effect for the given relative time.
+      e(V_interact)           Each column vector contains variance estimate of the cohort-specific effect estimator for the given relative time.
+      e(ff_w)                 Each column vector contains estimates of cohort shares underlying the given relative time.
+      e(Sigma_ff)             variance estimate of the cohort share estimators
+
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    aweights and fweights are allowed; see weight.
+ 
+Description
+
+    To estimate the dynamic effects of an absorbing treatment, researchers often use two-way fixed effects regressions that include leads and lags of the treatment (event study specification). Units are categorized into different cohorts based on their
+    initial treatment timing. Sun and Abraham (2020) show the coefficients in this event study specification can be written as a linear combination of cohort-specific effects from both its own relative period and other relative periods.  They show this
+    specification is not robust to treatment effects heterogeneity and propose the interaction weighted estimator.
+
+    eventstudyinteract implements the interaction weighted estimators for event studies, It is optimized for speed in large panel datasets thanks to reghdfe.
+
+    For each relative time indicator specified in rel_time_list, eventstudyinteract estimates the IW estimator for the treatment effect associated with the given relative time.  It provides built-in options to control for fixed effects and covariates
+    (see covariates).
+
+
+Examples
+
+    Load the 1968 extract of the National Longitudinal Survey of Young Women and Mature Women.
+        . webuse nlswork, clear
+
+    Code the cohort categorical variable based on when the individual first joined the union, which will be inputted in cohort(varname).
+        . gen union_year = year if union == 1
+        . bysort idcode: egen first_union = min(union_year)
+        . drop union_year
+ 
+    Code the relative time categorical variable.
+        . gen ry = year - first_union
+
+    For the first example, we take the control cohort to be individuals that never unionized.
+        . gen never_union = (first_union == .)
+
+    Check if there is a sufficient number of treated units for each relative time.  With very few units it might be better to bin the relative times and assume constant treatment effects within the bin.
+        . tab ry
+
+    We will consider the dynamic effect of union status on income.  We first generate these relative time indicators, and leave out the distant leads due to few observations.  Implicitly this assumes that effects outside the lead windows are zero.
+        forvalues k = 18(-1)2 {
+           gen g_`k' = ry == -`k'
+        }
+        forvalues k = 0/18 {
+             gen g`k' = ry == `k'
+        }
+        
+    We use the IW estimator to estimate the dynamic effect on log wage associated with each relative time.
+    With many leads and lags, we need a large matrix size to hold intermediate estimates.
+        . set matsize 800
+        . eventstudyinteract ln_wage g_* g0-g18, cohort(first_union) control_cohort(never_union) covariates(south) absorb(i.idcode i.year) vce(cluster idcode)
+
+Event study plots
+    We may feed the estimates into coefplot for an event study plot.
+        . matrix C = e(b_iw)
+        . mata st_matrix("A",sqrt(diagonal(st_matrix("e(V_iw)"))))
+        . matrix C = C \ A'
+        . matrix list C
+        . coefplot matrix(C[1]), se(C[2])
+
+Binning
+    Pre-treatment effects seem relatively constant, which might suggest binning the many leads.  TODO: current implementation of bins does not follow Sun and Abraham (2020) exactly due to coding challenge.  But it is valid if effects in the bin are
+    constant for each cohort.
+        . gen g_l4 = ry <= -4
+
+Using the last treated as the control cohort
+    Alternatively, we can take the control cohort to be individuals that were unionized last.
+        . gen last_union = (first_union == 88)
+
+    If using the last-treated cohort as the control, be sure to restrict the analysis sample to exclude the never-treated (if any) and to be before the treated periods for the last-treated cohort.
+        . eventstudyinteract ln_wage g_l4 g_3 g_2 g0-g18 if first_union != . & year < 88, cohort(first_union) control_cohort(last_union) covariates(south) absorb(i.idcode i.year) vce(cluster idcode)
+
+Understanding the mechanics of the IW estimator
+    We can look at the share of cohorts underlying the IW estimates for each relative time.
+        . matrix list e(ff_w)
+
+    We can look at the cohort-specific treatment effect estimates for each relative time.
+        . matrix list e(b_interact)
+
+    We can check that the IW estimates are weighted averages of the cohort-specific dynamic effect estimate , weighted by the corresponding cohort share estimates.  For example, the IW estimate associated with g_l4 is
+        . matrix list e(b_iw)
+    which is the weighted average of cohort-specific treatment effect estimates, with weights corresponding to the cohort share estimates:
+        . matrix delta = e(b_interact)
+        . matrix weight = e(ff_w)
+        . matrix nu = delta[1...,1]'*weight[1...,1]
+        . matrix list nu
+
+Aggregating event study estimates
+    It is possible to use lincom to estimate the average effect, say over the first five years of joining the union. However, since lincom looks for coefficients and variance covariance matrix stored in e(b) and e(V) a workaround is the following:
+        . matrix b = e(b_iw)
+        . matrix V = e(V_iw)
+        . ereturn post b V
+        . lincom (g0 + g1 + g2 + g3 + g4)/5
+
+Aggregating event study estimates
+    It is possible to use test to perform a joint F-test of pretrends in the sense of testing whether all of the coefficients on the pre-event relative time indicators are jointly zero. However, since test looks for coefficients and variance covariance
+    matrix stored in e(b) and e(V) a workaround is the following:
+        . matrix b = e(b_iw)
+        . matrix V = e(V_iw)
+        . ereturn post b V
+        . test (g_l4=0) (g_3=0) (g_2=0)
+
+Compare event study estimates for subsamples
+    Suppose we want to compare the average effect over the first five years of joining the union between college graduates and non-college graduates. We can first estimate their separate effects by interacting the relative time indicators with the
+    indicator of college graduates:
+        forvalues k = 18(-1)2 {
+           gen g_`k'_collgrad0 = ry == -`k' & collgrad == 0
+        }
+        forvalues k = 0/18 {
+             gen g`k'_collgrad0 = ry == `k' & collgrad == 0
+        }
+        gen g_l4_collgrad0 = ry <= -4 & collgrad == 0 
+        forvalues k = 18(-1)2 {
+           gen g_`k'_collgrad1 = ry == -`k' & collgrad == 1
+        }
+        forvalues k = 0/18 {
+             gen g`k'_collgrad1 = ry == `k' & collgrad == 1
+        }
+        gen g_l4_collgrad1 = ry <= -4 & collgrad == 1
+
+    We can then use lincom to estimate the difference in their average effects as below.  Alternatively, we can use eventstudyinteract separately on the subsamples of college graduates and non-college graduates.  The point estimates might be slightly
+    different because the control cohort is restricted to college graduates and non-college graduates respectively. The approach below combines both into one control cohort.
+        
+        . eventstudyinteract ln_wage g_l4_collgrad* g_3_collgrad* g_2_collgrad* g0_collgrad0-g18_collgrad0 g0_collgrad1-g18_collgrad1 if first_union != . & year < 88, cohort(first_union) control_cohort(last_union) absorb(i.idcode i.year) vce(cluster
+            idcode)
+        . matrix b = e(b_iw)
+        . matrix V = e(V_iw)
+        . ereturn post b V
+        . lincom (g0_collgrad1 + g1_collgrad1 + g2_collgrad1 + g3_collgrad1 + g4_collgrad1)/5 - (g0_collgrad0 + g1_collgrad0 + g2_collgrad0 + g3_collgrad0 + g4_collgrad0)/5
+
+Acknowledgements
+  
+    Thanks to the users of early versions of the program who devoted time to reporting the bugs that they encountered.  Thanks to Yunan Ji, Soomi Kim, Paichen Li, Emma Rackstraw and Jie Zhou for beta testing.  Thanks to Claudio A. Mora-García for
+    incorporating covariance estimation into the code.
+
+References
+ 
+    Baum, C. and Schaffer, M. 2013.  AVAR: Stata module to perform asymptotic covariance estimation for iid and non-iid data robust to heteroskedasticity, autocorrelation, 1- and 2-way clustering, and common cross-panel autocorrelated disturbances.
+        Statistical Software Components S457689, Boston College Department of Economics.  https://ideas.repec.org/c/boc/bocode/s457689.html
+ 
+    Correia, S. 2017.  REGHDFE: Stata module for linear and instrumental-variable/gmm regression absorbing multiple levels of fixed effects.  Statistical Software Components s457874, Boston College Department of Economics.
+        https://ideas.repec.org/c/boc/bocode/s457874.html
+
+    Sun, L. and Abraham, S. 2020.  Estimating Dynamic Treatment Effects in Event Studies with Heterogeneous Treatment Effects
+
+Citation and Installation of eventstudyinteract
+
+    eventstudyinteract is not an official Stata command. It is a free contribution to the research community, like a paper. Please cite it as such:
+
+    Sun, L., 2021.  eventstudyinteract: interaction weighted estimator for event study.  https://github.com/lsun20/eventstudyinteract.
+
+    eventstudyinteract can be installed easily via the github package, which is available on https://github.com/haghish/github.
+
+        . github install lsun20/eventstudyinteract
+        . github update eventstudyinteract
+
+Author
+
+    Liyang Sun
+    lsun20@mit.edu

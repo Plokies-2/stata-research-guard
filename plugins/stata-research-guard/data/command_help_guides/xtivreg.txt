@@ -1,0 +1,580 @@
+[XT] xtivreg -- Instrumental variables and two-stage least squares for panel-data models
+                (View complete PDF manual entry)
+
+
+Syntax
+
+    GLS random-effects (RE) model
+
+        xtivreg depvar [varlist_1] (varlist_2 = varlist_iv) [if] [in] [, re RE_options]
+
+
+    Between-effects (BE) model
+
+        xtivreg depvar [varlist_1] (varlist_2 = varlist_iv) [if] [in] , be [BE_options]
+
+
+    Fixed-effects (FE) model
+
+        xtivreg depvar [varlist_1] (varlist_2 = varlist_iv) [if] [in] , fe [FE_options]
+
+
+    First-differenced (FD) estimator
+
+        xtivreg depvar [varlist_1] (varlist_2 = varlist_iv) [if] [in] , fd [FD_options]
+
+
+    RE_options           Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Model
+      re                 use random-effects estimator; the default
+      ec2sls             use Baltagi's EC2SLS random-effects estimator
+      nosa               use the Baltagi-Chang estimators of the variance components
+      regress            treat covariates as exogenous and ignore instrumental variables
+
+    SE/Robust
+      vce(vcetype)       vcetype may be conventional, robust, cluster clustvar, bootstrap, or jackknife
+
+    Reporting
+      level(#)           set confidence level; default is level(95)
+      first              report first-stage estimates
+      small              report t and F statistics instead of Z and chi-squared statistics
+      theta              report theta
+      display_options    control columns and column formats, row spacing, line width, display of omitted variables and base and empty cells, and factor-variable labeling
+
+
+      coeflegend         display legend instead of statistics
+
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  
+    BE_options           Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Model
+      be                 use between-effects estimator
+      regress            treat covariates as exogenous and ignore instrumental variables
+
+    SE/Robust
+      vce(vcetype)       vcetype may be conventional, robust, cluster clustvar, bootstrap, or jackknife
+
+    Reporting
+      level(#)           set confidence level; default is level(95)
+      first              report first-stage estimates
+      small              report t and F statistics instead of Z and chi-squared statistics
+      display_options    control columns and column formats, row spacing, line width, display of omitted variables and base and empty cells, and factor-variable labeling
+
+
+      coeflegend         display legend instead of statistics
+
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    FE_options           Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Model
+      fe                 use fixed-effects estimator
+      regress            treat covariates as exogenous and ignore instrumental variables
+
+    SE/Robust
+      vce(vcetype)       vcetype may be conventional, robust, cluster clustvar, bootstrap, or jackknife
+
+    Reporting
+      level(#)           set confidence level; default is level(95)
+      first              report first-stage estimates
+      small              report t and F statistics instead of Z and chi-squared statistics
+      display_options    control columns and column formats, row spacing, line width, display of omitted variables and base and empty cells, and factor-variable labeling
+
+
+      coeflegend         display legend instead of statistics
+
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  
+    FD_options           Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Model
+      noconstant         suppress constant term
+      fd                 use first-differenced estimator
+      regress            treat covariates as exogenous and ignore instrumental variables
+
+    SE/Robust
+      vce(vcetype)       vcetype may be conventional, robust, cluster clustvar, bootstrap, or jackknife
+
+    Reporting
+      level(#)           set confidence level; default is level(95)
+      first              report first-stage estimates
+      small              report t and F statistics instead of Z and chi-squared statistics
+      display_options    control columns and column formats, row spacing, line width, and display of omitted variables
+
+      coeflegend         display legend instead of statistics
+
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    A panel variable must be specified. For xtivreg, fd, a time variable must also be specified. Use xtset.
+    varlist_1 and varlist_iv may contain factor variables, except for the fd estimator; see fvvarlist.
+    depvar, varlist_1, varlist_2, and varlist_iv may contain time-series operators; see tsvarlist.
+    by, collect, and statsby are allowed; see prefix.
+    coeflegend does not appear in the dialog box.
+    See [XT] xtivreg postestimation for features available after estimation.
+
+
+Menu
+
+    Statistics > Longitudinal/panel data > Endogenous covariates > Instrumental-variables regression (FE, RE, BE, FD)
+
+
+Description
+
+    xtivreg offers five different estimators for fitting panel-data models in which some of the right-hand-side covariates are endogenous.  These estimators are two-stage least-squares generalizations of simple panel-data estimators for exogenous
+    variables. xtivreg with the be option uses the two-stage least-squares between estimator.  xtivreg with the fe option uses the two-stage least-squares within estimator.  xtivreg with the re option uses a two-stage least-squares random-effects
+    estimator.  There are two implementations: G2SLS from Balestra and Varadharajan-Krishnakumar (1987) and EC2SLS from Baltagi.  The Balestra and Varadharajan-Krishnakumar G2SLS is the default because it is computationally less expensive.  Baltagi's
+    EC2SLS can be obtained by specifying the ec2sls option.  xtivreg with the fd option requests the two-stage least-squares first-differenced estimator.
+
+    See Baltagi (2013) for an introduction to panel-data models with endogenous covariates.  For the derivation and application of the first-differenced estimator, see Anderson and Hsiao (1981).
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+        Methods and formulas
+
+    The above sections are not included in this help file.
+
+
+Options for RE model
+
+        +-------+
+    ----+ Model +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    re requests the G2SLS random-effects estimator.  re is the default.
+
+    ec2sls requests Baltagi's EC2SLS random-effects estimator instead of the default Balestra and Varadharajan-Krishnakumar estimator.
+
+    nosa specifies that the Baltagi-Chang estimators of the variance components be used instead of the default adapted Swamy-Arora estimators.
+
+    regress specifies that all the covariates be treated as exogenous and that the instrument list be ignored.  Specifying regress causes xtivreg to fit the requested panel-data regression model of depvar on varlist_1 and varlist_2, ignoring varlist_iv.
+
+        +-----------+
+    ----+ SE/Robust +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    vce(vcetype) specifies the type of standard error reported, which includes types that are derived from asymptotic theory (conventional), that are robust to some kinds of misspecification (robust), that allow for intragroup correlation (cluster
+        clustvar), and that use bootstrap or jackknife methods (bootstrap, jackknife); see [XT] vce_options.
+
+
+        vce(conventional), the default, uses the conventionally derived variance estimator for generalized least-squares regression.
+
+        Specifying vce(robust) is equivalent to specifying vce(cluster panelvar); see xtreg, re in Methods and formulas of [XT] xtreg.
+
+        +-----------+
+    ----+ Reporting +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    level(#); see [R] Estimation options.
+
+    first specifies that the first-stage regressions be displayed.
+
+    small specifies that t statistics be reported instead of Z statistics and that F statistics be reported instead of chi-squared statistics.
+
+    theta specifies that the output should include the estimated value of theta used in combining the between and fixed estimators.  For balanced data, this is a constant, and for unbalanced data, a summary of the values is presented in the header of
+        the output.
+
+    display_options:  noci, nopvalues, noomitted, vsquish, noemptycells, baselevels, allbaselevels, nofvlabel, fvwrap(#), fvwrapon(style), cformat(%fmt), pformat(%fmt), sformat(%fmt), and nolstretch; see [R] Estimation options.
+
+
+    The following option is available with xtivreg but is not shown in the dialog box:
+
+    coeflegend; see [R] Estimation options.
+
+
+Options for BE model
+
+        +-------+
+    ----+ Model +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    be requests the between regression estimator.
+
+    regress specifies that all the covariates be treated as exogenous and that the instrument list be ignored.  Specifying regress causes xtivreg to fit the requested panel-data regression model of depvar on varlist_1 and varlist_2, ignoring varlist_iv.
+
+        +-----------+
+    ----+ SE/Robust +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    vce(vcetype) specifies the type of standard error reported, which includes types that are derived from asymptotic theory (conventional), that are robust to some kinds of misspecification (robust), that allow for intragroup correlation (cluster
+        clustvar), and that use bootstrap or jackknife methods (bootstrap, jackknife); see [XT] vce_options.
+
+
+        vce(conventional), the default, uses the conventionally derived variance estimator for generalized least-squares regression.
+
+        Specifying vce(robust) is equivalent to specifying vce(cluster panelvar); see xtreg, fe in Methods and formulas of [XT] xtreg.
+
+        +-----------+
+    ----+ Reporting +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    level(#); see [R] Estimation options.
+
+    first specifies that the first-stage regressions be displayed.
+
+    small specifies that t statistics be reported instead of Z statistics and that F statistics be reported instead of chi-squared statistics.
+
+    display_options:  noci, nopvalues, noomitted, vsquish, noemptycells, baselevels, allbaselevels, nofvlabel, fvwrap(#), fvwrapon(style), cformat(%fmt), pformat(%fmt), sformat(%fmt), and nolstretch; see [R] Estimation options.
+
+
+    The following option is available with xtivreg but is not shown in the dialog box:
+
+    coeflegend; see [R] Estimation options.
+
+
+Options for FE model
+
+        +-------+
+    ----+ Model +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    fe requests the fixed-effects (within) regression estimator.
+
+    regress specifies that all the covariates be treated as exogenous and that the instrument list be ignored.  Specifying regress causes xtivreg to fit the requested panel-data regression model of depvar on varlist_1 and varlist_2, ignoring varlist_iv.
+
+        +-----------+
+    ----+ SE/Robust +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    vce(vcetype) specifies the type of standard error reported, which includes types that are derived from asymptotic theory (conventional), that are robust to some kinds of misspecification (robust), that allow for intragroup correlation (cluster
+        clustvar), and that use bootstrap or jackknife methods (bootstrap, jackknife); see [XT] vce_options.
+
+
+        vce(conventional), the default, uses the conventionally derived variance estimator for generalized least-squares regression.
+
+        Specifying vce(robust) is equivalent to specifying vce(cluster panelvar); see xtreg, fe in Methods and formulas of [XT] xtreg.
+
+        +-----------+
+    ----+ Reporting +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    level(#); see [R] Estimation options.
+
+    first specifies that the first-stage regressions be displayed.
+
+    small specifies that t statistics be reported instead of Z statistics and that F statistics be reported instead of chi-squared statistics.
+
+    display_options:  noci, nopvalues, noomitted, vsquish, noemptycells, baselevels, allbaselevels, nofvlabel, fvwrap(#), fvwrapon(style), cformat(%fmt), pformat(%fmt), sformat(%fmt), and nolstretch; see [R] Estimation options.
+
+
+    The following option is available with xtivreg but is not shown in the dialog box:
+
+    coeflegend; see [R] Estimation options.
+
+
+Options for FD model
+
+        +-------+
+    ----+ Model +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    noconstant; see [R] Estimation options.
+
+    fd requests the first-differenced regression estimator.
+
+    regress specifies that all the covariates be treated as exogenous and that the instrument list be ignored.  Specifying regress causes xtivreg to fit the requested panel-data regression model of depvar on varlist_1 and varlist_2, ignoring varlist_iv.
+
+        +-----------+
+    ----+ SE/Robust +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    vce(vcetype) specifies the type of standard error reported, which includes types that are derived from asymptotic theory (conventional), that are robust to some kinds of misspecification (robust), that allow for intragroup correlation (cluster
+        clustvar), and that use bootstrap or jackknife methods (bootstrap, jackknife); see [XT] vce_options.
+
+
+        vce(conventional), the default, uses the conventionally derived variance estimator for generalized least-squares regression.
+
+        Specifying vce(robust) is equivalent to specifying vce(cluster panelvar); see xtreg, fe in Methods and formulas of [XT] xtreg.
+
+        +-----------+
+    ----+ Reporting +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    level(#); see [R] Estimation options.
+
+    first specifies that the first-stage regressions be displayed.
+
+    small specifies that t statistics be reported instead of Z statistics and that F statistics be reported instead of chi-squared statistics.
+
+    display_options:  noci, nopvalues, noomitted, vsquish, cformat(%fmt), pformat(%fmt), sformat(%fmt), and nolstretch; see [R] Estimation options.
+
+    The following option is available with xtivreg but is not shown in the dialog box:
+
+    coeflegend; see [R] Estimation options.
+
+
+Examples
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse abdata
+
+    First-differenced estimator
+        . xtivreg n l2.n l(0/1).w l(0/2).(k ys) yr1981-yr1984 (l.n = l3.n), fd
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse nlswork
+
+    Fixed-effects model
+        . xtivreg ln_w age c.age#c.age not_smsa (tenure = union south), fe
+
+    GLS random-effects model
+        . xtivreg ln_w age c.age#c.age not_smsa 2.race (tenure = union birth south), re
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Stored results
+
+    xtivreg, re stores the following in e():
+
+    Scalars           
+      e(N)                   number of observations
+      e(N_g)                 number of groups
+      e(df_m)                model degrees of freedom
+      e(df_rz)               residual degrees of freedom
+      e(g_min)               smallest group size
+      e(g_avg)               average group size
+      e(g_max)               largest group size
+      e(Tcon)                1 if panels balanced, 0 otherwise
+      e(N_clust)             number of clusters
+      e(sigma)               ancillary parameter (gamma, lnormal)
+      e(sigma_u)             panel-level standard deviation
+      e(sigma_e)             standard deviation of epsilon_it
+      e(r2_w)                R-squared for within model
+      e(r2_o)                R-squared for overall model
+      e(r2_b)                R-squared for between model
+      e(chi2)                chi-squared
+      e(rho)                 rho
+      e(F)                   model F (small only)
+      e(m_p)                 p-value from model test
+      e(thta_min)            minimum theta
+      e(thta_5)              theta, 5th percentile
+      e(thta_50)             theta, 50th percentile
+      e(thta_95)             theta, 95th percentile
+      e(thta_max)            maximum theta
+      e(rank)                rank of e(V)
+
+    Macros            
+      e(cmd)                 xtivreg
+      e(cmdline)             command as typed
+      e(depvar)              name of dependent variable
+      e(ivar)                variable denoting groups
+      e(tvar)                variable denoting time within groups
+      e(endog)               names of endogenous variables
+      e(exog)                names of exogenous variables
+      e(model)               g2sls or ec2sls
+      e(small)               small, if specified
+      e(clustvar)            name of cluster variable
+      e(chi2type)            Wald; type of model chi-squared test
+      e(vce)                 vcetype specified in vce()
+      e(vcetype)             title used to label Std. err.
+      e(properties)          b V
+      e(predict)             program used to implement predict
+      e(marginsok)           predictions allowed by margins
+      e(marginsnotok)        predictions disallowed by margins
+      e(asbalanced)          factor variables fvset as asbalanced
+      e(asobserved)          factor variables fvset as asobserved
+
+    Matrices          
+      e(b)                   coefficient vector
+      e(V)                   variance-covariance matrix of the estimators
+      e(V_modelbased)        model-based variance
+
+    Functions         
+      e(sample)              marks estimation sample
+
+    In addition to the above, the following is stored in r():
+
+    Matrices          
+      r(table)               matrix containing the coefficients with their standard errors, test statistics, p-values, and confidence intervals
+
+    Note that results stored in r() are updated when the command is replayed and will be replaced when any r-class command is run after the estimation command.
+
+
+    xtivreg, be stores the following in e():
+
+    Scalars           
+      e(N)                   number of observations
+      e(N_g)                 number of groups
+      e(mss)                 model sum of squares
+      e(df_m)                model degrees of freedom
+      e(rss)                 residual sum of squares
+      e(df_r)                residual degrees of freedom
+      e(df_rz)               residual degrees of freedom for the between-transformed regression
+      e(g_min)               smallest group size
+      e(g_avg)               average group size
+      e(g_max)               largest group size
+      e(rs_a)                adjusted R-squared
+      e(r2_w)                R-squared for within model
+      e(r2_o)                R-squared for overall model
+      e(r2_b)                R-squared for between model
+      e(N_clust)             number of clusters
+      e(chi2)                model Wald
+      e(chi2_p)              p-value for model chi-squared test
+      e(F)                   F statistic (small only)
+      e(rmse)                root mean squared error
+      e(rank)                rank of e(V)
+
+    Macros            
+      e(cmd)                 xtivreg
+      e(cmdline)             command as typed
+      e(depvar)              name of dependent variable
+      e(ivar)                variable denoting groups
+      e(tvar)                variable denoting time within groups
+      e(endog)               names of endogenous variables
+      e(exog)                names of exogenous variables
+      e(model)               be
+      e(small)               small, if specified
+      e(clustvar)            name of cluster variable
+      e(vce)                 vcetype specified in vce()
+      e(vcetype)             title used to label Std. err.
+      e(properties)          b V
+      e(predict)             program used to implement predict
+      e(marginsok)           predictions allowed by margins
+      e(marginsnotok)        predictions disallowed by margins
+      e(asbalanced)          factor variables fvset as asbalanced
+      e(asobserved)          factor variables fvset as asobserved
+
+    Matrices          
+      e(b)                   coefficient vector
+      e(V)                   variance-covariance matrix of the estimators
+      e(V_modelbased)        model-based variance
+
+    Functions         
+      e(sample)              marks estimation sample
+
+    In addition to the above, the following is stored in r():
+
+    Matrices          
+      r(table)               matrix containing the coefficients with their standard errors, test statistics, p-values, and confidence intervals
+
+    Note that results stored in r() are updated when the command is replayed and will be replaced when any r-class command is run after the estimation command.
+
+
+    xtivreg, fe stores the following in e():
+
+    Scalars           
+      e(N)                   number of observations
+      e(N_g)                 number of groups
+      e(df_m)                model degrees of freedom
+      e(rss)                 residual sum of squares
+      e(df_r)                residual degrees of freedom (small only)
+      e(df_rz)               residual degrees of freedom for the within-transformed regression
+      e(g_min)               smallest group size
+      e(g_avg)               average group size
+      e(g_max)               largest group size
+      e(N_clust)             number of clusters
+      e(sigma)               ancillary parameter (gamma, lnormal)
+      e(corr)                corr(u_i, Xb)
+      e(sigma_u)             panel-level standard deviation
+      e(sigma_e)             standard deviation of epsilon_it
+      e(r2_w)                R-squared for within model
+      e(r2_o)                R-squared for overall model
+      e(r2_b)                R-squared for between model
+      e(chi2)                model Wald (not small)
+      e(chi2_p)              p-value for model chi-squared test
+      e(rho)                 rho
+      e(F)                   F statistic (small only)
+      e(F_f)                 F for H_0: u_i=0
+      e(F_fp)                p-value for F for H_0: u_i=0
+      e(df_a)                degrees of freedom for absorbed effect
+      e(rank)                rank of e(V)
+
+    Macros            
+      e(cmd)                 xtivreg
+      e(cmdline)             command as typed
+      e(depvar)              name of dependent variable
+      e(ivar)                variable denoting groups
+      e(tvar)                variable denoting time within groups
+      e(endog)               names of endogenous variables
+      e(exog)                names of exogenous variables
+      e(model)               fe
+      e(small)               small, if specified
+      e(clustvar)            name of cluster variable
+      e(vce)                 vcetype specified in vce()
+      e(vcetype)             title used to label Std. err.
+      e(properties)          b V
+      e(predict)             program used to implement predict
+      e(marginsok)           predictions allowed by margins
+      e(marginsnotok)        predictions disallowed by margins
+      e(asbalanced)          factor variables fvset as asbalanced
+      e(asobserved)          factor variables fvset as asobserved
+
+    Matrices          
+      e(b)                   coefficient vector
+      e(V)                   variance-covariance matrix of the estimators
+      e(V_modelbased)        model-based variance
+
+    Functions         
+      e(sample)              marks estimation sample
+
+    In addition to the above, the following is stored in r():
+
+    Matrices          
+      r(table)               matrix containing the coefficients with their standard errors, test statistics, p-values, and confidence intervals
+
+    Note that results stored in r() are updated when the command is replayed and will be replaced when any r-class command is run after the estimation command.
+
+
+    xtivreg, fd stores the following in e():
+
+    Scalars           
+      e(N)                   number of observations
+      e(N_g)                 number of groups
+      e(df_m)                model degrees of freedom
+      e(rss)                 residual sum of squares
+      e(df_r)                residual degrees of freedom (small only)
+      e(df_rz)               residual degrees of freedom for first-differenced regression
+      e(g_min)               smallest group size
+      e(g_avg)               average group size
+      e(g_max)               largest group size
+      e(N_clust)             number of clusters
+      e(sigma)               ancillary parameter (gamma, lnormal)
+      e(corr)                corr(u_i, Xb)
+      e(sigma_u)             panel-level standard deviation
+      e(sigma_e)             standard deviation of epsilon_it
+      e(r2_w)                R-squared for within model
+      e(r2_o)                R-squared for overall model
+      e(r2_b)                R-squared for between model
+      e(chi2)                model Wald (not small)
+      e(chi2_p)              p-value for model chi-squared test
+      e(rho)                 rho
+      e(F)                   F statistic (small only)
+      e(rank)                rank of e(V)
+
+    Macros            
+      e(cmd)                 xtivreg
+      e(cmdline)             command as typed
+      e(depvar)              name of dependent variable
+      e(ivar)                variable denoting groups
+      e(tvar)                variable denoting time within groups
+      e(endog)               names of endogenous variables
+      e(exog)                names of exogenous variables
+      e(model)               fd
+      e(small)               small, if specified
+      e(clustvar)            name of cluster variable
+      e(vce)                 vcetype specified in vce()
+      e(vcetype)             title used to label Std. err.
+      e(properties)          b V
+      e(predict)             program used to implement predict
+      e(marginsok)           predictions allowed by margins
+
+    Matrices          
+      e(b)                   coefficient vector
+      e(V)                   variance-covariance matrix of the estimators
+      e(V_modelbased)        model-based variance
+
+    Functions         
+      e(sample)              marks estimation sample
+
+    In addition to the above, the following is stored in r():
+
+    Matrices          
+      r(table)               matrix containing the coefficients with their standard errors, test statistics, p-values, and confidence intervals
+
+    Note that results stored in r() are updated when the command is replayed and will be replaced when any r-class command is run after the estimation command.
+
+
+
+References
+
+    Anderson, T. W., and C. Hsiao. 1981.  Estimation of dynamic models with error components. Journal of the American Statistical Association 76: 598-606.
+
+    Balestra, P., and J. Varadharajan-Krishnakumar. 1987. Full information estimations of a system of simultaneous equations with error component structure. Econometric Theory 3: 223-246.
+
+    Baltagi, B. H. 2013.  Econometric Analysis of Panel Data. 5th ed.  Chichester, UK: Wiley.

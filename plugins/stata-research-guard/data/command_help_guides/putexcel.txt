@@ -1,0 +1,640 @@
+[RPT] putexcel -- Export results to an Excel file
+                  (View complete PDF manual entry)
+
+
+Syntax
+
+    Set workbook for export
+
+        putexcel set filename [, set_options]
+
+
+    Change worksheet settings
+
+        putexcel sheetset [, sheetset_options]
+
+
+    Write expression to Excel
+
+        putexcel ul_cell = exp [, expression_options format_options]
+
+
+    Export Stata matrix to Excel
+
+        putexcel ul_cell = matrix(matname) [, matrix_options format_options]
+
+
+    Export Stata graph, path diagram, or other image to Excel
+
+        putexcel ul_cell = image(filename)
+
+
+    Export returned results to Excel
+
+        putexcel ul_cell = returnset [, colwise overwritefmt]
+
+
+    Write formula to Excel
+
+        putexcel ul_cell = formula(formula) [, overwritefmt]
+
+
+    Write hyperlink to Excel
+
+        putexcel ul_cell = hyperlink(link, link_name)
+
+
+    Format cells
+
+        putexcel cellrange, overwritefmt format_options
+
+
+    Add the coefficient table from the last estimation command to Excel file
+
+        putexcel ul_cell = etable[(#1 #2 ... #n)]
+
+
+    Add a table from the current collection to Excel file
+
+        putexcel ul_cell = collect[, collect_options]
+
+
+    Close and save Excel file
+
+        putexcel save
+
+
+    Describe current export settings
+
+        putexcel describe
+
+
+    Clear current export settings
+
+        putexcel clear
+
+
+    ul_cell is a valid Excel upper-left cell specified using standard Excel notation, for example, A1 or D4.
+
+    cellrange is ul_cell or ul_cell:lr_cell, where lr_cell is a valid Excel lower-right cell, for example, A1, A1:D1, A1:A4, or A1:D4.
+
+
+    set_options                                 Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    open                                        open Excel file in memory
+    modify                                      modify Excel file
+    replace                                     overwrite Excel file
+    sheet(sheetname [, replace])                specify the worksheet to use; the default sheet name is Sheet1
+
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    sheetset_options                            Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    split([#][, #])                             split a worksheet at row # or column # or both
+    header("[text]"[, margin(#)])               insert a header into a worksheet
+    footer("[text]"[, margin(#)])               insert a footer into a worksheet
+    gridon                                      display the cell grid in Excel
+    gridoff                                     hide the cell grid in Excel
+    hpagebreak(#)                               insert a page break at row #
+    vpagebreak(#)                               insert a page break at column #
+    namedrange("text", cellrange)               add a named cell range to a worksheet
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    expression_options                          Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      overwritefmt                              overwrite existing cell formatting when exporting new content
+      asdate                                    convert Stata date (%td-formatted) exp to an Excel date
+      asdatetime                                convert Stata datetime (%tc-formatted) exp to an Excel datetime
+      asdatenum                                 convert Stata date exp to an Excel date number, preserving the cell's format
+      asdatetimenum                             convert Stata datetime exp to an Excel datetime number, preserving the cell's format
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    matrix_options                              Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      overwritefmt                              overwrite existing cell formatting when exporting new content
+      names                                     also write row names and column names for matrix matname; may not be combined with rownames or colnames
+      rownames                                  also write matrix row names for matrix matname; may not be combined with names or colnames
+      colnames                                  also write matrix column names for matrix matname; may not be combined with names or rownames
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    format_options                              Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Number
+      nformat(excelnfmt)                        specify format for numbers
+
+    Alignment
+      left                                      left-align text
+      hcenter                                   center text horizontally
+      right                                     right-align text
+      top                                       vertically align text with the top
+      vcenter                                   center text vertically
+      bottom                                    vertically align text with the bottom
+      txtindent(#)                              indent text by # spaces; default is 0
+      txtrotate(#)                              rotate text by # degrees; default is 0
+      [no]txtwrap                               wrap text within each cell
+      [no]shrinkfit                             shrink text to fit the cell width
+      merge                                     merge cells in cellrange
+      unmerge                                   separate merged cells identified by ul_cell
+
+
+    Font
+      font([fontname] [, size [, color]])       specify font, font size, and font color
+      [no]italic                                format text as italic
+      [no]bold                                  format text as bold
+      [no]underline                             underline text in the specified cells
+      [no]strikeout                             strikeout text in the specified cells
+      script(sub|super|none)                    specify subscript or superscript formatting
+
+
+    Border
+      border(border [, style [, color]])        specify horizontal and vertical cell border style
+      dborder(direction [, style [, color]])    specify diagonal cell border style
+
+
+    Fill
+      fpattern(pattern [, fgcolor [, bgcolor]]) specify fill pattern for cells
+
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    collect_options                             Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    name(cname)                                 use collection cname
+    noisily                                     show putexcel commands used for exporting
+    dofile(filename[, replace])                 save putexcel commands used for exporting to the specified do-file
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    putexcel ul_cell = collect and collect_options do not appear in the dialog box.
+
+
+    Output types
+
+    exp writes a valid Stata expression to a cell; see [U] 13 Functions and expressions.  Stata dates and datetimes differ from Excel dates and datetimes.  To properly export date and datetime values, use asdate and asdatetime.
+
+    matrix(matname) writes the values from a Stata matrix to Excel.  Stata determines where to place the data in Excel by default from the size of the matrix (the number of rows and columns) and the location you specified in ul_cell.  By default,
+        ul_cell contains the first element of matname, and matrix row names and column names are not written.
+
+    image(filename) writes a portable network graphics (.png), JPEG (.jpg), Windows metafile (.wmf), device-independent bitmap (.dib), enhanced metafile (.emf), or bitmap (.bmp) file to an Excel worksheet.  The upper-left corner of the image is aligned
+        with the upper-left corner of the specified ul_cell.  The image is not resized.  If filename contains spaces, it must be enclosed in double quotes.
+
+    returnset is a shortcut name that is used to identify a group of return values.  It is intended primarily for use by programmers and by those who intend to do further processing of their exported results in Excel.  returnset may be any one of the
+        following:
+
+         returnset
+        -------------------------
+         escalars   escalarnames
+         rscalars   rscalarnames
+         emacros    emacronames
+         rmacros    rmacronames
+         ematrices  ematrixnames
+         rmatrices  rmatrixnames
+         e*          enames
+         r*          rnames
+        -------------------------
+
+    formula(formula) writes an Excel formula to the cell specified in ul_cell.  formula may be any valid Excel formula.  Stata does not validate formulas; the text is passed literally to Excel.
+
+    hyperlink(link, link_name) writes a hyperlink to the cell specified in ul_cell.  link may be an external file, a cell, or a webpage.  Stata does not validate the links; the text is passed literally to Excel. Examples:
+
+        putexcel A1 = hyperlink("[auto.xlsx]Sheet1!C2", "Result")
+        putexcel A1 = hyperlink("https://www.stata.com", "StataCorp")
+        putexcel A1 = hyperlink(".\auto.xlsx", "1978 automobile data")
+
+    etable[(#1 #2 ... #n)] adds an automatically generated table to an Excel file starting in ul_cell.  The table may be derived from the coefficient table of the last estimation command, from the table of margins after the last margins command, or from
+        the table of results from one or more models displayed by estimates table.
+
+        If the estimation command outputs n > 1 coefficient tables, the default is to add all tables and assign the corresponding table names tablename1, tablename2, ..., tablename_n.  To specify which tables to add, supply the optional numlist to
+        etable.  For example, to add only the first and third tables from the estimation output, specify etable(1 3).  A few estimation commands do not support the etable output type. See Unsupported estimation commands in [RPT] Appendix for putdocx for
+        a list of estimation commands that are not supported by putexcel.
+
+    collect adds a table from the current collection to an Excel file starting in ul_cell.  This table may be created using collect or table.  See [TABLES] Intro for more information on using collect to create a customized table from a collection of
+        results from one or more Stata commands.  See [R] table intro for information on using table to create tabulations, tables of summary statistics, tables of regression results, and more.
+
+
+
+Menu
+
+    File > Export > Results to Excel spreadsheet (*.xls;*.xlsx)
+
+
+Description
+
+    putexcel writes Stata expressions, matrices, tables, images, and returned results to an Excel file.  putexcel can also format the cells in the worksheet.  This allows you to automate exporting and formatting of, for example, Stata estimation
+    results.  Excel 1997/2003 (.xls) files and Excel 2007/2010 and newer (.xlsx) files are supported.
+
+    putexcel set sets the Excel file to create, modify, or replace in subsequent putexcel commands.  You must set the destination file before using any other putexcel commands.  putexcel save closes the open file in memory and saves it to disk.
+    putexcel clear clears the file information set by putexcel set.  putexcel describe displays the file information set by putexcel set.
+
+    For an advanced syntax to simultaneously write multiple output types, see [RPT] putexcel advanced.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+        +-----+
+    ----+ Set +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    open permits putexcel set to open the Excel file in memory for modification.  The Excel file is written to disk when putexcel save is issued.
+
+    modify permits putexcel set to modify an Excel file.
+
+    replace permits putexcel set to overwrite an existing Excel workbook.  The workbook is overwritten when the first putexcel command is issued unless the open option is used.
+
+    sheet(sheetname [, replace]) saves to the worksheet named sheetname.  If there is no worksheet named sheetname in the workbook, then a new sheet named sheetname is created.  If this option is not specified, Sheet1 is used.
+
+        replace permits putexcel set to overwrite sheetname if it exists in the specified filename.
+
+
+        +----------------+
+    ----+ Sheet settings +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    split([#][, #]) splits a worksheet at row # or column # or both.
+
+    header("text"[, margin(#)]) inserts a header into a worksheet.
+
+    footer("text"[, margin(#)]) inserts a footer into a worksheet.
+
+    gridon shows the cell grid for a worksheet.
+
+    gridoff hides the cell grid for a worksheet.
+
+    hpagebreak(#) inserts a page break at row # for a worksheet.
+
+    vpagebreak(#) inserts a page break at column # for a worksheet.
+
+    namedrange("text", cellrange) adds a named cell range to a worksheet.
+
+
+        +------+
+    ----+ Main +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    overwritefmt causes putexcel to remove any existing cell formatting in the cell or cells to which it is writing new output.  By default, all existing cell formatting is preserved.  overwritefmt, when combined with a cell range, writes the cell
+        format more efficiently.
+
+    asdate tells putexcel that the specified exp is a Stata %td-formatted date that should be converted to an Excel date with m/d/yyyy Excel date format.
+
+        This option has no effect if an exp is not specified as the output type.
+
+    asdatetime tells putexcel that the specified exp is a Stata %tc-formatted datetime that should be converted to an Excel datetime with m/d/yyyy h:mm Excel datetime format.
+
+        This option has no effect if an exp is not specified as the output type.
+
+    asdatenum tells putexcel that the specified exp is a Stata %td-formatted date that should be converted to an Excel date number, preserving the cell's format.
+
+        This option has no effect if an exp is not specified as the output type.
+
+    asdatetimenum tells putexcel that the specified exp is a Stata %tc-formatted datetime that should be converted to an Excel datetime number, preserving the cell's format.
+
+        This option has no effect if an exp is not specified as the output type.
+
+    names specifies that matrix row names and column names be written into the Excel worksheet along with the matrix values.  If you specify names, then ul_cell will be blank, the cell to the right of it will contain the name of the first column, and
+        the cell below it will contain the name of the first row.  names may not be specified with rownames or colnames.
+
+        This option has no effect if matrix() is not specified as the output type.
+
+    rownames specifies that matrix row names be written into the Excel worksheet along with the matrix values.  If you specify rownames, then ul_cell will contain the name of the first row.  rownames may not be specified with names or colnames.
+
+        This option has no effect if matrix() is not specified as the output type.
+
+    colnames specifies that matrix column names be written into the Excel worksheet along with the matrix values.  If you specify colnames, then ul_cell will contain the name of the first column.  colnames may not be specified with names or rownames.
+
+        This option has no effect if matrix() is not specified as the output type.
+
+    colwise specifies that if a returnset is used, the values written to the Excel worksheet be written in consecutive columns.  By default, the values are written in consecutive rows.
+
+        This option has no effect if a returnset is not specified as the output type.
+
+
+        +--------+
+    ----+ Number +-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    nformat(excelnfmt) changes the numeric format of a cell range.  Codes for commonly used formats are shown in the table of numeric formats in the Appendix.  However, any valid Excel format is permitted.  Formats are formed from combinations of the
+        following symbols.
+
+                                                   Cell      Fmt      Cell
+     Symbol        Description                    value     code  displays
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     0             Digit placeholder (add zeros)   8.9      #.00      8.90
+     #             Digit placeholder (no zeros)    8.9      #.##       8.9
+     ?             Digit placeholder (add space)   8.9      0.0?      8.9
+     .             Decimal point
+     %             Percentage                       .1         %       10%
+     ,             Thousands separator         10000     #,###    10,000
+     E- E+ e- e+   Scientific format          12200000  0.00E+00  1.22E+07
+     $-+/():space  Display the symbol               12     (000)     (012)
+     \             Escape character                  3      0\!         3!
+     *             Repeat character                  3        3*    3xxxxx
+                          (fill in cell width)                         
+     _             Skip width of next character   -1.2      _0.0       1.2
+     "text"        Display text in quotes         1.23  0.00 "a"    1.23 a
+     @             Text placeholder                  b   "a"@"c"       abc
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        Formats that contain spaces must be enclosed in double quotes.
+
+
+        +-----------+
+    ----+ Alignment +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    left sets the specified cells to have contents left-aligned within the cell.  left may not be combined with right or hcenter.  Right-alignment is the Excel default for numeric values and need not be specified when outputting numbers.
+
+    hcenter sets the specified cells to have contents horizontally centered within the cell.  hcenter may not be combined with left or right.
+
+    right sets the specified cells to have contents right-aligned within the cell.  right may not be combined with left or hcenter.  Left-alignment is the Excel default for text and need not be specified when outputting strings.
+
+    top sets the specified cells to have contents vertically aligned with the top of the cell.  top may not be combined with bottom or vcenter.
+
+    vcenter sets the specified cells to have contents vertically aligned with the center of the cell.  vcenter may not be combined with top or bottom.
+
+    bottom sets the specified cells to have contents vertically aligned with the bottom of the cell.  bottom may not be combined with top or vcenter.
+
+    txtindent(#) sets the text indention in each cell in a cell range.  # must be an integer between 0 and 15.
+
+    txtrotate(#) sets the text rotation in each cell in a cell range.  # must be an integer between 0 and 180 or equal to 255.  txtrotate(0) is equal to no rotation and is the default.  txtrotate(255) specifies vertical text.  Values 1-90 rotate the
+        text counterclockwise 1 to 90 degrees.  Values 91-180 rotate the text clockwise 1 to 90 degrees.
+
+    txtwrap and notxtwrap specify whether or not the text is to be wrapped in a cell or within each cell in a range of cells.  The default is no wrapping.  notxtwrap has an effect only if the cell or cells were previously formatted to wrap.  txtwrap may
+        not be specified with shrinkfit.
+
+    shrinkfit and noshrinkfit specify whether or not the text is to be shrunk to fit in the cell width of a cell or in each cell of a range of cells.  The default is no shrinking.  noshrinkfit has an effect only if the cell or cells were previously
+        formatted to shrink text to fit.  shrinkfit may not be specified with txtwrap.
+
+    merge tells Excel that cells in the specified cell range should be merged.  merge may be combined with left, right, hcenter, top, bottom, and vcenter to format the merged cell.  Merging cells that contain data in each cell will result in the
+        upper-leftmost data being kept.
+
+        Once you have merged cells, you can refer to the merged cell by using any single cell from the specified cellrange.  For example, if you specified a cellrange of A1:B2, you could refer to the merged cell using A1, B1, A2, or B2.
+
+    unmerge tells Excel to unmerge previously merged cells.  When using unmerge, you only need to use a single cell from the merged cell in the previously specified cellrange.
+
+
+        +------+
+    ----+ Font +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    font([fontname] [, size [, color]]) sets the font, font size, and font color for each cell in a cell range.  The font size and font color may be specified individually without specifying fontname. Use font("", size) to specify font size only.  Use
+        font("", "", color) to specify font color only.  For both cases, the default font will be used.  If font() is not specified, the Excel defaults are preserved.
+
+        fontname may be any valid Excel font.  If fontname includes spaces, then it must be enclosed in double quotes.  What constitutes a valid Excel font is determined by the version of Excel that is installed on the user's computer.
+
+        size is a numeric value that represents any valid Excel font size.  The default is 12.
+
+        color may be one of the colors listed in the table of colors in the Appendix in [RPT] putexcel or may be a valid RGB value in the form "### ### ###".  If no color is specified, then Excel workbook defaults are used.
+
+    italic and noitalic specify whether to italicize or unitalicize the text in a cell or range of cells.  The default is for text to be unitalicized.  noitalic has an effect only if the cell or cells were previously italicized.
+
+    bold and nobold specify whether to bold or unbold the text in a cell or range of cells.  The default is for text to be unbold.  nobold has an effect only if the cell or cells were previously formatted as bold.
+
+    underline and nounderline specify whether to underline the text or remove the underline from the text in a cell or range of cells.  The default is for text not to be underlined.  nounderline has an effect only if the cell or cells previously
+        contained underlined text.
+
+    strikeout and nostrikeout specify whether to strikeout the text or remove the strikeout from the text in a cell or range of cells.  The default is for text not to have a strikeout mark.  nostrikeout has an effect only if the cell or cells previously
+        had a strikeout mark.
+
+    script(sub|super|none) changes the script style of the cell.  script(sub) makes all text in a cell or range of cells a subscript.  script(super) makes all text in a cell or range of cells a superscript.  script(none) removes all subscript or
+        superscript formatting from a cell or range of cells.  Specifying script(none) has an effect only if the cell or cells were previously formatted as subscript or superscript.
+
+
+        +--------+
+    ----+ Border +-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    border(border [, style [, color]]) sets the cell border, style, and color for a cell or range of cells.
+
+        border may be all, left, right, top, or bottom.
+
+        style is a keyword specifying the look of the border.  The most common styles are thin, medium, thick, and double.  The default is thin.  For a complete list of border styles, see the Appendix in [RPT] putexcel.  To remove an existing border,
+            specify none as the style.
+
+        color may be one of the colors listed in the table of colors in the Appendix in [RPT] putexcel or may be a valid RGB value in the form "### ### ###".  If no color is specified, then Excel workbook defaults are used.
+
+    dborder(direction [, style [, color]]) sets the cell diagonal border direction, style, and color for a cell or range of cells.
+
+        direction may be down, up, or both.  down draws a line from the upper-left corner of the cell to the lower-right corner of the cell or, for a range of cells, from the upper-left corner of ul_cell to the lower-right corner of lr_cell.  up draws a
+            line from the lower-left corner of the cell to the upper-right corner of the cell or, for a range of cells, from the lower-left corner of the area defined by ul_cell:lr_cell to the upper-right corner.
+
+        style is a keyword specifying the look of the border.  The most common styles are thin, medium, thick, and double.  The default is thin.  For a complete list of border styles, see the Appendix in [RPT] putexcel.  To remove an existing border,
+            specify none as the style.
+
+        color may be one of the colors listed in the table of colors in the Appendix in [RPT] putexcel.  or may be a valid RGB value in the form "### ### ###".  If no color is specified, then Excel workbook defaults are used.
+
+
+        +------+
+    ----+ Fill +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    fpattern(pattern [, fgcolor [, bgcolor]]) sets the fill pattern, foreground color, and background color for a cell or range of cells.
+
+        pattern is a keyword specifying the fill pattern.  The most common fill patterns are solid for a solid color (determined by fgcolor), gray25 for 25% gray scale, gray50 for 50% gray scale, and gray75 for 75% gray scale.  A complete list of fill
+            patterns is shown in the Appendix in [RPT] putexcel.  To remove an existing fill pattern from the cell or cells, specify none as the pattern.
+
+        fgcolor specifies the foreground color.  The default foreground color is black.  fgcolor may be any of the colors listed in the table of colors in the Appendix in [RPT] putexcel or may be a valid RGB value in the form "### ### ###".
+
+        bgcolor specifies the background color.  bgcolor may be any of the colors listed in the table of colors in the Appendix in [RPT] putexcel or may be a valid RGB value in the form "### ### ###".  If no bgcolor is specified, then Excel workbook
+            defaults are used.
+
+
+    The following options are available when exporting a collection:
+
+    name(cname) specifies a collection cname from which to export the table.  By default, the table is taken from the current collection.
+
+    noisily specifies that the putexcel commands used to export to the workbook be displayed.
+
+    dofile(filename[, replace]) specifies that putexcel save to filename the commands used to export to the workbook.  If filename already exists, it can be overwritten by specifying replace.  If filename is specified without an extension, .do is
+        assumed.
+
+
+Examples
+
+    Declare first sheet of results.xlsx as the destination for subsequent putexcel commands
+        . putexcel set results
+
+    Write the text "Variable", "Mean", and "Std. Dev." to cells A1, B1, and C1
+        . putexcel A1 = "Variable"
+        . putexcel B1 = "Mean"
+        . putexcel C1 = "Std. Dev."
+
+    Summarize the mpg variable
+        . sysuse auto, clear
+        . summarize mpg
+
+    Obtain the names of the returned results for the mean and the standard deviation, r(mean) and r(sd)
+        . return list
+
+    Write the variable name, mean, and standard deviation in cells A2, B2, and C2; specify a format with two decimal places for the mean and standard deviation
+        . putexcel A2 = "mpg"
+        . putexcel B2 = `r(mean)', nformat(number_d2)
+        . putexcel C2 = `r(sd)', nformat(number_d2)
+
+    Fit a regression of mpg on weight and displacement
+        . regress mpg weight displacement
+
+    Write the text "Coef." to cell B5
+        . putexcel B5 = "Coef."
+
+    Write the matrix of coefficients and their labels contained in the matrix row names from the transposed e(b) matrix; specify that this matrix is written with the upper left entry in cell A6
+        . matrix b = e(b)'
+        . putexcel A6 = matrix(b), rownames
+
+
+Technical note: Excel data size limits and dates and times
+
+    You can read about Excel data size limits and the two different Excel date systems in help import excel.
+
+
+Appendix
+
+    Codes for numeric formats
+
+         Code                           Example
+        ----------------------------------------
+         number                            1000
+         number_d2                      1000.00
+         number_sep                     100,000
+         number_sep_d2               100,000.00
+         number_sep_negbra              (1,000)
+         number_sep_negbrared           (1,000)
+         number_d2_sep_negbra        (1,000.00)
+         number_d2_sep_negbrared     (1,000.00)
+         currency_negbra                ($4000)
+         currency_negbrared             ($4000)
+         currency_d2_negbra          ($4000.00)
+         currency_d2_negbrared       ($4000.00)
+         account                          5,000
+         accountcur                        $    5,000
+         account_d2                    5,000.00
+         account_d2_cur              $ 5,000.00
+         percent                            75%
+         percent_d2                      75.00%
+         scientific_d2                 10.00E+1
+         fraction_onedig                 10 1/2
+         fraction_twodig               10 23/95
+         date                         3/18/2007
+         date_d_mon_yy                18-Mar-07
+         date_d_mon                      18-Mar
+         date_mon_yy                     Mar-07
+         time_hmm_AM                    8:30 AM
+         time_HMMSS_AM               8:30:00 AM
+         time_HMM                          8:30
+         time_HMMSS                     8:30:00
+         time_MMSS                        30:55
+         time_H0MMSS                   20:30:55
+         time_MMSS0                     30:55.0
+         date_time               3/18/2007 8:30
+         text                      this is text
+        ----------------------------------------
+
+
+    Colors
+
+         color
+        ----------------------------------------------------
+         aliceblue       ghostwhite            navajowhite
+         antiquewhite    gold                  navy
+         aqua            goldenrod             oldlace
+         aquamarine      gray                  olive
+         azure           green                 olivedrab
+         beige           greenyellow           orange
+         bisque          honeydew              orangered
+         black           hotpink               orchid
+         blanchedalmond  indianred             palegoldenrod
+         blue            indigo                palegreen
+         blueviolet      ivory                 paleturquoise
+         brown           khaki                 palevioletred
+         burlywood       lavender              papayawhip
+         cadetblue       lavenderblush         peachpuff
+         chartreuse      lawngreen             peru
+         chocolate       lemonchiffon          pink
+         coral           lightblue             plum
+         cornflowerblue  lightcoral            powderblue
+         cornsilk        lightcyan             purple
+         crimson         lightgoldenrodyellow  red
+         cyan            lightgray             rosybrown
+         darkblue        lightgreen            royalblue
+         darkcyan        lightpink             saddlebrown
+         darkgoldenrod   lightsalmon           salmon
+         darkgray        lightseagreen         sandybrown
+         darkgreen       lightskyblue          seagreen
+         darkkhaki       lightslategray        seashell
+         darkmagenta     lightsteelblue        sienna
+         darkolivegreen  lightyellow           silver
+         darkorange      lime                  skyblue
+         darkorchid      limegreen             slateblue
+         darkred         linen                 slategray
+         darksalmon      magenta               snow
+         darkseagreen    maroon                springgreen
+         darkslateblue   mediumaquamarine      steelblue
+         darkslategray   mediumblue            tan
+         darkturquoise   mediumorchid          teal
+         darkviolet      mediumpurple          thistle
+         deeppink        mediumseagreen        tomato
+         deepskyblue     mediumslateblue       turquoise
+         dimgray         mediumspringgreen     violet
+         dodgerblue      mediumturquoise       wheat
+         firebrick       mediumvioletred       white
+         floralwhite     midnightblue          whitesmoke
+         forestgreen     mintcream             yellow
+         fuchsia         mistyrose             yellowgreen
+         gainsboro       moccasin
+        ----------------------------------------------------
+
+
+    Border styles
+
+         style
+        -------------------------
+         none
+         thin
+         medium
+         dashed
+         dotted
+         thick
+         double
+         hair
+         medium_dashed
+         dash_dot
+         medium_dash_dot
+         dash_dot_dot
+         medium_dash_dot_dot
+         slant_dash_dot
+        -------------------------
+
+
+    Background patterns
+
+         pattern 
+        -------------------------
+         none
+         solid
+         gray50
+         gray75
+         gray25
+         horstripe
+         verstripe
+         diagstripe
+         revdiagstripe
+         diagcrosshatch
+         thinhorstripe
+         thinverstripe
+         thindiagstripe
+         thinrevdiagstripe
+         thinhorcrosshatch
+         thindiagcrosshatch
+         thickdiagcrosshatch
+         gray12p5
+         gray6p25
+        -------------------------
+
+
+Stored results
+
+    putexcel collect stores the following in s():
+
+    Scalars           
+      s(collection)          name of collection
+      s(dofile)              name of the new do-file

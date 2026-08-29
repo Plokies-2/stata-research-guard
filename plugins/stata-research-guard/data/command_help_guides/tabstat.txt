@@ -1,0 +1,155 @@
+[R] tabstat -- Compact table of summary statistics
+               (View complete PDF manual entry)
+
+
+Syntax
+
+        tabstat varlist [if] [in] [weight] [, options]
+
+
+    options                      Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      by(varname)                 group statistics by variable
+      statistics(statname [...])  report specified statistics
+
+    Options
+      labelwidth(#)               width for by() variable labels; default is labelwidth(16)
+      varwidth(#)                 variable width; default is varwidth(12)
+      columns(variables)          display variables in table columns; the default
+      columns(statistics)         display statistics in table columns
+      format[(%fmt)]              display format for statistics; default format is %9.0g
+      casewise                    perform casewise deletion of observations
+      nototal                     do not report overall statistics; use with by()
+      missing                     report statistics for missing values of by() variable
+      noseparator                 do not use separator line between by() categories
+      longstub                    make left table stub wider
+      save                        store summary statistics in r()
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    by is allowed; see [D] by.
+    aweights and fweights are allowed; see weight.
+
+
+Menu
+
+    Statistics > Summaries, tables, and tests > Other tables > Compact table of summary statistics
+
+
+Description
+
+    tabstat displays summary statistics for a series of numeric variables in one table.  It allows you to specify the list of statistics to be displayed.  Statistics can be calculated (conditioned on) another variable.  tabstat allows substantial
+    flexibility in terms of the statistics presented and the format of the table.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+        +------+
+    ----+ Main +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    by(varname) specifies that the statistics be displayed separately for each unique value of varname; varname may be numeric or string.  For instance, tabstat height would present the overall mean of height.  tabstat height, by(sex) would present the
+        mean height of males, and of females, and the overall mean height.  Do not confuse the by() option with the by prefix; both may be specified.
+
+    statistics(statname [...]) specifies the statistics to be displayed; the default is equivalent to specifying statistics(mean).  (stats() is a synonym for statistics().) Multiple statistics may be specified and are separated by white space, such as
+        statistics(mean sd).  Available statistics are
+
+        statname       Definition
+        -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        mean            mean
+        count           count of nonmissing observations
+        n               same as count
+        sum             sum
+        max             maximum
+        min             minimum
+        range           range = max - min
+        sd              standard deviation
+        variance        variance
+        cv              coefficient of variation (sd/mean)
+        semean          standard error of mean (sd/sqrt(n))
+        skewness        skewness
+        kurtosis        kurtosis
+        p1              1st percentile
+        p5              5th percentile
+        p10             10th percentile
+        p25             25th percentile
+        median          median (same as p50)
+        p50             50th percentile (same as median)
+        p75             75th percentile
+        p90             90th percentile
+        p95             95th percentile
+        p99             99th percentile
+        iqr             interquartile range = p75 - p25
+        q               equivalent to specifying p25 p50 p75
+        -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        +---------+
+    ----+ Options +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    labelwidth(#) specifies the maximum width to be used within the stub to display the labels of the by() variable.  The default is labelwidth(16).  8 < # < 32.
+
+    varwidth(#) specifies the maximum width to be used within the stub to display the names of the variables.  The default is varwidth(12).  varwidth() is effective only with columns(statistics).  Setting varwidth() implies longstub.  8 < # < 32.
+
+    columns(variables|statistics) specifies whether to display variables or statistics in the columns of the table.  columns(variables) is the default when more than one variable is specified.
+
+    format and format(%fmt) specify how the statistics are to be formatted.  The default is to use a %9.0g format.
+
+        format specifies that each variable's statistics be formatted with the variable's display format; see [D] format.
+
+        format(%fmt) specifies the format to be used for all statistics.
+
+        The column width is the maximum width of these formats.  The minimum column width is nine display characters.
+
+    casewise specifies casewise deletion of observations.  Statistics are to be computed for the sample that is not missing for any of the variables in varlist.  The default is to use all the nonmissing values for each variable.
+
+    nototal is for use with by(); it specifies that the overall statistics not be reported.
+
+    missing specifies that missing values of the by() variable be treated just like any other value and that statistics should be displayed for them.  The default is not to report the statistics for the by()==missing group.  If the by() variable is a
+        string variable, by()=="" is considered to mean missing.
+
+    noseparator specifies that a separator line between the by() categories not be displayed.
+
+    longstub specifies that the left stub of the table be made wider so that it can include names of the statistics or variables in addition to the categories of by(varname).  The default is to describe the statistics or variables in a header.  longstub
+        is ignored if by(varname) is not specified.
+
+    save specifies that the summary statistics be returned in r().  The overall (unconditional) statistics are returned in matrix r(StatTotal) (rows are statistics, columns are variables).  The conditional statistics are returned in the matrices
+        r(Stat1), r(Stat2), ..., and the names of the corresponding variables are returned in the macros r(name1), r(name2), ....
+
+
+Examples
+
+    Setup
+        . sysuse auto
+
+    Show the mean (by default) of price, weight, mpg, and rep78
+        . tabstat price weight mpg rep78
+
+    Show the mean (by default) of price, weight, mpg, and rep78 by categories of foreign
+        . tabstat price weight mpg rep78, by(foreign)
+
+    In addition to mean, show standard deviation, minimum, and maximum
+        . tabstat price weight mpg rep78, by(foreign) stat(mean sd min max)
+
+    Suppress overall statistics
+        . tabstat price weight mpg rep78, by(foreign) stat(mean sd min max) nototal
+
+    Include names of statistics in body of table
+        . tabstat price weight mpg rep78, by(foreign) stat(mean sd min max) nototal long
+
+    Format each variable's statistics using the variable's display format
+        . tabstat price weight mpg rep78, by(foreign) stat(mean sd min max) nototal long format
+
+    Show statistics horizontally and variables vertically
+        . tabstat price weight mpg rep78, by(foreign) stat(mean sd min max) nototal long col(stat)
+
+
+Video example
+
+    Descriptive statistics in Stata

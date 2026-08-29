@@ -1,0 +1,240 @@
+help eststo                                                                                                                                                                                                           also see: esttab, estout, estadd, estpost
+                                                                                                                                                                                                                       http://repec.sowi.unibe.ch/stata/estout/
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Title
+
+    eststo -- Store estimates
+
+
+Syntax
+
+        [_]eststo [name] [, options ] [ : estimation_command ]
+
+        [_]eststo dir
+
+        [_]eststo drop {#|name} [ {#|name} ... ]
+
+        [_]eststo clear
+
+
+    options           description
+    --------------------------------------------------------
+    [no]esample       do not/do store e(sample)
+    title(string)     specify a title for the stored set
+    prefix(prefix)    specify a name prefix; default is est
+    addscalars(...)   add scalar statistics
+    refresh[(#)]      overwrite a previously stored set
+    nocopy            clear e() after storing the set
+    missing           use missing values in the by groups
+    --------------------------------------------------------
+        
+    by is allowed with eststo if eststo is used as a prefix command, i.e. specify
+
+        by ... : eststo ... : estimation_command
+        
+    to apply estimation_command to each by group and store an estimation set for each group; see help by. Note that the implementation of by with eststo requires estimation_command to follow standard Stata syntax and allow the if qualifier. Do not use
+    the by ...: eststo: construct with svy commands.
+
+
+Description
+
+    eststo stores a copy of the active estimation results for later tabulation. If name is provided, the estimation set is stored under name. If name is not provided, the estimation set is stored under est#, where # is a counter for the number of stored
+    estimation sets.
+
+    eststo may be used in two ways: Either after fitting a model as in
+
+        . regress y x
+        . eststo
+
+    or as a prefix command (see help prefix):
+
+        . eststo: regress y x
+
+    _eststo is a variant on eststo that, by default, does not store the estimation sample information contained in e(sample).  Essentially, _eststo is a shortcut to eststo, noesample.
+
+    eststo dir displays a list of the stored estimates.
+
+    eststo drop drops estimation sets stored by eststo. If name is provided, the estimation set stored under name is dropped (if * or ? wildcards are used name, all matching sets are dropped). Alternatively, if # is provided, the estimation set stored
+    as est# is dropped.
+
+    eststo clear drops all estimation sets stored by eststo (and clears eststo's global macros).
+
+    eststo is an alternative to official Stata's estimates store. The main differences are:
+
+         o  eststo does not require the user to specify a name for the stored estimation set.
+
+         o  eststo may be used as a prefix command (see help prefix).
+
+         o  eststo provides the possibility to store estimates without the e(sample) function (either specify the noesample option or use the _eststo command). Omitting e(sample) saves memory and also speeds up tabulation programs such as estimates
+            table, estout or esttab.  Warning: Some post-estimation commands may not work with estimation sets that do not contain the e(sample).
+
+         o  eststo can add additional scalar statistics to be stored with the estimation set.
+
+
+Options
+
+    esample causes the information in e(sample) to be stored with the estimates. This is the default in eststo. Type noesample or use the _eststo command to omit the e(sample). Note that some post-estimation commands may not be working correctly with
+        estimation sets that have been stored without e(sample).
+
+    title(string) specifies a title for the stored estimation set.
+
+    addscalars(name exp [...] [, replace]) may be used to add additional results to the e()-scalars of the estimation set before storing it. Specify the names and values of the scalars in pairs. For example, addscalars(one 1 two 2) would add e(one) = 1
+        and e(two) = 2. See below for an example. The replace suboption permits overwriting existing e()-returns. Not allowed as names are "b", "V", or "sample".  See estadd for a more sophisticated tool to add additional results to e()-returns.
+
+    prefix(prefix) specifies a custom prefix for the automatic names of the stored estimation sets. The default prefix is est.
+
+    refresh[(#)] may be used to overwrite a previously stored estimation set instead of storing the estimates under a new name. refresh, specified without argument, will overwrite the last saved set. Alternatively, refresh(#) will overwrite the set
+        named est# if it exists. If name is provided to eststo, existing sets of the same name will always be overwritten whether or not refresh is specified. refresh() with argument is not allowed in this case.
+
+    nocopy specifies that after the estimation set has been stored, it no longer be available as the active estimation set.
+
+    missing is for use of eststo with the by prefix command and causes missing values to be treated like any other values in the by variables. The default is to discard observations with missing values in the by variables.
+
+
+Examples
+
+    Applying eststo after fiting a model to store the model's results, as in the following example:
+
+        . sysuse auto
+        (1978 Automobile Data)
+        
+        . quietly regress price weight
+        
+        . eststo model1
+        
+        . quietly regress turn weight foreign
+        
+        . eststo model2
+        
+        . estout
+        
+        --------------------------------------
+                           model1       model2
+                                b            b
+        --------------------------------------
+        weight           2.044063     .0042183
+        foreign                      -1.809802
+        _cons           -6.707353     27.44963
+        --------------------------------------
+
+
+    Applying eststo as a prefix commmand to fit and store a model in one step:
+
+        . eststo model1: quietly regress price weight
+        
+        . eststo model2: quietly regress turn weight foreign
+        
+        . estout
+        
+        --------------------------------------
+                           model1       model2
+                                b            b
+        --------------------------------------
+        weight           2.044063     .0042183
+        foreign                      -1.809802
+        _cons           -6.707353     27.44963
+        --------------------------------------
+        
+        
+    Using eststo with automatic names:
+
+        . eststo clear
+        
+        . eststo: quietly regress price weight
+        (est1 stored)
+        
+        . eststo: quietly regress turn weight foreign
+        (est2 stored)
+        
+        . estout
+        
+        --------------------------------------
+                             est1         est2
+                                b            b
+        --------------------------------------
+        weight           2.044063     .0042183
+        foreign                      -1.809802
+        _cons           -6.707353     27.44963
+        --------------------------------------
+        
+
+    Adding ancillary statistics:
+
+        . eststo clear
+        
+        . quietly regress price weight mpg
+        
+        . test weight = mpg
+        
+         ( 1)  weight - mpg = 0
+        
+               F(  1,    71) =    0.36
+            Prob > F =    0.5514
+        
+        . eststo, add(p_diff r(p))
+        (e(p_diff) = .55138216 added)
+        (est1 stored)
+        
+        . estout, stat(p_diff)
+        
+        -------------------------
+                             est1
+                                b
+        -------------------------
+        weight           1.746559
+        mpg             -49.51222
+        _cons            1946.069
+        -------------------------
+        p_diff           .5513822
+        -------------------------
+        
+
+    Using the by prefix to store subbroup models:
+
+        . eststo clear
+        
+        . quietly by foreign: eststo: quietly reg price weight mpg
+        
+        . esttab, label nodepvar nonumber
+        
+        ----------------------------------------------------
+                                 Domestic         Foreign   
+        ----------------------------------------------------
+        Weight (lbs.)               4.415***        5.156***
+                                   (4.66)          (5.85)   
+        
+        Mileage (mpg)               237.7          -19.78   
+                                   (1.71)         (-0.34)   
+        
+        Constant                 -13285.4*        -5065.8   
+                                  (-2.32)         (-1.58)   
+        ----------------------------------------------------
+        Observations                   52              22   
+        ----------------------------------------------------
+        t statistics in parentheses
+        * p<0.05, ** p<0.01, *** p<0.001
+
+
+Returned results
+
+    The name under which an estimation set is stored, is added to the set in e(_estimates_name).
+
+    In addition, eststo maintains two global macros. $eststo contains a list of the names of the stored estimation sets. $eststo_counter contains the count of stored estimation sets.
+
+
+Acknowledgements
+
+    Bill Gould suggested to make eststo "byable".
+
+
+Author
+
+    Ben Jann, Institute of Sociology, University of Bern, jann@soz.unibe.ch
+
+
+Also see
+
+    Manual:  [R] estimates
+
+    Online:  help for estimates, esttab, estout, estadd, estpost

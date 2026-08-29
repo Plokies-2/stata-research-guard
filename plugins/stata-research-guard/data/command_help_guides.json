@@ -1,0 +1,3613 @@
+{
+  "schema_version": "1.0",
+  "source_runtime": "Stata 18",
+  "guides": [
+    {
+      "record_type": "command_help_guide",
+      "command": "sysuse",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "sysuse"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/s/sysuse.sthlp",
+          "source_sha256": "b83cdcd944b2b9d3ce957fef8258deadd730d8128de3f1ed79c991b35a6968c5"
+        }
+      ],
+      "content_file": "command_help_guides/sysuse.txt",
+      "content_sha256": "b8c3aa51c7c0e4c5747749d30e8b465fc0f646c24a71516819210dc9f1d4b189",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "acreg",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "December 2020 Beta Version (same SSC ado header)",
+      "source_url": null,
+      "help_topics": [
+        "acreg-ssc-acreg"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/acreg-ssc-acreg.sthlp",
+          "source_sha256": "15d2a0b87630d49045163b75c4e9997e8a77039e41076853dd31e52e248de7d1"
+        }
+      ],
+      "content_file": "command_help_guides/acreg.txt",
+      "content_sha256": "2abf3d78389cb4bc9f20d716aa38f8cd84b8127b330f691fbc705548c92419e1",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 1,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "append",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "append"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/a/append.sthlp",
+          "source_sha256": "d3711124c36d2b33199db9d1dcab384d18af904ea95ca01af372c99218e94e3e"
+        }
+      ],
+      "content_file": "command_help_guides/append.txt",
+      "content_sha256": "94bbcd6be86b49b0d03835e6128c01d9edc55d4193708c1521d0f42fb5a82d55",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "areg",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "areg"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/a/areg.sthlp",
+          "source_sha256": "2c0ee575a572e6ffce286f464e745c907a23b582dccfd6f54503ef2bf76d7eca"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/sncmdnote.ihlp",
+          "source_sha256": "5e45ca7afa414564d8db98db16217f9f18765a7e4ced8d9f12a1432e709269d0"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/shortdes-displayoptall.ihlp",
+          "source_sha256": "1333a9da009e1978445c9a76b13f3ecd38200480c8cb41e00d2762e25b119c24"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/shortdes-coeflegend.ihlp",
+          "source_sha256": "e36c279a6b0550e6492ae1174b5a4f10c1aa46ae9b25e08e68eb9b19331741bd"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/snfeaturesnote.ihlp",
+          "source_sha256": "7036a7354ac16fe04f2ffe9234eb64e5a4c73142515afb8c70b3f43052318b92"
+        },
+        {
+          "source_path": "Stata18/ado/base/f/fvvarlist.ihlp",
+          "source_sha256": "161d09e7863b4a927325b6732f427f962c8d2cacbdae2d5ff8bfd4af9c06489f"
+        },
+        {
+          "source_path": "Stata18/ado/base/v/vce_mi.ihlp",
+          "source_sha256": "abfa0c99d11a297c0fd0a6624a823e14b36c645bb63fc6183fa5d8dc736d0767"
+        },
+        {
+          "source_path": "Stata18/ado/base/d/displayopts_listd.ihlp",
+          "source_sha256": "fcca893e3081bb92f6f9e1801f0cf363659224b9cdbf9a5d2cd28b40ed2e5a15"
+        },
+        {
+          "source_path": "Stata18/ado/base/r/rtable.ihlp",
+          "source_sha256": "7f63075ee6bed5b5c2a41fbfe08db661ca97d2e5c0da439d302f0514f95fa74b"
+        }
+      ],
+      "content_file": "command_help_guides/areg.txt",
+      "content_sha256": "9ecf81c21f694f5b120058b43231b62d3f67309938606fa92b00343c7cbaf15d",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 2,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "assert",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "assert"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/a/assert.sthlp",
+          "source_sha256": "0613ab58443126736d3f16ee62faeccbdeb85301e1a5f5868cd7b64de6a0388c"
+        }
+      ],
+      "content_file": "command_help_guides/assert.txt",
+      "content_sha256": "6ed2e90b254b5d32c98a2f38e3e6ca54a4bd55991d5b5d23462e9116af04d3c3",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "boottest",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "boottest 4.5.0, 17 June 2025; commit f2204620a61ba8872cc6af22d6fb6492128e6278",
+      "source_url": null,
+      "help_topics": [
+        "boottest-github"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/boottest-github-f2204620a61ba8872cc6af22d6fb6492128e6278.sthlp",
+          "source_sha256": "47540af6ffd71e5d065c71078eae7fb6fa4c43639bb6bad6a59b01491b750ca8"
+        }
+      ],
+      "content_file": "command_help_guides/boottest.txt",
+      "content_sha256": "c21eb0117ea87843357ccd8b2185c5c8fc7ba9b5129d07db126d658447aea860",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 1,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "cgmreg",
+      "help_status": "available",
+      "authority": "maintainer-distributed command help",
+      "source_kind": "public maintained distribution help",
+      "source_version": "cgmreg help 1.0.0; repository commit 1e3006e54d51ebf75077e0f969367bb4b4250cb9",
+      "source_url": "https://github.com/jacaskey/Stata-code/blob/1e3006e54d51ebf75077e0f969367bb4b4250cb9/Estimating-Equations/cgmreg.hlp",
+      "help_topics": [
+        "cgmreg"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/command_help_sources/cgmreg-jacaskey-1e3006e54d51ebf75077e0f969367bb4b4250cb9.hlp",
+          "source_sha256": "6ebe6956454ddd0c3b7eef0bedd6a504d03a4e45024f6d464b4adedddb639d07"
+        }
+      ],
+      "content_file": "command_help_guides/cgmreg.txt",
+      "content_sha256": "b7b8b4b2c7f89d8b63fcee05527fc05a4533155ae9ca167c4609f2f4b27d8ae2",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [
+        "This help accompanies Judson Caskey's maintained distribution, not the original authors' archived cgmreg.ado alone."
+      ],
+      "full_manual_available": false,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "codebook",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "codebook"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/c/codebook.sthlp",
+          "source_sha256": "b0cefc694f5a328695b281e29877e23565828a6371550e66e0fd12a996d856b4"
+        }
+      ],
+      "content_file": "command_help_guides/codebook.txt",
+      "content_sha256": "0a2dc522de0e964976d22749405581427718c7c38d2bb1d5330d9efb7852215e",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 2,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "coefplot",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "coefplot 1.5.3, 28may2025; commit e8947d8b42c5b02029159b4f572780d3f7c0b085",
+      "source_url": null,
+      "help_topics": [
+        "coefplot-github"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/coefplot-github-e8947d8b42c5b02029159b4f572780d3f7c0b085.sthlp",
+          "source_sha256": "9b31f0702281293a698d618495a024f47cb0a3ede72fa548884dd52debb1207b"
+        }
+      ],
+      "content_file": "command_help_guides/coefplot.txt",
+      "content_sha256": "a680ae5563c0df924184d7864c641b9180747526efbc44cb4e1764c86930a8e2",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "collect_export",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "collect_export"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/c/collect_export.sthlp",
+          "source_sha256": "5eadd341e2d68d0a620f7a84b77d104335f6ce9476ef26be8a4287c3c7476cee"
+        }
+      ],
+      "content_file": "command_help_guides/collect_export.txt",
+      "content_sha256": "cfaabaa4c5c82d5ca468101ca9635e3cea31451940e3322fea4cf1845587e3fb",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "collect_get",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "collect_get"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/c/collect_get.sthlp",
+          "source_sha256": "59b4ef4896d73a6d1fbb2da56e6891adb3c4a037ba29dc9a50d792cff68ccbf3"
+        }
+      ],
+      "content_file": "command_help_guides/collect_get.txt",
+      "content_sha256": "c158d8b3514f04c56c9708dd8149646d232e2b8f20868aa045a452c2ba01099a",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "collect_style",
+      "help_status": "partial",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "collect_style__cons",
+        "collect_style_autolevels",
+        "collect_style_cell",
+        "collect_style_clear",
+        "collect_style_column",
+        "collect_style_header",
+        "collect_style_html",
+        "collect_style_notes",
+        "collect_style_putdocx",
+        "collect_style_putpdf",
+        "collect_style_row",
+        "collect_style_save",
+        "collect_style_showbase",
+        "collect_style_showempty",
+        "collect_style_showomit",
+        "collect_style_table",
+        "collect_style_tex",
+        "collect_style_title",
+        "collect_style_use"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/c/collect_style__cons.sthlp",
+          "source_sha256": "d974595188679ff020ab5aed28d3f8a011352060331d48cd5b4800ad025ff645"
+        },
+        {
+          "source_path": "Stata18/ado/base/c/collect_style_autolevels.sthlp",
+          "source_sha256": "a0346c15f0c008afd7de589b2a155f3ae28a0319ffa12758b356d8707a5198da"
+        },
+        {
+          "source_path": "Stata18/ado/base/c/collect_style_cell.sthlp",
+          "source_sha256": "8d3dd34beda24a646e511e2ad686c9a3da396a2bd11df900973cf0d612822334"
+        },
+        {
+          "source_path": "Stata18/ado/base/v/variant.ihlp",
+          "source_sha256": "ffe91c6c0b7ce624369e960a89b55a31bf8cfab39b815f5dccf1bf212521b45d"
+        },
+        {
+          "source_path": "Stata18/ado/base/c/collect_style_clear.sthlp",
+          "source_sha256": "744bf1d1b11d58bb41083ca633cad48fd62748c1032642030c34c7c3b65a7bd7"
+        },
+        {
+          "source_path": "Stata18/ado/base/c/collect_style_column.sthlp",
+          "source_sha256": "542e2daa7f0fe853a0d73bedb512053e282e857187176bc5c36897cabac156c2"
+        },
+        {
+          "source_path": "Stata18/ado/base/c/collect_style_header.sthlp",
+          "source_sha256": "79a3faa4c63077b8a2da1f4fcbbed3131f979837e411b2d55fd67b591df5408d"
+        },
+        {
+          "source_path": "Stata18/ado/base/c/collect_style_html.sthlp",
+          "source_sha256": "567c01efafc506927a81c4cdc23b9e29ca0698d8f462630f974b778d68d754c3"
+        },
+        {
+          "source_path": "Stata18/ado/base/c/collect_style_notes.sthlp",
+          "source_sha256": "4cde73ee495981c9fa731bce3f9c14d19909a7b0d227943517900a64d465e8de"
+        },
+        {
+          "source_path": "Stata18/ado/base/c/collect_style_putdocx.sthlp",
+          "source_sha256": "1fd60065a67778c27bc47225a8140141576e618dbbc405dc88fcbbdff99b90c3"
+        },
+        {
+          "source_path": "Stata18/ado/base/c/collect_style_putpdf.sthlp",
+          "source_sha256": "0a4171b982f27b20bb5f564a125966acb0cd1adc21b7d34205b004d043818c91"
+        },
+        {
+          "source_path": "Stata18/ado/base/c/collect_style_row.sthlp",
+          "source_sha256": "14f2ec5a2bc8a2c5f8ab51fe02f89d560eb68c7ac5fe92249d19f6eac7167a60"
+        },
+        {
+          "source_path": "Stata18/ado/base/c/collect_style_save.sthlp",
+          "source_sha256": "12c9e547a1c5f2aade979b198c80e8d9b3470dbfa906def9bd05fcfac376aa86"
+        },
+        {
+          "source_path": "Stata18/ado/base/c/collect_style_showbase.sthlp",
+          "source_sha256": "c9ba11be2d5c09b7cd67cdccc2ac7faf15c4935931aa123e1481fb5d383337b5"
+        },
+        {
+          "source_path": "Stata18/ado/base/c/collect_style_showempty.sthlp",
+          "source_sha256": "6f905d435fa8b8f75d6adc04d5e6c94714ba691417467a7431eb7ea6ed6671ac"
+        },
+        {
+          "source_path": "Stata18/ado/base/c/collect_style_showomit.sthlp",
+          "source_sha256": "39ed5312910133b15a0e566be538e871511207dbaf93869030b9dc6f9dd948bb"
+        },
+        {
+          "source_path": "Stata18/ado/base/c/collect_style_table.sthlp",
+          "source_sha256": "1c69b32c1aa4fc6a8b66a5ee93815246ba7427733ba762247a0ac8b367b47cb6"
+        },
+        {
+          "source_path": "Stata18/ado/base/c/collect_style_tex.sthlp",
+          "source_sha256": "da2b20031bba478254560acb9939c13ae38cc970f40257b663295a52dccac9e5"
+        },
+        {
+          "source_path": "Stata18/ado/base/c/collect_style_title.sthlp",
+          "source_sha256": "674e91c02509e5c7c391b2ad53cecd9019576795f98e7e0e518fc772dd68d934"
+        },
+        {
+          "source_path": "Stata18/ado/base/c/collect_style_use.sthlp",
+          "source_sha256": "504af256bc25c70887122abfcb8bc7ad7e1f9d234efefbec455c63933c4fcf68"
+        }
+      ],
+      "content_file": "command_help_guides/collect_style.txt",
+      "content_sha256": "80941de4a1be32f4a58c0edc2f24b27b1453429c4563e9f8a31974c36093ccb6",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [
+        "Stata 18 does not provide the Stata 19 topics: collect_style_smcl, collect_style_txt"
+      ],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": [
+        {
+          "topic": "collect_style_smcl",
+          "source_kind": "official Stata 19 command-entry PDF",
+          "source_url": "https://www.stata.com/manuals/tablescollectstylesmcl.pdf"
+        },
+        {
+          "topic": "collect_style_txt",
+          "source_kind": "official Stata 19 command-entry PDF",
+          "source_url": "https://www.stata.com/manuals/tablescollectstyletxt.pdf"
+        }
+      ]
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "collapse",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "collapse"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/c/collapse.sthlp",
+          "source_sha256": "328ef261bde04644adbe18635646db88e6801455faee159949ce8669f1ffc378"
+        }
+      ],
+      "content_file": "command_help_guides/collapse.txt",
+      "content_sha256": "793366be701e11b5f8c69ad469c3288efb94760a6bf01fc5ff94bcf9f23cc2f7",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "contract",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "contract"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/c/contract.sthlp",
+          "source_sha256": "710cf3e60efdf319096077bb1195d2eb098dca77c4c9b132a1959eca84951e9c"
+        }
+      ],
+      "content_file": "command_help_guides/contract.txt",
+      "content_sha256": "9bcb2d533ded94e9f6499b0d4b9bdf4498f6fae0f0acd32f1c7b5e01e0547aaf",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "crossfit",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "crossfit v1.4.4; help date 30aug2024; commit acf344fa03f38f3b572b78b9680078562c489192",
+      "source_url": null,
+      "help_topics": [
+        "crossfit-github"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/crossfit-github-acf344fa03f38f3b572b78b9680078562c489192.sthlp",
+          "source_sha256": "0a2e0659e43e3974126be2543c5897f385f3081ab179bf0a5daabdd6abebcd5f"
+        }
+      ],
+      "content_file": "command_help_guides/crossfit.txt",
+      "content_sha256": "dae981bfcdbe6e4bdef920288e2f86c36ad8468185a2358f27f5fd3c6232e199",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "csdid",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "version not stated in help; commit cd9b0d43a839f9214c50f9478dc5b09556cbc11b (2025-10-03)",
+      "source_url": null,
+      "help_topics": [
+        "csdid-github"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/csdid-github-cd9b0d43a839f9214c50f9478dc5b09556cbc11b.sthlp",
+          "source_sha256": "e8d443784817d8f1312ef0fd891e2bd463b478b0ae6786102fc91b8b865718a5"
+        }
+      ],
+      "content_file": "command_help_guides/csdid.txt",
+      "content_sha256": "5852b6535b19d99248a56d2c857d45fdf0881fd76815424302efbcfff37f1adb",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 1,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "csdid_estat",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "2.0.0 28aug2026",
+      "source_url": null,
+      "help_topics": [
+        "csdid_estat"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/csdid_estat-856ecd3f311e4dc20792dd03823c475fcbc3dc06.sthlp",
+          "source_sha256": "371d27e0c616e96f97b93885a9d79d6786791521a78525a1823f4580f2dab393"
+        }
+      ],
+      "content_file": "command_help_guides/csdid_estat.txt",
+      "content_sha256": "da0e5bb224e7eea28f88109582a21b5fe082466d2deae3c1ab0532a6a87eb6f2",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "ddml",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "6aug2023",
+      "source_url": null,
+      "help_topics": [
+        "ddml"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/ddml-6313ba3e1b9fb595325cf0336e86d3f7434373c6.sthlp",
+          "source_sha256": "c895c12f292a6ca99b48979f595fdb78962191655623110ef47a2c0c130054ce"
+        },
+        {
+          "source_path": "data/full_command_guides/sources/ddml_overview-6313ba3e1b9fb595325cf0336e86d3f7434373c6.sthlp",
+          "source_sha256": "03338f47c2a81ec96f661eaa93c3713e79d9b8385cd85066438674a7f5c2fed8"
+        },
+        {
+          "source_path": "data/full_command_guides/sources/ddml_example_partial_pystacked_basic-6313ba3e1b9fb595325cf0336e86d3f7434373c6.sthlp",
+          "source_sha256": "ea3599f228546d4f9299373d8ad13dfffd06f7fd55a8109e7e5eff911376c129"
+        },
+        {
+          "source_path": "data/full_command_guides/sources/ddml_install_ref_auth-6313ba3e1b9fb595325cf0336e86d3f7434373c6.ihlp",
+          "source_sha256": "042a75022d5baf14fcc4c8d3d8df0db90e5044be5da98aede9e09dd0b9706ce9"
+        }
+      ],
+      "content_file": "command_help_guides/ddml.txt",
+      "content_sha256": "c1c5b52c63550c0b821a85936f36685378eb63fe4e288dfef2155212c334bf55",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "did_imputation",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "3.1 2023-11-22",
+      "source_url": null,
+      "help_topics": [
+        "did_imputation"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/did_imputation-767c8d6670a751170910d419bbafd323df92ef08.sthlp",
+          "source_sha256": "4aaaf172b9d983f1fa991e17af948fe80c5e20b3250b53c9e7432bff9484b550"
+        }
+      ],
+      "content_file": "command_help_guides/did_imputation.txt",
+      "content_sha256": "7d95341a4c7eaae1ed05edacb99d8f3823deb2e61af0372e639ae7f67ed0c060",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 1,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "did_multiplegt_dyn",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "1 2026-06-26",
+      "source_url": null,
+      "help_topics": [
+        "did_multiplegt_dyn"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/did_multiplegt_dyn-ed2df86f73e6360e615c9cc32697fa1355c3e9ef.sthlp",
+          "source_sha256": "4aee9dd630b931119b77e96f28d36eb5bf00625292beb2e3ad98e52994b315f4"
+        }
+      ],
+      "content_file": "command_help_guides/did_multiplegt_dyn.txt",
+      "content_sha256": "47113ec7c6ba8d4326eea37a2d0cab5ce8547fb8d13a77d10ea70d91b9c8d739",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 1,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "dtable",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "dtable"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/d/dtable.sthlp",
+          "source_sha256": "bca0f9c10d9fcce4854dee9cf58288a0e44d38281dc1f9b47486d2566e44fea6"
+        },
+        {
+          "source_path": "Stata18/ado/base/v/variant.ihlp",
+          "source_sha256": "ffe91c6c0b7ce624369e960a89b55a31bf8cfab39b815f5dccf1bf212521b45d"
+        },
+        {
+          "source_path": "Stata18/ado/base/a/app_color.ihlp",
+          "source_sha256": "fab295ba10d57e12656048a1c64d7d8d33ed2db65d4ba352b8f4ed8a78a2ec81"
+        }
+      ],
+      "content_file": "command_help_guides/dtable.txt",
+      "content_sha256": "8486e921c75170456adb3afcdc1867dd089ee995a281afb46a0789ec2c454baa",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "duplicates",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "duplicates"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/d/duplicates.sthlp",
+          "source_sha256": "10a59511d8bd8c6200f527a0d633c6e566a99e827944a344dbfdb2155af66441"
+        }
+      ],
+      "content_file": "command_help_guides/duplicates.txt",
+      "content_sha256": "44b0f148b349bb26ebcdfe7b95a877132a6f6d126da3573c0a435dccb021840b",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "egen",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "egen"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/e/egen.sthlp",
+          "source_sha256": "73491f5168513fd36a38b5094519f93de3b33d29078a4778e85ade1d7d91a687"
+        }
+      ],
+      "content_file": "command_help_guides/egen.txt",
+      "content_sha256": "ada35207d289ef8345cc5eb497f758d9b70ea347ff8d55a96695fb38354af5a7",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "encode",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "encode"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/e/encode.sthlp",
+          "source_sha256": "aa4d145fc8ce6064fab87f7dd03cdc1b30ae17463815a4d78cedca00e099da63"
+        }
+      ],
+      "content_file": "command_help_guides/encode.txt",
+      "content_sha256": "c81cec1e3cdcf32ab01bf8d5a73a325df8aa79af407fc2d70117e90892b5bafb",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 1,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "decode",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "encode"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/e/encode.sthlp",
+          "source_sha256": "aa4d145fc8ce6064fab87f7dd03cdc1b30ae17463815a4d78cedca00e099da63"
+        }
+      ],
+      "content_file": "command_help_guides/decode.txt",
+      "content_sha256": "c81cec1e3cdcf32ab01bf8d5a73a325df8aa79af407fc2d70117e90892b5bafb",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 1,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "destring",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "destring"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/d/destring.sthlp",
+          "source_sha256": "cd33a40ab83babd5ee0e436a383de38d523ed42b3c6d8ab1600a870be3bcf56a"
+        }
+      ],
+      "content_file": "command_help_guides/destring.txt",
+      "content_sha256": "2d52afa3d4750b892965a766c413ce7f80c3541e77eb156e3eb158199ae2539d",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "estadd",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "command source date 01feb2017; package distribution date 20260413",
+      "source_url": null,
+      "help_topics": [
+        "estadd"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/estadd-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp",
+          "source_sha256": "09ce9ae1491b0d265c29f0b92cc6dadfa27963659bbd4c137307232719059c88"
+        }
+      ],
+      "content_file": "command_help_guides/estadd.txt",
+      "content_sha256": "d5ad7c9851616127ee6118d2e22e2b8bccea67cf387289825635a04dcbbd0be8",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "estout",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "command source date 25mar2026; package distribution date 20260413",
+      "source_url": null,
+      "help_topics": [
+        "estout"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/estout-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp",
+          "source_sha256": "0eab09197208e105fc4fce362fb04ac2d4413130389c72cd76bb336f710b2203"
+        }
+      ],
+      "content_file": "command_help_guides/estout.txt",
+      "content_sha256": "8bd75fe98e9f8d52c76e7b76827c8fba4410a452d9ab0a167ddf7d0ec23b6aed",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "estpost",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "command source date 19may2021; package distribution date 20260413",
+      "source_url": null,
+      "help_topics": [
+        "estpost"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/estpost-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp",
+          "source_sha256": "3ee756b3b3d19bc9dc515a2509b1e08a72025b0a9f068d23704f6eb00a49a5ec"
+        }
+      ],
+      "content_file": "command_help_guides/estpost.txt",
+      "content_sha256": "e5b044ae6fc1689841c76e0dbc5acaa5600d42f3818b759d23ee55930898d39f",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "eststo",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "command source date 01feb2017; package distribution date 20260413",
+      "source_url": null,
+      "help_topics": [
+        "eststo"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/eststo-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp",
+          "source_sha256": "5256d91b770ef7774d199280ba1ca2f890fd289a64e80dc77e436492a1cddd69"
+        }
+      ],
+      "content_file": "command_help_guides/eststo.txt",
+      "content_sha256": "d94505a4692960e97a6f51b5ab8580aced8dc2199efbc321b676368fae4a884d",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "esttab",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "command source date 25mar2026; package distribution date 20260413",
+      "source_url": null,
+      "help_topics": [
+        "esttab"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/esttab-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp",
+          "source_sha256": "05f91dc0c6e80e01cfd8c1ed0c0138dc91bf8825d23b9d47c7085cc2ff74d5bb"
+        }
+      ],
+      "content_file": "command_help_guides/esttab.txt",
+      "content_sha256": "ab626f0d0ed60f2010a3325a26369711d27d3dc4c76df318b0625693d96e009a",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 2,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "etable",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "etable"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/e/etable.sthlp",
+          "source_sha256": "ec09b02f0aa53fc9487d65d0b74487f9bf2f44f6a55a262db617b3e02095bcbf"
+        },
+        {
+          "source_path": "Stata18/ado/base/v/variant.ihlp",
+          "source_sha256": "ffe91c6c0b7ce624369e960a89b55a31bf8cfab39b815f5dccf1bf212521b45d"
+        },
+        {
+          "source_path": "Stata18/ado/base/a/app_color.ihlp",
+          "source_sha256": "fab295ba10d57e12656048a1c64d7d8d33ed2db65d4ba352b8f4ed8a78a2ec81"
+        }
+      ],
+      "content_file": "command_help_guides/etable.txt",
+      "content_sha256": "331d87b427d163b9de111e097f471c9b54531628fdfe5e5b55480325585a76b2",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "eventdd",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "4.0",
+      "source_url": null,
+      "help_topics": [
+        "maintainer_eventdd"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/maintainer_eventdd_5b499f66.sthlp",
+          "source_sha256": "109a986cd5c55eb93c39242a95df45d2935bce327a5e7cc502d7b3c5926adf9e"
+        }
+      ],
+      "content_file": "command_help_guides/eventdd.txt",
+      "content_sha256": "3ed6b085158d6c68595b6eb62a6e93430a058a15d0238fefb96e9ab7f997f626",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "event_plot",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "1",
+      "source_url": null,
+      "help_topics": [
+        "maintainer_event_plot"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/maintainer_event_plot_767c8d66.sthlp",
+          "source_sha256": "72d74cced3f2cf9e26e9d8fcb4a9d987b9d4862df2e564db58d61d6cfd8e0588"
+        }
+      ],
+      "content_file": "command_help_guides/event_plot.txt",
+      "content_sha256": "9c568c84344fb11276e8f5b813a01f62c12521378f5e57bc77e23c554a3f9298",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 1,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "eventstudyinteract",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "0.0",
+      "source_url": null,
+      "help_topics": [
+        "maintainer_eventstudyinteract"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/maintainer_eventstudyinteract_87d16aff.sthlp",
+          "source_sha256": "8e9e9b40b8e43faa1d1a328aa85939cf2fce875807acfdce558c16f0f9200094"
+        }
+      ],
+      "content_file": "command_help_guides/eventstudyinteract.txt",
+      "content_sha256": "bb29006049a92e33725b0e4c539cbbe1b10886ebfd9998557d70a8a73aa82dfa",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 1,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "export_excel",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "import_excel"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/i/import_excel.sthlp",
+          "source_sha256": "5b810b579e70df8c4169d26c0dcea2f2700a70ef798bbf963b3f78e702c03c7c"
+        }
+      ],
+      "content_file": "command_help_guides/export_excel.txt",
+      "content_sha256": "7980fb3ee7d920917aad5da3d83154d8dc7de1b290610f440ca7121aa13ea5df",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 2,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "export_delimited",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "import_delimited"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/i/import_delimited.sthlp",
+          "source_sha256": "fbf3fdeecff46b715f6cea28c68ee5d47af0fee9ac68ca7574c8c5eefb9def21"
+        }
+      ],
+      "content_file": "command_help_guides/export_delimited.txt",
+      "content_sha256": "8c113462c1cd4941e7de9e674bca04043275eb3bf15980457314bdbdb12c59f7",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "gcollapse",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "1.2.1",
+      "source_url": null,
+      "help_topics": [
+        "maintainer_gcollapse"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/maintainer_gcollapse_8b1dc050.sthlp",
+          "source_sha256": "1bc56dd5a45f226fab6352aecff40fa2951b32ec322d6fc46e16307cf0bd2492"
+        }
+      ],
+      "content_file": "command_help_guides/gcollapse.txt",
+      "content_sha256": "442365db35e36a90269926b47e75fc579104b55ab14f4863272f1e3531bc6a3b",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 2,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "gegen",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "1.4.2",
+      "source_url": null,
+      "help_topics": [
+        "maintainer_gegen"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/maintainer_gegen_8b1dc050.sthlp",
+          "source_sha256": "94f4077fc889dc6b1a73f0e8fdee6e0ebd3048ec027f1fefacecc269217f4805"
+        }
+      ],
+      "content_file": "command_help_guides/gegen.txt",
+      "content_sha256": "1e86efc35ff84a73e75cf9e0eb52b817966c373205104525445e46f450f5f9fb",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "generate",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "generate"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/g/generate.sthlp",
+          "source_sha256": "8787d0f4dded99306ee465755d10aeaaa68ec2d3db8ed85d178ee99c5c8bfd20"
+        }
+      ],
+      "content_file": "command_help_guides/generate.txt",
+      "content_sha256": "e51d24729efbaf30efbf3f7121ad7ee7f4e605dda54cb1e4829718061701a3e1",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "graph",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "graph"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/g/graph.sthlp",
+          "source_sha256": "4280ee9b69c1ca8ca605763c97539244ba7885275b6e058c275b67ec550e36ce"
+        }
+      ],
+      "content_file": "command_help_guides/graph.txt",
+      "content_sha256": "7466f39e8302ab1b461d06f73d3d75fa61dd6ba759574c3076766bdcb3142abf",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "graph_bar",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "graph_bar"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/g/graph_bar.sthlp",
+          "source_sha256": "1e76625dda36512df6c85aa1ed4c365ed3d620f2e9d4448988e0931674e0712e"
+        }
+      ],
+      "content_file": "command_help_guides/graph_bar.txt",
+      "content_sha256": "36ca805b30fdbd3fa16ce6d17286c85f2a0c25b16660c5f85f6d7ffb577715c9",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 2,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "greshape",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "0.5.0",
+      "source_url": null,
+      "help_topics": [
+        "maintainer_greshape"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/maintainer_greshape_8b1dc050.sthlp",
+          "source_sha256": "01809c1a8715650c9ccaad4994d8eff91153c99ab009155d220decbe1a6d387d"
+        }
+      ],
+      "content_file": "command_help_guides/greshape.txt",
+      "content_sha256": "35ef9663a2e6a5d9059de5ce4031b2d9ec332dbf11d4135c7373a821e5598489",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "gstats",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "0.4.0 + subcommand help",
+      "source_url": null,
+      "help_topics": [
+        "maintainer_gstats_1",
+        "maintainer_gstats_2",
+        "maintainer_gstats_3",
+        "maintainer_gstats_4",
+        "maintainer_gstats_5"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/maintainer_gstats_1_8b1dc050.sthlp",
+          "source_sha256": "5d668a6b5febda89097538036b5c082f339a92d0cbb87db2c0e70ad759cd61e6"
+        },
+        {
+          "source_path": "data/full_command_guides/sources/maintainer_gstats_2_8b1dc050.sthlp",
+          "source_sha256": "101cc9299ca53f7a1aeab736f9d7a4556731d6db78a5cf37ca74dfc46993a0b7"
+        },
+        {
+          "source_path": "data/full_command_guides/sources/maintainer_gstats_3_8b1dc050.sthlp",
+          "source_sha256": "6c5d66c9c7023a8a817be709e1275af65aa2d87fcf6e72e226063905f02beac1"
+        },
+        {
+          "source_path": "data/full_command_guides/sources/maintainer_gstats_4_8b1dc050.sthlp",
+          "source_sha256": "57ebaf04dbc4ce4bc300e4e6f1814a0a8d30b16175766c476e502beeabe186a1"
+        },
+        {
+          "source_path": "data/full_command_guides/sources/maintainer_gstats_5_8b1dc050.sthlp",
+          "source_sha256": "b73d2bbe544377241cbe2d13a2118d50b669636d99ae3e5d687f091578985e31"
+        }
+      ],
+      "content_file": "command_help_guides/gstats.txt",
+      "content_sha256": "af761e7a8159faf956ecf6b386017e8c7424270416f867d0f1622393726c6ba2",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "gquantiles",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "1.0.2",
+      "source_url": null,
+      "help_topics": [
+        "maintainer_gquantiles"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/maintainer_gquantiles_8b1dc050.sthlp",
+          "source_sha256": "e7ececc37f085bcfd290cc03906830cbbcccbb8568d8373f6ed7665da759d7d2"
+        }
+      ],
+      "content_file": "command_help_guides/gquantiles.txt",
+      "content_sha256": "52bd4bfb36e5ca17e637cbcab95001ad4a284e435a20ca61d375cfd119c89108",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "histogram",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "histogram"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/h/histogram.sthlp",
+          "source_sha256": "63e1f2ebd24d59a79da8f351cb2f414c983210f8352cf9035126bef9f1dd4e50"
+        }
+      ],
+      "content_file": "command_help_guides/histogram.txt",
+      "content_sha256": "7d263c931dd6c8dc1afb2a05756ee52b05d03c12715995be111503e76b3084df",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 1,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "import",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "import"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/i/import.sthlp",
+          "source_sha256": "f981e0b163a3bc99d3c2359348491bb96a33581d63ded31b51a94e968bee636e"
+        }
+      ],
+      "content_file": "command_help_guides/import.txt",
+      "content_sha256": "0d2ed87d7cc765d2f15c1ce92ca64602b302cdf97539e8641c7f3f5117dd1c54",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "import_delimited",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "import_delimited"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/i/import_delimited.sthlp",
+          "source_sha256": "fbf3fdeecff46b715f6cea28c68ee5d47af0fee9ac68ca7574c8c5eefb9def21"
+        }
+      ],
+      "content_file": "command_help_guides/import_delimited.txt",
+      "content_sha256": "8c113462c1cd4941e7de9e674bca04043275eb3bf15980457314bdbdb12c59f7",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "import_excel",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "import_excel"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/i/import_excel.sthlp",
+          "source_sha256": "5b810b579e70df8c4169d26c0dcea2f2700a70ef798bbf963b3f78e702c03c7c"
+        }
+      ],
+      "content_file": "command_help_guides/import_excel.txt",
+      "content_sha256": "7980fb3ee7d920917aad5da3d83154d8dc7de1b290610f440ca7121aa13ea5df",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "isid",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "isid"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/i/isid.sthlp",
+          "source_sha256": "19ccef70b2662dc5e14219e3d838333a4b03442eb9258d4caf565ff14550bbac"
+        }
+      ],
+      "content_file": "command_help_guides/isid.txt",
+      "content_sha256": "6eb393f4c5b1c54d3fe63b2ba6fad40cf693273b98c6c3b77c2cd8eb285ea88a",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 1,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "ivreg2",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "30July2015 help file; SSC record revised 14 Aug 2024",
+      "source_url": null,
+      "help_topics": [
+        "ivreg2-ssc"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/ivreg2-ssc-20260829.sthlp",
+          "source_sha256": "c387f5d743111ed76578d19b6f130adb71cdca9cfe1d5f4432ceeed1b6c06848"
+        }
+      ],
+      "content_file": "command_help_guides/ivreg2.txt",
+      "content_sha256": "50b65f139c60c8cdaca78fd9c46901dda22dcbc1acda008c38d90385aa4361d9",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 1,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "ivregress",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "ivregress"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/i/ivregress.sthlp",
+          "source_sha256": "4ecf486dc0c17dd363c2d3c8f7adb903d60ebd026945d0f6530aab0df236ae4f"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/shortdes-displayoptall.ihlp",
+          "source_sha256": "1333a9da009e1978445c9a76b13f3ecd38200480c8cb41e00d2762e25b119c24"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/shortdes-coeflegend.ihlp",
+          "source_sha256": "e36c279a6b0550e6492ae1174b5a4f10c1aa46ae9b25e08e68eb9b19331741bd"
+        },
+        {
+          "source_path": "Stata18/ado/base/m/maxiter.ihlp",
+          "source_sha256": "9cd5585acd6477a90f4bcbfba63c893e2d6ed17aecae2982bb0f7ebfa5bdea8d"
+        },
+        {
+          "source_path": "Stata18/ado/base/v/vce_rcbj.ihlp",
+          "source_sha256": "f2974e939a02810a90d125333e703ef253532d527fadaa918b7e858e3981b281"
+        },
+        {
+          "source_path": "data/full_command_guides/sources/stata19_displayopts_list.ihlp",
+          "source_sha256": "46d2d0c7d6970a22e17897f3eee247f3229edb52328967dc377d02659d525a83"
+        },
+        {
+          "source_path": "Stata18/ado/base/r/rtable.ihlp",
+          "source_sha256": "7f63075ee6bed5b5c2a41fbfe08db661ca97d2e5c0da439d302f0514f95fa74b"
+        }
+      ],
+      "content_file": "command_help_guides/ivregress.txt",
+      "content_sha256": "2a3a64db29f9af1d1ecb66bd7235e61d21ca48ff3fbda7e4d06d8e6c09544d98",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "ivreghdfe",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "1.1.4 29nov2025",
+      "source_url": null,
+      "help_topics": [
+        "ivreghdfe"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/ivreghdfe-bfb5577a6dbdfb029ab4ab6a7e93f7257a827b42.sthlp",
+          "source_sha256": "3cf9edb0918df56176bc433e737f090f9008d47efaf001e897ebd4cb63bacda8"
+        }
+      ],
+      "content_file": "command_help_guides/ivreghdfe.txt",
+      "content_sha256": "c777b7d09e174865b24fafb5f257e531b29a6b27c35b89322541fc1a4992c9b2",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 2,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "jwdid",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "2.0 May_4_2024",
+      "source_url": null,
+      "help_topics": [
+        "jwdid"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/jwdid-738defceb5413.sthlp",
+          "source_sha256": "e072c2d66b2bade526c9314cd4aafd48dcb33ca2c7706cd5b001f14a7c3e0a8b"
+        }
+      ],
+      "content_file": "command_help_guides/jwdid.txt",
+      "content_sha256": "1a2fff50c461d4fdfed1a0f57757962da4786e1926038f13b3b6027aadaf9bb7",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 2,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "jwdidstacked",
+      "help_status": "unavailable",
+      "authority": null,
+      "source_kind": "help unavailable",
+      "source_version": null,
+      "source_url": null,
+      "help_topics": [],
+      "source_files": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [
+        "No authoritative Stata help source is stored for this command."
+      ],
+      "full_manual_available": false,
+      "paper_examples_available": true,
+      "paper_example_count": 1,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "jregress",
+      "help_status": "unavailable",
+      "authority": "maintainer or package documentation",
+      "source_kind": "help unavailable; full manual retained",
+      "source_version": "PDF creation metadata 20 Jul 2024; Zenodo record 17712099, no formal PDF version label",
+      "source_url": null,
+      "help_topics": [],
+      "source_files": [],
+      "content_file": null,
+      "content_sha256": null,
+      "content_format": null,
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [
+        "No authoritative Stata help source is stored for this command."
+      ],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "label",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "label"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/l/label.sthlp",
+          "source_sha256": "7f5b06f30554a91e3d1d94756e9d25a135d2f05aaadcba1675e7faad4ed42c38"
+        }
+      ],
+      "content_file": "command_help_guides/label.txt",
+      "content_sha256": "47bd939e8fd9d1ef44b83eeaa64d70b1d56b0815cd28dd5a199ffd33afa00eb1",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "lincom",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "lincom"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/l/lincom.sthlp",
+          "source_sha256": "c0d4ce7c06cbe5d3f8de6a13b180f312bc170a5ff47c7dceab36316db9bbc916"
+        }
+      ],
+      "content_file": "command_help_guides/lincom.txt",
+      "content_sha256": "9f99d2280ab37719d2ca7f3c63cc9c8dd70b568d826aa5396340daac4b181087",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 1,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "logit",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "logit"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/l/logit.sthlp",
+          "source_sha256": "e0fa3479f28152514ec04d02f43692d9ff414c6e55d20d37dadbd34bc5812053"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/shortdes-displayoptall.ihlp",
+          "source_sha256": "1333a9da009e1978445c9a76b13f3ecd38200480c8cb41e00d2762e25b119c24"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/shortdes-coeflegend.ihlp",
+          "source_sha256": "e36c279a6b0550e6492ae1174b5a4f10c1aa46ae9b25e08e68eb9b19331741bd"
+        },
+        {
+          "source_path": "Stata18/ado/base/f/fvvarlist.ihlp",
+          "source_sha256": "161d09e7863b4a927325b6732f427f962c8d2cacbdae2d5ff8bfd4af9c06489f"
+        },
+        {
+          "source_path": "Stata18/ado/base/v/vce_mi.ihlp",
+          "source_sha256": "abfa0c99d11a297c0fd0a6624a823e14b36c645bb63fc6183fa5d8dc736d0767"
+        },
+        {
+          "source_path": "Stata18/ado/base/v/vce_asymptall.ihlp",
+          "source_sha256": "6f45d5d9a31a3d75ec42dbe225d9b2758ab3f034f2f325ca1bb97a0931d7abe7"
+        },
+        {
+          "source_path": "data/full_command_guides/sources/stata19_displayopts_list.ihlp",
+          "source_sha256": "46d2d0c7d6970a22e17897f3eee247f3229edb52328967dc377d02659d525a83"
+        },
+        {
+          "source_path": "Stata18/ado/base/r/rtable.ihlp",
+          "source_sha256": "7f63075ee6bed5b5c2a41fbfe08db661ca97d2e5c0da439d302f0514f95fa74b"
+        }
+      ],
+      "content_file": "command_help_guides/logit.txt",
+      "content_sha256": "0f37e640b7a580e15ea768486fe0a99da1c4c15fddeb2943ed815d7573e66203",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "logistic",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "logistic"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/l/logistic.sthlp",
+          "source_sha256": "811015a52d5c0ef3fa81720b2dbfcdd0134b65de89061d2de35c69864a30c525"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/shortdes-displayoptall.ihlp",
+          "source_sha256": "1333a9da009e1978445c9a76b13f3ecd38200480c8cb41e00d2762e25b119c24"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/shortdes-coeflegend.ihlp",
+          "source_sha256": "e36c279a6b0550e6492ae1174b5a4f10c1aa46ae9b25e08e68eb9b19331741bd"
+        },
+        {
+          "source_path": "Stata18/ado/base/f/fvvarlist.ihlp",
+          "source_sha256": "161d09e7863b4a927325b6732f427f962c8d2cacbdae2d5ff8bfd4af9c06489f"
+        },
+        {
+          "source_path": "Stata18/ado/base/v/vce_mi.ihlp",
+          "source_sha256": "abfa0c99d11a297c0fd0a6624a823e14b36c645bb63fc6183fa5d8dc736d0767"
+        },
+        {
+          "source_path": "Stata18/ado/base/v/vce_asymptall.ihlp",
+          "source_sha256": "6f45d5d9a31a3d75ec42dbe225d9b2758ab3f034f2f325ca1bb97a0931d7abe7"
+        },
+        {
+          "source_path": "data/full_command_guides/sources/stata19_displayopts_list.ihlp",
+          "source_sha256": "46d2d0c7d6970a22e17897f3eee247f3229edb52328967dc377d02659d525a83"
+        },
+        {
+          "source_path": "Stata18/ado/base/r/rtable.ihlp",
+          "source_sha256": "7f63075ee6bed5b5c2a41fbfe08db661ca97d2e5c0da439d302f0514f95fa74b"
+        }
+      ],
+      "content_file": "command_help_guides/logistic.txt",
+      "content_sha256": "e0b493c4398427fd810001daab8b22ac39ae80dcb97d3d7f26fbbe2917b95938",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "margins",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "margins"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/m/margins.sthlp",
+          "source_sha256": "b898beca0c2983a27f44375a08b5b24f3cf8ec9165e397bab8fd80880103ed0c"
+        }
+      ],
+      "content_file": "command_help_guides/margins.txt",
+      "content_sha256": "efe5c329456a535a89c47f41792783add4d90027d9d6da67e3b613ac7b10d830",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "marginsplot",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "marginsplot"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/m/marginsplot.sthlp",
+          "source_sha256": "1e50bd2cfd6f34763f46a01315c55c868f47349d442de8f1b3a6b58a1adff2d4"
+        },
+        {
+          "source_path": "Stata18/ado/base/g/gr_markopt2.ihlp",
+          "source_sha256": "180ec47b5556b352e091fae8e0a8580a4ccfb5d4812d853dda5b5ec7bbbe1dd6"
+        },
+        {
+          "source_path": "Stata18/ado/base/g/gr_clopt.ihlp",
+          "source_sha256": "29f690a1cb03f11f13ce49101bd1fc4be4453aebbc160b842a3cb3fe3dcac80c"
+        }
+      ],
+      "content_file": "command_help_guides/marginsplot.txt",
+      "content_sha256": "06458bb76f524ca950933432ba285729a2e53eecdb6670b936c3ce16c1f7903b",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 1,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "merge",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "merge"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/m/merge.sthlp",
+          "source_sha256": "878b14aa82b6072d5ec540b92ca55b14f1f5e210b89fc3b6bcbb2588fa2802a1"
+        }
+      ],
+      "content_file": "command_help_guides/merge.txt",
+      "content_sha256": "5f0397ce475f76c7b5da231c397c7188b77f6980acb22ebf09c41dd185dbdf1d",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "misstable",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "misstable"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/m/misstable.sthlp",
+          "source_sha256": "028d7924cda2dfdb97e89ee5d90dc53fac33264b4c6b2694887eb4abd28aab02"
+        }
+      ],
+      "content_file": "command_help_guides/misstable.txt",
+      "content_sha256": "ac223a3400a2a68207071bbcbab2e8ae179325f52ab2bd4828bdbdd6a794bc73",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 1,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "nbreg",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "nbreg"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/n/nbreg.sthlp",
+          "source_sha256": "572d558e1b2416f9fbe92bf964b5d70754b7b6118b36b54546e8bf0d9b3ee4ff"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/shortdes-displayoptall.ihlp",
+          "source_sha256": "1333a9da009e1978445c9a76b13f3ecd38200480c8cb41e00d2762e25b119c24"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/shortdes-coeflegend.ihlp",
+          "source_sha256": "e36c279a6b0550e6492ae1174b5a4f10c1aa46ae9b25e08e68eb9b19331741bd"
+        },
+        {
+          "source_path": "Stata18/ado/base/f/fvvarlist2.ihlp",
+          "source_sha256": "c5f2574ee3464ef7d706c69040d95cf26440e56c1ffe573bb425364d8a5710fd"
+        },
+        {
+          "source_path": "Stata18/ado/base/v/vce_mi.ihlp",
+          "source_sha256": "abfa0c99d11a297c0fd0a6624a823e14b36c645bb63fc6183fa5d8dc736d0767"
+        },
+        {
+          "source_path": "Stata18/ado/base/v/vce_asymptall.ihlp",
+          "source_sha256": "6f45d5d9a31a3d75ec42dbe225d9b2758ab3f034f2f325ca1bb97a0931d7abe7"
+        },
+        {
+          "source_path": "data/full_command_guides/sources/stata19_displayopts_list.ihlp",
+          "source_sha256": "46d2d0c7d6970a22e17897f3eee247f3229edb52328967dc377d02659d525a83"
+        },
+        {
+          "source_path": "Stata18/ado/base/r/rtable.ihlp",
+          "source_sha256": "7f63075ee6bed5b5c2a41fbfe08db661ca97d2e5c0da439d302f0514f95fa74b"
+        }
+      ],
+      "content_file": "command_help_guides/nbreg.txt",
+      "content_sha256": "a285ac4bccec820c2c5c4ab1abd0ab97fa43c9e18c00cfd2b8a5296030994906",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "outreg2",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "not_declared_in_selected_raw_help",
+      "source_url": null,
+      "help_topics": [
+        "outreg2_ssc_retrieved_2026-08-28"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/outreg2_ssc_retrieved_2026-08-28.hlp",
+          "source_sha256": "64b57f0b0c4bdc36a382e9edfc5887e4095b5e1c372edbd7b1f651370a8167fe"
+        }
+      ],
+      "content_file": "command_help_guides/outreg2.txt",
+      "content_sha256": "0cbaea0a0fe28a0a5eef1d508f675ec576a2d3cf446fb63df3e4bb108a13d90e",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 4,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "poisson",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "poisson"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/p/poisson.sthlp",
+          "source_sha256": "9d5ea55b891d2dc5586968b44155ed767045b632f585e6642c70b9eaafd1dd9b"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/shortdes-displayoptall.ihlp",
+          "source_sha256": "1333a9da009e1978445c9a76b13f3ecd38200480c8cb41e00d2762e25b119c24"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/shortdes-coeflegend.ihlp",
+          "source_sha256": "e36c279a6b0550e6492ae1174b5a4f10c1aa46ae9b25e08e68eb9b19331741bd"
+        },
+        {
+          "source_path": "Stata18/ado/base/f/fvvarlist.ihlp",
+          "source_sha256": "161d09e7863b4a927325b6732f427f962c8d2cacbdae2d5ff8bfd4af9c06489f"
+        },
+        {
+          "source_path": "Stata18/ado/base/v/vce_mi.ihlp",
+          "source_sha256": "abfa0c99d11a297c0fd0a6624a823e14b36c645bb63fc6183fa5d8dc736d0767"
+        },
+        {
+          "source_path": "Stata18/ado/base/v/vce_asymptall.ihlp",
+          "source_sha256": "6f45d5d9a31a3d75ec42dbe225d9b2758ab3f034f2f325ca1bb97a0931d7abe7"
+        },
+        {
+          "source_path": "data/full_command_guides/sources/stata19_displayopts_list.ihlp",
+          "source_sha256": "46d2d0c7d6970a22e17897f3eee247f3229edb52328967dc377d02659d525a83"
+        },
+        {
+          "source_path": "Stata18/ado/base/r/rtable.ihlp",
+          "source_sha256": "7f63075ee6bed5b5c2a41fbfe08db661ca97d2e5c0da439d302f0514f95fa74b"
+        }
+      ],
+      "content_file": "command_help_guides/poisson.txt",
+      "content_sha256": "df69cd171eaa6a02c94ce3ee4fabbcc57a8acaca19a6ea64347eec49cd7d09b7",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "ppmlhdfe",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "2.3.4 11jan2025",
+      "source_url": null,
+      "help_topics": [
+        "ppmlhdfe"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/ppmlhdfe_b85665d8f674e93c1e07446a9a2b29be7f797910.sthlp",
+          "source_sha256": "28baa95bd5b6d2887736d1fe334edec95f40f9defdc1cb87ff70b0e22da8ea30"
+        }
+      ],
+      "content_file": "command_help_guides/ppmlhdfe.txt",
+      "content_sha256": "c317bc1e97a486df5635b4f14ab8396714ea1c54e505b6f966bebb474f346b20",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "predict",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "predict"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/p/predict.sthlp",
+          "source_sha256": "f25b9b18191bb9e7e2002a41435ebf7dd39007109809ca28d20656580637fdf6"
+        },
+        {
+          "source_path": "Stata18/ado/base/m/menu_predict.ihlp",
+          "source_sha256": "4d1917b33dc14be80a30ed7b05c02da4b7b4bc634963802c433c19a9e5c67d00"
+        }
+      ],
+      "content_file": "command_help_guides/predict.txt",
+      "content_sha256": "4d5870ce7f78ec04d2b4613070e7663263ca7aa547251295111ee0be7f4ae9e4",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "psmatch2",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "not_declared_in_selected_raw_help",
+      "source_url": null,
+      "help_topics": [
+        "psmatch2"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/psmatch2_cfb54e6d3156ac9851af3979d4b33b27c86aad03.sthlp",
+          "source_sha256": "d98b1988bad8e294a4c34360ba74fcf2c863b947b08bd991dd2f79cc0dd92c2f"
+        }
+      ],
+      "content_file": "command_help_guides/psmatch2.txt",
+      "content_sha256": "92688396d47bb07853dead280b04543cf9e51517ee8b77bd4014fea318b94cdf",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "pstest",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "not_declared_in_selected_raw_help",
+      "source_url": null,
+      "help_topics": [
+        "pstest"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/pstest_cfb54e6d3156ac9851af3979d4b33b27c86aad03.sthlp",
+          "source_sha256": "d7e1c24c44408cb6a5d54c6bf78bccdd954e4baa6a574c4366e30cb0c5ca3b61"
+        }
+      ],
+      "content_file": "command_help_guides/pstest.txt",
+      "content_sha256": "1aa7fb7aa2c450c31b31f9151efca9098ddd3c8d93e536d490f3db2f90d115d3",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "probit",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "probit"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/p/probit.sthlp",
+          "source_sha256": "552f2b6f9fa52008d2741b3abdaa98345cce0604df3c6e17d77643f3e70cfecb"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/shortdes-displayoptall.ihlp",
+          "source_sha256": "1333a9da009e1978445c9a76b13f3ecd38200480c8cb41e00d2762e25b119c24"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/shortdes-coeflegend.ihlp",
+          "source_sha256": "e36c279a6b0550e6492ae1174b5a4f10c1aa46ae9b25e08e68eb9b19331741bd"
+        },
+        {
+          "source_path": "Stata18/ado/base/f/fvvarlist.ihlp",
+          "source_sha256": "161d09e7863b4a927325b6732f427f962c8d2cacbdae2d5ff8bfd4af9c06489f"
+        },
+        {
+          "source_path": "Stata18/ado/base/v/vce_mi.ihlp",
+          "source_sha256": "abfa0c99d11a297c0fd0a6624a823e14b36c645bb63fc6183fa5d8dc736d0767"
+        },
+        {
+          "source_path": "Stata18/ado/base/v/vce_asymptall.ihlp",
+          "source_sha256": "6f45d5d9a31a3d75ec42dbe225d9b2758ab3f034f2f325ca1bb97a0931d7abe7"
+        },
+        {
+          "source_path": "data/full_command_guides/sources/stata19_displayopts_list.ihlp",
+          "source_sha256": "46d2d0c7d6970a22e17897f3eee247f3229edb52328967dc377d02659d525a83"
+        },
+        {
+          "source_path": "Stata18/ado/base/r/rtable.ihlp",
+          "source_sha256": "7f63075ee6bed5b5c2a41fbfe08db661ca97d2e5c0da439d302f0514f95fa74b"
+        }
+      ],
+      "content_file": "command_help_guides/probit.txt",
+      "content_sha256": "51eb2876fd3b31119692e47435fae178c84c45a05f68ffd6fccda23c67670111",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 1,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "putexcel",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "putexcel"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/p/putexcel.sthlp",
+          "source_sha256": "db36d2797a8f8619aa03f4a08e6f0b40659721b3c6edd1647ddca7bed836b0d7"
+        },
+        {
+          "source_path": "Stata18/ado/base/p/putexcel_setopts_list.ihlp",
+          "source_sha256": "57ba8afcb1c7b0be060576f56648815c2f1cf4d922282505e95930133bb7604d"
+        },
+        {
+          "source_path": "Stata18/ado/base/p/putexcel_alignopts_list.ihlp",
+          "source_sha256": "d3e2d405e75d25f7ebfe089f7e3701c045798aa87247b597ef7acfd19d47dfcc"
+        },
+        {
+          "source_path": "Stata18/ado/base/p/putexcel_textopts_list.ihlp",
+          "source_sha256": "c9660f282f0bfc82c86b8da9b54f6e500de0ea9f884f5762555f2c91b9efb022"
+        },
+        {
+          "source_path": "Stata18/ado/base/p/putexcel_bordopts_list.ihlp",
+          "source_sha256": "fc946caf2dea44f083cdbc0fdb6488cf37663e2ce1065d9e88792339d15d0819"
+        },
+        {
+          "source_path": "Stata18/ado/base/p/putexcel_fillopt_list.ihlp",
+          "source_sha256": "265ab18bab482cf26dc1e3913e6972f3d76a8ea8cb46c8efc9ec2de1ca07baf1"
+        },
+        {
+          "source_path": "Stata18/ado/base/p/putexcel_output_types.ihlp",
+          "source_sha256": "a4b07df2ed00c021e6814e3581b10726cf1756d1bb7bab5558c6dd31c89ff9a1"
+        },
+        {
+          "source_path": "Stata18/ado/base/p/putexcel_set_opts.ihlp",
+          "source_sha256": "27c568464a9a10da3130980e9fccd39a7aed8863785172a2aa35ee8111210bca"
+        },
+        {
+          "source_path": "Stata18/ado/base/p/putexcel_sheetset_opts.ihlp",
+          "source_sha256": "a2a2afbcfd167b46bcefb8c54e03fb57d1692af4f34bb062e2845ae0e1d2f4fe"
+        },
+        {
+          "source_path": "Stata18/ado/base/p/putexcel_expt_opts.ihlp",
+          "source_sha256": "8447454327d61cee6f8b631c8b86355bb1daf6e692f23031c3af8083e5a4a2a7"
+        },
+        {
+          "source_path": "Stata18/ado/base/p/putexcel_num_opt.ihlp",
+          "source_sha256": "031497a19149a0f739e2c0d43ca64698dc1016d0d7b5eb39b2ec9186ee0b82ca"
+        },
+        {
+          "source_path": "Stata18/ado/base/p/putexcel_align_opts.ihlp",
+          "source_sha256": "d7e0b2734e770ab3a875e00a5ad4d1c067d57a2e531c6668c0279c68d74c27d9"
+        },
+        {
+          "source_path": "Stata18/ado/base/p/putexcel_text_opts.ihlp",
+          "source_sha256": "fa1a35d2092b96643a6b28721bd9a033670b4b7d9f2035c61a1bb71a7f51bba8"
+        },
+        {
+          "source_path": "Stata18/ado/base/p/putexcel_bord_opts.ihlp",
+          "source_sha256": "2972d83156a45f864efaa08b9a4274d361e4c4e0ee7f32a779f13e22a06973d0"
+        },
+        {
+          "source_path": "Stata18/ado/base/p/putexcel_fill_opt.ihlp",
+          "source_sha256": "9ae8b6c910be315852dc2e540af6928490e6174fce27abf2e225b84d6b110eb5"
+        }
+      ],
+      "content_file": "command_help_guides/putexcel.txt",
+      "content_sha256": "79a96353c4e9758bcb969c61245230885f65283879d56cf06184ab8d2e908709",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 2,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "qddml",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "30aug2024",
+      "source_url": null,
+      "help_topics": [
+        "qddml"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/qddml_6313ba3e1b9fb595325cf0336e86d3f7434373c6.sthlp",
+          "source_sha256": "296a75f61d2170be4328dc17a5c45a0e163fe024ca94b1c88b1b5dc345232f86"
+        },
+        {
+          "source_path": "data/full_command_guides/sources/ddml_install_ref_auth-6313ba3e1b9fb595325cf0336e86d3f7434373c6.ihlp",
+          "source_sha256": "042a75022d5baf14fcc4c8d3d8df0db90e5044be5da98aede9e09dd0b9706ce9"
+        }
+      ],
+      "content_file": "command_help_guides/qddml.txt",
+      "content_sha256": "98c1822f2e89a6835763369e433488ab83d0d10a8268a288bb43aaca02b23f5f",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "rangestat",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "not_declared_in_selected_raw_help",
+      "source_url": null,
+      "help_topics": [
+        "rangestat_ssc_retrieved_2026-08-28"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/rangestat_ssc_retrieved_2026-08-28.sthlp",
+          "source_sha256": "afa347a892c82f410359bc0a35631c08273c821d9013712c97ee735ade8862e1"
+        }
+      ],
+      "content_file": "command_help_guides/rangestat.txt",
+      "content_sha256": "29dcbe96f6e6bc6a807b8ad6e60e269b63bf68c3b70ac8fc70afe99274b211f5",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "rdbwselect",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "11.1.0  2026-05-22",
+      "source_url": null,
+      "help_topics": [
+        "rdbwselect"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/rdbwselect_7dd25671b8f28fc8618b1b7aa4a981564ee53f75.sthlp",
+          "source_sha256": "8584942234dd5b723881d0557fdfbf476e515faa2d0799caf99eac12a38cc745"
+        }
+      ],
+      "content_file": "command_help_guides/rdbwselect.txt",
+      "content_sha256": "547ee1fdb26198a4ac11814725359c396aa61ec5cd161169f642b12e46e31de7",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "rdplot",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "11.1.0  2026-05-22",
+      "source_url": null,
+      "help_topics": [
+        "rdplot"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/rdplot_7dd25671b8f28fc8618b1b7aa4a981564ee53f75.sthlp",
+          "source_sha256": "41aa4f40af4d7f3d9de6cd78e449cf9c2b0e519ebfd20e629e87d85ba669fa74"
+        }
+      ],
+      "content_file": "command_help_guides/rdplot.txt",
+      "content_sha256": "fde55cbafd3be9b4f78adc8840cb03a30bac9ff95b6bbcb4b3c191f03246d619",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "rdrobust",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "11.1.0  2026-05-22",
+      "source_url": null,
+      "help_topics": [
+        "rdrobust"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/rdrobust_7dd25671b8f28fc8618b1b7aa4a981564ee53f75.sthlp",
+          "source_sha256": "6bd246cc9c9d3395862c6584bba24e86f355bef012560ac9a3ebbeb17008e7b3"
+        }
+      ],
+      "content_file": "command_help_guides/rdrobust.txt",
+      "content_sha256": "5c274b3db07531239d8d1469ee60a95e043dd34a9abdcf150f733fb3933aacfa",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 2,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "recode",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "recode"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/r/recode.sthlp",
+          "source_sha256": "3be601ac8aa4993e943184e0d1799ca67527447b05540560061102f0a61bec4a"
+        },
+        {
+          "source_path": "Stata18/ado/base/f/frunalias.ihlp",
+          "source_sha256": "2a2e73d1e9f4bec62c64f395ca4b10fd1ef2fec90685c785359b82fd1892fe45"
+        }
+      ],
+      "content_file": "command_help_guides/recode.txt",
+      "content_sha256": "e0585997b5177aa129cbd130844f0a0dad87559e8fac4e859217fdc81c62013b",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "regress",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "regress"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/r/regress.sthlp",
+          "source_sha256": "c54ea8b4b8cfbbdc8db817d0d8d6358ef5d98b1174e39b48b6ad7f53e9fbfb8f"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/shortdes-displayoptall.ihlp",
+          "source_sha256": "1333a9da009e1978445c9a76b13f3ecd38200480c8cb41e00d2762e25b119c24"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/shortdes-coeflegend.ihlp",
+          "source_sha256": "e36c279a6b0550e6492ae1174b5a4f10c1aa46ae9b25e08e68eb9b19331741bd"
+        },
+        {
+          "source_path": "Stata18/ado/base/f/fvvarlist.ihlp",
+          "source_sha256": "161d09e7863b4a927325b6732f427f962c8d2cacbdae2d5ff8bfd4af9c06489f"
+        },
+        {
+          "source_path": "Stata18/ado/base/v/vce_mi.ihlp",
+          "source_sha256": "abfa0c99d11a297c0fd0a6624a823e14b36c645bb63fc6183fa5d8dc736d0767"
+        },
+        {
+          "source_path": "Stata18/ado/base/d/displayopts_listd.ihlp",
+          "source_sha256": "fcca893e3081bb92f6f9e1801f0cf363659224b9cdbf9a5d2cd28b40ed2e5a15"
+        },
+        {
+          "source_path": "Stata18/ado/base/r/rtable.ihlp",
+          "source_sha256": "7f63075ee6bed5b5c2a41fbfe08db661ca97d2e5c0da439d302f0514f95fa74b"
+        }
+      ],
+      "content_file": "command_help_guides/regress.txt",
+      "content_sha256": "f4164a56a936af20e2fef914d023cb863b72c78bb9c6c5e002bbe8e80bf1618d",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "reghdfe",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "6.14.1 08Jul2026",
+      "source_url": null,
+      "help_topics": [
+        "reghdfe"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/reghdfe-29b2b203-sergiocorreia.sthlp",
+          "source_sha256": "5c99c4d0b34eebe53d6f1158ba093d693cf4d0c74a3f7eb9603c6b0972b072c1"
+        },
+        {
+          "source_path": "data/full_command_guides/sources/stata19_displayopts_list.ihlp",
+          "source_sha256": "46d2d0c7d6970a22e17897f3eee247f3229edb52328967dc377d02659d525a83"
+        }
+      ],
+      "content_file": "command_help_guides/reghdfe.txt",
+      "content_sha256": "ef491432c8d84b24bf2aa4d98500aba76e022368e07a0ded4a72b68047280c83",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 2,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "replace",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "generate"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/g/generate.sthlp",
+          "source_sha256": "8787d0f4dded99306ee465755d10aeaaa68ec2d3db8ed85d178ee99c5c8bfd20"
+        }
+      ],
+      "content_file": "command_help_guides/replace.txt",
+      "content_sha256": "e51d24729efbaf30efbf3f7121ad7ee7f4e605dda54cb1e4829718061701a3e1",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 2,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "reshape",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "reshape"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/r/reshape.sthlp",
+          "source_sha256": "9c523461e22965f89193b29acdf4481df2f4a21dbcdbe5361b3dd2021e9f9bf7"
+        },
+        {
+          "source_path": "Stata18/ado/base/f/frunalias.ihlp",
+          "source_sha256": "2a2e73d1e9f4bec62c64f395ca4b10fd1ef2fec90685c785359b82fd1892fe45"
+        }
+      ],
+      "content_file": "command_help_guides/reshape.txt",
+      "content_sha256": "e2eece7903c8b4196fd453cdfc358b97ddabf19948f9e9f1f77441294c296511",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 1,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "ritest",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "1.1.8 mar2021",
+      "source_url": null,
+      "help_topics": [
+        "ritest-1.1.18-simonheb"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/ritest-1.1.18-simonheb.sthlp",
+          "source_sha256": "6ea86ae6cfe6ce3d39edfbfedc673dd8be0fcf7d42c7437eefe8fa6e92ed37a5"
+        }
+      ],
+      "content_file": "command_help_guides/ritest.txt",
+      "content_sha256": "c5385c2ccc7bfe754061a2285b2d6670725fa0fdb87513ca075a5781fb4d9d9f",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "save",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "save"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/s/save.sthlp",
+          "source_sha256": "d007fc3e98b323c4b5d7eb66b31519f2c0eada8fb9c68c47b510aa79e62b0111"
+        }
+      ],
+      "content_file": "command_help_guides/save.txt",
+      "content_sha256": "7bf3382cebe3577a9875b08acd0d9464b6d24a88b20aaebe8045ba200f61c2cb",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "sdid",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "2.0.3 May 14, 2025",
+      "source_url": null,
+      "help_topics": [
+        "sdid"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/sdid-7f06fd7-daniel-pailanir.sthlp",
+          "source_sha256": "0dd7d62cd6076dccb9a24e942dcf8ba14d6cfed39b0e0bf6ef7f90ff85562c66"
+        }
+      ],
+      "content_file": "command_help_guides/sdid.txt",
+      "content_sha256": "dc635c363d08b36db9df46c50da89b28d30fc8b31573141eda28954b4045c8fd",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "stackedev",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "1.1 18dec2021",
+      "source_url": null,
+      "help_topics": [
+        "stackedev"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/stackedev-0da3631-joshbleiberg.sthlp",
+          "source_sha256": "19ca7395b63e26348a6e94e0efe0d2e928449a763b2a5d08377b2fa1527e51bc"
+        }
+      ],
+      "content_file": "command_help_guides/stackedev.txt",
+      "content_sha256": "20fc3a06a1540969ddf9ad7497c9c7090125777d830c14cb17c3d53d7ef7f063",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "stcox",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "stcox"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/s/stcox.sthlp",
+          "source_sha256": "bfe47e5149ef48e610538b1df3e496ca0d3137bb879e69863a5735558bda77ed"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/shortdes-displayoptall.ihlp",
+          "source_sha256": "1333a9da009e1978445c9a76b13f3ecd38200480c8cb41e00d2762e25b119c24"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/shortdes-coeflegend.ihlp",
+          "source_sha256": "e36c279a6b0550e6492ae1174b5a4f10c1aa46ae9b25e08e68eb9b19331741bd"
+        },
+        {
+          "source_path": "Stata18/ado/base/v/vce_mi.ihlp",
+          "source_sha256": "abfa0c99d11a297c0fd0a6624a823e14b36c645bb63fc6183fa5d8dc736d0767"
+        },
+        {
+          "source_path": "data/full_command_guides/sources/stata19_displayopts_list.ihlp",
+          "source_sha256": "46d2d0c7d6970a22e17897f3eee247f3229edb52328967dc377d02659d525a83"
+        },
+        {
+          "source_path": "Stata18/ado/base/r/rtable.ihlp",
+          "source_sha256": "7f63075ee6bed5b5c2a41fbfe08db661ca97d2e5c0da439d302f0514f95fa74b"
+        }
+      ],
+      "content_file": "command_help_guides/stcox.txt",
+      "content_sha256": "5167af9a4f9f8d753faad219ec7588d7c4a0c2308f9ba625e845efb752e84231",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "stset",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "stset"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/s/stset.sthlp",
+          "source_sha256": "b61b47e2a18c5e802ebee0f62c44803f62e25f55b6168cc15223bbaa3cf2b8a4"
+        }
+      ],
+      "content_file": "command_help_guides/stset.txt",
+      "content_sha256": "b88493e18aa4387e47ae27d5391f386473536c2f8de6e32af3fc89fc068e9c70",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "summarize",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "summarize"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/s/summarize.sthlp",
+          "source_sha256": "efd516f3150e3504a9363bb8f58d6bf0662bb7b55e19aac43420fa37614a1689"
+        }
+      ],
+      "content_file": "command_help_guides/summarize.txt",
+      "content_sha256": "854d633967b8728ee9369f5cb5d7112ba64682b7e05c290bbd2363adde3cba2e",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 1,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "table",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "table"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/t/table.sthlp",
+          "source_sha256": "0fb2ffdba125783fd7ec62a7cbc596bb65ae930a3a7d6147413de1009648c56a"
+        },
+        {
+          "source_path": "Stata18/ado/base/n/not_strl.ihlp",
+          "source_sha256": "5d7e7d3c4fca39b30486b4155cc8a84dd877c434509681c42f901bff3b015603"
+        },
+        {
+          "source_path": "Stata18/ado/base/t/tab_star.ihlp",
+          "source_sha256": "11be00bb671ce0d56a3c29bab7032271305137c1b495ebec2c5e610abb4afbcf"
+        },
+        {
+          "source_path": "Stata18/ado/base/t/tab_label.ihlp",
+          "source_sha256": "88185b3315e6a470c4adf46af819c7312f6d6f81ba7f3372695eb164388f52ed"
+        },
+        {
+          "source_path": "Stata18/ado/base/t/tab_style.ihlp",
+          "source_sha256": "912d346b7f1dfa3b7dce29c5224342304e468913ef613a48afd39565c3dac772"
+        }
+      ],
+      "content_file": "command_help_guides/table.txt",
+      "content_sha256": "5975ce82bce0904f84578c92965a0df71933d439572951116e2d0d45387e6028",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "tabstat",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "tabstat"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/t/tabstat.sthlp",
+          "source_sha256": "8a30567aefde6b99d1d558d1d976b00832b8de065707fc74a3a508e383e2aaba"
+        }
+      ],
+      "content_file": "command_help_guides/tabstat.txt",
+      "content_sha256": "569cd579d03c6a3dac656131c240af34833b8956477033b366563db8208ac7c5",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 2,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "tabulate",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "tabulate"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/t/tabulate.sthlp",
+          "source_sha256": "3ff874033de9191597098f7ed1b8e009c5c68402530bd8fddcc43d81aa5d62ed"
+        }
+      ],
+      "content_file": "command_help_guides/tabulate.txt",
+      "content_sha256": "a2415d8567be25c6920c1095042e83b629bd18306b7361ccdee78797e47ba323",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "testparm",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "test"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/t/test.sthlp",
+          "source_sha256": "9e78ebe6a62fd02959e2979fc6866b523039b52dd7cf50676820451099e1aef3"
+        }
+      ],
+      "content_file": "command_help_guides/testparm.txt",
+      "content_sha256": "96f0cdcdbcbf9760596b7c587e0a330210cd24fadbfb15325560dea4a09a134e",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 2,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "test",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "test"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/t/test.sthlp",
+          "source_sha256": "9e78ebe6a62fd02959e2979fc6866b523039b52dd7cf50676820451099e1aef3"
+        }
+      ],
+      "content_file": "command_help_guides/test.txt",
+      "content_sha256": "96f0cdcdbcbf9760596b7c587e0a330210cd24fadbfb15325560dea4a09a134e",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 2,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "tostring",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "destring"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/d/destring.sthlp",
+          "source_sha256": "cd33a40ab83babd5ee0e436a383de38d523ed42b3c6d8ab1600a870be3bcf56a"
+        }
+      ],
+      "content_file": "command_help_guides/tostring.txt",
+      "content_sha256": "2d52afa3d4750b892965a766c413ce7f80c3541e77eb156e3eb158199ae2539d",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "tsfill",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "tsfill"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/t/tsfill.sthlp",
+          "source_sha256": "dc428d1a113eae31c355263de9062da378af2a0eb92793cc8a382e4223ac0744"
+        }
+      ],
+      "content_file": "command_help_guides/tsfill.txt",
+      "content_sha256": "008718cdab0478a157ef4be736b9a155318612a46d18df9117a6fea3df18ed3d",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 2,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "tsset",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "tsset"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/t/tsset.sthlp",
+          "source_sha256": "e85b33462e2f2c9bdb64828aa139dff68b02cf31f17f5788650bc05dfbbcf374"
+        }
+      ],
+      "content_file": "command_help_guides/tsset.txt",
+      "content_sha256": "03a7d150a691736c055ced1ecc5d4d9ecd4de2b96ed76521878006abfce137ec",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 2,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "twoway",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "graph_twoway"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/g/graph_twoway.sthlp",
+          "source_sha256": "b44c10b4fe6eacbf32cf2c2ea6288c41567521f000e4eb63ea73638cda5e6535"
+        }
+      ],
+      "content_file": "command_help_guides/twoway.txt",
+      "content_sha256": "75658c54cd8897160a009b2cc55e083e7689f5eb7b04bcf2a8787257ed9058cf",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 1,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "ttest",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "ttest"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/t/ttest.sthlp",
+          "source_sha256": "bcd79ab5dcaba31fb07c90c23d4a8954b8be03d01617f9a8c68cec15d1ec7047"
+        }
+      ],
+      "content_file": "command_help_guides/ttest.txt",
+      "content_sha256": "f7bbd0fa038726ef48a9423cac0d3ff0c473940471afab0b1601d392e3dafd9f",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 2,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "use",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "use"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/u/use.sthlp",
+          "source_sha256": "06f3fbe546f59b98bb7d933aa1791e5b15287e9eb95058977b7ef26012d76fcd"
+        }
+      ],
+      "content_file": "command_help_guides/use.txt",
+      "content_sha256": "d6c7709a7a8113126191a111d680b20eb111ed7b6e13134c87aad8b6db070c2c",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "winsor2",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "2.0 2020/11/24",
+      "source_url": null,
+      "help_topics": [
+        "winsor2-ssc"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/winsor2-ssc-20260829.sthlp",
+          "source_sha256": "b3d6cb9e00fd84dd1faef142ac58d35e5cca22400ec9acdff858312d00d55995"
+        }
+      ],
+      "content_file": "command_help_guides/winsor2.txt",
+      "content_sha256": "44e1831e080e7f9d078054995740193490e9220a0a10728ba3d2ea6bbe084db3",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 2,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "xtivreg",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "xtivreg"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/x/xtivreg.sthlp",
+          "source_sha256": "3d4d9fc6f41e2e361055a0d0241db46d5c3bd1321bcdae028093052791a73234"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/shortdes-displayoptall.ihlp",
+          "source_sha256": "1333a9da009e1978445c9a76b13f3ecd38200480c8cb41e00d2762e25b119c24"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/shortdes-coeflegend.ihlp",
+          "source_sha256": "e36c279a6b0550e6492ae1174b5a4f10c1aa46ae9b25e08e68eb9b19331741bd"
+        },
+        {
+          "source_path": "Stata18/ado/base/x/xt_vce_asymptall.ihlp",
+          "source_sha256": "995d83a151110ba415e3ce5f179e40a7e26244e34b884120fc39e2f1b80da161"
+        },
+        {
+          "source_path": "data/full_command_guides/sources/stata19_displayopts_list.ihlp",
+          "source_sha256": "46d2d0c7d6970a22e17897f3eee247f3229edb52328967dc377d02659d525a83"
+        },
+        {
+          "source_path": "Stata18/ado/base/r/rtable.ihlp",
+          "source_sha256": "7f63075ee6bed5b5c2a41fbfe08db661ca97d2e5c0da439d302f0514f95fa74b"
+        }
+      ],
+      "content_file": "command_help_guides/xtivreg.txt",
+      "content_sha256": "3312c04b5024593fdd1d1af9dfe2cb3c38766e92e5117cb3dc0130ce7358844d",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 1,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "xtreg",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "xtreg"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/x/xtreg.sthlp",
+          "source_sha256": "aa50b07d2929b7f46f524cc839abd2140e699fff5e175441a5cd3f3ab6d23bfb"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/sncmdnote.ihlp",
+          "source_sha256": "5e45ca7afa414564d8db98db16217f9f18765a7e4ced8d9f12a1432e709269d0"
+        },
+        {
+          "source_path": "Stata18/ado/base/e/eform_tab.ihlp",
+          "source_sha256": "cb1d7577fce1206be7655063dfb0eac0f9256db82d21e9e54ba345f6ddf54ef2"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/shortdes-displayoptall.ihlp",
+          "source_sha256": "1333a9da009e1978445c9a76b13f3ecd38200480c8cb41e00d2762e25b119c24"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/shortdes-coeflegend.ihlp",
+          "source_sha256": "e36c279a6b0550e6492ae1174b5a4f10c1aa46ae9b25e08e68eb9b19331741bd"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/snfeaturesnote.ihlp",
+          "source_sha256": "7036a7354ac16fe04f2ffe9234eb64e5a4c73142515afb8c70b3f43052318b92"
+        },
+        {
+          "source_path": "Stata18/ado/base/v/vce_mi.ihlp",
+          "source_sha256": "abfa0c99d11a297c0fd0a6624a823e14b36c645bb63fc6183fa5d8dc736d0767"
+        },
+        {
+          "source_path": "Stata18/ado/base/x/xt_vce_asymptall.ihlp",
+          "source_sha256": "995d83a151110ba415e3ce5f179e40a7e26244e34b884120fc39e2f1b80da161"
+        },
+        {
+          "source_path": "Stata18/ado/base/e/eform_des.ihlp",
+          "source_sha256": "603745f5c8f094d5dd3cd434c032b7b94bc3db57c2cc2e2a8381c3a365e93b9b"
+        },
+        {
+          "source_path": "data/full_command_guides/sources/stata19_displayopts_list.ihlp",
+          "source_sha256": "46d2d0c7d6970a22e17897f3eee247f3229edb52328967dc377d02659d525a83"
+        },
+        {
+          "source_path": "Stata18/ado/base/d/displayopts_listd.ihlp",
+          "source_sha256": "fcca893e3081bb92f6f9e1801f0cf363659224b9cdbf9a5d2cd28b40ed2e5a15"
+        },
+        {
+          "source_path": "Stata18/ado/base/l/lognolog.ihlp",
+          "source_sha256": "018e21bf7145086407ccef48a5bdd929b9614c4c063e27a9337efe04af888a9f"
+        },
+        {
+          "source_path": "Stata18/ado/base/r/rtable.ihlp",
+          "source_sha256": "7f63075ee6bed5b5c2a41fbfe08db661ca97d2e5c0da439d302f0514f95fa74b"
+        }
+      ],
+      "content_file": "command_help_guides/xtreg.txt",
+      "content_sha256": "2b2f774c13fed6fb88e4ffb85e78da1d8ef040e3ff4cc66c17d00684052749a7",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 3,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "xtset",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "xtset"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/x/xtset.sthlp",
+          "source_sha256": "6d0de20c27f137cb6ff975244fd3546886d6ee17ab61feef786eba08f5ea81ea"
+        }
+      ],
+      "content_file": "command_help_guides/xtset.txt",
+      "content_sha256": "dcaba5a35075bdac62796496f36a92033694668a9ea2378d8969fa88b026b844",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 2,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "xtabond2",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "repository commit a694533e395b0277ee2fffbde00a7111357c524f",
+      "source_url": null,
+      "help_topics": [
+        "xtabond2"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/xtabond2-a694533e395b0277ee2fffbde00a7111357c524f.hlp",
+          "source_sha256": "5e3f02ab31aa177003cf3a42d77c7b7f6218debcd229bfe3eee9ece58c3b81c1"
+        }
+      ],
+      "content_file": "command_help_guides/xtabond2.txt",
+      "content_sha256": "b41921d1678ae1622d0eaafa9dfcfadcc78a492e19d3f70fe16bade11de6c737",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "asdoc",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "2.3.9.5; April 10, 2021",
+      "source_url": null,
+      "help_topics": [
+        "asdoc-ssc"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/asdoc-ssc-20260829.sthlp",
+          "source_sha256": "bee4550593160293c23e3b414b3db8d9890b23f7057cf65ea06bb92e4d9b1d52"
+        }
+      ],
+      "content_file": "command_help_guides/asdoc.txt",
+      "content_sha256": "5b95913fa2d594c272a3c343cabe503dcabf8abe4845b60fc201aae1d0a957d0",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 1,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "fcollapse",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "2.49.0 06may2022",
+      "source_url": null,
+      "help_topics": [
+        "fcollapse"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/fcollapse-7b3663e49ea5c5b81638c55be29edf416e68e8b7.sthlp",
+          "source_sha256": "3cfd14b325a16209b0d6c4276907f15f699bcada9168bb4ba7e4ac2026256402"
+        }
+      ],
+      "content_file": "command_help_guides/fcollapse.txt",
+      "content_sha256": "0210c8d5c466811345b1cb1969a2c38bbf7b72c474707afe37ba07b665c9669b",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": true,
+      "paper_example_count": 1,
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "fmerge",
+      "help_status": "available",
+      "authority": "maintainer or package documentation",
+      "source_kind": "stored maintainer help",
+      "source_version": "2.10.0 3apr2017",
+      "source_url": null,
+      "help_topics": [
+        "fmerge"
+      ],
+      "source_files": [
+        {
+          "source_path": "data/full_command_guides/sources/fmerge-7b3663e49ea5c5b81638c55be29edf416e68e8b7.sthlp",
+          "source_sha256": "db75a458e863fdb726e432419b6075e6192040aba30853df67b7afb1d49dd2a6"
+        }
+      ],
+      "content_file": "command_help_guides/fmerge.txt",
+      "content_sha256": "b19226ca0a9aa01c97c0e28aadf77ad7ebad1dad6dbaaee1a2763563885fffb6",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "full_manual_available": true,
+      "paper_examples_available": false,
+      "paper_example_count": 0,
+      "related_online_sources": []
+    }
+  ]
+}

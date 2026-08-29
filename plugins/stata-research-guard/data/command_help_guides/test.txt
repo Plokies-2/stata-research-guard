@@ -1,0 +1,274 @@
+[R] test -- Test linear hypotheses after estimation
+            (View complete PDF manual entry)
+
+
+Syntax
+
+    Basic syntax
+
+        test coeflist                                (Syntax 1)
+
+        test exp = exp [= ...]                       (Syntax 2)
+
+        test [eqno] [: coeflist]                     (Syntax 3)
+
+        test [eqno = eqno [= ...]] [: coeflist]      (Syntax 4)
+
+        testparm varlist [, testparm_options]
+
+
+    Full syntax
+
+        test (spec) [(spec) ...] [, test_options]
+
+
+    testparm_options     Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    equal                hypothesize that the coefficients are equal to each other
+    equation(eqno)       specify equation name or number for which the hypothesis is tested
+    nosvyadjust          compute unadjusted Wald tests for survey results
+
+    df(#)                use F distribution with # denominator degrees of freedom for the reference distribution of the test statistic; for survey data, # specifies the design degrees of freedom unless nosvyadjust is specified
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    df(#) does not appear in the dialog box.
+
+
+    test_options         Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Options
+      mtest[(opt)]       test each condition separately
+      coef               report estimated constrained coefficients
+      accumulate         test hypothesis jointly with previously tested hypotheses
+      notest             suppress the output
+      common             test only variables common to all the equations
+      constant           include the constant in coefficients to be tested
+      nosvyadjust        compute unadjusted Wald tests for survey results
+      minimum            perform test with the constant, drop terms until the test becomes nonsingular, and test without the constant on the remaining terms; highly technical
+
+      matvlc(matname)    save the variance-covariance matrix; programmer's option
+      df(#)              use F distribution with # denominator degrees of freedom for the reference distribution of the test statistic; for survey data, # specifies the design degrees of freedom unless nosvyadjust is specified
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    matvlc(matname) and df(#) do not appear in the dialog box.
+
+
+    coeflist and varlist may contain factor variables and time-series operators; see fvvarlist and tsvarlist.
+    collect is allowed with test and testparm; see prefix.
+
+
+            Syntax 1 tests that coefficients are 0.
+
+            Syntax 2 tests that linear expressions are equal.
+
+            Syntax 3 tests that coefficients in eqno are 0.
+
+            Syntax 4 tests equality of coefficients between equations.
+
+
+        spec is one of
+            coeflist
+            exp=exp[=exp]
+            [eqno][: coeflist]
+            [eqno1=eqno2[=...]][:  coeflist]
+
+        coeflist is
+            coef [coef ...]
+            [eqno]coef [[eqno]coef...]
+            [eqno]_b[coef] [[eqno]_b[coef]...]
+
+        exp is a linear expression containing
+            coef
+            _b[coef]
+            _b[eqno:coef]
+            [eqno]coef
+            [eqno]_b[coef]
+
+        eqno is
+            ##
+            name
+
+    coef identifies a coefficient in the model.  coef is typically a variable name, a level indicator, an interaction indicator, or an interaction involving continuous variables.  Level indicators identify one level of a factor variable and interaction
+    indicators identify one combination of levels of an interaction; see fvvarlist.  coef may contain time-series operators; see tsvarlist.
+
+    Distinguish between [], which are to be typed, and [], which indicate optional arguments.
+
+    Although not shown in the syntax diagram, parentheses around spec are required only with multiple specifications.  Also, the diagram does not show that test may be called without arguments to redisplay the results from the last test.
+
+    anova and manova allow the test syntax above plus more (see [R] anova postestimation for test after anova; see [MV] manova postestimation for test after manova).
+
+
+Menu
+
+    Statistics > Postestimation
+
+
+Description
+
+    test performs Wald tests of simple and composite linear hypotheses about the parameters of the most recently fit model.
+
+    test supports svy estimators (see [SVY] svy estimation), carrying out an adjusted Wald test by default in such cases.  test can be used with svy estimation results, see [SVY] svy postestimation.
+
+    testparm provides a useful alternative to test that permits varlist rather than a list of coefficients (which is often nothing more than a list of variables), allowing the use of standard Stata notation, including '-' and '*', which are given the
+    expression interpretation by test.
+
+    test and testparm perform Wald tests.  For likelihood-ratio tests, see [R] lrtest.  For Wald-type tests of nonlinear hypotheses, see [R] testnl.  To display estimates for one-dimensional linear or nonlinear expressions of coefficients, see [R]
+    lincom and [R] nlcom.
+
+    See [R] anova postestimation for additional test syntax allowed after anova.
+
+    See [MV] manova postestimation for additional test syntax allowed after manova.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+        Methods and formulas
+
+    The above sections are not included in this help file.
+
+
+Options for testparm
+
+    equal tests that the variables appearing in varlist, which also appear in the previously fit model, are equal to each other rather than jointly equal to zero.
+
+    equation(eqno) is relevant only for multiple-equation models, such as mvreg, mlogit, and heckman.  It specifies the equation for which the all-zero or all-equal hypothesis is tested.  equation(#1) specifies that the test be conducted regarding the
+        first equation #1.  equation(price) specifies that the test concern the equation named price.
+
+    nosvyadjust is for use with svy estimation commands; see [SVY] svy estimation.  It specifies that the Wald test be carried out without the default adjustment for the design degrees of freedom.  That is, the test is carried out as W/k ~ F(k,d) rather
+        than as (d-k+1)W/(kd) ~ F(k,d-k+1), where k = the dimension of the test and d = the total number of sampled PSUs minus the total number of strata.  When the df() option is used, it will override the default design degrees of freedom.
+
+    The following option is available with testparm but is not shown in the dialog box:
+
+    df(#) specifies that the F distribution with # denominator degrees of freedom be used for the reference distribution of the test statistic.  The default is to use e(df_r) degrees of freedom or the chi-squared distribution if e(df_r) is missing.
+        With survey data, # is the design degrees of freedom unless nosvyadjust is specified.
+
+
+Options for test
+
+        +---------+
+    ----+ Options +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    mtest[(opt)] specifies that tests be performed for each condition separately.  opt specifies the method for adjusting p-values for multiple testing.  Valid values for opt are
+
+                bonferroni    Bonferroni's method
+                holm          Holm's method
+                sidak         Sidak's method
+                noadjust      no adjustment is to be made
+
+        Specifying mtest without an argument is equivalent to mtest(noadjust).
+
+    coef specifies that the constrained coefficients be displayed.
+
+    accumulate allows a hypothesis to be tested jointly with the previously tested hypotheses.
+
+    notest suppresses the output.  This option is useful when you are interested only in the joint test of several hypotheses, specified in a subsequent call of test, accumulate.
+
+    common specifies that when you use the [eqno1=eqno2[=...]] form of spec, the variables common to the equations eqno1, eqno2, etc., be tested.  The default action is to complain if the equations have variables not in common.
+
+    constant specifies that _cons be included in the list of coefficients to be tested when using the [eqno1=eqno2[=...]] or [eqno] forms of spec.  The default is not to include _cons.
+
+    nosvyadjust is for use with svy estimation commands; see [SVY] svy estimation.  It specifies that the Wald test be carried out without the default adjustment for the design degrees of freedom.  That is, the test is carried out as W/k ~ F(k,d) rather
+        than as (d-k+1)W/(kd) ~ F(k,d-k+1), where k = the dimension of the test and d = the total number of sampled PSUs minus the total number of strata.  When the df() option is used, it will override the default design degrees of freedom.
+
+    minimum is a highly technical option.  It first performs the test with the constant added.  If this test is singular, coefficients are dropped until the test becomes nonsingular.  Then the test without the constant is performed with the remaining
+        terms.
+
+    The following options are available with test but are not shown in the dialog box:
+
+    matvlc(matname), a programmer's option, saves the variance-covariance matrix of the linear combinations involved in the suite of tests.  For the test of the linear constraints L*b = c, matname contains L*V*L', where V is the estimated
+        variance-covariance matrix of b.
+
+    df(#) specifies that the F distribution with # denominator degrees of freedom be used for the reference distribution of the test statistic.  The default is to use e(df_r) degrees of freedom or the chi-squared distribution if e(df_r) is missing.
+        With survey data, # is the design degrees of freedom unless nosvyadjust is specified.
+
+
+Examples after single-equation estimation
+
+    Setup
+        . webuse census3
+        . regress brate medage medagesq i.region
+
+    Test coefficient on 3.region is 0
+        . test 3.region=0
+
+    Shorthand for the previous test command
+        . test 3.region
+
+    Test coefficient on 2.region=coefficient on 4.region
+        . test 2.region=4.region
+
+    Stata will perform the algebra, and then do the test
+        . test 2*(2.region-3*(3.region-4.region))=3.region+2.region+6*(4.region-3.region)
+
+    Test that coefficients on 2.region and 3.region are jointly equal to 0
+        . test (2.region=0) (3.region=0)
+
+    The following two commands are equivalent to the previous test command
+        . test 2.region = 0
+        . test 3.region = 0, accumulate
+
+    Test that the coefficients on 2.region, 3.region, and 4.region are all 0; testparm understands a varlist
+
+        . testparm i(2/4).region
+
+    In the above example, you may substitute any single-equation estimation command (such as clogit, logistic, logit, and ologit) for regress.
+
+ 
+Examples after multiple-equation estimation commands
+
+    Setup
+        . sysuse auto
+        . sureg (price foreign mpg displ) (weight foreign length)
+
+    Test significance of foreign in the price equation
+        . test [price]foreign
+
+    Test that foreign is jointly 0 in both equations
+        . test [price]foreign [weight]foreign
+
+    Shorthand for the previous test command
+        . test foreign
+
+    Test a cross-equation constraint
+        . test [price]foreign = [weight]foreign
+
+    Alternative syntax for the previous test
+        . test [price=weight]: foreign
+
+    Test all coefficients except the intercept in an equation
+        . test [price]
+
+    Test that foreign and displ are jointly 0 in the price equation
+        . test [price]: foreign displ
+
+    Test that the coefficients on variables that are common to both equations are jointly 0
+        . test [price=weight], common
+
+    Simultaneous test of multiple constraints
+        . test ([price]: foreign) ([weight]: foreign)
+
+
+Stored results
+
+    test and testparm store the following in r():
+
+    Scalars   
+      r(p)           two-sided p-value
+      r(F)           F statistic
+      r(df)          test constraints degrees of freedom
+      r(df_r)        residual degrees of freedom
+      r(dropped_i)   index of ith constraint dropped
+      r(chi2)        chi-squared
+      r(ss)          sum of squares (test)
+      r(rss)         residual sum of squares
+      r(drop)        1 if constraints were dropped, 0 otherwise
+
+    Macros    
+      r(mtmethod)    method of adjustment for multiple testing
+
+    Matrices  
+      r(mtest)       multiple test results
+
+    r(ss) and r(rss) are defined only when test is used for testing effects after anova.

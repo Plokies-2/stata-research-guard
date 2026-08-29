@@ -1,0 +1,235 @@
+[R] areg -- Linear regression with many indicator variables+
+            (View complete PDF manual entry)
+
++This command includes features that are part of StataNow.
+
+
+
+Syntax
+
+        areg depvar [indepvars] [if] [in] [weight], absorb(...) [options]
+
+    options                       Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Model
+    * absorb(varname)             categorical variable to be absorbed
+   +* absorb(varlist [, method])  specify categorical variables to be absorbed
+    + noabsorbtest                suppress the F test of absorbed indicators
+
+    SE/Robust
+      vce(vcetype)                vcetype may be ols, robust, cluster clustvarlist, bootstrap, jackknife, or hc2 [clustvar]
+
+    Reporting
+      level(#)                    set confidence level; default is level(95)
+      clustertable                display table of multiway cluster combinations
+      display_options             control columns and column formats, row spacing, line width, display of omitted variables and base and empty cells, and factor-variable labeling
+
+
+    Optimization
+   +† tolerance(#)                convergence tolerance for maximum absolute difference; default is tolerance(1e-8)
+   +† iterate(#)                  maximum number of iterations for alternating projection method (APM); default is iterate(50)
+   +† nolog                       suppress the APM iteration log
+
+      coeflegend                  display legend instead of statistics
+
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    + These features are part of StataNow.
+
+    * absorb() is required.
+    † Ignored if only one absorbed variable is specified.
+    indepvars may contain factor variables; see fvvarlist.
+
+    depvar and indepvars may contain time-series operators; see tsvarlist.
+    bootstrap, by, collect, fp, jackknife, mi estimate, rolling, and statsby are allowed; see prefix.
+    vce(bootstrap) and vce(jackknife) are not allowed with the mi estimate prefix.
+
+    Weights are not allowed with the bootstrap prefix.
+    aweights are not allowed with the jackknife prefix.
+    aweights, fweights, and pweights are allowed; see weight.
+    coeflegend does not appear in the dialog box.
+    See [R] areg postestimation for features available after estimation.
+
+
+Menu
+
+    Statistics > Linear models and related > Other > Linear regression absorbing cat. variables
+
+
+Description
+
+    areg fits linear regression absorbing categorical factors.  areg is designed for datasets with categorical variables that have many groups, but the number of groups for each variable does not increase with the sample size.  See the xtreg, fe command
+    in [XT] xtreg for an estimator that handles the case in which one categorical variable (often a panel identifier) has a number of groups that increases with the sample size; additional categorical variables with fixed group sizes may also be
+    included.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+        Methods and formulas
+
+    The above sections are not included in this help file.
+
+
+Options
+
+        +-------+
+    ----+ Model +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    absorb(varname) specifies the categorical variable, which is to be included in the regression as if it were specified by indicator variables.  absorb() is required.
+
+    absorb(varlist [, method]) is part of StataNow.  It specifies the categorical variables to be absorbed.  The results are adjusted as if indicator variables for each level of each variable in varlist were included in the regression.  absorb() is
+        required.
+
+        When more than one categorical variable is absorbed, an APM iterative algorithm is used to project the depvar and indepvars to absorb these variables.  method specifies the APM and is one of halperin or cimmino.
+
+            halperin, the default, uses the product of the projection matrices.
+
+            cimmino uses the mean of the projection matrices.
+
+        The two methods typically perform similarly.  See Stammann (2018) for details.
+
+        method is ignored if only one absorbed variable is specified.
+
+    noabsorbtest is part of StataNow.  It prevents computation of the F test that all coefficients on indicators for absorbed variables are jointly zero.  Computation of this test requires an iterative search.  If the F test is of no interest, you may
+        specify noabsorbtest and save computational time.
+
+        +-----------+
+    ----+ SE/Robust +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    vce(vcetype) specifies the type of standard error reported, which includes types that are derived from asymptotic theory (ols), that are robust to some kinds of misspecification (robust), that allow for intragroup correlation (cluster clustvarlist),
+        and that use bootstrap or jackknife methods (bootstrap, jackknife); see [R] vce_option.
+
+        vce(ols), the default, uses the standard variance estimator for ordinary least-squares regression.
+
+        vce(cluster clustvarlist) specifies that standard errors allow for intragroup correlation within groups defined by one or more variables in clustvarlist, relaxing the usual requirement that the observations be independent.  For example,
+            vce(cluster clustvar1) produces cluster-robust standard errors that allow for observations that are independent across groups defined by clustvar1 but not necessarily independent within groups.  You could also type vce(cluster clustvar1
+            clustvar2 ... clusterp) to account for correlation within groups formed by p variables (multiway clustering).
+
+        areg also allows the following:
+
+        vce(hc2 [clustvar][, dfadjust]) specifies an alternative bias correction for the robust variance calculation.  In the unclustered case, vce(robust) uses (sigma-hat_j)^2 = {n/(n-k)} (u_j)^2 as an estimate of the variance of the jth observation,
+            where n is the number of observations, k is the number of regressors, u_j is the calculated residual, and n/(n-k) is included to improve the overall estimate's small-sample properties.
+
+            vce(hc2) instead uses u_j^2/(1-h_jj) as the observation's variance estimate, where h_jj is the diagonal element of the hat (projection) matrix.  This estimate is unbiased if the model really is homoskedastic.  vce(hc2) tends to produce
+            slightly more conservative confidence intervals.  vce(hc2 clustvar) produces estimates that allow for intragroup correlation within groups defined by clustvar.  dfadjust computes the Bell and McCaffrey (2002) adjusted degrees of freedom
+            based on clustvar.  Note that dfadjust does not affect multiple-imputation results when the command is used with mi estimate.  See Methods and formulas in [R] regress for a description of the computation when clustvar is specified.
+
+            vce(hc2) is not allowed when multiple variables are absorbed.
+
+        +-----------+
+    ----+ Reporting +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    level(#); see [R] Estimation options.
+
+    clustertable displays a table reporting cluster combinations and the number of clusters per combination.  This option is available only when vce(cluster clustvarlist) is specified with more than one variable in clustvarlist to compute multiway
+        cluster-robust standard errors.
+
+    display_options:  noci, nopvalues, dfci, dfpvalues, noomitted, vsquish, noemptycells, baselevels, allbaselevels, nofvlabel, fvwrap(#), fvwrapon(style), cformat(%fmt), pformat(%fmt), sformat(%fmt), and nolstretch; see [R] Estimation options.
+
+
+        dfci specifies that parameter degrees of freedom and confidence intervals be reported in the coefficient table.
+
+        dfpvalues specifies that parameter degrees of freedom and p-values be reported in the coefficient table.
+
+        +--------------+
+    ----+ Optimization +-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    tolerance(#) is part of StataNow.  It specifies the limit for the maximum absolute difference between iterations for the projected depvar and indepvars.  The default is tolerance(1e-8).
+
+    iterate(#) is part of StataNow.  It specifies the maximum number of iterations for the APM.  The default is iterate(50).
+
+    nolog is part of StataNow. It specifies that no APM iterative log be displayed.
+
+    The following option is available with areg but is not shown in the dialog box:
+
+    coeflegend; see [R] Estimation options.
+
+
+Examples
+
+    Setup
+        . sysuse auto
+
+    Regression with fixed effects for rep78
+        . areg price weight length, absorb(rep78)
+
+    Same as above, but also compute the bootstrap standard errors
+        . areg price weight length, absorb(rep78) vce(bootstrap, reps(200))
+
+
+Stored results
+
+    areg stores the following in e():
+
+    Scalars           
+      e(N)                   number of observations
+      e(k_absorb)            total number of absorbed categories
+      e(mss)                 model sum of squares
+      e(tss)                 total sum of squares
+      e(df_m)                model degrees of freedom
+      e(rss)                 residual sum of squares
+      e(df_r)                residual degrees of freedom
+      e(r2)                  R-squared
+      e(r2_a)                adjusted R-squared
+      e(df_a)                degrees of freedom for absorbed effect
+      e(rmse)                root mean squared error
+      e(ll)                  log likelihood
+      e(ll_0)                log likelihood, constant-only model
+      e(N_clust)             number of clusters
+      e(F)                   F statistic
+      e(F_absorb)            F statistic for absorbed effect (when vce(robust) is not specified)
+      e(p)                   p-value for model F test
+      e(p_absorb)            p-value for F test of absorbed effect
+      e(rank)                rank of e(V)
+      e(converged)           1 if APM converged, 0 otherwise
+
+    Macros            
+      e(cmd)                 areg
+      e(cmdline)             command as typed
+      e(depvar)              name of dependent variable
+      e(absvar)              names of absorbed variables
+      e(apm)                 alternating projection method
+      e(wtype)               weight type
+      e(wexp)                weight expression
+      e(title)               title in estimation output
+      e(clustvar)            names of cluster variables
+      e(cluster#)            cluster combination #
+      e(vce)                 vcetype specified in vce()
+      e(vcetype)             title used to label Std. err.
+      e(datasignature)       the checksum
+      e(datasignaturevars)   variables used in calculation of checksum
+      e(properties)          b V
+      e(predict)             program used to implement predict
+      e(footnote)            program used to implement the footnote display
+      e(marginsnotok)        predictions disallowed by margins
+      e(asbalanced)          factor variables fvset as asbalanced
+      e(asobserved)          factor variables fvset as asobserved
+
+    Matrices          
+      e(b)                   coefficient vector
+      e(V)                   variance-covariance matrix of the estimators
+      e(V_modelbased)        model-based variance
+      e(adj_df)              adjusted degrees of freedom when vce(hc2, dfadjust) is specified
+      e(kcluster)            cluster sizes, multiway clustering
+      e(kabsorb)             number of levels for each absorbed variable
+
+    Functions         
+      e(sample)              marks estimation sample
+
+    In addition to the above, the following is stored in r():
+
+    Matrices          
+      r(table)               matrix containing the coefficients with their standard errors, test statistics, p-values, and confidence intervals
+
+    Note that results stored in r() are updated when the command is replayed and will be replaced when any r-class command is run after the estimation command.
+
+
+
+References
+
+    Bell, R. M., and D. F. McCaffrey. 2002. Bias reduction in standard errors for linear regression with multi-stage samples.  Survey Methodology 28: 169-181.
+
+    Stammann, A. 2018. Fast and feasible estimation of generalized linear models with high-dimensional k-way fixed effects. Unpublished manuscript.  https://arxiv.org/pdf/1707.01815.pdf.

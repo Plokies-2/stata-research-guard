@@ -1,0 +1,367 @@
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+help for psmatch2
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Mahalanobis and Propensity score Matching
+
+        psmatch2 depvar [indepvars] [if exp] [in range] [, outcome(varlist) pscore(varname) neighbor(integer) radius caliper(real) mahalanobis(varlist) ai(integer) samplevar altvariance debug kernel llr kerneltype(type) bwidth(real) spline
+                     nknots(integer) common trim(real) noreplacement descending odds index logit ties quietly w(matrix) ate]
+
+        where indepvars and mahalanobis(varlist) may contain factor variables; see fvvarlist.
+
+Description
+
+    psmatch2 implements Mahalanobis matching and several propensity-score matching estimators. The command compares treated and untreated observations after adjusting for pre-treatment observed covariates. Treatment status is defined by depvar=1 for
+    treated observations and depvar=0 for untreated observations.
+
+    The propensity score is the conditional probability of treatment. It may be supplied by the user with pscore() or estimated internally from indepvars by probit or logit. Matching methods include nearest-neighbor matching, k-nearest-neighbor
+    matching, caliper matching, radius matching, kernel matching, local linear regression matching, spline smoothing, and Mahalanobis matching.
+
+    psmatch2 is being continuously improved. To install the most recent SSC version, type
+
+        . ssc install psmatch2, replace
+
+Standard errors
+
+    By default, psmatch2 reports approximate standard errors that treat the matching weights as fixed. These standard errors assume independent observations, homoskedastic outcome variances within the treated and untreated groups, and outcome variances
+    that do not vary with the propensity score. They also do not account for estimation of the propensity score.
+
+    For the ATT, the default standard error is
+
+        SE(ATT) = sqrt( Var(Y|DM=1)/N1 + Var(Y|DM=0)*sum(w_i^2; i in DM=0)/N1^2 )
+
+    where N1 is the number of matched treated observations, DM=1 denotes the matched treated sample, DM=0 denotes the matched controls, and w_i is the number of times control observation i is used as a match. With option ate, analogous formulas are used
+    for the ATU and ATE:
+
+        SE(ATU) = sqrt( Var(Y|DM=0)/N0 + Var(Y|DM=1)*sum(w_i^2; i in DM=1)/N0^2 )
+
+        SE(ATE) = sqrt( [ Var(Y|DM=1)*sum((1+w_i)^2; i in DM=1) + Var(Y|DM=0)*sum((1+w_i)^2; i in DM=0) ] / (N0+N1)^2 )
+
+    where N0 is the number of matched controls and w_i is the number of times each observation is used as a match by the opposite treatment arm.
+
+    For nearest-neighbor matching, analytical Abadie-Imbens (2006) standard errors are available with ai(M), where M>0. The value M is the number of neighbors used to estimate the conditional outcome variance σ²(X,W), as in their formula (14).
+
+    By default, ai() reports the marginal, or population, variance of the matching estimator (Theorem 7 of Abadie and Imbens 2006). Specify samplevar to report the conditional/sample variance instead (Theorem 6).  Under samplevar, the variance
+    convention conditions on the realized matching sample, and the estimated propensity score is treated as fixed.
+
+    When the propensity score is estimated internally by probit or logit and ai() is specified, psmatch2 applies the Abadie-Imbens (2016) correction for first-step score estimation whenever the correction is available. This correction adjusts the
+    analytical AI standard errors for the fact that the propensity score is estimated rather than known.
+
+    The AI(2016) correction is not applied when the propensity score is supplied with pscore() or when samplevar, caliper, ties, noreplacement, or altvariance is specified.
+
+    Bootstrapping nearest-neighbor matching estimators is generally not recommended. Use ai(M) for Abadie-Imbens analytical matching standard errors.
+
+Returned results
+
+    psmatch2 stores the ATT in r(att) and its standard error in r(seatt). With option ate, it also stores the ATU and ATE in r(atu) and r(ate), with standard errors in r(seatu) and r(seate). With more than one outcome variable, outcome-specific results
+    are stored as r(att_varname), r(seatt_varname), and similarly for ATU and ATE.
+
+    psmatch2 also stores r(table), a Stata-style results table with rows b, se, z, pvalue, ll, ul, df, crit, and eform. The columns identify the reported outcome-effect combinations.
+
+    Option ate controls which treatment-effect parameters are reported. It does not determine the standard error for the ATT. Thus, when the AI(2016) correction is available, the ATT standard error is the same whether or not ate is specified.
+
+Replication and ties
+
+    To make results replicable, set the random-number seed before calling psmatch2. The sort order of the data may affect nearest-neighbor matching when there are ties in the propensity score, for example when the propensity score is estimated from
+    categorical covariates.
+
+    You can open the dialog by clicking here or by typing
+
+        . db psmatch2
+
+    The following list presents the syntax for each matching method.
+
+Weights
+
+    psmatch2 estimates the propensity score in the unweighted analysis sample and uses the estimated score to construct matches. Weights can be applied after matching to average matched outcomes or matched treatment effects for a differently weighted
+    target population.
+
+    For an ATT for a target treated population, compare the weighted mean of the observed treated outcome with the weighted mean of the matched counterfactual outcome among treated observations on support:
+
+        . sum outcome if treated==1 & _support==1 [aw=w]
+        . sum _outcome if treated==1 & _support==1 [aw=w]
+
+    The difference between these two weighted means is the ATT for the target treated population, computed from the matched outcomes left behind by psmatch2.
+
+    For an ATU for a target untreated population, compare the weighted mean of _outcome with the weighted mean of outcome among untreated observations on support.
+
+    For an ATE for a target population, average the matched individual treatment effects over all observations on support using the weights. One direct calculation is:
+
+        . gen double _te = cond(_treated==1, outcome - _outcome, _outcome - outcome) if _support==1
+        . sum _te if _support==1 [aw=w]
+
+    For weighted estimands, assess covariate balance using the weights.  If weighted balance is poor, change the propensity-score specification or the matching rule, for example by adding sampling-design variables or interactions to the propensity-score
+    model.
+
+Matching within strata
+
+    The following code illustrates how to match within exact cells and then calculate the average effect for the whole population.
+
+        g att = .
+        egen g = group(groupvars)
+        levels g, local(gr)
+        qui foreach j of local gr {
+                psmatch2 treatvar varlist if g==`j', out(outvar)
+                replace att = r(att) if  g==`j'
+        }
+        sum att
+
+Detailed Syntax
+
+    One-to-one matching:
+
+        psmatch2 depvar [indepvars] [if exp] [in range] , [outcome(varlist) pscore(varname) ai(integer k>1) mahalanobis(varlist) caliper(real) noreplacement descending common trim(real) odds index logit ties warnings quietly ate]
+
+
+    k-Nearest neighbors matching:
+
+        psmatch2 depvar [indepvars] [if exp] [in range] , [outcome(varlist) pscore(varname) neighbor(integer k>1) caliper(real) common trim(real) odds index logit ties warnings quietly ate]
+
+
+    Radius matching:
+
+        psmatch2 depvar [indepvars] [if exp] [in range] , radius caliper(real) [outcome(varlist) pscore(varname) common trim(real) odds index logit quietly ate]
+
+
+    Kernel matching:
+
+        psmatch2 depvar [indepvars] [if exp] [in range] , kernel [outcome(varlist) kerneltype(kernel_type) pscore(varname) bwidth(real) mahalanobis(varlist) common trim(real) odds index logit quietly ate]
+
+
+    Local linear regression matching:
+
+        psmatch2 depvar [indepvars] [if exp] [in range] , llr outcome(varlist) [kerneltype(kernel_type) pscore(varname) bwidth(real) mahalanobis(varlist) common trim(real) odds index logit quietly ate]
+
+    Spline matching:
+
+        psmatch2 depvar [indepvars] [if exp] [in range] , spline outcome(varlist) [nknots(integer) pscore(varname) neighbor(integer) caliper(real) common trim(real) odds index logit ties warnings quietly ate]
+
+    Mahalanobis matching:
+
+        psmatch2 depvar [if exp] [in range] , mahalanobis(varlist) outcome(varlist) ai(integer) [samplevar altvariance kernel(kernel_type) llr bwidth(real) caliper(real) w(matrix) ate]
+
+
+    psmatch2 creates a number of variables for the convenience of the user:
+
+        _treated is a variable that equals 0 for control observations and 1 for treatment observations.
+
+        _support is an indicator variable with equals 1 if the observation is on the common support and 0 if the observatio is off the support.
+
+        _pscore is the estimated propensity score or a copy of the one provided by pscore().
+
+        _outcome_variable for every treatment observation stores the value of the matched outcome.
+
+        _weight. For nearest neighbor matching, it holds the frequency with which the observation is used as a match; with option ties and k-nearest neighbors matching it holds the normalized weight; for kernel matching, and llr matching with a weight
+        other than stata's tricube, it stores the overall weight given to the matched observation. When estimating att only _weight = 1 for the treated.
+
+        _id In the case of one-to-one and nearest-neighbors matching, a new identifier created for all observations.
+
+        _nk In the case of one-to-one and nearest-neighbors matching, for every treatment observation, it stores the observation number of the k-th matched control observation. Do not forget to sort by _id if you want to use the observation number (id)
+        of for example the 1st nearest neighbor as in
+
+        sort _id
+        g x_of_match = x[_n1]
+
+        _nn In the case of nearest-neighbors matching, for every treatment observation, it stores the number of matched control observations.
+
+Options
+
+    outcome(varlist) the outcome variable(s).  When evaluating multiple outcomes psmatch2 reduces to the min common number of observations with non-missing values on ALL outcomes, because otherwise the matching weigths will not sum to the right number.
+        If you have multiple outcomes with widely differing missing values you may wish to run psmatch2 separately for each of the outcomes.
+
+    ate with this option the average treatment effect (ate) and average treatment effect on the untreated (atu) are reported in addition to the average treatment effect on the treated (att).  The estimates are returned in r(ate), r(atu) and r(att)
+        respectively, see above.
+
+    ai(integer) with nearest-neighbor matching, calculate the Abadie-Imbens analytical standard errors proposed by Abadie and Imbens (2006) by specifying the number of neighbors M used to estimate the conditional outcome variance σ²(X,W) (their formula
+        (14)). With option altvariance one can use the estimator of Abadie et al. (2004) instead.
+
+        By default, ai() reports the marginal, or population, variance of the matching estimator (Theorem 7 of Abadie and Imbens 2006), which adds a component for treatment-effect heterogeneity across covariate values. Specify samplevar to report the
+        conditional/sample variance instead (Theorem 6), which conditions on the realized matching sample. Under samplevar, the estimated propensity score is treated as fixed, so the AI(2016) first-stage correction is not applied.
+
+        For Mahalanobis matching (mahal()), the AI(2006) standard errors are returned directly.
+
+        For propensity-score nearest-neighbor matching with an internally estimated probit or logit score, ai() additionally applies the Abadie-Imbens (2016) correction for first-stage score estimation when the correction is available. The correction is
+        not applied when the score is supplied with pscore() or when caliper, ties, noreplacement, altvariance, common, index, odds, samplevar, kernel, llr, radius, spline, or mahalanobis is specified.  The ATE correction is weakly negative in variance.
+        For ATT and ATU, the correction can increase or decrease the SE.  The option ate determines whether ATU and ATE are displayed and returned.  It does not determine whether the ATT first-stage correction is applied.
+
+        With option debug, psmatch2 returns additional diagnostic components of the AI(2016) correction: the AI(2006) standard errors before the first-stage correction and the correction terms. These returns are intended for testing and reproducibility
+        checks.
+
+        Implementation note. For ATT and ATU, Abadie and Imbens (2016, p. 799) estimate the derivative of the target parameter with respect to the propensity-score parameter by matching on the full covariate vector. psmatch2 instead uses an equivalent
+        population decomposition conditional on the propensity score. In particular, the derivative term is written as the sum of a local propensity-score mean component and the difference between the within-score covariance terms for the treated and
+        untreated outcome regressions. This avoids a separate full-covariate matching step for this component. The same-arm local means are computed leave-one-out. Thus the ATT and ATU first-stage corrections are plug-in implementations of the
+        Abadie-Imbens population correction, but the derivative component is not the literal full-covariate matching estimator displayed in their paper.
+
+    debug return additional diagnostic components of the Abadie-Imbens (2016) first-stage correction. These include the AI(2006) standard errors before the correction and the correction components.
+
+    samplevar when using ai(integer), report the conditional/sample variance of the matching estimator (Theorem 6 of Abadie and Imbens 2006) rather than the marginal, or population, variance (Theorem 7, the default).  The population variance adds a
+        component for treatment-effect heterogeneity, V^τ(X), on top of the conditional variance. Under samplevar, the estimated propensity score is treated as fixed and the AI(2016) correction is not applied.
+
+    altvariance when using ai(integer), calculate the conditional variance using the expression in Abadie et al. (2004, p.303).
+
+Options: Estimation of the propensity score
+
+    pscore(varname) specifies the variable to be used as propensity score.
+
+    Alternatively, indepvars need to be specified to allow the program to estimate the propensity score on them.  In this case:
+
+    logit use logit instead of the default probit to estimate the propensity score.
+
+    quietly do not print output of propensity score estimation.
+
+    odds match on the logarithm of the odds ratio of the propensity score (stored in _pscore).
+
+    index use the latent variable index instead of the probability.
+
+    warnings test for control observations with duplicate propensity score values.
+
+
+Options: Imposition of common support
+
+    common imposes a common support by dropping treatment observations whose pscore is higher than the maximum or less than the minimum pscore of the controls.
+
+    trim(integer) imposes common support by dropping # percent of the treatment observations at which the pscore density of the control observations is the lowest.
+
+Options: Choice of matching estimator
+
+    neighbor(integer) number of neighbors used to calculate the matched outcome.  Defaults to 1. Default matching method is single nearest-neighbour (without caliper).
+
+    noreplacement perform 1-to-1 matching without replacement. Nearest neigbor propensity score matching only.
+
+    descending perform 1-to-1 matching without replacement in descending order. Nearest neighbor propensity score matching only.
+
+    ties not only match nearest neighbor but also other controls with identical (tied) pscores.
+
+    radius perform radius matching within the specified radius given by caliper.
+
+    caliper(real) value for maximum distance of controls.  Use to perform nearest neighbor(s) within caliper, radius matching and Mahalanobis 1-to-1 matching.
+
+    kernel perform kernel matching.
+
+    kerneltype(kernel_type) specifies the type of kernel:
+
+        normal the gaussian kernel.
+
+        biweight the biweight kernel.
+
+        epan the epanechnikov kernel (Default).
+
+        uniform the uniform kernel.
+
+        tricube the tricube kernel.
+
+    llr llr use local linear regression matching instead of kernel matching.
+
+    bwidth(real) the bandwidth for kernel and local linear regression matching.  Default bandwidth is 0.06, except when doing local linear regression with the Epanechnikov kernel when the default bandwidth is the rule-of-thumb bandwidth of lpoly.
+
+    mahalanobis(varlist) perform Mahalanobis-metric matching on varlist.
+
+    w(matrix) specify alternative weighting matrix. Mahalanobis-metric matching becomes matching on a quadratic metric with the specified weighting matrix.
+
+    spline performs 'spline-smoothing matching' by first fitting a natural cubic spline on pscore (or on the result from estimate) to outcome.  The matched values are stored in the new variable, _s_outcomevar.  (It requires the spline programme, which
+        for stata7 needs to be downloaded by typing: net install snp7_1.)
+
+    nknots(integer) specifies the number of interior knots for spline smoothing. Default is the fourth root of the number of comparison units.
+
+Saved results
+
+    psmatch2 saves the following in r():
+
+      r(att)                      average treatment effect on the treated
+      r(seatt)                    standard error of ATT
+      r(ate)                      average treatment effect (with ate)
+      r(seate)                    standard error of ATE (with ate)
+      r(atu)                      average treatment effect on the untreated (with ate)
+      r(seatu)                    standard error of ATU (with ate)
+      r(table)                    Stata-style results table with rows b, se, z, pvalue, ll, ul, df, crit, and eform
+
+    With multiple outcome variables, effects and standard errors are also returned as outcome-specific scalars such as r(att_varname), r(seatt_varname), r(ate_varname), and r(seate_varname).
+
+    With option debug, when the Abadie-Imbens (2016) first-stage correction fires, the following additional scalars are returned for each outcome variable y:
+
+      r(seatt_ai_fixed_y)         AI(2006) ATT SE before the AI(2016) correction
+      r(qTminus_y)                ATT first-stage covariance correction
+      r(qTplus_y)                 ATT derivative correction
+      r(seate_ai_fixed_y)         AI(2006) ATE SE before the AI(2016) correction; returned with ate
+      r(qA_y)                     ATE first-stage correction; returned with ate
+      r(seatu_ai_fixed_y)         AI(2006) ATU SE before the AI(2016) correction; returned with ate
+      r(qUminus_y)                ATU first-stage covariance correction; returned with ate
+      r(qUplus_y)                 ATU derivative correction; returned with ate
+
+    The adjusted variances satisfy
+
+        r(seatt_y)^2 = r(seatt_ai_fixed_y)^2 - r(qTminus_y) + r(qTplus_y)
+
+    With ate, the corresponding identities are
+
+        r(seate_y)^2 = r(seate_ai_fixed_y)^2 - r(qA_y)
+
+        r(seatu_y)^2 = r(seatu_ai_fixed_y)^2 - r(qUminus_y) + r(qUplus_y)
+
+Examples
+
+     . psmatch2 training age gender, kernel k(biweight) out(wage)
+     . psmatch2 training age gender, n(5) logit
+     . psmatch2 training age gender, out(wage)
+     . bs "psmatch2 training age gender, out(wage)" "r(att)"
+
+Also see
+
+    The commands pstest, psgraph.
+
+
+Thanks for citing psmatch2 as follows
+
+    E. Leuven and B. Sianesi. (2003). "PSMATCH2: Stata module to perform full Mahalanobis and propensity score matching, common support graphing, and covariate imbalance testing".  http://ideas.repec.org/c/boc/bocode/s432001.html. This version
+    INSERT_VERSION_HERE.
+
+where you can check your version as follows:
+
+     . which psmatch2
+
+
+Disclaimer
+
+    THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND
+    PERFORMANCE OF THE PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
+
+    IN NO EVENT WILL THE COPYRIGHT HOLDERS OR THEIR EMPLOYERS, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR REDISTRIBUTE THIS SOFTWARE, BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE
+    OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER
+    PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+Background Reading
+
+Abadie, A., Drukker, D., Herr, J. L., & Imbens, G. W. (2004). "Implementing matching estimators for average treatment effects in Stata", Stata journal 4, 290-311.
+
+Abadie, A. and Imbens, G.W. (2006), "Large sample properties of matching estimators for average treatment effects", Econometrica 74(1), 235-267.
+
+Abadie, A. and Imbens, G.W. (2016), "Matching on the Estimated Propensity Score", Econometrica 84(2), 781-807.
+
+Cochran, W. and Rubin, D.B. (1973), "Controlling Bias in Observational Studies", Sankyha 35, 417-446.
+
+Dehejia, R.H and Wahba, S. (1999), "Causal Effects in Non-Experimental Studies: Re-Evaluating the Evaluation of Training Programmes", Journal of the American Statistical Association 94, 1053-1062.
+
+Heckman, J.J., Ichimura, H. and Todd, P.E. (1997), "Matching As An Econometric Evaluation Estimator: Evidence from Evaluating a Job Training Programme", Review of Economic Studies 64, 605-654.
+
+Heckman, J.J., Ichimura, H. and Todd, P.E. (1998), "Matching as an Econometric Evaluation Estimator", Review of Economic Studies 65, 261-294.
+
+Heckman, J.J., Ichimura, H., Smith, J.A. and Todd, P. (1998), "Characterising Selection Bias Using Experimental Data", Econometrica 66, 5.
+
+Heckman, J.J., LaLonde, R.J., Smith, J.A. (1998), "The Economics and Econometrics of Active Labour Market Programmes", in Ashenfelter, O. and Card, D. (eds.), The Handbook of Labour Economics Vol. 3A.
+
+Imbens, G. (2000), "The Role of Propensity Score in Estimating Dose-Response Functions", Biometrika 87(3), 706-710.
+
+Lechner, M. (2001), Identification and Estimation of Causal Effects of Multiple Treatments under the Conditional Independence Assumption, in: Lechner, M., Pfeiffer, F. (eds), Econometric Evaluation of Labour Market Policies, Heidelberg: Physica/Springer,
+  p. 43-58.
+
+Rosenbaum, P.R. and Rubin, D.B. (1983), "The Central Role of the Propensity Score in Observational Studies for Causal Effects", Biometrika 70, 1, 41-55.
+
+Rosenbaum, P.R. and Rubin, D.B. (1985), "Constructing a Control Group Using Multivariate Matched Sampling Methods that Incorporate the Propensity Score", The American Statistician 39(1), 33-38.
+
+Rubin, D.B. (1974), "Estimating Causal Effects of Treatments in Randomised and Non-Randomised Studies", Journal of Educational Psychology 66, 688-701.
+
+Rubin, D.B. (1980), "Bias Reduction Using Mahalanobis-Metric Matching", Biometrics 36, 293-298.
+
+Author
+
+    Edwin Leuven, University of Oslo. If you observe any problems mailto:e.leuven@gmail.com.

@@ -1,0 +1,1127 @@
+help estpost                                                                                                                                                                                                           also see: esttab, estout, eststo, estadd
+                                                                                                                                                                                                                       http://repec.sowi.unibe.ch/stata/estout/
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Title
+
+    estpost -- Post results from various commands in e()
+
+
+Syntax
+
+        estpost command [...]
+
+
+    command              description
+    -------------------------------------------------------------------------------
+    summarize            post summary statistics
+    tabstat              post summary statistics
+    gtabstat             post summary statistics (using gstats tab from gtools)
+    ttest                post two-group mean-comparison tests
+    prtest               post two-group tests of proportions
+    tabulate             post one-way or two-way frequency table
+    svy: tabulate        post frequency table for survey data
+    correlate            post correlations
+    ci                   post confidence intervals for means,
+                             proportions, or counts
+    stci                 post confidence intervals for means
+                             and percentiles of survival time
+    margins              post results from margins (Stata 11 or newer)
+    -------------------------------------------------------------------------------
+
+
+Description
+
+    estpost posts results from various Stata commands in e() so that they can be tabulated using esttab or estout. Type ereturn list after estpost to list the elements saved in e().
+
+
+Commands
+
+        +-----------+
+    ----+ summarize +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    estpost summarize [varlist] [if] [in] [weight] [, detail meanonly listwise casewise quietly esample ]
+
+    posts summary statistics computed by summarize. If no varlist is specified, summary statistics are calculated for all variables in the dataset.
+
+    aweights, fweights, and iweights are allowed (however, iweights may not be used with the detail option); see weight.
+
+    Options are:
+
+        detail and meanonly as described in help summarize.
+
+        listwise to handle missing values through listwise deletion, meaning that an observation is omitted from the estimation sample if any of the variables in varlist is missing for that observation. The default is to determine the used observations
+            for each variable separately without regard to whether other variables are missing. casewise is a synonym for listwise.
+
+        quietly to suppress the output.
+
+        esample to mark the estimation sample in e(sample).
+
+    The following results vectors are saved in e():
+
+        e(count)     number of observations
+        e(mean)      mean
+        e(min)       minimum
+        e(max)       maximum
+        e(sum)       sum of variable
+        e(sum_w)     sum of the weights
+        e(Var)       variance (unless meanonly)
+        e(sd)        standard deviation (unless meanonly)
+        e(p1)        1st percentile (detail only)
+        e(p5)        5th percentile (detail only)
+        e(p10)       10th percentile (detail only)
+        e(p25)       25th percentile (detail only)
+        e(p50)       50th percentile (detail only)
+        e(p75)       75th percentile (detail only)
+        e(p90)       90th percentile (detail only)
+        e(p95)       95th percentile (detail only)
+        e(p99)       99th percentile (detail only)
+        e(skewness)  skewness (detail only)
+        e(kurtosis)  kurtosis (detail only)
+
+    Example:
+
+        . sysuse auto, clear
+        (1978 Automobile Data)
+
+        . estpost summarize price mpg rep78 foreign
+
+                     |  e(count)   e(sum_w)    e(mean)     e(Var)      e(sd)
+        -------------+-------------------------------------------------------
+               price |        74         74   6165.257    8699526   2949.496
+                 mpg |        74         74    21.2973   33.47205   5.785503
+               rep78 |        69         69   3.405797   .9799659   .9899323
+             foreign |        74         74   .2972973   .2117734   .4601885
+
+                     |    e(min)     e(max)     e(sum)
+        -------------+---------------------------------
+               price |      3291      15906     456229
+                 mpg |        12         41       1576
+               rep78 |         1          5        235
+             foreign |         0          1         22
+
+        . esttab ., cells("mean sd count") noobs
+        
+        ---------------------------------------------------
+                              (1)
+        
+                             mean           sd        count
+        ---------------------------------------------------
+        price            6165.257     2949.496           74
+        mpg               21.2973     5.785503           74
+        rep78            3.405797     .9899323           69
+        foreign          .2972973     .4601885           74
+        ---------------------------------------------------
+
+
+        +---------+
+    ----+ tabstat +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    estpost tabstat varlist [if] [in] [weight] [, statistics(statname [...]) columns(variables|statistics) by(varname) nototal missing listwise casewise quietly esample elabels ]
+
+    posts summary statistics computed by tabstat. aweights and fweights are allowed; see weight.
+
+    Options are:
+
+        statistics(), columns(), by(), nototal, and missing as described in help tabstat.
+
+        listwise to handle missing values through listwise deletion, meaning that an observation is omitted from the estimation sample if any of the variables in varlist is missing for that observation. The default is to determine the used observations
+            for each variable separately without regard to whether other variables are missing. casewise is a synonym for listwise.
+
+        quietly to suppress the output.
+
+        esample to mark the estimation sample in e(sample).
+
+        elabels to enforce saving the by() values/labels in macro e(labels).
+
+    A vector of results is saved in e() for each specified variable or statistic, depending on columns().
+
+    Examples:
+
+        . sysuse auto, clear
+        (1978 Automobile Data)
+
+        . estpost tabstat price mpg rep78, listwise ///
+        >     statistics(mean sd)
+
+        Summary statistics: mean sd
+             for variables: price mpg rep78
+
+                     |  e(price)     e(mpg)   e(rep78)
+        -------------+---------------------------------
+                mean |  6146.043   21.28986   3.405797
+                  sd |   2912.44   5.866408   .9899323
+
+        . esttab ., cells("price mpg rep78")
+        
+        ---------------------------------------------------
+                              (1)
+        
+                            price          mpg        rep78
+        ---------------------------------------------------
+        mean             6146.043     21.28986     3.405797
+        sd                2912.44     5.866408     .9899323
+        ---------------------------------------------------
+        N                      69                          
+        ---------------------------------------------------
+
+        . estpost tabstat price mpg rep78, listwise ///
+        >     statistics(mean sd) columns(statistics)
+
+        Summary statistics: mean sd
+             for variables: price mpg rep78
+
+                     |   e(mean)      e(sd)
+        -------------+----------------------
+               price |  6146.043    2912.44
+                 mpg |  21.28986   5.866408
+               rep78 |  3.405797   .9899323
+
+        . esttab ., cells("mean(fmt(a3)) sd")
+        
+        --------------------------------------
+                              (1)
+        
+                             mean           sd
+        --------------------------------------
+        price              6146.0       2912.4
+        mpg                 21.29        5.866
+        rep78               3.406        0.990
+        --------------------------------------
+        N                      69             
+        --------------------------------------
+
+        . estpost tabstat price mpg rep78, by(foreign) ///
+        >     statistics(mean sd) columns(statistics) listwise
+
+        Summary statistics: mean sd
+             for variables: price mpg rep78
+          by categories of: foreign
+
+             foreign |   e(mean)      e(sd)
+        -------------+----------------------
+        Domestic     |                      
+               price |   6179.25   3188.969
+                 mpg |  19.54167   4.753312
+               rep78 |  3.020833    .837666
+        -------------+----------------------
+        Foreign      |                      
+               price |  6070.143   2220.984
+                 mpg |  25.28571   6.309856
+               rep78 |  4.285714   .7171372
+        -------------+----------------------
+        Total        |                      
+               price |  6146.043    2912.44
+                 mpg |  21.28986   5.866408
+               rep78 |  3.405797   .9899323
+
+        . esttab ., main(mean) aux(sd) nostar unstack ///
+        >     noobs nonote label
+        
+        -----------------------------------------------------------
+                                      (1)
+        
+                                 Domestic      Foreign        Total
+        -----------------------------------------------------------
+        Price                      6179.3       6070.1       6146.0
+                                 (3189.0)     (2221.0)     (2912.4)
+
+        Mileage (mpg)               19.54        25.29        21.29
+                                  (4.753)      (6.310)      (5.866)
+
+        Repair Record 1978          3.021        4.286        3.406
+                                  (0.838)      (0.717)      (0.990)
+        -----------------------------------------------------------
+
+
+        +----------+
+    ----+ gtabstat +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    estpost gtabstat varlist [if] [in] [weight] [, statistics(statname [...]) columns(variables|statistics) by(varname) missing quietly esample elabels ]
+
+    posts summary statistics computed by gstats tab from the gtools package. gstats tab is a fast, by-able alternative to tabstat. aweights, fweights, pweights and pweights are allowed; see weight. However, total, casewise, and listwise are not allowed.
+
+    Options are:
+
+        statistics(), columns(), and by() as described in help gstats tab. By default nomissing is passed; use missing to include missing-value groups.
+
+        quietly to suppress the output.
+
+        esample to mark the estimation sample in e(sample).
+
+        elabels to enforce saving the by() values/labels in macro e(labels).
+
+    A vector of results is saved in e() for each specified variable or statistic, depending on columns().
+
+    Examples:
+
+        . sysuse auto, clear
+        (1978 Automobile Data)
+
+        . estpost gtabstat price mpg rep78, ///
+        >     statistics(mean sd)
+
+        Summary statistics: mean sd
+             for variables: price mpg rep78
+
+                     |  e(price)     e(mpg)   e(rep78)
+        -------------+---------------------------------
+                mean |  6146.043   21.28986   3.405797
+                  sd |   2912.44   5.866408   .9899323
+
+        . esttab ., cells("price mpg rep78")
+        
+        ---------------------------------------------------
+                              (1)
+        
+                            price          mpg        rep78
+        ---------------------------------------------------
+        mean             6146.043     21.28986     3.405797
+        sd                2912.44     5.866408     .9899323
+        ---------------------------------------------------
+        N                      69                          
+        ---------------------------------------------------
+
+        . estpost gtabstat price mpg rep78, ///
+        >     statistics(mean sd) columns(statistics)
+
+        Summary statistics: mean sd
+             for variables: price mpg rep78
+
+                     |   e(mean)      e(sd)
+        -------------+----------------------
+               price |  6146.043    2912.44
+                 mpg |  21.28986   5.866408
+               rep78 |  3.405797   .9899323
+
+        . esttab ., cells("mean(fmt(a3)) sd")
+        
+        --------------------------------------
+                              (1)
+        
+                             mean           sd
+        --------------------------------------
+        price              6146.0       2912.4
+        mpg                 21.29        5.866
+        rep78               3.406        0.990
+        --------------------------------------
+        N                      69             
+        --------------------------------------
+
+        . estpost gtabstat price mpg rep78, by(foreign) ///
+        >     statistics(mean sd) columns(statistics)
+
+        Summary statistics: mean sd
+             for variables: price mpg rep78
+          by categories of: foreign
+
+             foreign |   e(mean)      e(sd)
+        -------------+----------------------
+        Domestic     |                      
+               price |   6179.25   3188.969
+                 mpg |  19.54167   4.753312
+               rep78 |  3.020833    .837666
+        -------------+----------------------
+        Foreign      |                      
+               price |  6070.143   2220.984
+                 mpg |  25.28571   6.309856
+               rep78 |  4.285714   .7171372
+        -------------+----------------------
+        Total        |                      
+               price |  6146.043    2912.44
+                 mpg |  21.28986   5.866408
+               rep78 |  3.405797   .9899323
+
+        . esttab ., main(mean) aux(sd) nostar unstack ///
+        >     noobs nonote label
+        
+        -----------------------------------------------------------
+                                      (1)
+        
+                                 Domestic      Foreign        Total
+        -----------------------------------------------------------
+        Price                      6179.3       6070.1       6146.0
+                                 (3189.0)     (2221.0)     (2912.4)
+
+        Mileage (mpg)               19.54        25.29        21.29
+                                  (4.753)      (6.310)      (5.866)
+
+        Repair Record 1978          3.021        4.286        3.406
+                                  (0.838)      (0.717)      (0.990)
+        -----------------------------------------------------------
+
+
+        +-------+
+    ----+ ttest +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    estpost ttest varlist [if] [in], by(groupvar) [ unequal welch listwise casewise quietly esample ]
+
+    posts two-group mean-comparison tests computed by ttest.
+
+    Options are:
+
+        by(), unequal, and welch as described in help ttest.
+
+        listwise to handle missing values through listwise deletion, meaning that an observation is omitted from the estimation sample if any of the variables in varlist is missing for that observation. The default is to determine the used observations
+            for each variable separately without regard to whether other variables are missing. casewise is a synonym for listwise.
+
+        quietly to suppress the output.
+
+        esample to mark the estimation sample in e(sample).
+
+    The following results vectors are saved in e():
+
+        e(b)         mean difference
+        e(count)     number of observations
+        e(se)        standard error of difference
+        e(t)         t statistic
+        e(df_t)      degrees of freedom
+        e(p_l)       lower one-sided p-value
+        e(p)         two-sided p-value
+        e(p_u)       upper one-sided p-value
+        e(N_1)       number of observations in group 1
+        e(mu_1)      mean in group 1
+        e(N_2)       number of observations in group 2
+        e(mu_2)      mean in group 2
+
+    Example:
+
+        . sysuse auto, clear
+        (1978 Automobile Data)
+
+        . estpost ttest price mpg headroom trunk, by(foreign)
+
+                     |      e(b)   e(count)      e(se)       e(t)    e(df_t)
+        -------------+-------------------------------------------------------
+               price | -312.2587         74   754.4488  -.4138899         72
+                 mpg | -4.945804         74   1.362162  -3.630848         72
+            headroom |  .5402098         74   .2070884   2.608596         72
+               trunk |  3.340909         74   1.022208   3.268327         72
+
+                     |    e(p_l)       e(p)     e(p_u)     e(N_1)    e(mu_1)
+        -------------+-------------------------------------------------------
+               price |  .3400925   .6801851   .6599075         52   6072.423
+                 mpg |  .0002627   .0005254   .9997373         52   19.82692
+            headroom |  .9944757   .0110486   .0055243         52   3.153846
+               trunk |    .99917     .00166     .00083         52      14.75
+
+                     |    e(N_2)    e(mu_2)
+        -------------+----------------------
+               price |        22   6384.682
+                 mpg |        22   24.77273
+            headroom |        22   2.613636
+               trunk |        22   11.40909
+
+        . esttab ., wide
+        
+        -----------------------------------------
+                              (1)
+        
+        -----------------------------------------
+        price              -312.3         (-0.41)
+        mpg                -4.946***      (-3.63)
+        headroom            0.540*         (2.61)
+        trunk               3.341**        (3.27)
+        -----------------------------------------
+        N                      74                
+        -----------------------------------------
+        t statistics in parentheses
+        * p<0.05, ** p<0.01, *** p<0.001
+
+
+        +--------+
+    ----+ prtest +-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    estpost prtest varlist [if] [in], by(groupvar) [ listwise casewise quietly esample ]
+
+    posts two-group tests of proportions computed by prtest.
+
+    Options are:
+
+        by() as described in help prtest.
+
+        listwise to handle missing values through listwise deletion, meaning that an observation is omitted from the estimation sample if any of the variables in varlist is missing for that observation. The default is to determine the used observations
+            for each variable separately without regard to whether other variables are missing. casewise is a synonym for listwise.
+
+        quietly to suppress the output.
+
+        esample to mark the estimation sample in e(sample).
+
+    The following results vectors are saved in e():
+
+        e(b)         difference in proportions
+        e(count)     number of observations
+        e(se)        standard error of difference
+        e(se0)       standard error under Ho
+        e(z)         z statistic
+        e(p_l)       lower one-sided p-value
+        e(p)         two-sided p-value
+        e(p_u)       upper one-sided p-value
+        e(N_1)       number of observations in group 1
+        e(P_1)       proportion in group 1
+        e(N_2)       number of observations in group 2
+        e(P_2)       proportion in group 2
+
+    Example:
+
+        . webuse cure2, clear
+        
+        . estpost prtest cure, by(sex)
+
+                     |      e(b)   e(count)      e(se)     e(se0)       e(z)
+        -------------+-------------------------------------------------------
+                cure | -.0729167        109   .0933123   .0942404  -.7737309
+
+                     |    e(p_l)       e(p)     e(p_u)     e(N_1)     e(P_1)
+        -------------+-------------------------------------------------------
+                cure |   .219545     .43909    .780455         64     .59375
+
+                     |    e(N_2)     e(P_2)
+        -------------+----------------------
+                cure |        45   .6666667
+
+        . esttab ., cell("b se0 z p")
+        
+        ----------------------------------------------------------------
+                              (1)
+        
+                                b          se0            z            p
+        ----------------------------------------------------------------
+        cure            -.0729167     .0942404    -.7737309       .43909
+        ----------------------------------------------------------------
+        N                     109                                       
+        ----------------------------------------------------------------
+
+
+        +----------+
+    ----+ tabulate +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    One-way table:
+
+        estpost tabulate varname [if] [in] [weight] [, missing nolabel sort subpop(varname) nototal quietly esample elabels ]
+
+    Two-way table:
+
+        estpost tabulate varname1 varname2 [if] [in] [weight] [, missing nolabel chi2 exact[(#)] gamma lrchi2 taub v nototal quietly esample elabels ]
+
+    estpost tabulate posts a one-way or two-way table computed by tabulate. aweights, fweights, and iweights are allowed; see weight.
+
+    Options are:
+
+        missing, nolabel, sort, subpop(), chi2, exact, gamma, lrchi2, taub, and v as described in help tabulate.
+
+        nototal to omit row and column totals.
+
+        quietly to suppress the output.
+
+        esample to mark the estimation sample in e(sample).
+
+        elabels to enforce saving labels in e(labels) and e(eqlabels).
+
+    The following vectors are saved in e():
+
+        e(b)         frequency counts
+        e(pct)       percent
+        e(cumpct)    cumulative percent (one-way only)
+        e(colpct)    column percent (two-way only)
+        e(rowpct)    row percent (two-way only)
+
+    If two-way options such as, e.g., chi2 or exact are specified, the results of the tests added as scalars in e() using the names documented in [R] tabulate.
+
+    The value labels of the row variable are stored as names in the saved vectors, unless no label exceeds 30 characters or contains unsuitable characters in which case the labels are stored in macro e(labels). Type varlabels(`e(labels)') in esttab or 
+    estout to use the labels stored e(labels). The value labels of the column variable are stored as equation names or, alternatively, in macro e(eqlabels). Type eqlabels(`e(eqlabels)') in esttab or estout to use the labels stored in e(eqlabels).
+    Specify the elabels option to enforce saving labels in e(labels) and e(eqlabels).
+
+    Examples:
+
+        . sysuse auto, clear
+        (1978 Automobile Data)
+
+        . estpost tabulate foreign
+
+             foreign |      e(b)     e(pct)  e(cumpct)
+        -------------+---------------------------------
+            Domestic |        52   70.27027   70.27027
+             Foreign |        22   29.72973        100
+        -------------+---------------------------------
+               Total |        74        100           
+
+        . esttab ., cells("b pct(fmt(2)) cumpct(fmt(2))") noobs
+        
+        ---------------------------------------------------
+                              (1)
+                          foreign
+                                b          pct       cumpct
+        ---------------------------------------------------
+        Domestic               52        70.27        70.27
+        Foreign                22        29.73       100.00
+        Total                  74       100.00             
+        ---------------------------------------------------
+
+        . estpost tabulate rep78 foreign
+
+        foreign      |                                            
+               rep78 |      e(b)     e(pct)  e(colpct)  e(rowpct)
+        -------------+--------------------------------------------
+        Domestic     |                                            
+                   1 |         2   2.898551   4.166667        100
+                   2 |         8    11.5942   16.66667        100
+                   3 |        27   39.13043      56.25         90
+                   4 |         9   13.04348      18.75         50
+                   5 |         2   2.898551   4.166667   18.18182
+               Total |        48   69.56522        100   69.56522
+        -------------+--------------------------------------------
+        Foreign      |                                            
+                   1 |         0          0          0          0
+                   2 |         0          0          0          0
+                   3 |         3   4.347826   14.28571         10
+                   4 |         9   13.04348   42.85714         50
+                   5 |         9   13.04348   42.85714   81.81818
+               Total |        21   30.43478        100   30.43478
+        -------------+--------------------------------------------
+        Total        |                                            
+                   1 |         2   2.898551   2.898551        100
+                   2 |         8    11.5942    11.5942        100
+                   3 |        30   43.47826   43.47826        100
+                   4 |        18   26.08696   26.08696        100
+                   5 |        11   15.94203   15.94203        100
+               Total |        69        100        100        100
+
+        . esttab ., cell(colpct(fmt(2))) unstack noobs
+        
+        ---------------------------------------------------
+                              (1)
+        
+                         Domestic      Foreign        Total
+                           colpct       colpct       colpct
+        ---------------------------------------------------
+        1                    4.17         0.00         2.90
+        2                   16.67         0.00        11.59
+        3                   56.25        14.29        43.48
+        4                   18.75        42.86        26.09
+        5                    4.17        42.86        15.94
+        Total              100.00       100.00       100.00
+        ---------------------------------------------------
+
+        . esttab ., cell(colpct(fmt(2)) count(fmt(g) par keep(Total))) ///
+        >     collabels(none) unstack noobs nonumber nomtitle          ///
+        >     eqlabels(, lhs("Repair Rec."))                           ///
+        >     varlabels(, blist(Total "{hline @width}{break}"))
+        
+        ---------------------------------------------------
+        Repair Rec.      Domestic      Foreign        Total
+        ---------------------------------------------------
+        1                    4.17         0.00         2.90
+        2                   16.67         0.00        11.59
+        3                   56.25        14.29        43.48
+        4                   18.75        42.86        26.09
+        5                    4.17        42.86        15.94
+        ---------------------------------------------------
+        Total              100.00       100.00       100.00
+                                                           
+        ---------------------------------------------------
+
+
+        +---------------+
+    ----+ svy: tabulate +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    One-way table:
+
+        estpost svy [vcetype] [, svy_options] : tabulate varname [if] [in] [, nototal quietly esample elabels svy_tabulate_opts ]
+
+    Two-way table:
+
+        estpost svy [vcetype] [, svy_options] : tabulate varname1 varname2 [if] [in] [, nototal quietly esample elabels svy_tabulate_opts ]
+
+    estpost svy: tabulate posts a one-way or two-way table for complex survey data computed by svy: tabulate. Stata 9 or newer is required.
+
+    Options are as described in [SVY] svy: tabulate oneway or [SVY] svy: tabulate twoway, respectively, and:
+
+        nototal to omit row and column totals (synonym for nomarginals).
+
+        quietly to suppress the output.
+
+        esample to mark the estimation sample in e(sample).
+
+        elabels to enforce saving labels in e(labels) and e(eqlabels).
+
+    estpost svy: tabulate posts results in e() (except e(V)) as documented in [SVY] svy: tabulate oneway and [SVY] svy: tabulate twoway, respectively, and adds or replaces the following matrices:
+
+        e(b)      cell, column, or row proportions or percentages,
+                    or weighted counts, depending on options
+        e(se)     standard errors of e(b)
+        e(lb)     lower confidence bounds for e(b)
+        e(ub)     upper confidence bounds for e(b)
+        e(deff)   deff for variances of e(b)
+        e(deft)   deft for variances of e(b)
+        e(cell)   cell proportion or percentages
+        e(row)    row proportion or percentages (two-way only)
+        e(col)    column proportion or percentages (two-way only)
+        e(count)  weighted counts
+        e(obs)    number of observations
+
+    The value labels of the row variable are stored as names in the saved vectors, unless no label exceeds 30 characters or contains unsuitable characters in which case the labels are stored in macro e(labels). Type varlabels(`e(labels)') in esttab or 
+    estout to use the labels stored e(labels). The value labels of the column variable are stored as equation names or, alternatively, in macro e(eqlabels). Type eqlabels(`e(eqlabels)') in esttab or estout to use the labels stored in e(eqlabels).
+    Specify the elabels option to enforce saving labels in e(labels) and e(eqlabels).
+
+    Examples:
+
+        . webuse nhanes2b, clear
+        
+        . svyset psuid [pweight=finalwgt], strata(stratid)
+
+              pweight:finalwgt
+                  VCE:linearized
+          Single unit:missing
+             Strata 1:stratid
+                 SU 1:psuid
+                FPC 1:<zero>
+        
+        . estpost svy: tabulate race
+        (running tabulate on estimation sample)
+
+        Number of strata=        31            Number of obs      =      10351
+        Number of PSUs=        62              Population size    =  117157513
+                                               Design df          =         31
+
+        -----------------------
+        1=white,  |
+        2=black,  |
+        3=other   | proportions
+        ----------+------------
+            White |       .8792
+            Black |       .0955
+            Other |       .0253
+                  |
+            Total |           1
+        -----------------------
+          Key:  proportions  =  cell proportions
+
+        saved vectors:
+                     e(b) =  cell proportions
+                    e(se) =  standard errors of cell proportions
+                    e(lb) =  lower 95% confidence bounds for cell proportions
+                    e(ub) =  upper 95% confidence bounds for cell proportions
+                  e(deff) =  deff for variances of cell proportions
+                  e(deft) =  deft for variances of cell proportions
+                  e(cell) =  cell proportions
+                 e(count) =  weighted counts
+                   e(obs) =  number of observations
+        
+        . esttab ., cell("b(f(4)) se deft")
+        
+        ---------------------------------------------------
+                              (1)
+        
+                                b           se         deft
+        ---------------------------------------------------
+        White              0.8792       0.0167       5.2090
+        Black              0.0955       0.0127       4.4130
+        Other              0.0253       0.0105       6.8246
+        Total              1.0000       0.0000             
+        ---------------------------------------------------
+        N                   10351                          
+        ---------------------------------------------------
+
+        . estpost svy: tabulate race diabetes, row percent
+        (running tabulate on estimation sample)
+
+        Number of strata=        31            Number of obs      =      10349
+        Number of PSUs=        62              Population size    =  117131111
+                                               Design df          =         31
+
+        -------------------------------
+        1=white,  |  diabetes, 1=yes,
+        2=black,  |        0=no
+        3=other   |     0      1  Total
+        ----------+--------------------
+            White |  96.8  3.195    100
+            Black |  94.1  5.903    100
+            Other | 97.97  2.034    100
+                  |
+            Total | 96.58  3.425    100
+        -------------------------------
+          Key:  row percentages
+
+          Pearson:
+        Uncorrectedchi2(2)        =   21.3483
+        Design-basedF(1.52, 47.26)=   15.0056     P = 0.0000
+
+        saved vectors:
+                     e(b) =  row percentages
+                    e(se) =  standard errors of row percentages
+                    e(lb) =  lower 95% confidence bounds for row percentages
+                    e(ub) =  upper 95% confidence bounds for row percentages
+                  e(deff) =  deff for variances of row percentages
+                  e(deft) =  deft for variances of row percentages
+                  e(cell) =  cell percentages
+                   e(row) =  row percentages
+                   e(col) =  column percentages
+                 e(count) =  weighted counts
+                   e(obs) =  number of observations
+        
+        . esttab ., b(2) se(2) scalars(F_Pear) nostar unstack ///
+        >     mtitle(`e(colvar)')
+        
+        ---------------------------------------------------
+                              (1)
+                         diabetes
+                                0            1        Total
+        ---------------------------------------------------
+        White               96.80         3.20       100.00
+                           (0.20)       (0.20)             
+
+        Black               94.10         5.90       100.00
+                           (0.61)       (0.61)             
+
+        Other               97.97         2.03       100.00
+                           (0.76)       (0.76)             
+
+        Total               96.58         3.42       100.00
+                           (0.18)       (0.18)             
+        ---------------------------------------------------
+        N                   10349                          
+        F_Pear              15.01                          
+        ---------------------------------------------------
+        Standard errors in parentheses
+
+
+        +-----------+
+    ----+ correlate +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    estpost correlate varlist [if] [in] [weight] [, matrix nohalf print(#) bonferroni sidak listwise casewise quietly esample elabels[(pfx sfx)] nolabel ]
+
+    posts the pairwise correlations between the first variable in varlist and the remaining variables. Alternatively, if the matrix option is specified, all pairwise correlations among the variable in varlist are posted.
+
+    aweights, fweights, iweights and pweights are allowed; see weight.
+
+    Methods and formulas are as described in [R] correlate. However, if pweights are specified, the p-values of the correlations are computed as suggested in the Stata FAQ on "Estimating correlations with survey data".
+
+    Options are:
+
+        matrix to return the (lower triangle) of the correlation matrix of the variables in varlist. The default is to return the pairwise correlations between the first variable in varlist and the remaining variables.
+
+        nohalf to return the full correlation matrix rather than just the lower triangle. nohalf has no effect unless matrix is specified.
+
+        print(#) to suppress (leave blank) correlation coefficients with a p-value larger than #. print() only affects what is saved in e(rho), e(p), and e(count), but not what is saved in e(b).
+
+        bonferroni to apply the Bonferroni adjustment to the p-values.
+
+        sidak to apply the Sidak adjustment to the p-values.
+
+        listwise to handle missing values through listwise deletion, meaning that an observation is omitted from the estimation sample if any of the variables in varlist is missing for that observation. The default is to handle missing values by
+            pairwise deletion, i.e. all available observations are used to calculate a pairwise correlation without regard to whether variables outside that pair are missing. casewise is a synonym for listwise.
+
+        quietly to suppress the output.
+
+        esample to mark the estimation sample in e(sample).
+
+        elabels[(pfx sfx)] stores numbered labels in e(labels) and e(eqlabels) if option matrix has been specified. This is useful if you want to tabulate a correlation matrix. See below for an example. Specify pfx and sfx to provide a prefix and suffix
+            for the numbers; for example, eqlabels([ ]) will format the numbers as [1], [2], etc.; eqlabels("" .) will format the numbers as 1., 2., etc.
+
+        nolabel causes option elabels() to use variable names rather than variable labels.
+
+    The following vectors are saved in e():
+
+        e(b)         correlation coefficients
+        e(rho)       correlation coefficients
+        e(p)         p-values
+        e(count)     number of observations
+
+    Examples:
+
+        . sysuse auto, clear
+        (1978 automobile data)
+        
+        . estpost correlate price mpg turn foreign, matrix elabels(( ))
+        
+                     |      e(b)     e(rho)       e(p)   e(count) 
+        -------------+--------------------------------------------
+        price        |                                            
+               price |         1          1                    74 
+                 mpg | -.4685967  -.4685967   .0000255         74 
+                turn |  .3096174   .3096174   .0072662         74 
+             foreign |  .0487195   .0487195   .6801851         74 
+        mpg          |                                            
+                 mpg |         1          1                    74 
+                turn | -.7191863  -.7191863   5.30e-13         74 
+             foreign |  .3933974   .3933974   .0005254         74 
+        turn         |                                            
+                turn |         1          1                    74 
+             foreign | -.6310965  -.6310965   1.66e-09         74 
+        foreign      |                                            
+             foreign |         1          1                    74 
+        
+        . esttab ., not unstack compress noobs
+        
+        --------------------------------------------------------------
+                         (1)                                          
+                                                                      
+                       price          mpg         turn      foreign   
+        --------------------------------------------------------------
+        price              1                                          
+        mpg           -0.469***         1                             
+        turn           0.310**     -0.719***         1                
+        foreign       0.0487        0.393***    -0.631***         1   
+        --------------------------------------------------------------
+        * p<0.05, ** p<0.01, *** p<0.001
+        
+        . esttab ., not unstack compress noobs nonum nomtitle ///
+        >     varwidth(21) varlabels(`e(labels)') eqlabels(`e(eqlabels)')
+        
+        -------------------------------------------------------------------------
+                                    (1)          (2)          (3)          (4)   
+        -------------------------------------------------------------------------
+        (1) Price                     1                                          
+        (2) Mileage (mpg)        -0.469***         1                             
+        (3) Turn circle (ft.)     0.310**     -0.719***         1                
+        (4) Car origin           0.0487        0.393***    -0.631***         1   
+        -------------------------------------------------------------------------
+        * p<0.05, ** p<0.01, *** p<0.001
+        
+        . bysort foreign: eststo: ///
+        >     estpost correlate price turn weight rep78, listwise
+        
+        ------------------------------------------------------------
+        -> Domestic
+        
+               price |      e(b)     e(rho)       e(p)   e(count) 
+        -------------+--------------------------------------------
+                turn |  .4328091   .4328091   .0021229         48 
+              weight |  .6864719   .6864719   7.19e-08         48 
+               rep78 | -.0193249  -.0193249   .8962741         48 
+        (est1 stored)
+        
+        ------------------------------------------------------------
+        -> Foreign
+        
+               price |      e(b)     e(rho)       e(p)   e(count) 
+        -------------+--------------------------------------------
+                turn |  .5102425   .5102425   .0181155         21 
+              weight |  .8315886   .8315886   2.99e-06         21 
+               rep78 |  .1797879   .1797879   .4354917         21 
+        (est2 stored)
+        
+        . esttab est1 est2, not mtitles
+        
+        --------------------------------------------
+                              (1)             (2)   
+                         Domestic         Foreign   
+        --------------------------------------------
+        turn                0.433**         0.510*  
+        weight              0.686***        0.832***
+        rep78             -0.0193           0.180   
+        --------------------------------------------
+        N                      48              21   
+        --------------------------------------------
+        * p<0.05, ** p<0.01, *** p<0.001
+
+
+        +----+
+    ----+ ci +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    estpost ci [varlist] [if] [in] [weight] [, binomial poisson exposure(varname) exact wald wilson agresti jeffreys level(#) listwise casewise quietly esample ]
+
+    posts standard errors and confidence intervals computed by ci. aweights and fweights are allowed, but aweights may not be specified with options binomial or poisson; see weight.
+
+    Options are:
+
+        binomial, poisson, exposure(), exact, wald, wilson, agresti, jeffreys, and level() as described in help ci.
+
+        listwise to handle missing values through listwise deletion, meaning that an observation is omitted from the estimation sample if any of the variables in varlist is missing for that observation. The default is to determine the used observations
+            for each variable separately without regard to whether other variables are missing. casewise is a synonym for listwise.
+
+        quietly to suppress the output.
+
+        esample to mark the estimation sample in e(sample).
+
+    The following results vectors are saved in e():
+
+        e(b)         mean
+        e(count)     number of observations
+        e(se)        estimate of standard error
+        e(lb)        lower bound of confidence interval
+        e(ub)        upper bound of confidence interval
+
+    Examples:
+
+        . sysuse auto, clear
+        (1978 Automobile Data)
+
+        . estpost ci price mpg rep78, listwise
+        (confidence level is 95%)
+
+                     |      e(b)   e(count)      e(se)      e(lb)      e(ub)
+        -------------+-------------------------------------------------------
+               price |  6146.043         69   350.6166   5446.399   6845.688
+                 mpg |  21.28986         69   .7062326   19.88059   22.69912
+               rep78 |  3.405797         69   .1191738   3.167989   3.643605
+
+        . esttab ., cells("b lb ub") label
+        
+        -----------------------------------------------------------
+                                      (1)
+        
+                                        b           lb           ub
+        -----------------------------------------------------------
+        Price                    6146.043     5446.399     6845.688
+        Mileage (mpg)            21.28986     19.88059     22.69912
+        Repair Record 1978       3.405797     3.167989     3.643605
+        -----------------------------------------------------------
+        Observations                   69                          
+        -----------------------------------------------------------
+
+        . eststo exact: estpost ci foreign, binomial exact
+        (confidence level is 95%)
+
+                     |      e(b)   e(count)      e(se)      e(lb)      e(ub)
+        -------------+-------------------------------------------------------
+             foreign |  .2972973         74   .0531331    .196584   .4148353
+
+        . eststo agresti: estpost ci foreign, binomial agresti
+        (confidence level is 95%)
+
+                     |      e(b)   e(count)      e(se)      e(lb)      e(ub)
+        -------------+-------------------------------------------------------
+             foreign |  .2972973         74   .0531331    .204807   .4097942
+
+        . esttab exact agresti, cells(lb ub) mtitles
+        
+        --------------------------------------
+                              (1)          (2)
+                            exact      agresti
+                            lb/ub        lb/ub
+        --------------------------------------
+        foreign           .196584      .204807
+                         .4148353     .4097942
+        --------------------------------------
+        N                      74           74
+        --------------------------------------
+
+
+        +------+
+    ----+ stci +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    estpost stci [if] [in] [, by(groupvar) median rmean emean p(#) ccorr level(#) quietly esample elabels ]
+
+    posts confidence intervals for means and percentiles of survival time computed by stci. Stata 9 or newer is required.
+
+    Options are:
+
+        by(groupvar) to report separate summaries for each group defined by groupvar, along with an overall total.
+
+        median, rmean, emean, p(), ccorr, and level() as described in help stci.
+
+        quietly to suppress the output.
+
+        esample to mark the estimation sample in e(sample).
+
+        elabels to enforce saving by() labels in e(labels).
+
+    The following vectors are saved in e():
+
+        e(count)     number of subjects
+        e(p50)       median (if median specified; the default)
+        e(p#)        #th percentile (if p(#) specified)
+        e(rmean)     restricted mean (if rmean specified)
+        e(emean)     extended mean (if emean specified)
+        e(se)        standard error
+        e(lb)        lower bound of CI
+        e(ub)        upper bound of CI
+
+    Examples:
+
+        . webuse page2, clear
+        
+        . estpost stci
+        (confidence level is 95%)
+
+                     |  e(count)     e(p50)      e(se)      e(lb)      e(ub)
+        -------------+-------------------------------------------------------
+               total |        40        232   2.562933        213        239
+
+        . esttab ., cell("count p50 se lb ub") noobs compress
+        
+        ------------------------------------------------------------
+                         (1)
+        
+                       count       p50        se        lb        ub
+        ------------------------------------------------------------
+        total             40       232  2.562933       213       239
+        ------------------------------------------------------------
+
+        . estpost stci, by(group)
+        (confidence level is 95%)
+
+                     |  e(count)     e(p50)      e(se)      e(lb)      e(ub)
+        -------------+-------------------------------------------------------
+                   1 |        19        216   5.171042        190        234
+                   2 |        21        233   2.179595        232        280
+        -------------+-------------------------------------------------------
+               total |        40        232   2.562933        213        239
+
+        . esttab ., cell("count p50 se lb ub") noobs compress
+        
+        ------------------------------------------------------------
+                         (1)
+        
+                       count       p50        se        lb        ub
+        ------------------------------------------------------------
+        1                 19       216  5.171042       190       234
+        2                 21       233  2.179595       232       280
+        total             40       232  2.562933       213       239
+        ------------------------------------------------------------
+
+
+        +---------+
+    ----+ margins +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    estpost margins [marginlist] [if] [in] [weight] [, quietly margins_opions ]
+
+    posts results from the margins command, that was introduced in Stata 11.
+
+    Options are:
+
+        quietly to suppress the output.
+
+        margins_opions as described in help margins (except post).
+
+    estpost margins replaces the current e(b) and e(V) with r(b) and r(V) from margins and also copies all other matrixes, scalars, and macros from margins into e() (possibly replacing identically named existing entries).
+
+    Examples:
+
+        . sysuse auto, clear
+        (1978 Automobile Data)
+
+        . quietly logit foreign price mpg weight
+        
+        . estpost margins, dydx(*) quietly
+        
+        . esttab ., cell("b se") pr2
+        
+        --------------------------------------
+                              (1)
+                          foreign
+                                b           se
+        --------------------------------------
+        price            .0000686     .0000136
+        mpg             -.0089607      .006596
+        weight          -.0005069      .000055
+        --------------------------------------
+        N                      74             
+        pseudo R-sq         0.619             
+        --------------------------------------
+
+
+Author
+
+    Ben Jann, Institute of Sociology, University of Bern, jann@soz.unibe.ch
+
+    estpost gtabstat has been contributed by Mauricio Caceres Bravo.
+
+
+Also see
+
+    Manual:  [R] estimates
+
+    Online:  help for estimates, estout, esttab, eststo, estadd

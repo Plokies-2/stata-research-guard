@@ -7,7 +7,7 @@ const readline = require("node:readline");
 const PLUGIN_ROOT = path.resolve(__dirname, "..");
 const DATA_ROOT = path.join(PLUGIN_ROOT, "data");
 const REGISTRY_PATH = path.join(DATA_ROOT, "command_registry.json");
-const FULL_COMMAND_GUIDES_PATH = path.join(DATA_ROOT, "full_command_guides.json");
+const COMMAND_HELP_GUIDES_PATH = path.join(DATA_ROOT, "command_help_guides.json");
 const PAPER_PROFILES_PATH = path.join(DATA_ROOT, "paper_example_profiles.jsonl");
 const PAPER_BLOCKS_PATH = path.join(DATA_ROOT, "high_quality_paper_blocks.jsonl");
 const PAPER_OCCURRENCES_PATH = path.join(DATA_ROOT, "paper_usage_occurrences.jsonl");
@@ -52,8 +52,8 @@ function groupBy(rows, key) {
 const registry = readJson(REGISTRY_PATH);
 const commandsByName = new Map(registry.commands.map((row) => [row.command, row]));
 
-const guideIndex = readJson(FULL_COMMAND_GUIDES_PATH);
-const guidesByCommand = new Map(guideIndex.guides.map((row) => [row.command, row]));
+const helpGuideIndex = readJson(COMMAND_HELP_GUIDES_PATH);
+const helpGuidesByCommand = new Map(helpGuideIndex.guides.map((row) => [row.command, row]));
 
 const paperProfiles = readJsonl(PAPER_PROFILES_PATH);
 const paperBlocks = readJsonl(PAPER_BLOCKS_PATH);
@@ -140,19 +140,23 @@ function validateArguments(args) {
   };
 }
 
-function assertFullGuidesAvailable(selectedCommands) {
-  const missing = selectedCommands.filter((command) => !guidesByCommand.has(command));
-  if (missing.length > 0) {
-    throw new Error(
-      `ABORT full_command_guide_unavailable: reason=full_command_guide_unavailable missing_commands=${JSON.stringify(missing)}`,
-    );
-  }
-}
-
-function fullGuide(command) {
-  const entry = guidesByCommand.get(command);
+function commandHelp(command) {
+  const entry = helpGuidesByCommand.get(command);
+  if (!entry || !entry.content_file) return null;
   const contentPath = path.join(DATA_ROOT, entry.content_file);
   return { ...entry, content: readUtf8(contentPath) };
+}
+
+function commandEvidence(command) {
+  const entry = helpGuidesByCommand.get(command);
+  if (!entry) throw new Error(`command help index is missing registry command: ${command}`);
+  return {
+    command,
+    help_status: entry.help_status,
+    command_help: commandHelp(command),
+    full_manual_available: entry.full_manual_available,
+    paper_example_catalog: profilesByCommand.get(command) || [],
+  };
 }
 
 function paperCard(blockId) {
@@ -181,15 +185,12 @@ function buildCommandEvidence(args) {
     };
   }
 
-  assertFullGuidesAvailable(selectedCommands);
-
   if (phase === "selected_command_evidence") {
     return {
       phase: "selected_command_evidence",
       main_rules: mainRules(),
       selected_commands: selectedCommands,
-      full_command_guides: selectedCommands.map(fullGuide),
-      paper_example_catalog: selectedCommands.flatMap((command) => profilesByCommand.get(command) || []),
+      command_evidence: selectedCommands.map(commandEvidence),
     };
   }
 
@@ -213,7 +214,7 @@ function buildCommandEvidence(args) {
 const TOOL_DEFINITIONS = [
   {
     name: "get_stata_command_evidence",
-    description: "Stateless three-phase exact-key Stata evidence lookup. Every phase includes the common main rules. Phase 1 returns the 109-command neutral dictionary. The model autonomously selects exact canonical commands. Phase 2 returns only those commands' complete guides and paper-profile catalog. Phase 3 returns only exact selected raw paper blocks, linked occurrences, and optional directly linked raw log or artifact context. Missing commands and missing full guides abort. The server does not score, rank, recommend, promote, audit, semantically validate, or automatically choose commands, blocks, specifications, or outputs.",
+    description: "Stateless three-phase exact-key Stata evidence lookup. Every phase includes the common main rules. Phase 1 returns the 109-command neutral dictionary. The model autonomously selects exact canonical commands. Phase 2 returns one independent packet per selected command with Stata-rendered official or maintainer help, factual help and full-manual availability, and a compact paper-profile catalog. It does not return the retained full manuals or raw paper code. Phase 3 currently returns only exact selected raw paper blocks, linked occurrences, and optional directly linked raw log or artifact context; any redesigned expanded manual-plus-paper phase remains deferred. Commands outside the dictionary abort. The server does not score, rank, recommend, promote, audit, semantically validate, or automatically choose commands, blocks, specifications, or outputs.",
     inputSchema: {
       oneOf: [
         {
@@ -224,7 +225,7 @@ const TOOL_DEFINITIONS = [
           properties: { request: { type: "string", minLength: 1 } },
         },
         {
-          title: "Phase 2 selected guides and paper profiles",
+          title: "Phase 2 selected command help and paper profiles",
           type: "object",
           additionalProperties: false,
           required: ["request", "selected_commands"],
@@ -261,13 +262,26 @@ const TOOL_DEFINITIONS = [
         {
           type: "object",
           additionalProperties: false,
-          required: ["phase", "main_rules", "selected_commands", "full_command_guides", "paper_example_catalog"],
+          required: ["phase", "main_rules", "selected_commands", "command_evidence"],
           properties: {
             phase: { const: "selected_command_evidence" },
             main_rules: { type: "object" },
             selected_commands: { type: "array", items: { type: "string" } },
-            full_command_guides: { type: "array", items: { type: "object" } },
-            paper_example_catalog: { type: "array", items: { type: "object" } },
+            command_evidence: {
+              type: "array",
+              items: {
+                type: "object",
+                additionalProperties: false,
+                required: ["command", "help_status", "command_help", "full_manual_available", "paper_example_catalog"],
+                properties: {
+                  command: { type: "string" },
+                  help_status: { enum: ["available", "partial", "unavailable"] },
+                  command_help: { anyOf: [{ type: "object" }, { type: "null" }] },
+                  full_manual_available: { type: "boolean" },
+                  paper_example_catalog: { type: "array", items: { type: "object" } },
+                },
+              },
+            },
           },
         },
         {

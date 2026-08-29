@@ -1,0 +1,206 @@
+[D] duplicates -- Report, tag, or drop duplicate observations
+                  (View complete PDF manual entry)
+
+
+Syntax
+
+    Report duplicates
+
+        duplicates report [varlist] [if] [in]
+
+
+    List one example for each group of duplicates
+
+        duplicates examples [varlist] [if] [in] [, options]
+
+
+    List all duplicates
+
+        duplicates list [varlist] [if] [in] [, options]
+
+
+    Tag duplicates
+
+        duplicates tag [varlist] [if] [in] , generate(newvar)
+
+
+    Drop duplicates
+
+        duplicates drop [if] [in]
+
+        duplicates drop varlist [if] [in] , force
+
+
+    options                  Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      compress               compress width of columns in both table and display formats
+      nocompress             use display format of each variable
+      fast                   synonym for nocompress; no delay in output of large datasets
+      abbreviate(#)          abbreviate variable names to # characters; default is ab(8)
+      string(#)              truncate string variables to # characters; default is string(10)
+
+    Options
+      table                  force table format
+      display                force display format
+      header                 display variable header once; default is table mode
+      noheader               suppress variable header
+      header(#)              display variable header every # lines
+      clean                  force table format with no divider or separator lines
+      divider                draw divider lines between columns
+      separator(#)           draw a separator line every # lines; default is separator(5)
+      sepby(varlist)         draw a separator line whenever varlist values change
+      nolabel                display numeric codes rather than label values
+
+    Summary
+      mean[(varlist)]        add line reporting the mean for each of the (specified) variables
+      sum[(varlist)]         add line reporting the sum for each of the (specified) variables
+      N[(varlist)]           add line reporting the number of nonmissing values for each of the (specified) variables
+      labvar(varname)        substitute Mean, Sum, or N for value of varname in last row of table
+
+    Advanced
+      constant[(varlist)]    separate and list variables that are constant only once
+      notrim                 suppress string trimming
+      absolute               display overall observation numbers when using by varlist:
+      nodotz                 display numerical values equal to .z as field of blanks
+      subvarname             substitute characteristic for variable name in header
+      linesize(#)            columns per line; default is linesize(79)
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    collect is allowed with all duplicates commands; see prefix.
+
+
+Menu
+
+    duplicates report, duplicates examples, and duplicates list
+
+        Data > Data utilities > Report and list duplicated observations
+
+    duplicates tag
+
+        Data > Data utilities > Tag duplicated observations
+
+    duplicates drop
+
+        Data > Data utilities > Drop duplicated observations
+
+
+Description
+
+    duplicates reports, displays, lists, tags, or drops duplicate observations, depending on the subcommand specified.  Duplicates are observations with identical values either on all variables if no varlist is specified or on a specified varlist.
+
+    duplicates report produces a table showing observations that occur as one or more copies and indicating how many observations are "surplus" in the sense that they are the second (third, ...) copy of the first of each group of duplicates.
+
+    duplicates examples lists one example for each group of duplicated observations.  Each example represents the first occurrence of each group in the dataset.
+
+    duplicates list lists all duplicated observations.
+
+    duplicates tag generates a variable representing the number of duplicates for each observation.  This will be 0 for all unique observations.
+
+    duplicates drop drops all but the first occurrence of each group of duplicated observations.  The word drop may not be abbreviated.
+
+    Any observations that do not satisfy specified if and/or in conditions are ignored when you use report, examples, list, or drop.  The variable created by tag will have missing values for such observations.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options for duplicates examples and duplicates list
+
+        +------+
+    ----+ Main +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    compress, nocompress, fast, abbreviate(#), string(#); see [D] list.
+
+        +---------+
+    ----+ Options +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    table, display, header, noheader, header(#), clean, divider, separator(#), sepby(varlist), nolabel; see [D] list.
+
+        +---------+
+    ----+ Summary +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    mean[(varlist)], sum[(varlist)], N[(varlist)], labvar(varname); see [D] list.
+
+        +----------+
+    ----+ Advanced +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    constant[(varlist)], notrim, absolute, nodotz, subvarname, linesize(#); see [D] list.
+
+
+Option for duplicates tag
+
+    generate(newvar) is required and specifies the name of a new variable that will tag duplicates.
+
+
+Option for duplicates drop
+
+    force specifies that observations duplicated with respect to a named varlist be dropped.  The force option is required when such a varlist is given as a reminder that information may be lost by dropping observations, given that those observations
+        may differ on any variable not included in varlist.
+
+
+Remarks
+
+    As of Stata 11, the browse subcommand is no longer available.  To open duplicates in the Data Browser, use the following commands:
+
+        . duplicates tag, generate(newvar)
+        . browse if newvar > 0
+
+    See [D] edit for details on the browse command.
+
+
+Examples
+
+    Setup
+        . sysuse auto
+        . keep make price mpg rep78 foreign
+        . expand 2 in 1/2
+
+    Report duplicates
+        . duplicates report
+
+    List one example for each group of duplicated observations
+        . duplicates examples
+
+    List all duplicated observations
+        . duplicates list
+
+    Create variable dup containing the number of duplicates (0 if observation is unique)
+        . duplicates tag, generate(dup)
+
+    List the duplicated observations
+        . list if dup==1
+
+    Drop all but the first occurrence of each group of duplicated observations
+        . duplicates drop
+
+    List all duplicated observations
+        . duplicates list
+
+
+Video example
+
+        How to identify and remove duplicate observations
+
+
+Stored results
+
+    duplicates report, duplicates examples, duplicates list, duplicates tag, and duplicates drop store the following in r():
+
+    Scalars        
+      r(N)                number of observations
+
+    duplicates report also stores the following in r():
+
+    Scalars        
+      r(unique_value)     number of unique observations
+
+    duplicates drop also stores the following in r():
+
+    Scalars   
+      r(N_drop)           number of observations dropped

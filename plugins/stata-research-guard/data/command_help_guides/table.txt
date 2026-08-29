@@ -1,0 +1,398 @@
+[R] table -- Table of frequencies, summaries, and command results
+             (View complete PDF manual entry)
+
+
+Syntax
+
+    Basic syntax for a one-way table
+
+        table rowvar
+
+        table () colvar
+
+
+    Basic syntax for a two-way table
+
+        table rowvar colvar
+
+
+    Basic syntax for an n-way table
+
+        table rowvars colvar
+
+        table rowvar (colvars)
+
+        table (rowvars) (colvars)
+
+
+    Basic syntax for multiple n-way tables
+
+        table (rowvars) (colvars) (tabvars)
+
+
+    Full syntax
+
+        table (rowspec) (colspec) [(tabspec)] [if] [in] [weight] [, options]
+
+
+    rowspec, colspec, and tabspec may be empty or may include variable names or any of the following keywords:
+
+          keyword          Description
+          ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+          result           requested statistics
+          stars            stars denoting statistical significance
+          var              variables from statistic() option
+          across           index across() specifications
+          colname          column names for matrix statistics
+          rowname          row names for matrix statistics
+          coleq            column equation names for matrix statistics
+          roweq            row equation names for matrix statistics
+          command          index option command()
+          statcmd          index options statistic() and command()
+          ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    options                                  Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      totals(totals)                         report only the specified totals
+      nototals                               suppress the marginal totals
+
+    Statistics
+      statistic(statspec)                    statistic to be reported; default is statistic(frequency) when no weights are specified and statistic(sumw) otherwise
+
+    Commands
+      command(cmdspec)                       collect results from the specified Stata command
+
+    Formats
+      nformat(%fmt [results][, basestyle])   specify numeric format
+      sformat(sfmt [results])                specify string format
+      cidelimiter(char)                      use character as delimiter for confidence interval limits
+      cridelimiter(char)                     use character as delimiter for credible interval limits
+
+    Stars
+      stars(starspec)                        add stars to denote statistical significance
+
+    Options
+      listwise                               use listwise deletion to handle missing values
+      missing                                treat numeric missing values like other values
+      showcounts                             show sample size for all variables in statistic() option
+      zerocounts                             report 0 for empty cell counts
+      name(cname)                            collect results into a collection named cname
+      append                                 append results to an existing collection
+      replace                                replace results of an existing collection
+      label(filename)                        specify the collection labels
+      style(filename [, override])           specify the collection style
+
+      markvar(newvar)                        create newvar that identifies observations used in the tabulation
+      noisily                                display output from each command
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    fweights, aweights, iweights, and pweights are allowed; see weight.
+    strL variables are not allowed; see [U] 12.4.8 strL.
+
+    markvar() and noisily do not appear in the dialog box.
+
+
+Menu
+
+    Statistics > Summaries, tables, and tests > Tables of frequencies, summaries, and command results
+
+
+Description
+
+    table is a flexible command for creating tables of many types -- tabulations, tables of summary statistics, tables of regression results, and more.  table can calculate summary statistics to display in the table.  table can also include results from
+    other Stata commands.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+        Methods and formulas
+
+    The above sections are not included in this help file.
+
+
+Options
+
+        +------+
+    ----+ Main +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    totals(totals) and nototals control which totals are to be displayed in the table. By default, all totals are reported.
+
+        totals(totals) specifies which margin totals to display in the reported table. totals can contain variables in rowspec, colspec, tabspec, and their interaction.  Interactions can be specified by using the # operator.
+
+        nototals prevents table from displaying any totals.
+
+        +------------+
+    ----+ Statistics +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    statistic(statspec) specifies the statistic to be displayed.  Frequency statistics, summary statistics, and ratio statistics are available by specifying statistic(freqstat), statistic(sumstat varlist), and statistic(ratiostat [varlist] [,
+        ratio_options]), respectively.
+
+        statistic() may be repeated to request multiple statistics.
+
+        statistic(freqstat) specifies that frequencies be computed.
+
+          freqstat         Definition
+          ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+          frequency        frequency
+          sumw             sum of weights
+          ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        statistic(sumstat varlist) specifies that summary statistic sumstat be computed for the variables in varlist.
+
+          sumstat          Definition
+          ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+          mean             mean
+          semean           standard error of the mean
+          sebinomial       standard error of the mean, binomial
+          sepoisson        standard error of the mean, Poisson
+
+          variance         variance
+          sd               standard deviation
+          skewness         skewness
+          kurtosis         kurtosis
+          cv               coefficient of variation
+          svycv            coefficient of variation (svy)
+
+          geomean          geometric mean
+          geosd            geometric standard deviation
+
+          count            number of nonmissing values
+
+          median           median
+          p#               #th percentile
+          q1               first quartile
+          q2               second quartile
+          q3               third quartile
+          iqr              interquartile range
+
+          min              minimum value
+          max              maximum value
+          range            range
+
+          first            first value
+          last             last value
+          firstnm          first nonmissing value
+          lastnm           last nonmissing value
+
+          total            total
+          rawtotal         unweighted total
+
+          fvfrequency      frequency of each factor-variable level
+          fvrawfrequency   unweighted frequency of each factor-variable level
+          fvproportion     proportion within each factor-variable level
+          fvrawproportion  unweighted proportion within each factor-variable level
+          fvpercent        percentage within each factor-variable level
+          fvrawpercent     unweighted percentage within each factor-variable level
+          ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        statistic(ratiostat [varlist] [, ratio_options]) specifies that ratio statistic ratiostat be computed.  If varlist is specified, ratios are computed based on the totals of the specified variables.  If varlist is not specified, ratios are
+            computed based on frequencies.
+
+          ratiostat        Definition
+          ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+          proportion       proportion
+          percent          percentage
+          rawproportion    proportion ignoring optionally specified weights
+          rawpercent       percentage ignoring optionally specified weights
+          ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+          ratio_options    Definition
+          ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+          across(cellspec) percentages or proportions across levels of variables or interactions
+          total            compute overall percentages or proportions
+          ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+            cellspec may contain rowvars, colvars, tabvars, or an interaction between any of these variables. Interactions can be specified by using the # operator.
+
+        +----------+
+    ----+ Commands +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    command(cmdspec) specifies the Stata commands from which to collect results. command() may be repeated to collect results from multiple commands.
+
+        cmdspec is [explist:] command [arguments] [, cmdoptions]
+
+            explist specifies which results to collect and report in the table.  explist may include result identifiers and named expressions.
+
+                result identifiers are results stored in r() and e() by the command.  For instance, result identifiers could be r(mean), r(C), or e(chi2).  After estimation commands, result identifiers also include the following:
+
+          Identifier       Result
+          ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+          _r_b             coefficients or transformed coefficients reported by command
+          _r_se            standard errors of _r_b
+          _r_z             test statistics for _r_b
+          _r_z_abs         absolute value of _r_z
+          _r_p             p-values for _r_b
+          _r_lb            lower bounds of confidence intervals for _r_b
+          _r_ub            upper bounds of confidence intervals for _r_b
+          _r_ci            confidence intervals for _r_b
+          _r_crlb          lower bounds of credible intervals for _r_b
+          _r_crub          upper bounds of credible intervals for _r_b
+          _r_cri           credible intervals for _r_b
+          _r_df            degrees of freedom for _r_b
+          ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                named expressions are specified as name = exp, where name may be any valid Stata name and exp is an expression, typically an expression that involves one or more result identifiers. An example of a named expressions is sd =
+                  sqrt(r(variance)).
+
+                For r-class commands, the default is to include all numeric scalars posted to r() in the table results. For e-class commands, the default is to include _r_b in the table results.
+
+            command is any command that follows standard Stata syntax.
+
+            arguments may be anything so long as they do not include an if clause, in range, or weight specification.
+
+                Any if or in qualifier and weights should be specified directly with table, not within the command() option.
+
+            cmdoptions may be anything supported by command.
+
+        +---------+
+    ----+ Formats +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    nformat(%fmt [results][, basestyle]) changes the numeric format, such as the number of decimal places, for specified results.  If results are not specified, the numeric format is changed for all results.
+
+        results may be any statistic named in option statistic() (that is, any freqstat, sumstat, or ratiostat) or may be any name in the e() or r() results produced by commands specified in option command().
+
+        This option is repeatable, and when multiple formats apply to one result, the rightmost specification is applied.
+
+        This option does not affect the format of numeric layout variables (rowspec, colspec, and tabspec) or the format of factor variables specified in the statistic() option.  The default format of these variables is taken from the dataset.
+
+        basestyle indicates that the format be applied to results that do not already have their own format instead of overriding the format for all results.
+
+    sformat(sfmt [results]) changes the string format for specified results.  You can, for instance, add symbols or text to the values reported in the table by modifying the string format.
+
+        sfmt may contain a mix of text and %s.  Here %s refers to the numeric value that is formatted as specified using nformat().  The text will be placed around the numeric values in your table as it is placed around %s in this option.  For instance,
+        to place parentheses around the percent statistics, you can specify sformat("(%s)" percent).
+
+        results may be any statistic named in option statistic() (that is, any freqstat, sumstat, or ratiostat) or may be any name in the e() or r() results produced by commands specified in option command().
+
+        Two text characters must be specified using a special character sequence if you want them to be displayed in your table.  To include %, type %%.  To include \, type \\.  For instance, to place a percent sign following percent statistics, you can
+        specify sformat("%s%%" percent).
+
+        This option is repeatable, and when multiple formats apply to one result, the rightmost specification is applied.
+
+    cidelimiter(char) changes the delimiter between confidence interval limits to char. The default is cidelimiter(" "), that is, two spaces.
+
+    cridelimiter(char) changes the delimiter between credible interval limits to char. The default is cridelimiter(" "), that is, two spaces.
+
+        +-------+
+    ----+ Stars +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    stars(starspec) specifies that stars representing statistical significance be included in the table.  starspec identifies the result whose values determine significance, which characters should represent each significance level, and where these
+        characters should be displayed in the table.  starspec is
+
+        starres [#1 "label1" [#2 "label2" [#3 "label3" [#4 "label4" [#5 "label5"]]]]] [, attach(attachres) result dimension starsnoteopts]
+
+            starres is the name of the result whose values determine which characters, typically which number of stars, are to be displayed.
+
+            label1 specifies the characters to be displayed when starres < #1.
+
+            label2 specifies the characters to be displayed when starres < #2.
+
+            label3 specifies the characters to be displayed when starres < #3.
+
+            label4 specifies the characters to be displayed when starres < #4.
+
+            label5 specifies the characters to be displayed when starres < #5.
+
+            attach(attachres) specifies the name of the result to which the characters defined by label1, ..., label5 are to be attached.  If attach() is not specified, a new result named stars is created and is automatically added to the table.
+
+            result and dimension control how collect stars adds items when labeling significant results.  These options are mutually exclusive.
+
+                result specifies the default behavior, and this option is necessary only if the following dimension behavior is in effect and you want to change back to the result behavior.
+
+                dimension specifies that dimension stars be added to the collection.  Items will be tagged with stars[value], and the labels will be tagged with stars[label].  Use this option for layouts where results are to be stacked within columns,
+                    and use new dimension stars in the column specification of the layout.
+
+            starsnoteopts control the display and composition of the stars note.
+
+                noshownote and shownote control whether to display the stars note.
+
+                increasing and decreasing control the order of p-values in the stars note.
+
+                pvname(string) specifies a name for the p-value in the stars note.  The default is pvname(p).
+
+                delimiter(string) specifies the delimiter between labels in the stars note.  The default is delimiter(",").
+
+                nformat(%fmt) specifies the numeric format for the cutoff values in the stars note.  The default is nformat(%9.0g).
+
+                prefix(string) specifies the prefix for the stars note.  The prefix is empty by default.
+
+                suffix(string) specifies the suffix for the stars note.  The suffix is empty by default.
+
+            For example, stars(_r_p 0.01 "***" 0.05 "**" 0.1 "*", attach(_r_b)) could be added to a table of regression results to specify that stars be defined based on the p-values in _r_p and be attached to the reported coefficients (_r_b).
+
+
+        +---------+
+    ----+ Options +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    listwise handles missing values through listwise deletion, meaning that the entire observation is omitted from the sample if any variable specified in a statistic() option is missing for that observation. By default, table will omit an observation
+        only if all variables specified in all statistic() options are missing for that observation.
+
+    missing specifies that numeric missing values of any variables specified in rowspec, colspec, or tabspec be treated as valid categories.  By default, observations with a numeric missing value in any of these variables are omitted.
+
+        This option does not apply to factor variables specified with statistics fvfrequency, fvrawfrequency, fvproportion, fvrawproportion, fvpercent, or fvrawpercent.
+
+    showcounts specifies that table report the sample size for each variable specified in option statistic().
+
+    zerocounts specifies that table report a 0 in empty cells for results count, frequency, fvfrequency, and fvrawfrequency.
+
+    name(cname) specifies that a collection named cname be associated with the collected statistics and results.  The default is name(Table).
+
+    append specifies that table append its collection information into the collection named in name().
+
+    replace permits table to overwrite an existing collection.  This option is implied for name(Table) when append is not specified.
+
+    label(filename) specifies the filename containing the collection labels to use for your table.  Labels in filename will be loaded for the table, and any labels not specified in filename will be taken from the labels defined in c(collect_label).  The
+        default is to use only the collection labels set in c(collect_label); see [TABLES] set collect_label.
+
+
+    style(filename [, override]) specifies the filename containing the collection styles to use for your table.  The default collection styles will be discarded, and only the collection styles in filename will be applied.
+
+        If you prefer the default collection styles but also want to apply any styles in filename, specify override.  If there are conflicts between the default collection styles and those in filename, the ones in filename will take precedence.
+
+        The default is to use only the collection styles set in c(table_style); see [TABLES] set table_style.
+
+
+    The following options are available with table but are not shown in the dialog box:
+
+    markvar(newvar) generates an indicator variable that identifies the observations used in the tabulation.
+
+    noisily specifies that output from the commands specified in command() options be displayed. By default, output from commands is suppressed.
+
+
+Examples
+
+    Setup
+        . webuse nhanes2
+
+    One-way table of frequencies
+        . table agegrp
+
+    One-way table of percentages
+        . table agegrp, stat(percent)
+
+    Three-way table of frequencies
+        . table (agegrp) (sex race)
+
+    Two-way tables for each level of sex
+        . table (agegrp) (race) (sex)
+
+    Table with percentage of observations in each category of sex and race, for each category of region
+        . table region, stat(fvpercent sex race) nformat(%5.2f)
+
+    Table with pairwise correlations
+        . table (rowname) (colname), command(r(C): pwcorr age bmi weight)
+
+    Table of regression coefficients
+        . table colname, command(regress bpsystol age bmi)
+
+
+Stored results
+
+    table stores the following in r():
+
+    Scalars   
+      r(N)           number of observations

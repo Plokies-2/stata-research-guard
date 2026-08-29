@@ -1,0 +1,794 @@
+[R] etable -- Create a table of estimation results
+              (View complete PDF manual entry)
+
+
+Syntax
+
+        etable [, options]
+
+    options                                  Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      estimates(namelist)                    work with previously stored estimation results
+      margins                                consume results from margins
+      replay                                 report table without consuming results
+      column(column_header)                  select column header
+      name(cname)                            work with collection cname; default is name(ETable)
+      append                                 append to the collection
+      replace                                replace the collection
+
+    Coefficients
+      keep(coeflist)                         report coefficients in order specified
+      cstat(cstat[, cstat_opts])             report coefficient statistic
+
+    Model
+      mstat(mstat[, mstat_opts])             report model statistic
+
+    Equations
+      equations(eqlist)                      report equations in order specified
+      eqrecode(oldeq = neweq)                recode equation
+      [no]showeq                             display or suppress equations
+
+    Stars
+      stars([starspec][, stars_opts])        customize rules for star labels
+      [no]showstars                          display or suppress star labels
+      [no]showstarsnote                      display or suppress note explaining star labels
+
+    Title
+      title(string)                          add table title
+      titlestyles(text_styles)               change table title styles
+
+    Notes
+      note(string)                           add table note
+      notestyles(text_styles)                change table note styles
+
+    Export
+      export(filename.suffix[, export_opts]) export table
+
+    Options
+      [no]varlabel                           display or suppress variable names or labels
+      [no]fvlabel                            display or suppress factor values or labels
+      [no]center                             center or right-align item cells
+      label(filename[, replace])             specify the collection labels
+      style(filename[, override])            specify the collection style
+
+      warn                                   show collect warnings
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    warn does not appear in the dialog box.
+
+    column_header                            Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    depvar                                   show dependent variable name; the default
+    dvlabel                                  show variable label for dependent variable
+    command                                  show command name
+    title                                    show command title
+    estimates                                show estimates name
+    index                                    show result set index
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    cstat_opts                               Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    label(string)                            specify coefficient statistic label
+    font([fontfamily][, font_opts])          specify font style
+    smcl(smcl)                               specify formatting for SMCL files
+    latex(latex)                             specify LaTeX macro
+    shading(sspec)                           set background color, foreground color, and fill pattern
+    nformat(%fmt)                            specify numeric format
+    sformat(sfmt)                            specify string format
+    cidelimiter(char)                        use character as delimiter for confidence interval limits
+    cridelimiter(char)                       use character as delimiter for credible interval limits
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    mstat_opts                               Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    label(string)                            specify model statistic label
+    font([fontfamily][, font_opts])          specify font style
+    smcl(smcl)                               specify formatting for SMCL files
+    latex(latex)                             specify LaTeX macro
+    shading(sspec)                           set background color, foreground color, and fill pattern
+    nformat(%fmt)                            specify numeric format
+    sformat(sfmt)                            specify string format
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    font_opts                                Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    size(# [unit])                           specify font size
+    color(color)                             specify font color
+    variant(variant)                         specify font variant and capitalization
+    [no]bold                                 specify whether to format statistic as bold
+    [no]italic                               specify whether to format statistic as italic
+    [no]strikeout                            specify whether to strike out statistic
+    underline(upattern)                      specify whether to underline statistic
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    stars_opts                               Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    attach(cstat)                            attach star labels to coefficient statistic cstat
+    increasing                               compose stars note with increasing p-values; the default
+    decreasing                               compose stars note with decreasing p-values
+    pvname(string)                           p-value name for stars note
+    delimiter(char)                          use character as delimiter for labels in stars note
+    nformat(%fmt)                            numeric format for stars note
+    prefix(string)                           prefix for stars note
+    suffix(string)                           suffix for stars note
+    clear                                    remove previous star properties
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    text_styles                              Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    font([fontfamily][, text_opts])          specify font style
+    smcl(smcl)                               specify formatting for SMCL files
+    latex(latex)                             specify LaTeX macro
+    shading(sspec)                           set background color, foreground color, and fill pattern
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    text_opts                                Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    size(# [unit])                           specify font size
+    color(color)                             specify font color
+    variant(variant)                         specify font variant and capitalization
+    [no]bold                                 specify whether to format statistic as bold
+    [no]italic                               specify whether to format statistic as italic
+    [no]strikeout                            specify whether to strike out statistic
+    [no]underline                            specify whether to underline statistic
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    suffix         fileformat     Output format
+    ---------------------------------------------------------------------
+    docx           as(docx)       Microsoft Word
+    html           as(html)       HTML 5 with CSS
+    pdf            as(pdf)        PDF
+    xlsx           as(xlsx)       Microsoft Excel 2007/2010 or newer
+    xls            as(xls)        Microsoft Excel 1997/2003
+    tex            as(latex)      LaTeX
+    smcl           as(smcl)       SMCL
+    txt            as(txt)        plain text
+    markdown       as(markdown)   Markdown
+    md             as(markdown)   Markdown
+    ---------------------------------------------------------------------
+
+    export_opts                              Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    as(fileformat)                           specify document type
+    replace                                  overwrite existing file
+    docx_options                             available when exporting to .docx files
+    html_options                             available when exporting to .html files
+    pdf_options                              available when exporting to .pdf files
+    excel_options                            available when exporting to .xls and .xlsx files
+    tex_options                              available when exporting to .tex files
+    smcl_option                              available when exporting to .smcl files
+    txt_option                               available when exporting to .txt files
+    md_option                                available when exporting to .markdown and .md files
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    docx_options                             Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    noisily                                  show the putdocx commands used to export to the Microsoft Word file
+    dofile(filename[, replace])              save the putdocx commands used for exporting to the named do-file
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    html_options                             Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    append                                   append to an existing file
+    tableonly                                export only the table to the specified file
+    cssfile(cssfile)                         define the styles in cssfile instead of filename
+    prefix(prefix)                           use prefix to identify style classes
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    pdf_options                              Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    noisily                                  show the putpdf commands used to export to the PDF file
+    dofile(filename[, replace])              save the putpdf commands used for exporting to the named do-file
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    excel_options                            Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    noisily                                  show the putexcel commands used to export to the Excel file
+    dofile(filename[, replace])              save the putexcel commands used for exporting to the named do-file
+    sheet(sheetname[, replace])              specify the worksheet to use; the default sheet name is Sheet1
+    cell(cell)                               specify the Excel upper-left cell as the starting position to export the table; the default is cell(A1)
+    modify                                   modify Excel file
+
+    noopen                                   do not open Excel file in memory
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    noopen does not appear in the dialog box.
+
+    tex_options                              Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    append                                   append to an existing file
+    tableonly                                export only the table to the specified file
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    smcl_option                              Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    append                                   append to an existing file
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    txt_option                               Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    append                                   append to an existing file
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    md_option                                Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    append                                   append to an existing file
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    fontfamily specifies a valid font family.
+
+    unit may be in (inch), pt (point), or cm (centimeter).  An inch is equivalent to 72 points and 2.54 centimeters.  The default is pt.
+
+    variant may be allcaps, smallcaps, or normal.
+
+        variant(allcaps) changes the text to all uppercase letters; applicable when publishing items from a collection to Microsoft Word, PDF, LaTeX, and HTML files.
+
+        variant(smallcaps) changes the text to use large capitals for uppercase letters and smaller capitals for lowercase letters; applicable when publishing items from a collection to Microsoft Word, LaTeX, and HTML files.
+
+        variant(normal) changes the font variant back to normal and leaves the capitalization unchanged from the original text; applicable when publishing items from a collection to Microsoft Word, PDF, LaTeX, and HTML files.
+
+
+    upattern may be any of the patterns listed in the Appendix.  For example, underline(none) removes the underline from the statistic, and underline(single) underlines the statistic.  All other upatterns are available only when publishing items from a
+        collection to Microsoft Word.
+
+    smcl specifies the name of the SMCL directive to render text for SMCL output.  The supported SMCL directives are input, error, result, and text.
+
+    latex specifies the name of a LaTeX macro to render text for LaTeX output.  Example LaTeX macro names are textbf, textsf, textrm, and texttt.  Custom LaTeX macros are also allowed.  If text is to be rendered in a cell, title, or note, then latex is
+        translated to the following when you export to LaTeX:
+
+            \latex {text}
+
+    sspec is
+
+        [background(bgcolor) foreground(fgcolor) pattern(fpattern)]
+
+            bgcolor specifies the background color.
+
+            fgcolor specifies the foreground color.
+
+            fpattern specifies the fill pattern.  A complete list of fill patterns is shown in the Appendix.
+
+    bgcolor, fgcolor, and color may be one of the colors listed in the Appendix; a valid RGB value in the form ### ### ###, for example, 171 248 103; or a valid RRGGBB hex value in the form ######, for example, ABF867.
+
+    sfmt is the specification for a string format in option sformat() and may contain a mix of text and %s.  Here %s refers to the statistic value that is formatted as specified using nformat().  The text will be placed around the statistic as it is
+        placed around %s in this option.  For instance, to place parentheses around the statistic, you can specify sformat("(%s)").
+
+        Two text characters must be specified using a special character sequence if you want them to be displayed in your collection.  To include %, type %%.  To include \, type \\.  For instance, to place a percent sign after a statistic, you can
+        specify sformat("%s%%").
+
+
+Menu
+
+    Statistics > Summaries, tables, and tests > Table of estimation results
+
+
+Description
+
+    The etable command allows you to easily create a table of estimation results and export it to a variety of file types.  You can create a table complete with a title, notes, stars for indicating significant results, and more.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+        +------+
+    ----+ Main +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    estimates(namelist) specifies the estimation results to be included in the table.  These are the names specified with estimates store.  By default, etable creates a table with the active estimation results.
+
+    margins creates a table with the results of the immediately preceding margins command.
+
+    replay specifies that etable redisplay the table without consuming results.
+
+    column(column_header) specifies the content to be used in the column headers.  column_header may be depvar, dvlabel, command, title, estimates, or index.
+
+        depvar specifies that etable use the dependent variable name for the column headers.  This name is obtained from the eclass macro e(depvar).  Note that this macro may contain multiple names after fitting a multivariate model.
+
+        dvlabel specifies that etable use the variable label for the dependent variable name for the column headers.  etable uses the variable label associated with the variable name in the eclass macro e(depvar).  If the variable does not have a
+            variable label, the variable name will be used.  column(dvlabel) will not be helpful when the estimation command stores multiple names in e(depvar).
+
+        command specifies that etable use the command name for the column headers.  This name is obtained from the eclass macro e(cmd).
+
+        title specifies that etable use the command title for the column headers.  This title is obtained from the eclass macro e(title).
+
+        estimates specifies that etable use the name given to previously stored estimation results for the column headers; these are the names specified with estimates store.
+
+        index specifies that etable use the result set index for the column headers.
+
+    name(cname) specifies the collection from which estimation results will be obtained, instead of the current collection.  The default is name(ETable).
+
+    append specifies that etable append the results into the collection named in name().
+
+    replace permits etable to overwrite the existing collection.  This option is implied for name(ETable) when append and replay are not specified.
+
+        +--------------+
+    ----+ Coefficients +-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    keep(coeflist) specifies the coefficients to be included in the table and the order in which to display them.  Names are separated from each other by blanks.  The default is to display all coefficients.
+
+    cstat(cstat[, cstat_opts]) specifies the coefficient statistic to be included in the table.  Optionally, you may specify the label and style for this statistic.  cstat() may be repeated to request multiple coefficient statistics.
+
+        The default is to display the coefficients (_r_b) and their standard errors (_r_se), both formatted to three decimals.  Standard errors are enclosed in parentheses.
+
+        Available coefficient statistics are
+
+          cstat            Description
+          ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+          _r_b             coefficients reported by estimation
+          _r_se            standard errors of _r_b
+          _r_z             test statistics for _r_b
+          _r_z_abs         absolute values of _r_z
+          _r_p             p-values for _r_b
+          _r_lb            lower bounds of confidence intervals (CIs) for _r_b
+          _r_ub            upper bounds of CIs for _r_b
+          _r_ci            CIs for _r_b
+          _r_crlb          lower bounds of credible intervals for _r_b
+          _r_crub          upper bounds of credible intervals for _r_b
+          _r_cri           credible intervals of Bayesian estimates
+          _hide            hide coefficient statistics
+          ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        cstat_opts are label(string), font([fontfamily][, font_opts]), smcl(smcl), latex(latex), shading(sspec), nformat(%fmt), sformat(sfmt), cidelimiter(char), and cridelimiter(char).
+
+            label(string) is used to modify the label for the specified coefficient statistic.
+
+            font([fontfamily][, size(# [unit]) color(color) variant(variant) [no]bold [no]italic [no]strikeout [no]underline underline(upattern)]) specifies the font style for the coefficient statistic.  These font style properties are applicable when
+                exporting the table to Microsoft Word, Microsoft Excel, PDF, HTML, and LaTeX files, unless otherwise specified.
+
+                fontfamily specifies a valid font family.  This font style property is applicable when publishing items from a collection to Microsoft Word, Microsoft Excel, PDF, and HTML files.
+
+                size(# [unit]) specifies the font size as a number optionally followed by units.  This font style property is applicable when publishing items from a collection to Microsoft Word, Microsoft Excel, PDF, and HTML files.
+
+                color(color) specifies the text color.
+
+                variant(variant) specifies the font variant and capitalization.
+
+                bold and nobold specify the font weight.  bold changes the font weight to bold; nobold changes the font weight back to normal.
+
+                italic and noitalic specify the font style.  italic changes the font style to italic; noitalic changes the font style back to normal.
+
+                strikeout and nostrikeout specify whether to add a strikeout mark to the coefficient statistic.  strikeout adds a strikeout mark to the statistic; nostrikeout changes the statistic back to normal.
+
+                underline(upattern), underline, and nounderline specify how to underline the coefficient statistic.
+
+                Only one of strikeout or underline is allowed when publishing to HTML files.
+
+            smcl(smcl) specifies how to render the statistic value for SMCL output.  This style property is applicable only when publishing items from a collection to a SMCL file.
+
+            latex(latex) specifies how to render the statistic value for LaTeX output.  This style property is applicable only when publishing items from a collection to a LaTeX file.
+
+            shading(sspec) sets the background color, foreground color, and fill pattern.  The background color is applicable when exporting the table to Microsoft Word, Microsoft Excel, PDF, HTML, and LaTeX files.  The foreground color and fill pattern
+                are applicable when exporting the table to Microsoft Word and Microsoft Excel.
+
+            nformat(%fmt) applies the Stata numeric format %fmt to the coefficient statistic.
+
+            sformat(sfmt) applies a string format to the coefficient statistic.
+
+            cidelimiter(char) changes the delimiter between confidence interval limits for coefficient statistic _r_ci.  The default is cidelimiter(" ").
+
+            cridelimiter(char) changes the delimiter between credible interval limits for coefficient statistic _r_cri.  The default is cridelimiter(" ").
+
+        +-------+
+    ----+ Model +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    mstat(mstat[, mstat_opts]) specifies the model statistics to be included in the table.
+
+        mstat may be a result identifier or a named expression.  mstat() may be repeated to request multiple model statistics.  The default is to display the number of observations, with zero decimal digits.
+
+            result identifier is one of the following:
+
+              Identifier   Result
+              -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+              N            number of observations
+              aic          Akaike's information criterion
+              bic          Schwarz's Bayesian information criterion
+              F            F statistic
+              chi2         chi-squared
+              ll           log likelihood of fitted model
+              r2           R-squared
+              r2_a         adjusted R-squared
+              rank         rank of fitted model
+              escalar      any e() scalar, by default
+              rscalar      any r() scalar with option margins
+              _hide        hide model statistics
+              -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+            named expression is specified as name = exp, where name may be any valid Stata name and exp is a scalar expression, typically an expression that involves one or more scalars in e().  For example, aic=(-2*e(ll) + 2*e(rank)).
+
+                With option margins, or if you ran a postestimation command like estat, exp may also involve one or more scalars in r().  For example, suppose you fit a logistic model and also called estat gof, then you can show its goodness-of-fit
+                statistic with chi2_gof=(r(chi2)).
+
+        mstat_opts are label(string), font([fontfamily] [, font_opts]), smcl(smcl), latex(latex), shading(sspec), nformat(%fmt), and sformat(sfmt).
+
+            label(string) is used to modify the label for the specified model statistic.
+
+            font([fontfamily][, size(# [unit]) color(color) variant(variant) [no]bold [no]italic [no]strikeout [no]underline underline(upattern)]) specifies the font style for the model statistic.  These font style properties are applicable when
+                exporting the table to Microsoft Word, Microsoft Excel, PDF, HTML, and LaTeX files, unless otherwise specified.
+
+                fontfamily specifies a valid font family.  This font style property is applicable when publishing items from a collection to Microsoft Word, Microsoft Excel, PDF, and HTML files.
+
+                size(# [unit]) specifies the font size as a number optionally followed by units.  This font style property is applicable when publishing items from a collection to Microsoft Word, Microsoft Excel, PDF, and HTML files.
+
+                color(color) specifies the text color.
+
+                variant(variant) specifies the font variant and capitalization.
+
+                bold and nobold specify the font weight.  bold changes the font weight to bold; nobold changes the font weight back to normal.
+
+                italic and noitalic specify the font style.  italic changes the font style to italic; noitalic changes the font style back to normal.
+
+                strikeout and nostrikeout specify whether to add a strikeout mark to the model statistic.  strikeout adds a strikeout mark to the statistic; nostrikeout changes the text back to normal.
+
+                underline(upattern), underline, and nounderline specify how to underline the model statistic.
+
+                Only one of strikeout or underline is allowed when publishing to HTML files.
+
+            smcl(smcl) specifies how to render the statistic value for SMCL output.  This style property is applicable only when publishing items from a collection to a SMCL file.
+
+            latex(latex) specifies how to render the statistic value for LaTeX output.  This style property is applicable only when publishing items from a collection to a LaTeX file.
+
+            shading(sspec) sets the background color, foreground color, and fill pattern.
+
+            nformat(%fmt) applies the Stata numeric format %fmt to the model statistic.
+
+            sformat(sfmt) applies a string format to the model statistic.
+
+        +-----------+
+    ----+ Equations +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    equations(eqlist) specifies the equations to be included in the table and the order in which they are reported.
+
+    eqrecode(oldeq = neweq) changes the equation name from oldeq to neweq.  eqrecode() may be repeated to recode multiple equations.
+
+    showeq and noshoweq specify whether equations should be displayed.  showeq displays the equations; noshoweq suppresses the equations.
+
+        +-------+
+    ----+ Stars +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    stars([#1 "label1" [#2 "label2" [#3 "label3" [#4 "label4" [#5 "label5"]]]]] [, stars_opts]) manages the display of stars for indicating the significance of results.
+
+        The default is stars(.05 "*" .01 "**", attach(_r_b)), which will display one star (*) for p-values less than 0.05 and two stars (**) for p-values less than 0.01; the stars will be attached to the coefficients (_r_b).
+
+        stars_opts are attach(cstat), increasing, decreasing, pvname(string), delimiter(char), nformat(%fmt), prefix(string), suffix(string), and clear.
+
+            attach(cstat) specifies that the star labels be attached to coefficient statistic cstat.  The default is attach(_r_b).
+
+            increasing and decreasing control the order of p-values in the stars note.
+
+                increasing specifies that the stars note be composed with increasing p-values.  This is the default.
+
+                decreasing specifies that the stars note be composed with decreasing p-values.
+
+            pvname(string) specifies the name for the p-value in the stars note that is displayed with showstarsnote.  The default is pvname(p).
+
+            delimiter(char) changes the delimiter between labels in the stars note.  The default is cridelimiter(",").
+
+            nformat(%fmt) specifies the numeric format for the numbers displayed in the stars note.  The default is nformat(%9.0g).
+
+            prefix(string) adds a prefix to the stars note.
+
+            suffix(string) adds a suffix to the stars note.
+
+            clear removes existing star properties.
+
+    showstars and noshowstars specify whether star labels should be displayed.  showstars displays star labels; noshowstars suppresses the star labels.
+
+    showstarsnote and noshowstarsnote specify whether to display the note explaining what the star labels represent.  showstarsnote displays the note; noshowstarsnote suppresses the note.
+
+        showstarsnote is ignored if noshowstars is in effect.
+
+        +-------+
+    ----+ Title +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    title(string) adds the text string as a title to the table.
+
+    titlestyles(text_styles) changes the style for the table title.  text_styles are the following:
+
+        font([fontfamily][, size(# [unit]) color(color) variant(variant) [no]bold [no]italic [no]strikeout [no]underline]) specifies the font style.  These font style properties are applicable when exporting the table to Microsoft Word, Microsoft Excel,
+            PDF, HTML, and LaTeX files, unless otherwise specified.
+
+            fontfamily specifies a valid font family.  This font style property is applicable when publishing items from a collection to Microsoft Word, Microsoft Excel, PDF, and HTML files.
+
+            size(# [unit]) specifies the font size as a number optionally followed by units.  This font style property is applicable when publishing items from a collection to Microsoft Word, Microsoft Excel, PDF, and HTML files.
+
+            color(color) specifies the text color.
+
+            variant(variant) specifies the font variant and capitalization.
+
+            bold and nobold specify the font weight.  bold changes the font weight to bold; nobold changes the font weight back to normal.
+
+            italic and noitalic specify the font style.  italic changes the font style to italic; noitalic changes the font style back to normal.
+
+            strikeout and nostrikeout specify whether to add a strikeout mark to the title.  strikeout adds a strikeout mark to the title; nostrikeout changes the title back to normal.
+
+            underline and nounderline specify whether to underline the table title.  underline adds a single line under the title; nounderline removes the underline.
+
+            Only one of strikeout or underline is allowed when publishing to HTML files.
+
+        smcl(smcl) specifies how to render the table title for SMCL output.  This style property is applicable only when publishing items from a collection to a SMCL file.
+
+        latex(latex) specifies how to render the table title for LaTeX output.  This style property is applicable only when publishing items from a collection to a LaTeX file.
+
+        shading(sspec) sets the background color, foreground color, and fill pattern.  The background color is applicable when exporting the table to Microsoft Word, Microsoft Excel, PDF, HTML, and LaTeX files.  The foreground color and fill pattern are
+            applicable when exporting the table to Microsoft Word and Microsoft Excel.
+
+        +-------+
+    ----+ Notes +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    note(string) adds the text string as a note to the table.  note() may be specified multiple times to add multiple notes.  Each note is placed on a new line.
+
+    notestyles(text_styles) changes the style for the table notes.  text_styles are the following:
+
+        font([fontfamily][, size(# [unit]) color(color) variant(variant) [no]bold [no]italic [no]strikeout [no]underline]) specifies the font style.  These font style properties are applicable when exporting the table to Microsoft Word, Microsoft Excel,
+            PDF, HTML, and LaTeX files, unless otherwise specified.
+
+            fontfamily specifies a valid font family.  This font style property is applicable when publishing items from a collection to Microsoft Word, Microsoft Excel, PDF, and HTML files.
+
+            size(# [unit]) specifies the font size as a number optionally followed by units.  This font style property is applicable when publishing items from a collection to Microsoft Word, Microsoft Excel, PDF, and HTML files.
+
+            color(color) specifies the text color.
+
+            variant(variant) specifies the font variant and capitalization.
+
+            bold and nobold specify the font weight.  bold changes the font weight to bold; nobold changes the font weight back to normal.
+
+            italic and noitalic specify the font style.  italic changes the font style to italic; noitalic changes the font style back to normal.
+
+            strikeout and nostrikeout specify whether to add a strikeout mark to the notes.  strikeout adds a strikeout mark to the note; nostrikeout changes the note back to normal.
+
+            underline and nounderline specify whether to underline the table notes.  underline adds a single line under the notes; nounderline removes the underline.
+
+            Only one of strikeout or underline is allowed when publishing to HTML files.
+
+        smcl(smcl) specifies how to render the table notes for SMCL output.  This style property is applicable only when publishing items from a collection to a SMCL file.
+
+        latex(latex) specifies how to render the table notes for LaTeX output.  This style property is applicable only when publishing items from a collection to a LaTeX file.
+
+        shading(sspec) sets the background color, foreground color, and fill pattern.  The background color is applicable when exporting the table to Microsoft Word, Microsoft Excel, PDF, HTML, and LaTeX files.  The foreground color and fill pattern are
+            applicable when exporting the table to Microsoft Word and Microsoft Excel.
+
+        +--------+
+    ----+ Export +-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    export(filename.suffix[, export_opts])
+        exports the table to the specified file.  export_opts are the following:
+
+        as(fileformat) specifies the file format to which the table is to be exported.  This option is rarely specified because, by default, etable determines the format from the suffix of the file being created.
+
+        replace permits etable to overwrite an existing file.
+
+        noisily specifies that etable show the commands used to export the table to Microsoft Word, Microsoft Excel, and PDF files.  The putdocx, putexcel, or putpdf command used to export the table will be displayed.
+
+        dofile(filename[, replace]) specifies that etable save to filename the commands used to export the table to Microsoft Word, Microsoft Excel, and PDF files.
+
+            If filename already exists, it can be overwritten by specifying replace.  If filename is specified without an extension, .do is assumed.
+
+        append specifies that etable append the table to an existing file.
+
+            This option is applicable when you export the table to an HTML, a LaTeX, a SMCL, a txt, or a Markdown file.  When you export to HTML and LaTeX files, the append option implies the tableonly option.  Furthermore, when you export to HTML
+            files, if the target CSS file already exists, etable will also append to it.
+
+        tableonly specifies that only the table be exported to the specified HTML or LaTeX document.  By default, etable produces complete HTML and LaTeX documents.
+
+            When you export to an HTML file, if the cssfile() option is not specified, a CSS filename is constructed from filename, with the extension replaced with .css.
+
+        cssfile(cssfile) specifies that etable define the styles in cssfile instead of filename when you export to HTML.
+
+        prefix(prefix) specifies that etable use prefix to identify style classes when you export to HTML.
+
+        sheet(sheetname[, replace]) saves to the worksheet named sheetname.  For more information about this option, see [RPT] putexcel.
+
+        cell(cell) specifies an Excel upper-left cell as the starting position to publish the table.  The default is cell(A1).
+
+        modify permits putexcel set to modify an Excel file.  For more information about this option, see [RPT] putexcel.
+
+        noopen prevents putexcel from opening the Excel file in memory for modification.  It does not appear in the dialog box.  For more information about this option, see [RPT] putexcel.  This option is necessary only when you need to force etable to
+            produce do-files as it did when etable was first introduced in Stata 17.
+
+        +---------+
+    ----+ Options +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    varlabel and novarlabel specify whether variable labels should be displayed.  varlabel displays variable labels; novarlabel displays variable names.
+
+    fvlabel and nofvlabel specify whether value labels should be displayed.  fvlabel displays value labels; nofvlabel displays the values of the factor variable.
+
+    center and nocenter specify how item cells are horizontally aligned.  center specifies that item cells are centered; nocenter specifies that item cells are right-aligned.
+
+    label(filename[, replace]) specifies the filename containing the collection labels to use for your table.  Labels in filename will be loaded for the table, and default labels will be used for any labels not specified in filename.
+
+        If you prefer to replace the labels used by etable with those specified in filename, specify replace.  The etable labels will be discarded, and only the labels in filename will be applied.
+
+    style(filename[, override]) specifies the filename containing the collection styles to use for your table.  This might be a style you saved with collect style save or a predefined style shipped with Stata.  The etable collection styles will be
+        discarded, and only the collection styles in filename will be applied.  Note that the layout specification saved in filename will not be applied; etable will always use its predefined layout.
+
+        If you prefer the etable collection styles but also want to apply any styles in filename, specify override.  If there are conflicts between the default collection styles and those in filename, the ones in filename will take precedence.
+
+        The default is to use only the collection styles set in c(etable_style); see [TABLES] set etable_style.
+
+    The following option is available with etable but is not shown in the dialog box:
+
+    warn specifies that etable display warnings from collect.  By default, these warnings are suppressed.
+
+
+Examples: table of regression coefficients and standard errors
+
+    Setup
+        . webuse lbw
+        . regress bwt age lwt i.smoke i.ptl
+
+    Create a table with coefficients, standard errors, and the number of observations
+        . etable
+
+    Same as above, but display the standard errors to 2 decimal places
+        . etable, cstat(_r_b) cstat(_r_se, nformat(%7.2f))
+
+    Same as above, but also display stars for significance and a note indicating what the stars represent
+        . etable, cstat(_r_b) cstat(_r_se, nformat(%7.2f)) showstars showstarsnote
+
+    Same as above, but add the title "My title"
+        . etable, cstat(_r_b) cstat(_r_se, nformat(%7.2f)) showstars showstarsnote title("My title")
+
+
+Examples: table comparing regression results
+
+    Setup
+        . webuse lbw
+        . regress bwt age lwt
+        . estimates store model1
+        . regress bwt age lwt i.smoke i.ptl
+        . estimates store model2
+
+    Create a table with coefficients, standard errors, number of observations, and R-squared from estimates stored as model1 and model2
+        . etable, estimates(model1 model2) mstat(N) mstat(r2)
+
+    Same as above, but use the index of results for the column headers
+        . etable, estimates(model1 model2) mstat(N) mstat(r2) column(index)
+
+    Same as above, but also export the table to myreg.tex
+        . etable, estimates(model1 model2) mstat(N) mstat(r2) column(index) export(myreg.tex)
+
+
+Examples: table with results from margins
+
+    Setup
+        . webuse lbw
+        . logistic low age lwt i.smoke i.ht
+        . margins smoke ht
+
+    Create a table with the average predicted probabilities and confidence intervals estimated by margins
+        . etable, margins cstat(_r_b) cstat(_r_ci)
+
+    Same as above, but use a comma as the delimiter between confidence interval limits and hide the number of observations
+        . etable, margins cstat(_r_b) cstat(_r_ci, cidelimiter(,)) mstat(_hide)
+
+
+Appendix
+
+        Colors
+
+         color, bgcolor, fgcolor, bcolor
+        ----------------------------------------------------
+         aliceblue       ghostwhite            navajowhite
+         antiquewhite    gold                  navy
+         aqua            goldenrod             oldlace
+         aquamarine      gray                  olive
+         azure           green                 olivedrab
+         beige           greenyellow           orange
+         bisque          honeydew              orangered
+         black           hotpink               orchid
+         blanchedalmond  indianred             palegoldenrod
+         blue            indigo                palegreen
+         blueviolet      ivory                 paleturquoise
+         brown           khaki                 palevioletred
+         burlywood       lavender              papayawhip
+         cadetblue       lavenderblush         peachpuff
+         chartreuse      lawngreen             peru
+         chocolate       lemonchiffon          pink
+         coral           lightblue             plum
+         cornflowerblue  lightcoral            powderblue
+         cornsilk        lightcyan             purple
+         crimson         lightgoldenrodyellow  red
+         cyan            lightgray             rosybrown
+         darkblue        lightgreen            royalblue
+         darkcyan        lightpink             saddlebrown
+         darkgoldenrod   lightsalmon           salmon
+         darkgray        lightseagreen         sandybrown
+         darkgreen       lightskyblue          seagreen
+         darkkhaki       lightslategray        seashell
+         darkmagenta     lightsteelblue        sienna
+         darkolivegreen  lightyellow           silver
+         darkorange      lime                  skyblue
+         darkorchid      limegreen             slateblue
+         darkred         linen                 slategray
+         darksalmon      magenta               snow
+         darkseagreen    maroon                springgreen
+         darkslateblue   mediumaquamarine      steelblue
+         darkslategray   mediumblue            tan
+         darkturquoise   mediumorchid          teal
+         darkviolet      mediumpurple          thistle
+         deeppink        mediumseagreen        tomato
+         deepskyblue     mediumslateblue       turquoise
+         dimgray         mediumspringgreen     violet
+         dodgerblue      mediumturquoise       wheat
+         firebrick       mediumvioletred       white
+         floralwhite     midnightblue          whitesmoke
+         forestgreen     mintcream             yellow
+         fuchsia         mistyrose             yellowgreen
+         gainsboro       moccasin
+        ----------------------------------------------------
+
+
+        Underline patterns
+
+         upattern
+        -------------------------
+         none
+         single
+         words
+         double
+         thick
+         dotted
+         dottedHeavy
+         dash
+         dashedHeavy
+         dashLong
+         dashLongHeavy
+         dotDash
+         dashDotHeavy
+         dotDotDash
+         dashDotDotHeavy
+         wave
+         wavyHeavy
+         wavyDouble
+        -------------------------
+
+
+        Shading patterns
+
+         fpattern
+        -------------------------
+         nil
+         clear
+         solid
+         horzStripe
+         vertStripe
+         reverseDiagStripe
+         diagStripe
+         horzCross
+         diagCross
+         thinHorzStripe
+         thinVertStripe
+         thinReverseDiagStripe
+         thinDiagStripe
+         thinHorzCross
+         thinDiagCross
+         pct5
+         pct10
+         pct12
+         pct15
+         pct20
+         pct25
+         pct30
+         pct35
+         pct37
+         pct40
+         pct45
+         pct50
+         pct55
+         pct60
+         pct62
+         pct65
+         pct70
+         pct75
+         pct80
+         pct85
+         pct87
+         pct90
+         pct95
+        -------------------------

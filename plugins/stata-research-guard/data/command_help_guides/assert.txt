@@ -1,0 +1,65 @@
+[D] assert -- Verify truth of claim
+              (View complete PDF manual entry)
+
+
+Syntax
+
+        assert exp [if] [in] [, rc0 null fast]
+
+    by is allowed; see [D] by.
+
+
+Description
+
+    assert verifies that exp is true.  If it is true, the command produces no output.  If it is not true, assert informs you that the "assertion is false" and issues a return code of 9; see [U] 8 Error messages and return codes.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+    rc0 forces a return code of 0, even if the assertion is false.
+
+    null forces a return code of 8 on null assertions.  A null assertion occurs when an if condition excludes all observations from being checked by assert. By default, the return code is 0 for null assertions.
+
+    fast forces the command to exit at the first occurrence that exp evaluates to false.
+
+
+Examples
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . sysuse bplong
+        . describe
+
+    Verify that sex variable is coded as 0 or 1
+        . assert sex == 0 | sex == 1
+
+    Setup
+        . replace sex = 3 in 1
+
+    Verify that sex variable is coded as 0 or 1
+        . assert sex == 0 | sex == 1
+
+    List observation for which assertion is false
+        . list if sex != 0 & sex != 1
+
+    Verify that bp is in [100,200]
+        . assert bp >= 100 & bp <= 200
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse autotech, clear
+        . merge 1:1 make using https://www.stata-press.com/data/r18/autocost
+
+    Confirm _merge is always 3
+        . assert _merge == 3
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -1,0 +1,172 @@
+[D] collapse -- Make dataset of summary statistics
+                (View complete PDF manual entry)
+
+
+Syntax
+
+        collapse clist [if] [in] [weight] [, options]
+
+    where clist is either
+
+        [(stat)] varlist [ [(stat)] ... ]
+
+        [(stat)] target_var=varname [target_var=varname ...] [ [(stat)] ...]
+
+    or any combination of the varlist or target_var forms, and stat is one of
+
+        mean         means; the default
+        median       medians
+        p1           1st percentile
+        p2           2nd percentile
+        ...          3rd-49th percentiles
+        p50          50th percentile (same as median)
+        ...          51st-97th percentiles
+        p98          98th percentile
+        p99          99th percentile
+        sd           standard deviations
+        semean       standard error of the mean (sd/sqrt(n))
+        sebinomial   standard error of the mean, binomial (sqrt(p(1-p)/n))
+        sepoisson    standard error of the mean, Poisson (sqrt(mean/n))
+        sum          sums
+        rawsum       sums, ignoring optionally specified weight except observations with a weight of zero are excluded
+        count        number of nonmissing observations
+        percent      percentage of nonmissing observations in the by group (100 x (# nonmissing in by group)/(total # nonmissing))
+        max          maximums
+        min          minimums
+        iqr          interquartile range
+        first        first value
+        last         last value
+        firstnm      first nonmissing value
+        lastnm       last nonmissing value
+
+    options          Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Options
+      by(varlist)    groups over which stat is to be calculated
+      cw             casewise deletion instead of all possible observations
+
+      fast           do not restore the original dataset should the user press Break; programmer's command
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    varlist and varname in clist may contain time-series operators; see tsvarlist.
+    aweights, fweights, iweights, and pweights are allowed; see weight, and see Weights below.  pweights may not be used with sd, semean, sebinomial, or sepoisson.  iweights may not be used with semean, sebinomial, or sepoisson.  aweights may not be
+      used with sebinomial or sepoisson.
+    fast does not appear in the dialog box.
+
+
+Menu
+
+    Data > Create or change data > Other variable-transformation commands > Make dataset of means, medians, etc.
+
+
+Description
+
+    collapse converts the dataset in memory into a dataset of means, sums, medians, etc.  clist must refer to numeric variables exclusively.
+
+    Note: See [D] contract if you want to collapse to a dataset of frequencies.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+        +---------+
+    ----+ Options +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    by(varlist) specifies the groups over which the means, etc., are to be calculated.  If this option is not specified, the resulting dataset will contain 1 observation.  If it is specified, varlist may refer to either string or numeric variables.
+
+    cw specifies casewise deletion.  If cw is not specified, all possible observations are used for each calculated statistic.
+
+    The following option is available with collapse but is not shown in the dialog box:
+
+    fast specifies that collapse not restore the original dataset should the user press Break.  fast is intended for use by programmers.
+
+
+Weights
+
+    collapse allows all four weight types; the default is aweights.  Weight normalization impacts only the sum, count, sd, semean, and sebinomial statistics.
+
+    Let j index observations and i index by-groups.  Here are the definitions for count and sum with weights:
+
+     count:                         
+        unweighted:                 N_i, the number of observations in group i
+        aweight:                    N_i, the number of observations in group i
+        fweight, iweight, pweight:  sum(w_j), the sum of the weights over observations in group i
+     sum:                           
+        unweighted:                 sum(x_j), the sum of x_j over observations in group i
+        aweight:                    sum(v_j*x_j) over observations in group i; v_j = weights normalized to sum to N_i
+        fweight, iweight, pweight:  sum(w_j*x_j) over observations in group i
+
+    When the by() option is not specified, the entire dataset is treated as one group.
+
+    The sd statistic with weights returns the bias-corrected standard deviation, which is based on the factor sqrt(N_i/(N_i-1)), where N_i is the number of observations.  Statistics sd, semean, sebinomial, and sepoisson are not allowed with pweighted
+    data.  Otherwise, the statistic is changed by the weights through the computation of the weighted count, as outlined above.
+
+    For instance, consider a case in which there are 25 observations in the dataset and a weighting variable that sums to 57.  In the unweighted case, the weight is not specified, and the count is 25.  In the analytically weighted case, the count is
+    still 25; the scale of the weight is irrelevant.  In the frequency-weighted case, however, the count is 57, the sum of the weights.
+
+    The rawsum statistic with aweights ignores the weight, with one exception:  observations with zero weight will not be included in the sum.
+
+
+Examples
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse college
+        . describe
+        . list
+
+    Create dataset containing the 25th percentile of gpa for each year
+        . collapse (p25) gpa [fw=number], by(year)
+
+    List the result
+        . list
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse college, clear
+
+    Create dataset containing the mean and median of gpa and hour for each year, and store median of gpa and hour in medgpa and medhour, respectively
+        . collapse (mean) gpa hour (median) medgpa=gpa medhour=hour [fw=number], by(year)
+
+    List the result
+        . list
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse college, clear
+
+    Create dataset containing the count of gpa and hour and the minimums of gpa and hour, and store the minimums in mingpa and minhour, respectively
+        . collapse (count) gpa hour (min) mingpa=gpa minhour=hour [fw=number], by(year)
+
+    List the result
+        . list
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse college, clear
+        . replace gpa = . in 3
+
+    Create dataset containing the percentage of observations in each year where the totals are weighted counts of nonmissing gpa and hours
+        . collapse (percent) gpa hour [fw=number], by(year)
+
+    List the result
+        . list
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse college, clear
+        . replace gpa = . in 2/4
+
+    Create dataset containing the mean of gpa and hour for each year, but ignore all observations that have missing values when calculating the means
+        . collapse (mean) gpa hour [fw=number], by(year) cw
+
+    List the result
+        . list
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

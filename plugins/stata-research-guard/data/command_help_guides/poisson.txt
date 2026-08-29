@@ -1,0 +1,186 @@
+[R] poisson -- Poisson regression
+               (View complete PDF manual entry)
+
+
+Syntax
+
+        poisson depvar [indepvars] [if] [in] [weight] [, options]
+
+    options                       Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Model
+      noconstant                  suppress constant term
+      exposure(varname_e)         include ln(varname_e) in model with coefficient constrained to 1
+      offset(varname_o)           include varname_o in model with coefficient constrained to 1
+      constraints(constraints)    apply specified linear constraints
+
+    SE/Robust
+      vce(vcetype)                vcetype may be oim, robust, cluster clustvar, opg, bootstrap, or jackknife
+
+    Reporting
+      level(#)                    set confidence level; default is level(95)
+      irr                         report incidence-rate ratios
+      nocnsreport                 do not display constraints
+      display_options             control columns and column formats, row spacing, line width, display of omitted variables and base and empty cells, and factor-variable labeling
+
+
+    Maximization
+      maximize_options            control the maximization process; seldom used
+
+      collinear                   keep collinear variables
+      coeflegend                  display legend instead of statistics
+
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    indepvars may contain factor variables; see fvvarlist.
+
+    depvar, indepvars, varname_e, and varname_o may contain time-series operators; see tsvarlist.
+    bayes, bootstrap, by, fmm, fp, jackknife, mfp, mi estimate, nestreg, rolling, statsby, stepwise, and svy are allowed; see prefix.  For more details, see [BAYES] bayes: poisson and [FMM] fmm: poisson.
+    vce(bootstrap) and vce(jackknife) are not allowed with the mi estimate prefix.
+
+    Weights are not allowed with the bootstrap prefix.
+    vce() and weights are not allowed with the svy prefix.
+    fweights, iweights, and pweights are allowed; see weight.
+    collinear and coeflegend do not appear in the dialog box.
+    See [R] poisson postestimation for features available after estimation.
+
+
+Menu
+
+    Statistics > Count outcomes > Poisson regression
+
+
+Description
+
+    poisson fits a Poisson regression of depvar on indepvars, where depvar is a nonnegative count variable.
+
+    If you have panel data, see [XT] xtpoisson.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+        Methods and formulas
+
+    The above sections are not included in this help file.
+
+
+Options
+
+        +-------+
+    ----+ Model +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    noconstant, exposure(varname_e), offset(varname_o), constraints(constraints); see [R] Estimation options.
+
+        +-----------+
+    ----+ SE/Robust +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    vce(vcetype) specifies the type of standard error reported, which includes types that are derived from asymptotic theory (oim, opg), that are robust to some kinds of misspecification (robust), that allow for intragroup correlation (cluster
+        clustvar), and that use bootstrap or jackknife methods (bootstrap, jackknife); see [R] vce_option.
+
+
+        +-----------+
+    ----+ Reporting +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    level(#); see [R] Estimation options.
+
+    irr reports estimated coefficients transformed to incidence-rate ratios, that is, exp(b) rather than b.  Standard errors and confidence intervals are similarly transformed.  This option affects how results are displayed, not how they are estimated
+        or stored.  irr may be specified at estimation or when replaying previously estimated results.
+
+    nocnsreport; see [R] Estimation options.
+
+    display_options:  noci, nopvalues, noomitted, vsquish, noemptycells, baselevels, allbaselevels, nofvlabel, fvwrap(#), fvwrapon(style), cformat(%fmt), pformat(%fmt), sformat(%fmt), and nolstretch; see [R] Estimation options.
+
+
+        +--------------+
+    ----+ Maximization +-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    maximize_options:  difficult, technique(algorithm_spec), iterate(#), [no]log, trace, gradient, showstep, hessian, showtolerance, tolerance(#), ltolerance(#), nrtolerance(#), nonrtolerance, and from(init_specs); see [R] Maximize.  These options are
+        seldom used.
+
+        Setting the optimization type to technique(bhhh) resets the default vcetype to vce(opg).
+
+    The following options are available with poisson but are not shown in the dialog box:
+
+    collinear, coeflegend; see [R] Estimation options.
+
+
+Examples
+
+    Setup
+        . webuse dollhill3
+
+    Fit a Poisson regression
+        . poisson deaths smokes i.agecat, exposure(pyears)
+
+    Obtain incidence-rate ratios
+        . poisson deaths smokes i.agecat, exposure(pyears) irr
+
+    Redisplay results, but with 99% confidence intervals
+        . poisson, level(99) irr
+
+
+Stored results
+
+    poisson stores the following in e():
+
+    Scalars           
+      e(N)                   number of observations
+      e(k)                   number of parameters
+      e(k_eq)                number of equations in e(b)
+      e(k_eq_model)          number of equations in overall model test
+      e(k_dv)                number of dependent variables
+      e(df_m)                model degrees of freedom
+      e(r2_p)                pseudo-R-squared
+      e(ll)                  log likelihood
+      e(ll_0)                log likelihood, constant-only model
+      e(N_clust)             number of clusters
+      e(chi2)                chi-squared
+      e(p)                   p-value for model test
+      e(rank)                rank of e(V)
+      e(ic)                  number of iterations
+      e(rc)                  return code
+      e(converged)           1 if converged, 0 otherwise
+
+    Macros            
+      e(cmd)                 poisson
+      e(cmdline)             command as typed
+      e(depvar)              name of dependent variable
+      e(wtype)               weight type
+      e(wexp)                weight expression
+      e(title)               title in estimation output
+      e(clustvar)            name of cluster variable
+      e(offset)              linear offset variable
+      e(chi2type)            Wald or LR; type of model chi-squared test
+      e(vce)                 vcetype specified in vce()
+      e(vcetype)             title used to label Std. err.
+      e(opt)                 type of optimization
+      e(which)               max or min; whether optimizer is to perform maximization or minimization
+      e(ml_method)           type of ml method
+      e(user)                name of likelihood-evaluator program
+      e(technique)           maximization technique
+      e(properties)          b V
+      e(estat_cmd)           program used to implement estat
+      e(predict)             program used to implement predict
+      e(asbalanced)          factor variables fvset as asbalanced
+      e(asobserved)          factor variables fvset as asobserved
+
+    Matrices          
+      e(b)                   coefficient vector
+      e(Cns)                 constraints matrix
+      e(ilog)                iteration log (up to 20 iterations)
+      e(gradient)            gradient vector
+      e(V)                   variance-covariance matrix of the estimators
+      e(V_modelbased)        model-based variance
+
+    Functions         
+      e(sample)              marks estimation sample
+
+    In addition to the above, the following is stored in r():
+
+    Matrices          
+      r(table)               matrix containing the coefficients with their standard errors, test statistics, p-values, and confidence intervals
+
+    Note that results stored in r() are updated when the command is replayed and will be replaced when any r-class command is run after the estimation command.

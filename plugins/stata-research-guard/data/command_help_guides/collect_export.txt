@@ -1,0 +1,264 @@
+[TABLES] collect export -- Export table from a collection
+                           (View complete PDF manual entry)
+
+
+Syntax
+
+        collect export filename.suffix [, export_options document_options]
+
+
+    export_options               Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    name(cname)                  export collection cname
+    as(fileformat)               specify document type
+    replace                      overwrite existing file
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    By default, collect export will try to determine the document type from suffix using the following table:
+
+    suffix     option              File type
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    docx      as(docx)      Microsoft Word
+    html      as(html)      HTML 5 with CSS
+    pdf       as(pdf)       PDF (Portable Document Format)
+    xlsx      as(xlsx)      Microsoft Excel 2007/2010 or newer
+    xls       as(xls)       Microsoft Excel 1997/2003
+    tex       as(latex)     LaTeX
+    smcl      as(smcl)      SMCL (Stata Markup and Control Language)
+    txt       as(txt)       plain text
+    markdown  as(markdown)  Markdown
+    md        as(markdown)  Markdown
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    document_options             Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    docx_options                 when exporting to .docx files
+    html_options                 when exporting to .html files
+    pdf_options                  when exporting to .pdf files
+    excel_options                when exporting to .xls and .xlsx files
+    tex_options                  when exporting to .tex files
+    smcl_option                  when exporting to .smcl files
+    txt_option                   when exporting to .txt files
+    md_option                    when exporting to .markdown and .md files
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    docx_options                 Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    noisily                      show the putdocx commands used to export to the .docx file
+    dofile(filename[, replace])  save the putdocx commands used for exporting to the named do-file
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    html_options                 Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    prefix(prefix)               use prefix to identify style classes
+    cssfile(cssfile)             define the styles in cssfile instead of filename
+    tableonly                    export only the table to the specified file
+    append                       append to an existing file
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    pdf_options                  Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    noisily                      show the putpdf commands used to export to the PDF file
+    dofile(filename[, replace])  save the putpdf commands used for exporting to the named do-file
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    excel_options                Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    noisily                      show the putexcel commands used to export to the Excel file
+    dofile(filename[, replace])  save the putexcel commands used for exporting to the named do-file
+    cell(cell)                   specify the Excel upper-left cell as the starting position to export the table; the default is cell(A1)
+    modify                       modify Excel file
+    sheet(sheetname[, replace])  specify the worksheet to use; the default sheet name is Sheet1
+    noopen                       do not open Excel file in memory
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    noopen does not appear in the dialog box.
+
+    tex_options                  Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    tableonly                    export only the table to the specified file
+    append                       append to an existing file
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    smcl_option                  Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    append                       append to an existing file
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    txt_option                   Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    append                       append to an existing file
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    md_option                    Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    append                       append to an existing file
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Menu
+
+    Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+
+Description
+
+    collect export exports a table from a collection to a specified document type.
+
+    You can also include a table in a report created by putdocx, putpdf, or putexcel; see [RPT] putdocx collect, [RPT] putpdf collect, and [RPT] putexcel.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+    Options are presented under the following headings:
+
+        export_options
+        docx_options
+        html_options
+        pdf_options
+        excel_options
+        tex_options
+        smcl_option
+        txt_option
+        md_option
+
+
+export_options
+
+    name(cname) specifies a collection to export instead of the current collection.
+
+    as(fileformat) specifies the file format to which the collection is to be exported.  This option is rarely specified because, by default, collect export determines the format from the suffix of the file being created.
+
+    replace permits collect export to overwrite an existing file.
+
+
+docx_options
+
+    noisily specifies that collect export show the putdocx commands used to export to the .docx file.
+
+    dofile(filename[, replace]) specifies that collect export save to filename the putdocx commands used to export to the .docx file.  If filename already exists, it can be overwritten by specifying replace.  If filename is specified without an
+        extension, .do is assumed.
+
+
+html_options
+
+    prefix(prefix) specifies that collect export use prefix to identify style classes for the exported HTML table.
+
+    cssfile(cssfile) specifies that collect export define the styles in cssfile instead of filename.
+
+    tableonly specifies that only the table be exported to the specified file. With this option, the produced file may be included in other HTML documents.  By default, collect export produces a complete HTML document.
+
+        If option cssfile() is not specified, a CSS filename is constructed from filename, with the extension replaced with .css.
+
+    append specifies that collect export append the table to an existing file.
+
+        This option implies option tableonly.
+
+        If the target CSS file already exists, collect export will also append to it.
+
+
+pdf_options
+
+    noisily specifies that collect export show the putpdf commands used to export to the PDF file.
+
+    dofile(filename[, replace]) specifies that collect export save to filename the putpdf commands used to export to the PDF file.  If filename already exists, it can be overwritten by specifying replace. If filename is specified without an extension,
+        .do is assumed.
+
+
+excel_options
+
+    noisily specifies that collect export show the putexcel commands used to export to the .xls or .xlsx file.
+
+    dofile(filename[, replace]) specifies that collect export save to filename the putexcel commands used to export to the .xls or .xlsx file.  If filename already exists, it can be overwritten by specifying replace.  If filename is specified without an
+        extension, .do is assumed.
+
+    cell(cell) specifies an Excel upper-left cell as the starting position to publish the table. The default is cell(A1).
+
+    modify permits putexcel set to modify an Excel file.  For more information about this option, see [RPT] putexcel.
+
+    sheet(sheetname [, replace]) saves to the worksheet named sheetname. For more information about this option, see [RPT] putexcel.
+
+    noopen prevents collect export from using option open in the call to putexcel set.
+
+        By default, collect export uses the putexcel set option open to open the Excel file in memory for modification.  This tends to improve the speed of the export if many cells or style edits are in the collection.  For more information about the
+        open option, see [RPT] putexcel.
+
+        noopen is necessary only when you need to force collect export to produce do-files as it did when collect export was first introduced in Stata 17.
+
+
+tex_options
+
+    tableonly specifies that only the table be exported to the specified file.  With this option, the produced file may be included in other LaTeX documents via the \input or \include macro.
+
+    append specifies that collect export append the table to an existing file.
+
+        This option implies option tableonly.
+
+
+smcl_option
+
+    append specifies that collect export append the table to an existing file.
+
+
+txt_option
+
+    append specifies that collect export append the table to an existing file.
+
+
+md_option
+
+    append specifies that collect export append the table to an existing file.
+
+
+Examples
+
+    Setup
+        . collect clear
+        . sysuse auto
+        . collect: regress mpg price i.foreign
+        . collect: regress mpg price i.foreign##c.trunk
+        . collect layout (colname) (cmdset#result[_r_b _r_se])
+
+    Export a table from the current collection to a Microsoft Word file
+        . collect export tworegs.docx
+
+    Export the table to a LATEX file
+        . collect export tworegs.tex
+
+    Export the table to a PDF file
+        . collect export tworegs.pdf
+
+    Export the table to an HTML file
+        . collect export tworegs.html
+
+    Export the table to a Microsoft Excel file
+        . collect export tworegs.xls
+
+    Export the table to a Markdown file
+        . collect export tworegs.md
+
+    Export the table to a plain text file
+        . collect export tworegs.txt
+
+    Export the table to a SMCL file
+        . collect export tworegs.smcl
+
+
+Stored results
+
+    collect export stores the following in s():
+
+    Macros            
+      s(filename)            name of the file
+      s(collection)          name of collection
+      s(noisily)             1 if option noisily specified, 0 otherwise
+      s(dofile)              name of the new do-file
+      s(cssfile)             name of the new css-file

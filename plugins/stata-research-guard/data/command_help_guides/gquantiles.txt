@@ -1,0 +1,232 @@
+Title
+
+    gquantiles -- Efficiently compute percentiles (quantiles), categories, and frequencies.
+
+    Important: Please run gtools, upgrade to update gtools to the latest stable version.
+
+Syntax
+
+    gquantiles can function as a fast, by-able, alternative to xtile, pctile, and _pctile, though it offers more functionality that those Stata commands (e.g. this function accepts by(varlist) with xtile[()] and pctile[()], it can compute arbitrary
+    quantiles and an arbitrary number in a reasonable amount of time, it computes frequencies, and more).
+
+    Create variable containing percentiles (equivalent to pctile)
+
+        gquantiles newvar = exp [if] [in] [weight] , pctile [nquantiles(int) genp(newvarname) altdef]
+
+    Create variable containing quantile categories (equivalent to xtile)
+
+        gquantiles newvar = exp [if] [in] [weight] , xtile [nquantiles(int) cutpoints(varname) altdef]
+
+        fasterxtile newvar = exp [if] [in] [weight] , [nquantiles(int) cutpoints(varname) altdef]
+
+    Compute percentiles and store them in r() (equivalent to _pctile)
+
+        gquantiles exp [if] [in] [weight] , _pctile [nquantiles(int) percentiles(numlist) altdef]
+
+    The full syntax, however, is
+
+        gquantiles [newvar =] exp [if] [in] [weight] , {pctile|xtile|_pctile} quantiles_method [gquantiles_options]
+
+    options                 Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Quantiles method (choose only one)
+
+      nquantiles(#)         number of quantiles; default is nquantiles(2)
+      percentiles(numlist)  calculate percentiles corresponding to the specified percentages
+      cutpoints(varname)    use values of varname as cutpoints
+      cutoffs(numlist)      use values of numlist as cutpoints
+      cutquantiles(numlist) calculate percentiles corresponding to the values of varname
+      quantmatrix(matrix)   use values of matrix as quantiles
+      cutmatrix(matrix)     use values of matrix as cutpoints
+
+    options             Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Options
+
+      genp(newvarp)     generate newvarp variable containing percentages
+      altdef            use alternative formula for calculating percentiles
+
+    Extras
+      by(varlist)       Compute quantiles by groups (pctile and xtile only).
+      groupid(varname)  Store group ID in varname.
+      _pctile           (Not with by.) Do the computation in the style of _pctile
+      pctile[(newvar)]  Store percentiles in newvar. If newvar is not specified, then this indicates to do the computations in the style of pctile.
+      xtile[(newvar)]   Store quantile categories in newvar. If newvar is not specified, then this indicates to do the computations in the style of xtile.
+      binfreq[(newvar)] Store the frequency counts of the source variable in the quantile categories in newvar. If newvar is not specified (not with by), this is stored in r(quantiles_bincount) or r(cutoffs_bincount)
+
+    Switches
+      method(#)         (Not with by.) Algorithm to use to compute quantiles.
+      dedup             Drop duplicate values of variables specified via cutpoints or cutquantiles
+      cutifin           Exclude values outside [if] [in] of variables specified via cutpoints or cutquantiles
+      cutby             Use cutquantiles() or cutpoints() by group.
+      returnlimit(#)    Maximum return values that can be set via _pctile
+      strict            Without by, exit with error when the number of quantiles requested exceeds the number non-missing. With by, skip groups where this happens.
+      minmax            (Not with by.) Additionally store the min and max in r(min) and r(max)
+      replace           Replace targets, should they exist.
+
+    Gtools
+      compress          Try to compress strL to str#.
+      forcestrl         Skip binary variable check and force gtools to read strL variables.
+      verbose           Print info during function execution.
+      bench[({int})]    Benchmark various steps of the plugin. Optionally specify depth level.
+      hashmethod(str)   Hash method (default, biject, or spooky). Intended for debugging.
+      oncollision(str)  Collision handling (fallback or error). Intended for debugging.
+
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    aweights, fweights, and pweights are allowed (see [U] 11.1.6 weight), except with option altdef, in which case no weights are allowed.
+
+Description
+
+    gquantiles replaces xtile, pctile, and _pctile.  gquantiles offers several additional options above the three built-in Stata commands: an arbitrary number of quantiles, arbitrary cutoffs, frequency counts of the xtile categories, computing pctile
+    and xtile at the same time, and so on.
+
+    gquantiles is also faster than the user-written fastxtile, so an alias, fasterxtile, is provided.
+
+    gquantiles is part of the [R] gtools project.
+
+Options
+
+        +------------------+
+    ----+ Quantiles method +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    nquantiles(#) specifies the number of quantiles.  It computes percentiles corresponding to percentages 100*k/m for k=1, 2, ..., m-1, where m=#.  For example, nquantiles(10) requests that the 10th, 20th, ..., 90th percentiles be computed.  The
+        default is nquantiles(2); that is, the median is computed.
+
+    percentiles(numlist) requests percentiles corresponding to the specified percentages.  For example, percentiles(10(20)90) requests that the 10th, 30th, 50th, 70th, and 90th percentiles be computed. With _pctile these are placed into r(r1), r(r2),
+        r(r3), r(r4), and r(r5) up to 1,001. With xtile these are the quantiles that define the categories and with pctile these are the quantiles to compute.
+
+    cutpoints(varname) requests that the values of varname be used to define the categories, rather than quantiles. This is natural to use with xtile. With pctile and _pctile this is redundant unless you also request binfreq[(newvar)].  By default, all
+        values of varname are used, regardless of any if or in restriction. You can specify cutifin to obey the restrictions and dedup to exclude duplicates.
+
+    cutoffs(numlist) Use values of numlist as cutpoints.
+
+    cutquantiles(numlist) Calculate percentiles corresponding to the values of varname. This is an alternative to percentiles().
+
+    quantmatrix(matrix) Requests percentiles (quantiles) corresponding to the entries of the matrix. This must be a column vector or a row vector. The behavior of gquantiles using this option is otherwise equivalent to its behavior when passing
+        quantiles().
+
+    cutmatrix(matrix) Requests cutoffs corresponding to the entries of the matrix. This must be a column vector or a row vector. The behavior of gquantiles using this option is otherwise equivalent to its behavior when passing cutoffs().
+
+        +------------------+
+    ----+ Standard Options +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    genp(newvar) specifies a new variable to be generated containing the percentages corresponding to the percentiles.
+
+    altdef uses an alternative formula for calculating percentiles (not with weights).  The default method is to invert the empirical distribution function by using averages, where the function is flat (the default is the same method used by summarize;
+        see [R] summarize).  The alternative formula uses an interpolation method.  See Methods and formulas in [D] pctile.
+
+        +--------+
+    ----+ Extras +-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    by(varlist) Compute quantiles by group. pctile[()] requires option strict, which has the effect of ignoring groups where the number of quantiles requested is larger than the number of non-missing observations within the group. by() is most useful
+        with option groupid(varname).
+
+    groupid(varname) Store group ID in varname. This is equivalent to gegen, group
+
+    _pctile (Not with by.) Do the computation in the style of _pctile. It stores return values in r(1), r(2), and so on, as wll as a matrix called r(quantiles_used) or r(cutoffs_used) in case quantiles or cutoffs are requested. This can be combined with
+        other options listed in this section.
+
+    pctile[(newvar)] Store percentiles in newvar. If newvar is not specified, then this indicates to do the computations in the style of pctile.  This can be combined with other options listed in this section.
+
+    xtile[(newvar)] Store quantile categories in newvar. If newvar is not specified, then this indicates to do the computations in the style of xtile. This can be combined with other options listed in this section.
+
+    binfreq[(newvar)] Store the frequency counts of the source variable in the quantile categories in newvar. When weights are specified, this stores the sum of the weights within that category. If newvar is not specified, this is stored in
+        r(quantiles_bincount) or r(cutoffs_bincount). This can be combined with other options listed in this section.
+
+        +----------+
+    ----+ Switches +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    method(#) (Not with by.) Algorithm to use to compute quantiles.  If you have many duplicates or are computing many quantiles, you should specify {opt method(1)}. If you have few duplicates or are computing few quantiles you should specify method(2).
+        By default, gquantiles tries to guess which method will run faster.
+
+    dedup Drop duplicate values of variables specified via cutpoints() or cutquantiles(). For instance, if the user asks for quantiles 1, 90, 10, 10, and 1, then quantiles 1, 1, 10, 10, and 90 are used. With this option only 1, 10, and 90 would be used.
+
+    cutifin Exclude values outside [if] [in] of variables specified via cutpoints() or cutquantiles(). The restriction that all values are used is artificial (the option was originally written to allow xtile to use pctile internally).
+
+    cutby By default all values of the variable requested via cutpoints() or cutquantiles() are used. With this option, each group uses a different set of quantiles or cutoffs (note this automatically sets option cutifin)
+
+    returnlimit(#) Maximum return values that can be set via _pctile.  Since gquantiles can compute a large number of quantiles very quickly, the function allows the user to request an arbitrary number. But setting 1,000s of return values is
+        computationally infeasible. Consider pctile in this case.
+
+    strict Without by(), exit with error if the number of quantiles is greater than the number of non-missing observations plus one.  With by(), skip groups where this happens. This restriction for pctile is sensible, but for xtile it is artificial. It
+        exists because it uses pctile internally, but gquantiles does not have this issue.
+
+    minmax (Not with by.) Additionally store the min and max in r(min) and r(max)
+
+    replace Replace targets, should they exist.
+
+        +--------+
+    ----+ Gtools +-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    compress Try to compress strL to str#. The Stata Plugin Interface has only limited support for strL variables. In Stata 13 and earlier (version 2.0) there is no support, and in Stata 14 and later (version 3.0) there is read-only support. The user
+        can try to compress strL variables using this option.
+
+    forcestrl Skip binary variable check and force gtools to read strL variables (14 and above only). Gtools gives incorrect results when there is binary data in strL variables.  This option was included because on some windows systems Stata detects
+        binary data even when there is none. Only use this option if you are sure you do not have binary data in your strL variables.
+
+    verbose prints some useful debugging info to the console.
+
+    benchmark and benchmarklevel(int) print how long in seconds various parts of the program take to execute. The user can also pass bench(int) for finer control. bench(1) is the same as benchmark but bench(2) and bench(3) additionally print benchmarks
+        for internal plugin steps.
+
+    hashmethod(str) Hash method to use. default automagically chooses the algorithm. biject tries to biject the inputs into the natural numbers. spooky hashes the data and then uses the hash.
+
+    oncollision(str) How to handle collisions. A collision should never happen but just in case it does gtools will try to use native commands.  The user can specify it throw an error instead by passing oncollision(error).
+
+Examples
+
+    See the online documentation for examples.
+
+Stored results
+
+    gquantiles stores the following in r():
+
+    Scalars        
+      r(N)                  Number of observations
+      r(min)                Min (only if minmax was requested)
+      r(max)                Max (only if minmax was requested)
+      r(nqused)             Number of quantiles/cutoffs
+      r(method_ratio)       Rule used to decide between methods 1 and 2
+
+      r(nquantiles)         Number of quantiles (only w nquantiles())
+      r(ncutpoints)         Number of cutpoints (only w cutpoints())
+      r(nquantiles_used)    Number of quantiles (only w quantiles())
+      r(nquantpoints)       Number of quantiles (only w cutquantiles())
+      r(ncutoffs_used)      Number of cutoffs (only w cutoffs())
+
+      r(r#)                 The #th quantile requested (only w _pctile)
+
+    Macros    
+      r(quantiles)          Quantiles used (only w percentiles() or quantiles())
+      r(cutoffs)            Cutoffs used (only w option cutoffs())
+
+    Matrices       
+      r(quantiles_used)     With _pctile or with quantiles()
+      r(quantiles_binfreq)  With option binfreq and any quantiles requested
+
+      r(cutoffs_used)       With _pctile or with cutoffs()
+      r(cutoffs_binfreq)    With option binfreq and any cutoffs requested
+
+
+Author
+
+    Mauricio Caceres Bravo
+    mauricio.caceres.bravo@gmail.com
+    mcaceresb.github.io
+
+Website
+
+    gquantiles is maintained as part of [R] gtools at github.com/mcaceresb/stata-gtools
+
+Acknowledgment
+
+    This help file was based on StataCorp's own help file for pctile
+
+    This project was largely inspired by Sergio Correia's ftools:  https://github.com/sergiocorreia/ftools.
+
+    The OSX version of gtools was implemented with invaluable help from @fbelotti; see https://github.com/mcaceresb/stata-gtools/issues/11.
+
+Also see
+
+    help for pctile, gtools; fastxtile (if installed), ftools (if installed)

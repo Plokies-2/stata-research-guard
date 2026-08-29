@@ -1,0 +1,225 @@
+[R] predict -- Obtain predictions, residuals, etc., after estimation
+               (View complete PDF manual entry)
+
+
+Syntax
+
+    After single-equation (SE) models
+
+        predict [type] newvar [if] [in] [, single_options]
+
+
+    After multiple-equation (ME) models
+
+        predict [type] newvar [if] [in] [, multiple_options]
+
+        predict [type] stub* [if] [in], scores
+
+
+
+    single_options           Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      xb                     calculate linear prediction
+      stdp                   calculate standard error of the prediction
+      score                  calculate first derivative of the log likelihood with respect to xb
+
+    Options
+      nooffset               ignore any offset() or exposure() variable
+      other_options          command-specific options
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    multiple_options         Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      equation(eqno[,eqno])  specify equations
+      xb                     calculate linear prediction
+      stdp                   calculate standard error of the prediction
+      stddp                  calculate the difference in linear predictions
+
+    Options
+      nooffset               ignore any offset() or exposure() variable
+      other_options          command-specific options
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Menu for predict
+
+    Statistics > Postestimation
+
+
+
+Description
+
+    predict calculates predictions, residuals, influence statistics, and the like after estimation.  Exactly what predict can do is determined by the previous estimation command; command-specific options are documented with each estimation command.
+    Regardless of command-specific options, the actions of predict share certain similarities across estimation commands:
+
+        1.  predict newvar creates newvar containing "predicted values" -- numbers related to the E(y|x).  For instance, after linear regression, predict newvar creates xb and, after probit, creates the probability F(xb).
+
+        2.  predict newvar, xb creates newvar containing xb.  This may be the same result as option 1 (for example, linear regression) or different (for example, probit), but regardless, option xb is allowed.
+
+        3.  predict newvar, stdp creates newvar containing the standard error of the linear prediction xb.
+
+        4.  predict newvar, other_options may create newvar containing other useful quantities; see help or the reference manual entry for the particular estimation command to find out about other available options.
+
+        5.  nooffset added to any of the above commands requests that the calculation ignore any offset or exposure variable specified by including the offset(varname_o) or exposure(varname_e) option when you fit the model.
+
+    predict can be used to make in-sample or out-of-sample predictions:
+
+        6.  predict calculates the requested statistic for all possible observations, whether they were used in fitting the model or not.  predict does this for the standard options 1 through 3 and generally does this for estimator-specific options 4.
+
+        7.  predict newvar if e(sample), ...  restricts the prediction to the estimation subsample.
+
+        8.  Some statistics make sense only with respect to the estimation subsample.  In such cases, the calculation is automatically restricted to the estimation subsample, and the documentation for the specific option states this.  Even so, you can
+            still specify if e(sample) if you are uncertain.
+
+        9.  predict can make out-of-sample predictions even using other datasets.  In particular, you can
+
+            . use ds1
+             (fit a model)
+            . use two              /* another dataset */
+            . predict yhat, ...    /* fill in the predictions */
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+        Methods and formulas
+
+    The above sections are not included in this help file.
+
+
+Options
+
+        +------+
+    ----+ Main +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    xb calculates the linear prediction from the fitted model.  That is, all models can be thought of as estimating a set of parameters b1, b2, ..., bk, and the linear prediction is y = xb.  For linear regression, the values y are called the predicted
+        values or, for out-of-sample predictions, the forecast.  For logit and probit, for example, y is called the logit or probit index.
+
+        x1, x2, ..., xk are obtained from the data currently in memory and do not necessarily correspond to the data on the independent variables used to fit the model (obtaining the b1, b2, ..., bk).
+
+    stdp calculates the standard error of the linear prediction.  Here the prediction means the same thing as the "index", namely, xb.  The statistic produced by stdp can be thought of as the standard error of the predicted expected value, or mean
+        index, for the observation's covariate pattern.  The standard error of the prediction is also commonly referred to as the standard error of the fitted value. The calculation can be made in or out of sample.
+
+    stddp is allowed only after you have previously fit a multiple-equation model.  The standard error of the difference in linear predictions between two equations is calculated.  This option requires that equation(eqno1,eqno2) be specified.
+
+    score calculates the equation-level score; this is usually the derivative of the log likelihood with respect to the linear prediction.
+
+    scores is the ME model equivalent of the score option, resulting in multiple equation-level score variables.  An equation-level score variable is created for each equation in the model; ancillary parameters -- such as ln(sigma) and atanh(rho) --
+        make up separate equations.
+
+    equation(eqno[,eqno]) -- synonym outcome() -- is relevant only when you have previously fit a multiple-equation model.  It specifies the equation to which you are referring.
+
+        equation() is typically filled in with one eqno -- it would be filled in that way with options xb and stdp, for instance.  equation(#1) would mean the calculation is to be made for the first equation, equation(#2) would mean the second, and so
+        on.  You could also refer to the equations by their names.  equation(income) would refer to the equation named income and equation(hours) to the equation named hours.
+
+        If you do not specify equation(), results are the same as if you specified equation(#1).
+
+        Other statistics, such as stddp, refer to between-equation concepts.  In those cases, you might specify equation(#1,#2) or equation(income,hours).  When two equations must be specified, equation() is required.
+
+        +---------+
+    ----+ Options +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    nooffset may be combined with most statistics and specifies that the calculation should be made, ignoring any offset or exposure variable specified when the model was fit.
+
+        This option is available, even if not documented for predict after a specific command.  If neither the offset(varname_o) option nor the exposure(varname_e) option was specified when the model was fit, specifying nooffset does nothing.
+
+    other_options refers to command-specific options that are documented with each command.
+
+
+Examples
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . sysuse auto
+        . regress mpg weight if foreign
+
+    Obtain predictions for just the sample on which we fit the model
+        . predict pmpg if e(sample)
+
+    Obtain out-of-sample prediction using all 74 observations of same dataset
+        . predict pmpg2
+
+    cooksd is a regression-specific option; see [R] regress postestimation
+        . predict c, cooksd
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . sysuse auto, clear
+        . generate weight2 = weight^2
+        . regress mpg weight weight2 foreign
+        . webuse newautos, clear
+        . generate weight2 = weight^2
+
+    Obtain out-of-sample prediction using another dataset
+        . predict mpg
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . sysuse auto, clear
+        . generate weight2 = weight^2
+        . regress mpg weight weight2 foreign
+
+    Obtain residuals
+        . predict double resid, residuals
+        . summarize resid
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . sysuse auto, clear
+        . logistic foreign mpg weight
+
+    Obtain probability of a positive outcome; see [R] logistic postestimation
+        . predict phat
+
+    Obtain linear prediction
+        . predict idxhat, xb
+        . summarize foreign phat idxhat
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse airline, clear
+        . poisson injuries XYZowned
+
+    Obtain predicted count; see [R] poisson postestimation
+        . predict injhat
+
+    Obtain linear prediction
+        . predict idx, xb
+        . generate exp_idx = exp(idx)
+        . summarize injuries injhat exp_idx idx
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . sysuse auto, clear
+        . logistic foreign mpg weight
+
+    Obtain single-equation model scores
+        . predict double sc, score
+        . summarize sc
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . sysuse auto, clear
+        . sureg (price foreign displ) (weight foreign length)
+
+    Obtain linear prediction for price equation
+        . predict pred_p, equation(price)
+
+    Obtain linear prediction for weight equation
+        . predict pred_w, equation(weight)
+        . summarize price pred_p weight pred_w
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . sysuse auto, clear
+        . ologit rep78 mpg weight
+
+    Obtain multiple-equation model scores
+        . predict double sc*, scores
+        . summarize sc*
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

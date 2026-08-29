@@ -1,0 +1,216 @@
+[R] misstable -- Tabulate missing values
+                 (View complete PDF manual entry)
+
+
+Syntax
+
+    Report counts of missing values
+
+        misstable summarize [varlist] [if] [in] [, summarize_options]
+
+
+    Report pattern of missing values
+
+        misstable patterns [varlist] [if] [in] [, patterns_options]
+
+
+    Present a tree view of the pattern of missing values
+
+        misstable tree [varlist] [if] [in] [, tree_options]
+
+
+    List the nesting rules that describe the missing-value pattern
+
+        misstable nested [varlist] [if] [in] [, nested_options]
+
+
+    summarize_options       Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    all                     show all variables
+    showzeros               show zeros in table
+    generate(stub [, exok]) generate missing-value indicators
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    patterns_options        Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    asis                    use variables in order given
+    frequency               report frequencies instead of percentages
+    exok                    treat .a, .b, ..., .z as nonmissing
+    replace                 replace data in memory with dataset of patterns
+    clear                   okay to replace even if original unsaved
+    bypatterns              list by patterns rather than by frequency
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    tree_options            Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    asis                    use variables in order given
+    frequency               report frequencies instead of percentages
+    exok                    treat .a, .b, ..., .z as nonmissing
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    nested_options          Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    exok                    treat .a, .b, ..., .z as nonmissing
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    In addition, programmer's option nopreserve is allowed with all syntaxes; see [P] nopreserve option.
+
+    collect is allowed; see prefix.
+
+
+Menu
+
+    Statistics > Summaries, tables, and tests > Other tables > Tabulate missing values
+
+
+Description
+
+    misstable makes tables that help you understand the pattern of missing values in your data.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options for misstable summarize
+
+    all specifies that the table should include all the variables specified or all the variables in the dataset.  The default is to include only numeric variables that contain missing values.
+
+    showzeros specifies that zeros in the table should display as 0 rather than being omitted.
+
+    generate(stub [, exok]) requests that a missing-value indicator newvar, a new binary variable containing 0 for complete observations and 1 for incomplete observations, be generated for every numeric variable in varlist containing missing values.  If
+        the all option is specified, missing-value indicators are created for all the numeric variables specified or for all the numeric variables in the dataset.  If exok is specified within generate(), the extended missing values .a, .b, ..., .z are
+        treated as if they do not designate missing.
+
+        For each variable in varlist, newvar is the corresponding variable name varname prefixed with stub.  If the total length of stub and varname exceeds 32 characters, newvar is abbreviated so that its name does not exceed 32 characters.
+
+
+Options for misstable patterns
+
+    asis, frequency, and exok -- see Common options below.
+
+    replace specifies that the data in memory be replaced with a dataset corresponding to the table just displayed; see misstable patterns in [R] misstable.
+
+    clear is for use with replace; it specifies that it is okay to change the data in memory even if they have not been saved to disk.
+
+    bypatterns specifies the table be ordered by pattern rather than by frequency.  That is, bypatterns specifies that patterns containing one incomplete variable be listed first, followed by those for two incomplete variables, and so on.  The default
+        is to list the most frequent pattern first, followed by the next most frequent pattern, etc.
+
+
+Options for misstable tree
+
+    asis, frequency, and exok -- see Common options below.
+
+
+Option for misstable nested
+
+    exok -- see Common options below.
+
+
+Common options
+
+    asis specifies that the order of the variables in the table be the same as the order in which they are specified on the misstable command.  The default is to order the variables by the number of missing values, and within that, by the amount of
+        overlap of missing values.
+
+    frequency specifies that the table should report frequencies instead of percentages.
+
+    exok specifies that the extended missing values .a, .b, ..., .z should be treated as if they do not designate missing.  Some users use extended missing values to designate values that are missing for a known and valid reason.
+
+    nopreserve is a programmer's option allowed with all misstable commands; see [P] nopreserve option.
+
+
+Examples
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse studentsurvey
+
+    Report counts of missing values
+        . misstable summarize
+
+    Report counts of missing values and create missing-value indicators
+        . misstable summarize, generate(miss_)
+        . describe miss_*
+
+    Report the pattern of missing values
+        . misstable patterns
+
+    Same as above, but also obtain dataset of the patterns
+        . misstable patterns, replace clear
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse studentsurvey, clear
+
+    Show tree view of the pattern of missing values
+        . misstable tree, frequency
+
+    List nesting rules that describe the missing-value pattern
+        . misstable nested
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Stored results
+
+    misstable summarize stores the following values of the last variable summarized in r():
+
+    Scalars        
+      r(N_eq_dot)         number of observations containing .
+      r(N_gt_dot)         number of observations containing .a, .b, ..., .z
+      r(N_lt_dot)         number of observations containing nonmissing
+      r(K_uniq)           number of unique, nonmissing values
+      r(min)              variable's minimum value
+      r(max)              variable's maximum value
+
+    Macros         
+      r(vartype)          numeric, string, or none
+
+      r(K_uniq) contains . if the number of unique, nonmissing values is greater than 500.  r(vartype) contains none if no variables are summarized, and in that case, the value of the scalars are all set to missing (.).  Programmers intending to access
+      results after misstable summarize should specify the all option.
+
+
+    misstable patterns stores the following in r():
+
+    Scalars        
+      r(N_complete)       number of complete observations
+      r(N_incomplete)     number of incomplete observations
+      r(K)                number of patterns
+
+    Macros         
+      r(vars)             variables used in order presented
+
+      r(N_complete) and r(N_incomplete) are defined with respect to the variables specified if variables were specified and otherwise, defined with respect to all the numeric variables in the dataset.  r(N_complete) is the number of observations that
+      contain no missing values.
+
+
+    misstable tree stores the following in r():
+
+    Macros         
+      r(vars)             variables used in order presented
+
+
+    misstable nested stores the following in r():
+
+    Scalars        
+      r(K)                number of statements
+
+    Macros         
+      r(stmt1)            first statement
+      r(stmt2)            second statement
+      .                   .
+      .                   .
+      r(stmt`r(K)')       last statement
+      r(stmt1wc)          r(stmt1) with missing-value counts
+      r(vars)             variables considered
+
+      A statement is encoded "varname", "varname op varname", or "varname op varname op varname", and so on; op is either "->" or "<->".

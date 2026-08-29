@@ -20,6 +20,10 @@ function readJsonl(name) {
     .map(JSON.parse);
 }
 
+function readJson(name) {
+  return JSON.parse(fs.readFileSync(path.join(ROOT, "data", name), "utf8"));
+}
+
 function deepKeys(value, keys = new Set()) {
   if (Array.isArray(value)) {
     for (const row of value) deepKeys(row, keys);
@@ -36,6 +40,7 @@ const PAPER_PROFILES = readJsonl("paper_example_profiles.jsonl");
 const PAPER_BLOCKS = readJsonl("high_quality_paper_blocks.jsonl");
 const PAPER_OCCURRENCES = readJsonl("paper_usage_occurrences.jsonl");
 const PAPER_EXECUTION_CONTEXTS = readJsonl("paper_execution_contexts.jsonl");
+const COMMAND_HELP_INDEX = readJson("command_help_guides.json");
 
 test("MCP exposes one simple exact-key three-phase lookup tool", () => {
   assert.equal(TOOL_DEFINITIONS.length, 1);
@@ -50,6 +55,13 @@ test("Phase 1 returns common main rules and the neutral 109-command dictionary o
   assert.deepEqual(Object.keys(result), ["phase", "main_rules", "command_dictionary"]);
   assert.equal(result.phase, "discovery");
   assert.match(result.main_rules.content, /# General Rules/);
+  assert.match(result.main_rules.content, /If the appropriate command is clear from the request and project context, select only that command/);
+  assert.match(result.main_rules.content, /When multiple commands are genuinely needed/);
+  assert.match(result.main_rules.content, /you may request only those relevant evidence packets together/);
+  assert.match(result.main_rules.content, /Do not create a `program` merely to shorten one call or anticipate future reuse/);
+  assert.match(result.main_rules.content, /Indent only inside a real control-flow scope/);
+  assert.match(result.main_rules.content, /In each core regression or estimation call/);
+  assert.match(result.main_rules.content, /Do not replace them with local or global macros/);
   assert.equal(result.command_dictionary.length, 109);
 
   for (const command of result.command_dictionary) {
@@ -79,24 +91,72 @@ test("Phase 1 returns common main rules and the neutral 109-command dictionary o
   }
 });
 
-test("Phase 2 returns the full xtreg guide and its three exact profiles", () => {
+test("Phase 2 returns Stata-rendered xtreg help and its three exact profiles", () => {
   const result = buildCommandEvidence({ request: "Use xtreg", selected_commands: ["xtreg"] });
   assert.deepEqual(Object.keys(result), [
     "phase",
     "main_rules",
     "selected_commands",
-    "full_command_guides",
-    "paper_example_catalog",
+    "command_evidence",
   ]);
   assert.deepEqual(result.selected_commands, ["xtreg"]);
-  assert.equal(result.full_command_guides.length, 1);
-  assert.equal(result.full_command_guides[0].command, "xtreg");
-  assert.equal(result.full_command_guides[0].content.length, 149155);
+  assert.equal(result.command_evidence.length, 1);
+  const evidence = result.command_evidence[0];
+  assert.equal(evidence.command, "xtreg");
+  assert.equal(evidence.help_status, "available");
+  assert.equal(evidence.command_help.command, "xtreg");
+  assert.equal(evidence.command_help.source_version, "Stata 18");
+  assert.match(evidence.command_help.content, /xtreg depvar/);
+  assert.match(evidence.command_help.content, /Syntax/);
+  assert.equal(evidence.full_manual_available, true);
   assert.deepEqual(
-    result.paper_example_catalog.map((row) => row.block_id),
+    evidence.paper_example_catalog.map((row) => row.block_id),
     ["block-139-184-033", "block-139-184-034", "block-139-184-035"],
   );
-  assert.equal("block_code" in result.paper_example_catalog[0], false);
+  assert.equal("block_code" in evidence.paper_example_catalog[0], false);
+  assert.equal(deepKeys(evidence).has("full_command_guide"), false);
+});
+
+test("Phase 2 resolves multiple selected commands independently in request order", () => {
+  const result = buildCommandEvidence({
+    request: "Use several commands",
+    selected_commands: ["duplicates", "cgmreg", "xtivreg", "jwdidstacked"],
+  });
+  assert.deepEqual(
+    result.command_evidence.map((row) => row.command),
+    ["duplicates", "cgmreg", "xtivreg", "jwdidstacked"],
+  );
+  assert.deepEqual(
+    result.command_evidence.map((row) => row.help_status),
+    ["available", "available", "available", "unavailable"],
+  );
+
+  const [duplicates, cgmreg, xtivreg, jwdidstacked] = result.command_evidence;
+  assert.equal(duplicates.command_help.command, "duplicates");
+  assert.ok(duplicates.paper_example_catalog.length > 0);
+  assert.match(cgmreg.command_help.content, /cluster\(varlist\)/);
+  assert.equal(cgmreg.full_manual_available, false);
+  assert.equal(cgmreg.paper_example_catalog.length, 3);
+  assert.equal(xtivreg.command_help.command, "xtivreg");
+  assert.deepEqual(xtivreg.paper_example_catalog.map((row) => row.block_id), ["block-139-184-032"]);
+  assert.equal(jwdidstacked.command_help, null);
+  assert.equal(jwdidstacked.full_manual_available, false);
+  assert.equal(jwdidstacked.paper_example_catalog.length, 1);
+});
+
+test("the 109-command help index records 106 available, one partial, and two unavailable commands", () => {
+  assert.equal(COMMAND_HELP_INDEX.guides.length, 109);
+  const counts = Object.groupBy(COMMAND_HELP_INDEX.guides, (row) => row.help_status);
+  assert.equal(counts.available.length, 106);
+  assert.equal(counts.partial.length, 1);
+  assert.equal(counts.unavailable.length, 2);
+  assert.deepEqual(counts.unavailable.map((row) => row.command).sort(), ["jregress", "jwdidstacked"]);
+
+  const collectStyle = COMMAND_HELP_INDEX.guides.find((row) => row.command === "collect_style");
+  assert.equal(collectStyle.help_topics.length, 19);
+  assert.match(collectStyle.limitations.join(" "), /collect_style_smcl/);
+  const content = fs.readFileSync(path.join(ROOT, "data", collectStyle.content_file), "utf8");
+  assert.match(content, /collect style _cons/);
 });
 
 test("Phase 3 returns one exact xtreg block and occurrence with an empty log array", () => {
@@ -163,8 +223,9 @@ test("outreg2 profiles remain nonbinding when a selected block contains another 
     request: "Keep regress and use outreg2",
     selected_commands: ["regress", "outreg2"],
   });
+  const outreg2Evidence = phase2.command_evidence.find((row) => row.command === "outreg2");
   assert.deepEqual(
-    phase2.paper_example_catalog.filter((row) => row.focus_command === "outreg2").map((row) => row.block_id),
+    outreg2Evidence.paper_example_catalog.map((row) => row.block_id),
     [
       "outreg2_table6_replace_append_stats",
       "outreg2_table2_word_columns",
@@ -189,17 +250,31 @@ test("paper data stays at 166 blocks and 12 optional raw-log attachments", () =>
   assert.equal(PAPER_EXECUTION_CONTEXTS.length, 12);
 });
 
-test("missing dictionary commands and missing full guides abort without substitution", () => {
+test("missing dictionary commands abort while unavailable help remains command-local", () => {
   assert.throws(
     () => buildCommandEvidence({ request: "Use madeup", selected_commands: ["madeup"] }),
     /ABORT command_not_in_dictionary/,
   );
-  for (const command of ["cgmreg", "jwdidstacked"]) {
-    assert.throws(
-      () => buildCommandEvidence({ request: `Use ${command}`, selected_commands: [command] }),
-      /ABORT full_command_guide_unavailable/,
-    );
+  for (const command of ["jregress", "jwdidstacked"]) {
+    const result = buildCommandEvidence({ request: `Use ${command}`, selected_commands: [command] });
+    const evidence = result.command_evidence[0];
+    assert.equal(evidence.command, command);
+    assert.equal(evidence.help_status, "unavailable");
+    assert.equal(evidence.command_help, null);
+    assert.ok(evidence.paper_example_catalog.length > 0);
   }
+});
+
+test("Phase 3 returns available paper blocks when another selected command lacks help", () => {
+  const result = buildCommandEvidence({
+    request: "Inspect the available branch",
+    selected_commands: ["jregress", "xtivreg"],
+    selected_block_ids: ["block-139-184-032"],
+  });
+  assert.deepEqual(result.selected_commands, ["jregress", "xtivreg"]);
+  assert.equal(result.paper_usage_cards.length, 1);
+  assert.equal(result.paper_usage_cards[0].paper_block.focus_command, "xtivreg");
+  assert.equal(result.paper_usage_cards[0].paper_log_contexts.length, 1);
 });
 
 test("phase arguments and exact IDs fail closed", () => {

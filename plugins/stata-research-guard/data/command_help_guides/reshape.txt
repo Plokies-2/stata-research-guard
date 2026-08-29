@@ -1,0 +1,312 @@
+[D] reshape -- Convert data from wide to long form and vice versa
+               (View complete PDF manual entry)
+
+
+Syntax
+
+    Overview
+
+           long
+        +------------+                  wide
+        | i  j  stub |                 +----------------+
+        |------------|                 | i  stub1 stub2 |
+        | 1  1   4.1 |     reshape     |----------------|
+        | 1  2   4.5 |   <--------->   | 1    4.1   4.5 |
+        | 2  1   3.3 |                 | 2    3.3   3.0 |
+        | 2  2   3.0 |                 +----------------+
+        +------------+
+
+        To go from long to wide:
+
+                                            j existing variable
+                                           /
+                reshape wide stub, i(i) j(j)
+
+        To go from wide to long:
+
+                reshape long stub, i(i) j(j)
+                                           \
+                                            j new variable
+
+        To go back to long after using reshape wide:
+
+                reshape long
+
+        To go back to wide after using reshape long:
+
+                reshape wide
+
+
+    Basic syntax
+
+        Convert data from wide form to long form
+
+            reshape long stubnames, i(varlist) [options]
+
+
+        Convert data from long form to wide form
+
+            reshape wide stubnames, i(varlist) [options]
+
+
+        Convert data back to long form after using reshape wide
+
+            reshape long
+
+
+        Convert data back to wide form after using reshape long
+
+            reshape wide
+
+
+        List problem observations when reshape fails
+
+            reshape error
+
+
+        Specify default method for reshaping the data
+
+            set reshape_favor {default|memory|speed} [, permanently]
+
+         options                    Description
+       --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+       * i(varlist)                 use varlist as the ID variables
+         j(varname [values])        long->wide: varname, existing variable
+                                    wide->long: varname, new variable
+                                    optionally specify values to subset varname
+         string                     varname is a string variable (default is numeric)
+         favor(favor)               specify reshape method; favor may be memory or speed
+       --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        * i(varlist) is required.
+        reshape does not allow alias variables; see [D] frunalias for advice on how to get around this restriction.
+
+
+
+        values is  #[-#] [...]              if varname is numeric
+                                                    (default)
+                         "string" ["string" ...]  if varname is string
+
+        stubnames are variable names (long->wide), or stubs of variable names (wide->long), and either way, may contain @, denoting where j appears or is to appear in the name.
+
+        In the example above, when we wrote "reshape wide stub", we could have written "reshape wide stub@" because j by default ends up as a suffix.  Had we written stu@b, then the wide variables would have been named stu1b and stu2b.
+
+
+    Advanced syntax
+
+        reshape i varlist
+
+        reshape j varname [values] [, string]
+
+        reshape xij fvarnames [, atwl(chars)]
+
+        reshape xi [varlist]
+
+        reshape favor {memory|speed}
+
+        reshape [query]
+
+        reshape clear
+
+
+Menu
+
+    Data > Create or change data > Other variable-transformation commands > Convert data between wide and long
+
+
+Description
+
+    reshape converts data from wide to long form and vice versa.
+
+    set reshape_favor specifies whether, when performing the data conversion, reshape should favor conserving memory (memory) or running quickly (speed).  Historically, reshape favored conserving memory.  Switching to speed will make reshape run faster
+    at the cost of consuming more memory.  You can easily revert to the default method for reshaping the data (default).
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+    i(varlist) specifies the variables whose unique values denote a logical observation. i() is required.
+
+    j(varname [values]) specifies the variable whose unique values denote a subobservation.  values lists the unique values to be used from varname, which typically are not explicitly stated because reshape will determine them automatically from the
+        data.
+
+    string specifies that j() may contain string values.
+
+    atwl(chars), available only with the advanced syntax and not shown in the dialog box, specifies that plain ASCII chars be substituted for the @ character when converting the data from wide to long form.
+
+    favor(favor) specifies the method for reshaping the data.  Historically, reshape was coded to minimize its use of memory; this is favor(memory).  With favor(speed), the focus is to accomplish the reshape faster at the cost of using more memory.
+
+    permanently specifies that, in addition to making the change right now, the setting be remembered and become the default setting when you invoke Stata.
+
+
+Remarks
+
+    Before using reshape, you need to determine whether the data are in long or wide form.  You also must determine the logical observation (i) and the subobservation (j) by which to organize the data.  Suppose that you had the following data, which
+    could be organized in wide or long form as follows:
+
+
+                                                                                                                         (wide form)           
+
+                                                                                                                i         ....... x_ij ........
+                                                                                                                id  sex   inc80   inc81   inc82
+                                                                                                                -------------------------------
+                                                                                                                 1    0    5000    5500    6000
+                                                                                                                 2    1    2000    2200    3300
+                                                                                                                 3    0    3000    2000    1000
+
+
+                                                                                                                          (long form)      
+
+                                                                                                                    i     j           x_ij
+                                                                                                                    id   year   sex    inc 
+                                                                                                                    -----------------------
+                                                                                                                     1     80     0   5000 
+                                                                                                                     1     81     0   5500 
+                                                                                                                     1     82     0   6000 
+                                                                                                                     2     80     1   2000 
+                                                                                                                     2     81     1   2200 
+                                                                                                                     2     82     1   3300 
+                                                                                                                     3     80     0   3000 
+                                                                                                                     3     81     0   2000 
+                                                                                                                     3     82     0   1000 
+
+
+    Given these data, you could use reshape to convert from one form to the other:
+
+        . reshape long inc, i(id) j(year)  (goes from top form to bottom)
+        . reshape wide inc, i(id) j(year)  (goes from bottom form to top)
+
+    See [D] reshape for a detailed discussion and examples for both the basic and advanced syntax.
+
+
+Examples
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse reshape1
+
+    List the data
+        . list
+
+    Convert data from wide form to long form
+        . reshape long inc ue, i(id) j(year)
+
+    List the result
+        . list, sepby(id)
+
+    Convert data back from long form to wide form (quick way)
+        . reshape wide
+
+    Convert data back from long form to wide form (explicit way)
+        . reshape wide inc ue, i(id) j(year)
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse reshape1, clear
+
+    Convert data from wide form to long form, favoring speed over memory
+        . reshape long inc ue, i(id) j(year) favor(speed)
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse reshape2, clear
+
+    List the data
+        . list
+
+    Try to convert the data from wide form to long form
+        . reshape long inc, i(id) j(year)
+
+    List the problem observations
+        . reshape error
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse reshape3, clear
+
+    List the data
+        . list
+
+    Convert the data from wide form to long form
+        . reshape long inc@r ue, i(id) j(year)
+
+    List the result
+        . list, sepby(id)
+
+    Convert the data back from long form to wide form (quick way)
+        . reshape wide
+
+    Convert the data back from long form to wide form (explicit way)
+        . reshape wide inc@r ue, i(id) j(year)
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse reshape4, clear
+
+    List the data
+        . list
+
+    Convert the data from wide form to long form, allowing sex to take on string values
+        . reshape long inc, i(id) j(sex) string
+
+    List the result
+        . list, sepby(id)
+
+    Convert the data back from long form to wide form (quick way)
+        . reshape wide
+
+    Convert the data back from long form to wide form (explicit way)
+        . reshape wide inc, i(id) j(sex) string
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse reshape5, clear
+
+    List the data
+        . list
+
+    Convert the data from long-long form to wide-wide form (two j variables)
+        . reshape wide @inc, i(hid year) j(sex) string
+        . reshape wide minc finc, i(hid) j(year)
+
+    List the result
+        . list
+
+    Convert the data back from wide-wide form to long-long form
+        . reshape long minc finc, i(hid) j(year)
+        . reshape long @inc, i(hid year) j(sex) string
+
+    List the result
+        . list
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Video examples
+
+    How to reshape data from long format to wide format
+
+    How to reshape data from wide format to long format
+
+
+Stored results
+
+    reshape stores the following characteristics with the data (see [P] char):
+
+      _dta[ReS_i]         i variable names
+      _dta[ReS_j]         j variable name
+      _dta[ReS_jv]        j values, if specified
+      _dta[ReS_Xij]       X_ij variable names
+      _dta[ReS_Xij_n]     number of X_ij variables
+      _dta[ReS_Xij_long#] name of #th X_ij variable in long form
+      _dta[ReS_Xij_wide#] name of #th X_ij variable in wide form
+      _dta[ReS_Xi]        X_i variable names, if specified
+      _dta[ReS_atwl]      atwl() value, if specified
+      _dta[ReS_str]       1 if option string specified, 0 otherwise
+      _dta[ReS_favor]     favor() value, if specified

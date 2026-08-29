@@ -1,0 +1,239 @@
+[D] import delimited -- Import and export delimited text data
+                        (View complete PDF manual entry)
+
+
+Syntax
+
+    Load a delimited text file
+
+        import delimited [using] filename [, import_delimited_options]
+
+
+    Rename specified variables from a delimited text file
+
+        import delimited extvarlist using filename [, import_delimited_options]
+
+
+    Save data in memory to a delimited text file
+
+        export delimited [using] filename [if] [in] [, export_delimited_options]
+
+
+    Save subset of variables in memory to a delimited text file
+
+        export delimited [varlist] using filename [if] [in] [, export_delimited_options]
+
+
+    If filename is specified without an extension, .csv is assumed for both import delimited and export delimited.  If filename contains embedded spaces, enclose it in double quotes.
+
+    extvarlist specifies variable names of imported columns.
+
+    import_delimited_options                  Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    delimiters("chars"[, collapse|asstring])  use chars as delimiters
+    varnames(#|nonames)                       treat row # of data as variable names or the data do not have variable names
+    case(preserve|lower|upper)                preserve the case or read variable names as lowercase (the default) or uppercase
+    asfloat                                   import all floating-point data as floats
+    asdouble                                  import all floating-point data as doubles
+    encoding(encoding)                        specify the encoding of the text file being imported
+    emptylines(skip|include)                  specify how to handle empty lines in data; default is emptylines(skip)
+    stripquotes(yes|no|default)               remove or keep double quotes in data
+    bindquotes(loose|strict|nobind)           specify how to handle double quotes in data
+    maxquotedrows(# | unlimited)              number of rows of data allowed inside a quoted string when bindquote(strict) is specified
+    rowrange([start][:end])                   row range of data to load
+    colrange([start][:end])                   column range of data to load
+    parselocale(locale)                       specify the locale to use for interpreting numbers in the text file being imported
+    decimalseparator(character)               character to use for the decimal separator when parsing numbers
+    groupseparator(character)                 character to use for the grouping separator when parsing numbers
+    numericcols(numlist|_all)                 force specified columns to be numeric
+    stringcols(numlist|_all)                  force specified columns to be string
+    clear                                     replace data in memory
+
+    favorstrfixed                             favor storing string variables as str# rather than strL
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    collect is allowed with import delimited; see prefix.
+    favorstrfixed does not appear in the dialog box.
+
+    export_delimited_options                  Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      delimiter("char"|tab)                   use char as delimiter
+      novarnames                              do not write variable names on the first line
+      nolabel                                 output numeric values (not labels) of labeled variables
+      datafmt                                 use the variables' display format upon export
+      quote                                   always enclose strings in double quotes
+      replace                                 overwrite existing filename
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Menu
+
+    import delimited
+
+        File > Import > Text data (delimited, *.csv, ...)
+
+    export delimited
+
+        File > Export > Text data (delimited, *.csv, ...)
+
+
+Description
+
+    import delimited reads into memory a text file in which there is one observation per line and the values are separated by commas, tabs, or some other delimiter.  The two most common types of text data to import are comma-separated values (.csv) text
+    files and tab-separated text files, often .txt files.  Similarly, export delimited writes Stata's data to a text file.
+
+    Stata has other commands for importing data.  If you are not sure that import delimited will do what you are looking for, see [D] import and [U] 22 Entering and importing data.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options for import delimited
+
+    delimiters("chars"[, collapse|asstring]) allows you to specify other separation characters.  For instance, if values in the file are separated by a semicolon, specify delimiters(";").  By default, import delimited will check if the file is delimited
+        by tabs or commas based on the first line of data.  Specify delimiters("\t") to use a tab character, or specify delimiters("whitespace") to use whitespace as a delimiter.
+
+        collapse forces import delimited to treat multiple consecutive delimiters as just one delimiter.
+
+        asstring forces import delimited to treat chars as one delimiter.  By default, each character in chars is treated as an individual delimiter.
+
+    varnames(#|nonames) specifies where or whether variable names are in the data.  By default, import delimited tries to determine whether the file includes variable names.  import delimited translates the names in the file to valid Stata variable
+        names.  The original names from the file are stored unmodified as variable labels.
+
+        varnames(#) specifies that the variable names are in row # of the data; any data before # should not be imported.
+
+        varnames(nonames) specifies that the variable names are not in the data.
+
+    case(preserve|lower|upper) specifies the case of the variable names after import.  The default is case(lowercase).
+
+    asfloat imports floating-point data as type float.  The default storage type of the imported variables is determined by set type.
+
+    asdouble imports floating-point data as type double.  The default storage type of the imported variables is determined by set type.
+
+    encoding(encoding) specifies the encoding of the text file to be read.  If encoding() is not specified, the file will be scanned to try to automatically determine the correct encoding.  import delimited uses encodings available in Java, a list of
+        which can be found at https://www.oracle.com/java/technologies/javase/jdk11-suported-locales.html.
+
+        Option charset() is a synonym for encoding().
+
+    emptylines(skip|include) specifies how import delimited handles empty lines in data.  skip (the default) specifies that empty lines to be processed as observations should be skipped.  include specifies that empty lines to be processed as
+        observations should be included.  The resulting observations in Stata will simply contain missing values.
+
+    stripquotes(yes|no|default) tells import delimited how to handle double quotes.  yes causes all double quotes to be stripped.  no leaves double quotes in the data unchanged.  default automatically strips quotes that can be identified as binding
+        quotes.  default also will identify two adjacent double quotes as a single double quote because some software encodes double quotes that way.
+
+    bindquotes(loose|strict|nobind) specifies how import delimited handles double quotes in data.  Specifying loose (the default) tells import delimited that it must have a matching open and closed double quote on the same line of data.  strict tells
+        import delimited that once it finds one double quote on a line of data, it should keep searching through the data for the matching double quote even if that double quote is on another line.  Specifying nobind tells import delimited to ignore
+        double quotes for binding.
+
+    maxquotedrows(# | unlimited) specifies the number of rows allowed inside a quoted string when parsing the file to import.  The default is maxquotedrows(20).  If this option is specified without bindquote(strict), then maxquotedrows() will be
+        ignored.
+
+        Option maxquotedrows(0) is a synonym for maxquotedrows(unlimited).
+
+    rowrange([start][:end]) specifies a range of rows within the data to load.  start and end are integer row numbers.
+
+    colrange([start][:end]) specifies a range of variables within the data to load.  start and end are integer column numbers.
+
+    parselocale(locale) specifies the locale to use for interpreting numbers in the text file being imported.  This option invokes an alternative parsing method and can result in slightly different behavior than not specifying this option.  The default
+        is to not use a locale when parsing numbers where the behavior is to treat . as the decimal separator.  A list of available locales can be found at https://www.oracle.com/technetwork/java/javase/java8locales-2095355.html.
+
+    decimalseparator(character) specifies the character to use for interpreting the decimal separator when parsing numbers.  This option implicitly invokes option parselocale() with your system's default locale.  parselocale(locale) can be specified to
+        override the default system locale.
+
+    groupseparator(character) specifies the character to use for interpreting the grouping separator when parsing numbers.  This option implicitly invokes option parselocale() with your system's default locale.  parselocale(locale) can be specified to
+        override the default system locale.
+
+    numericcols(numlist|_all) forces the data type of the column numbers in numlist to be numeric.  Specifying _all will import all data as numeric.
+
+    stringcols(numlist|_all) forces the data type of the column numbers in numlist to be string.  Specifying _all will import all data as strings.
+
+    clear specifies that it is okay to replace the data in memory, even though the current data have not been saved to disk.
+
+    The following option is available with import delimited but is not shown in the dialog box:
+
+    favorstrfixed forces import delimited to favor storing strings as a str#.
+
+        By default, import delimited will attempt to save space by importing string data as a strL if doing so will save space.  The favorstrfixed option prevents the space-saving calculation from occurring, causing strings to be stored as a str# unless
+        the string is larger than a str# can hold.  In that case, strL must be used.  See [R] Limits for details about the maximum size of a str#.
+
+
+Options for export delimited
+
+        +------+
+    ----+ Main +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    delimiter("char"|tab) allows you to specify other separation characters.  For instance, if you want the values in the file to be separated by a semicolon, specify delimiter(";").  The default delimiter is a comma.
+
+        delimiter(tab) specifies that a tab character be used as the delimiter.
+
+    novarnames specifies that variable names not be written in the first line of the file; the file is to contain data values only.
+
+    nolabel specifies that the numeric values of labeled variables be written into the file rather than the label associated with each value.
+
+    datafmt specifies that all variables be exported using their display format.  For example, the number 1000 with a display format of %4.2f would export as 1000.00, not 1000. The default is to use the raw, unformatted value when exporting.
+
+    quote specifies that string variables always be enclosed in double quotes.  The default is to only double quote strings that contain spaces or the delimiter.
+
+    replace specifies that filename be replaced if it already exists.
+
+
+Examples
+
+    Setup
+        . copy https://www.stata.com/examples/auto.csv auto.csv
+
+    Read this file into Stata
+        . import delimited auto
+
+    Look at what we just loaded
+        . list
+
+    Read rows 2 through 5 of auto.csv into Stata and then list the data
+        . clear
+        . import delimited auto, rowrange(3:6)
+        . list
+
+    Read the first three columns and last four rows of auto.csv into Stata and list the data
+        . clear
+        . import delimited auto, colrange(:3) rowrange(8)
+        . list
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse auto, clear
+
+    Save the data currently in memory to myauto.csv
+        . export delimited myauto
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse auto
+
+    Same as above but only saves a subset of the data; note the use of the replace option because myauto.csv already exists
+        . export delimited make mpg rep78 foreign in 1/10 using myauto, replace
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Video example
+
+    Importing delimited data
+
+
+Stored results
+
+    import delimited stores the following in r():
+
+    Scalars        
+      r(N)                number of observations imported
+      r(k)                number of variables imported
+
+    Macros         
+      r(delimiters)       delimiters used when importing the file
+      r(encoding)         encoding used when importing the file

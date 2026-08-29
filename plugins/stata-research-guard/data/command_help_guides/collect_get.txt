@@ -1,0 +1,121 @@
+[TABLES] collect get -- Collect results from a Stata command
+                        (View complete PDF manual entry)
+
+
+Syntax
+
+    Basic prefix syntax to consume results from Stata commands
+
+        collect [get]: command
+
+
+    Full prefix syntax to consume results from Stata commands
+
+        [prefix ...:] collect [get] [resultlist] [if] [in] [, tags(tags)]: command
+
+
+    Consume results after running a Stata command
+
+        collect get resultlist [, name(cname) tags(tags)]
+
+
+    where prefix may be by, capture, frame, noisily, quietly, or version.
+
+    where resultlist is
+
+        result [result [...]]
+
+        result, when specified with the collect prefix, identifies individual results to be added to the list of automatic results.
+
+        result, when specified with collect get, indicates the type of results to be stored and identifies the results to add to the list of automatic results.
+
+        result may be one of the following:
+
+          result           Description
+          ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+          r()              all r() results
+          e()              all e() results
+          explist          returned results and named expressions
+          ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        Specifying any r() result will also cause collect to consume all r() results.  Specifying any e() result will also cause collect to consume all e() results.
+
+        explist specifies which results to collect.  explist may include result identifiers and named expressions.
+
+            result identifiers are results stored in r() and e() by the command.  For instance, result identifiers could be r(mean), r(C), or e(chi2).  After estimation commands, result identifiers also include the following:
+
+          Identifier       Result
+          ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+          _r_b             coefficients or transformed coefficients reported by command
+          _r_se            standard errors of _r_b
+          _r_z             test statistics for _r_b
+          _r_z_abs         absolute values of _r_z
+          _r_df            degrees of freedom for _r_b
+          _r_p             p-values for _r_b
+          _r_lb            lower bounds of confidence intervals for _r_b
+          _r_ub            upper bounds of confidence intervals for _r_b
+          _r_ci            confidence intervals for _r_b
+          _r_cri           credible interval (CrI) of Bayesian estimates
+          _r_crlb          lower bound of CrI of Bayesian estimates
+          _r_crub          upper bound of CrI of Bayesian estimates
+          ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+            named expressions are specified as name = exp, where name may be any valid Stata name and exp is an expression, typically an expression that involves one or more result identifiers.  Examples of named expressions are mean = r(mean) and sd =
+                sqrt(r(variance)).
+
+    tags is a dimension and its corresponding level, or it is a space-separated list of dimensions and their corresponding levels:
+
+        dimname[levvalue] [dimname[levvalue] ...]
+
+        If levvalue contains spaces, it must be enclosed in double quotes.
+
+
+Menu
+
+    Statistics > Summaries, tables, and tests > Tables and collections > Collect results
+
+
+Description
+
+    The collect get command and collect prefix put results into a collection.  Collected results are scalars, macros, and matrices from e() and r() as well as scalar and matrix expressions.  Tables can be constructed from the results in the collection.
+
+    The collect get command identifies results from a previous Stata command that are to be put into a collection.  The collect prefix puts results returned by the prefixed command into a collection.
+
+    Both the collect get command and the collect prefix allow you to specify a list of results to add to the automatic result levels (automatic levels) for subsequent table layouts.  Specifying automatic levels at the time you collect results is an
+    alternative to selecting the results to include at the time you lay out your table; see [TABLES] collect layout.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+        +------+
+    ----+ Main +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    name(cname) specifies the collection into which results will be saved, instead of the current collection.
+
+        +---------+
+    ----+ Options +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    tags(tags) specifies additional tags to attach to the results being consumed.  Each tag takes on the form dimname [levvalue]; to specify multiple tags separate them with a space.  The following dimension names are not allowed in tags():
+        border_block, cell_type, program_class, and result_type.
+
+
+Example
+
+    Setup
+        . collect clear
+        . sysuse auto
+
+    Consume results from regress and place them in the current collection
+        . collect get: regress mpg price i.foreign
+
+    Consume results from regress for the current collection and add coefficients and standard errors to the automatic layout levels
+        . collect _r_b _r_se: regress mpg price i.foreign

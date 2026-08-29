@@ -1,0 +1,160 @@
+[D] codebook -- Describe data contents
+                (View complete PDF manual entry)
+
+
+Syntax
+
+        codebook [varlist] [if] [in] [, options]
+
+    options                  Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Options
+      all                    print complete report without missing values
+      header                 print dataset name and last saved date
+      notes                  print any notes attached to variables
+      mv                     report pattern of missing values
+      tabulate(#)            set tables/summary statistics threshold; default is tabulate(9)
+      problems               report potential problems in dataset
+      detail                 display detailed report on the variables; only with problems
+      compact                display compact report on the variables
+      dots                   display a dot for each variable processed; only with compact
+
+    Languages
+      languages[(namelist)]  use with multilingual datasets; see [D] label language for details
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    collect is allowed; see prefix.
+
+
+Menu
+
+    Data > Describe data > Describe data contents (codebook)
+
+
+Description
+
+    codebook examines the variable names, labels, and data to produce a codebook describing the dataset.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+        +---------+
+    ----+ Options +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    all is equivalent to specifying the header and notes options.  It provides a complete report, which excludes only performing mv.
+
+    header adds to the top of the output a header that lists the dataset name, the date that the dataset was last saved, etc.
+
+    notes lists any notes attached to the variables; see [D] notes.
+
+    mv specifies that codebook search the data to determine the pattern of missing values.  This is a CPU-intensive task.
+
+    tabulate(#) specifies the number of unique values of the variables to use to determine whether a variable is categorical or continuous.  Missing values are not included in this count.  The default is 9; when there are more than nine unique values,
+        the variable is classified as continuous.  Extended missing values will be included in the tabulation.
+
+    problems specifies that a summary report is produced describing potential problems that have been diagnosed:
+
+        - Variables that are labeled with an undefined value label
+        - Incompletely value-labeled variables
+        - Variables that are constant, including always missing
+        - Leading, trailing, and embedded spaces in string variables
+        - Embedded binary 0 (\0) in string variables
+        - Noninteger-valued date variables
+
+        See codebook problems for a discussion of these problems and advice on overcoming them.
+
+    detail may be specified only with the problems option.  It specifies that the detailed report on the variables not be suppressed.
+
+    compact specifies that a compact report on the variables be displayed.  compact may not be specified with any options other than dots.
+
+    dots specifies that a dot be displayed for every variable processed.  dots may be specified only with compact.
+
+        +-----------+
+    ----+ Languages +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    languages[(namelist)] is for use with multilingual datasets; see [D] label language.  It indicates that the codebook pertains to the languages in namelist or to all defined languages if no such list is specified as an argument to languages().  The
+        output of codebook lists the data label and variable labels in these languages and which value labels are attached to variables in these languages.
+
+        Problems are diagnosed in all of these languages, as well.  The problem report does not provide details in which language problems occur.  We advise you to rerun codebook for problematic variables; specify detail to produce the problem report
+        again.
+
+        If you have a multilingual dataset but do not specify languages(), all output, including the problem report, is shown in the "active" language.
+
+
+Examples
+
+    With standard (monolingual) datasets,
+
+        -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        Setup
+            . sysuse auto
+            . note rep78: "investigate missing values"
+            . label values rep78 repairlbl
+
+        Display codebook for all variables in dataset
+            . codebook
+
+        Same as above command
+            . codebook _all
+
+        Same as above command, but print dataset name, date last saved, dataset label, number of variables and of observations, and dataset size
+            . codebook, header
+
+        Display codebook for rep78 variable
+            . codebook rep78
+
+        Display codebook for rep78 variable, including notes attached to rep78
+            . codebook rep78, notes
+
+        Report potential problems with dataset
+            . codebook, problems
+
+        Display compact report for all variables in dataset
+            . codebook, compact
+
+        -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        Setup
+            . webuse citytemp, clear
+
+        Display codebook for cooldd, heatdd, tempjan, and tempjuly, and report pattern of missing values
+            . codebook cooldd heatdd tempjan tempjuly, mv
+        -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    With multilingual datasets, with languages en and es, and with active language en,
+
+        Setup
+            . webuse autom
+
+        Display codebook for foreign in language en
+            . codebook foreign
+
+        Display codebook for foreign in language es
+            . codebook foreign, language(es)
+
+        Display codebook for foreign in both en and es
+            . codebook foreign, languages
+
+
+Stored results
+
+    codebook stores the following lists of variables with potential problems in r():
+
+    Macros             
+      r(cons)                 constant (or missing)
+      r(labelnotfound)        undefined value labeled
+      r(notlabeled)           value labeled but with unlabeled categories
+      r(str_type)             compressible
+      r(str_leading)          leading blanks
+      r(str_trailing)         trailing blanks
+      r(str_embedded)         embedded blanks
+      r(str_embedded0)        embedded binary 0 (\0)
+      r(realdate)             noninteger dates

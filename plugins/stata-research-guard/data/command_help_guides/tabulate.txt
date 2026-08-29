@@ -1,0 +1,11 @@
+Tables of frequencies
+
+    See
+
+        tabulate oneway       for one-way tables of frequencies
+
+        tabulate twoway       for two-way tables of frequencies
+
+    and see
+
+        tabulate, summarize() for one- and two-way tables of summary statistics

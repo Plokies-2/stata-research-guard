@@ -1,0 +1,1457 @@
+version:  2.3.9.5
+help asdoc                                                                                                                                                                                                                                       April 10, 2021
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Title
+
+    asdoc - An easy way of creating publication quality tables from Stata commands
+
+
+Syntax
+
+    [bysort varname:] asdoc Stata_Commands, [Stata_command_options asdoc_options]
+
+
+Table of contents
+
+1. Commands for controlling asdoc
+1.1 Replace / append
+1.2 appending similar rows (rowappend)
+1.3 Output file name (save)
+1.4 Table title (title)
+1.5 Format row and column headers  (fhr and fhc)
+1.6 Font size (fs)
+1.7 Font style (font)
+1.8 Decimal points (dec)
+1.9 Adding lines / paragraphs (text)
+1.10 Hide Stata output (hide)
+1.11 Getting Stata commands in output files (cmd)
+1.12 Abbreviate variable names (abb)
+1.13 Report labels instead of variable names (label)
+1.14 Always report equal decimal points (tzok)
+1.15 RTF control words on the go)
+
+2. Summary statistics
+2.1 Basic summary statistics
+2.2 Detailed Summary statistics
+2.3 Customized summary statistics
+2.4 By-groups summary statistics
+
+3. Correlations
+3.1 Simple correlations
+3.2 Pairwise / correlations with significance level
+3.3 Partial correlations
+3.4 Interclass correlation
+3.5 Tetrachoric correlation
+3.6 Spearman correlation
+
+4. Regressions
+4.1 Full regression tables
+4.2 Compact / nested tables (publication quality)
+4.3 Wide regression tables 
+4.4 Regression over groups using bysort 
+
+
+5. Frequency tables
+5.1 One-way tabulation (tabulate1)
+5.2 Two-way tabulation (tabulate2)
+5.3 One- and two-way tables of summary statistics (tabsum)
+5.4 Multiple-way tables (tab1)
+5.5 All-possible two-way tables (tab2)
+
+6. Compact tables (tabstat)
+6.1 Without groups
+6.1 With groups
+
+7. Flexible table of statistics (table)
+7.1 One-way table
+7.2 Two-way table
+7.3 Three-way table
+7.4 Four-way table
+
+8. T-tests (ttest)
+8.1 one-sample t-test
+8.2 two-sample using groups
+8.3 two-sample using variables
+8.4 paired t-test
+
+9. Table of means, std., and frequencies (tabsum)
+
+10. Means (ameans)
+10.1 Arithmetic / harmonic / geometric means
+10.2 Proportions
+10.3 Ratio
+10.4 Total
+
+11. Export data to file (list)
+
+12. Writing matrix to file (wmat)
+
+13. The survey prefix command (svy:)
+
+14. aslist - Create a list of unique values (aslist)
+
+15. Describe - Export variable names and their labels (describe)
+
+16. Creating tables row by row (row)
+
+17. Accumulating text and statistics (accum)
+
+18. Other Stata Commands
+
+19. How to cite
+
+20. Index to blog entries and Videos
+
+21. Future Plans for asdoc
+
+
+DESCRIPTION
+
+    asdoc sends Stata output to Word / RTF format. asdoc creates high-quality, publication-ready tables from various Stata commands such as summarize, correlate, pwcorr, tab1, tab2, tabulate1, tabulate2, tabstat, ttest, regress, table, amean,
+    proportions, means, and many more. Using asdoc is pretty easy.  We need to just add asdoc as a prefix to Stata commands. asdoc has several built-in routines for dedicated calculations and making nicely formatted tables.
+
+
+1. ASDOC OPTIONS
+
+
+    How to enter asdoc options and Stata_command options:
+    Both the asdoc options and Stata_command specific options should be entered after comma. asdoc will parse both the option itself. For example, the following command has both types of options.
+
+        asdoc sum, detail replace dec(3)
+
+    option detail belongs to sum command of Stata, whereas options replace and dec(3) are asdoc options.
+
+    Following options are used for controlling the behavior of asdoc:
+
+
+    1.1 Replace / append:
+    We shall use option replace when an existing output file needs to be replaced. On the other hand, we shall use option append if we want to append results to the existing file. Both the options are optional. Therefore, if none of these options are
+    used, asdoc will first determine whether a file with a similar name exists in the current directory. If it exists, asdoc will assume an append option. If the file does not exist, it will create a new file with the default name "Myfile.doc"
+
+    Example 1 : running asdoc without replace or append (first time)
+        `
+        sysuse auto
+        asdoc sum
+
+    The above lines of code will generate a new file with the name Myfile.doc. Next, if we estimate a table of correlation, we can replace the existing file Myfile.doc or append to it. Again, if we do not use any of these options, option append will be
+    assumed. So;
+
+    Example 2 : running asdoc without replace or append (second time)
+        `
+        asdoc cor
+        OR
+        asdoc cor, append
+
+    Both of the above commands serve the same purpose. The file Myfile.doc will now contain a table of summary statistics, followed by a table of correlations. However, had we typed the following, then the file would contain only table of correlations.
+        `
+        asdoc cor, replace
+
+
+    1.2 rowappend:
+    To develop a table row by row from different runs of the asdoc, we need to use option rowappend.  This option can be used with ttests [see example here], customized summary statistics [see examples here] or [read more examples on our website here ],
+    or in other instances where the table headers and structure do not change and appendable statistics have similar structure as those already in the table.
+
+
+    1.3 save(file_name):
+    Option save(file_name) is an optional option. This option is used to specify the name of the output file. If left blank, the default name will be used, that is Myfile.doc. If .doc extension is not preferred, then option save will have to be used
+    with the desired extension, such as .rtf
+
+    Example 3 : Naming the output file
+        `
+        asdoc sum, save(summary.doc)
+        OR
+        asdoc sum, save(summary.rtf)
+
+
+    1.4 title(table_title):
+    Option title(table_title) is an optional option. This option is used to specify table title.  If left blank, a default table title will be used.
+    asdoc sum, save(summary.doc) title(Descriptive statistics)
+
+        1.4.1 title not needed:
+        If table title is not needed, we can use an empty title using title(\i)
+        asdoc sum, save(summary.doc) title(\i)
+
+
+
+    1.5 Format row and column headers fhr() and fhc():
+    Option fhr() is used to format the row headers, i.e. the data given in the first column of each row. Option fhc() is used to format the column headers, i.e., the data given in the top cells of each column. Both the fhr() and fhc() will pass RTF
+    control words to the final document. See the following examples.
+
+    ------------------------------------------------------------
+    Objective                                    Code to use
+    ------------------------------------------------------------
+    Format column headers as bold               fhc(\b)
+    Format column headers as italic             fhc(\i)
+    Format column headers as bold and italic    fhc(\b \i)
+    Format row headers as bold                  fhr(\b)
+    Format row headers as italic                fhr(\b)
+    Format row headers as bold and italic       fhr(\b \i)
+    ------------------------------------------------------------
+
+    So to make a table of descriptive statistics with column hdeaders in bold and row headers in italic font, the code would be:
+    asdoc sum, fhr(\i) fhc(\b) replace
+
+
+
+    1.6 Font size i.e. fs(#)
+    The default font size of asdoc is 10 pt. Option fs(#) can be used to change it.  For example, fs(12) or fs(8), etc.
+
+
+    1.7 Font style i.e. font(font_name)
+    The default font style is Garamond in asdoc. Option font(font_name) can be used to change it.  For example, font(Arial) or font(Century), etc.
+
+
+
+    1.8 Decimal points i.e. dec(#)
+    The default decimal points in many commands are 3. In some commands, the decimal points are borrowed from the Stata output and hence they cannot be changed. In several commands, it is possible to change decimal points with option dec(#).  For
+    example, dec(2) or dec(4), etc.
+
+
+    1.9 Adding text lines to the output file i.e. text(text lines)
+    We can write text to our output file with option text(text lines).  This is useful when we want to add details or comments with the Stata output. In fact, this option makes asdoc really flexible in terms of adding tables and paragraph at the same
+    time.  We never have to leave the Stata interface to add comments or interpretation with the results. One trick that we can play is to use option fs() to change font size and mark headings and sub-headings in the document. Consider the following
+    examples [I have copied some text from www.wikipedia.org for this example]
+
+    1. Write a heading "Details on Cars" in our document
+        asdoc, text(Details on Cars) fs(16) replace
+
+    2. Now add some text
+        asdoc, text(A car is a wheeled motor vehicle used for transportation) append fs(10)
+        asdoc, text(Most definitions of car say they run primarily on roads, seat one ) append fs(10)
+        asdoc, text(to eight people, have four tires, and mainly transport people.) append fs(10)
+
+    3. Now add some statistics
+        sysuse auto, clear
+        asdoc sum, append fs(10)
+
+
+    1.10 Hide Stata output with option hide
+        We can suppress Stata output with option hide. It is important to mention that option hide might not work with some of the Stata commands (asdoc creates output from log files in some cases).
+
+
+    1.11 Getting Stata commands in output files (cmd)
+        If we need to report the Stata command in the output file, we can use the option cmd.
+
+
+    1.12 Abbreviate variable names with option (abb(#))
+        In case variable names are lengthy, they can be abbreviated in the output file with option abb(#). For example, abb(8). In many cases, the default value is 10. However, when option label is used, this value is set to = abb + 22.  If abbreviation
+        is not needed, we can use abb(.)
+
+
+    1.13 Report variable labels with option (label)
+        Several commands allow reporting variable labels instead of variable names. For example, the most commonly used commands for reporting statistics are correlate and summarize.  Both of these commands allow option label. For example :
+
+        asdoc cor, label
+        asdoc sum, label
+
+    1.14 Always report equal decimal points (tzok)
+        The default for report decimal points is to drop trailing zeros and report only valid decimal points. However, we can use the option tzok i.e. trailing zeros OK, to report equal decimal points for all values even if the trailing values are zero.
+        Therefore, using option dec(4) for reporting 4 decimal points, the value 2.1 will be reported as follows with and without option tzok.
+
+        Default style 2.1
+        with tzok option 2.1000
+
+
+
+    1.15 RTF control words on the go
+        It is pretty easy to pass on RTF control words with the sub-commands text and row, and option title of asdoc. See the following examples.
+
+        Write text in italics
+        asdoc, text(\i A car is a wheeled motor vehicle used for transportation)
+
+        Write text in bold
+        asdoc, text(\b A car is a wheeled motor vehicle used for transportation)
+
+        Write only the selected text "wheeled motor" in bold : The text formating can be turned off by adding zero to the control word. Therefore, to turn off the boldfacing, the control word is \b0
+        asdoc, text(A car is a \b wheeled motor \b0 vehicle used for transportation)
+
+        Write text in bold and italics
+        asdoc, text(\b \i A car is a wheeled motor vehicle used for transportation)
+
+        Write text as a new paragraph
+        asdoc, text(\par A car is a wheeled motor vehicle used for transportation)
+
+        For more on RTF control words, see this pag.
+
+
+Go to Table of Contents
+
+
+
+
+2. SUMMARY STATISTICS
+
+    asdoc creates excellent tables of summary statistics such as mean, standard deviation, minimum, maximum, etc.  asdoc offers four different methods of creating tables of summary statistics. These are discussed below with examples and relevant
+    options.
+
+
+    2.1 Simple tables of summary statistics:
+    To create a simple table of summary statistics, we normally type summarize or sum command in Stata. To send output from sum command to a Word document, we shall type the following:
+
+    Example 4 : Summary / descriptive statistics for all numeric variables
+        `
+        sysuse auto
+        asdoc sum
+
+    Example 5 : Summary / descriptive statistics for selected variables, reporting variable labels
+        `
+        asdoc sum price mpg rep78 headroom trunk, label replace
+
+
+    Example 6 : Summary / descriptive statistics with [if] [in] conditions
+        `
+        asdoc sum price mpg rep78 headroom trunk if price>4000
+
+    Example 7 : Reporting customized decimal points
+        `
+        asdoc sum, dec(2)
+
+
+
+    2.2 Detailed summary statistics:
+    To find detailed summary statistics, we normally type summarize, detail or sum, detail command in Stata. To make a table of detailed summary statistics, we shall just add detail after comma to the asdoc sum command. Using this option, the following
+    statistics are added to the table : observations, mean, standard deviation, minimum, maximum, 1st percentile, 99th percentile, skewness, and kurtosis. If additional statistics or a specific combination of statistics are required, then we can use the
+    customized statistics option [see Section 2.3 below]. Following are some examples:
+
+    Example 8: Detailed Summary statistics for all numeric variables
+        `
+        sysuse auto
+        asdoc sum, detail
+
+    Example 9 : Detailed Summary statistics, write to file named Summary stats.doc
+        `
+        asdoc sum, detail save(Summary stats.doc)
+
+
+    2.3 Custom summary statistics:
+    To make a table of a specific combination of statistics, we shall use the option statistics() with asdoc sum command. Let us discuss option statistics first.
+  
+
+        2.3.1 statistics() Option statistics allows the following statistics: N sd mean semean median count sum range min max var cv skewness kurtosis iqr p1 p5 p10 p25 p50 p75 p99 tstat
+
+        +------------+
+    ----+ Statistics +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+       N          Number of observations
+       mean       Arithmetic mean
+       sd         Standard deviation
+       semean     Stanard error of the mean
+       sum        Sum / total
+       range      Range
+       min        The smallest value
+       max        The largest value
+       count      Counts the number of non-missing observations
+       var        Variance
+       cv         Coefficient of variation
+       skewness   Skewness
+       kurtosis   Kurtosis
+       iqr        Interquartile range
+       p1         1st percentile
+       p5         5th percentile
+       p10        10th percentile
+       p25        25th percentile
+       p50        Median or the 50 percentile
+       p75        75th percentile
+       p99        99th percentile
+       tstat      t-statistics that the given variable == 0
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    Example 10 : Mean SD, t-value 1st and 99th percentiles
+        `
+        sysuse auto, clear
+        asdoc sum, stat(N mean sd tstat p1 p99)
+
+    Example 11 : Replace existing file, decimal point 5
+        `
+        asdoc sum, stat(N mean sd tstat p1 p99) replace dec(5)
+
+
+    2.4 Summary statistics over a grouping variable:
+    To find summary statistics separately for each category of a grouping variable, we can use by(varname) or the prefix bysort varname: with asdoc.
+
+    Example 12 : For each category of foreign: display Mean SD, t-value 1st and 99th percentiles
+        `
+        sysuse auto, clear
+        asdoc sum, stat(N mean sd tstat p1 p99) by(foreign)
+        OR
+        bys foreign: asdoc sum, stat(N mean sd tstat p1 p99)
+
+Go to Table of Contents
+
+
+
+3. CORRELATIONS
+
+    asdoc can create tables almost for all Stata commands related to correlations such as simple correlations, pairwise and partial correlations, interclass correlation, and tetrachoric correlation. The following syntax is used for asdoc cor command:
+
+    SYNTAX
+
+        asdoc cor [varlist] [if] [in], [nonum label dec(#) asdoc_options]
+
+
+    nonum : By default, asdoc writes the column header as (1), (2), ... (n) while creating a table of correlations.  Option nonum will force asdoc to write variable names as column headers.
+
+    label : By default, asdoc writes variable names as the row headers of the correlation table. Option label can be used to use variable labels instead of variable names.
+
+    The dec(#) can be used to specify the number of decimal points to be reported. For example, dec(2) will report correlation coefficients with two decimal points.
+
+    Other asdoc options are acceptable with correlation commands [See Section 1 for more details].  Specifically, these options are frequently used with correlation commands: save(filename), replace, append, dec(#), title(table_title) and fs(#)
+
+
+
+    3.1 Simple correlations
+    To make a table of correlation, we need to just add asdoc to the beginning of cor command.
+
+    Example 13 : Correlations among all numeric variables
+        `
+        sysuse auto, clear
+        asdoc cor
+
+    Example 14 : Correlations among selected variables, use variable labels
+        `
+        asdoc cor price trunk length weight, replace label
+
+    Example 15 : Selected variables, write to file corr.doc, table title 'Correlation'
+        `
+        asdoc cor price trunk length weight, save(corr.doc) title(Correlation)
+
+
+    3.2 Pairwise correlation
+
+    Example 16 : Add significance level to each entry
+        `
+        asdoc pwcorr price headroom mpg displacement, sig
+
+    Example 17 : Add stars to correlations significant at the 1% level after Bonferroni adjustment
+        `
+        asdoc pwcorr price headroom mpg displacement, star(.01) bonferroni
+
+
+    3.3 Partial and semipartial correlations
+
+    Example 18 : Partial and semipartial correlations
+        `
+        asdoc pcorr price mpg weight foreign
+
+
+    3.4 Intraclass correlation coefficients
+
+    Example 19 : Calculate ICCs for one-way random-effects model
+        `
+        webuse judges
+        asdoc icc rating target
+
+    Example 20 : Same as above but test whether ICCs equal 0.5
+        `
+        asdoc icc rating target, testvalue(.5)
+
+    Example 21 : Calculate ICCs for two-way random-effects model
+        `
+        asdoc icc rating target judge
+
+
+    3.5 Tetrachoric correlations for binary variables
+
+    Example 22 :  Correlations produced by tetrachoric
+        `
+        webuse familyvalues
+        asdoc tetrachoric RS074 RS075 RS076
+
+
+    3.6 Spearman's and Kendall's correlations
+
+    Example
+        `
+        webuse states2
+        asdoc spearman mrgrate divorce_rate medage
+
+
+Go to Table of Contents
+
+
+
+4. REGRESSIONS
+
+    asdoc can create three types of regression tables. The first type is the detailed table that combines key statistics from the Stata's regression output with some additional statistics such as mean and standard deviation of the dependent variable
+    etc. This table is the default option in asdoc.  The second table is the nested table that nests more than one regressions in one table.  The third table is the  wide table that reports regression components in a wide or row format. Since  wide
+    table offers more than 10 options, it is discussed in this separate section with relevant examples. The following options are available when exporting regression tables with asdoc.
+
+        4.1 nested
+        This option invokes the creation of nested regression tables. Without this option, the default (detailed regression) table is created by asdoc.
+
+        4.2 rep({t | se})
+        This option is used in combination with option nest for reporting t-values (t) or standard errors (se) with each of the regression coefficient. The default for this option is standard errors. Please note that option rep(t) will work only when
+        used at the start of the nested table. This is the case either (i) when option replace is used or (ii) the nested table is started for the first time.
+
+        4.3 append
+        append and replace are alternatives and are optional options. If left blank, option append is assumed, which will write the results to the existing file.
+
+        4.4 reset
+        Option reset causes asdoc to make a new nested table, i.e. instead of appending to the existing nested table, option reset will start a new table in the existing file.
+
+        4.5 title(table title)
+        Option title() is used to write table title.  For example, title(Table 1 - Fixed effects model)
+
+        4.6 cnames(Column title)
+        Option cnames() is used to write column title while making a nested table. By default, each column title is named as the name of the dependent variable in nested tables. We can change this name to our desired name with option cnames, e.g.,
+        cnames(OLS) or cnames(FE), etc.
+
+        4.7 dec(#)
+        Option dec() is used to specify the number of decimal points.  For example, dec(3)
+
+
+        4.8 add(text1, text2 | text3, text4...)
+        This option adds text legends to the bottom cells of the nested regression table. This option is usually used to show the presence or absence of some variables in the respective regression models. For example, we might include firm, year or
+        industry dummies in a regression model and just indicate with 'yes' or 'no' the presence of these dummies. This version of asdoc supports up to a maximum of three categories of legends. The text legends should be added in pairs of two, each one
+        separated by a comma. For example:
+            add(Year dummies, yes)
+            add(Year dummies, yes, industry dummies, yes)
+            add(Year dummies, yes, industry dummies, yes, country dummies, no)
+
+
+        4.9 keep(varlist) (used only with option nest)
+        keep(varlist) and drop(varlist) are alternatives; they specify coefficients to be included or omitted from the table.  The default is to display all coefficients.
+
+        4.10 stat(stats from e()) (used only with option nest)
+        stat() can be used to report additional regression statistics that are stored in macro e(). For example
+        stat(rmse, rss). Please note that each statistic should be separated by the character comma. Some of the most commonly used e() statistics of regression models are as follows:
+
+        +------------+
+    ----+ Statistics +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+       N          Number of observations. Reported by asdoc as default
+       r2         R-squared. Reported by asdoc as default
+       r2_a       Adjusted r-squared
+       F          F-statistics
+       rmse       RMSE
+       rss        Residual sum of squares
+       ll         Log-likelihood
+       chi2       Chi-square value
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        4.11 Set custom significance level for stars
+        The default significance levels for reporting stars are set at : *** for p-values <=0.01; ** for p-values <=0 .05, and * for p-values <=0.1. However, we can set our own levels for statistical significance using option setstars(). An example of
+        setstars option looks like:
+        setstars(***@.01, **@.05, *@.1)
+        As we can see from the above line, setstars separates each argument by a comma.  Each argument has three components. The first component is the symbol (in our case it is *) which will be reported for the given significance level. The second
+        component is the @ sign that connects the significance level with the symbol. And the third component is the value at which the significance level is set. So if we want to report stars such that
+
+        * for p-value .001 or less
+        ** for p-value .01 or less
+        *** for p-value .05 or less
+
+        We shall write the option setstars as
+
+        setstars(*@.001, **@.01, ***@.05)
+
+        An example would be:  asdoc reg price mpg rep78 headroom trunk weight length turn , replace setstars(*@.001, **@.01, ***@.05)
+
+
+        4.12 Suppressing stars [used with detailed regression tables]
+        If we are not interested in reporting significance stars, we can use option nostars
+
+
+        4.13 Suppressing confidence intervals [used with detailed regression tables]
+        If confidence intervals are not needed, we can use option noci
+
+        4.14 Confidence intervals at 99% [used with detailed regression tables]
+        asdoc follows the Stata's default to report confidence intervals at 95% level. However, one can change the level using the option level(##). So to use the cofidence internal at 99%:
+        `
+        sysuse auto, clear
+        asdoc reg price mpg rep78 headroom, level(99)
+
+        4.15 eform [exponentiated coefficients]
+        Option eform can be used to exponentiate coefficients or convert them to odd ratios in some regressions such as logit, etc.
+
+
+
+Examples : Detailed tables
+
+    Example 23 :  Single table for each regression (detailed tables)
+        `
+        sysuse auto, clear
+        asdoc reg price mpg rep78 headroom, save(Table_1.doc)
+
+    Example 24 :  Same as above, table add table title and use option append
+        `
+        sysuse auto, clear
+        asdoc reg price mpg rep78 headroom, title(Table 1: Regression results) save(Table_1.doc) append
+
+
+Examples : Nested regression tables
+
+    Example 25 : Make a nested table of four regressions
+        `
+        sysuse auto, clear
+        asdoc reg price mpg rep78, nest replace
+
+    Add variable headroom and then nest with existing table
+        `
+        asdoc reg price mpg rep78 headroom, nest append
+
+    Add variable weight and then nest with existing table
+        `
+        asdoc reg price mpg rep78 headroom weight, nest append
+
+    Adding text legend with option add(Foreign, yes) and drop the coefficient of foreign from table
+        `
+        asdoc reg price mpg rep78 weight foreign, nest append text(Foreign dummy, yes) drop(foreign)
+
+Video examples
+
+    Video example of exploring more options of asdoc for reporting regression tables can be accessed at our website  www.FinTechProfessor.com or at our Youtube channel
+
+
+
+4.3 Wide Regression tables: 
+  
+
+    Option wide can be used with regression commands for making wide regression tables.  Such tables can have functional usefulness to accommodate many regressions and can look great. Wide tables can be used in many circumstances; however, I mention one
+    of them below:
+
+    Portfolios / industry / country type regressions. Let's say that we have 20 portfolios and want to regress each portfolio returns on the same risk factors, that might include MKTrf, SMB, and HML. The only variable that change in each regression is
+    the portfolio returns. These 20 regressions can be aesthetically shown using wide regression table where each regression is reported in a row. All regressions are stacked over one another.
+
+    The following options are available with the option wide.  These options are further explained with the help of examples in the following section.
+
+        4.3.1. Without reporting t-values or se
+        4.3.2. Reporting t-values / se below the coefficients (t|se(below))
+        4.3.3. Reporting t-values / se side-ways (t|se(side))
+        4.3.3.1 Using bracket / parenthesis around t-values / sd (bracket)
+        4.3.3.2 Suppressing the t-values / se text in the header row (notse)
+        4.3.4. Reporting stars for significance (stars)
+        4.3.5. Reporting additional regression statistics (stat(stat_options))
+        4.3.6. Suppressing r-squared (nor2)
+        4.3.7. Adding customized row headers (add(text))
+        4.3.8. Adding customized column headers (canems(text))
+        4.3.9. Starting a new table within the same file (newtable)
+        4.3.10. Ending a table (end)
+        4.3.11. Using parenthesis as a text (opt btp)
+
+
+
+
+
+    4.3.1. Without Reporting t-values or p-values
+
+        Example 26 : Default output style for wide regressions
+
+        sysuse auto
+        asdoc reg price mpg rep78, replace wide
+
+        Add another regression where the dependent variable is trunk
+        asdoc reg trunk mpg rep78, wide
+
+        Add third regression where the dependent variable is weight
+        asdoc reg weight mpg rep78, wide
+
+
+
+    4.3.2. Reporting se / t-values below coefficients
+
+        Example 27
+
+        sysuse auto
+        asdoc reg price mpg rep78, wide replace t(below)
+
+        Add another regression where the dependent variable is trunk
+        asdoc reg trunk mpg rep78, wide t(below)
+
+        Add third regression where the dependent variable is weight
+        asdoc reg weight mpg rep78, wide t(below)
+
+    Note: we can report standard errors (se) instead of t-values by replacing t(below) with se(below) in the above examples.
+
+
+    4.3.3. Reporting se / t-values side-ways
+
+        Example 28
+
+        sysuse auto
+        asdoc reg price mpg rep78, wide replace t(side)
+
+        Add another regression where the dependent variable is trunk
+        asdoc reg trunk mpg rep78, wide t(side)
+
+        Add third regression where the dependent variable is weight
+        asdoc reg weight mpg rep78, wide t(side)
+
+        Note: we can report standard errors (se) instead of t-values by replacing t(side) with se(side) in the above examples.
+
+
+        4.3.3.1 Option bracket
+        The default is to use parenthesis around standard errors / t-values. However, we can use option bracket to use square bracket around these values.
+
+
+        4.3.3.2 Option notse
+        The default is to report t-values or se text in each alternate row when option t(below) or se(below) is used.  This text can be suppressed with option notse.
+
+
+    4.3.4. Reporting stars for significance
+
+        Option stars adds asterisks with regression coefficients such that *** are added for 1%, ** for 5%, and * for 10% level of significance.
+
+        Example 29
+
+        sysuse auto
+        asdoc reg price mpg rep78, wide replace stars
+
+        Add another regression where the dependent variable is trunk
+        asdoc reg trunk mpg rep78, wide stars
+
+
+
+    4.3.5. Reporting Additional regression statistics
+        Option stat() can be used to report additional regression statistics that are stored in macro help e()}.  For example, to report RMSE and RSS of a regression, we shall add option stat(rmse, rss). Some of the most commonly used e() statistics of
+        regression models are as follows. Please note that any other statistics from macro e() can be reported in addition to the following.
+
+        +--------------------------------------------+
+    ----+ Additional regression statistics to report +-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+       N          Number of observations. Reported by asdoc as default
+       r2         R-squared. Reported by asdoc as default
+       r2_a       Adjusted r-squared
+       F          F-statistics
+       rmse       RMSE
+       rss        Residual sum of squares
+       ll         Log-likelihood
+       chi2       Chi-square value
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+    Report N, adjusted R2, and RMSE
+
+        Example 30
+
+        asdoc reg price mpg rep78, wide stat(N rmse r2_a) replace
+
+
+    4.3.6. Suppressing R2
+
+        With option wide, the r-squared (R2) is reported by default. However, it can be suppressed by option nor2. For example:
+
+        Example 31
+
+        asdoc reg price mpg rep78, wide nor2 replace
+
+
+    4.3.7. Adding customized row text
+
+        Option add(text) can be used to specify the text that appears in the first cell of each row.  By default, asdoc reports name of the dependent variable in the first cell of each row.  See the following examples where the dependent variables are
+        price and trunk in the two regressions, respectively. We shall report the text Regression 1 and Regression 2 instead.
+
+        Example 32
+
+        sysuse auto
+        asdoc reg price mpg rep78, wide replace add(Regression 1)
+
+        Add another regression where dependent variable is trunk
+        asdoc reg trunk mpg rep78, wide add(Regression 2)
+
+
+
+    4.3.8. Adding customized column text
+
+        Option cnames(text) can be used to specify the text that appears in the header column.  By default, asdoc reports name of the independent variable in the header column.  If we were to use a different text, we shall use option cnames(text1 text2
+        ...).  For example
+        asdoc reg price, wide cnames(Abnormal_ret)
+
+
+    4.3.9. Starting a new table within the same file
+
+        Using option newtable, we can start a new table within the existing file. So let us write two regressions to Table 1 and two more regressions to Table 2 in the same file.
+
+        Example 33
+
+        sysuse auto
+        asdoc reg price mpg rep78, wide replace
+        asdoc reg trunk mpg rep78, wide
+
+
+    Start a new table within the same file, this time we are not using option replace. Please note the first line that works as a title for the new table.  The option fs(14) actually makes the font size bigger than the normal text, that has a default
+        value of 10. Please also note the RTF control word \par at end of the sentence, that marks a new paragraph in the document and ends the previously started table.
+
+        Example 34
+        asdoc, text(My New Table \par) fs(14)
+        asdoc reg length mpg rep78, wide newtable
+        asdoc reg trunk mpg rep78, wide
+
+
+    4.3.10. Ending a table
+        Using option end, asdoc will add the following text after the last row of the table.
+        a. If option t() is used, then the text "t-statistics are parentheses" will be added.
+        b. If option se() is used, then the text "Standard errors are in parentheses will be added."
+        c. If option stars is used, then the text "*** p<0.01, ** p<0.05, * p<0.1 will be added."
+        If option end is not used, asdoc will still report complete table, however, the above text will not be added to the end of the table.
+
+
+    4.3.11. Using parenthesis as a text with option btp
+        Since asdoc uses parenthesis "()" as parsing characters, it can be tricky to use them as simple text.  Option btp allows converting square brackets to parentheses when they are written to the Word file.  For example, if we use option add(text)
+        and use parenthesis inside this option, this will confuse the parsing process.  Therefore, we shall play a trick to first use square brackets in the text and then convert them back to parentheses. Therefore, if we write the text
+
+        Example 35
+
+        asdoc reg mpg price trunk, wide add(Millege[mpg]) replace btp
+
+        The Word file will contain text Millege(mpg) in the first cell of the first row, instead of Millege[mpg]. This option also works with option text.
+
+
+
+
+Go to Table of Contents
+
+
+
+
+4.4 Regression over groups using the bysort prefix 
+  
+
+    In version 2.0 of asdoc, I have worked on the bysort functionality to work with all types of regression tables i.e.  detailed regressions,  nested regressions, and  wide regression tables. Following are few examples to show the basic syntax:
+
+    Example dataset : Let us use the grunfeld panel dataset. It has 10 companies identified by the grouping variable companies and has 20 years of data for each company. We shall run a regression separately for each company and write the results to
+    MyFile.doc.
+
+
+    Example 36 : Detailed regression table
+        `
+        webuse grunfeld, clear
+        bys company: asdoc reg invest mvalue kstock, replace
+
+
+    Example 37 : Nested regression table
+        `
+        bys company: asdoc reg invest mvalue kstock, nested replace
+
+
+    Example 38 : Wide regression table
+        `
+        bys company: asdoc reg invest mvalue kstock, wide replace
+
+
+Go to Table of Contents
+
+
+
+5. FREQUENCY TABLES
+
+    As with other commands, we need to just add asdoc as a prefix to the tabulation commands that includes tabulate, tabulate1 tabulate2, tab1, tab2, etc.  Since frequency tables in Stata can assume different structures, asdoc writes these tables from
+    log files. We can use the following options of asdoc to control asdoc behavior.  (1) replace / append (2)  save(filename) (3)  title(text) (4) fs(#) (5) hide. These options are discussed in detail in  Section 1.
+
+
+    5.1 One-way table
+
+    asdoc generally follows the syntax structure and options of the tab command.  Yet, asdoc offers one additional option (the option is nocf) of suppressing the cumulative frequencies' column of the tab command.
+
+    Example 39 :  One-way table
+        `
+        sysuse auto, clear
+        asdoc tabulate rep78, replace
+
+    Please note that replace is asdoc option to replace the existing file.
+    If we were to write to the existing file, we would then use option append, instead of replace.
+
+    Example 39.1 :  One-way table with no cumulative frequencies
+        `
+        asdoc tabulate rep78, replace nocf
+
+    5.2 Two-way table of frequencies
+
+    Example 40 : Two-way table of frequencies
+        `
+        webuse citytemp2, clear
+        asdoc tabulate region agecat, replace
+
+    Example 41 : Include row percentages
+        `
+        asdoc tabulate region agecat , nokey row replace
+    Note nokey suppresses the display of a key above two-way tables.
+
+    Example 42 : Include column percentages
+        `
+        asdoc tabulate region agecat , nokey column replace
+
+    Example 43 : Include row percentages, suppress frequency counts
+        `
+        asdoc tabulate region agecat, nokey row nofreq replace
+
+
+    5.3 One- and two-way tables of summary statistics
+
+    Example 44 : One-way tabulation with summary statistics
+        `
+        sysuse auto, clear
+        asdoc tabulate rep78, summarize(mpg) replace
+
+    Example 45 : Two variables tabulation with summary statistics
+        `
+        generate wgtcat = autocode(weight, 4, 1760, 4840)
+        asdoc tabulate wgtcat foreign, summarize(mpg) replace
+
+    Example 46 : Suppress frequencies
+        `
+        asdoc tabulate wgtcat foreign, summarize(mpg) nofreq replace
+
+
+
+    5.4 Multiple-way tabulation (tab1)
+    tab1 produces a one-way tabulation for each variable specified in varlist.
+
+    Example 47 : Multiple-way tabulation
+        `
+        sysuse nlsw88, clear
+        asdoc tab1 race married grade, replace
+
+
+    5.5 Two-way for all possible combinations (tab2)
+
+    Example 48 : Two variables tabulation with summary statistics
+        `
+        asdoc tab2 race south, replace
+
+Go to Table of Contents
+
+
+
+6. COMPACT TABLES (TABSTAT)
+
+    asdoc makes some elegant tables when used with tabstat command. There are several custom-made routines in asdoc that create clean tables from tabstat command.  asdoc fully supports the tabstat command structure and its options. And, yes asdoc allows
+    one additional statistics, that is, t-statistics alongside the allowed statistics in tabstat. For reporting purposes, asdoc categorizes tabstat commands in two groups: (1) stats without a grouping variable (2) stats over a grouping variable.
+
+
+    6.1 Tabstat Without-by
+
+If statistics are less than variables, the table is transposed, i.e. statistics are shown in columns, while variables are shown in rows
+
+    Example 49 : One variable, many stats, including t-statistics
+        `
+        sysuse auto, clear
+        asdoc tabstat price , stat(min max mean sd median p1 p99 tstat) replace
+
+    Example 50 : Many variables, one statistic
+        `
+        asdoc tabstat price mpg rep78 headroom trunk weight length foreign , stat( mean) replace
+
+    Example 51 : Many variables, many statistics
+        `
+        asdoc tabstat price mpg rep78 headroom trunk weight length foreign , stat( max mean sd median p1 p99 tstat) replace
+
+
+
+    6.2 Tabstat with-by
+
+    Example 52 :
+        `
+        bysort foreign: asdoc tabstat price mpg rep78 headroom trunk weight length, stat(mean) replace
+        OR
+        asdoc tabstat price mpg rep78 headroom trunk weight length, stat(mean) by(foreign) replace
+
+    Example 53 : By with many variables and many statistics
+        `
+        bysort foreign: asdoc tabstat price mpg rep78 headroom trunk weight length, stat(mean sd p1 p99 tstat) replace
+
+Go to Table of Contents
+
+
+
+7. FLEXIBLE TABLE OF SUMMARY STATS (TABLE)
+
+    Exporting tables from table command was the most challenging part in asdoc programming. Nevertheless, asdoc does a pretty good job in exporting table from table command. asdoc accepts almost options with table command, except cellwidth(#),
+    stubwidth(#), and csepwidth(#).
+
+
+    7.1 One-way table
+
+    Example 54 : One-way table; frequencies shown by default
+        `
+        sysuse auto, clear
+        asdoc table rep78, title(Table of Freq. for Repairs) replace
+
+    Example 55 : One-way table; show count of non-missing observations for mpg}
+        `
+        asdoc table rep78, contents(n mpg) replace
+
+
+    Example 56 : One-way table; multiple statistics on mpg requested
+        `
+        asdoc table rep78, c(n mpg mean mpg sd mpg median mpg) replace
+
+
+    Example 57 : Add formatting
+        `
+        asdoc table rep78, c(n mpg mean mpg sd mpg median mpg) format(%9.2f) replace
+
+
+    7.2 Two-way table
+
+    Example 58 : Two-way table; frequencies shown by default
+        `
+        asdoc table rep78 foreign, replace
+
+    Example 59 : Two-way table; show means of mpg for each cell
+        `
+        asdoc table rep78 foreign, c(mean mpg) replace
+
+
+    Example 60 : Add formatting
+        `
+        asdoc table rep78 foreign, c(mean mpg) format(%9.2f) center replace
+
+
+    Example 61 : Add row and column totals
+        `
+        asdoc table rep78 foreign, c(mean mpg) format(%9.2f) center row col replace
+
+
+    7.3 Three-way table
+
+    Example 62 : Three-way table
+        `
+        webuse byssin, clear
+        asdoc table workplace smokes race [fw=pop], c(mean prob) replace
+
+    Example 63 : Add formatting
+        `
+        asdoc table workplace smokes race [fw=pop], c(mean prob) format(%9.3f) replace
+
+
+    Example 64 : Request supercolumn totals
+        `
+        asdoc table workplace smokes race [fw=pop], c(mean prob) format(%9.3f) sc replace
+
+
+
+    7.4 Four-way table
+
+    Example 65 : Four-way table
+        `
+        webuse byssin1, clear
+        asdoc table workplace smokes race [fw=pop], by(sex) c(mean prob) format(%9.3f) replace
+
+
+    Example 66 : Four-way table with supercolumn, row, and column totals
+        `
+        asdoc table workplace smokes race [fw=pop], by(sex) c(mean prob) format(%9.3f) sc col row replace
+
+Go to Table of Contents
+
+
+8. T-TESTS (TTEST)
+
+    The primary challenge in reporting results of the ttest command is what statistics to report and in which format to report. The format should be such that it occupies minimum space possible. Over many other possibilities, I preferred the format of a
+    single line for all types of t-tests. Therefore, whether it is one-sample t-test or two-sample or other forms, asdoc manages to report the results line by line for each test. asdoc also allows accumulating results from different runs of t-tests.
+    For this purpose, the option rowappend of asdoc really comes handy.  With ttest command, we can use the following options of asdoc to control asdoc behavior.  (1) replace / append (2)  save(filename) (3)  title(text) (4) fs(#) (5) hide. (6)  stats()
+    (7) rowappend. These options are discussed in detail in  Section 1.. Option stats and rowappend are discussed below:
+
+
+        6.stat(mean se df obs t p sd dif) : Without stat() option, asdoc reports number of observations (obs), mean, standard error, t-value, and p-value with t-tests.  However, you can select all or few statistics using the stat option.
+
+        +------------+
+    ----+ Statistics +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+       n        Number of observations
+       mean     Arithmetic mean
+       se       Standard error
+       df       degrees of freedom
+       obs      Number of observations
+       t        t-value
+       p        p-value
+       sd       standard deviation
+       dif      difference in means if two-sample t-test
+
+
+        7. rowappned : ttest tables can be constructed in steps by adding results of different t-tests to an existing table one by one using option rowappend. There is only one limitation that the t-tests are performed and asdoc command applied without
+        writing any other results to the file in-between.  See the following example:
+
+
+    8.1 One-sampel t-test
+
+
+    Example 67 : Appending t-test results with rowappend option
+        `
+        sysuse auto, clear
+        asdoc ttest rep78==0, replace title(T-test results : mean == 0)
+        asdoc ttest price==0, rowappend
+        asdoc ttest mpg==0, rowappend
+        asdoc ttest turn==0, rowappend
+        asdoc ttest weight==0, rowappend
+        asdoc ttest length==0, rowappend
+
+
+    Example 68 : Repeat the above tests, requesting specific statistics
+        sysuse auto, clear
+        asdoc ttest rep78==0, replace title(T-test results : mean == 0) stat(obs mean se df t)
+        asdoc ttest price==0, rowappend stat(obs mean se df t)
+        asdoc ttest mpg==0, rowappend stat(obs mean se df t)
+        asdoc ttest turn==0, rowappend stat(obs mean se df t)
+        asdoc ttest weight==0, rowappend stat(obs mean se df t)
+        asdoc ttest length==0, rowappend stat(obs mean se df t)
+
+
+    8.2 Two-sample t-test using groups i.e. with option the by()
+
+    Example 69: Two-sample t-test using groups i.e. with the option by()
+        `
+        asdoc ttest mpg, by(foreign) replace
+
+
+    8.3 Two-sample t-test using variables
+
+    Example 70: Two-sample t-tes using variables
+        `
+        asdoc ttest mpg==price, replace
+
+    And to add similar tests to the same table, we can use rowappend
+
+    Example 71: append more tests
+        `
+        asdoc ttest trunk==price, rowappend
+
+
+    8.4 Two sample test over groups
+
+    Example 72: Two sample test over groups
+        `
+        bysort foreign: asdoc ttest mpg == price, replace
+
+Go to Table of Contents
+
+
+9. TABLE OF MEANS (TABSUM)
+    The tabsum can be implemented using tabulate command. Therefore, see sub-section 5.3 tabsum for more details.
+
+
+10. MEANS, PROPORTIONS, RATIO, TOTAL 
+
+    Example 73: Arithmetic, geometric, and harmonic means
+        `
+        sysuse auto, clear
+        asdoc ameans price trunk, replace
+
+
+    Example 74: Proportions
+        `
+        asdoc proportion rep78, replace
+
+    Example 75: Estimate proportions over values of foreign
+        `
+        asdoc proportion rep78, over(foreign) replace
+
+
+    Example 76:  Estimate ratio of mpg1 to mpg2
+        `
+        webuse fuel, clear
+        asdoc ratio mpg1/mpg2, replace
+
+    Example 77: Estimate ratio of death to pop and ratio of marriage to pop
+        `
+        webuse census2, clear
+        asdoc ratio ( death/pop) ( marriage/pop), replace
+        Please note that the use of the colon is not allowed as asdoc uses color for parsing bysort prefix.
+
+
+    Example 78: Estimate totals over values of sex, using swgt as pweights
+        `
+        webuse census2, clear
+        asdoc ratio ( death/pop) ( marriage/pop), replace
+
+
+11. EXPORTING DATASET (LIST)
+
+    Stata's list command displays the values of variables. asdoc can export these values to a file in form of a nicely formatted table. asdoc implements the most basic version of list command and might not accept some of its options such as mean, sum,
+    etc. However, the [if] [in] qualifiers are accepted.
+
+    Example 79: List and export values of varlist for first 10 observations
+        `
+        sysuse auto, clear
+        asdoc list price trunk mpg turn in 1/10 , replace
+
+    Example 80: List and export values all variables if foregin==1
+        `
+        asdoc list if foreign==1, replace
+
+
+
+12. EXPORTING A MATRIX
+
+    asdoc can export a Stata's matrix to a file in form of a nicely formatted table.  The syntax is given below :
+
+    asdoc wmat, matrix(matrix_name) [rnames(row names) cnames(column names) replace append other_options]
+
+    Description :  wmat is the command name - an abbreviation for writing matrix. Option matrix() is a required option to get name of an existing matrix.  Option rnames() and cnames() are optional options to specify row names and column names of the
+    matrix. If these options are left blank, existing row and column names of the matrix are used. Other options of asdoc can also be used with wmat. For example, replace will replace an existing output file, while append will append to the existing
+    file.  fs() sets the font size, while option title() can be used to specify title of the matrix in the output file.
+
+    Example 81: Make a matrix of uniform numbers
+        `
+        mat A = matuniform(10, 5)
+
+    Example 82: Write matrix to file
+        `
+        asdoc wmat, mat(A) replace
+
+    Example 83: Append another matrix to existing file, with custom column and row names
+        `
+        mat B = matuniform(4, 6)
+        asdoc wmat, mat(B) append rnames(Sugar Honey Muffin Pie) cnames(Chili Diablo Pepper Capsicum Kambuzi Malagueta)
+
+
+
+13. The survey prefix command
+
+    asdoc can also work with the survey prefix command svy. Just like with other Stata commands, the word asdoc needs to be added before the svy: prefix. See the following examples:
+
+    Example 84: svy: mean
+        `
+        webuse nhanes2f, clear
+        svyset psuid [pweight=finalwgt], strata(stratid)
+        asdoc svy: mean zinc
+
+    Example 85: svy: regress
+        `
+        webuse nhanes2f, clear
+        svyset psuid [pweight=finalwgt], strata(stratid)
+        asdoc svy: regress zinc age age2 weight female black orace rural, replace
+
+
+    Example 86: If we were to nest svy: regressions
+        `
+        webuse nhanes2f, clear
+        svyset psuid [pweight=finalwgt], strata(stratid)
+        asdoc svy: regress zinc age age2 weight female black orace rural, replace nest
+
+
+    Example 87: If we were to nest svy: regressions
+        `
+        webuse nhanes2f, clear
+        svyset psuid [pweight=finalwgt], strata(stratid)
+        asdoc svy: regress zinc age age2 weight female black orace rural, replace nest
+        asdoc svy: regress zinc age age2 weight female black , append nest
+        asdoc svy: regress zinc age age2 weight female , append nest
+
+
+    Example 88: Report additional regression statistics from macro e()
+        `
+        webuse nhanes2f, clear
+        svyset psuid [pweight=finalwgt], strata(stratid)
+        asdoc svy: regress zinc age age2 weight female black orace rural, replace nest stat(N_strata, N_psu)
+        asdoc svy: regress zinc age age2 weight female black , append nest stat(N_strata, N_psu)
+        asdoc svy: regress zinc age age2 weight female , append nest stat(N_strata, N_psu)
+
+
+14. ASLIST : LIST OF UNIQUE VALUES
+
+    To report one value per group or unique values for varlist, we can use aslist command after asdoc. See the following examples:
+
+    Example 89: List unique categories of race and married
+        `
+        sysuse nlsw88.dta, clear
+        decode race, gen(race2)
+        asdoc aslist race2 married, replace
+
+
+15. DESCRIBE : EXPORT VARIABLE NAMES AND LABELS
+
+    To use asdoc with describe command, we shall just add asdoc as a prefix to describe. We can also use the following options to add details to the output file in addition to the variable name and label.
+
+        +------------------+
+    ----+ describe options +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+       position    a column containing the numeric position of the original variable (1, 2, 3, ...)
+       type        a column containing the storage type of the original variable, such as "str18", "int", "float", ....
+       isnumeric   a column equal to 1 if the original variable was numeric and equal to 0 if it was string.
+       format      a column containing the display format of the original variable, such as "%-18s", "%8.0gc", ....
+       vallab      a column containing the name of the value label associated with the original variable, if any.
+
+    Example 90: Describe names and varlabel
+        `
+        sysuse auto, clear
+        asdoc des , replace
+
+    Example 91: Add variable position
+        `
+        sysuse auto, clear
+        asdoc des, position replace
+
+    Example 92: With all possible options
+        `
+        sysuse auto, clear
+        asdoc des, position type isnumeric format vallab replace
+
+
+16. BUILDING TABLES ROW BY ROW (row)
+
+    Option row, allows building a table row by row from text and statistics.  In each run of asdoc with option row, a row is added to the output table. This is a useful feature when statistics are collected from different Stata commands to build
+    customized tables. The syntax for using this option is given below:
+
+    Syntax:
+
+    asdoc, row(data1, data2, data3, data4, data5, ...) [dec(#) replace cs(#) title(text)]
+
+    As shown above, we shall type nothing after the word asdoc. Therefore, all other arguments of the command come after the comma.
+
+    16.1. The first required option is row(data1, data2, ...). Here data1, data2, ... can be either a numeric value, string, or both. Within the brackets after option row, each piece of data should be separated by the character comma and hence it will
+    be written to a separate cell in the output table.
+
+    16.2.The optional options include dec() that specifies the number of decimal points if the data is numeric in nature. For example, for reporting two decimal points, the option dec will look like dec(2). If left empty, the default value for dec is
+    three.
+
+    16.3. Next optional option is cs(#) that specifies the cell width. It can take values from 1 to 10. It is the horizontal width of cells in the output table.  A bigger cell width is required to accommodate more data. If this option is not specified,
+    asdoc will use its default cell width that is calculated on the basis of a number of characters in the data and number of data items supplied through the option row.
+
+    16.4. Other options of asdoc can also be used with option row such as replace that will replace the existing file; append (can be left blank) to append to the existing file; title(title of the table), etc.
+
+    Example 93: Collect statistics from dfuller command}
+
+        webuse air2, clear
+        asdoc, row(Variables, Z, p-value, lags) title(Table: Dfuller test results) replace
+        dfuller air
+        asdoc, row( Air1, `r(Zt)', `r(p)', `r(lags)') dec(3)
+
+        In the first line, we downloaded the air2 data from the StataCorp server. Then, we wrote the title row of the table. In the third line, we applied Dicky-Fuller test to the variable air.  And in the 4th line, we collected the required statistics
+        i.e. the Z-test value, p-value, and the number of lags and sent these stats to a word table. These statistics are left behind by the dfuller test in r() macros. We can keep on adding rows to this table. Let us create another variable, apply 
+        dfuller test, and send these statistics to the same MS Word file.
+
+        gen air2 = air+air[_n-1]/2
+        dfuller air2
+        asdoc, row( Air1, `r(Zt)', `r(p)', `r(lags)') dec(3)
+
+17. ACCUMULATING TEXT AND STATISTICS (accum)
+
+        As discussed above in Section 16, we can create table from text and statistics that are collected from different Stata commands. There is one challenge to developing flexible tables with option row - that a given row has to be written in one go.
+        So once a row is written, no further cells can be appended to the same row. This means that we need to first collect all the required bits of information before writing a row. Collecting and holding these bits of information can be tricky or too
+        time-consuming. To facilitate this process, asdoc offers option accum(data1, data2, ...).  The word accum is an abbreviation that I use for accumulate. The syntax of this option is given below:
+
+        asdoc, accum(data1, data2, data3, data4, data5, ...) [ dec(#) show ]
+
+        Actually, the above command can be run as long as the limit of gloabal macro to hold data is not reached.  The above command will accumulate text and statistics from different runs of asdoc and hold them in the global macro ${accum}. Once we
+        have accumulated all the needed bits of information in the global macro, then its contents can be written to the Word table with option row. Option show can be used to show contents of the global macro ${accum}.
+
+        Assume that we want to build an odd table that presents the number of observations, mean, and standard deviation for two variables in two different time periods.  The researcher wants to follow the following format:
+
+----------------------------------------------------------------------
+invest                          kstocks
+------------------------------------------------------------
+Period          N       Mean    SD                N     Mean    SD
+----------------------------------------------------------------------
+
+1935-40 110     108.49  147.62           110    156.24  124.59
+
+1941-45 90      191.74  273.17           90     422.40  379.87
+
+----------------------------------------------------------------------
+
+        Example 94
+
+        webuse grunfeld, clear
+
+        asdoc, row( \i, \i, invest, \i, \i, kstock,\i) replace
+        asdoc, row( Periods, N, Mean, SD, N, Mean, SD)
+
+        sum invest if inrange(year , 1935, 1945)
+        asdoc, accum(`r(N)', `r(mean)', `r(sd)')
+        sum kstock if inrange(year , 1935, 1945)
+        asdoc, accum(`r(N)', `r(mean)', `r(sd)')
+        asdoc, row( 1935-1945, $accum)
+
+
+        Explanation:
+        1. The second row of our required table reveals that a total of 7 cells are needed, this is why we created 7 cells in the first line of code. The text " \i," is a way of entering an empty cell. We entered empty cells so that the variables names
+        invest and kstocks are written in the middle of the table.
+        2. The second line of code writes the table header row.
+        3. The third line finds summary statistics. We shall collect our required statistics from the macros that are left behind in r() by the sum command.
+        4. The fourth line accumulates the required statistics for our first variable invest
+        5. We are not yet writing the accumulated statistics to the Word file. So we find statistics for our second variable kstocks in the fifth line.
+        6. We again accumulate the needed statistics for our second variable in the sixth line.
+        7. Since our row of required statistics is now complete, we write the accumulated statistics and the first row label, i.e, 1935-1945 to our Word file.
+
+
+        Let us write one more row to the table. This time, the statistics are based on years 1946-1954
+
+        sum invest if inrange(year , 1946, 1954)
+        asdoc, accum(`r(N)', `r(mean)', `r(sd)')
+        sum kstock if inrange(year , 1946, 1954)
+        asdoc, accum(`r(N)', `r(mean)', `r(sd)')
+        asdoc, row( 1946-1954, $accum)
+
+
+
+18. OTHER Stata COMMANDS
+
+    Stata commands that have some output in the result window can also be used with asdoc. Even when a command does not have an output, asdoc can be added as a prefix. In such cases, asdoc just passes the commands to Stata without generating any output.
+    asdoc might come up with a less than pretty output if it is used with a Stata command that does not have a standard table format. If a user-written command that estimates regression model is used with asdoc, option isreg can be used to tell asdoc
+    that the command is a regression command. Another way is to add the command name to the REG macro in the sub-program getcmd. In order for asdoc to work with a regression program, it is necessary that the given program is rclass and leaves behind
+    standard r(table). Following are few examples in this category:
+
+    Example 95: Other Stata commands with asdoc: the case of mvtest
+        `
+        webuse iris, clear
+        asdoc mvtest normality pet* sep*, bivariate univariate stats(all) replace
+
+
+
+19. HOW TO CITE 
+
+    In-text citation style : You can mention the following in the footnotes with tables generated by asdoc:
+
+    These tables were created with asdoc program, written by Shah (2018).
+
+    Bibliography citation style :
+
+    Shah, A. (2018). "asdoc:  Create high-quality tables in MS Word from Stata output"
+
+
+
+20. INDEX TO VIDEOS and BLOG ENTRIES on asdoc
+
+    YouTube video :  Creating descriptive statistics with asdoc
+    YouTube video :  Create tabs and cross-tabs with asdoc
+    YouTube video :  Create publication quality table of correlation in Stata with asdoc
+    YouTube video :  Create publication quality regression tables in Stata with asdoc
+    YouTube video :  Regression over groups in Stata | asdoc | export tables to MS Word or in RTF
+    YouTube video :  Writing all stats to a single Word file
+
+    Blog post :  A simple example to get started with asdoc
+    Blog post :  How to export high-quality table of correlations from Stata to MS Word
+    Blog post :  Exporting tabs and cross-tabs to MS Word from Stata with asdoc
+    Blog post :  Ordering variables in a nested regression table of asdoc in Stata
+    Blog post :  Customizing the regression output Confidence Interval, adding stars, etc.
+    Blog post :  Export Stata dta file to MS Word
+    Blog post :  Exporting customized descriptive statistics from Stata to MS Word
+
+
+
+
+21. WANNA SAY THANKS? 
+
+    This is the biggest program I have ever written. asdoc took more than 12 months to complete (average 14 hours per day in the first stage of development, that was around 3 months).  It has more than 50 functions written in Mata language and more than
+    20 programs written in the Stata language. All these programming efforts span over 9800 lines of codes, 1310 IF statements, and 544 ELSE statements. If you like it and find it useful, please do cite it in your research work [See how to cite it] and
+    send your thanks and comments to attaullah.shah@imsciences.edu.pk. If you think that you can thank me otherwise, then my Paypal account address is attaullah.shah@imsciences.edu.pk A small token of thanks will suffice.
+
+
+22. FUTURE PLANS
+
+    It is now almost three years in developing asdoc and constantly adding features to it.  With the addition of _docx and xl() classes to Stata, it is high time to add support for native docx and xlsx output to asdoc. Also, given that there exists a
+    significant number of LaTeX users, asdoc should be able to create LaTeX documents.  It gives me immense pleasure to annouce  asdocx that is not only more flexible in making customized tables, but also creates documents in native docx, xlsx, rtf, and
+    .tex formats. If you have enjoyed and find asdoc useful, please consider buying a copy of asdocx to support its development. Details related to asdocx can be found on  this page.
+
+Author
+
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: *
+*                                                                   *
+*            Dr. Attaullah Shah                                     *
+*            Institute of Management Sciences, Peshawar, Pakistan   *
+*            Email: attaullah.shah@imsciences.edu.pk                *
+*            www.FinTechProfessor.com                               *
+*            www.OpenDoors.Pk                                       *
+*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*
+
+
+Also see
+
+    asm : for momentum portfolios
+    astile : for creating fastest quantile groups
+    asgen : for weighted average mean
+    asrol : for rolling-window statistics
+    asreg : for rolling-window, by-group, and Fama and MacBeth regressions
+    ascol : for converting asset returns and prices from daily to a weekly, monthly, quarterly, and yearly frequency
+    searchfor : for searching text in data sets

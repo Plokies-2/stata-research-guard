@@ -1,0 +1,124 @@
+[R] lincom -- Linear combinations of parameters
+              (View complete PDF manual entry)
+
+
+Syntax
+
+        lincom exp [, options]
+
+    options           Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    eform             generic label; exp(b)
+    or                odds ratio
+    hr                hazard ratio
+    shr               subhazard ratio
+    irr               incidence-rate ratio
+    rrr               relative-risk ratio
+    level(#)          set confidence level; default is level(95)
+    display_options   control column formats
+
+    df(#)             use t distribution with # degrees of freedom for computing p-values and confidence intervals
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    exp is any linear combination of parameters that is valid syntax for test; see [R] test.  exp must not contain an equal sign.
+    collect is allowed; see prefix.
+    df(#) does not appear in the dialog box.
+
+
+Menu
+
+    Statistics > Postestimation
+
+
+Description
+
+    lincom computes point estimates, standard errors, t or z statistics, p-values, and confidence intervals for linear combinations of parameters after any estimation command, including survey estimation.  Results can optionally be displayed as odds
+    ratios, hazard ratios, incidence-rate ratios, or relative-risk ratios.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+    eform, or, hr, shr, irr, and rrr all report coefficient estimates as exp(b) rather than b.  Standard errors and confidence intervals are similarly transformed.  or is the default after logistic.  The only difference in these options is how the
+        output is labeled.
+
+        Option    Label        Explanation             Example commands
+        ---------------------------------------------------------------
+        eform     exp(b)       Generic label           cloglog
+        or        Odds ratio   Odds ratio              logistic, logit
+        hr        Haz. ratio   Hazard ratio            stcox, streg
+        shr       SHR          Subhazard ratio         stcrreg
+        irr       IRR          Incidence-rate ratio    poisson
+        rrr       RRR          Relative-rate ratio     mlogit
+        ---------------------------------------------------------------
+
+        exp may not contain any additive constants when you use the eform, or, hr, irr, or rrr option.
+
+    level(#) specifies the confidence level, as a percentage, for confidence intervals.  The default is level(95) or as set by set level.
+
+    display_options:  cformat(%fmt), pformat(%fmt), and sformat(%fmt); see [R] Estimation options.
+
+    The following option is available with lincom but is not shown in the dialog box:
+
+    df(#) specifies that the t distribution with # degrees of freedom be used for computing p-values and confidence intervals.  The default is to use e(df_r) degrees of freedom or the standard normal distribution if e(df_r) is missing.
+
+
+Examples
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse regress
+        . regress y x1 x2 x3
+
+    Estimate linear combinations of coefficients
+        . lincom x2-x1
+        . lincom 3*x1 + 500*x3
+        . lincom 3*x1 + 500*x3 - 12
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse lbw
+
+    Fit logistic regression, reporting coefficients
+        . logit low age lwt i.race smoke ptl ht ui
+
+    Estimate linear combination of coefficients; report odds ratio
+        . lincom 2.race+smoke, or
+
+    Fit logistic regression, reporting odds ratios
+        . logistic low age lwt i.race smoke ptl ht ui
+
+    lincom after logistic reports odds ratios by default
+        . lincom 2.race+smoke
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse sysdsn1
+        . mlogit insure age male nonwhite i.site
+
+    Estimate linear combination of coefficients from Prepaid equation
+        . lincom [Prepaid]male + [Prepaid]nonwhite
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Stored results
+
+    lincom stores the following in r():
+
+    Scalars   
+      r(estimate)    point estimate
+      r(se)          estimate of standard error
+      r(df)          degrees of freedom
+      r(t) or r(z)   t or z statistic
+      r(p)           p-value
+      r(lb)          lower bound of confidence interval
+      r(ub)          upper bound of confidence interval
+      r(level)       confidence level

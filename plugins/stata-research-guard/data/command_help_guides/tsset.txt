@@ -1,0 +1,259 @@
+[TS] tsset -- Declare data to be time-series data
+              (View complete PDF manual entry)
+
+
+Syntax
+
+    Declare data to be time series
+
+        tsset timevar [, options]
+
+        tsset panelvar timevar [, options]
+
+
+    Display how data are currently tsset
+
+        tsset
+
+
+    Clear time-series settings
+
+        tsset, clear
+
+
+    In the declare syntax, panelvar identifies the panels and timevar identifies the times.
+
+    options               Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      unitoptions         specify units of timevar
+
+    Delta
+      deltaoption         specify length of period of timevar
+
+      noquery             suppress summary calculations and output
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    collect is allowed; see prefix.
+    noquery is not shown in the dialog box.
+
+    unitoptions           Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    (default)             timevar's units from timevar's display format
+
+    clocktime             timevar is %tc:  0 = 1jan1960 00:00:00.000, 1 = 1jan1960 00:00:00.001, ...
+    daily                 timevar is %td:  0 = 1jan1960, 1 = 2jan1960, ...
+    weekly                timevar is %tw:  0 = 1960w1, 1 = 1960w2, ...
+    monthly               timevar is %tm:  0 = 1960m1, 1 = 1960m2, ...
+    quarterly             timevar is %tq:  0 = 1960q1, 1 = 1960q2, ...
+    halfyearly            timevar is %th:  0 = 1960h1, 1 = 1960h2, ...
+    yearly                timevar is %ty:  1960 = 1960, 1961 = 1961, ...
+    generic               timevar is %tg:  0 = ?, 1 = ?, ...
+
+    format(%fmt)          specify timevar's format and then apply default rule
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    In all cases, negative timevar values are allowed.
+
+    deltaoption specifies the period between observations in timevar units and may be specified as
+
+    deltaoption           Example
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    delta(#)               delta(1) or delta(2)
+    delta((exp))           delta((7*24))
+    delta(# units)         delta(7 days) or delta(15 minutes) or delta(7 days 15 minutes)
+    delta((exp) units)     delta((2+3) weeks)
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    Allowed units for %tc and %tC timevars are
+
+                -----------------------------------
+                seconds     second      secs    sec
+                minutes     minute      mins    min
+                hours       hour
+                days        day
+                weeks       week
+                -----------------------------------
+
+    and for all other %t timevars, units specified must match the frequency of the data; for example, for %ty, units must be year or years.
+
+
+Menu
+
+    Statistics > Time series > Setup and utilities > Declare dataset to be time-series data
+
+
+Description
+
+    tsset manages the time-series settings of a dataset.  tsset timevar declares the data in memory to be a time series.  This allows you to use Stata's time-series operators and to analyze your data with the ts commands.  tsset panelvar timevar
+    declares the data to be panel data, also known as cross-sectional time-series data, which contain one time series for each value of panelvar. This allows you to also analyze your data with the xt commands without having to xtset your data.
+
+    tsset without arguments displays how the data are currently set and sorts the data on timevar or panelvar timevar.
+
+    tsset, clear is a rarely used programmer's command to declare that the data are no longer a time series.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+        +------+
+    ----+ Main +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    unitoptions clocktime, daily, weekly, monthly, quarterly, halfyearly, yearly, generic, and format(%fmt) specify the units in which timevar is recorded.
+
+        timevar will usually be a %t variable; see [D] Datetime.  If timevar already has a %t display format assigned to it, you do not need to specify a unitoption; tsset will obtain the units from the format.  If you have not yet bothered to assign
+        the appropriate %t format, however, you can use the unitoptions to tell tsset the units.  Then tsset will set timevar's display format for you.  Thus, the unitoptions are convenience options; they allow you to skip formatting the time variable.
+        The following all have the same net result:
+
+            Alternative 1        Alternative 2        Alternative 3
+            --------------------------------------------------------------
+            format t %td         (t not formatted)    (t not formatted)
+            tsset t              tsset t, daily       tsset t, format(%td)
+
+        timevar is not required to be a %t variable; it can be any variable of your own concocting so long as it takes on only integer values.  In such cases, it is called generic and considered to be %tg.  Specifying the unitoption generic or attaching
+        a special format to timevar, however, is not necessary because tsset will assume that the variable is generic if it has any numerical format other than a %t format (or if it has a %tg format).
+
+    clear -- used in tsset, clear -- makes Stata forget that the data ever were tsset.  This is a rarely used programmer's option.
+
+        +-------+
+    ----+ Delta +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    delta() specifies the period between observations in timevar and is commonly used when timevar is %tc.  delta() is only sometimes used with the other %t formats or with generic time variables.
+
+        If delta() is not specified, delta(1) is assumed.  This means that at timevar = 5, the previous time is timevar = 5-1 = 4 and the next time would be timevar = 5+1 = 6.  Lag and lead operators, for instance, would work this way.  This would be
+        assumed regardless of the units of timevar.
+
+        If you specified delta(2), then at timevar = 5, the previous time would be timevar = 5-2 = 3 and the next time would be timevar = 5+2 = 7.  Lag and lead operators would work this way.  In the observation with timevar = 5, L.price would be the
+        value of price in the observation for which timevar = 3 and F.price would be the value of price in the observation for which timevar = 7.  If you then add an observation with timevar = 4, the operators will still work appropriately; that is, at
+        timevar = 5, L.price will still have the value of price at timevar = 3.
+
+        The are two aspects of timevar: its units and its length of period.  The unitoptions set the units.  delta() sets the length of period.
+
+        We mentioned that delta() is commonly used with %tc timevars because Stata's %tc variables have units of milliseconds.  If delta() is not specified and in some model you refer to L.price, you will be referring to the value of price 1 ms ago.
+        Few people have data with periodicity of a millisecond.  Perhaps your data are hourly. You could specify delta(3600000).  Or you could specify delta((60*60*1000)), because delta() will allow expressions if you include an extra pair of
+        parentheses.  Or you could specify delta(1 hour).  They all mean the same thing:  timevar has periodicity of 3,600,000 ms.  In an observation for which timevar = 1,489,572,000,000 (corresponding to 15mar2007 10:00:00), L.price would be the
+        observation for which timevar = 1,489,572,000,000 - 3,600,000 = 1,489,568,400,000 (corresponding to 15mar2007 9:00:00).
+
+        When you tsset the data and specify delta(), tsset verifies that all the observations follow the specified periodicity.  For instance, if you specified delta(2), then timevar could contain any subset of {..., -4, -2, 0, 2, 4, ...} or it could
+        contain any subset of {..., -3, -1, 1, 3, ...}.  If timevar contained a mix of values, tsset would issue an error message.  If you also specify panelvar -- you type tsset panelvar timevar, delta(2) -- the check is made on each panel
+        independently.  One panel might contain timevar values from one set and the next, another, and that would be fine.
+
+    The following option is available with tsset but is not shown in the dialog box:
+
+    noquery prevents tsset from performing most of its summary calculations and suppresses output.  With this option, only the following results are posted:
+
+            r(tdelta)
+            r(panelvar)
+            r(timevar)
+            r(tsfmt)
+            r(unit)
+            r(unit1)
+
+
+Examples
+
+    For a generic time series, variable time takes on values 1, 2, ...:
+
+            . webuse idle2
+            . tsset time
+
+    For an annual time series, time takes on values such as 1990, 1991, ...:
+
+            . webuse sunspot
+            . tsset time
+    or
+            . tsset time, yearly
+
+    For a quarterly time series, qtr takes on 0 meaning 1960q1, 1 meaning 1960q2, ... :
+
+            . webuse lutkepohl2
+            . tsset qtr
+        or
+            . tsset qtr, quarterly
+
+    (use the second if qtr has not yet been assigned a %tq format)
+
+    For a monthly time series, month takes on 0 meaning 1960m1, 1 meaning 1960m2, ...:
+
+            . webuse monthly
+            . tsset month
+    or
+            . tsset month, monthly
+
+    For a daily time series, date is a %td variable and already has been assigned a %td format:
+
+            . webuse dow1
+            . tsset date
+
+    If date has not yet been given a format:
+
+            . tsset date, daily
+    or
+            . format date %td
+            . tsset date
+
+    For a weekly time series, but with date a %td (daily) variable:
+
+            . webuse mondays, clear
+            . tsset date, daily delta(7)
+    or
+            . tsset date, daily delta(7 days)
+
+    For an hourly time series, time is a %tc variable:
+
+            . webuse hourlytemp
+            . tsset time, clocktime delta(1 hour)
+
+    If time already had a %tc display format, the above could be reduced to
+
+            . tsset time, delta(1 hour)
+
+    For generic panel data, variable company being the panel identification variable and time being generic time:
+
+            . webuse invest2
+            . tsset company time
+
+    For yearly panel data, variable company being the panel ID variable and year being a four-digit calendar year:
+
+            . webuse grunfeld
+            . tsset company year, yearly
+
+    For hourly panel data, variable pid being the patient ID and tod being a %tc variable containing time of day:
+
+            . webuse patienttimes
+            . tsset pid tod, clocktime delta(30 minutes)
+
+
+Video example
+
+        Formatting and managing dates
+
+
+Stored results
+
+    tsset stores the following in r():
+
+    Scalars   
+      r(imin)        minimum panel ID
+      r(imax)        maximum panel ID
+      r(tmin)        minimum time
+      r(tmax)        maximum time
+      r(tdelta)      delta
+      r(gaps)        1 if there are gaps, 0 otherwise
+
+    Macros    
+      r(panelvar)    name of panel variable
+      r(timevar)     name of time variable
+      r(tdeltas)     formatted delta
+      r(tmins)       formatted minimum time
+      r(tmaxs)       formatted maximum time
+      r(tsfmt)       %fmt of time variable
+      r(unit)        units of time variable:  Clock, clock, daily, weekly, monthly, quarterly, halfyearly, yearly, or generic
+      r(unit1)       units of time variable:  C, c, d, w, m, q, h, y, or ""
+      r(balanced)    unbalanced, weakly balanced, or strongly balanced; panels are strongly balanced if they all have the same time values, weakly balanced if same number of observations but different time values, otherwise unbalanced

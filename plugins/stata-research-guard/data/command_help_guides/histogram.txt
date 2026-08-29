@@ -1,0 +1,208 @@
+[R] histogram -- Histograms for continuous and categorical variables
+                 (View complete PDF manual entry)
+
+
+Syntax
+
+        histogram varname [if] [in] [weight] [, [continuous_opts | discrete_opts] options]
+
+    continuous_opts                     Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      bins(#)                           set number of bins to #
+      width(#)                          set width of bins to #
+      start(#)                          set lower limit of first bin to #
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    discrete_opts                       Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      discrete                          specify that data are discrete
+      width(#)                          set width of bins to #
+      start(#)                          set theoretical minimum value to #
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    options                             Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      density                           draw as density; the default
+      fraction                          draw as fractions
+      frequency                         draw as frequencies
+      percent                           draw as percentages
+      bar_options                       rendition of bars
+      binrescale                        recalculate bin sizes when by() is specified
+      addlabels                         add height labels to bars
+      addlabopts(marker_label_options)  affect rendition of labels
+
+    Density plots
+      normal                            add a normal density to the graph
+      normopts(line_options)            affect rendition of normal density
+      kdensity                          add a kernel density estimate to the graph
+      kdenopts(kdensity_options)        affect rendition of kernel density
+
+
+    Add plots
+      addplot(plot)                     add other plots to the histogram
+
+    Y axis, X axis, Titles, Legend, Overall, By
+      twoway_options                    any options documented in [G-3] twoway_options
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    fweights are allowed; see weight.
+
+
+Menu
+
+    Graphics > Histogram
+
+
+Description
+
+    histogram draws histograms of varname, which is assumed to be the name of a continuous variable unless the discrete option is specified.
+
+    hist is a synonym for histogram.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options for use in the continuous case
+
+        +------+
+    ----+ Main +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    bins(#) and width(#) are alternatives.  They specify how the data are to be aggregated into bins: bins() by specifying the number of bins (from which the width can be derived) and width() by specifying the bin width (from which the number of bins
+        can be derived).
+
+        If neither option is specified, results are the same as if bins(k) had been specified, where
+
+            k = min{sqrt(N), 10*ln(N)/ln(10)}
+
+        and where N is the (weighted) number of observations.
+
+    start(#) specifies the theoretical minimum of varname.  The default is start(m), where m is the observed minimum value of varname.
+
+        Specify start() when you are concerned about sparse data, for instance, if you know that varname can have a value of 0, but you are concerned that 0 may not be observed.
+
+        start(#), if specified, must be less than or equal to m, or else an error will be issued.
+
+
+Options for use in the discrete case
+
+        +------+
+    ----+ Main +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    discrete specifies that varname is discrete and that you want each unique value of varname to have its own bin (bar of histogram).
+
+    width(#) is rarely specified in the discrete case; it specifies the width of the bins.  The default is width(d), where d is the observed minimum difference between the unique values of varname.
+
+        Specify width() if you are concerned that your data are sparse.  For example, in theory varname could take on the values, say, 1, 2, 3, ..., 9, but because of the sparseness, perhaps only the values 2, 4, 7, and 8 are observed.  Here the default
+        width calculation would produce width(2), and you would want to specify width(1).
+
+    start(#) is also rarely specified in the discrete case; it specifies the theoretical minimum value of varname.  The default is start(m), where m is the observed minimum value.
+
+        As with width(), specify start(#) if you are concerned that your data are sparse.  In the previous example, you might also want to specify start(1).  start() does nothing more than add white space to the left side of the graph.
+
+        The value of # in start() must be less than or equal to m, or an error will be issued.
+
+
+Options for use in the continuous and discrete cases
+
+        +------+
+    ----+ Main +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    density, fraction, frequency, and percent specify whether you want the histogram scaled to density units, fractional units, frequencies, or percentages.  density is the default.
+
+        density scales the height of the bars so that the sum of their areas equals 1.
+
+        fraction scales the height of the bars so that the sum of their heights equals 1.
+
+        frequency scales the height of the bars so that each bar's height is equal to the number of observations in the category.  Thus the sum of the heights is equal to the total number of observations.
+
+        percent scales the height of the bars so that the sum of their heights equals 100.
+
+    bar_options are any of the options allowed by graph twoway bar; see [G-2] graph twoway bar.
+
+        One of the most useful bar_options is barwidth(#), which specifies the width of the bars in varname units.  By default, histogram draws the bars so that adjacent bars just touch.  If you want gaps between the bars, do not specify histogram's
+        width() option -- which would change how the histogram is calculated -- but specify the bar_option barwidth() or the histogram option gap, both of which affect only how the bar is rendered.
+
+        The bar_option horizontal cannot be used with the addlabels option.
+
+    binrescale specifies that bin size and plot range be recalculated for each group when by() is specified.  If normal is specified, the mean and standard deviation of each overlaid normal density plot are recalculated in each group.  Similarly, if
+        kdensity is specified, the scaling of the overlaid kernel density plot is recalculated in each group.
+
+    addlabels specifies that the top of each bar be labeled with the density, fraction, or frequency, as determined by the density, fraction, and frequency options.
+
+    addlabopts(marker_label_options) specifies how to render the labels atop the bars.  See [G-3] marker_label_options.  Do not specify the marker_label_option mlabel(varname), which specifies the variable to be used; this is specified for you by
+        histogram.
+
+        addlabopts() will accept more options than those documented in [G-3] marker_label_options.  All options allowed by twoway scatter are also allowed by addlabopts(); see [G-2] graph twoway scatter.  One particularly useful option is yvarformat();
+        see [G-3] advanced_options.
+
+        +---------------+
+    ----+ Density plots +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    normal specifies that the histogram be overlaid with an appropriately scaled normal density.  The normal will have the same mean and standard deviation as the data.
+
+    normopts(line_options) specifies details about the rendition of the normal curve, such as the color and style of line used.  See [G-2] graph twoway line.
+
+    kdensity specifies that the histogram be overlaid with an appropriately scaled kernel density estimate of the density.  By default, the estimate will be produced using the Epanechnikov kernel with an "optimal" half-width.  This default corresponds
+        to the default of kdensity; see [R] kdensity.  How the estimate is produced can be controlled using the kdenopts() option described below.
+
+    kdenopts(kdensity_options) specifies details about how the kernel density estimate is to be produced along with details about the rendition of the resulting curve, such as the color and style of line used; see [G-2] graph twoway kdensity.  The
+        kernel density estimate is described in [R] kdensity.  As an example, if you wanted to produce kernel density estimates by using the Gaussian kernel with optimal half-width, you would specify kdenopts(gauss) and if you also wanted a half-width
+        of 5, you would specify kdenopts(gauss width(5)).
+
+        +-----------+
+    ----+ Add plots +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    addplot(plot) allows adding more graph twoway plots to the graph; see [G-3] addplot_option.
+
+        +---------------------------------------------+
+    ----+ Y axis, X axis, Titles, Legend, Overall, By +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    twoway_options are any of the options documented in [G-3] twoway_options.  This includes, most importantly, options for titling the graph (see [G-3] title_options), options for saving the graph to disk (see [G-3] saving_option), and the by() option,
+        which will allow you to simultaneously graph histograms for different subsets of the data (see [G-3] by_option).
+
+
+Examples
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . sysuse sp500
+
+    Create a histogram of volume
+        . histogram volume
+
+    Same as above, but add a normal density curve
+        . histogram volume, normal
+
+    Same as above, but also add a kernel density estimate
+        . histogram volume, normal kdensity
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    Setup
+        . sysuse auto
+
+    Create a histogram with a bin for each of the 21 unique values
+        . histogram mpg, discrete
+
+    Same as above, but show frequencies on the y axis, add a report of frequencies above the bars, and label the values 12, 14, ..., 42 on the x axis
+        . histogram mpg, discrete freq addlabels xlabel(12(2)42)
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Video example
+
+    Histograms in Stata
+
+
+Reference
+
+    Pollock, P. H. III.  2011.  A Stata Companion to Political Analysis. 2nd ed.  Washington, DC: CQ Press.

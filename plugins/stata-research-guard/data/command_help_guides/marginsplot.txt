@@ -1,0 +1,350 @@
+[R] marginsplot -- Graph results from margins (profile plots, etc.)
+                   (View complete PDF manual entry)
+
+
+Syntax
+
+        marginsplot [, options]
+
+    options                                Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      xdimension(dimlist [, dimopts])      use dimlist to define x axis
+      plotdimension(dimlist [, dimopts])   create plots for groups in dimlist
+      bydimension(dimlist [, dimopts])     create subgraphs for groups in dimlist
+      graphdimension(dimlist [, dimopts])  create graphs for groups in dimlist
+      horizontal                           swap x and y axes
+      noci                                 do not plot confidence intervals
+      derivlabels                          use labels attached to marginal-effects variables
+      name(name|stub [, replace])          name of graph, or stub if multiple graphs
+
+    Labels
+      allxlabels                           place ticks and labels on the x axis for each value
+      nolabels                             label groups with their values, not their labels
+      allsimplelabels                      forgo variable name and equal signs in all labels
+      nosimplelabels                       include variable name and equal signs in all labels
+      separator(string)                    separator for labels when multiple variables are specified in a dimension
+      noseparator                          do not use a separator
+
+    Plot
+      plotopts(plot_options)               affect rendition of all margin plots
+      plot#opts(plot_options)              affect rendition of #th margin plot
+      recast(plottype)                     plot margins using plottype
+
+    CI plot
+      ciopts(rcap_options)                 affect rendition of all confidence interval plots
+      ci#opts(rcap_options)                affect rendition of #th confidence interval plot
+      recastci(plottype)                   plot confidence intervals using plottype
+      mcompare(method)                     adjust for multiple comparisons
+      level(#)                             set confidence level
+
+    Pairwise
+      unique                               plot only unique pairwise comparisons
+      csort                                sort comparison categories first
+
+    Add plots
+      addplot(plot)                        add other plots to the graph
+
+    Y axis, X axis, Titles, Legend, Overall, By
+      twoway_options                       any options documented in [G-3] twoway_options
+      byopts(byopts)                       how subgraphs are combined, labeled, etc.
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    where dimlist may be any of the dimensions across which margins were computed in the immediately preceding margins command.  That is to say, dimlist may be any variable used in the margins command, including variables specified in the at(), over(),
+        and within() options.  More advanced specifications of dimlist are covered in Addendum: Advanced uses of dimlist below.
+
+    dimopts                     Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    labels(lablist)             list of quoted strings to label each level of the dimension
+    elabels(elablist)           list of enumerated labels
+    nolabels                    label groups with their values, not their labels
+    allsimplelabels             forgo variable name and equal signs in all labels
+    nosimplelabels              include variable name and equal signs in all labels
+    separator(string)           separator for labels when multiple variables are specified in the dimension
+    noseparator                 do not use a separator
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    where lablist is defined as
+
+        "label" ["label" [...]]
+
+    elablist is defined as
+
+        # "label" [# "label" [...]]
+
+    and the #s are the indices of the levels of the dimension -- 1 is the first level, 2 is the second level, and so on.
+
+    plot_options               Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    marker_options             change look of markers (color, size, etc.)
+    marker_label_options       add marker labels; change look or position
+
+    cline_options              change look of the line
+
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    method                     Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    noadjust                   do not adjust for multiple comparisons
+    bonferroni [adjustall]     Bonferroni's method; adjust across all terms
+    sidak [adjustall]          Sidak's method; adjust across all terms
+    scheffe                    Scheffe's method
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Menu
+
+    Statistics > Postestimation
+
+
+Description
+
+    marginsplot graphs the results of the immediately preceding margins command.  Common names for some of the graphs that marginsplot can produce are profile plots and interaction plots.
+
+    marginsplot is also available after estat lcprob and estat lcmean; see [SEM] estat lcprob, [SEM] estat lcmean, [FMM] estat lcprob, and [FMM] estat lcmean.
+
+
+Links to PDF documentation
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+        +------+
+    ----+ Main +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    xdimension(), plotdimension(), bydimension(), and graphdimension() specify the variables from the preceding margins command whose group levels will be used for the graph's x axis, plots, by() subgraphs, and graphs.
+
+        marginsplot chooses default dimensions based on the margins command.  In most cases, the first variable appearing in an at() option and evaluated over more than one value is used for the x axis.  If no at() variable meets this condition, the
+        first variable in the marginlist is usually used for the x axis and the remaining variables determine the plotted lines or markers.  Pairwise comparisons and graphs of marginal effects (derivatives) have different defaults.  In all cases, you
+        may override the defaults and explicitly control which variables are used on each dimension of the graph by using these dimension options.
+
+        Each of these options supports suboptions that control the labeling of the dimension -- axis labels for xdimension(), plot labels for plotdimension(), subgraph titles for bydimension(), and graph titles for graphdimension() titles.
+
+        For examples using the dimension options, see Controlling the graph's dimensions in [R] marginsplot.
+
+        xdimension(dimlist [, dimopts]) specifies the variables for the x axis in dimlist and controls the content of those labels with dimopts.
+
+        plotdimension(dimlist [, dimopts]) specifies in dimlist the variables whose group levels determine the plots and optionally specifies in dimopts the content of the plots' labels.
+
+        bydimension(dimlist [, dimopts]) specifies in dimlist the variables whose group levels determine the by() subgraphs and optionally specifies in dimopts the content of the subgraphs' titles.  For an example using by(), see Three-way interactions
+            in [R] marginsplot.
+
+        graphdimension(dimlist [, dimopts]) specifies in dimlist the variables whose group levels determine the graphs and optionally specifies in dimopts the content of the graphs' titles.
+
+    horizontal reverses the default x and y axes.  By default, the y axis represents the estimates of the margins and the x axis represents one or more factors or continuous covariates.  Specifying horizontal swaps the axes so that the x axis represents
+        the estimates of the margins.  This option can be useful if the labels on the factor or continuous covariates are long.
+
+        The horizontal option is discussed in Horizontal is sometimes better in [R] marginsplot.
+
+    noci removes plots of the pointwise confidence intervals.  The default is to plot the confidence intervals.
+
+    derivlabels specifies that variable labels attached to marginal-effects variables be used in place of the variable names in titles and legends.  Marginal-effects variables are the ones specified in margins's option dydx(), dyex(), eydx(), or eyex().
+
+    name(name|stub [, replace]) specifies the name of the graph or graphs.  If the graphdimension() option is specified, or if the default action is to produce multiple graphs, then the argument of name() is taken to be stub and graphs named stub1,
+        stub2, ... are created.
+
+        The replace suboption causes existing graphs with the specified name or names to be replaced.
+
+        If name() is not specified, default names are used and the graphs may be replaced by subsequent marginsplot or other graphing commands.
+
+        +--------+
+    ----+ Labels +-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        
+    With the exception of allxlabels, all of these options may be specified either directly as options or as dimopts within options xdimension(), plotdimension(), bydimension(), and graphdimension().  When specified in one of the dimension options, only
+    the labels for that dimension are affected.  When specified outside the dimension options, all labels on all dimensions are affected.  Specifications within the dimension options take precedence.
+
+    allxlabels specifies that tick marks and labels be placed on the x axis for each value of the x-dimension variables.  By default, if there are more than 25 ticks, default graph axis labeling rules are applied.  Labeling may also be specified using
+        the standard graph twoway x-axis label rules and options -- xlabel().
+
+    nolabels specifies that value labels not be used to construct graph labels and titles for the group levels in the dimension.  By default, if a variable in a dimension has value labels, those labels are used to construct labels and titles for axis
+        ticks, plots, subgraphs, and graphs.
+
+        Graphs of contrasts and pairwise comparisons are an exception to this rule and are always labeled with values rather than value labels.
+
+    allsimplelabels and nosimplelabels control whether graphs' labels and titles include just the values of the variables or include variable names and equal signs.  The default is to use just the value label for variables that have value labels and to
+        use variable names and equal signs for variables that do not have value labels.  An example of the former is "Female" and the latter is "country=2".
+
+        Sometimes, value labels are universally descriptive, and sometimes they have meaning only when considered in relation to their variable.  For example, "Male" and "Female" are typically universal, regardless of the variable from which they are
+        taken.  "High" and "Low" may not have meaning unless you know they are in relation to a specific measure, say, blood-pressure level.  The allsimplelabels and nosimplelabels options let you override the default labeling.
+
+        allsimplelabels specifies that all titles and labels use just the value or value label of the variable.
+
+        nosimplelabels specifies that all titles and labels include varname= before the value or value label of the variable.
+
+    separator(string) and noseparator control the separator between label sections when more than one variable is used to specify a dimension.  The default separator is a comma followed by a space, but no separator may be requested with noseparator or
+        the default may be changed to any string with separator().
+
+        For example, if plotdimension(a b) is specified, the plot labels in our graph legend might be "a=1, b=1", "a=1, b=2", ... . Specifying separator(:) would create labels "a=1:b=1", "a=1:b=2", ... .
+
+        +------+
+    ----+ Plot +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    plotopts(plot_options) affects the rendition of all margin plots.  The plot_options can affect the size and color of markers, whether and how the markers are labeled, and whether and how the points are connected; see [G-3] marker_options, [G-3]
+        marker_label_options, and [G-3] cline_options.
+
+        These settings may be overridden for specific plots by using the plot#opts() option.
+
+    plot#opts(plot_options) affects the rendition of the #th margin plot.  The plot_options can affect the size and color of markers, whether and how the markers are labeled, and whether and how the points are connected; see [G-3] marker_options, [G-3]
+        marker_label_options, and [G-3] cline_options.
+
+    recast(plottype) specifies that margins be plotted using plottype.  plottype may be scatter, line, connected, bar, area, spike, dropline, or dot; see [G-2] graph twoway.  When recast() is specified, the plot-rendition options appropriate to the
+        specified plottype may be used in lieu of plot_options.  For details on those options, follow the appropriate link from [G-2] graph twoway.
+
+        For an example using recast(), see Continuous covariates in [R] marginsplot.
+
+        You may specify recast() within a plotopts() or plot#opts() option.  It is better, however, to specify it as documented here, outside those options.  When specified outside those options, you have greater access to the plot-specific rendition
+        options of your specified plottype.
+
+        +---------+
+    ----+ CI plot +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    ciopts(rcap_options) affects the rendition of all confidence interval plots; see [G-3] rcap_options.
+
+        These settings may be overridden for specific confidence interval plots with the ci#opts() option.
+
+    ci#opts(rcap_options) affects the rendition of the #th confidence interval; see [G-3] rcap_options.
+
+    recastci(plottype) specifies that confidence intervals be plotted using plottype.  plottype may be rarea, rbar, rspike, rcap, rcapsym, rline, rconnected, or rscatter; see [G-2] graph twoway.  When recastci() is specified, the plot-rendition options
+        appropriate to the specified plottype may be used in lieu of rcap_options.  For details on those options, follow the appropriate link from [G-2] graph twoway.
+
+        For an example using recastci(), see Continuous covariates in [R] marginsplot.
+
+        You may specify recastci() within a ciopts() or ci#opts() option.  It is better, however, to specify it as documented here, outside those options.  When specified outside those options, you have greater access to the plot-specific rendition
+        options of your specified plottype.
+
+    mcompare(method) specifies the method for confidence intervals that account for multiple comparisons within a factor-variable term.  The default is determined by the margins results stored in r().  If marginsplot is working from margins results
+        stored in e(), the default is mcompare(noadjust).
+
+    level(#) specifies the confidence level, as a percentage, for confidence intervals.  The default is determined by the margins results stored in r().  If marginsplot is working from margins results stored in e(), the default is level(95) or as set by
+        set level.
+
+        +----------+
+    ----+ Pairwise +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    These options have an effect only when the pwcompare option was specified on the preceding margins command.
+
+    unique specifies that only unique pairwise comparisons be plotted.  The default is to plot all pairwise comparisons, including those that are mirror images of each other -- "male" versus "female" and "female" versus "male".  margins reports only the
+        unique pairwise comparisons.  unique also changes the default xdimension() for graphs of pairwise comparisons from the reference categories (_pw0) to the comparisons of each pairwise category (_pw).
+
+        Unique comparisons are often preferred with horizontal graphs that put all pairwise comparisons on the x axis, whereas including the full matrix of comparisons is preferred for charts showing the reference groups on an axis and the comparison
+        groups as plots; see Pairwise comparisons and Horizontal is sometimes better in [R] marginsplot.
+
+    csort specifies that comparison categories are sorted first, and then reference categories are sorted within comparison category.  The default is to sort reference categories first, and then sort comparison categories within reference categories.
+        This option has an observable effect only when _pw is also specified in one of the dimension options.  It then determines the order of the labeling in the dimension where _pw is specified.
+
+        +-----------+
+    ----+ Add plots +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    addplot(plot) provides a way to add other plots to the generated graph; see [G-3] addplot_option.
+
+        For an example using addplot(), see Adding scatterplots of the data of [R] marginsplot.
+
+        If multiple graphs are drawn by a single marginsplot command or if plot specifies plots with multiple y variables, for example, scatter y1 y2 x, then the graph's legend will not clearly identify all the plots and will require customization using
+        the legend() option; see [G-3] legend_options.
+
+        +---------------------------------------------+
+    ----+ Y axis, X axis, Titles, Legend, Overall, By +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    twoway_options are any of the options documented in [G-3] twoway_options.  These include options for titling the graph (see [G-3] title_options); for saving the graph to disk (see [G-3] saving_option); for controlling the labeling and look of the
+        axes (see [G-3] axis_options); for controlling the look, contents, position, and organization of the legend (see [G-3] legend_options); for adding lines (see [G-3] added_line_options) and text (see [G-3] added_text_options); and for controlling
+        other aspects of the graph's appearance (see [G-3] twoway_options).
+
+        The label() suboption of the legend() option has no effect on marginsplot.  Use the order() suboption instead.
+
+    byopts(byopts) affects the appearance of the combined graph when bydimension() is specified or when the default graph has subgraphs, including the overall graph title, the position of the legend, and the organization of subgraphs.  See [G-3]
+        by_option.
+
+
+Examples
+
+    These examples are intended for quick reference.  For a conceptual overview of marginsplot and examples with discussion, see Remarks and examples in [R] marginsplot.
+
+    Setup
+        . webuse nhanes2
+
+    Profile plot of margins
+        . regress bpsystol agegrp##sex
+        . margins agegrp
+        . marginsplot
+
+    Interaction plot
+        . margins agegrp#sex
+        . marginsplot
+
+    Contrasts of margins -- effects (discrete marginal effects)
+        . margins r.sex@agegrp
+        . marginsplot
+
+    Equivalently, using dydx()
+        . margins agegrp, dydx(sex)
+        . marginsplot
+
+    Plots at specified values of continuous covariates
+        . logistic highbp sex##agegrp##c.bmi
+        . margins sex, at(bmi=(10(5)65))
+        . marginsplot
+
+    Changing plot types
+        . marginsplot, recast(line) recastci(rarea)
+
+    Controlling dimensions
+        . regress bpsystol agegrp##sex##c.bmi
+        . margins agegrp, over(sex) at(bmi=(10(10)60))
+        . marginsplot
+        . marginsplot, xdimension(agegrp)
+        . marginsplot, xdimension(agegrp) bydimension(sex)
+        . marginsplot, xdimension(agegrp) bydimension(bmi) xlabel(, angle(45))
+
+    Marginal effects of continuous covariates
+        . logistic highbp sex##agegrp##c.bmi
+        . margins agegrp, dydx(bmi)
+        . marginsplot
+
+        . margins agegrp#sex, dydx(bmi)
+        . marginsplot
+
+
+Video examples
+
+    Profile plots and interaction plots, part 1: A single categorical variable
+
+    Profile plots and interaction plots, part 2: A single continuous variable
+
+    Profile plots and interaction plots, part 3: Interactions between categorical variables
+
+    Profile plots and interaction plots, part 4: Interactions of continuous and categorical variables
+
+    Profile plots and interaction plots, part 5: Interactions of two continuous variables
+
+
+Addendum: Advanced uses of dimlist
+
+    dimlist specifies the dimensions from the immediately preceding margins command that are to be used for the marginsplot's x axis, plots, subgraphs, and graphs.  dimlist may contain:
+
+    dim              Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    varname          Any variable referenced in the preceding margins command
+
+    _equation        If the estimation command being analyzed is multivariate and margins automatically produced estimates for more than one dependent-variable equation, then dimlist may contain _equation to enumerate those equations.
+
+    _outcome         If the estimation command being analyzed is ordinal and margins automatically produced estimates for more than one outcome level, then dimlist may contain _outcome to enumerate those outcomes.
+
+    _predict         If the preceding margins command included multiple predict() options, then dimlist may contain _predict to enumerate those predict() options.
+
+    at(varname)      If a variable is specified in both the marginlist or the over() option and in the at() option of margins, then the two uses can be distinguished in marginsplot by typing the at() variables as at(varname) in dimlist.
+
+    _deriv           If the preceding margins command included a dydx(), eyex(), dyex(), or eydx() option, dimlist may also contain _deriv to specify all the variables over which derivatives were taken.
+
+    _term            If the preceding margins command included multiple terms; e.g., margins a b; then dimlist may contain _term to enumerate those terms.
+
+    _atopt           If the preceding margins command included multiple at() options, then dimlist may contain _atopt to enumerate those at() options.
+
+    When the pairwise option is specified on margins you can specify dimensions that enumerate the pairwise comparisons.
+
+    _pw              enumerates all the pairwise comparisons
+    _pw0             enumerates the reference categories of the comparisons
+    _pw1             enumerates the comparison categories of the comparisons
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

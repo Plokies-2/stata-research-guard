@@ -1,0 +1,215 @@
+Title
+
+    acreg -           Arbitrary Correlation Regression
+
+
+
+Description
+
+    acreg computes standard errors corrected for arbitrary cluster correlation in spatial and network settings.  It implements a range of error correction methods for linear regression models: OLS and 2SLS. - F. Colella, R. Lalive, S.O. Sakalli, M.
+    Thoenig
+
+
+Syntax
+
+        acreg depvar [varlist1] [(varlist2 = varlist_iv) [if] [in]] [fweight pweight] [, id(idvar) time(timevar) spatial network latitude(latitudevar) longitude(longitudevar) links_mat(varlist_links) dist_mat(varlist_distances) dist(distcutoff)
+              lag(timecutoff) weights(varlist_weights) cluster(varlist_cluster) hac bartlett nbclust(n_clusters) pfe1(fe1var) pfe2(fe2var) correctr2 dropsingletons storeweights storedistances]
+
+    depvar is the dependent variable.
+
+    varlist1 is the list of exogenous variables.
+
+    varlist2 is the list of endogenous variables.
+
+    varlist_iv is the list of exogenous variables used with varlist1 as instruments for varlist2.
+
+
+    options                 Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        +-------+
+    ----+ Panel +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+      idvar                  is the unique identifier, required in panel database.
+
+      timevar                is the time unit variable, required in panel database.
+
+        +----------------------+
+    ----+  Spatial Environment +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+      spatial                specifies that the environment is a spatial environment, not required if no arbitrary cluster correction and if varlist_weights or varlist_cluster or network option is specified.
+
+      + latitudevar          is the variable containing the latitude of each observation, decimal degrees: range[-180,180].
+
+      + longitudevar         is the variable containing the longitude of each observation, decimal degrees: range[-180,180].
+
+      # varlist_distances    is the list of N variables containing bilateral distances between observations.  In the spatial environment, bilateral distance is the spatial distance between observations, i.e., physical distance between two locations (in
+                              the network environment, it is the network distance between observations, i.e., the number of links along the shortest path between two nodes).
+
+      distcutoff             specifies the distance cutoff in kilometers beyond which the correlation between error term of two observations is assumed to be zero, required if latitude and longitude are specified or dist_mat is specified. The distance
+                              cutoff is in kilometers if latitude and longitude are specified. It can be in any other meaningful metric if bilateral distances are specified.
+
+      timecutoff             specifies the time lag for observations with the same idvar, not required in cross-sectional environment, default in panel environment is 0, i.e. when id and time are specified.  In panel environment when timecutoff is 0, or
+                              not specified, Standard Errors are automatically clustered at id-x-time cell level.
+
+        +----------------------+
+    ----+  Network Environment +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+      network                specifies that the environment is a network environment, not required if no arbitrary cluster correction and if varlist_weights or varlist_cluster or spatial option is specified.
+
+      * varlist_links        is the list of N dummy variables specifying the links between observations, i.e., the adjacency matrix. If distcutoff>1 only the first observation in time of each individual will be used as input to compute the bilateral
+                              distance between two nodes.
+
+      # varlist_distances    is the list of N variables containing bilateral distances between observations.  In the network environment, bilateral distance is the network distance between observations, i.e., the number of links along the shortest path
+                              between two nodes (in the spatial environment, it is the spatial distance between observations, i.e., physical distance between two locations).
+
+      distcutoff             specifies the distance cutoff (geodesic paths) beyond which the correlation between error term of two observations is assumed to be zero, required if dist_mat is specified, optional if links_mat is specified, default is 1.
+                              When links_mat is specified and distcutoff is grerater than 1, acreg will automatically computes the bilateral distance between two nodes.
+
+      timecutoff             specifies the time lag for observations with the same idvar, not required in cross-sectional environment, default in panel environment is 0, i.e. when id and time are specified.  In panel environment when timecutoff is 0, or
+                              not specified, Standard Errors are automatically clustered at id-x-time cell level.
+
+        +----------------------------------+
+    ----+  Multiway Clustering Environment +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+      varlist_cluster        is the list of variables to use for multy-way clustered SEs, not required if no arbitrary cluster correction and if the option spatial or the option network or varlist_weights is specified.
+
+        +-----------------------------------+
+    ----+  Arbitrary Clustering Environment +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+      varlist_weights        is the list of NxT variables containing the weights that will be used for error correction, not required if no arbitrary cluster correction and if the option spatial or the option network or varlist_cluster is specified. The
+                              NxT variables need to follow the same order of the observations.
+
+        +------------------------+
+    ----+  Correlation Structure +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+      hac                    reports Heteroskedastic and Autocorrelation Corrected (HAC) standard errors; lagcutoff will be the temporal decay; requires id, time and lagcutoff.
+
+      bartlett               imposes a distance linear decay between observations within the cutoff in the correlation structure.
+
+      n_clusters             is the number of clusters used to compute the Kleibergen-Paap statistic in case of cluster correction. Default is 100.
+
+
+
+        +-----------------------------------------------+
+    ----+  High Dimensional Fixed Effects (partial out) +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+      fe1var                 identification of the first high dimensional fixed effects variable.
+
+      fe2var                 identification of the second high dimensional fixed effects variable.
+
+      correctr2              when pfe1 or pfe2 are specified the r-squared is computed on the "partialled out sample". This option reports the correct r-squared, i.e. the pre-partialling out r-squared.  not allowed with fweights.
+
+      dropsingletons         drop singleton groups when pfe1 or pfe2 are specified.
+
+        +----------+
+    ----+  Storing +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+      storeweights           stores the computed weights used to correct the VCV for arbitrary cluster correlation as a matrix under the name weightsmat, which may be used as input for the option varlist_weights, only if the option spatial or the option
+                              network or varlist_cluster is specified.
+
+      storedistances         stores the computed distances used to correct the VCV for arbitrary cluster correlation as a matrix under the name distancesmat, which may be used as input for the option varlist_distances, only if the option spatial or the
+                              option network is specified and varlist_distances is not specified.
+
+
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Notes:
+    distcutoff may be integer or float. TIMEcutoff has to be integer.
+
+    + These options have to be specified when spatial is specified and varlist_distances is not specified.
+
+    * This option has to be specified when network is specified and varlist_distances is not specified.
+
+    # This option may be specified only when spatial is pecified and latitudevar and longitudevar are not specified, or when network is specified and varlist_links is not specified.
+
+    acreg uses some functions from the following external pakages: ivreg2, ranktest, hdfe. To install these packages please type acregpackcheck after having installed the program.
+
+
+Examples
+
+
+    Please find some examples below, for additional examples please visit the page https://acregstata.weebly.com/
+
+
+        +----------------------+
+    ----+  Spatial Environment +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    Setup - load spatial database
+        . webuse homicide_1960_1990.dta
+
+    Fit a regression via 2SLS, with no cluster correction - robust standard errors
+        . acreg hrate ln_population age (ln_income=unemployment)
+
+    Fit a regression via 2SLS, using Longitude and Latitude as input - cross section
+        . acreg hrate ln_population age (ln_income=unemployment), latitude(_CX) longitude(_CY) dist(50) spatial
+
+    Fit a regression via 2SLS, using Longitude and Latitude as input - panel, no hac
+        . acreg hrate ln_population age (ln_income=unemployment), id(_ID) time(year) latitude(_CX) longitude(_CY) dist(50) lag(50) spatial
+
+    Fit a regression via 2SLS, using Longitude and Latitude as input - panel, hac
+        . acreg hrate ln_population age (ln_income=unemployment), id(_ID) time(year) latitude(_CX) longitude(_CY) dist(50) lag(50) spatial hac
+
+
+
+        +----------------------+
+    ----+  Network Environment +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    Setup - load network database - Grund and Densley (2012)
+        . ssc desc acreg
+        . net get acreg
+        . use nwexample.dta
+
+    Fit a regression via OLS, with no cluster correction - robust standard errors
+        . acreg Arrests Ranking Age Residence i.Birthplace
+
+    Fit a regression via OLS, cluster correction
+        . acreg Arrests Ranking Age Residence i.Birthplace, network links_mat(_net2_*) dist(1)
+
+    Fit a regression via OLS, cluster correction ut to second degree
+        . acreg Arrests Ranking Age Residence i.Birthplace, network links_mat(_net2_*) dist(2)
+
+
+Stored results
+
+    acreg stores the following in e():
+
+    Scalars
+      e(N)          number of observations
+      e(mss)        model sum of squares (centered)
+      e(mssu)       model sum of squares (uncentered)
+      e(rss)        residual sum of squares
+      e(tss)        total sum of squares (centered)
+      e(tssu)       total sum of squares (uncentered)
+      e(r2)         centered R2 (1-rss/tss)
+      e(r2u)        uncentered R2
+      e(widstat)    Kleibergen-Paap rk Wald F statistic
+
+    Matrices
+      e(b)          coefficient vector
+      e(V)          corrected variance-covariance matrix of the estimators
+
+    Functions
+      e(sample)     marks estimation sample
+
+
+
+Installation
+
+    To install the package, please type the following in the Stata command window or download and run the ado files below:
+        . ssc install acreg
+
+    To erase the package please type the following in the Stata command window:
+        . ado uninstall acreg
+
+
+References
+
+
+    Colella, Fabrizio; Lalive, Rafael; Sakalli, Seyhun Orcan; Thoenig, Mathias. (2019) Inference with Arbitrary Clustering, IZA Discussion Paper n. 12584
+
+
+    Colella, Fabrizio; Lalive, Rafael; Sakalli, Seyhun Orcan; Thoenig, Mathias. (2020) Acreg: arbitrary correlation regression.
+
+
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    This Version: December 2020 (1.1.0)

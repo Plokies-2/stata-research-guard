@@ -1,0 +1,63 @@
+[D] isid -- Check for unique identifiers
+            (View complete PDF manual entry)
+
+
+Syntax
+
+        isid varlist [using filename] [, sort missok]
+
+
+Menu
+
+    Data > Data utilities > Check for unique identifiers
+
+
+Description
+
+    isid checks whether the specified variables uniquely identify the observations.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+    sort indicates that the dataset be sorted by varlist.
+
+    missok indicates that missing values are permitted in varlist.
+
+
+Examples
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . sysuse auto
+
+    Check whether mpg uniquely identifies observations
+        . isid mpg
+
+    Check whether make uniquely identifies observations
+        . isid make
+
+    Setup
+        . replace make = "" in 1
+
+    Check whether make uniquely identifies observations
+        . isid make
+
+    Same as above command, but permit missing values in make
+        . isid make, missok
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse grunfeld, clear
+
+    Check whether panel and time variables uniquely identify observations
+        . isid company year
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

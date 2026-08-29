@@ -1,0 +1,127 @@
+[D] contract -- Make dataset of frequencies and percentages
+                (View complete PDF manual entry)
+
+
+Syntax
+
+        contract varlist [if] [in] [weight] [, options]
+
+    options               Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Options
+      freq(newvar)        name of frequency variable; default is _freq
+      cfreq(newvar)       create cumulative frequency variable
+      percent(newvar)     create percentage variable
+      cpercent(newvar)    create cumulative percentage variable
+      float               generate percentage variables as type float
+      format(format)      display format for new percentage variables; default is format(%8.2f)
+      zero                include combinations with frequency zero
+      nomiss              drop observations with missing values
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    fweights are allowed; see weight.
+
+
+Menu
+
+    Data > Create or change data > Other variable-transformation commands > Make dataset of frequencies
+
+
+Description
+
+    contract replaces the dataset in memory with a new dataset consisting of all combinations of varlist that exist in the data and a new variable that contains the frequency of each combination.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+        +---------+
+    ----+ Options +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    freq(newvar) specifies a name for the frequency variable.  If not specified, _freq is used.
+
+    cfreq(newvar) specifies a name for the cumulative frequency variable.  If not specified, no cumulative frequency variable is created.
+
+    percent(newvar) specifies a name for the percentage variable.  If not specified, no percent variable is created.
+
+    cpercent(newvar) specifies a name for the cumulative percentage variable.  If not specified, no cumulative percentage variable is created.
+
+    float specifies that the percentage variables specified by percent() and cpercent() will be generated as variables of type float.  If float is not specified, these variables will be generated as variables of type double.  All generated variables are
+        compressed to the smallest storage type possible without loss of precision; see [D] compress.
+
+    format(format) specifies a display format for the generated percentage variables specified by percent() and cpercent().  If format() is not specified, these variables will have the display format %8.2f.
+
+    zero specifies that combinations with frequency zero be included.
+
+    nomiss specifies that observations with missing values on any variable in varlist be dropped.  If nomiss is not specified, all observations possible are used.
+
+
+Examples
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . sysuse auto
+
+    Replace dataset with dataset containing all combinations of foreign and rep78 along with the frequency with which each combination occurs
+        . contract foreign rep78
+
+    List the result
+        . list
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . sysuse auto, clear
+
+    Same as above, but include combinations that have 0 frequency
+        . contract foreign rep78, zero
+
+    List the result
+        . list
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . sysuse auto, clear
+
+    Same as above, but name frequency variable count
+        . contract foreign rep78, zero freq(count)
+
+    List the result
+        . list
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . sysuse auto, clear
+
+    Same as above, but drop observations with missing values
+        . contract foreign rep78, zero freq(count) nomiss
+
+    List the result
+        . list
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . sysuse auto, clear
+
+    Include cumulative frequency variable in dataset
+        . contract foreign rep78, cfreq(cumfreq)
+
+    List the result
+        . list
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . sysuse auto, clear
+
+    Same as above, but also include a percentage variable and cumulative percentage variable in dataset
+        . contract foreign rep78, cfreq(cumfreq) percent(percentage) cpercent(cumpercent)
+
+    List the result
+        . list, abbrev(10)
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

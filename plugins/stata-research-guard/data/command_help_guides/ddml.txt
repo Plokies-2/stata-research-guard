@@ -1,0 +1,248 @@
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+help ddml                                                                                                                                                                                                                                                v1.4.4
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ddml - Stata package for Double Debiased Machine Learning
+
+    ddml implements algorithms for causal inference aided by supervised machine learning as proposed in Double/debiased machine learning for treatment and structural parameters (Chernozhukov et al., Econometrics Journal, 2018). Five different models are
+    supported, allowing for binary or continuous treatment variables and endogeneity, high-dimensional controls and/or instrumental variables.  ddml also implements the stacking approaches discussed in Ahrens et al. (2024a).  For a companion paper, see
+    Ahrens et al. (2024b).
+
+    ddml supports a variety of different ML programs, including but not limited to pystacked and lassopack.  pystacked is the recommended way to specify multiple learners in ddml, and ddml has integrated support for various features provided by 
+    pystacked.
+
+    The ddml package includes the wrapper program qddml, which uses a simplified one-line syntax, but offers less flexibility.
+
+    ddml and qddml rely on crossfit, which can be used as a standalone program.
+
+
+Contents
+
+  Links to detailed help files
+  Supported models in ddml
+  Main steps in estimation using ddml
+  Compatible programs and pystacked integration
+  Basic example: the partially-linear model with pystacked
+  Installation
+  References
+  Authors
+
+
+Follow links below to detailed help
+
+  Help files: qddml
+    qddml                One-step DDML estimation using qddml.
+
+  Help files: detailed help files including syntax/options for main steps in using ddml
+    ddml init            1. Initialize ddml and select model.
+    ddml eq              2. Add supervised ML programs for estimating conditional expectations.
+    ddml crossfit        3. Cross-fitting to estimate conditional expectations.
+    ddml estimate        4. Estimate causal model and report/post results.
+    ddml stacking        Overview of stacking in ddml and pystacked
+
+  Help files: detailed help files and examples for models supported by ddml
+    ddml partial         Partially-linear model
+    ddml iv              Partially-linear IV model
+    ddml fiv             Flexible partially-linear IV model
+    ddml interactive     Interactive model - ATE and ATET estimation
+    ddml interactiveiv   Interactive IV model - LATE estimation
+    ddml examples        Clickable list of all ddml examples
+
+  Help files: auxiliary programs
+    ddml describe        Report information about the model setup and/or results.
+    ddml extract         Report information about saved results e.g. stacking weigths.
+    ddml sample          Add cross-fitting repetitions to an existing model.
+    ddml export          Save the ddml estimated conditional expectations to a csv file.
+    ddml overlap         (interactive models only) Generate overlap plots for propensity-score-based models
+    crossfit             Use crossfit as a standalone program for cross-fitting and cross-validation.
+
+
+Models
+
+    Throughout we use Y to denote the outcome variable, X to denote confounders, Z to denote instrumental variable(s), and D to denote the treatment variable(s) of interest.
+
+    Partially-linear model [partial]
+
+        Y = a.D + g(X) + U
+        D = m(X) + V
+
+    where the aim is to estimate a while controlling for X. To this end, we estimate the conditional expectations E[Y|X] and E[D|X] using a supervised machine learner.
+
+    Interactive model [interactive]
+
+        Y = g(X,D) + U
+        D = m(X) + V
+
+    which relaxes the assumption that X and D are separable.  D is a binary treatment variable, and we aim to estimate the average treatment effect (ATE) or average treatment effect on the treated (ATET).  We estimate the conditional expectations
+    E[D|X], as well as E[Y|X,D=0] and E[Y|X,D=1] (jointly added using ddml E[Y|X,D]).
+
+    Partially-linear IV model [iv]
+
+        Y = a.D + g(X) + U
+        Z = m(X) + V
+
+    where the aim is to estimate a.  We estimate the conditional expectations E[Y|X], E[D|X] and E[Z|X] using a supervised machine learner.
+
+    Flexible partially-linear IV model [fiv]
+
+        Y = a.D + g(X) + U
+        D = m(Z) + g(X) + V 
+
+    where the estimand of interest is a.  We estimate the conditional expectations E[Y|X], E[D^|X] and D^:=E[D|Z,X] using a supervised machine learner. The instrument is then formed as D^-E^[D^|X] where E^[D^|X] denotes the estimate of E[D^|X].
+
+    Note: "{D}" is a placeholder that is used because last step (estimation of E[D|X]) uses the fitted values from estimating E[D|X,Z].
+
+    Interactive IV model [interactiveiv]
+
+        Y = g(Z,X) + U
+        D = h(Z,X) + V
+        Z = m(X) + E
+
+    where the aim is to estimate the local average treatment effect (LATE).  We estimate, using a supervised machine learner, the following conditional expectations:  E[Y|X,Z=0] and E[Y|X,Z=1] (jointly added using ddml E[Y|X,Z]); E[D|X,Z=0] and
+    E[D|X,Z=1] (jointly added using ddml E[D|X,Z]); and E[Z|X].
+
+
+Main steps when estimating with ddml
+
+    Estimation with ddml proceeds in four steps.
+
+    Step 1. Initialize ddml and select model:
+
+        ddml init model [if] [in] [ , mname(name) kfolds(integer) fcluster(varname) foldvar(varlist) reps(integer) norandom tabfold vars(varlist) ]
+
+    where model is either partial, iv, interactive, fiv, interactiveiv; see model descriptions.
+
+    Step 2. Add supervised ML programs for estimating conditional expectations:
+
+        ddml eq [ , mname(name) vname(varname) learner(varname) vtype(string) predopt(string) ] :  command depvar vars [ , cmdopt ]
+
+    where, depending on model chosen in Step 1, eq is either E[Y|X] E[Y|D,X] E[Y|X,Z] E[D|X] E[D|X,Z] E[Z|X].  command is a supported supervised ML program (e.g. pystacked or cvlasso).  See supported programs.
+
+    Note: Options before ":" and after the first comma refer to ddml.  Options that come after the final comma refer to the estimation command.
+
+    Step 3. Cross-fitting:
+
+        ddml crossfit [ , mname(name) shortstack ]
+
+    This step implements the cross-fitting algorithm. Each learner is fitted iteratively on training folds and out-of-sample predicted values are obtained.
+
+    Step 4. Estimate causal effects:
+
+        ddml estimate [ , mname(name) robust cluster(varname) vce(type) atet ateu trim(real) ]
+
+    The ddml estimate command returns treatment effect estimates for all combination of learners added in Step 2.
+
+    Optional. Report/post selected results:
+
+        ddml estimate [ , mname(name) spec(integer or string) rep(integer or string) allcombos notable replay  ]
+
+    Optional. Retrieve information from ddml:
+
+        ddml extract [ object_name , mname(name) show(display_item) ename(name) vname(varname) stata keys key1(string) key2(string) key3(string) subkey1(string) subkey2(string) ]
+
+    display_item can be stweights, ssweights, psweights, weights, mse, n, or pystacked.  ddml stores many internal results on associative arrays.  See ddml extract for details.
+
+    For full details and further options, follow the links to the detailed help files above.
+
+
+Compatible programs
+
+    ddml is compatible with a large set of user-written Stata commands.  It has been tested with
+
+       - the pystacked package (see pystacked and below).  Note that pystacked requires Stata 16.
+
+       - lassopack for regularized regression (see lasso2, cvlasso, rlasso).
+
+       - rforest by Zou & Schonlau. Note that rforest requires the option vtype(none).
+
+       - svmachines by Guenther & Schonlau.
+
+    Beyond these, it is compatible with any Stata program that
+
+       - uses the standard "reg y x" syntax,
+
+       - supports if-conditions,
+
+       - and comes with predict post-estimation programs.
+
+    pystacked implements stacking regression (Wolpert, 1992) via Stata's Python integration in combination with scikit-learn's sklearn.ensemble.StackingRegressor and sklearn.ensemble.StackingClassifier.  Stacking is a way of combining multiple
+    supervised machine learners (the "base" or "level-0" learners) into a meta learner.
+
+    pystacked is the recommended way to specify multiple learners in ddml.  pystacked provides a fast way of estimating all the learners in a single call to one program, and ddml has integrated support for various features provided by pystacked.  ddml
+    will store the predicted values of the specified base learners as well as the combined ("stacked") predicted values.  It also stores the stacking weights used by pystacked along with the ddml short-stacking weights.  See ddml stacking for more
+    details.
+
+
+
+Example
+
+    A basic example of how to use ddml is below.  For a clickable list of all examples in the package, see help ddml examples.
+
+    Partially-linear model - Basic example with pystacked
+
+    Load the data, define global macros, set the seed and initialize the model.  Use 2-fold cross-fitting with two repetitions (resamples) Use pystacked's default learners as the supervised learners: OLS, cross-validated lasso, and gradient boosting.
+    NB: The model specification and results will be stored on a Mata object with the default name "m0".
+
+        . use https://github.com/aahrens1/ddml/raw/master/data/sipp1991.dta, clear
+        . global Y net_tfa
+        . global D e401
+        . global X tw age inc fsize educ db marr twoearn pira hown
+        . set seed 42
+        . ddml init partial, kfolds(2) reps(2)
+        . ddml E[Y|X]: pystacked $Y $X
+        . ddml E[D|X]: pystacked $D $X
+        . ddml crossfit
+        . ddml estimate
+
+    Replicate the ddml estimate results for the 1st cross-fit estimation (resample 1) by hand, using the estimated conditional expectations generated by ddml and pystacked; "_1" means resample 1.  Compare using ddml estimate, replay.
+
+        . cap drop Yresid
+        . cap drop Dresid
+        . gen double Yresid = $Y - Y1_pystacked_1
+        . gen double Dresid = $D - D1_pystacked_1
+        . regress Yresid Dresid
+        . ddml estimate, mname(m0) spec(st) rep(1) notable replay
+
+
+
+Installation
+
+    To verify that ddml and qddml are correctly installed, click on or type whichpkg ddml (which requires whichpkg to be installed; ssc install whichpkg).
+
+    To get the latest stable versions of ddml and qddml from our website, check the installation instructions at https://statalasso.github.io/docs/ddml/installation/.  We update the stable website version more frequently than the SSC version.
+
+
+References
+
+    Ahrens, A., Hansen, C. B., & Schaffer, M. E. (2023).  pystacked: Stacking generalization and machine learning in Stata.  The Stata Journal, 23(4), 909-931.  https://doi.org/10.1177/1536867X231212426
+
+    Ahrens, A., Hansen, C. B., Schaffer, M. E., & Wiemann, T. (2024a).  Model averaging and double machine learning.  arXiv:2401.01645.  https://arxiv.org/abs/2401.01645
+
+    Ahrens, A., Hansen, C. B., Schaffer, M. E., & Wiemann, T. (2024b).  ddml: Double/debiased machine learning in Stata.  The Stata Journal, 24(1), 3-45.  https://doi.org/10.1177/1536867X241233641
+
+    Chernozhukov, V., Chetverikov, D., Demirer, M., Duflo, E., Hansen, C., Newey, W. and Robins, J. (2018), Double/debiased machine learning for treatment and structural parameters.  The Econometrics Journal, 21: C1-C68.  
+    https://doi.org/10.1111/ectj.12097
+
+    Hastie, T., Tibshirani, R., & Friedman, J. (2009).  The elements of statistical learning: data mining, inference, and prediction. Springer Science & Business Media.
+
+    Wolpert, David H. Stacked generalization.  Neural networks 5.2 (1992): 241-259.  https://doi.org/10.1016/S0893-6080(05)80023-1
+
+
+Authors
+
+    Achim Ahrens, Public Policy Group, ETH Zurich, Switzerland
+    achim.ahrens@gess.ethz.ch
+
+    Christian B. Hansen, University of Chicago, USA
+    Christian.Hansen@chicagobooth.edu
+
+    Mark E Schaffer, Heriot-Watt University, UK
+    m.e.schaffer@hw.ac.uk
+
+    Thomas Wiemann, University of Chicago, USA
+    wiemann@uchicago.edu
+
+
+Also see (if installed)
+
+    Help:  pystacked, lasso2, cvlasso, rlasso, ivlasso, pdslasso.

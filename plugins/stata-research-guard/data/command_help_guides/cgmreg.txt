@@ -1,0 +1,104 @@
+help cgmreg                                                                                                                                                                                                                                     version:  1.0.0
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Title
+
+    cgmreg - Linear regressions with multi-way clustered standard errors.
+
+
+Syntax
+
+    cgmreg depvar [indepvars] [if] [in] [weight] , cluster(varlist) [noconstant max]
+
+Notes
+
+    - You must specify at least one clustering variable (cluster).
+    - Updates on 2014-02-04: Updated table so R2 and adjusted R2 are clearly labeled. Adjusted R2 corrected. Fixed error message for users that need to install the unique command.
+    - Updates on 2014-07-03: No longer allows pweight.
+
+
+Description
+
+    cgmreg resembles Mitchell Petersen's cluster2 command except that it allows an arbitrary number of clustering variables.  Cameron, Gelbach and Miller (2006) describe the procedure for computing the covariance matrix.  The program is modified from
+    the cgmreg command provided by Miller.
+
+    The chi-square statistic for the joint test of all of the coefficients is computed using the adjusted covariance matrix.
+
+Options
+    max; Sets the diagonal elements of the covariance matrix to the maximum from estimates standard errors using OLS, robust and for each cluster (See Angrist and Pischke 2009). Note that this is somewhat ad hoc and does not adjust the off-diagonal
+        elements of the covariance matrix.
+
+    level(#); see estimation options.
+
+Example
+    . webuse nlsw88
+    . reg wage tenure ttl_exp collgrad if ~missing(age,occupation), cluster(industry)
+    . cgmreg wage tenure ttl_exp collgrad if ~missing(age,occupation), cluster(industry)
+    . cgmreg wage tenure ttl_exp collgrad, cluster(industry age occupation)
+
+
+Return values
+
+   Scalars
+       e(N)               Number of observations
+       e(df_m)            Model degrees of freedom
+       e(df_r)            Residual degrees of freedom
+       e(chi2)            Wald chi-squared statistic
+       e(chi2_p)          p-value of Wald statistic
+       e(r2)              R-squared
+       e(rmse)            Root mean squared error
+       e(mss)             Model sum of squares
+       e(rss)             Residual sum of squares
+       e(r2_a)            Adjusted R-squared
+       e(ll)              Log likelihood
+       e(ll_0)            Log likelihood, constant-only model
+       e(S)               Number of cluster combinations
+       e(NC)              Number of cluster variables
+       e(N_i)             Number of clusters for cluster variable i
+
+   Macros
+       e(clusvar)         Names of cluster variables
+       e(clustvar)        Names of cluster variables
+       e(predict)         Program used to implement predict
+       e(properties)      b V
+       e(cmd)             cgmreg
+       e(depvar)          Name of dependent variable
+
+   Matrices
+       e(b)                Coefficient vector
+       e(V)                Variance-covariance matrix of the estimators
+
+   Functions
+       e(sample)           Marks estimation sample
+
+
+Reference
+
+    - Angrist, J., and J. Pischke. 2009. Mostly harmless econometrics: An empiricists' companion. Princeton, NJ, USA: Princeton University Press.
+
+    - Cameron, A., J. Gelbach and D. Miller. 2006. Robust inference with multi-way clustering. NBER Technical Working Paper 327.
+
+    - Petersen,M. 2009. Estimating standard errors in finance panel data sets: Comparing approaches. Review of Financial Studies 22(1): 435-480.
+
+
+
+Remarks
+
+    - Updated 17-Feb-2010 to include number of cluster variables in ereturn list, allow for regressions on a constant only and technical changes (e.g. changing macro variables to scalars) - Updated 3-Jul-2014 to disallow pweight because of issues with
+      how it interacts with the _robust command
+
+Author
+
+    Mitchell Petersen at Northwestern University (mpetersen@northwestern.edu) wrote logit2, which is available at http://www.kellogg.northwestern.edu/faculty/petersen/htm/papers/se/se_programming.htm.
+
+    Douglas Miller at UC, Davis (dmiller@ucdavis.edu) wrote cgmreg, which is available at http://www.econ.ucdavis.edu/faculty/dmiller/statafiles/index.htm.
+
+    Judson Caskey, University of Texas, judson.caskey@mccombs.utexas.edu
+
+
+
+Also see
+
+    Manual:  [R] regress
+
+    Online:  regress, _robust

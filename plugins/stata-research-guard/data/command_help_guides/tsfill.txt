@@ -1,0 +1,59 @@
+[TS] tsfill -- Fill in gaps in time variable
+               (View complete PDF manual entry)
+
+
+Syntax
+
+        tsfill [, full]
+
+    You must tsset or xtset your data before using tsfill; see [TS] tsset and [XT] xtset.
+
+
+Menu
+
+    Statistics > Time series > Setup and utilities > Fill in gaps in time variable
+
+
+Description
+
+    tsfill is used to fill in gaps in time-series data and gaps in panel data with new observations, which contain missing values.  tsfill is not needed to obtain correct lags, leads, and differences when gaps exist in a series because Stata's
+    time-series operators handle gaps automatically.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Option
+
+    full is for use with panel data only.  With panel data, tsfill by default fills in observations for each panel according to the minimum and maximum values of timevar for the panel.  Thus if the first panel spanned the times 5-20 and the second panel
+        the times 1-15, after tsfill they would still span the same periods; observations would be created to fill in any missing times from 5-20 in the first panel and from 1-15 in the second.
+
+        If full is specified, observations are created so that both panels span the time 1-20, the overall minimum and maximum of timevar across panels.
+
+
+Examples
+
+    Using tsfill with time-series data
+        . webuse tsfillxmpl
+        . list mdate income
+        . tsfill
+        . list mdate income
+
+    Using tsfill with panel data
+        . webuse tsfillxmpl2, clear
+        . list edlevel year income
+        . tsfill
+        . list edlevel year income
+        . tsfill, full
+        . list edlevel year income
+
+
+Video example
+
+        Formatting and managing dates

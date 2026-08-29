@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.3.0+codex.20260829163957"
+    "version": "0.3.0+codex.20260829205123"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
-      "bytes": 1681,
-      "sha256": "c65cd0607baf6ab807dee73deb91c26e8bb1a5c7fef062cedf4356f3e47ea53b"
+      "bytes": 1955,
+      "sha256": "c32632b6b3078d16dd50ec4512aea420d89b48e63e7daf406a06c60d934afbca"
     },
     {
       "path": ".mcp.json",
@@ -22,13 +22,558 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 7311,
-      "sha256": "aac703670809e6a095d6a75cbefd82903fd5df8847a05058a18c0955381c430d"
+      "bytes": 9298,
+      "sha256": "62bd3dd42e899fafbe91ca602b1f0205b8fd9c150aba2ca031c55086453534bb"
+    },
+    {
+      "path": "data/command_help_guides/acreg.txt",
+      "bytes": 14112,
+      "sha256": "2abf3d78389cb4bc9f20d716aa38f8cd84b8127b330f691fbc705548c92419e1"
+    },
+    {
+      "path": "data/command_help_guides/append.txt",
+      "bytes": 5584,
+      "sha256": "94bbcd6be86b49b0d03835e6128c01d9edc55d4193708c1521d0f42fb5a82d55"
+    },
+    {
+      "path": "data/command_help_guides/areg.txt",
+      "bytes": 13461,
+      "sha256": "9ecf81c21f694f5b120058b43231b62d3f67309938606fa92b00343c7cbaf15d"
+    },
+    {
+      "path": "data/command_help_guides/asdoc.txt",
+      "bytes": 65655,
+      "sha256": "5b95913fa2d594c272a3c343cabe503dcabf8abe4845b60fc201aae1d0a957d0"
+    },
+    {
+      "path": "data/command_help_guides/assert.txt",
+      "bytes": 2330,
+      "sha256": "6ed2e90b254b5d32c98a2f38e3e6ca54a4bd55991d5b5d23462e9116af04d3c3"
+    },
+    {
+      "path": "data/command_help_guides/boottest.txt",
+      "bytes": 51603,
+      "sha256": "c21eb0117ea87843357ccd8b2185c5c8fc7ba9b5129d07db126d658447aea860"
+    },
+    {
+      "path": "data/command_help_guides/cgmreg.txt",
+      "bytes": 4597,
+      "sha256": "b7b8b4b2c7f89d8b63fcee05527fc05a4533155ae9ca167c4609f2f4b27d8ae2"
+    },
+    {
+      "path": "data/command_help_guides/codebook.txt",
+      "bytes": 7872,
+      "sha256": "0a2dc522de0e964976d22749405581427718c7c38d2bb1d5330d9efb7852215e"
+    },
+    {
+      "path": "data/command_help_guides/coefplot.txt",
+      "bytes": 56562,
+      "sha256": "a680ae5563c0df924184d7864c641b9180747526efbc44cb4e1764c86930a8e2"
+    },
+    {
+      "path": "data/command_help_guides/collapse.txt",
+      "bytes": 9129,
+      "sha256": "793366be701e11b5f8c69ad469c3288efb94760a6bf01fc5ff94bcf9f23cc2f7"
+    },
+    {
+      "path": "data/command_help_guides/collect_export.txt",
+      "bytes": 15073,
+      "sha256": "cfaabaa4c5c82d5ca468101ca9635e3cea31451940e3322fea4cf1845587e3fb"
+    },
+    {
+      "path": "data/command_help_guides/collect_get.txt",
+      "bytes": 6439,
+      "sha256": "c158d8b3514f04c56c9708dd8149646d232e2b8f20868aa045a452c2ba01099a"
+    },
+    {
+      "path": "data/command_help_guides/collect_style.txt",
+      "bytes": 98149,
+      "sha256": "80941de4a1be32f4a58c0edc2f24b27b1453429c4563e9f8a31974c36093ccb6"
+    },
+    {
+      "path": "data/command_help_guides/contract.txt",
+      "bytes": 6435,
+      "sha256": "9bcb2d533ded94e9f6499b0d4b9bdf4498f6fae0f0acd32f1c7b5e01e0547aaf"
+    },
+    {
+      "path": "data/command_help_guides/crossfit.txt",
+      "bytes": 8789,
+      "sha256": "dae981bfcdbe6e4bdef920288e2f86c36ad8468185a2358f27f5fd3c6232e199"
+    },
+    {
+      "path": "data/command_help_guides/csdid_estat.txt",
+      "bytes": 23884,
+      "sha256": "da0e5bb224e7eea28f88109582a21b5fe082466d2deae3c1ab0532a6a87eb6f2"
+    },
+    {
+      "path": "data/command_help_guides/csdid.txt",
+      "bytes": 17974,
+      "sha256": "5852b6535b19d99248a56d2c857d45fdf0881fd76815424302efbcfff37f1adb"
+    },
+    {
+      "path": "data/command_help_guides/ddml.txt",
+      "bytes": 12691,
+      "sha256": "c1c5b52c63550c0b821a85936f36685378eb63fe4e288dfef2155212c334bf55"
+    },
+    {
+      "path": "data/command_help_guides/decode.txt",
+      "bytes": 5147,
+      "sha256": "c81cec1e3cdcf32ab01bf8d5a73a325df8aa79af407fc2d70117e90892b5bafb"
+    },
+    {
+      "path": "data/command_help_guides/destring.txt",
+      "bytes": 11248,
+      "sha256": "2d52afa3d4750b892965a766c413ce7f80c3541e77eb156e3eb158199ae2539d"
+    },
+    {
+      "path": "data/command_help_guides/did_imputation.txt",
+      "bytes": 27268,
+      "sha256": "7d95341a4c7eaae1ed05edacb99d8f3823deb2e61af0372e639ae7f67ed0c060"
+    },
+    {
+      "path": "data/command_help_guides/did_multiplegt_dyn.txt",
+      "bytes": 47256,
+      "sha256": "47113ec7c6ba8d4326eea37a2d0cab5ce8547fb8d13a77d10ea70d91b9c8d739"
+    },
+    {
+      "path": "data/command_help_guides/dtable.txt",
+      "bytes": 60827,
+      "sha256": "8486e921c75170456adb3afcdc1867dd089ee995a281afb46a0789ec2c454baa"
+    },
+    {
+      "path": "data/command_help_guides/duplicates.txt",
+      "bytes": 8403,
+      "sha256": "44b0f148b349bb26ebcdfe7b95a877132a6f6d126da3573c0a435dccb021840b"
+    },
+    {
+      "path": "data/command_help_guides/egen.txt",
+      "bytes": 26252,
+      "sha256": "ada35207d289ef8345cc5eb497f758d9b70ea347ff8d55a96695fb38354af5a7"
+    },
+    {
+      "path": "data/command_help_guides/encode.txt",
+      "bytes": 5147,
+      "sha256": "c81cec1e3cdcf32ab01bf8d5a73a325df8aa79af407fc2d70117e90892b5bafb"
+    },
+    {
+      "path": "data/command_help_guides/estadd.txt",
+      "bytes": 32301,
+      "sha256": "d5ad7c9851616127ee6118d2e22e2b8bccea67cf387289825635a04dcbbd0be8"
+    },
+    {
+      "path": "data/command_help_guides/estout.txt",
+      "bytes": 91797,
+      "sha256": "8bd75fe98e9f8d52c76e7b76827c8fba4410a452d9ab0a167ddf7d0ec23b6aed"
+    },
+    {
+      "path": "data/command_help_guides/estpost.txt",
+      "bytes": 52753,
+      "sha256": "e5b044ae6fc1689841c76e0dbc5acaa5600d42f3818b759d23ee55930898d39f"
+    },
+    {
+      "path": "data/command_help_guides/eststo.txt",
+      "bytes": 10046,
+      "sha256": "d94505a4692960e97a6f51b5ab8580aced8dc2199efbc321b676368fae4a884d"
+    },
+    {
+      "path": "data/command_help_guides/esttab.txt",
+      "bytes": 35473,
+      "sha256": "ab626f0d0ed60f2010a3325a26369711d27d3dc4c76df318b0625693d96e009a"
+    },
+    {
+      "path": "data/command_help_guides/etable.txt",
+      "bytes": 54526,
+      "sha256": "331d87b427d163b9de111e097f471c9b54531628fdfe5e5b55480325585a76b2"
+    },
+    {
+      "path": "data/command_help_guides/event_plot.txt",
+      "bytes": 12247,
+      "sha256": "9c568c84344fb11276e8f5b813a01f62c12521378f5e57bc77e23c554a3f9298"
+    },
+    {
+      "path": "data/command_help_guides/eventdd.txt",
+      "bytes": 25815,
+      "sha256": "3ed6b085158d6c68595b6eb62a6e93430a058a15d0238fefb96e9ab7f997f626"
+    },
+    {
+      "path": "data/command_help_guides/eventstudyinteract.txt",
+      "bytes": 15566,
+      "sha256": "bb29006049a92e33725b0e4c539cbbe1b10886ebfd9998557d70a8a73aa82dfa"
+    },
+    {
+      "path": "data/command_help_guides/export_delimited.txt",
+      "bytes": 14873,
+      "sha256": "8c113462c1cd4941e7de9e674bca04043275eb3bf15980457314bdbdb12c59f7"
+    },
+    {
+      "path": "data/command_help_guides/export_excel.txt",
+      "bytes": 13116,
+      "sha256": "7980fb3ee7d920917aad5da3d83154d8dc7de1b290610f440ca7121aa13ea5df"
+    },
+    {
+      "path": "data/command_help_guides/fcollapse.txt",
+      "bytes": 6737,
+      "sha256": "0210c8d5c466811345b1cb1969a2c38bbf7b72c474707afe37ba07b665c9669b"
+    },
+    {
+      "path": "data/command_help_guides/fmerge.txt",
+      "bytes": 2351,
+      "sha256": "b19226ca0a9aa01c97c0e28aadf77ad7ebad1dad6dbaaee1a2763563885fffb6"
+    },
+    {
+      "path": "data/command_help_guides/gcollapse.txt",
+      "bytes": 15029,
+      "sha256": "442365db35e36a90269926b47e75fc579104b55ab14f4863272f1e3531bc6a3b"
+    },
+    {
+      "path": "data/command_help_guides/gegen.txt",
+      "bytes": 18766,
+      "sha256": "1e86efc35ff84a73e75cf9e0eb52b817966c373205104525445e46f450f5f9fb"
+    },
+    {
+      "path": "data/command_help_guides/generate.txt",
+      "bytes": 7104,
+      "sha256": "e51d24729efbaf30efbf3f7121ad7ee7f4e605dda54cb1e4829718061701a3e1"
+    },
+    {
+      "path": "data/command_help_guides/gquantiles.txt",
+      "bytes": 15901,
+      "sha256": "52bd4bfb36e5ca17e637cbcab95001ad4a284e435a20ca61d375cfd119c89108"
+    },
+    {
+      "path": "data/command_help_guides/graph_bar.txt",
+      "bytes": 59711,
+      "sha256": "36ca805b30fdbd3fa16ce6d17286c85f2a0c25b16660c5f85f6d7ffb577715c9"
+    },
+    {
+      "path": "data/command_help_guides/graph.txt",
+      "bytes": 6875,
+      "sha256": "7466f39e8302ab1b461d06f73d3d75fa61dd6ba759574c3076766bdcb3142abf"
+    },
+    {
+      "path": "data/command_help_guides/greshape.txt",
+      "bytes": 9876,
+      "sha256": "35ef9663a2e6a5d9059de5ce4031b2d9ec332dbf11d4135c7373a821e5598489"
+    },
+    {
+      "path": "data/command_help_guides/gstats.txt",
+      "bytes": 37302,
+      "sha256": "af761e7a8159faf956ecf6b386017e8c7424270416f867d0f1622393726c6ba2"
+    },
+    {
+      "path": "data/command_help_guides/histogram.txt",
+      "bytes": 13441,
+      "sha256": "7d263c931dd6c8dc1afb2a05756ee52b05d03c12715995be111503e76b3084df"
+    },
+    {
+      "path": "data/command_help_guides/import_delimited.txt",
+      "bytes": 14873,
+      "sha256": "8c113462c1cd4941e7de9e674bca04043275eb3bf15980457314bdbdb12c59f7"
+    },
+    {
+      "path": "data/command_help_guides/import_excel.txt",
+      "bytes": 13116,
+      "sha256": "7980fb3ee7d920917aad5da3d83154d8dc7de1b290610f440ca7121aa13ea5df"
+    },
+    {
+      "path": "data/command_help_guides/import.txt",
+      "bytes": 3993,
+      "sha256": "0d2ed87d7cc765d2f15c1ce92ca64602b302cdf97539e8641c7f3f5117dd1c54"
+    },
+    {
+      "path": "data/command_help_guides/isid.txt",
+      "bytes": 1913,
+      "sha256": "6eb393f4c5b1c54d3fe63b2ba6fad40cf693273b98c6c3b77c2cd8eb285ea88a"
+    },
+    {
+      "path": "data/command_help_guides/ivreg2.txt",
+      "bytes": 81828,
+      "sha256": "50b65f139c60c8cdaca78fd9c46901dda22dcbc1acda008c38d90385aa4361d9"
+    },
+    {
+      "path": "data/command_help_guides/ivreghdfe.txt",
+      "bytes": 1748,
+      "sha256": "c777b7d09e174865b24fafb5f257e531b29a6b27c35b89322541fc1a4992c9b2"
+    },
+    {
+      "path": "data/command_help_guides/ivregress.txt",
+      "bytes": 17171,
+      "sha256": "2a3a64db29f9af1d1ecb66bd7235e61d21ca48ff3fbda7e4d06d8e6c09544d98"
+    },
+    {
+      "path": "data/command_help_guides/jwdid.txt",
+      "bytes": 12566,
+      "sha256": "1a2fff50c461d4fdfed1a0f57757962da4786e1926038f13b3b6027aadaf9bb7"
+    },
+    {
+      "path": "data/command_help_guides/label.txt",
+      "bytes": 8083,
+      "sha256": "47bd939e8fd9d1ef44b83eeaa64d70b1d56b0815cd28dd5a199ffd33afa00eb1"
+    },
+    {
+      "path": "data/command_help_guides/lincom.txt",
+      "bytes": 5726,
+      "sha256": "9f99d2280ab37719d2ca7f3c63cc9c8dd70b568d826aa5396340daac4b181087"
+    },
+    {
+      "path": "data/command_help_guides/logistic.txt",
+      "bytes": 11213,
+      "sha256": "e0b493c4398427fd810001daab8b22ac39ae80dcb97d3d7f26fbbe2917b95938"
+    },
+    {
+      "path": "data/command_help_guides/logit.txt",
+      "bytes": 10889,
+      "sha256": "0f37e640b7a580e15ea768486fe0a99da1c4c15fddeb2943ed815d7573e66203"
+    },
+    {
+      "path": "data/command_help_guides/margins.txt",
+      "bytes": 41181,
+      "sha256": "efe5c329456a535a89c47f41792783add4d90027d9d6da67e3b613ac7b10d830"
+    },
+    {
+      "path": "data/command_help_guides/marginsplot.txt",
+      "bytes": 25644,
+      "sha256": "06458bb76f524ca950933432ba285729a2e53eecdb6670b936c3ce16c1f7903b"
+    },
+    {
+      "path": "data/command_help_guides/merge.txt",
+      "bytes": 14669,
+      "sha256": "5f0397ce475f76c7b5da231c397c7188b77f6980acb22ebf09c41dd185dbdf1d"
+    },
+    {
+      "path": "data/command_help_guides/misstable.txt",
+      "bytes": 10475,
+      "sha256": "ac223a3400a2a68207071bbcbab2e8ae179325f52ab2bd4828bdbdd6a794bc73"
+    },
+    {
+      "path": "data/command_help_guides/nbreg.txt",
+      "bytes": 20155,
+      "sha256": "a285ac4bccec820c2c5c4ab1abd0ab97fa43c9e18c00cfd2b8a5296030994906"
+    },
+    {
+      "path": "data/command_help_guides/outreg2.txt",
+      "bytes": 49863,
+      "sha256": "0cbaea0a0fe28a0a5eef1d508f675ec576a2d3cf446fb63df3e4bb108a13d90e"
+    },
+    {
+      "path": "data/command_help_guides/poisson.txt",
+      "bytes": 8998,
+      "sha256": "df69cd171eaa6a02c94ce3ee4fabbcc57a8acaca19a6ea64347eec49cd7d09b7"
+    },
+    {
+      "path": "data/command_help_guides/ppmlhdfe.txt",
+      "bytes": 15461,
+      "sha256": "c317bc1e97a486df5635b4f14ab8396714ea1c54e505b6f966bebb474f346b20"
+    },
+    {
+      "path": "data/command_help_guides/predict.txt",
+      "bytes": 13051,
+      "sha256": "4d5870ce7f78ec04d2b4613070e7663263ca7aa547251295111ee0be7f4ae9e4"
+    },
+    {
+      "path": "data/command_help_guides/probit.txt",
+      "bytes": 11518,
+      "sha256": "51eb2876fd3b31119692e47435fae178c84c45a05f68ffd6fccda23c67670111"
+    },
+    {
+      "path": "data/command_help_guides/psmatch2.txt",
+      "bytes": 24097,
+      "sha256": "92688396d47bb07853dead280b04543cf9e51517ee8b77bd4014fea318b94cdf"
+    },
+    {
+      "path": "data/command_help_guides/pstest.txt",
+      "bytes": 15628,
+      "sha256": "1aa7fb7aa2c450c31b31f9151efca9098ddd3c8d93e536d490f3db2f90d115d3"
+    },
+    {
+      "path": "data/command_help_guides/putexcel.txt",
+      "bytes": 37936,
+      "sha256": "79a96353c4e9758bcb969c61245230885f65283879d56cf06184ab8d2e908709"
+    },
+    {
+      "path": "data/command_help_guides/qddml.txt",
+      "bytes": 18000,
+      "sha256": "98c1822f2e89a6835763369e433488ab83d0d10a8268a288bb43aaca02b23f5f"
+    },
+    {
+      "path": "data/command_help_guides/rangestat.txt",
+      "bytes": 47148,
+      "sha256": "29dcbe96f6e6bc6a807b8ad6e60e269b63bf68c3b70ac8fc70afe99274b211f5"
+    },
+    {
+      "path": "data/command_help_guides/rdbwselect.txt",
+      "bytes": 16013,
+      "sha256": "547ee1fdb26198a4ac11814725359c396aa61ec5cd161169f642b12e46e31de7"
+    },
+    {
+      "path": "data/command_help_guides/rdplot.txt",
+      "bytes": 12175,
+      "sha256": "fde55cbafd3be9b4f78adc8840cb03a30bac9ff95b6bbcb4b3c191f03246d619"
+    },
+    {
+      "path": "data/command_help_guides/rdrobust.txt",
+      "bytes": 20462,
+      "sha256": "5c274b3db07531239d8d1469ee60a95e043dd34a9abdcf150f733fb3933aacfa"
+    },
+    {
+      "path": "data/command_help_guides/recode.txt",
+      "bytes": 9344,
+      "sha256": "e0585997b5177aa129cbd130844f0a0dad87559e8fac4e859217fdc81c62013b"
+    },
+    {
+      "path": "data/command_help_guides/reghdfe.txt",
+      "bytes": 46941,
+      "sha256": "ef491432c8d84b24bf2aa4d98500aba76e022368e07a0ded4a72b68047280c83"
+    },
+    {
+      "path": "data/command_help_guides/regress.txt",
+      "bytes": 16770,
+      "sha256": "f4164a56a936af20e2fef914d023cb863b72c78bb9c6c5e002bbe8e80bf1618d"
+    },
+    {
+      "path": "data/command_help_guides/replace.txt",
+      "bytes": 7104,
+      "sha256": "e51d24729efbaf30efbf3f7121ad7ee7f4e605dda54cb1e4829718061701a3e1"
+    },
+    {
+      "path": "data/command_help_guides/reshape.txt",
+      "bytes": 13892,
+      "sha256": "e2eece7903c8b4196fd453cdfc358b97ddabf19948f9e9f1f77441294c296511"
+    },
+    {
+      "path": "data/command_help_guides/ritest.txt",
+      "bytes": 15760,
+      "sha256": "c5385c2ccc7bfe754061a2285b2d6670725fa0fdb87513ca075a5781fb4d9d9f"
+    },
+    {
+      "path": "data/command_help_guides/save.txt",
+      "bytes": 7093,
+      "sha256": "7bf3382cebe3577a9875b08acd0d9464b6d24a88b20aaebe8045ba200f61c2cb"
+    },
+    {
+      "path": "data/command_help_guides/sdid.txt",
+      "bytes": 22395,
+      "sha256": "dc635c363d08b36db9df46c50da89b28d30fc8b31573141eda28954b4045c8fd"
+    },
+    {
+      "path": "data/command_help_guides/stackedev.txt",
+      "bytes": 6826,
+      "sha256": "20fc3a06a1540969ddf9ad7497c9c7090125777d830c14cb17c3d53d7ef7f063"
+    },
+    {
+      "path": "data/command_help_guides/stcox.txt",
+      "bytes": 15882,
+      "sha256": "5167af9a4f9f8d753faad219ec7588d7c4a0c2308f9ba625e845efb752e84231"
+    },
+    {
+      "path": "data/command_help_guides/stset.txt",
+      "bytes": 18684,
+      "sha256": "b88493e18aa4387e47ae27d5391f386473536c2f8de6e32af3fc89fc068e9c70"
+    },
+    {
+      "path": "data/command_help_guides/summarize.txt",
+      "bytes": 4201,
+      "sha256": "854d633967b8728ee9369f5cb5d7112ba64682b7e05c290bbd2363adde3cba2e"
+    },
+    {
+      "path": "data/command_help_guides/sysuse.txt",
+      "bytes": 1554,
+      "sha256": "b8c3aa51c7c0e4c5747749d30e8b465fc0f646c24a71516819210dc9f1d4b189"
+    },
+    {
+      "path": "data/command_help_guides/table.txt",
+      "bytes": 24154,
+      "sha256": "5975ce82bce0904f84578c92965a0df71933d439572951116e2d0d45387e6028"
+    },
+    {
+      "path": "data/command_help_guides/tabstat.txt",
+      "bytes": 8807,
+      "sha256": "569cd579d03c6a3dac656131c240af34833b8956477033b366563db8208ac7c5"
+    },
+    {
+      "path": "data/command_help_guides/tabulate.txt",
+      "bytes": 255,
+      "sha256": "a2415d8567be25c6920c1095042e83b629bd18306b7361ccdee78797e47ba323"
+    },
+    {
+      "path": "data/command_help_guides/test.txt",
+      "bytes": 13484,
+      "sha256": "96f0cdcdbcbf9760596b7c587e0a330210cd24fadbfb15325560dea4a09a134e"
+    },
+    {
+      "path": "data/command_help_guides/testparm.txt",
+      "bytes": 13484,
+      "sha256": "96f0cdcdbcbf9760596b7c587e0a330210cd24fadbfb15325560dea4a09a134e"
+    },
+    {
+      "path": "data/command_help_guides/tostring.txt",
+      "bytes": 11248,
+      "sha256": "2d52afa3d4750b892965a766c413ce7f80c3541e77eb156e3eb158199ae2539d"
+    },
+    {
+      "path": "data/command_help_guides/tsfill.txt",
+      "bytes": 1795,
+      "sha256": "008718cdab0478a157ef4be736b9a155318612a46d18df9117a6fea3df18ed3d"
+    },
+    {
+      "path": "data/command_help_guides/tsset.txt",
+      "bytes": 13323,
+      "sha256": "03a7d150a691736c055ced1ecc5d4d9ecd4de2b96ed76521878006abfce137ec"
+    },
+    {
+      "path": "data/command_help_guides/ttest.txt",
+      "bytes": 6372,
+      "sha256": "f7bbd0fa038726ef48a9423cac0d3ff0c473940471afab0b1601d392e3dafd9f"
+    },
+    {
+      "path": "data/command_help_guides/twoway.txt",
+      "bytes": 12373,
+      "sha256": "75658c54cd8897160a009b2cc55e083e7689f5eb7b04bcf2a8787257ed9058cf"
+    },
+    {
+      "path": "data/command_help_guides/use.txt",
+      "bytes": 1418,
+      "sha256": "d6c7709a7a8113126191a111d680b20eb111ed7b6e13134c87aad8b6db070c2c"
+    },
+    {
+      "path": "data/command_help_guides/winsor2.txt",
+      "bytes": 5210,
+      "sha256": "44e1831e080e7f9d078054995740193490e9220a0a10728ba3d2ea6bbe084db3"
+    },
+    {
+      "path": "data/command_help_guides/xtabond2.txt",
+      "bytes": 40396,
+      "sha256": "b41921d1678ae1622d0eaafa9dfcfadcc78a492e19d3f70fe16bade11de6c737"
+    },
+    {
+      "path": "data/command_help_guides/xtivreg.txt",
+      "bytes": 31471,
+      "sha256": "3312c04b5024593fdd1d1af9dfe2cb3c38766e92e5117cb3dc0130ce7358844d"
+    },
+    {
+      "path": "data/command_help_guides/xtreg.txt",
+      "bytes": 55253,
+      "sha256": "2b2f774c13fed6fb88e4ffb85e78da1d8ef040e3ff4cc66c17d00684052749a7"
+    },
+    {
+      "path": "data/command_help_guides/xtset.txt",
+      "bytes": 15117,
+      "sha256": "dcaba5a35075bdac62796496f36a92033694668a9ea2378d8969fa88b026b844"
+    },
+    {
+      "path": "data/command_help_guides.json",
+      "bytes": 145735,
+      "sha256": "444cbeb898ee1d516e39990419eac9de1c2fc3d1686be01bcfbd91dc1e76e28a"
+    },
+    {
+      "path": "data/command_help_sources/cgmreg-jacaskey-1e3006e54d51ebf75077e0f969367bb4b4250cb9.hlp",
+      "bytes": 4945,
+      "sha256": "6ebe6956454ddd0c3b7eef0bedd6a504d03a4e45024f6d464b4adedddb639d07"
     },
     {
       "path": "data/command_registry.json",
-      "bytes": 169660,
-      "sha256": "0c1fa842012cbbb331d4a2bd6cbd881a807e251232adf26bf842df52efab50d1"
+      "bytes": 169948,
+      "sha256": "842440abde66b7214a3915516da20b5987f3ac094e2f2c09cf70f59f2718d4d4"
     },
     {
       "path": "data/full_command_guides/acreg.md",
@@ -1432,23 +1977,28 @@
     },
     {
       "path": "INSTRUCTIONS.md",
-      "bytes": 3456,
-      "sha256": "a7fcbf839a5f89d8ed6c8170e57c0a285d34e5e8d0407a3abd7009b06050c915"
+      "bytes": 4689,
+      "sha256": "6fc254842281989bb14ba707ea067a3e2c17e7b900900e48c66103f562ac81b3"
     },
     {
       "path": "mcp/server.cjs",
-      "bytes": 13163,
-      "sha256": "f027d52b13fc5f4f5550fd80291cd8282ca0630da7ce60d60028e728b4747b06"
+      "bytes": 13935,
+      "sha256": "8f3a2664afee7588d4bf29e0e21db80d2dfdfafbb2e247e8cf784d45224c59b2"
     },
     {
       "path": "README.md",
-      "bytes": 5443,
-      "sha256": "a38bdbb84fe6757d32e7db41f3c49193aa9706db7618868af6d7cb5ed8db1a68"
+      "bytes": 7667,
+      "sha256": "f1c32326ba0f0fef92e4ac4aa103de40c09c02098cca813dddc6afab360a8610"
     },
     {
       "path": "scripts/build_clean_command_guide.py",
       "bytes": 7179,
       "sha256": "f339d7b86b091e1c8302de7bcaa462d1b57b6917995a4a95725c68a791fbe15b"
+    },
+    {
+      "path": "scripts/build_command_help_guides.cjs",
+      "bytes": 17671,
+      "sha256": "d6943d3f5dcd8529c9d7c643872066f3e10b757fd51e2c957d15f0d6bc4bf645"
     },
     {
       "path": "scripts/run_mcp.cmd",
@@ -1462,8 +2012,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/agents/openai.yaml",
-      "bytes": 688,
-      "sha256": "0c451f5608049306629c02450af8083d2d9fba14d72839155fe53d8db6c9f3a4"
+      "bytes": 692,
+      "sha256": "9d2b1f20ce8c0833ae29551fa72b9107523de0458d84869c6f0f332f1bb455a6"
     },
     {
       "path": "skills/stata-replication-workflow/references/authoring-conventions.md",
@@ -1472,13 +2022,13 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/command-evidence.md",
-      "bytes": 3912,
-      "sha256": "0d31a07034959b927c023352f13e636e0d3377b9857f0b3ff3cfb6f6b33ee308"
+      "bytes": 5077,
+      "sha256": "62cd5dcaf6503043797636391622bda62f7c4af562f3751aa28c5fd838743d1e"
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rules.md",
-      "bytes": 7170,
-      "sha256": "611999eeee981ac86930bfa22ec30623b848d59a5097795b9e9a4cfa1eb9b982"
+      "bytes": 8472,
+      "sha256": "2d8e46252064893f6bf26afd5f62719ec75813950cddd67a96254d9a15fc3560"
     },
     {
       "path": "skills/stata-replication-workflow/references/readme-contract.md",
@@ -1492,8 +2042,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/SKILL.md",
-      "bytes": 4787,
-      "sha256": "850110954511d57851f78f5c17a9e7cee728d8d2e9cd3adbed9ed1905516ef2d"
+      "bytes": 5980,
+      "sha256": "230dccc976a6241ccacc50e219c7479512e8a52b1380661d42caf212dadd2a4a"
     },
     {
       "path": "tests/fixtures/outreg2_excel_runtime.do",
@@ -1517,8 +2067,8 @@
     },
     {
       "path": "tests/server.test.cjs",
-      "bytes": 8435,
-      "sha256": "8b53d2800a8238fe8c0922d6e2117cd624db19d655d685a9ab1c95f9ff1c26b1"
+      "bytes": 12604,
+      "sha256": "5e0db524074e70841bf74b0a24358d680a86fcdb664b62a761e85ad888d2e024"
     }
   ],
   "semantic_anchors": [
@@ -1534,7 +2084,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.3.0+codex.20260829163957"
+      "value": "0.3.0+codex.20260829205123"
     },
     {
       "id": "readme.heading",

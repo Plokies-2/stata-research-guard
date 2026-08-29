@@ -1,0 +1,63 @@
+[D] sysuse -- Use shipped dataset
+              (View complete PDF manual entry)
+
+
+Syntax
+
+    Use example dataset installed with Stata
+
+        sysuse ["]filename["] [, clear]
+
+
+    List example Stata datasets installed with Stata
+
+        sysuse dir [, all]
+
+
+Menu
+
+    File > Example datasets...
+
+
+Description
+
+    sysuse filename loads the specified Stata-format dataset that was shipped with Stata or that is stored along the ado-path.  If filename is specified without a suffix, .dta is assumed.
+
+    sysuse dir lists the names of the datasets shipped with Stata plus any other datasets stored along the ado-path.  You can also see dta_examples for a list of datasets shipped with Stata.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+    clear specifies that it is okay to replace the data in memory, even though the current data have not been saved to disk.
+
+    all specifies that all datasets be listed, even those that include an underscore (_) in their name.  By default, such datasets are not listed.
+
+
+Example
+
+    If you simply type use lifeexp, you would see
+
+        . use lifeexp
+        file lifeexp.dta not found
+        r(601);
+
+    Type sysuse, however, and the dataset is loaded:
+
+        . sysuse lifeexp
+        (Life expectancy, 1998)
+
+
+Stored results
+
+    sysuse dir stores in the macro r(files) the list of dataset names.
+
+    sysuse filename stores in the macro r(fn) the filename, including the full path specification.

@@ -1,0 +1,156 @@
+[D] import -- Overview of importing data into Stata
+              (View complete PDF manual entry)
+
+
+Description
+
+    This entry provides a quick reference for determining which method to use for reading non-Stata data into memory.  See [U] 22 Entering and importing data for more details.
+
+
+Links to PDF documentation
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Summary of the different methods
+
+import excel
+
+        1. import excel reads worksheets from Microsoft Excel (.xls and .xlsx) files.
+
+        2. Entire worksheets can be read, or custom cell ranges can be read.
+
+    See [D] import excel.
+
+
+import delimited
+
+        1. import delimited reads text-delimited files.
+
+        2. The data can be tab-separated or comma-separated.  A custom delimiter may also be specified.
+
+        3. An observation must be on only one line.
+
+        4. The first line of the file can optionally contain the names of the variables.
+
+    See [D] import delimited.
+
+
+jdbc
+
+        1. Java Database Connectivity (JDBC) is an application programming interface for the programming language Java.  The jdbc command allows you to connect to, load data from, insert data into, and execute queries on a database using JDBC.
+
+    See [D] jdbc.
+
+
+odbc
+
+        1. ODBC, an acronym for Open DataBase Connectivity, is a standard for exchanging data between programs.  Stata supports the ODBC standard for importing data via the odbc command and can read from any ODBC data source on your computer.
+
+    See [D] odbc.
+
+
+infile (free format) -- infile without a dictionary
+
+        1. The data can be space-separated, tab-separated, or comma-separated.
+
+        2. Strings with embedded spaces or commas must be enclosed in quotes (even if tab- or comma-separated).
+
+        3. An observation can be on more than one line, or there can even be multiple observations per line.
+
+    See [D] infile (free format).
+
+
+infix (fixed format)
+
+        1. The data must be in fixed-column format.
+
+        2. An observation can be on more than one line.
+
+        3. infix has simpler syntax than infile (fixed format).
+
+    See [D] infix (fixed format).
+
+
+infile (fixed format) -- infile with a dictionary
+
+        1. The data may be in fixed-column format.
+
+        2. An observation can be on more than one line.
+
+        3. ASCII or EBCDIC data can be read.
+
+        4. infile (fixed format) has the most capabilities for reading data.
+
+    See [D] infile (fixed format).
+
+
+import sas
+
+        1. import sas reads Version 7 SAS (.sas7bdat) files.
+
+        2. import sas will also read value-label information from a .sas7bcat file.
+
+    See [D] import sas.
+
+
+import sasxport5 and import sasxport8
+
+        1. import sasxport5 reads SAS XPORT Version 5 Transport format files.
+
+        2. import sasxport5 will also read value-label information from a formats.xpf XPORT file.
+
+        3. import sasxport8 reads SAS XPORT Version 8 Transport format files.
+
+    See [D] import sasxport5 and [D] import sasxport8.
+
+
+import spss
+
+        1. import spss reads IBM SPSS Statistics (.sav and .zsav) files.
+
+    See [D] import spss.
+
+
+import fred
+
+        1. import fred reads Federal Reserve Economic Data.
+
+        2. To use import fred, you must have a valid API key obtained from the St. Louis Federal Reserve.
+
+    See [D] import fred.
+
+
+import haver (Windows only)
+
+        1. import haver reads data from Haver Analytics (https://www.haver.com/) databases.
+
+    See [D] import haver.
+
+
+import haverdirect (Windows only)
+
+        1. import haverdirect reads data from Haver Analytics (https://www.haver.com/) cloud servers.
+
+    See [D] import haverdirect.
+
+
+import dbase
+
+        1. import dbase reads a version III or version IV dBase (.dbf) file.
+
+    See [D] import dbase.
+
+
+spshape2dta
+
+        1. spshape2dta translates the .dbf and .shp files of a shapefile into two Stata datasets.
+
+    See [SP] spshape2dta.
+
+
+Video example
+
+    Copy/paste data from Excel into Stata

@@ -1,0 +1,197 @@
+Title
+
+    gegen --     Efficient implementation of by-able egen functions using C.
+
+    Important: Please run gtools, upgrade to update gtools to the latest stable version.
+
+Syntax
+
+        gegen [type] newvar = fcn(arguments) [if] [in] [weight] [, replace fcn_options gtools_options]
+
+    options                Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Gtools
+      compress             Try to compress strL to str#.
+      forcestrl            Skip binary variable check and force gtools to read strL variables.
+      verbose              Print info during function execution.
+      benchmark            Benchmark various steps of the plugin.
+      benchmarklevel(int)  Benchmark various steps of the plugin.
+      hashmethod(str)      Hash method (default, biject, or spooky). Intended for debugging.
+      oncollision(str)     Collision handling (fallback or error). Intended for debugging.
+      gtools_capture(str)  The above options are captured and not passed to egen in case the requested function is not internally supported by gtools. You can pass extra arguments here if their names conflict with captured gtools options.
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    aweights, fweights, iweights, and pweights are allowed for the functions listed below and mimic collapse and gcollapse; see weight and Weights (collapse).  pweights may not be used with sd, variance, cv, semean, sebinomial, or sepoisson. iweights
+      may not be used with semean, sebinomial, or sepoisson. aweights may not be used with sebinomial or sepoisson.
+
+    The following are simply wrappers for other gtools functions.  They all allow by(varlist) as an option.  Consult each command's corresponding help files for details.  (Note that gstats transform in particular allows embedding options in the
+    statistic call rather than program arguments; while this is technically also possible to do through gegen, I do not recommend it. Instead, use window() with moving_stat, interval() with range_stat, cumby() with cumsum, and so on.) In the table, stat
+    can be replaced with any stat available to gcollapse except percent, nunique:
+
+            function              -> calls
+            ----------------------------------------                  
+            xtile(exp)           -> fasterxtile
+            standardize(varname) -> gstats transform
+            normalize(varname)   -> gstats transform
+            demean(varname)      -> gstats transform
+            demedian(varname)    -> gstats transform
+            moving_stat(varname) -> gstats transform
+            range_stat(varname)  -> gstats transform
+            cumsum(varname)      -> gstats transform
+            shift(varname)       -> gstats transform
+            rank(varname)        -> gstats transform
+            winsor(varname)      -> gstats winsor
+            winsorize(varname)   -> gstats winsor
+
+    The functions listed below have been compiled and hence will run very quickly.  Functions not listed here hash the data and then call egen with by(varlist) set to the hash, which is often faster than calling egen directly, but not always.  Natively
+    supported functions should always be faster, however. They are:
+
+        group(varlist) [, missing counts(newvarname) fill(real)]
+            may not be combined with by.  It creates one variable taking on values 1, 2, ... for the groups formed by varlist.  varlist may contain numeric variables, string variables, or a combination of the two.  The default order of the groups is the
+            sort order of the varlist.  However, the user can specify:
+
+                [+|-] varname [[+|-] varname ...]
+
+            And the order will be inverted for variables that have - prepended.  missing indicates that missing values in varlist (either . or "") are to be treated like any other value when assigning groups, instead of as missing values being assigned
+            to the group missing.
+
+            You can also specify counts() to generate a new variable with the number of observations per group; by default all observations within a group are filled with the count, but via fill() the user can specify the value the variable will take
+            after the first observation that appears within a group. The user can also specify fill(data) to fill the first Jth observations with the count per group (in the sorted group order) or fill(group) to keep the default behavior.
+
+        tag(varlist) [, missing]
+            may not be combined with by.  It tags just 1 observation in each distinct group defined by varlist.  When all observations in a group have the same value for a summary variable calculated for the group, it will be sufficient to use just one
+            value for many purposes.  The result will be 1 if the observation is tagged and never missing, and 0 otherwise.
+
+            Note values for any observations excluded by either if or in are set to 0 (not missing).  Hence, if tag is the variable produced by egen tag = tag(varlist), the idiom if tag is always safe.  missing specifies that missing values of varlist
+            may be included.
+
+        first|last|firstnm|lastnm(exp)                                                                                                                                                                                                   (allows by varlist:)  
+            creates a constant (within varlist) containing the first, last, first non-missing, and last non-missing observation. The functions are analogous to those in collapse and not to those in egenmore.
+
+        count(exp)                                                                                                                                                                                                                       (allows by varlist:)  
+            creates a constant (within varlist) containing the number of nonmissing observations of exp.
+
+        nunique(exp)                                                                                                                                                                                                                     (allows by varlist:)  
+            creates a constant (within varlist) containing the number of unique observations of exp.
+
+        iqr(exp)                                                                                                                                                                                                                         (allows by varlist:)  
+            creates a constant (within varlist) containing the interquartile range of exp.  Also see pctile().
+
+        max(exp)                                                                                                                                                                                                                         (allows by varlist:)  
+            creates a constant (within varlist) containing the maximum value of exp.
+
+        mean(exp)                                                                                                                                                                                                                        (allows by varlist:)  
+            creates a constant (within varlist) containing the mean of exp.
+
+        geomean(exp)                                                                                                                                                                                                                     (allows by varlist:)  
+            creates a constant (within varlist) containing the geometric mean of exp. If exp has negative values, the function returns missing (.).  If exp has any zeros, the function returns zero.
+
+        median(exp)                                                                                                                                                                                                                      (allows by varlist:)  
+            creates a constant (within varlist) containing the median of exp.  Also see pctile().
+
+        min(exp)                                                                                                                                                                                                                         (allows by varlist:)  
+            creates a constant (within varlist) containing the minimum value of exp.
+
+        range(exp)                                                                                                                                                                                                                       (allows by varlist:)  
+            creates a constant (within varlist) containing the value range of exp.
+
+        select(exp) , n(#|-#)                                                                                                                                                                                                            (allows by varlist:)  
+            creates a constant (within varlist) containing the #th smallest value of exp. To compute the #th largest value, prefix a negative sign, -#. Note that without weights, n(1) and n(-1) will give the same value as min and max, respectively.
+
+        pctile(exp) [, p(#)]                                                                                                                                                                                                             (allows by varlist:)  
+            creates a constant (within varlist) containing the #th percentile of exp.  If p(#) is not specified, 50 is assumed, meaning medians.  Also see median().
+
+        sd(exp)                                                                                                                                                                                                                          (allows by varlist:)  
+            creates a constant (within varlist) containing the standard deviation of exp.  Also see mean().
+
+        variance(exp)                                                                                                                                                                                                                    (allows by varlist:)  
+            creates a constant (within varlist) containing the variance of exp.  Also see sd().
+
+        cv(exp)                                                                                                                                                                                                                          (allows by varlist:)  
+            creates a constant (within varlist) containing the coefficient of variation of exp; sd/mean.  Also see sd() and mean().
+
+        percent(exp)                                                                                                                                                                                                                     (allows by varlist:)  
+            creates a constant (within varlist) containing the percent of non-missing observations of exp in the group relative to the sample.
+
+        semean(exp)                                                                                                                                                                                                                      (allows by varlist:)  
+            creates a constant (within varlist) containing the standard error of the mean of exp, (sd/sqrt(n)).
+
+        sebinomial(exp)                                                                                                                                                                                                                  (allows by varlist:)  
+            creates a constant (within varlist) containing the standard error of the mean of exp, binomial (sqrt(p(1-p)/n)) (missing if exp not 0, 1).
+
+        sepoisson(exp)                                                                                                                                                                                                                   (allows by varlist:)  
+            creates a constant (within varlist) containing the standard error of the mean of exp, Poisson (sqrt(mean / n)) (missing if exp is negative; result rounded to nearest integer)
+
+        skewness(exp)                                                                                                                                                                                                                    (allows by varlist:)  
+            creates a constant (within varlist) containing the skewness of exp
+
+        kurtosis(exp)                                                                                                                                                                                                                    (allows by varlist:)  
+            creates a constant (within varlist) containing the kurtosis of exp
+
+        sum(exp) [, missing]                                                                                                                                                                                                             (allows by varlist:)  
+        total(exp) [, missing]                                                                                                                                                                                                           (allows by varlist:)  
+            creates a constant (within varlist) containing the sum of exp treating missing as 0.  If missing is specified and all values in exp are missing, newvar is set to missing.  Also see mean().
+
+        gini(exp)                                                                                                                                                                                                                        (allows by varlist:)  
+        gini|dropneg(exp)                                                                                                                                                                                                                (allows by varlist:)  
+        gini|keepneg(exp)                                                                                                                                                                                                                (allows by varlist:)  
+            creates a constant (within varlist) containing the Gini coefficient of exp, truncating negative values to 0. gini|dropneg drops negative values, and gini|keepneg keeps negative values as is (the user is responsible for the interpretation of
+            the Gini coefficient in this case).
+
+Description
+
+    gegen creates newvar of the optionally specified storage type equal to fcn(arguments). Here fcn() is either one of the internally supported commands above or a by-able function written for egen, as documented above. Only egen functions or internally
+    supported functions may be used with egen.  If you want to generate multiple summary statistics from a single variable it may be faster to use gcollapse with the merge option.
+
+    Depending on fcn(), arguments, if present, refers to an expression, varlist, or a numlist, and the options are similarly fcn dependent.
+
+Out of memory
+
+    (See also Stata's own discussion: help memory.)
+
+    There are many reasons for why an OS may run out of memory. The best-case scenario is that your system is running some other memory-intensive program.  This is specially likely if you are running your program on a server, where memory is shared
+    across all users. In this case, you should attempt to re-run gegen once other memory-intensive programs finish.
+
+    If no memory-intensive programs were running concurrently, the second best-case scenario is that your user has a memory cap that your programs can use. Again, this is specially likely on a server, and even more likely on a computing grid.  If you
+    are on a grid, see if you can increase the amount of memory your programs can use (there is typically a setting for this). If your cap was set by a system administrator, consider contacting them and asking for a higher memory cap.
+
+    If you have no memory cap imposed on your user, the likely scenario is that your system cannot allocate enough memory for gegen. At this point you have two options: One option is to try fegen or egen, which are slower but using either should require
+    a trivial one-letter change to the code; another option is to re-write egen the data in segments (the easiest way to do this would be to egen a portion of all rows at a time and perform a series of append statements at the end.)
+
+If you have no memory cap imposed on your user, the likely scenario is
+that your system cannot allocate enough memory for gegen. At this
+point you can try fegen or egen, which are slower but using
+either should require a trivial one-letter change to the code.  Note,
+however, that replacing gegen with fegen or plain egen
+is not guaranteed to use less memory. I have not benchmarked memory use
+very extensively, so gegen might use less memory (I doubt that is
+the case in most scenarios, but it is possible).
+
+    You can also try to process the data by segments. However, if you are doing group operations you would need to first sort the data and make sure you are not splitting groups apart.
+
+Examples
+
+    See the online documentation for examples.
+
+
+Author
+
+    Mauricio Caceres Bravo
+    mauricio.caceres.bravo@gmail.com
+    mcaceresb.github.io
+
+Website
+
+    gegen is maintained as part of [R] gtools at github.com/mcaceresb/stata-gtools
+
+Acknowledgment
+
+    This help file was based on StataCorp's own help file for egen.
+
+    This project was largely inspired by Sergio Correia's ftools:  https://github.com/sergiocorreia/ftools.
+
+    The OSX version of gtools was implemented with invaluable help from @fbelotti; see https://github.com/mcaceresb/stata-gtools/issues/11.
+
+Also see
+
+    help for gcollapse, gtools; fegen (if installed), fcollapse (if installed), ftools (if installed)

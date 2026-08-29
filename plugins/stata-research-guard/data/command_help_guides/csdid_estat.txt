@@ -1,0 +1,314 @@
+Title
+
+    csdid_estat -- Display, post, and export csdid results
+
+
+Syntax
+
+    Display the group-time ATT(g,t) table
+
+        estat attgt [, saving(filename) replace]
+
+    Display the event-study coefficients
+
+        estat event [, window(min max) post level(#) dropmissing]
+
+    Compute and display an aggregation
+
+        estat aggregation [, window(min max) post level(#) dropmissing]
+
+    Export a results dataset
+
+        estat tidy, saving(filename) [replace]
+
+        estat glance, saving(filename) [replace]
+
+    aggregation is simple, group, calendar, or dynamic.
+
+    Every form above may also be typed as csdid_estat instead of estat, for example csdid_estat event, window(-3 3). The two are the same command; estat is the Stata-conventional spelling and csdid_estat is convenient in scripts that must not depend on
+    e(estat_cmd).
+
+    options                     Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      window(min max)           restrict the aggregation to event times min through max
+      post                      leave the aggregated effects posted in e(b) and e(V)
+      level(#)                  set confidence level; default is the confidence level used by csdid
+      dropmissing               drop missing ATT(g,t) cells before aggregating
+
+    Export
+      saving(filename)          write the result just computed to filename; accepted by every subcommand, required by tidy and glance
+      replace                   overwrite filename if it exists
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    Every subcommand accepts saving(filename) and replace, which write the result just computed to filename as a dataset instead of only printing it; on tidy and glance, which do nothing else, saving() is required. estat attgt accepts nothing else, and
+      says so with return code 198 rather than accepting an option and ignoring it.  window() must be spelled in full here; csdid_stats, which is a separate command, does allow the abbreviation win().  dropmissing is accepted only on event and on the
+      four aggregation subcommands, which are the subcommands that aggregate.  estat may be used only after csdid; the aggregation itself is computed by csdid_stats.
+
+    The standard estat subcommands vce, summarize, ic, and bootstrap are passed through to Stata; see Standard estat subcommands. Any other subcommand is refused with return code 498 and a list of the supported ones.
+
+
+Description
+
+    estat after csdid displays results, posts them for Stata's inference commands, and exports them to datasets.
+
+    estat attgt redisplays the group-time ATT(g,t) table exactly as csdid produced it.
+
+    estat event reports the event study as a coefficient vector: one coefficient per event time present in the data, including the e = -1 reference period, plus Post_avg, the average of the post-treatment event-time effects. Standard errors, tests, and
+    confidence intervals are in r(table).
+
+    estat simple, estat group, estat calendar, and estat dynamic compute the corresponding aggregation with csdid_stats and display its table: one row per aggregated effect with its standard error, and the overall effect and its standard error repeated
+    in the last two columns of every row. estat dynamic and estat event are the same aggregation shown two ways -- a table of effects and standard errors, or a posted coefficient vector.
+
+    estat tidy and estat glance write a Stata dataset of estimates and of model metadata, in a tidy column layout suited to tables and reporting.  csdid_plot draws the plot, or exports plot-ready data.
+
+
+Options
+
+        +------+
+    ----+ Main +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    window(min max) restricts the aggregation to event times min through max. The window is applied by recomputing the aggregation over the requested range, not by hiding rows of a wider one, so the reported overall effect (Post_avg for event) is the
+        overall effect of the windowed event times. Both bounds must be numeric. See Event windows for what is refused.
+
+    post leaves the aggregated effects in e(b) and e(V), so that test, lincom, estimates store, and table-building commands operate on the aggregation rather than on the ATT(g,t) cells. It works on event and on all four aggregations; the coefficient
+        names are listed under Posting the aggregation. Without post, none of the five touches e(b) or e(V) at all -- the displayed table is built from r(table) directly -- so a display-only aggregation never changes what test or lincom would act on.
+
+    level(#) sets the confidence level of the reported interval. When it is not specified, the level of the csdid call is used. The level reaches the band under bootstrap inference as well as under analytical inference, because the aggregation is
+        recomputed; see Confidence levels.
+
+    dropmissing drops ATT(g,t) cells whose estimate is missing before aggregating. It is forwarded to csdid_stats and means there exactly what it means there. Without it, a missing cell stops the aggregation with return code 498 and a message naming the
+        option, on estat event as on the other four aggregation subcommands.
+
+        +--------+
+    ----+ Export +-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    saving(filename) names the dataset to write. It is required by tidy and glance; without it they exit with return code 198 rather than printing something that cannot be saved.
+
+    replace allows saving() to overwrite an existing file. On its own it means nothing, so it is refused with return code 198 rather than accepted and dropped.
+
+
+Remarks
+
+    Remarks are presented under the following headings:
+
+       Which subcommand to use             
+       Event windows                       
+       Posting the aggregation             
+       Confidence levels                   
+       Exported datasets                   
+       Standard estat subcommands          
+
+Which subcommand to use
+
+    The aggregations themselves, and the parameter each one estimates, are documented in csdid_stats. This command decides only how the numbers reach you.
+
+       Command               What you get
+       estat attgt           the ATT(g,t) table
+       estat event           event-study coefficients and Post_avg; r(table) carries the standard errors
+       estat dynamic         the same aggregation as a table of effects and standard errors
+       estat simple          one overall effect
+       estat group           one effect per treatment cohort, plus the overall effect
+       estat calendar        one effect per period, plus the overall effect
+       csdid_stats           the same four aggregations with the full option set, including balance() and saved-influence-function input
+
+    Four behaviors follow from the fact that these subcommands compute rather than replay:
+
+    estat event and the four aggregation subcommands always recompute.  None of them reuses an aggregation that happens to be sitting in e(), so the options you type on the command you type are the options the reported numbers were computed under --
+        including level(), which under bootstrap inference could otherwise be answered with a band computed at some earlier level, and window(), which csdid_stats does not record in e() and which therefore cannot be detected as stale. The price is one
+        aggregation per command; the guarantee is that estat event and estat dynamic can never disagree.
+
+    Recomputing draws from the live multiplier stream. The draws start from the random-number state csdid stored (e(boot_rng_state), or e(boot_seed)), which survives posting, and each bootstrap aggregation advances that state and re-stores it -- so a
+        sequence of aggregations after one seeded estimation is reproducible as a sequence, while each aggregation's draws depend on its position in it. Re-running the estimation restarts the stream; repeating the identical aggregation sequence then
+        returns identical numbers.
+
+    Each one replaces the active aggregation in e(). Running estat group and then estat event leaves the dynamic aggregation active, and e(agg_type) says which one it is. e(attgt) and the estimation results are never disturbed, so estat attgt always
+        shows the ATT(g,t) table.
+
+    Missing ATT(g,t) cells stop every one of them, estat event included. If any cell of e(attgt) is missing, estat event, estat simple, estat group, estat calendar, and estat dynamic stop with return code 498 and tell you to drop them, which you do with
+        dropmissing on the same command, as in estat event, dropmissing, or with csdid_stats type, dropmissing. A missing cell is a signal that some (g,t) comparison could not be estimated, so it should be seen before it is averaged away. tidy and
+        glance export an aggregation rather than computing one, so they do not accept dropmissing; specify it on the aggregation before exporting.
+
+    from(#) was a lower bound on event time in Stata csdid Version 1.82. It is rejected with return code 198 and a message naming the replacement; see csdid_stats. Use window(# #) on estat event instead.
+
+Event windows
+
+    window() is forwarded to csdid_stats, so it behaves exactly as it does there -- including the fact that on estat simple and estat group only the upper bound bites, by restricting which post-treatment cells are averaged, and the fact that on estat
+    calendar it does not bite at all: the calendar aggregation is over periods, not event times, so a window on it is warned about and ignored and the full calendar aggregation is reported. The reported overall effect is recomputed over the window, and
+    the coefficient vector covers exactly the event times present in the data. No coefficient is fabricated for an event time that does not exist, and none is given a zero variance to fill a gap in the grid.
+
+    A window that leaves no event time at all, or that contains only pre-treatment event times, is refused with return code 498; a reversed window is caught earlier, at parse time, with return code 198. In the example below, whose event times run from
+    -3 to 3, both estat event, window(5 8) and estat event, window(-3 -1) stop with a message naming the empty window rather than reporting an average of nothing.
+
+Posting the aggregation
+
+    post replaces e(b) and e(V) with the aggregated effects, on every subcommand that computes one. Coefficient names are:
+
+       estat event           Tm# for event time -#, Tp# for event time #, and Post_avg
+       estat dynamic         the same names as estat event
+       estat group           G# per cohort, and Overall
+       estat calendar        T# per period, and Overall
+       estat simple          ATT
+
+    # is the event time, cohort or period itself, with a decimal point written as an underscore (Tm0_25 for event time -0.25). An effect whose name would pass Stata's 32-character limit, or would repeat a name already in use, is named eff_# instead and
+    the run reports how many were affected; e(aggte) always reports the event time, cohort or period of every row.
+
+    The event-time coefficient vector includes the e = -1 reference period, and what that row holds depends on the base period. Under the default base_period(universal) it is the normalisation itself:  identically zero, with no standard error. Under
+    base_period(varying) it is an estimated placebo, with a standard error of its own. The posted covariance matrix is not diagonal:  it is built from the influence functions of the aggregated effects, or from the bootstrap draws under bootstrap
+    inference, so test and lincom account for the correlation between event times.
+
+    post displays nothing. Use estat event or estat type without post to see the table, or read r(table), or run lincom on the coefficient you care about. After post, an ordinary estimates store keeps the aggregation, so several aggregations can be
+    stored side by side and compared.
+
+    r(table) is filled on all five aggregation routes whether or not post is given, and it always describes the aggregation just computed. It is never left holding an earlier aggregation's numbers: if the command you typed fails or posts nothing,
+    r(table) is cleared rather than left standing.
+
+    A row with no standard error -- the normalised base period under base_period(universal), or an effect whose influence function is degenerate -- reports a missing standard error, z, p-value and confidence limits, exactly as the displayed table does.
+    e(V) carries a zero row and column there, which is Stata's convention for a coefficient with no estimated variance, so test and lincom treat that term as known.
+
+Confidence levels
+
+    Under fully analytical inference (analytical with pointwise) the interval always follows the level in force: the estimation level, or the level requested with level(). Under analytical alone the recomputed aggregation carries a simultaneous band
+    whose critical value is bootstrapped at the level in force, with the note csdid_stats prints (see Confidence bands in csdid_stats).
+
+    Under the default multiplier bootstrap the interval uses the bootstrap critical value in e(crit_val), which the aggregation bootstrap produces at the level in force when the aggregation is computed. Because estat recomputes the aggregation whenever
+    it is asked for one, the level you type is the level the band is computed at, on the first request and on every later one. After a seeded estimation, estat event, level(90) and then estat event, level(99) report two different critical values, each
+    the one its own level implies. Because every bootstrap aggregation consumes further multiplier draws from the live stream (see Random numbers in csdid), repeating a request after other aggregation calls uses later draws and reports a slightly
+    different bootstrap critical value; to reproduce a particular value, re-run the seeded estimation and repeat the same sequence of requests. A narrower or wider window() likewise recomputes the band over the event times that survive it.
+
+    Re-levelling is exact rather than approximate because the recomputation redraws from the multiplier state csdid stored at estimation time, not from a fresh random-number stream. The band you get by re-levelling is therefore the band you would have
+    got by estimating again at that level, not an approximation to it.
+
+    One consequence is worth stating because it is what users check: everything that reads the level agrees. e(agg_level), r(table), the displayed interval, estat tidy, and csdid_plot all describe the level of the aggregation you last asked for, not of
+    some earlier one.
+
+Exported datasets
+
+    estat tidy and estat glance describe the active result. If an aggregation is active they export the aggregation; otherwise they export the ATT(g,t) estimates. To export ATT(g,t) after having computed an aggregation, re-run csdid.
+
+    estat tidy after estimation writes one row per ATT(g,t) cell with term (the label ATT(g,t)), group, time, estimate, std_error, statistic, p_value, conf_low, conf_high, point_conf_low, and point_conf_high. The conf_* columns use the reported critical
+    value -- simultaneous under the default bootstrap -- and the point_conf_* columns use the pointwise one, so both bands are available without recomputing.
+
+    Those are the ATT(g,t) critical values, taken from e(boot_attgt) under a bootstrap and from the normal quantile at e(level) otherwise. They do not change when an aggregation is computed first: an aggregation's critical value is a maximum over its
+    own effects, not over the ATT(g,t) cells, and banding this table with it would be reporting the wrong band. After csdid_stats using the run is analytical by construction and the bands are the normal quantile at the level stored in the artifact.
+
+    estat tidy after an aggregation writes one row per aggregated effect, with a leading type column naming the aggregation and the same estimate columns. The row identifier follows the aggregation: event_time for dynamic, time for calendar, group for
+    group, and term alone for simple. The group export adds a final ATT(Average) row, sorted first, holding the overall effect.
+
+    estat glance writes a single row of model metadata: nobs (units), ngroup, ntime, control_group, and est_method, preceded by type when an aggregation is active.
+
+    Both exports are silent on success. The scratch dataset each one builds is put together quietly, so a successful export prints no observation-count notices and raises no more prompt; the data in memory are restored unchanged. Refusals are still
+    displayed.
+
+    Because Stata variable names cannot contain dots, the tidy column names (std.error, p.value, conf.low, conf.high, point.conf.low, point.conf.high, control.group, est.method) are carried as variable labels.
+
+Standard estat subcommands
+
+    estat after csdid is not a closed menu. The standard subcommands vce, summarize, ic, and bootstrap are handed to Stata's own estat implementation, with their own options, so estat vce, format(%9.4f) works exactly as it does after any other
+    estimation command. What each one does after csdid follows from what csdid stores:
+
+       estat vce               displays e(V): the covariance matrix of the ATT(g,t) cells, or of the aggregated effects after post
+       estat summarize         summarizes the estimation sample: csdid marks e(sample), so the standard subcommand works and reports the variables in the model over the observations csdid used
+       estat ic                refuses: csdid is not likelihood based and stores no e(ll)
+       estat bootstrap         refuses: csdid's multiplier bootstrap is not Stata's bootstrap prefix and leaves none of its results
+
+    The two refusals are Stata's own, not a csdid restriction, and they name the result that is absent. A subcommand that is neither one of these nor one of csdid's is refused with return code 498 and a list of the supported subcommands, rather than
+    with Stata's generic "not valid" message.
+
+    Two option mistakes are also named rather than lumped together. An option estat does not have -- a graph-styling option, say -- exits with unsupported option(s): and return code 198; an option typed twice, as in estat event, window(-1 1) window(0
+    1), exits with option(s) specified more than once: and return code 198, so the message names the real fault instead of telling you to remove a supported option. A bare csdid_estat with no subcommand lists the subcommands.
+
+
+Examples
+
+    The examples use mpdta.dta, the county-level teen-employment panel of Callaway and Sant'Anna (2021), which ships with the package as an ancillary file: net get csdid copies it into the current directory.
+
+    Setup
+        . net get csdid
+        . use mpdta, clear
+        . csdid lemp lpop, ivar(countyreal) time(year) gvar(first_treat)
+
+    The estimated cells, then the four summaries
+        . estat attgt
+        . estat simple
+        . estat group
+        . estat calendar
+        . estat event
+
+    Event study restricted to a window
+        . estat event, window(-3 3)
+
+    Change the confidence level; the band is recomputed, not reused
+        . estat event, level(90)
+        . display e(crit_val), e(agg_level)
+        . estat event, level(99)
+        . display e(crit_val), e(agg_level)
+
+    Aggregate when some ATT(g,t) cells could not be estimated
+        . estat event, dropmissing
+
+    Post the event study, then test and combine coefficients
+        . estat event, post
+        . matrix list r(table)
+        . test Tm3 = Tm2 = 0
+        . lincom (Tp0 + Tp1)/2
+
+    Store two aggregations and compare them
+        . estat group, post
+        . estimates store bycohort
+        . estat calendar, post
+        . estimates store bycalendar
+        . estimates table bycohort bycalendar, se
+
+    Export results
+        . csdid lemp lpop, ivar(countyreal) time(year) gvar(first_treat)
+        . estat attgt, saving(attgt_cells) replace
+        . estat glance, saving(model_summary) replace
+        . estat event
+        . estat tidy, saving(event_tidy) replace
+
+
+Stored results
+
+    estat attgt stores nothing; it displays e(attgt).
+
+    estat event and estat aggregation compute the aggregation with csdid_stats and therefore store everything csdid_stats stores, including e(aggte), e(agg_type), e(agg_level), e(crit_val), e(point_crit_val), and, under storeall, e(agg_inffunc). In
+    addition, they store the following in e():
+
+    Matrices             
+      e(b)                      aggregated effects, only when post is specified
+      e(V)                      covariance matrix of the aggregated effects, from their influence functions or from the bootstrap draws
+
+    and the following in r():
+
+    Matrices             
+      r(table)                  estimate, standard error, z, p-value, confidence limits, and critical value for each posted effect
+
+    r(table) is an r() result like any other: read or copy it immediately, because the next command that returns in r() -- including lincom and test -- replaces it.
+
+    e(cmd) remains csdid and e(attgt), e(group_prob) and the estimation macros and scalars are preserved across posting, so aggregation and estimation results can be read from the same e(). e(inffunc) is preserved too when it is there at all, which is
+    only when the estimation was run with storeall; otherwise the influence functions stay internal and e(inffunc) does not exist before or after posting.
+
+    estat tidy and estat glance store nothing; they write the dataset named in saving().
+
+    predict and margins are not supported after csdid. The posted coefficients are group-time or aggregated treatment effects, not coefficients on variables in the data, and no prediction is defined for them. Both refuse by name -- predict with return
+    code 198 and margins with return code 322 -- rather than failing on an internal coefficient name.  test, lincom, nlcom, predictnl, and estimates all work on what is posted; the complete list is in csdid postestimation.
+
+
+References
+
+    Baker, A., B. Callaway, S. Cunningham, A. Goodman-Bacon, and P. H. C.  Sant'Anna. 2026. Difference-in-differences designs: A practitioner's guide.  Journal of Economic Literature 64(2): 498-557.  https://doi.org/10.1257/jel.20251650.
+
+    Callaway, B., and P. H. C. Sant'Anna. 2021. Difference-in-differences with multiple time periods. Journal of Econometrics 225(2): 200-230.  https://doi.org/10.1016/j.jeconom.2020.12.001.
+
+    Roth, J., P. H. C. Sant'Anna, A. Bilinski, and J. Poe. 2023. What's trending in difference-in-differences? A synthesis of the recent econometrics literature.  Journal of Econometrics 235(2): 2218-2244.  https://doi.org/10.1016/j.jeconom.2023.03.008.
+
+
+Authors
+
+    csdid is by Brantly Callaway, Fernando Rios-Avila, and Pedro H. C.  Sant'Anna. Full affiliations and contact addresses, the acknowledgments, how to report a problem, and how to cite the package are in help csdid.
+
+
+Also see
+
+    Online:  csdid, csdid postestimation, csdid_stats, csdid_plot

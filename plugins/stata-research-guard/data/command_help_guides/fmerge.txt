@@ -1,0 +1,53 @@
+Title
+
+    fmerge -- Merge datasets
+
+    fmerge is a wrapper for join, supporting m:1 and 1:1 joins.
+
+    The syntax is identical to merge, except for the extra option verbose, that will show debug information and the underlying join command.
+
+Syntax
+
+    One-to-one merge on specified key variables
+
+        fmerge 1:1 varlist using filename [, options]
+
+
+    Many-to-one merge on specified key variables
+
+        fmerge m:1 varlist using filename [, options]
+
+
+    options               Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Options
+      keepusing(varlist)  variables to keep from using data; default is all
+      generate(newvar)    name of new variable to mark merge results; default is _merge
+      nogenerate          do not create _merge variable
+      nolabel             do not copy value-label definitions from using
+      nonotes             do not copy notes from using
+      update              update missing values of same-named variables in master with values from using (not allowed)
+      replace             replace all values of same-named variables in master with nonmissing values from using (requires update) (not allowed)
+      noreport            do not display match result summary table
+      force               allow string/numeric variable type mismatch without error (ignored)
+      verbose             show debug information and the join command used (new)
+
+    Results
+      assert(results)     specify required match results
+      keep(results)       specify which match results to keep
+
+      sorted              do not sort; datasets already sorted (ignored)
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Author
+
+    Sergio Correia
+    Board of Governors of the Federal Reserve System, USA
+    sergio.correia@gmail.com
+
+
+More Information
+
+    To report bugs, contribute, ask for help, etc. please see the project URL in Github:
+    https://github.com/sergiocorreia/ftools
