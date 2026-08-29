@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.3.0+codex.20260829160356"
+    "version": "0.3.0+codex.20260829163957"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
       "bytes": 1681,
-      "sha256": "54f35c924665db504ce6d7cdb4b28e04ac87c4ef6f167bbd917f8b1d94bc13af"
+      "sha256": "c65cd0607baf6ab807dee73deb91c26e8bb1a5c7fef062cedf4356f3e47ea53b"
     },
     {
       "path": ".mcp.json",
@@ -1442,8 +1442,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 5149,
-      "sha256": "62295498034d68665746da203429851efae66a9715b78211ac4d0fef8c4dd3e8"
+      "bytes": 5443,
+      "sha256": "a38bdbb84fe6757d32e7db41f3c49193aa9706db7618868af6d7cb5ed8db1a68"
     },
     {
       "path": "scripts/build_clean_command_guide.py",
@@ -1534,7 +1534,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.3.0+codex.20260829160356"
+      "value": "0.3.0+codex.20260829163957"
     },
     {
       "id": "readme.heading",
