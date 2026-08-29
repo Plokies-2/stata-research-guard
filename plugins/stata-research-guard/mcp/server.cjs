@@ -132,6 +132,27 @@ function optionalSelectedBlockIdsFrom(args) {
   return selectedBlockIdsFrom(args);
 }
 
+function optionalExpandedCommandsFrom(args, selectedCommands) {
+  if (!Object.prototype.hasOwnProperty.call(args, "expanded_commands")) return [];
+  if (!Array.isArray(args.expanded_commands) || args.expanded_commands.length === 0) {
+    throw new Error("ABORT empty_expanded_command_selection: expanded_commands must be a non-empty array of exact selected command keys");
+  }
+  const seen = new Set();
+  for (const command of args.expanded_commands) {
+    if (typeof command !== "string" || !commandsByName.has(command)) {
+      throw new Error(`ABORT command_not_in_dictionary: ${JSON.stringify(command)}`);
+    }
+    if (seen.has(command)) {
+      throw new Error(`ABORT duplicate_expanded_command: ${JSON.stringify(command)}`);
+    }
+    if (!selectedCommands.includes(command)) {
+      throw new Error(`ABORT expanded_command_not_selected: ${JSON.stringify(command)}`);
+    }
+    seen.add(command);
+  }
+  return [...args.expanded_commands];
+}
+
 function validateArguments(args) {
   if (!args || typeof args !== "object" || Array.isArray(args)) {
     throw new Error("arguments must be an object");
@@ -151,7 +172,7 @@ function validateArguments(args) {
     ? new Set(["request"])
     : phase === "selected_command_evidence"
       ? new Set(["request", "selected_commands"])
-      : new Set(["request", "selected_commands", "expanded", "selected_block_ids"]);
+      : new Set(["request", "selected_commands", "expanded", "expanded_commands", "selected_block_ids"]);
   const unexpected = Object.keys(args).filter((key) => !allowed.has(key));
   if (unexpected.length > 0) {
     throw new Error(`ABORT invalid_phase_arguments: ${phase} does not allow ${unexpected.join(", ")}`);
@@ -163,11 +184,16 @@ function validateArguments(args) {
     throw new Error("ABORT invalid_phase_arguments: selected_block_ids requires expanded: true");
   }
 
-  return {
-    phase,
-    selectedCommands: phase === "discovery" ? null : selectedCommandsFrom(args),
-    selectedBlockIds: phase === "expanded_context" ? optionalSelectedBlockIdsFrom(args) : null,
-  };
+  const selectedCommands = phase === "discovery" ? null : selectedCommandsFrom(args);
+  const selectedBlockIds = phase === "expanded_context" ? optionalSelectedBlockIdsFrom(args) : null;
+  const expandedCommands = phase === "expanded_context"
+    ? optionalExpandedCommandsFrom(args, selectedCommands)
+    : null;
+  if (phase === "expanded_context" && expandedCommands.length === 0 && selectedBlockIds.length === 0) {
+    throw new Error("ABORT empty_expanded_context: supply expanded_commands, selected_block_ids, or both");
+  }
+
+  return { phase, selectedCommands, selectedBlockIds, expandedCommands };
 }
 
 function commandHelp(command) {
@@ -294,7 +320,7 @@ function paperCard(blockId) {
 }
 
 function buildCommandEvidence(args) {
-  const { phase, selectedCommands, selectedBlockIds } = validateArguments(args);
+  const { phase, selectedCommands, selectedBlockIds, expandedCommands } = validateArguments(args);
 
   if (phase === "discovery") {
     return {
@@ -325,8 +351,9 @@ function buildCommandEvidence(args) {
     phase: "expanded_context",
     main_rules: mainRules(),
     selected_commands: selectedCommands,
+    expanded_commands: expandedCommands,
     selected_block_ids: selectedBlockIds,
-    expanded_command_evidence: selectedCommands.map((command) => ({
+    expanded_command_evidence: expandedCommands.map((command) => ({
       command,
       expanded_documentation: expandedDocumentation(command),
     })),
@@ -337,7 +364,7 @@ function buildCommandEvidence(args) {
 const TOOL_DEFINITIONS = [
   {
     name: "get_stata_command_evidence",
-    description: "Stateless three-phase exact-key Stata evidence lookup. Every phase includes the common main rules. Phase 1 returns the 109-command neutral dictionary. The model autonomously selects exact canonical commands. Phase 2 returns Stata 18-rendered official or maintainer help, factual expanded-documentation status, and a compact paper-profile catalog. When help does not fully settle the requested action, Phase 3 combines the selected commands' Stata 18 official manual entries or limited author supplement with optional exact paper blocks and directly linked raw log or artifact excerpts. The model chooses whether to expand and which exact block IDs to request; the server never scores, ranks, recommends, promotes, audits, semantically validates, or automatically chooses commands, blocks, specifications, or outputs.",
+    description: "Stateless three-phase exact-key Stata evidence lookup. Every phase includes the common main rules. Phase 1 returns the 109-command neutral dictionary. The model autonomously selects exact canonical commands. Phase 2 returns Stata 18-rendered official or maintainer help, factual expanded-documentation status, and a compact paper-profile catalog. When help does not fully settle the requested action, Phase 3 can combine whole Stata 18 manual entries for only the exact expanded_commands subset with optional exact paper blocks and directly linked raw log or artifact excerpts. The model chooses which selected commands to expand and which exact block IDs to request; the server never scores, ranks, recommends, promotes, audits, semantically validates, or automatically chooses commands, blocks, specifications, or outputs.",
     inputSchema: {
       oneOf: [
         {
@@ -362,63 +389,16 @@ const TOOL_DEFINITIONS = [
           type: "object",
           additionalProperties: false,
           required: ["request", "selected_commands", "expanded"],
+          anyOf: [
+            { required: ["expanded_commands"] },
+            { required: ["selected_block_ids"] },
+          ],
           properties: {
             request: { type: "string", minLength: 1 },
             selected_commands: { type: "array", minItems: 1, items: { type: "string", minLength: 1 } },
             expanded: { const: true },
+            expanded_commands: { type: "array", minItems: 1, items: { type: "string", minLength: 1 } },
             selected_block_ids: { type: "array", minItems: 1, items: { type: "string", minLength: 1 } },
-          },
-        },
-      ],
-    },
-    outputSchema: {
-      oneOf: [
-        {
-          type: "object",
-          additionalProperties: false,
-          required: ["phase", "main_rules", "command_dictionary"],
-          properties: {
-            phase: { const: "discovery" },
-            main_rules: { type: "object" },
-            command_dictionary: { type: "array", items: { type: "object" } },
-          },
-        },
-        {
-          type: "object",
-          additionalProperties: false,
-          required: ["phase", "main_rules", "selected_commands", "command_evidence"],
-          properties: {
-            phase: { const: "selected_command_evidence" },
-            main_rules: { type: "object" },
-            selected_commands: { type: "array", items: { type: "string" } },
-            command_evidence: {
-              type: "array",
-              items: {
-                type: "object",
-                additionalProperties: false,
-                required: ["command", "help_status", "command_help", "expanded_documentation", "paper_example_catalog"],
-                properties: {
-                  command: { type: "string" },
-                  help_status: { enum: ["available", "partial", "unavailable"] },
-                  command_help: { anyOf: [{ type: "object" }, { type: "null" }] },
-                  expanded_documentation: { type: "object" },
-                  paper_example_catalog: { type: "array", items: { type: "object" } },
-                },
-              },
-            },
-          },
-        },
-        {
-          type: "object",
-          additionalProperties: false,
-          required: ["phase", "main_rules", "selected_commands", "selected_block_ids", "expanded_command_evidence", "paper_usage_cards"],
-          properties: {
-            phase: { const: "expanded_context" },
-            main_rules: { type: "object" },
-            selected_commands: { type: "array", items: { type: "string" } },
-            selected_block_ids: { type: "array", items: { type: "string" } },
-            expanded_command_evidence: { type: "array", items: { type: "object" } },
-            paper_usage_cards: { type: "array", items: { type: "object" } },
           },
         },
       ],

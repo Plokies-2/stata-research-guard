@@ -77,7 +77,7 @@
       "expanded_documentation_status": "available",
       "authority": "StataCorp official",
       "source_kind": "installed Stata PDF manual",
-      "source_version": "Stata 18 installation",
+      "source_version": "Stata 18 installation with explicitly marked StataNow features",
       "source_relation_to_help": "same Stata 18 release; expanded manual entry",
       "source_path": "Stata18/docs/r.pdf",
       "source_sha256": "3157e84c376103a42b73e72902c21c06ddb4d99e9663c6746ded6131d47b9073",
@@ -94,7 +94,9 @@
       "content_sha256": "c5fe69d39a6c7ea07f6ef8af73b15f617c4ef2aa6a3420c60253d1fb3a7fe319",
       "content_format": "layout-preserving plain text",
       "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
-      "limitations": []
+      "limitations": [
+        "This installed Stata 18 entry includes options explicitly marked as StataNow-only. Do not use those options unless the active Stata environment provides StataNow features."
+      ]
     },
     {
       "record_type": "expanded_command_guide",
@@ -1349,7 +1351,7 @@
       "source_kind": "author PDF command guide preserved inside Zenodo replication archive",
       "source_version": "PDF creation metadata 20 Jul 2024; Zenodo record 17712099, no formal PDF version label",
       "source_relation_to_help": "author supplement; authoritative command help unavailable",
-      "source_path": "full_command_guides/sources/jregress-zenodo-17712099-b0db4dc34ad7.pdf",
+      "source_path": "expanded_command_sources/jregress-zenodo-17712099-b0db4dc34ad7.pdf",
       "source_sha256": "b0db4dc34ad7fb1b02cc0641a1a4317080331c4231ab160c1ba5e5bbd00e0b3b",
       "components": [],
       "content_file": "expanded_command_guides/jregress.txt",
@@ -2464,7 +2466,7 @@
       "expanded_documentation_status": "available",
       "authority": "StataCorp official",
       "source_kind": "installed Stata PDF manual",
-      "source_version": "Stata 18 installation",
+      "source_version": "Stata 18 installation with explicitly marked StataNow features",
       "source_relation_to_help": "same Stata 18 release; expanded manual entry",
       "source_path": "Stata18/docs/xt.pdf",
       "source_sha256": "cd3bbcc3a1d6dcbc8dd6efe3032a8231a8576b9c1700f496ddadfc317caece03",
@@ -2481,7 +2483,9 @@
       "content_sha256": "3d9bead581f197ea924412ccc09c085ca097bd75ea7d163e1ff738452c5bb921",
       "content_format": "layout-preserving plain text",
       "transformation": "Poppler -layout text, split on PDF page boundaries; selected whole contiguous command entries by Stata's repeated entry header; removed only the repeated running header from continuation pages.",
-      "limitations": []
+      "limitations": [
+        "This installed Stata 18 entry includes options explicitly marked as StataNow-only. Do not use those options unless the active Stata environment provides StataNow features."
+      ]
     },
     {
       "record_type": "expanded_command_guide",

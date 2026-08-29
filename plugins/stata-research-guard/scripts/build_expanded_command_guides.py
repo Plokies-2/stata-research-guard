@@ -24,6 +24,7 @@ PLUGIN_ROOT = Path(__file__).resolve().parents[1]
 DATA_ROOT = PLUGIN_ROOT / "data"
 OUTPUT_ROOT = DATA_ROOT / "expanded_command_guides"
 OUTPUT_INDEX = DATA_ROOT / "expanded_command_guides.json"
+SOURCE_CATALOG = DATA_ROOT / "command_source_catalog.json"
 
 
 ENTRY_TOPICS = {
@@ -60,6 +61,12 @@ ENTRY_TOPICS = {
     "twoway": ["graph twoway"],
 }
 
+STATANOW_LIMITATION = (
+    "This installed Stata 18 entry includes options explicitly marked as StataNow-only. "
+    "Do not use those options unless the active Stata environment provides StataNow features."
+)
+STATANOW_COMMANDS = {"areg", "xtreg"}
+
 
 def read_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
@@ -71,20 +78,6 @@ def sha256(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
-
-
-def manual_code(source_url: str) -> str:
-    stem = Path(source_url).stem.lower()
-    for code in ("tables", "rpt", "xt", "st", "ts"):
-        if stem.startswith(code):
-            return code
-    if stem.startswith("g-") or stem.startswith("g2"):
-        return "g"
-    if stem.startswith("d"):
-        return "d"
-    if stem.startswith("r"):
-        return "r"
-    raise ValueError(f"Cannot map official source URL to a Stata 18 manual: {source_url}")
 
 
 def normalized_header(line: str) -> str:
@@ -133,22 +126,24 @@ def plugin_relative(path: Path) -> str:
 
 def build(manual_text_dir: Path, stata_docs_dir: Path) -> dict:
     registry = read_json(DATA_ROOT / "command_registry.json")["commands"]
-    full_guides = read_json(DATA_ROOT / "full_command_guides.json")["guides"]
+    source_catalog = read_json(SOURCE_CATALOG)["commands"]
     help_guides = read_json(DATA_ROOT / "command_help_guides.json")["guides"]
-    full_by_command = {row["command"]: row for row in full_guides}
+    source_by_command = {row["command"]: row for row in source_catalog}
     help_by_command = {row["command"]: row for row in help_guides}
 
     manual_pages: dict[str, list[str]] = {}
     OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
+    for stale_output in OUTPUT_ROOT.glob("*.txt"):
+        stale_output.unlink()
     guides = []
 
     for command_row in registry:
         command = command_row["command"]
-        full = full_by_command.get(command)
+        source_entry = source_by_command.get(command)
         help_entry = help_by_command[command]
 
-        if full and str(full.get("authority", "")).startswith("StataCorp"):
-            code = manual_code(full["source_url"])
+        if source_entry and str(source_entry.get("authority", "")).startswith("StataCorp"):
+            code = source_entry["stata_manual_code"]
             if code not in manual_pages:
                 text_path = manual_text_dir / f"{code}.txt"
                 manual_pages[code] = text_path.read_text(encoding="utf-8", errors="replace").split("\f")
@@ -175,7 +170,11 @@ def build(manual_text_dir: Path, stata_docs_dir: Path) -> dict:
                     "expanded_documentation_status": "available",
                     "authority": "StataCorp official",
                     "source_kind": "installed Stata PDF manual",
-                    "source_version": "Stata 18 installation",
+                    "source_version": (
+                        "Stata 18 installation with explicitly marked StataNow features"
+                        if command in STATANOW_COMMANDS
+                        else "Stata 18 installation"
+                    ),
                     "source_relation_to_help": "same Stata 18 release; expanded manual entry",
                     "source_path": f"Stata18/docs/{code}.pdf",
                     "source_sha256": sha256(pdf_path),
@@ -188,13 +187,14 @@ def build(manual_text_dir: Path, stata_docs_dir: Path) -> dict:
                         "command entries by Stata's repeated entry header; removed only the repeated "
                         "running header from continuation pages."
                     ),
-                    "limitations": [],
+                    "limitations": [STATANOW_LIMITATION] if command in STATANOW_COMMANDS else [],
                 }
             )
             continue
 
-        if command == "jregress" and full:
-            source = DATA_ROOT / full["content_file"]
+        if command == "jregress" and source_entry and source_entry.get("expanded_source"):
+            expanded_source = source_entry["expanded_source"]
+            source = DATA_ROOT / expanded_source["content_file"]
             output = OUTPUT_ROOT / "jregress.txt"
             content = source.read_text(encoding="utf-8")
             output.write_text(content, encoding="utf-8", newline="\n")
@@ -203,17 +203,17 @@ def build(manual_text_dir: Path, stata_docs_dir: Path) -> dict:
                     "record_type": "expanded_command_guide",
                     "command": command,
                     "expanded_documentation_status": "supplemental",
-                    "authority": full.get("authority"),
-                    "source_kind": full.get("source_kind"),
-                    "source_version": full.get("source_version"),
+                    "authority": source_entry.get("authority"),
+                    "source_kind": expanded_source.get("source_kind"),
+                    "source_version": expanded_source.get("source_version"),
                     "source_relation_to_help": "author supplement; authoritative command help unavailable",
-                    "source_path": full.get("source_file"),
-                    "source_sha256": full.get("source_sha256"),
+                    "source_path": expanded_source.get("source_file"),
+                    "source_sha256": expanded_source.get("source_sha256"),
                     "components": [],
                     "content_file": plugin_relative(output),
                     "content_sha256": sha256(output),
                     "content_format": "markdown text extracted from author PDF",
-                    "transformation": full.get("transformation"),
+                    "transformation": expanded_source.get("transformation"),
                     "limitations": [
                         "Use for conceptual and worked-example context only; it does not replace missing authoritative syntax help."
                     ],
@@ -248,7 +248,7 @@ def build(manual_text_dir: Path, stata_docs_dir: Path) -> dict:
                 "record_type": "expanded_command_guide",
                 "command": command,
                 "expanded_documentation_status": "unavailable",
-                "authority": full.get("authority") if full else None,
+                "authority": source_entry.get("authority") if source_entry else None,
                 "source_kind": None,
                 "source_version": None,
                 "source_relation_to_help": "no authoritative help or expanded documentation available",

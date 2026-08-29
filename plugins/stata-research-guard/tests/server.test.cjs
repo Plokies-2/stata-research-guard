@@ -41,12 +41,14 @@ const PAPER_BLOCKS = readJsonl("high_quality_paper_blocks.jsonl");
 const PAPER_EXECUTION_CONTEXTS = readJsonl("paper_execution_contexts.jsonl");
 const COMMAND_HELP_INDEX = readJson("command_help_guides.json");
 const EXPANDED_GUIDE_INDEX = readJson("expanded_command_guides.json");
+const COMMAND_SOURCE_CATALOG = readJson("command_source_catalog.json");
 
 test("MCP exposes one simple exact-key three-phase lookup tool", () => {
   assert.equal(TOOL_DEFINITIONS.length, 1);
   assert.equal(TOOL_DEFINITIONS[0].name, "get_stata_command_evidence");
   assert.equal(TOOL_DEFINITIONS[0].inputSchema.oneOf.length, 3);
-  assert.equal(TOOL_DEFINITIONS[0].outputSchema.oneOf.length, 3);
+  assert.equal(TOOL_DEFINITIONS[0].inputSchema.oneOf[2].anyOf.length, 2);
+  assert.equal("outputSchema" in TOOL_DEFINITIONS[0], false);
   assert.doesNotMatch(JSON.stringify(TOOL_DEFINITIONS), /project_path|target_files|known_constraints/);
 });
 
@@ -105,11 +107,15 @@ test("Phase 2 returns Stata-rendered xtreg help and its three exact profiles", (
   assert.equal(evidence.command, "xtreg");
   assert.equal(evidence.help_status, "available");
   assert.equal(evidence.command_help.command, "xtreg");
-  assert.equal(evidence.command_help.source_version, "Stata 18");
+  assert.equal(evidence.command_help.source_version, "Stata 18 installation with explicitly marked StataNow features");
   assert.match(evidence.command_help.content, /xtreg depvar/);
   assert.match(evidence.command_help.content, /Syntax/);
+  assert.match(evidence.command_help.limitations.join(" "), /StataNow-only/);
+  assert.equal("full_manual_available" in evidence.command_help, false);
+  assert.equal("paper_example_count" in evidence.command_help, false);
   assert.equal(evidence.expanded_documentation.status, "available");
-  assert.equal(evidence.expanded_documentation.source_version, "Stata 18 installation");
+  assert.equal(evidence.expanded_documentation.source_version, "Stata 18 installation with explicitly marked StataNow features");
+  assert.match(evidence.expanded_documentation.limitations.join(" "), /StataNow-only/);
   assert.deepEqual(
     evidence.paper_example_catalog.map((row) => row.block_id),
     ["block-139-184-033", "block-139-184-034", "block-139-184-035"],
@@ -146,6 +152,8 @@ test("Phase 2 resolves multiple selected commands independently in request order
 });
 
 test("the Stata 18 help and expanded-document indexes cover all 109 commands", () => {
+  assert.equal(COMMAND_SOURCE_CATALOG.commands.length, 109);
+  assert.doesNotMatch(JSON.stringify(COMMAND_SOURCE_CATALOG), /full_command_guides/);
   assert.equal(COMMAND_HELP_INDEX.guides.length, 109);
   const counts = Object.groupBy(COMMAND_HELP_INDEX.guides, (row) => row.help_status);
   assert.equal(counts.available.length, 107);
@@ -171,15 +179,19 @@ test("the Stata 18 help and expanded-document indexes cover all 109 commands", (
   assert.equal(expandedCounts.unavailable.length, 1);
 });
 
-test("Phase 3 returns Stata 18 expanded documentation without requiring a paper block", () => {
+test("Phase 3 expands only the exact requested command subset without requiring a paper block", () => {
   const result = buildCommandEvidence({
     request: "Read more about regress",
-    selected_commands: ["regress"],
+    selected_commands: ["regress", "margins", "marginsplot", "outreg2"],
     expanded: true,
+    expanded_commands: ["regress"],
   });
   assert.equal(result.phase, "expanded_context");
+  assert.deepEqual(result.expanded_commands, ["regress"]);
   assert.deepEqual(result.selected_block_ids, []);
   assert.deepEqual(result.paper_usage_cards, []);
+  assert.equal(result.expanded_command_evidence.length, 1);
+  assert.equal(result.expanded_command_evidence[0].command, "regress");
   const documentation = result.expanded_command_evidence[0].expanded_documentation;
   assert.equal(documentation.expanded_documentation_status, "available");
   assert.equal(documentation.source_version, "Stata 18 installation");
@@ -198,10 +210,13 @@ test("Phase 3 returns one slim exact xtreg paper card with an empty log array", 
     "phase",
     "main_rules",
     "selected_commands",
+    "expanded_commands",
     "selected_block_ids",
     "expanded_command_evidence",
     "paper_usage_cards",
   ]);
+  assert.deepEqual(result.expanded_commands, []);
+  assert.deepEqual(result.expanded_command_evidence, []);
   assert.equal(result.paper_usage_cards.length, 1);
   const card = result.paper_usage_cards[0];
   assert.equal(card.block_id, "block-139-184-033");
@@ -316,6 +331,7 @@ test("Phase 3 reports duplicate maintainer help and the limited jregress supplem
     request: "Read the available expansion",
     selected_commands: ["cgmreg", "jregress", "jwdidstacked"],
     expanded: true,
+    expanded_commands: ["cgmreg", "jregress", "jwdidstacked"],
   });
   const rows = result.expanded_command_evidence.map((row) => row.expanded_documentation);
   assert.deepEqual(rows.map((row) => row.expanded_documentation_status), [
@@ -367,6 +383,23 @@ test("phase arguments and exact IDs fail closed", () => {
       selected_block_ids: ["block-139-184-033"],
     }),
     /ABORT invalid_phase_arguments/,
+  );
+  assert.throws(
+    () => buildCommandEvidence({
+      request: "Empty expanded context",
+      selected_commands: ["xtreg"],
+      expanded: true,
+    }),
+    /ABORT empty_expanded_context/,
+  );
+  assert.throws(
+    () => buildCommandEvidence({
+      request: "Expansion outside selected boundary",
+      selected_commands: ["xtreg"],
+      expanded: true,
+      expanded_commands: ["regress"],
+    }),
+    /ABORT expanded_command_not_selected/,
   );
 });
 

@@ -1,0 +1,740 @@
+{
+  "schema_version": "1.0",
+  "target_runtime": "Stata 18",
+  "commands": [
+    {
+      "command": "sysuse",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "acreg",
+      "authority": "maintainer or package documentation",
+      "source_kind": "SSC raw STHLP",
+      "source_version": "December 2020 Beta Version (same SSC ado header)",
+      "source_url": "https://ideas.repec.org/c/boc/bocode/s458889.html",
+      "source_file": "command_help_sources/acreg-ssc-acreg.sthlp"
+    },
+    {
+      "command": "append",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "areg",
+      "authority": "StataCorp official",
+      "stata_manual_code": "r"
+    },
+    {
+      "command": "assert",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "boottest",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer raw STHLP",
+      "source_version": "boottest 4.5.0, 17 June 2025; commit f2204620a61ba8872cc6af22d6fb6492128e6278",
+      "source_url": "https://raw.githubusercontent.com/droodman/boottest/f2204620a61ba8872cc6af22d6fb6492128e6278/boottest.sthlp",
+      "source_file": "command_help_sources/boottest-github-f2204620a61ba8872cc6af22d6fb6492128e6278.sthlp"
+    },
+    {
+      "command": "cgmreg",
+      "authority": "maintainer-distributed command help",
+      "source_kind": "public maintained distribution help",
+      "source_version": "cgmreg help 1.0.0; repository commit 1e3006e54d51ebf75077e0f969367bb4b4250cb9",
+      "source_url": "https://github.com/jacaskey/Stata-code/blob/1e3006e54d51ebf75077e0f969367bb4b4250cb9/Estimating-Equations/cgmreg.hlp",
+      "source_file": "command_help_sources/cgmreg-jacaskey-1e3006e54d51ebf75077e0f969367bb4b4250cb9.hlp",
+      "limitations": [
+        "This help accompanies Judson Caskey's maintained distribution, not the original authors' archived cgmreg.ado alone."
+      ]
+    },
+    {
+      "command": "codebook",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "coefplot",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer raw STHLP",
+      "source_version": "coefplot 1.5.3, 28may2025; commit e8947d8b42c5b02029159b4f572780d3f7c0b085",
+      "source_url": "https://raw.githubusercontent.com/benjann/coefplot/e8947d8b42c5b02029159b4f572780d3f7c0b085/coefplot.sthlp",
+      "source_file": "command_help_sources/coefplot-github-e8947d8b42c5b02029159b4f572780d3f7c0b085.sthlp"
+    },
+    {
+      "command": "collect_export",
+      "authority": "StataCorp official",
+      "stata_manual_code": "tables"
+    },
+    {
+      "command": "collect_get",
+      "authority": "StataCorp official",
+      "stata_manual_code": "tables"
+    },
+    {
+      "command": "collect_style",
+      "authority": "StataCorp official",
+      "stata_manual_code": "tables"
+    },
+    {
+      "command": "collapse",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "contract",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "crossfit",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer raw STHLP",
+      "source_version": "crossfit v1.4.4; help date 30aug2024; commit acf344fa03f38f3b572b78b9680078562c489192",
+      "source_url": "https://raw.githubusercontent.com/aahrens1/ddml/acf344fa03f38f3b572b78b9680078562c489192/crossfit.sthlp",
+      "source_file": "command_help_sources/crossfit-github-acf344fa03f38f3b572b78b9680078562c489192.sthlp"
+    },
+    {
+      "command": "csdid",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer raw STHLP",
+      "source_version": "version not stated in help; commit cd9b0d43a839f9214c50f9478dc5b09556cbc11b (2025-10-03)",
+      "source_url": "https://raw.githubusercontent.com/friosavila/stpackages/cd9b0d43a839f9214c50f9478dc5b09556cbc11b/csdid/csdid.sthlp",
+      "source_file": "command_help_sources/csdid-github-cd9b0d43a839f9214c50f9478dc5b09556cbc11b.sthlp"
+    },
+    {
+      "command": "csdid_estat",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer_stata_help",
+      "source_version": "2.0.0 28aug2026",
+      "source_url": "https://raw.githubusercontent.com/pedrohcgs/csdid-stata/856ecd3f311e4dc20792dd03823c475fcbc3dc06/pkg/csdid_estat.sthlp",
+      "source_file": "command_help_sources/csdid_estat-856ecd3f311e4dc20792dd03823c475fcbc3dc06.sthlp"
+    },
+    {
+      "command": "ddml",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer_stata_help_with_include",
+      "source_version": "6aug2023",
+      "source_url": "https://raw.githubusercontent.com/aahrens1/ddml/6313ba3e1b9fb595325cf0336e86d3f7434373c6/ddml.sthlp",
+      "source_file": "command_help_sources/ddml-6313ba3e1b9fb595325cf0336e86d3f7434373c6.sthlp",
+      "supplemental_sources": [
+        {
+          "source_file": "command_help_sources/ddml_install_ref_auth-6313ba3e1b9fb595325cf0336e86d3f7434373c6.ihlp",
+          "source_sha256": "042a75022d5baf14fcc4c8d3d8df0db90e5044be5da98aede9e09dd0b9706ce9",
+          "source_url": "https://raw.githubusercontent.com/aahrens1/ddml/6313ba3e1b9fb595325cf0336e86d3f7434373c6/ddml_install_ref_auth.ihlp",
+          "include_name": null
+        },
+        {
+          "source_file": "command_help_sources/ddml_overview-6313ba3e1b9fb595325cf0336e86d3f7434373c6.sthlp",
+          "source_sha256": "03338f47c2a81ec96f661eaa93c3713e79d9b8385cd85066438674a7f5c2fed8",
+          "source_url": "https://raw.githubusercontent.com/aahrens1/ddml/6313ba3e1b9fb595325cf0336e86d3f7434373c6/ddml_overview.sthlp",
+          "include_name": null
+        },
+        {
+          "source_file": "command_help_sources/ddml_example_partial_pystacked_basic-6313ba3e1b9fb595325cf0336e86d3f7434373c6.sthlp",
+          "source_sha256": "ea3599f228546d4f9299373d8ad13dfffd06f7fd55a8109e7e5eff911376c129",
+          "source_url": "https://raw.githubusercontent.com/aahrens1/ddml/6313ba3e1b9fb595325cf0336e86d3f7434373c6/ddml_example_partial_pystacked_basic.sthlp",
+          "include_name": null
+        }
+      ]
+    },
+    {
+      "command": "did_imputation",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer_stata_help",
+      "source_version": "3.1 2023-11-22",
+      "source_url": "https://raw.githubusercontent.com/borusyak/did_imputation/767c8d6670a751170910d419bbafd323df92ef08/did_imputation.sthlp",
+      "source_file": "command_help_sources/did_imputation-767c8d6670a751170910d419bbafd323df92ef08.sthlp"
+    },
+    {
+      "command": "did_multiplegt_dyn",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer_stata_help",
+      "source_version": "1 2026-06-26",
+      "source_url": "https://raw.githubusercontent.com/Credible-Answers/did_multiplegt_dyn/ed2df86f73e6360e615c9cc32697fa1355c3e9ef/Stata/did_multiplegt_dyn.sthlp",
+      "source_file": "command_help_sources/did_multiplegt_dyn-ed2df86f73e6360e615c9cc32697fa1355c3e9ef.sthlp"
+    },
+    {
+      "command": "dtable",
+      "authority": "StataCorp official",
+      "stata_manual_code": "r"
+    },
+    {
+      "command": "duplicates",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "egen",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "encode",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "decode",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "destring",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "estadd",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer_stata_help",
+      "source_version": "command source date 01feb2017; package distribution date 20260413",
+      "source_url": "https://raw.githubusercontent.com/benjann/estout/2c6beb2df405a1aa8940e0432a4a53810eca8e60/estadd.hlp",
+      "source_file": "command_help_sources/estadd-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp"
+    },
+    {
+      "command": "estout",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer_stata_help",
+      "source_version": "command source date 25mar2026; package distribution date 20260413",
+      "source_url": "https://raw.githubusercontent.com/benjann/estout/2c6beb2df405a1aa8940e0432a4a53810eca8e60/estout.hlp",
+      "source_file": "command_help_sources/estout-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp"
+    },
+    {
+      "command": "estpost",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer_stata_help",
+      "source_version": "command source date 19may2021; package distribution date 20260413",
+      "source_url": "https://raw.githubusercontent.com/benjann/estout/2c6beb2df405a1aa8940e0432a4a53810eca8e60/estpost.hlp",
+      "source_file": "command_help_sources/estpost-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp"
+    },
+    {
+      "command": "eststo",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer_stata_help",
+      "source_version": "command source date 01feb2017; package distribution date 20260413",
+      "source_url": "https://raw.githubusercontent.com/benjann/estout/2c6beb2df405a1aa8940e0432a4a53810eca8e60/eststo.hlp",
+      "source_file": "command_help_sources/eststo-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp"
+    },
+    {
+      "command": "esttab",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer_stata_help",
+      "source_version": "command source date 25mar2026; package distribution date 20260413",
+      "source_url": "https://raw.githubusercontent.com/benjann/estout/2c6beb2df405a1aa8940e0432a4a53810eca8e60/esttab.hlp",
+      "source_file": "command_help_sources/esttab-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp"
+    },
+    {
+      "command": "etable",
+      "authority": "StataCorp official",
+      "stata_manual_code": "r"
+    },
+    {
+      "command": "eventdd",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer_stata_help",
+      "source_version": "4.0",
+      "source_url": "https://raw.githubusercontent.com/damiancclarke/eventdd/5b499f662acdfca8ce0399cf82c0222be2072223/eventdd.sthlp",
+      "source_file": "command_help_sources/maintainer_eventdd_5b499f66.sthlp"
+    },
+    {
+      "command": "event_plot",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer_stata_help",
+      "source_version": "1",
+      "source_url": "https://raw.githubusercontent.com/borusyak/did_imputation/767c8d6670a751170910d419bbafd323df92ef08/event_plot.sthlp",
+      "source_file": "command_help_sources/maintainer_event_plot_767c8d66.sthlp"
+    },
+    {
+      "command": "eventstudyinteract",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer_stata_help",
+      "source_version": "0.0",
+      "source_url": "https://raw.githubusercontent.com/lsun20/EventStudyInteract/87d16affd23f8bea20cb312c9e02fea0f1d87fe5/eventstudyinteract.sthlp",
+      "source_file": "command_help_sources/maintainer_eventstudyinteract_87d16aff.sthlp"
+    },
+    {
+      "command": "export_excel",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "export_delimited",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "gcollapse",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer_stata_help",
+      "source_version": "1.2.1",
+      "source_url": "https://raw.githubusercontent.com/mcaceresb/stata-gtools/8b1dc0501345220848c69fac7255dd0c5d381a96/docs/stata/gcollapse.sthlp",
+      "source_file": "command_help_sources/maintainer_gcollapse_8b1dc050.sthlp"
+    },
+    {
+      "command": "gegen",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer_stata_help",
+      "source_version": "1.4.2",
+      "source_url": "https://raw.githubusercontent.com/mcaceresb/stata-gtools/8b1dc0501345220848c69fac7255dd0c5d381a96/docs/stata/gegen.sthlp",
+      "source_file": "command_help_sources/maintainer_gegen_8b1dc050.sthlp"
+    },
+    {
+      "command": "generate",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "graph",
+      "authority": "StataCorp official",
+      "stata_manual_code": "g"
+    },
+    {
+      "command": "graph_bar",
+      "authority": "StataCorp official",
+      "stata_manual_code": "g"
+    },
+    {
+      "command": "greshape",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer_stata_help",
+      "source_version": "0.5.0",
+      "source_url": "https://raw.githubusercontent.com/mcaceresb/stata-gtools/8b1dc0501345220848c69fac7255dd0c5d381a96/docs/stata/greshape.sthlp",
+      "source_file": "command_help_sources/maintainer_greshape_8b1dc050.sthlp"
+    },
+    {
+      "command": "gstats",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer_stata_help",
+      "source_version": "0.4.0 + subcommand help",
+      "source_url": "https://raw.githubusercontent.com/mcaceresb/stata-gtools/8b1dc0501345220848c69fac7255dd0c5d381a96/docs/stata/gstats.sthlp",
+      "source_file": "command_help_sources/maintainer_gstats_1_8b1dc050.sthlp",
+      "supplemental_sources": [
+        {
+          "source_file": "command_help_sources/maintainer_gstats_2_8b1dc050.sthlp",
+          "source_sha256": "101cc9299ca53f7a1aeab736f9d7a4556731d6db78a5cf37ca74dfc46993a0b7",
+          "source_url": "https://raw.githubusercontent.com/mcaceresb/stata-gtools/8b1dc0501345220848c69fac7255dd0c5d381a96/docs/stata/gstats_hdfe.sthlp",
+          "include_name": null
+        },
+        {
+          "source_file": "command_help_sources/maintainer_gstats_3_8b1dc050.sthlp",
+          "source_sha256": "6c5d66c9c7023a8a817be709e1275af65aa2d87fcf6e72e226063905f02beac1",
+          "source_url": "https://raw.githubusercontent.com/mcaceresb/stata-gtools/8b1dc0501345220848c69fac7255dd0c5d381a96/docs/stata/gstats_winsor.sthlp",
+          "include_name": null
+        },
+        {
+          "source_file": "command_help_sources/maintainer_gstats_4_8b1dc050.sthlp",
+          "source_sha256": "57ebaf04dbc4ce4bc300e4e6f1814a0a8d30b16175766c476e502beeabe186a1",
+          "source_url": "https://raw.githubusercontent.com/mcaceresb/stata-gtools/8b1dc0501345220848c69fac7255dd0c5d381a96/docs/stata/gstats_summarize.sthlp",
+          "include_name": null
+        },
+        {
+          "source_file": "command_help_sources/maintainer_gstats_5_8b1dc050.sthlp",
+          "source_sha256": "b73d2bbe544377241cbe2d13a2118d50b669636d99ae3e5d687f091578985e31",
+          "source_url": "https://raw.githubusercontent.com/mcaceresb/stata-gtools/8b1dc0501345220848c69fac7255dd0c5d381a96/docs/stata/gstats_transform.sthlp",
+          "include_name": null
+        }
+      ]
+    },
+    {
+      "command": "gquantiles",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer_stata_help",
+      "source_version": "1.0.2",
+      "source_url": "https://raw.githubusercontent.com/mcaceresb/stata-gtools/8b1dc0501345220848c69fac7255dd0c5d381a96/docs/stata/gquantiles.sthlp",
+      "source_file": "command_help_sources/maintainer_gquantiles_8b1dc050.sthlp"
+    },
+    {
+      "command": "histogram",
+      "authority": "StataCorp official",
+      "stata_manual_code": "r"
+    },
+    {
+      "command": "import",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "import_delimited",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "import_excel",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "isid",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "ivreg2",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer/SSC package help",
+      "source_version": "30July2015 help file; SSC record revised 14 Aug 2024",
+      "source_url": "https://ideas.repec.org/c/boc/bocode/s425401.html",
+      "source_file": "command_help_sources/ivreg2-ssc-20260829.sthlp"
+    },
+    {
+      "command": "ivregress",
+      "authority": "StataCorp official",
+      "stata_manual_code": "r"
+    },
+    {
+      "command": "ivreghdfe",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer repository raw Stata help",
+      "source_version": "1.1.4 29nov2025",
+      "source_url": "https://raw.githubusercontent.com/sergiocorreia/ivreghdfe/bfb5577a6dbdfb029ab4ab6a7e93f7257a827b42/src/ivreghdfe.sthlp",
+      "source_file": "command_help_sources/ivreghdfe-bfb5577a6dbdfb029ab4ab6a7e93f7257a827b42.sthlp"
+    },
+    {
+      "command": "jwdid",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer repository raw Stata help",
+      "source_version": "2.0 May_4_2024",
+      "source_url": "https://raw.githubusercontent.com/friosavila/stpackages/738defceb5413face7051754b259c82798c67e52/jwdid/jwdid.sthlp",
+      "source_file": "command_help_sources/jwdid-738defceb5413.sthlp"
+    },
+    {
+      "command": "jwdidstacked",
+      "authority": null
+    },
+    {
+      "command": "jregress",
+      "authority": "maintainer or package documentation",
+      "expanded_source": {
+        "source_kind": "author PDF command guide preserved inside Zenodo replication archive",
+        "source_version": "PDF creation metadata 20 Jul 2024; Zenodo record 17712099, no formal PDF version label",
+        "source_url": "https://zenodo.org/records/17712099/files/JackknifeStandardErrors_Replication.zip",
+        "source_file": "expanded_command_sources/jregress-zenodo-17712099-b0db4dc34ad7.pdf",
+        "source_sha256": "b0db4dc34ad7fb1b02cc0641a1a4317080331c4231ab160c1ba5e5bbd00e0b3b",
+        "content_file": "expanded_command_sources/jregress-author-guide.md",
+        "content_sha256": "0116da7e34c2348cc1dbb4edda74053078dbee39ec3faaea4d905aca257145f0",
+        "transformation": "Born-digital one-page author PDF inspected visually and extracted in reading order. Removed only the terminal PDF form-feed boundary; retained title, description, every example and command line in sequence, syntax, and all five option-table rows as UTF-8 Markdown."
+      }
+    },
+    {
+      "command": "label",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "lincom",
+      "authority": "StataCorp official",
+      "stata_manual_code": "r"
+    },
+    {
+      "command": "logit",
+      "authority": "StataCorp official",
+      "stata_manual_code": "r"
+    },
+    {
+      "command": "logistic",
+      "authority": "StataCorp official",
+      "stata_manual_code": "r"
+    },
+    {
+      "command": "margins",
+      "authority": "StataCorp official",
+      "stata_manual_code": "r"
+    },
+    {
+      "command": "marginsplot",
+      "authority": "StataCorp official",
+      "stata_manual_code": "r"
+    },
+    {
+      "command": "merge",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "misstable",
+      "authority": "StataCorp official",
+      "stata_manual_code": "r"
+    },
+    {
+      "command": "nbreg",
+      "authority": "StataCorp official",
+      "stata_manual_code": "r"
+    },
+    {
+      "command": "outreg2",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer-distributed raw help",
+      "source_version": "not_declared_in_selected_raw_help",
+      "source_url": "https://ideas.repec.org/c/boc/bocode/s425401.html",
+      "source_file": "command_help_sources/outreg2_ssc_retrieved_2026-08-28.hlp"
+    },
+    {
+      "command": "poisson",
+      "authority": "StataCorp official",
+      "stata_manual_code": "r"
+    },
+    {
+      "command": "ppmlhdfe",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer raw .sthlp/SMCL",
+      "source_version": "2.3.4 11jan2025",
+      "source_url": "https://raw.githubusercontent.com/sergiocorreia/ppmlhdfe/b85665d8f674e93c1e07446a9a2b29be7f797910/src/ppmlhdfe.sthlp",
+      "source_file": "command_help_sources/ppmlhdfe_b85665d8f674e93c1e07446a9a2b29be7f797910.sthlp"
+    },
+    {
+      "command": "predict",
+      "authority": "StataCorp official",
+      "stata_manual_code": "r"
+    },
+    {
+      "command": "psmatch2",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer raw .sthlp/SMCL",
+      "source_version": "not_declared_in_selected_raw_help",
+      "source_url": "https://raw.githubusercontent.com/eleuven/psmatch2/cfb54e6d3156ac9851af3979d4b33b27c86aad03/psmatch2.sthlp",
+      "source_file": "command_help_sources/psmatch2_cfb54e6d3156ac9851af3979d4b33b27c86aad03.sthlp"
+    },
+    {
+      "command": "pstest",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer raw .sthlp/SMCL",
+      "source_version": "not_declared_in_selected_raw_help",
+      "source_url": "https://raw.githubusercontent.com/eleuven/psmatch2/cfb54e6d3156ac9851af3979d4b33b27c86aad03/pstest.sthlp",
+      "source_file": "command_help_sources/pstest_cfb54e6d3156ac9851af3979d4b33b27c86aad03.sthlp"
+    },
+    {
+      "command": "probit",
+      "authority": "StataCorp official",
+      "stata_manual_code": "r"
+    },
+    {
+      "command": "putexcel",
+      "authority": "StataCorp official",
+      "stata_manual_code": "rpt"
+    },
+    {
+      "command": "qddml",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer raw .sthlp/SMCL",
+      "source_version": "30aug2024",
+      "source_url": "https://raw.githubusercontent.com/aahrens1/ddml/6313ba3e1b9fb595325cf0336e86d3f7434373c6/qddml.sthlp",
+      "source_file": "command_help_sources/qddml_6313ba3e1b9fb595325cf0336e86d3f7434373c6.sthlp"
+    },
+    {
+      "command": "rangestat",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer-distributed raw help",
+      "source_version": "not_declared_in_selected_raw_help",
+      "source_url": "https://ideas.repec.org/c/boc/bocode/s458161.html",
+      "source_file": "command_help_sources/rangestat_ssc_retrieved_2026-08-28.sthlp"
+    },
+    {
+      "command": "rdbwselect",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer raw .sthlp/SMCL",
+      "source_version": "11.1.0  2026-05-22",
+      "source_url": "https://raw.githubusercontent.com/rdpackages/rdrobust/7dd25671b8f28fc8618b1b7aa4a981564ee53f75/stata/rdbwselect.sthlp",
+      "source_file": "command_help_sources/rdbwselect_7dd25671b8f28fc8618b1b7aa4a981564ee53f75.sthlp"
+    },
+    {
+      "command": "rdplot",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer raw .sthlp/SMCL",
+      "source_version": "11.1.0  2026-05-22",
+      "source_url": "https://raw.githubusercontent.com/rdpackages/rdrobust/7dd25671b8f28fc8618b1b7aa4a981564ee53f75/stata/rdplot.sthlp",
+      "source_file": "command_help_sources/rdplot_7dd25671b8f28fc8618b1b7aa4a981564ee53f75.sthlp"
+    },
+    {
+      "command": "rdrobust",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer raw .sthlp/SMCL",
+      "source_version": "11.1.0  2026-05-22",
+      "source_url": "https://raw.githubusercontent.com/rdpackages/rdrobust/7dd25671b8f28fc8618b1b7aa4a981564ee53f75/stata/rdrobust.sthlp",
+      "source_file": "command_help_sources/rdrobust_7dd25671b8f28fc8618b1b7aa4a981564ee53f75.sthlp"
+    },
+    {
+      "command": "recode",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "regress",
+      "authority": "StataCorp official",
+      "stata_manual_code": "r"
+    },
+    {
+      "command": "reghdfe",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer_stata_help",
+      "source_version": "6.14.1 08Jul2026",
+      "source_url": "https://raw.githubusercontent.com/sergiocorreia/reghdfe/29b2b203f534413369d675d0c0f674d61291f536/current-code/reghdfe.sthlp",
+      "source_file": "command_help_sources/reghdfe-29b2b203-sergiocorreia.sthlp"
+    },
+    {
+      "command": "replace",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "reshape",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "ritest",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer_stata_help",
+      "source_version": "1.1.8 mar2021",
+      "source_url": "https://raw.githubusercontent.com/simonheb/ritest/201cad88ba9abd847a49ab9a432a3450b2b3d3db/ritest.sthlp",
+      "source_file": "command_help_sources/ritest-1.1.18-simonheb.sthlp"
+    },
+    {
+      "command": "save",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "sdid",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer_stata_help",
+      "source_version": "2.0.3 May 14, 2025",
+      "source_url": "https://raw.githubusercontent.com/Daniel-Pailanir/sdid/7f06fd7200a80527682840f717f874e3b37e40e8/sdid.sthlp",
+      "source_file": "command_help_sources/sdid-7f06fd7-daniel-pailanir.sthlp"
+    },
+    {
+      "command": "stackedev",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer_stata_help",
+      "source_version": "1.1 18dec2021",
+      "source_url": "https://raw.githubusercontent.com/joshbleiberg/stackedev/0da36312e96e0e3530c5168b4767829350756b9e/stackedev.sthlp",
+      "source_file": "command_help_sources/stackedev-0da3631-joshbleiberg.sthlp"
+    },
+    {
+      "command": "stcox",
+      "authority": "StataCorp official",
+      "stata_manual_code": "st"
+    },
+    {
+      "command": "stset",
+      "authority": "StataCorp official",
+      "stata_manual_code": "st"
+    },
+    {
+      "command": "summarize",
+      "authority": "StataCorp official",
+      "stata_manual_code": "r"
+    },
+    {
+      "command": "table",
+      "authority": "StataCorp official",
+      "stata_manual_code": "r"
+    },
+    {
+      "command": "tabstat",
+      "authority": "StataCorp official",
+      "stata_manual_code": "r"
+    },
+    {
+      "command": "tabulate",
+      "authority": "StataCorp official",
+      "stata_manual_code": "r"
+    },
+    {
+      "command": "testparm",
+      "authority": "StataCorp official",
+      "stata_manual_code": "r"
+    },
+    {
+      "command": "test",
+      "authority": "StataCorp official",
+      "stata_manual_code": "r"
+    },
+    {
+      "command": "tostring",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "tsfill",
+      "authority": "StataCorp official",
+      "stata_manual_code": "ts"
+    },
+    {
+      "command": "tsset",
+      "authority": "StataCorp official",
+      "stata_manual_code": "ts"
+    },
+    {
+      "command": "twoway",
+      "authority": "StataCorp official",
+      "stata_manual_code": "g"
+    },
+    {
+      "command": "ttest",
+      "authority": "StataCorp official",
+      "stata_manual_code": "r"
+    },
+    {
+      "command": "use",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "winsor2",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer/SSC package help",
+      "source_version": "2.0 2020/11/24",
+      "source_url": "https://ideas.repec.org/c/boc/bocode/s457765.html",
+      "source_file": "command_help_sources/winsor2-ssc-20260829.sthlp"
+    },
+    {
+      "command": "xtivreg",
+      "authority": "StataCorp official",
+      "stata_manual_code": "xt"
+    },
+    {
+      "command": "xtreg",
+      "authority": "StataCorp official",
+      "stata_manual_code": "xt"
+    },
+    {
+      "command": "xtset",
+      "authority": "StataCorp official",
+      "stata_manual_code": "xt"
+    },
+    {
+      "command": "xtabond2",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer repository raw Stata help",
+      "source_version": "repository commit a694533e395b0277ee2fffbde00a7111357c524f",
+      "source_url": "https://raw.githubusercontent.com/droodman/xtabond2/a694533e395b0277ee2fffbde00a7111357c524f/xtabond2.hlp",
+      "source_file": "command_help_sources/xtabond2-a694533e395b0277ee2fffbde00a7111357c524f.hlp"
+    },
+    {
+      "command": "asdoc",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer/SSC package help",
+      "source_version": "2.3.9.5; April 10, 2021",
+      "source_url": "https://ideas.repec.org/c/boc/bocode/s458279.html",
+      "source_file": "command_help_sources/asdoc-ssc-20260829.sthlp"
+    },
+    {
+      "command": "fcollapse",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer repository raw Stata help",
+      "source_version": "2.49.0 06may2022",
+      "source_url": "https://raw.githubusercontent.com/sergiocorreia/ftools/7b3663e49ea5c5b81638c55be29edf416e68e8b7/src/fcollapse.sthlp",
+      "source_file": "command_help_sources/fcollapse-7b3663e49ea5c5b81638c55be29edf416e68e8b7.sthlp"
+    },
+    {
+      "command": "fmerge",
+      "authority": "maintainer or package documentation",
+      "source_kind": "maintainer repository raw Stata help",
+      "source_version": "2.10.0 3apr2017",
+      "source_url": "https://raw.githubusercontent.com/sergiocorreia/ftools/7b3663e49ea5c5b81638c55be29edf416e68e8b7/src/fmerge.sthlp",
+      "source_file": "command_help_sources/fmerge-7b3663e49ea5c5b81638c55be29edf416e68e8b7.sthlp"
+    }
+  ]
+}

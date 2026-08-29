@@ -25,9 +25,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -35,15 +32,15 @@
       "command": "acreg",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "SSC raw STHLP",
       "source_version": "December 2020 Beta Version (same SSC ado header)",
-      "source_url": null,
+      "source_url": "https://ideas.repec.org/c/boc/bocode/s458889.html",
       "help_topics": [
         "acreg-ssc-acreg"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/acreg-ssc-acreg.sthlp",
+          "source_path": "data/command_help_sources/acreg-ssc-acreg.sthlp",
           "source_sha256": "15d2a0b87630d49045163b75c4e9997e8a77039e41076853dd31e52e248de7d1"
         }
       ],
@@ -53,9 +50,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 1,
       "related_online_sources": []
     },
     {
@@ -81,9 +75,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -92,7 +83,7 @@
       "help_status": "available",
       "authority": "StataCorp official",
       "source_kind": "installed official Stata help",
-      "source_version": "Stata 18",
+      "source_version": "Stata 18 installation with explicitly marked StataNow features",
       "source_url": null,
       "help_topics": [
         "areg"
@@ -140,10 +131,9 @@
       "content_format": "plain_text",
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
-      "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 2,
+      "limitations": [
+        "This installed Stata 18 entry includes options explicitly marked as StataNow-only. Do not use those options unless the active Stata environment provides StataNow features."
+      ],
       "related_online_sources": []
     },
     {
@@ -169,9 +159,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -179,15 +166,15 @@
       "command": "boottest",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer raw STHLP",
       "source_version": "boottest 4.5.0, 17 June 2025; commit f2204620a61ba8872cc6af22d6fb6492128e6278",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/droodman/boottest/f2204620a61ba8872cc6af22d6fb6492128e6278/boottest.sthlp",
       "help_topics": [
         "boottest-github"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/boottest-github-f2204620a61ba8872cc6af22d6fb6492128e6278.sthlp",
+          "source_path": "data/command_help_sources/boottest-github-f2204620a61ba8872cc6af22d6fb6492128e6278.sthlp",
           "source_sha256": "47540af6ffd71e5d065c71078eae7fb6fa4c43639bb6bad6a59b01491b750ca8"
         }
       ],
@@ -197,9 +184,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 1,
       "related_online_sources": []
     },
     {
@@ -211,7 +195,7 @@
       "source_version": "cgmreg help 1.0.0; repository commit 1e3006e54d51ebf75077e0f969367bb4b4250cb9",
       "source_url": "https://github.com/jacaskey/Stata-code/blob/1e3006e54d51ebf75077e0f969367bb4b4250cb9/Estimating-Equations/cgmreg.hlp",
       "help_topics": [
-        "cgmreg"
+        "cgmreg-jacaskey"
       ],
       "source_files": [
         {
@@ -227,9 +211,6 @@
       "limitations": [
         "This help accompanies Judson Caskey's maintained distribution, not the original authors' archived cgmreg.ado alone."
       ],
-      "full_manual_available": false,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -255,9 +236,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 2,
       "related_online_sources": []
     },
     {
@@ -265,15 +243,15 @@
       "command": "coefplot",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer raw STHLP",
       "source_version": "coefplot 1.5.3, 28may2025; commit e8947d8b42c5b02029159b4f572780d3f7c0b085",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/benjann/coefplot/e8947d8b42c5b02029159b4f572780d3f7c0b085/coefplot.sthlp",
       "help_topics": [
         "coefplot-github"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/coefplot-github-e8947d8b42c5b02029159b4f572780d3f7c0b085.sthlp",
+          "source_path": "data/command_help_sources/coefplot-github-e8947d8b42c5b02029159b4f572780d3f7c0b085.sthlp",
           "source_sha256": "9b31f0702281293a698d618495a024f47cb0a3ede72fa548884dd52debb1207b"
         }
       ],
@@ -283,9 +261,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -311,9 +286,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -339,9 +311,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -463,9 +432,6 @@
       "limitations": [
         "Stata 18 scope excludes the later Stata 19 topics: collect_style_smcl, collect_style_txt"
       ],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": [
         {
           "topic": "collect_style_smcl",
@@ -502,9 +468,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -530,9 +493,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -540,15 +500,15 @@
       "command": "crossfit",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer raw STHLP",
       "source_version": "crossfit v1.4.4; help date 30aug2024; commit acf344fa03f38f3b572b78b9680078562c489192",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/aahrens1/ddml/acf344fa03f38f3b572b78b9680078562c489192/crossfit.sthlp",
       "help_topics": [
         "crossfit-github"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/crossfit-github-acf344fa03f38f3b572b78b9680078562c489192.sthlp",
+          "source_path": "data/command_help_sources/crossfit-github-acf344fa03f38f3b572b78b9680078562c489192.sthlp",
           "source_sha256": "0a2e0659e43e3974126be2543c5897f385f3081ab179bf0a5daabdd6abebcd5f"
         }
       ],
@@ -558,9 +518,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -568,15 +525,15 @@
       "command": "csdid",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer raw STHLP",
       "source_version": "version not stated in help; commit cd9b0d43a839f9214c50f9478dc5b09556cbc11b (2025-10-03)",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/friosavila/stpackages/cd9b0d43a839f9214c50f9478dc5b09556cbc11b/csdid/csdid.sthlp",
       "help_topics": [
         "csdid-github"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/csdid-github-cd9b0d43a839f9214c50f9478dc5b09556cbc11b.sthlp",
+          "source_path": "data/command_help_sources/csdid-github-cd9b0d43a839f9214c50f9478dc5b09556cbc11b.sthlp",
           "source_sha256": "e8d443784817d8f1312ef0fd891e2bd463b478b0ae6786102fc91b8b865718a5"
         }
       ],
@@ -586,9 +543,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 1,
       "related_online_sources": []
     },
     {
@@ -596,15 +550,15 @@
       "command": "csdid_estat",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer_stata_help",
       "source_version": "2.0.0 28aug2026",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/pedrohcgs/csdid-stata/856ecd3f311e4dc20792dd03823c475fcbc3dc06/pkg/csdid_estat.sthlp",
       "help_topics": [
         "csdid_estat"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/csdid_estat-856ecd3f311e4dc20792dd03823c475fcbc3dc06.sthlp",
+          "source_path": "data/command_help_sources/csdid_estat-856ecd3f311e4dc20792dd03823c475fcbc3dc06.sthlp",
           "source_sha256": "371d27e0c616e96f97b93885a9d79d6786791521a78525a1823f4580f2dab393"
         }
       ],
@@ -614,9 +568,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -624,27 +575,27 @@
       "command": "ddml",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer_stata_help_with_include",
       "source_version": "6aug2023",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/aahrens1/ddml/6313ba3e1b9fb595325cf0336e86d3f7434373c6/ddml.sthlp",
       "help_topics": [
         "ddml"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/ddml-6313ba3e1b9fb595325cf0336e86d3f7434373c6.sthlp",
+          "source_path": "data/command_help_sources/ddml-6313ba3e1b9fb595325cf0336e86d3f7434373c6.sthlp",
           "source_sha256": "c895c12f292a6ca99b48979f595fdb78962191655623110ef47a2c0c130054ce"
         },
         {
-          "source_path": "data/full_command_guides/sources/ddml_overview-6313ba3e1b9fb595325cf0336e86d3f7434373c6.sthlp",
+          "source_path": "data/command_help_sources/ddml_overview-6313ba3e1b9fb595325cf0336e86d3f7434373c6.sthlp",
           "source_sha256": "03338f47c2a81ec96f661eaa93c3713e79d9b8385cd85066438674a7f5c2fed8"
         },
         {
-          "source_path": "data/full_command_guides/sources/ddml_example_partial_pystacked_basic-6313ba3e1b9fb595325cf0336e86d3f7434373c6.sthlp",
+          "source_path": "data/command_help_sources/ddml_example_partial_pystacked_basic-6313ba3e1b9fb595325cf0336e86d3f7434373c6.sthlp",
           "source_sha256": "ea3599f228546d4f9299373d8ad13dfffd06f7fd55a8109e7e5eff911376c129"
         },
         {
-          "source_path": "data/full_command_guides/sources/ddml_install_ref_auth-6313ba3e1b9fb595325cf0336e86d3f7434373c6.ihlp",
+          "source_path": "data/command_help_sources/ddml_install_ref_auth-6313ba3e1b9fb595325cf0336e86d3f7434373c6.ihlp",
           "source_sha256": "042a75022d5baf14fcc4c8d3d8df0db90e5044be5da98aede9e09dd0b9706ce9"
         }
       ],
@@ -654,9 +605,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -664,15 +612,15 @@
       "command": "did_imputation",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer_stata_help",
       "source_version": "3.1 2023-11-22",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/borusyak/did_imputation/767c8d6670a751170910d419bbafd323df92ef08/did_imputation.sthlp",
       "help_topics": [
         "did_imputation"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/did_imputation-767c8d6670a751170910d419bbafd323df92ef08.sthlp",
+          "source_path": "data/command_help_sources/did_imputation-767c8d6670a751170910d419bbafd323df92ef08.sthlp",
           "source_sha256": "4aaaf172b9d983f1fa991e17af948fe80c5e20b3250b53c9e7432bff9484b550"
         }
       ],
@@ -682,9 +630,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 1,
       "related_online_sources": []
     },
     {
@@ -692,15 +637,15 @@
       "command": "did_multiplegt_dyn",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer_stata_help",
       "source_version": "1 2026-06-26",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/Credible-Answers/did_multiplegt_dyn/ed2df86f73e6360e615c9cc32697fa1355c3e9ef/Stata/did_multiplegt_dyn.sthlp",
       "help_topics": [
         "did_multiplegt_dyn"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/did_multiplegt_dyn-ed2df86f73e6360e615c9cc32697fa1355c3e9ef.sthlp",
+          "source_path": "data/command_help_sources/did_multiplegt_dyn-ed2df86f73e6360e615c9cc32697fa1355c3e9ef.sthlp",
           "source_sha256": "4aee9dd630b931119b77e96f28d36eb5bf00625292beb2e3ad98e52994b315f4"
         }
       ],
@@ -710,9 +655,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 1,
       "related_online_sources": []
     },
     {
@@ -746,9 +688,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -774,9 +713,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -802,9 +738,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -830,9 +763,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 1,
       "related_online_sources": []
     },
     {
@@ -858,9 +788,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 1,
       "related_online_sources": []
     },
     {
@@ -886,9 +813,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -896,15 +820,15 @@
       "command": "estadd",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer_stata_help",
       "source_version": "command source date 01feb2017; package distribution date 20260413",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/benjann/estout/2c6beb2df405a1aa8940e0432a4a53810eca8e60/estadd.hlp",
       "help_topics": [
         "estadd"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/estadd-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp",
+          "source_path": "data/command_help_sources/estadd-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp",
           "source_sha256": "09ce9ae1491b0d265c29f0b92cc6dadfa27963659bbd4c137307232719059c88"
         }
       ],
@@ -914,9 +838,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -924,15 +845,15 @@
       "command": "estout",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer_stata_help",
       "source_version": "command source date 25mar2026; package distribution date 20260413",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/benjann/estout/2c6beb2df405a1aa8940e0432a4a53810eca8e60/estout.hlp",
       "help_topics": [
         "estout"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/estout-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp",
+          "source_path": "data/command_help_sources/estout-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp",
           "source_sha256": "0eab09197208e105fc4fce362fb04ac2d4413130389c72cd76bb336f710b2203"
         }
       ],
@@ -942,9 +863,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -952,15 +870,15 @@
       "command": "estpost",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer_stata_help",
       "source_version": "command source date 19may2021; package distribution date 20260413",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/benjann/estout/2c6beb2df405a1aa8940e0432a4a53810eca8e60/estpost.hlp",
       "help_topics": [
         "estpost"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/estpost-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp",
+          "source_path": "data/command_help_sources/estpost-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp",
           "source_sha256": "3ee756b3b3d19bc9dc515a2509b1e08a72025b0a9f068d23704f6eb00a49a5ec"
         }
       ],
@@ -970,9 +888,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -980,15 +895,15 @@
       "command": "eststo",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer_stata_help",
       "source_version": "command source date 01feb2017; package distribution date 20260413",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/benjann/estout/2c6beb2df405a1aa8940e0432a4a53810eca8e60/eststo.hlp",
       "help_topics": [
         "eststo"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/eststo-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp",
+          "source_path": "data/command_help_sources/eststo-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp",
           "source_sha256": "5256d91b770ef7774d199280ba1ca2f890fd289a64e80dc77e436492a1cddd69"
         }
       ],
@@ -998,9 +913,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -1008,15 +920,15 @@
       "command": "esttab",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer_stata_help",
       "source_version": "command source date 25mar2026; package distribution date 20260413",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/benjann/estout/2c6beb2df405a1aa8940e0432a4a53810eca8e60/esttab.hlp",
       "help_topics": [
         "esttab"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/esttab-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp",
+          "source_path": "data/command_help_sources/esttab-2c6beb2df405a1aa8940e0432a4a53810eca8e60.hlp",
           "source_sha256": "05f91dc0c6e80e01cfd8c1ed0c0138dc91bf8825d23b9d47c7085cc2ff74d5bb"
         }
       ],
@@ -1026,9 +938,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 2,
       "related_online_sources": []
     },
     {
@@ -1062,9 +971,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -1072,15 +978,15 @@
       "command": "eventdd",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer_stata_help",
       "source_version": "4.0",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/damiancclarke/eventdd/5b499f662acdfca8ce0399cf82c0222be2072223/eventdd.sthlp",
       "help_topics": [
         "maintainer_eventdd"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/maintainer_eventdd_5b499f66.sthlp",
+          "source_path": "data/command_help_sources/maintainer_eventdd_5b499f66.sthlp",
           "source_sha256": "109a986cd5c55eb93c39242a95df45d2935bce327a5e7cc502d7b3c5926adf9e"
         }
       ],
@@ -1090,9 +996,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -1100,15 +1003,15 @@
       "command": "event_plot",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer_stata_help",
       "source_version": "1",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/borusyak/did_imputation/767c8d6670a751170910d419bbafd323df92ef08/event_plot.sthlp",
       "help_topics": [
         "maintainer_event_plot"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/maintainer_event_plot_767c8d66.sthlp",
+          "source_path": "data/command_help_sources/maintainer_event_plot_767c8d66.sthlp",
           "source_sha256": "72d74cced3f2cf9e26e9d8fcb4a9d987b9d4862df2e564db58d61d6cfd8e0588"
         }
       ],
@@ -1118,9 +1021,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 1,
       "related_online_sources": []
     },
     {
@@ -1128,15 +1028,15 @@
       "command": "eventstudyinteract",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer_stata_help",
       "source_version": "0.0",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/lsun20/EventStudyInteract/87d16affd23f8bea20cb312c9e02fea0f1d87fe5/eventstudyinteract.sthlp",
       "help_topics": [
         "maintainer_eventstudyinteract"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/maintainer_eventstudyinteract_87d16aff.sthlp",
+          "source_path": "data/command_help_sources/maintainer_eventstudyinteract_87d16aff.sthlp",
           "source_sha256": "8e9e9b40b8e43faa1d1a328aa85939cf2fce875807acfdce558c16f0f9200094"
         }
       ],
@@ -1146,9 +1046,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 1,
       "related_online_sources": []
     },
     {
@@ -1174,9 +1071,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 2,
       "related_online_sources": []
     },
     {
@@ -1202,9 +1096,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -1212,15 +1103,15 @@
       "command": "gcollapse",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer_stata_help",
       "source_version": "1.2.1",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/mcaceresb/stata-gtools/8b1dc0501345220848c69fac7255dd0c5d381a96/docs/stata/gcollapse.sthlp",
       "help_topics": [
         "maintainer_gcollapse"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/maintainer_gcollapse_8b1dc050.sthlp",
+          "source_path": "data/command_help_sources/maintainer_gcollapse_8b1dc050.sthlp",
           "source_sha256": "1bc56dd5a45f226fab6352aecff40fa2951b32ec322d6fc46e16307cf0bd2492"
         }
       ],
@@ -1230,9 +1121,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 2,
       "related_online_sources": []
     },
     {
@@ -1240,15 +1128,15 @@
       "command": "gegen",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer_stata_help",
       "source_version": "1.4.2",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/mcaceresb/stata-gtools/8b1dc0501345220848c69fac7255dd0c5d381a96/docs/stata/gegen.sthlp",
       "help_topics": [
         "maintainer_gegen"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/maintainer_gegen_8b1dc050.sthlp",
+          "source_path": "data/command_help_sources/maintainer_gegen_8b1dc050.sthlp",
           "source_sha256": "94f4077fc889dc6b1a73f0e8fdee6e0ebd3048ec027f1fefacecc269217f4805"
         }
       ],
@@ -1258,9 +1146,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -1286,9 +1171,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -1314,9 +1196,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -1342,9 +1221,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 2,
       "related_online_sources": []
     },
     {
@@ -1352,15 +1228,15 @@
       "command": "greshape",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer_stata_help",
       "source_version": "0.5.0",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/mcaceresb/stata-gtools/8b1dc0501345220848c69fac7255dd0c5d381a96/docs/stata/greshape.sthlp",
       "help_topics": [
         "maintainer_greshape"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/maintainer_greshape_8b1dc050.sthlp",
+          "source_path": "data/command_help_sources/maintainer_greshape_8b1dc050.sthlp",
           "source_sha256": "01809c1a8715650c9ccaad4994d8eff91153c99ab009155d220decbe1a6d387d"
         }
       ],
@@ -1370,9 +1246,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -1380,9 +1253,9 @@
       "command": "gstats",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer_stata_help",
       "source_version": "0.4.0 + subcommand help",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/mcaceresb/stata-gtools/8b1dc0501345220848c69fac7255dd0c5d381a96/docs/stata/gstats.sthlp",
       "help_topics": [
         "maintainer_gstats_1",
         "maintainer_gstats_2",
@@ -1392,23 +1265,23 @@
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/maintainer_gstats_1_8b1dc050.sthlp",
+          "source_path": "data/command_help_sources/maintainer_gstats_1_8b1dc050.sthlp",
           "source_sha256": "5d668a6b5febda89097538036b5c082f339a92d0cbb87db2c0e70ad759cd61e6"
         },
         {
-          "source_path": "data/full_command_guides/sources/maintainer_gstats_2_8b1dc050.sthlp",
+          "source_path": "data/command_help_sources/maintainer_gstats_2_8b1dc050.sthlp",
           "source_sha256": "101cc9299ca53f7a1aeab736f9d7a4556731d6db78a5cf37ca74dfc46993a0b7"
         },
         {
-          "source_path": "data/full_command_guides/sources/maintainer_gstats_3_8b1dc050.sthlp",
+          "source_path": "data/command_help_sources/maintainer_gstats_3_8b1dc050.sthlp",
           "source_sha256": "6c5d66c9c7023a8a817be709e1275af65aa2d87fcf6e72e226063905f02beac1"
         },
         {
-          "source_path": "data/full_command_guides/sources/maintainer_gstats_4_8b1dc050.sthlp",
+          "source_path": "data/command_help_sources/maintainer_gstats_4_8b1dc050.sthlp",
           "source_sha256": "57ebaf04dbc4ce4bc300e4e6f1814a0a8d30b16175766c476e502beeabe186a1"
         },
         {
-          "source_path": "data/full_command_guides/sources/maintainer_gstats_5_8b1dc050.sthlp",
+          "source_path": "data/command_help_sources/maintainer_gstats_5_8b1dc050.sthlp",
           "source_sha256": "b73d2bbe544377241cbe2d13a2118d50b669636d99ae3e5d687f091578985e31"
         }
       ],
@@ -1418,9 +1291,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -1428,15 +1298,15 @@
       "command": "gquantiles",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer_stata_help",
       "source_version": "1.0.2",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/mcaceresb/stata-gtools/8b1dc0501345220848c69fac7255dd0c5d381a96/docs/stata/gquantiles.sthlp",
       "help_topics": [
         "maintainer_gquantiles"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/maintainer_gquantiles_8b1dc050.sthlp",
+          "source_path": "data/command_help_sources/maintainer_gquantiles_8b1dc050.sthlp",
           "source_sha256": "e7ececc37f085bcfd290cc03906830cbbcccbb8568d8373f6ed7665da759d7d2"
         }
       ],
@@ -1446,9 +1316,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -1474,9 +1341,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 1,
       "related_online_sources": []
     },
     {
@@ -1502,9 +1366,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -1530,9 +1391,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -1558,9 +1416,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -1586,9 +1441,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 1,
       "related_online_sources": []
     },
     {
@@ -1596,15 +1448,15 @@
       "command": "ivreg2",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer/SSC package help",
       "source_version": "30July2015 help file; SSC record revised 14 Aug 2024",
-      "source_url": null,
+      "source_url": "https://ideas.repec.org/c/boc/bocode/s425401.html",
       "help_topics": [
         "ivreg2-ssc"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/ivreg2-ssc-20260829.sthlp",
+          "source_path": "data/command_help_sources/ivreg2-ssc-20260829.sthlp",
           "source_sha256": "c387f5d743111ed76578d19b6f130adb71cdca9cfe1d5f4432ceeed1b6c06848"
         }
       ],
@@ -1614,9 +1466,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 1,
       "related_online_sources": []
     },
     {
@@ -1652,7 +1501,7 @@
           "source_sha256": "f2974e939a02810a90d125333e703ef253532d527fadaa918b7e858e3981b281"
         },
         {
-          "source_path": "data/full_command_guides/sources/stata19_displayopts_list.ihlp",
+          "source_path": "Stata18/ado/base/d/displayopts_list.ihlp",
           "source_sha256": "46d2d0c7d6970a22e17897f3eee247f3229edb52328967dc377d02659d525a83"
         },
         {
@@ -1666,9 +1515,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -1676,15 +1522,15 @@
       "command": "ivreghdfe",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer repository raw Stata help",
       "source_version": "1.1.4 29nov2025",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/sergiocorreia/ivreghdfe/bfb5577a6dbdfb029ab4ab6a7e93f7257a827b42/src/ivreghdfe.sthlp",
       "help_topics": [
         "ivreghdfe"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/ivreghdfe-bfb5577a6dbdfb029ab4ab6a7e93f7257a827b42.sthlp",
+          "source_path": "data/command_help_sources/ivreghdfe-bfb5577a6dbdfb029ab4ab6a7e93f7257a827b42.sthlp",
           "source_sha256": "3cf9edb0918df56176bc433e737f090f9008d47efaf001e897ebd4cb63bacda8"
         }
       ],
@@ -1694,9 +1540,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 2,
       "related_online_sources": []
     },
     {
@@ -1704,15 +1547,15 @@
       "command": "jwdid",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer repository raw Stata help",
       "source_version": "2.0 May_4_2024",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/friosavila/stpackages/738defceb5413face7051754b259c82798c67e52/jwdid/jwdid.sthlp",
       "help_topics": [
         "jwdid"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/jwdid-738defceb5413.sthlp",
+          "source_path": "data/command_help_sources/jwdid-738defceb5413.sthlp",
           "source_sha256": "e072c2d66b2bade526c9314cd4aafd48dcb33ca2c7706cd5b001f14a7c3e0a8b"
         }
       ],
@@ -1722,9 +1565,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 2,
       "related_online_sources": []
     },
     {
@@ -1745,9 +1585,6 @@
       "limitations": [
         "No authoritative Stata help source is stored for this command."
       ],
-      "full_manual_available": false,
-      "paper_examples_available": true,
-      "paper_example_count": 1,
       "related_online_sources": []
     },
     {
@@ -1755,7 +1592,7 @@
       "command": "jregress",
       "help_status": "unavailable",
       "authority": "maintainer or package documentation",
-      "source_kind": "help unavailable; full manual retained",
+      "source_kind": "help unavailable; author supplement retained",
       "source_version": "PDF creation metadata 20 Jul 2024; Zenodo record 17712099, no formal PDF version label",
       "source_url": null,
       "help_topics": [],
@@ -1768,9 +1605,6 @@
       "limitations": [
         "No authoritative Stata help source is stored for this command."
       ],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -1796,9 +1630,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -1824,9 +1655,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 1,
       "related_online_sources": []
     },
     {
@@ -1866,7 +1694,7 @@
           "source_sha256": "6f45d5d9a31a3d75ec42dbe225d9b2758ab3f034f2f325ca1bb97a0931d7abe7"
         },
         {
-          "source_path": "data/full_command_guides/sources/stata19_displayopts_list.ihlp",
+          "source_path": "Stata18/ado/base/d/displayopts_list.ihlp",
           "source_sha256": "46d2d0c7d6970a22e17897f3eee247f3229edb52328967dc377d02659d525a83"
         },
         {
@@ -1880,9 +1708,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -1922,7 +1747,7 @@
           "source_sha256": "6f45d5d9a31a3d75ec42dbe225d9b2758ab3f034f2f325ca1bb97a0931d7abe7"
         },
         {
-          "source_path": "data/full_command_guides/sources/stata19_displayopts_list.ihlp",
+          "source_path": "Stata18/ado/base/d/displayopts_list.ihlp",
           "source_sha256": "46d2d0c7d6970a22e17897f3eee247f3229edb52328967dc377d02659d525a83"
         },
         {
@@ -1936,9 +1761,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -1964,9 +1786,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -2000,9 +1819,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 1,
       "related_online_sources": []
     },
     {
@@ -2028,9 +1844,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -2056,9 +1869,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 1,
       "related_online_sources": []
     },
     {
@@ -2098,7 +1908,7 @@
           "source_sha256": "6f45d5d9a31a3d75ec42dbe225d9b2758ab3f034f2f325ca1bb97a0931d7abe7"
         },
         {
-          "source_path": "data/full_command_guides/sources/stata19_displayopts_list.ihlp",
+          "source_path": "Stata18/ado/base/d/displayopts_list.ihlp",
           "source_sha256": "46d2d0c7d6970a22e17897f3eee247f3229edb52328967dc377d02659d525a83"
         },
         {
@@ -2112,9 +1922,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -2122,15 +1929,15 @@
       "command": "outreg2",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer-distributed raw help",
       "source_version": "not_declared_in_selected_raw_help",
-      "source_url": null,
+      "source_url": "https://ideas.repec.org/c/boc/bocode/s425401.html",
       "help_topics": [
         "outreg2_ssc_retrieved_2026-08-28"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/outreg2_ssc_retrieved_2026-08-28.hlp",
+          "source_path": "data/command_help_sources/outreg2_ssc_retrieved_2026-08-28.hlp",
           "source_sha256": "64b57f0b0c4bdc36a382e9edfc5887e4095b5e1c372edbd7b1f651370a8167fe"
         }
       ],
@@ -2140,9 +1947,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 4,
       "related_online_sources": []
     },
     {
@@ -2182,7 +1986,7 @@
           "source_sha256": "6f45d5d9a31a3d75ec42dbe225d9b2758ab3f034f2f325ca1bb97a0931d7abe7"
         },
         {
-          "source_path": "data/full_command_guides/sources/stata19_displayopts_list.ihlp",
+          "source_path": "Stata18/ado/base/d/displayopts_list.ihlp",
           "source_sha256": "46d2d0c7d6970a22e17897f3eee247f3229edb52328967dc377d02659d525a83"
         },
         {
@@ -2196,9 +2000,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -2206,15 +2007,15 @@
       "command": "ppmlhdfe",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer raw .sthlp/SMCL",
       "source_version": "2.3.4 11jan2025",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/sergiocorreia/ppmlhdfe/b85665d8f674e93c1e07446a9a2b29be7f797910/src/ppmlhdfe.sthlp",
       "help_topics": [
         "ppmlhdfe"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/ppmlhdfe_b85665d8f674e93c1e07446a9a2b29be7f797910.sthlp",
+          "source_path": "data/command_help_sources/ppmlhdfe_b85665d8f674e93c1e07446a9a2b29be7f797910.sthlp",
           "source_sha256": "28baa95bd5b6d2887736d1fe334edec95f40f9defdc1cb87ff70b0e22da8ea30"
         }
       ],
@@ -2224,9 +2025,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -2256,9 +2054,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -2266,15 +2061,15 @@
       "command": "psmatch2",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer raw .sthlp/SMCL",
       "source_version": "not_declared_in_selected_raw_help",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/eleuven/psmatch2/cfb54e6d3156ac9851af3979d4b33b27c86aad03/psmatch2.sthlp",
       "help_topics": [
         "psmatch2"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/psmatch2_cfb54e6d3156ac9851af3979d4b33b27c86aad03.sthlp",
+          "source_path": "data/command_help_sources/psmatch2_cfb54e6d3156ac9851af3979d4b33b27c86aad03.sthlp",
           "source_sha256": "d98b1988bad8e294a4c34360ba74fcf2c863b947b08bd991dd2f79cc0dd92c2f"
         }
       ],
@@ -2284,9 +2079,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -2294,15 +2086,15 @@
       "command": "pstest",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer raw .sthlp/SMCL",
       "source_version": "not_declared_in_selected_raw_help",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/eleuven/psmatch2/cfb54e6d3156ac9851af3979d4b33b27c86aad03/pstest.sthlp",
       "help_topics": [
         "pstest"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/pstest_cfb54e6d3156ac9851af3979d4b33b27c86aad03.sthlp",
+          "source_path": "data/command_help_sources/pstest_cfb54e6d3156ac9851af3979d4b33b27c86aad03.sthlp",
           "source_sha256": "d7e1c24c44408cb6a5d54c6bf78bccdd954e4baa6a574c4366e30cb0c5ca3b61"
         }
       ],
@@ -2312,9 +2104,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -2354,7 +2143,7 @@
           "source_sha256": "6f45d5d9a31a3d75ec42dbe225d9b2758ab3f034f2f325ca1bb97a0931d7abe7"
         },
         {
-          "source_path": "data/full_command_guides/sources/stata19_displayopts_list.ihlp",
+          "source_path": "Stata18/ado/base/d/displayopts_list.ihlp",
           "source_sha256": "46d2d0c7d6970a22e17897f3eee247f3229edb52328967dc377d02659d525a83"
         },
         {
@@ -2368,9 +2157,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 1,
       "related_online_sources": []
     },
     {
@@ -2452,9 +2238,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 2,
       "related_online_sources": []
     },
     {
@@ -2462,19 +2245,19 @@
       "command": "qddml",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer raw .sthlp/SMCL",
       "source_version": "30aug2024",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/aahrens1/ddml/6313ba3e1b9fb595325cf0336e86d3f7434373c6/qddml.sthlp",
       "help_topics": [
         "qddml"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/qddml_6313ba3e1b9fb595325cf0336e86d3f7434373c6.sthlp",
+          "source_path": "data/command_help_sources/qddml_6313ba3e1b9fb595325cf0336e86d3f7434373c6.sthlp",
           "source_sha256": "296a75f61d2170be4328dc17a5c45a0e163fe024ca94b1c88b1b5dc345232f86"
         },
         {
-          "source_path": "data/full_command_guides/sources/ddml_install_ref_auth-6313ba3e1b9fb595325cf0336e86d3f7434373c6.ihlp",
+          "source_path": "data/command_help_sources/ddml_install_ref_auth-6313ba3e1b9fb595325cf0336e86d3f7434373c6.ihlp",
           "source_sha256": "042a75022d5baf14fcc4c8d3d8df0db90e5044be5da98aede9e09dd0b9706ce9"
         }
       ],
@@ -2484,9 +2267,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -2494,15 +2274,15 @@
       "command": "rangestat",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer-distributed raw help",
       "source_version": "not_declared_in_selected_raw_help",
-      "source_url": null,
+      "source_url": "https://ideas.repec.org/c/boc/bocode/s458161.html",
       "help_topics": [
         "rangestat_ssc_retrieved_2026-08-28"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/rangestat_ssc_retrieved_2026-08-28.sthlp",
+          "source_path": "data/command_help_sources/rangestat_ssc_retrieved_2026-08-28.sthlp",
           "source_sha256": "afa347a892c82f410359bc0a35631c08273c821d9013712c97ee735ade8862e1"
         }
       ],
@@ -2512,9 +2292,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -2522,15 +2299,15 @@
       "command": "rdbwselect",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer raw .sthlp/SMCL",
       "source_version": "11.1.0  2026-05-22",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/rdpackages/rdrobust/7dd25671b8f28fc8618b1b7aa4a981564ee53f75/stata/rdbwselect.sthlp",
       "help_topics": [
         "rdbwselect"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/rdbwselect_7dd25671b8f28fc8618b1b7aa4a981564ee53f75.sthlp",
+          "source_path": "data/command_help_sources/rdbwselect_7dd25671b8f28fc8618b1b7aa4a981564ee53f75.sthlp",
           "source_sha256": "8584942234dd5b723881d0557fdfbf476e515faa2d0799caf99eac12a38cc745"
         }
       ],
@@ -2540,9 +2317,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -2550,15 +2324,15 @@
       "command": "rdplot",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer raw .sthlp/SMCL",
       "source_version": "11.1.0  2026-05-22",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/rdpackages/rdrobust/7dd25671b8f28fc8618b1b7aa4a981564ee53f75/stata/rdplot.sthlp",
       "help_topics": [
         "rdplot"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/rdplot_7dd25671b8f28fc8618b1b7aa4a981564ee53f75.sthlp",
+          "source_path": "data/command_help_sources/rdplot_7dd25671b8f28fc8618b1b7aa4a981564ee53f75.sthlp",
           "source_sha256": "41aa4f40af4d7f3d9de6cd78e449cf9c2b0e519ebfd20e629e87d85ba669fa74"
         }
       ],
@@ -2568,9 +2342,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -2578,15 +2349,15 @@
       "command": "rdrobust",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer raw .sthlp/SMCL",
       "source_version": "11.1.0  2026-05-22",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/rdpackages/rdrobust/7dd25671b8f28fc8618b1b7aa4a981564ee53f75/stata/rdrobust.sthlp",
       "help_topics": [
         "rdrobust"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/rdrobust_7dd25671b8f28fc8618b1b7aa4a981564ee53f75.sthlp",
+          "source_path": "data/command_help_sources/rdrobust_7dd25671b8f28fc8618b1b7aa4a981564ee53f75.sthlp",
           "source_sha256": "6bd246cc9c9d3395862c6584bba24e86f355bef012560ac9a3ebbeb17008e7b3"
         }
       ],
@@ -2596,9 +2367,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 2,
       "related_online_sources": []
     },
     {
@@ -2628,9 +2396,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -2680,9 +2445,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -2690,19 +2452,19 @@
       "command": "reghdfe",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer_stata_help",
       "source_version": "6.14.1 08Jul2026",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/sergiocorreia/reghdfe/29b2b203f534413369d675d0c0f674d61291f536/current-code/reghdfe.sthlp",
       "help_topics": [
         "reghdfe"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/reghdfe-29b2b203-sergiocorreia.sthlp",
+          "source_path": "data/command_help_sources/reghdfe-29b2b203-sergiocorreia.sthlp",
           "source_sha256": "5c99c4d0b34eebe53d6f1158ba093d693cf4d0c74a3f7eb9603c6b0972b072c1"
         },
         {
-          "source_path": "data/full_command_guides/sources/stata19_displayopts_list.ihlp",
+          "source_path": "Stata18/ado/base/d/displayopts_list.ihlp",
           "source_sha256": "46d2d0c7d6970a22e17897f3eee247f3229edb52328967dc377d02659d525a83"
         }
       ],
@@ -2712,9 +2474,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 2,
       "related_online_sources": []
     },
     {
@@ -2740,9 +2499,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 2,
       "related_online_sources": []
     },
     {
@@ -2772,9 +2528,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 1,
       "related_online_sources": []
     },
     {
@@ -2782,15 +2535,15 @@
       "command": "ritest",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer_stata_help",
       "source_version": "1.1.8 mar2021",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/simonheb/ritest/201cad88ba9abd847a49ab9a432a3450b2b3d3db/ritest.sthlp",
       "help_topics": [
         "ritest-1.1.18-simonheb"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/ritest-1.1.18-simonheb.sthlp",
+          "source_path": "data/command_help_sources/ritest-1.1.18-simonheb.sthlp",
           "source_sha256": "6ea86ae6cfe6ce3d39edfbfedc673dd8be0fcf7d42c7437eefe8fa6e92ed37a5"
         }
       ],
@@ -2800,9 +2553,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -2828,9 +2578,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -2838,15 +2585,15 @@
       "command": "sdid",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer_stata_help",
       "source_version": "2.0.3 May 14, 2025",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/Daniel-Pailanir/sdid/7f06fd7200a80527682840f717f874e3b37e40e8/sdid.sthlp",
       "help_topics": [
         "sdid"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/sdid-7f06fd7-daniel-pailanir.sthlp",
+          "source_path": "data/command_help_sources/sdid-7f06fd7-daniel-pailanir.sthlp",
           "source_sha256": "0dd7d62cd6076dccb9a24e942dcf8ba14d6cfed39b0e0bf6ef7f90ff85562c66"
         }
       ],
@@ -2856,9 +2603,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -2866,15 +2610,15 @@
       "command": "stackedev",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer_stata_help",
       "source_version": "1.1 18dec2021",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/joshbleiberg/stackedev/0da36312e96e0e3530c5168b4767829350756b9e/stackedev.sthlp",
       "help_topics": [
         "stackedev"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/stackedev-0da3631-joshbleiberg.sthlp",
+          "source_path": "data/command_help_sources/stackedev-0da3631-joshbleiberg.sthlp",
           "source_sha256": "19ca7395b63e26348a6e94e0efe0d2e928449a763b2a5d08377b2fa1527e51bc"
         }
       ],
@@ -2884,9 +2628,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -2918,7 +2659,7 @@
           "source_sha256": "abfa0c99d11a297c0fd0a6624a823e14b36c645bb63fc6183fa5d8dc736d0767"
         },
         {
-          "source_path": "data/full_command_guides/sources/stata19_displayopts_list.ihlp",
+          "source_path": "Stata18/ado/base/d/displayopts_list.ihlp",
           "source_sha256": "46d2d0c7d6970a22e17897f3eee247f3229edb52328967dc377d02659d525a83"
         },
         {
@@ -2932,9 +2673,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -2960,9 +2698,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -2988,9 +2723,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 1,
       "related_online_sources": []
     },
     {
@@ -3032,9 +2764,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -3060,9 +2789,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 2,
       "related_online_sources": []
     },
     {
@@ -3088,9 +2814,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -3116,9 +2839,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 2,
       "related_online_sources": []
     },
     {
@@ -3144,9 +2864,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 2,
       "related_online_sources": []
     },
     {
@@ -3172,9 +2889,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -3200,9 +2914,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 2,
       "related_online_sources": []
     },
     {
@@ -3228,9 +2939,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 2,
       "related_online_sources": []
     },
     {
@@ -3256,9 +2964,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 1,
       "related_online_sources": []
     },
     {
@@ -3284,9 +2989,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 2,
       "related_online_sources": []
     },
     {
@@ -3312,9 +3014,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
       "related_online_sources": []
     },
     {
@@ -3322,15 +3021,15 @@
       "command": "winsor2",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer/SSC package help",
       "source_version": "2.0 2020/11/24",
-      "source_url": null,
+      "source_url": "https://ideas.repec.org/c/boc/bocode/s457765.html",
       "help_topics": [
         "winsor2-ssc"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/winsor2-ssc-20260829.sthlp",
+          "source_path": "data/command_help_sources/winsor2-ssc-20260829.sthlp",
           "source_sha256": "b3d6cb9e00fd84dd1faef142ac58d35e5cca22400ec9acdff858312d00d55995"
         }
       ],
@@ -3340,9 +3039,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 2,
       "related_online_sources": []
     },
     {
@@ -3374,7 +3070,7 @@
           "source_sha256": "995d83a151110ba415e3ce5f179e40a7e26244e34b884120fc39e2f1b80da161"
         },
         {
-          "source_path": "data/full_command_guides/sources/stata19_displayopts_list.ihlp",
+          "source_path": "Stata18/ado/base/d/displayopts_list.ihlp",
           "source_sha256": "46d2d0c7d6970a22e17897f3eee247f3229edb52328967dc377d02659d525a83"
         },
         {
@@ -3388,9 +3084,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 1,
       "related_online_sources": []
     },
     {
@@ -3399,7 +3092,7 @@
       "help_status": "available",
       "authority": "StataCorp official",
       "source_kind": "installed official Stata help",
-      "source_version": "Stata 18",
+      "source_version": "Stata 18 installation with explicitly marked StataNow features",
       "source_url": null,
       "help_topics": [
         "xtreg"
@@ -3442,7 +3135,7 @@
           "source_sha256": "603745f5c8f094d5dd3cd434c032b7b94bc3db57c2cc2e2a8381c3a365e93b9b"
         },
         {
-          "source_path": "data/full_command_guides/sources/stata19_displayopts_list.ihlp",
+          "source_path": "Stata18/ado/base/d/displayopts_list.ihlp",
           "source_sha256": "46d2d0c7d6970a22e17897f3eee247f3229edb52328967dc377d02659d525a83"
         },
         {
@@ -3463,10 +3156,9 @@
       "content_format": "plain_text",
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
-      "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 3,
+      "limitations": [
+        "This installed Stata 18 entry includes options explicitly marked as StataNow-only. Do not use those options unless the active Stata environment provides StataNow features."
+      ],
       "related_online_sources": []
     },
     {
@@ -3492,9 +3184,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 2,
       "related_online_sources": []
     },
     {
@@ -3502,15 +3191,15 @@
       "command": "xtabond2",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer repository raw Stata help",
       "source_version": "repository commit a694533e395b0277ee2fffbde00a7111357c524f",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/droodman/xtabond2/a694533e395b0277ee2fffbde00a7111357c524f/xtabond2.hlp",
       "help_topics": [
         "xtabond2"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/xtabond2-a694533e395b0277ee2fffbde00a7111357c524f.hlp",
+          "source_path": "data/command_help_sources/xtabond2-a694533e395b0277ee2fffbde00a7111357c524f.hlp",
           "source_sha256": "5e3f02ab31aa177003cf3a42d77c7b7f6218debcd229bfe3eee9ece58c3b81c1"
         }
       ],
@@ -3520,9 +3209,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     },
     {
@@ -3530,15 +3216,15 @@
       "command": "asdoc",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer/SSC package help",
       "source_version": "2.3.9.5; April 10, 2021",
-      "source_url": null,
+      "source_url": "https://ideas.repec.org/c/boc/bocode/s458279.html",
       "help_topics": [
         "asdoc-ssc"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/asdoc-ssc-20260829.sthlp",
+          "source_path": "data/command_help_sources/asdoc-ssc-20260829.sthlp",
           "source_sha256": "bee4550593160293c23e3b414b3db8d9890b23f7057cf65ea06bb92e4d9b1d52"
         }
       ],
@@ -3548,9 +3234,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 1,
       "related_online_sources": []
     },
     {
@@ -3558,15 +3241,15 @@
       "command": "fcollapse",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer repository raw Stata help",
       "source_version": "2.49.0 06may2022",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/sergiocorreia/ftools/7b3663e49ea5c5b81638c55be29edf416e68e8b7/src/fcollapse.sthlp",
       "help_topics": [
         "fcollapse"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/fcollapse-7b3663e49ea5c5b81638c55be29edf416e68e8b7.sthlp",
+          "source_path": "data/command_help_sources/fcollapse-7b3663e49ea5c5b81638c55be29edf416e68e8b7.sthlp",
           "source_sha256": "3cfd14b325a16209b0d6c4276907f15f699bcada9168bb4ba7e4ac2026256402"
         }
       ],
@@ -3576,9 +3259,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": true,
-      "paper_example_count": 1,
       "related_online_sources": []
     },
     {
@@ -3586,15 +3266,15 @@
       "command": "fmerge",
       "help_status": "available",
       "authority": "maintainer or package documentation",
-      "source_kind": "stored maintainer help",
+      "source_kind": "maintainer repository raw Stata help",
       "source_version": "2.10.0 3apr2017",
-      "source_url": null,
+      "source_url": "https://raw.githubusercontent.com/sergiocorreia/ftools/7b3663e49ea5c5b81638c55be29edf416e68e8b7/src/fmerge.sthlp",
       "help_topics": [
         "fmerge"
       ],
       "source_files": [
         {
-          "source_path": "data/full_command_guides/sources/fmerge-7b3663e49ea5c5b81638c55be29edf416e68e8b7.sthlp",
+          "source_path": "data/command_help_sources/fmerge-7b3663e49ea5c5b81638c55be29edf416e68e8b7.sthlp",
           "source_sha256": "db75a458e863fdb726e432419b6075e6192040aba30853df67b7afb1d49dd2a6"
         }
       ],
@@ -3604,9 +3284,6 @@
       "renderer": "Stata translate with translator(smcl2txt)",
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
-      "full_manual_available": true,
-      "paper_examples_available": false,
-      "paper_example_count": 0,
       "related_online_sources": []
     }
   ]

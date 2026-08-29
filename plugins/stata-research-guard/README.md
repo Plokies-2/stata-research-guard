@@ -56,24 +56,25 @@ help에 사용자가 하려는 행동이 모두 설명되어 있고, 그 설명�
 
 ### 3. 필요한 확장 문서와 논문 코드 확인
 
-help만으로 위 종료 조건을 만족하지 못하면 `expanded: true`를 보냅니다. 논문 profile도 도움이 될 때만 exact block ID를 함께 보냅니다. 문서만 더 읽으려면 `selected_block_ids`를 생략할 수 있습니다.
+help만으로 위 종료 조건을 만족하지 못하면 `expanded: true`를 보내되, 긴 문서가 실제로 필요한 command만 `expanded_commands`에 넣습니다. `selected_commands`는 Phase 2에서 고른 전체 명령 경계이고, `expanded_commands`는 그 안의 exact subset입니다. 논문 profile도 도움이 될 때만 exact block ID를 `selected_block_ids`로 함께 보냅니다. 문서만, 논문만, 둘을 함께 요청할 수 있지만 두 선택이 모두 비어 있을 수는 없습니다.
 
 ```json
 {
   "request": "패널 자료에서 개체 고정효과 모형을 추정한다.",
-  "selected_commands": ["xtreg"],
+  "selected_commands": ["xtreg", "margins"],
   "expanded": true,
+  "expanded_commands": ["xtreg"],
   "selected_block_ids": ["block-139-184-033"]
 }
 ```
 
-응답의 `expanded_command_evidence`에는 선택한 공식 명령의 Stata 18 PDF command entry가 들어갑니다. user-written 명령은 Phase 2 help와 원자료가 같으면 `same_source_as_help`로 표시하고 같은 글을 다시 주입하지 않습니다. `jregress`만 저자 PDF를 `supplemental`로 반환합니다.
+응답의 `expanded_command_evidence`에는 `expanded_commands`로 고른 명령만 들어갑니다. 위 예에서는 `margins`도 Phase 2의 선택 경계 안에 있지만 긴 문서는 `xtreg` 하나만 주입됩니다. 공식 명령은 Stata 18 PDF command entry를 반환합니다. user-written 명령은 Phase 2 help와 원자료가 같으면 `same_source_as_help`로 표시하고 같은 글을 다시 주입하지 않습니다. `jregress`만 저자 PDF를 `supplemental`로 반환합니다.
 
 `paper_usage_cards`는 선택한 원문 code span과 필요한 출처만 담는 얇은 카드입니다. parser 내부정보와 중복된 occurrence 전체를 되풀이하지 않습니다. 같은 논문 패키지에 직접 연결된 log나 artifact가 있으면 원문 excerpt와 직접 metadata만 포함하며, 없으면 빈 배열입니다. 매우 긴 nuisance-coefficient 표 하나는 자동 길이 제한이 아니라 사람이 고른 정확한 원문 행 범위로 줄였습니다.
 
 ## 자료를 읽는 기준
 
-Phase 2에서는 공식·maintainer help가 명령 문법의 첫 기준입니다. Phase 3의 공식 명령 확장문서는 설치된 Stata 18 PDF에서 command entry 전체를 뽑아 version을 맞췄습니다. 기존 Stata 19 원자료와 user-written maintainer 원문은 삭제하지 않았지만 request payload에는 중복 주입하지 않습니다. 논문 code와 log, `jregress` 저자 PDF는 실제 사용 맥락을 돕는 보충자료이며 문법 근거를 대신하지 않습니다.
+Phase 2에서는 공식·maintainer help가 명령 문법의 첫 기준입니다. Phase 3의 공식 명령 확장문서는 설치된 Stata 18 PDF에서 command entry 전체를 뽑아 version을 맞췄습니다. help와 확장문서에 StataNow-only로 표시된 기능은 현재 환경이 해당 StataNow 기능을 제공할 때만 사용합니다. 다시 빌드하는 데 필요한 maintainer 원문과 `jregress` 보충자료는 작은 source catalog로 보존하고, 요청과 빌드에 쓰지 않는 이전 Stata 19 PDF·중복 정리본은 번들에 두지 않습니다. 논문 code와 log, `jregress` 저자 PDF는 실제 사용 맥락을 돕는 보충자료이며 문법 근거를 대신하지 않습니다.
 
 논문 코드는 실제 연구자가 그 명령을 어떻게 사용했는지 보여 주는 고품질 참고 예시입니다. 현재 프로젝트의 표본과 회귀 사양을 대신하는 template은 아닙니다. 예를 들어 `outreg2` 예시 주변에 `areg`나 `reghdfe`가 있더라도, 현재 모형이 `regress`라면 estimator는 그대로 두고 `outreg2` 사용 부분만 참고합니다.
 
@@ -92,7 +93,7 @@ Phase 2에서는 공식·maintainer help가 명령 문법의 첫 기준입니다
 
 ## 개발 확인
 
-플러그인을 수정한 뒤에는 MCP 응답과 bundle 구성이 정상인지 다음 명령으로 확인합니다. help 원자료를 다시 렌더링할 때는 `scripts/build_command_help_guides.cjs`가 Stata용 do-file을 준비하고, 그 do-file을 mcpStata에서 실행한 뒤 같은 스크립트의 `finalize` 단계로 index를 갱신합니다. Stata 18 PDF 원문을 다시 추출할 때는 Poppler `-layout` text를 준비한 뒤 `scripts/build_expanded_command_guides.py`에 해당 폴더를 넘깁니다.
+플러그인을 수정한 뒤에는 MCP 응답과 bundle 구성이 정상인지 다음 명령으로 확인합니다. `data/command_source_catalog.json`은 109개 명령의 Stata manual code와 보존할 maintainer 원문을 연결합니다. help를 다시 렌더링할 때는 `scripts/build_command_help_guides.cjs`가 이 catalog에서 Stata용 do-file을 준비하고, 그 do-file을 mcpStata에서 실행한 뒤 같은 스크립트의 `finalize` 단계로 index를 갱신합니다. Stata 18 PDF 원문을 다시 추출할 때는 Poppler `-layout` text를 준비한 뒤 `scripts/build_expanded_command_guides.py`에 해당 폴더를 넘깁니다.
 
 ```powershell
 node --test tests/server.test.cjs

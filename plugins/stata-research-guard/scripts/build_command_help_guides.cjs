@@ -23,8 +23,7 @@ const path = require("node:path");
 const PLUGIN_ROOT = path.resolve(__dirname, "..");
 const DATA_ROOT = path.join(PLUGIN_ROOT, "data");
 const REGISTRY_PATH = path.join(DATA_ROOT, "command_registry.json");
-const FULL_GUIDES_PATH = path.join(DATA_ROOT, "full_command_guides.json");
-const PAPER_PROFILES_PATH = path.join(DATA_ROOT, "paper_example_profiles.jsonl");
+const SOURCE_CATALOG_PATH = path.join(DATA_ROOT, "command_source_catalog.json");
 const OUTPUT_INDEX_PATH = path.join(DATA_ROOT, "command_help_guides.json");
 const OUTPUT_CONTENT_DIR = path.join(DATA_ROOT, "command_help_guides");
 
@@ -74,15 +73,9 @@ const COLLECT_STYLE_ONLINE_SOURCES = [
   },
 ];
 
-const EXTERNAL_HELP_SOURCES = new Map([
-  ["cgmreg", {
-    source_file: "command_help_sources/cgmreg-jacaskey-1e3006e54d51ebf75077e0f969367bb4b4250cb9.hlp",
-    authority: "maintainer-distributed command help",
-    source_kind: "public maintained distribution help",
-    source_version: "cgmreg help 1.0.0; repository commit 1e3006e54d51ebf75077e0f969367bb4b4250cb9",
-    source_url: "https://github.com/jacaskey/Stata-code/blob/1e3006e54d51ebf75077e0f969367bb4b4250cb9/Estimating-Equations/cgmreg.hlp",
-    limitation: "This help accompanies Judson Caskey's maintained distribution, not the original authors' archived cgmreg.ado alone.",
-  }],
+const STATANOW_LIMITATIONS = new Map([
+  ["areg", "This installed Stata 18 entry includes options explicitly marked as StataNow-only. Do not use those options unless the active Stata environment provides StataNow features."],
+  ["xtreg", "This installed Stata 18 entry includes options explicitly marked as StataNow-only. Do not use those options unless the active Stata environment provides StataNow features."],
 ]);
 
 function readUtf8(file) {
@@ -100,10 +93,6 @@ function readHelpText(file) {
 
 function readJson(file) {
   return JSON.parse(readUtf8(file));
-}
-
-function readJsonl(file) {
-  return readUtf8(file).split(/\r?\n/).filter((line) => line.trim()).map(JSON.parse);
 }
 
 function sha256(bytes) {
@@ -145,9 +134,9 @@ function buildInstalledHelpMap(stataBase) {
   return map;
 }
 
-function buildMaintainerHelpMap(fullGuides) {
+function buildMaintainerHelpMap(sourceCatalog) {
   const map = new Map();
-  for (const guide of fullGuides) {
+  for (const guide of sourceCatalog) {
     for (const source of [guide, ...(guide.supplemental_sources || [])]) {
       if (!source.source_file || !/\.(?:sthlp|hlp|ihlp)$/i.test(source.source_file)) continue;
       const absolute = path.join(DATA_ROOT, ...source.source_file.split("/"));
@@ -158,10 +147,6 @@ function buildMaintainerHelpMap(fullGuides) {
       }
       addSourceKeys(map, absolute, aliases);
     }
-  }
-  for (const source of EXTERNAL_HELP_SOURCES.values()) {
-    const absolute = path.join(DATA_ROOT, ...source.source_file.split("/"));
-    addSourceKeys(map, absolute, [path.basename(new URL(source.source_url).pathname)]);
   }
   return map;
 }
@@ -248,38 +233,35 @@ function prepare({ workDir, stataBase }) {
   fs.mkdirSync(path.join(workDir, "rendered"), { recursive: true });
 
   const registry = readJson(REGISTRY_PATH);
-  const fullGuides = readJson(FULL_GUIDES_PATH).guides;
-  const fullByCommand = new Map(fullGuides.map((row) => [row.command, row]));
-  const profilesByCommand = new Map();
-  for (const row of readJsonl(PAPER_PROFILES_PATH)) {
-    profilesByCommand.set(row.focus_command, (profilesByCommand.get(row.focus_command) || 0) + 1);
-  }
+  const sourceCatalog = readJson(SOURCE_CATALOG_PATH).commands;
+  const sourcesByCommand = new Map(sourceCatalog.map((row) => [row.command, row]));
   const installedMap = buildInstalledHelpMap(stataBase);
-  const localMap = buildMaintainerHelpMap(fullGuides);
+  const localMap = buildMaintainerHelpMap(sourceCatalog);
   const records = [];
   let componentIndex = 0;
 
   for (const commandRow of registry.commands) {
     const command = commandRow.command;
-    const guide = fullByCommand.get(command);
+    const guide = sourcesByCommand.get(command);
     const record = {
       command,
       authority: guide?.authority || null,
       source_kind: null,
       source_version: null,
+      source_url: guide?.source_url || null,
       help_status: "unavailable",
       help_topics: [],
       components: [],
-      limitations: [],
-      full_manual_available: Boolean(guide),
-      paper_examples_available: profilesByCommand.has(command),
-      paper_example_count: profilesByCommand.get(command) || 0,
+      limitations: [...(guide?.limitations || [])],
       related_online_sources: [],
     };
 
     if (guide?.authority?.startsWith("StataCorp")) {
       record.source_kind = "installed official Stata help";
-      record.source_version = "Stata 18";
+      record.source_version = STATANOW_LIMITATIONS.has(command)
+        ? "Stata 18 installation with explicitly marked StataNow features"
+        : "Stata 18";
+      if (STATANOW_LIMITATIONS.has(command)) record.limitations.push(STATANOW_LIMITATIONS.get(command));
       const topics = topicsForOfficial(command);
       for (const topic of topics) {
         const source = installedMap.get(topic.toLowerCase());
@@ -298,7 +280,7 @@ function prepare({ workDir, stataBase }) {
         record.help_status = "available";
       }
     } else if (guide && /\.(?:sthlp|hlp|ihlp)$/i.test(guide.source_file || "")) {
-      record.source_kind = "stored maintainer help";
+      record.source_kind = guide.source_kind || "stored maintainer help";
       record.source_version = guide.source_version || null;
       const sources = [path.join(DATA_ROOT, ...guide.source_file.split("/"))];
       if (command === "gstats") {
@@ -314,19 +296,9 @@ function prepare({ workDir, stataBase }) {
         record.components.push(componentPlan(label, source, workDir, localMap, installedMap, stataBase, componentIndex++));
       }
       record.help_status = record.components.length > 0 ? "available" : "unavailable";
-    } else if (EXTERNAL_HELP_SOURCES.has(command)) {
-      const source = EXTERNAL_HELP_SOURCES.get(command);
-      const absolute = path.join(DATA_ROOT, ...source.source_file.split("/"));
-      record.authority = source.authority;
-      record.source_kind = source.source_kind;
-      record.source_version = source.source_version;
-      record.help_topics.push(command);
-      record.components.push(componentPlan(command, absolute, workDir, localMap, installedMap, stataBase, componentIndex++));
-      record.help_status = "available";
-      record.limitations.push(source.limitation);
     } else {
-      record.source_kind = guide ? "help unavailable; full manual retained" : "help unavailable";
-      record.source_version = guide?.source_version || null;
+      record.source_kind = guide?.expanded_source ? "help unavailable; author supplement retained" : "help unavailable";
+      record.source_version = guide?.expanded_source?.source_version || null;
       record.limitations.push("No authoritative Stata help source is stored for this command.");
     }
 
@@ -397,7 +369,7 @@ function finalize({ workDir }) {
       authority: record.authority,
       source_kind: record.source_kind,
       source_version: record.source_version,
-      source_url: EXTERNAL_HELP_SOURCES.get(record.command)?.source_url || null,
+      source_url: record.source_url,
       help_topics: record.help_topics,
       source_files: record.components.flatMap((component) => component.source_files),
       content_file: contentFile,
@@ -406,9 +378,6 @@ function finalize({ workDir }) {
       renderer: plan.renderer,
       renderer_options: plan.renderer_options,
       limitations: [...new Set(record.limitations)],
-      full_manual_available: record.full_manual_available,
-      paper_examples_available: record.paper_examples_available,
-      paper_example_count: record.paper_example_count,
       related_online_sources: record.related_online_sources,
     });
   }

@@ -1,9 +1,12 @@
 # Changelog
 
-## 2026-08-30 — Stata 18 combined expanded context
+## 2026-08-30 — Stata 18 selective combined expanded context
 
-- Added combined Phase 3 with `expanded: true`: it returns selected commands' expanded documentation and optional exact paper blocks in one call, while the model retains both expansion and block-selection judgment.
+- Added `expanded_commands` as an exact subset of `selected_commands`, so combined Phase 3 returns whole documentation only for commands the model explicitly expands; paper-only, documentation-only, and combined requests remain separate choices in the same call.
+- Removed the declared MCP `outputSchema` because the server deliberately returns large JSON payloads as text content rather than `structuredContent`.
 - Replaced request-time Stata 19 official manuals with 63 whole command entries extracted from the PDF manuals installed with Stata 18. User-written maintainer help is not duplicated; `jregress` keeps its author PDF only as a syntax-limited supplement.
+- Marked the installed `areg` and `xtreg` help and manual entries as containing explicitly labeled StataNow-only features, which must not be treated as base Stata 18 options.
+- Replaced the 25 MB legacy full-guide corpus with a compact 109-command source catalog, the maintainer help sources needed to rebuild Phase 2, and the retained `jregress` supplement.
 - Marked all 19 Stata 18 `collect style` topics available for the Stata 18 target and kept later Stata 19-only `smcl` and `txt` topics out of the target grammar.
 - Slimmed paper cards to exact code, line spans, source provenance, and optional raw log/artifact excerpts. Removed duplicated parser occurrence structures from the payload and manually narrowed one 510-row nuisance-coefficient log to exact focal source ranges without an automatic length cutoff.
 - Defined a permissive model-side expansion rule: stop after help only when every requested action is explained, the code follows directly and is not difficult, and no material version, option interaction, returned-result, or downstream-interface issue remains.
