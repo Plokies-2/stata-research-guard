@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.3.0+codex.20260828233542"
+    "version": "0.3.0+codex.20260829160356"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
-      "bytes": 1735,
-      "sha256": "e0d7d743fed0ef6f12ff4c550d0ba56f0d82a6d02990096ed6c95e7cf166adf1"
+      "bytes": 1681,
+      "sha256": "54f35c924665db504ce6d7cdb4b28e04ac87c4ef6f167bbd917f8b1d94bc13af"
     },
     {
       "path": ".mcp.json",
@@ -22,63 +22,13 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 4373,
-      "sha256": "f7195994d18efdf168ac634ddc4c9de7692445baa6cf774c89783af3c65f21be"
-    },
-    {
-      "path": "data/audits/B01_reaudit.json",
-      "bytes": 13899,
-      "sha256": "78a6427fbe9835e3bb2db75e7f9fd960f630ef13ddd0d6ccd66ec1def27b527a"
-    },
-    {
-      "path": "data/audits/B02_audit.json",
-      "bytes": 20484,
-      "sha256": "c3b03f6e1419e57c438617de82331d68f0185477b7e54f23075ac016c23e76e3"
-    },
-    {
-      "path": "data/audits/B03_reaudit.json",
-      "bytes": 30047,
-      "sha256": "bcffe89594f81836e751781f3dc501b93c045931f008359d0354efa31a1364ce"
-    },
-    {
-      "path": "data/audits/B04_jregress_reaudit.json",
-      "bytes": 14617,
-      "sha256": "08dda33dbcac373c9511dde4bb8df5c8c4bcf7bea496e181816d68a656cd7baa"
-    },
-    {
-      "path": "data/audits/B05_psmatch2_reaudit.json",
-      "bytes": 10924,
-      "sha256": "1ec696875a51b3abe3b608f71e31e756a4aee9560b7abec53e1b89dcfe315bbe"
-    },
-    {
-      "path": "data/audits/B06_final_reaudit.json",
-      "bytes": 6611,
-      "sha256": "a1c41e1ba1b4673f69a98b96e4f8d5167a145a03582d64e5c79399c1a8ac3104"
-    },
-    {
-      "path": "data/audits/B07_audit.json",
-      "bytes": 13182,
-      "sha256": "6a4955ab40907303feb1db15527d95380d63d0318218c7297abc4c5e27823028"
-    },
-    {
-      "path": "data/audits/final_manifest_audit.json",
-      "bytes": 76196,
-      "sha256": "73ba1f8d54705bdd772da2e17f866d175e380df78eec1669166f37f04220d825"
-    },
-    {
-      "path": "data/command_paper_index.json",
-      "bytes": 53393,
-      "sha256": "bf97a1f54faee840d15fca161ddef7a1263cb610fcc593f8db7b1629c517e5e7"
+      "bytes": 7311,
+      "sha256": "aac703670809e6a095d6a75cbefd82903fd5df8847a05058a18c0955381c430d"
     },
     {
       "path": "data/command_registry.json",
-      "bytes": 42994,
-      "sha256": "ee219bc1e8d26589d3e14eb0d6391f65d0e92d7f4aee923081e09fc3eaf91963"
-    },
-    {
-      "path": "data/command_sources.json",
-      "bytes": 122701,
-      "sha256": "024c95095b6b9b17f7d4c56b086cb8573b55cd01c65635f7f11f9263dcdfaf2b"
+      "bytes": 169660,
+      "sha256": "0c1fa842012cbbb331d4a2bd6cbd881a807e251232adf26bf842df52efab50d1"
     },
     {
       "path": "data/full_command_guides/acreg.md",
@@ -1001,6 +951,11 @@
       "sha256": "affe91f5cff89ddde1394d6a75979079be56b223b241d00dff134be9ef67e8a2"
     },
     {
+      "path": "data/full_command_guides/sources/sysuse-stata19-dsysuse.pdf",
+      "bytes": 109400,
+      "sha256": "dd79ba8fab31461a10d2f3253af455a6b9cc27370cba8703760996fbbbea3264"
+    },
+    {
       "path": "data/full_command_guides/sources/sysuse-stata19-dwebuse.pdf",
       "bytes": 107010,
       "sha256": "ab2e0988005688e63af17b59107027251b9adb6485a42a2953c88c895cffcec5"
@@ -1112,8 +1067,8 @@
     },
     {
       "path": "data/full_command_guides/sysuse.md",
-      "bytes": 3827,
-      "sha256": "4ecb2ba61e08963d5bc4c97f2b393375d7062b32b8f7354b5963ce3f150bdbf2"
+      "bytes": 3916,
+      "sha256": "e076619bb2ecb6f5859adc1187563afcc5c8e4a4fa0942edd1505061da38cf38"
     },
     {
       "path": "data/full_command_guides/table.md",
@@ -1197,13 +1152,8 @@
     },
     {
       "path": "data/full_command_guides.json",
-      "bytes": 119455,
-      "sha256": "bf71d05100f536999984d7c03b195d2934224fbc7d87492ca71337c123788419"
-    },
-    {
-      "path": "data/guide_status.json",
-      "bytes": 75850,
-      "sha256": "e12b490ed61493fb4722e4b1cdc0add19054f20aeb794ee491789e2583ca43b9"
+      "bytes": 119665,
+      "sha256": "8758a4ba99c84cbd384bd28deef0369bb0d9b6270f05022adb2e3fd1fb0bfb34"
     },
     {
       "path": "data/high_quality_paper_blocks.jsonl",
@@ -1211,39 +1161,19 @@
       "sha256": "deca72efcbf14233f0f762ed614e22ba26216b4853818339efe08e5bb719e248"
     },
     {
-      "path": "data/manual_index.jsonl",
-      "bytes": 478423,
-      "sha256": "dbcdaed345b98204c7315f279efddd422598689938b8cad2108fe574992e63d2"
+      "path": "data/paper_example_profiles.jsonl",
+      "bytes": 202265,
+      "sha256": "91aa7866ca7eb53a4e0d17fb81d063aa6f0a30be0444ac309da54a6de68a05c6"
     },
     {
-      "path": "data/official_examples.json",
-      "bytes": 5170,
-      "sha256": "151165c552dbe3cdda99c86c4351a8a23a2c0d1e325dbcb40bf694d4a3c8fdec"
-    },
-    {
-      "path": "data/official_web_sources.json",
-      "bytes": 3087,
-      "sha256": "b6a1e231607f35d8b61523a66ac18b8dd23f665cab76066cb620d506d34ca42b"
-    },
-    {
-      "path": "data/paper_review_integrity_audit.json",
-      "bytes": 80442,
-      "sha256": "54e0662a979d45df573abb087f45ebb082237b89aa963b961547190a10dfd841"
-    },
-    {
-      "path": "data/paper_review_summary.json",
-      "bytes": 2409,
-      "sha256": "948ac203fc0e4db9263659d44c707ecaa5c69d0ce0799cc9a6da51f59d41037b"
+      "path": "data/paper_execution_contexts.jsonl",
+      "bytes": 111429,
+      "sha256": "a78d4d7ebe0df71c96e8fb010ae9c6d55ac749d3fd6dac24dbba251c95b48160"
     },
     {
       "path": "data/paper_usage_occurrences.jsonl",
       "bytes": 618585,
       "sha256": "79370d763e13cf9c05ed474b8fb47f01088b8b771156d6d98d66b178850a305c"
-    },
-    {
-      "path": "data/reference_packages.json",
-      "bytes": 44209,
-      "sha256": "0b0c7a8f15b45a2e5c6cef0ce08e5cc597bb76875cf4e1c4659a6bcbc43952b7"
     },
     {
       "path": "data/runtime/outreg2_excel_runtime_20260824.json",
@@ -1502,18 +1432,18 @@
     },
     {
       "path": "INSTRUCTIONS.md",
-      "bytes": 3666,
-      "sha256": "3a3b0ccdc9a1219a825c3917be918df532f2647f6e1307f9b568a14643a9b9d7"
+      "bytes": 3456,
+      "sha256": "a7fcbf839a5f89d8ed6c8170e57c0a285d34e5e8d0407a3abd7009b06050c915"
     },
     {
       "path": "mcp/server.cjs",
-      "bytes": 50324,
-      "sha256": "ef9994c2f61218fdb1e06ef2455b6136201de75224875c732b4ae29718062557"
+      "bytes": 13163,
+      "sha256": "f027d52b13fc5f4f5550fd80291cd8282ca0630da7ce60d60028e728b4747b06"
     },
     {
       "path": "README.md",
-      "bytes": 10009,
-      "sha256": "b77855cf0d19bfa31e864e01486531c8b027f7b2344c163cb4c18ebffea63c97"
+      "bytes": 5149,
+      "sha256": "62295498034d68665746da203429851efae66a9715b78211ac4d0fef8c4dd3e8"
     },
     {
       "path": "scripts/build_clean_command_guide.py",
@@ -1532,8 +1462,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/agents/openai.yaml",
-      "bytes": 706,
-      "sha256": "24e04c2e10e6831d74d041e9adbd62cce10cce9d8a1ed92544fdc9634cc8c6e2"
+      "bytes": 688,
+      "sha256": "0c451f5608049306629c02450af8083d2d9fba14d72839155fe53d8db6c9f3a4"
     },
     {
       "path": "skills/stata-replication-workflow/references/authoring-conventions.md",
@@ -1542,13 +1472,13 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/command-evidence.md",
-      "bytes": 5327,
-      "sha256": "81578eb2dbf8aa692b5ceb1bc44d0aff99a693fad99e45311fb6a5b1d73b1755"
+      "bytes": 3912,
+      "sha256": "0d31a07034959b927c023352f13e636e0d3377b9857f0b3ff3cfb6f6b33ee308"
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rules.md",
-      "bytes": 6906,
-      "sha256": "ea5c8debd7c6cbda409e50e5b555b3fb4e582b15b3a67ef255d906fa9081cd4c"
+      "bytes": 7170,
+      "sha256": "611999eeee981ac86930bfa22ec30623b848d59a5097795b9e9a4cfa1eb9b982"
     },
     {
       "path": "skills/stata-replication-workflow/references/readme-contract.md",
@@ -1562,8 +1492,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/SKILL.md",
-      "bytes": 6431,
-      "sha256": "b382549040d9926002da40ff068a63ff75e89702161fd43a3c0324a7336bc49c"
+      "bytes": 4787,
+      "sha256": "850110954511d57851f78f5c17a9e7cee728d8d2e9cd3adbed9ed1905516ef2d"
     },
     {
       "path": "tests/fixtures/outreg2_excel_runtime.do",
@@ -1572,13 +1502,13 @@
     },
     {
       "path": "tests/formatter_guard.test.cjs",
-      "bytes": 1930,
-      "sha256": "34bbfd0c982ccbb632eba73773f081c811441f99a0c334a1a8b515eddd87c571"
+      "bytes": 1118,
+      "sha256": "460de0adb08c8f70ba5041d034483d50db43f20f72ae9642fd58a7ecf3253b8e"
     },
     {
       "path": "tests/outreg2_excel_runtime.test.cjs",
-      "bytes": 2654,
-      "sha256": "9cf34ffdd2b2a4bc2bb0d5e736990e5de440e272f265aef787d9772862b27006"
+      "bytes": 2533,
+      "sha256": "84dfb4c5faa73e0c202d93beab4aa9ede5dd751cb0c172fcbf47b0912c46b560"
     },
     {
       "path": "tests/plugin_bundle_manifest.test.cjs",
@@ -1587,18 +1517,8 @@
     },
     {
       "path": "tests/server.test.cjs",
-      "bytes": 17411,
-      "sha256": "ea770db04d0481393f8a8c8eb6b2f0b4040276bcd4dfc9cf6c80130c4da7a2f5"
-    },
-    {
-      "path": "tests/test_command_evidence.py",
-      "bytes": 12530,
-      "sha256": "4317389b5a4857086a6930693c61098d19ccfa4033cf785373a40cb1f2e80c2d"
-    },
-    {
-      "path": "tests/test_source_archive.py",
-      "bytes": 1192,
-      "sha256": "e8bd7bf90c3c92a410beb898197e2308a9ab9bc2818e0ca4b053eafa94a67f38"
+      "bytes": 8435,
+      "sha256": "8b53d2800a8238fe8c0922d6e2117cd624db19d655d685a9ab1c95f9ff1c26b1"
     }
   ],
   "semantic_anchors": [
@@ -1614,7 +1534,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.3.0+codex.20260828233542"
+      "value": "0.3.0+codex.20260829160356"
     },
     {
       "id": "readme.heading",

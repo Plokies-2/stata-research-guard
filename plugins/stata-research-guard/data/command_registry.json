@@ -356,9 +356,20 @@
       "stages": [
         "import"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Load or list Stata-format datasets shipped with Stata or stored along the ado-path.",
+      "capabilities": [
+        "load an installed .dta dataset into memory",
+        "list discoverable installed datasets with sysuse dir"
+      ],
+      "required_input_state": [
+        "The target dataset must be discoverable along the ado-path; clear is required to replace unsaved data in memory."
+      ],
+      "output_interface": [
+        "loaded dataset in memory with r(fn), or a dataset-name list in r(files) for sysuse dir"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Searches installed ado-path datasets rather than web sources or arbitrary disk paths; loading replaces the current dataset instead of combining it."
+      ]
     },
     {
       "command": "acreg",
@@ -368,9 +379,22 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Fit OLS or 2SLS linear regression with covariance corrections for spatial, network, temporal, multiway-cluster, or user-supplied correlation structures.",
+      "capabilities": [
+        "construct arbitrary-correlation VCEs from coordinates, distances, network links, cluster identifiers, or observation-aligned weights",
+        "partial out up to two high-dimensional fixed effects",
+        "report the Kleibergen-Paap rk Wald F statistic for IV specifications"
+      ],
+      "required_input_state": [
+        "The chosen correction requires its corresponding identifiers, coordinates, distances, links, clusters, or weights; acreg also depends on ivreg2, ranktest, and hdfe."
+      ],
+      "output_interface": [
+        "e(b), corrected e(V), e(sample), and e(widstat), with optional stored weight or distance matrices"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Spatial, network, cluster, and supplied-weight inputs are conditionally constrained rather than freely interchangeable.",
+        "Its fixed-effect interface is limited to pfe1() and pfe2(); its core task is arbitrary-correlation OLS or 2SLS rather than areg-style absorb() regression."
+      ]
     },
     {
       "command": "append",
@@ -380,9 +404,22 @@
       "stages": [
         "merge_reshape"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Stack observations from one or more Stata-format datasets into the active dataset in memory.",
+      "capabilities": [
+        "append multiple .dta files by variable name",
+        "restrict incoming variables and create a source indicator",
+        "incorporate compatible labels and notes from using datasets"
+      ],
+      "required_input_state": [
+        "At least one using file must be Stata-format; any active dataset is the master and its observations precede using observations."
+      ],
+      "output_interface": [
+        "combined dataset in memory, with an optional generate() variable identifying each source dataset"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Stacks rows rather than matching observations by keys; variables absent from a source receive missing values.",
+        "String-versus-numeric type conflicts are errors unless force discards incompatible incoming values as missing."
+      ]
     },
     {
       "command": "areg",
@@ -392,9 +429,21 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Fit linear regression while absorbing one or more high-dimensional effects without estimating their coefficients.",
+      "capabilities": [
+        "absorb categorical factors and supported interactions using projection algorithms",
+        "use robust, multiway-clustered, resampling, HC2, HC3, or HAC VCEs subject to documented restrictions"
+      ],
+      "required_input_state": [
+        "Variables identifying the effects in the required absorb() specification; tsset data when a HAC VCE is requested."
+      ],
+      "output_interface": [
+        "e-class regression results including e(b), e(V), e(sample), absorbed-factor metadata, and convergence state; absorbed coefficients are not stored"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "areg does not calculate absorbed-effect coefficients and is designed for absorbed group counts that remain fixed as sample size grows.",
+        "HC2, HC3, and HAC VCEs are incompatible with multiple absorbed variables."
+      ]
     },
     {
       "command": "assert",
@@ -404,9 +453,22 @@
       "stages": [
         "data_integrity"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Verify that a logical claim holds in the current observation or group context.",
+      "capabilities": [
+        "check observation-level, dataset-level, or by-group expressions",
+        "count contradictions or stop at the first failure",
+        "control false-assertion and empty-selection return codes"
+      ],
+      "required_input_state": [
+        "An expression evaluable in the intended observation or group order."
+      ],
+      "output_interface": [
+        "no data mutation; default return code 0 when true, 9 when false, and optional return code 8 for a null selection"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "A false assertion normally interrupts do-file execution unless handled or rc0 is used; fast omits the total contradiction count.",
+        "Tests only the stated claim and does not describe the data or search for unspecified defects."
+      ]
     },
     {
       "command": "boottest",
@@ -416,9 +478,22 @@
       "stages": [
         "robustness"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Test linear hypotheses after compatible estimation using wild, WRE, or score bootstrap inference.",
+      "capabilities": [
+        "test joint or separate constraints with one-way or multiway clustering",
+        "perform Wald, Rao or score, and Anderson-Rubin variants",
+        "derive confidence sets or confidence-function plots and adjust multiple tests"
+      ],
+      "required_input_state": [
+        "Active results from a documented compatible estimator; margins mode additionally requires immediately preceding margins results that are linear in estimated parameters."
+      ],
+      "output_interface": [
+        "r() test statistics, p-values, confidence sets, and bootstrap settings, with optional graphs, r(dist), or r(v)"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "This is a postestimation inference command, not an estimator; permitted bootstrap types depend on the preceding estimator.",
+        "Random simulation and confidence-set inversion can be computationally intensive, and the optional wild-weight matrix can be very large."
+      ]
     },
     {
       "command": "cgmreg",
@@ -428,9 +503,20 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Fit OLS regression with two-way cluster-robust standard errors.",
+      "capabilities": [
+        "estimate a linear cross-section specification while accounting for two nonnested clustering dimensions"
+      ],
+      "required_input_state": [
+        "A linear cross-section OLS specification and identifiers for two clustering dimensions."
+      ],
+      "output_interface": [
+        "OLS regression results with a two-way cluster-robust covariance; the exact stored-result interface is not established by an authoritative guide"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "The maintainer overview identifies cgmreg for OLS and points instrumental-variables work to ivreg2.",
+        "Complete authoritative command help is unavailable, so exact syntax, options, and stored results remain unresolved and Phase 2 must fail closed."
+      ]
     },
     {
       "command": "codebook",
@@ -440,9 +526,22 @@
       "stages": [
         "data_integrity"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Describe a dataset's variables, labels, values, distributions, missingness, and selected potential data-quality problems.",
+      "capabilities": [
+        "produce detailed or compact codebooks",
+        "display categorical tabulations, continuous summaries, or example values",
+        "analyze missing-value patterns and report documented potential problems"
+      ],
+      "required_input_state": [
+        "A dataset in memory containing the variables and observations to be documented."
+      ],
+      "output_interface": [
+        "displayed codebook output and r() macros listing variables with documented potential problems"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Provides descriptive diagnostics rather than enforcing claims, and its problem report does not cover every possible data defect.",
+        "Missing-pattern analysis with mv is CPU intensive; compact and problems impose documented display-option limits."
+      ]
     },
     {
       "command": "coefplot",
@@ -452,9 +551,22 @@
       "stages": [
         "figures"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Plot already-computed coefficients or other results from active or stored estimation results or Stata matrices.",
+      "capabilities": [
+        "combine multiple models or matrices with selected coefficients and equations",
+        "plot supplied or derived confidence intervals and transform or rescale results",
+        "compose customizable twoway graphs and subgraphs"
+      ],
+      "required_input_state": [
+        "Active or stored e() results with point estimates and uncertainty, or matrices supplying the required values."
+      ],
+      "output_interface": [
+        "a Stata graph and r() plot or label metadata, with optional generated graph-data variables"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Does not fit the underlying models; the plot depends on the supplied estimation or matrix results and uncertainty inputs.",
+        "matrix() changes the result namespace, while at() is incompatible with several categorical ordering and labeling options."
+      ]
     },
     {
       "command": "collect_export",
@@ -466,9 +578,21 @@
       "stages": [
         "exports"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Export a table from the current or a named collection to a supported document file.",
+      "capabilities": [
+        "write DOCX, HTML, PDF, Excel, LaTeX, SMCL, text, or Markdown files",
+        "apply format-specific worksheet, table-only, append, CSS, or generated do-file controls"
+      ],
+      "required_input_state": [
+        "A collection containing a table with a renderable layout and a destination with a recognized suffix or explicit as() format."
+      ],
+      "output_interface": [
+        "external table file, optional do-file or CSS sidecar, and s() metadata naming the collection and produced files"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Consumes an existing collection presentation and does not add results or define its layout and labels.",
+        "Append, modify, and table-only behavior differs across target formats, and overwriting requires the applicable replace control."
+      ]
     },
     {
       "command": "collect_get",
@@ -478,9 +602,21 @@
       "stages": [
         "exports"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Add returned results or named scalar and matrix expressions from a Stata command to an in-memory collection.",
+      "capabilities": [
+        "collect e() or r() results either as a prefix or after a command",
+        "attach dimension tags and mark automatic result levels for later layouts"
+      ],
+      "required_input_state": [
+        "The prefix form runs the producing command; the post-command form requires the intended e() or r() results to remain active and an explicit result list."
+      ],
+      "output_interface": [
+        "current or named collection populated with result items, tags, and automatic-level metadata"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Naming one r() or e() result causes the corresponding result class to be consumed, while several matrices and hidden results require explicit naming.",
+        "Does not define table layout or appearance and does not export a file."
+      ]
     },
     {
       "command": "collect_style",
@@ -490,9 +626,22 @@
       "stages": [
         "exports"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Configure, clear, save, or reuse presentation styles and layout properties for collections.",
+      "capabilities": [
+        "format cells and headers and control visibility of base, empty, or omitted results",
+        "define output-specific presentation properties",
+        "save or load style and layout state as .stjson"
+      ],
+      "required_input_state": [
+        "A current or named collection; collect style use additionally requires an accessible style file."
+      ],
+      "output_interface": [
+        "mutated in-memory collection style and optional .stjson style or layout file, with subcommand-specific s() metadata"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Does not add result values to a collection and does not export the rendered table.",
+        "Rendering support varies by output format, and use with override, replace, or layout can supersede existing collection state."
+      ]
     },
     {
       "command": "collapse",
@@ -503,9 +652,21 @@
         "merge_reshape",
         "descriptives_balance_sample_flow"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Replace the active dataset with overall or grouped summary-statistic observations.",
+      "capabilities": [
+        "compute multiple means, quantiles, dispersion measures, counts, percentages, sums, extrema, or first and last values in one call",
+        "aggregate by groups with supported weights and variablewise or casewise missing-data handling"
+      ],
+      "required_input_state": [
+        "Calculated source variables must be numeric; by() variables may be string or numeric, and requested weights must be compatible with the selected statistics."
+      ],
+      "output_interface": [
+        "dataset in memory with one observation overall or one per by() group and variables containing the requested statistics"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Destructively aggregates observation-level data; it computes summary statistics rather than the exact value-pattern frequencies produced by contract.",
+        "Default deletion is variablewise, while cw restricts every statistic to a common complete-case sample."
+      ]
     },
     {
       "command": "contract",
@@ -515,9 +676,21 @@
       "stages": [
         "merge_reshape"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Replace the active dataset with one observation per distinct varlist combination and its frequency.",
+      "capabilities": [
+        "create frequency, percentage, cumulative-frequency, and cumulative-percentage variables",
+        "include zero-frequency combinations or exclude combinations containing missing values"
+      ],
+      "required_input_state": [
+        "A dataset in memory and the variables defining combinations; only frequency weights are supported when weighting is used."
+      ],
+      "output_interface": [
+        "frequency-form dataset in memory containing the combination variables and requested frequency or percentage measures"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Removes observation-level records and variables outside varlist; it does not calculate arbitrary summary statistics as collapse does.",
+        "Missing-value combinations are included by default, nomiss excludes them, and zero adds combinations with no observations."
+      ]
     },
     {
       "command": "crossfit",
@@ -527,9 +700,22 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Generate cross-fitted out-of-sample predictions by repeatedly fitting a supervised Stata estimator on K-1 folds.",
+      "capabilities": [
+        "use random or user-defined folds with one or multiple resamples",
+        "run any learner supporting standard postestimation prediction, with integrated pystacked support",
+        "report overall and fold-level sample sizes and mean squared prediction errors"
+      ],
+      "required_input_state": [
+        "An estimation command string for a learner supporting standard predict, a generate() stub, and either a chosen random split or integer fold variables."
+      ],
+      "output_interface": [
+        "numbered cross-fitted prediction variables, r() sample and MSPE results, and a standalone Mata crossfit object"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Produces predictions and prediction-error summaries rather than coefficient inference, causal estimates, or automatic tuning selection.",
+        "foldvar() overrides kfolds(), reps(), and norandom; existing prediction variables are overwritten, and random folds vary unless the RNG state is fixed."
+      ]
     },
     {
       "command": "csdid",
@@ -539,9 +725,26 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Estimate group-time average treatment effects for staggered, absorbing binary treatment adoption.",
+      "capabilities": [
+        "Computes ATT(g,t) by combining cohort-specific 2x2 comparisons with never-treated or not-yet-treated controls using regression, inverse-probability, or doubly robust methods.",
+        "Supports panel and repeated-cross-section data, covariates, cohort, calendar, simple, and event aggregations, and asymptotic or multiplier-wild-bootstrap inference.",
+        "Can save recentered influence functions for later aggregation and plotting."
+      ],
+      "required_input_state": [
+        "A positive, regularly spaced time variable and a cohort variable coded 0 for never treated and positive at first treatment; treatment must remain on after adoption.",
+        "Panel use requires an individual identifier with a time-invariant cohort; omitting ivar() invokes repeated-cross-section estimation.",
+        "Each treated cohort needs an observed pretreatment period; always-treated units are excluded."
+      ],
+      "output_interface": [
+        "e() contains ATT(g,t) estimates and covariance information for csdid_estat, csdid_stats, and csdid_plot.",
+        "saverif() can write a dataset containing ATT(g,t) and aggregation-weight recentered influence functions."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "It does not cover treatment reversals, nonbinary doses, or continuously varying treatment.",
+        "Large numbers of cohorts and periods can make the ATT(g,t) covariance calculation memory- and time-intensive.",
+        "Aggregation and display of existing csdid results belong to csdid_estat rather than a new estimation."
+      ]
     },
     {
       "command": "csdid_estat",
@@ -551,9 +754,22 @@
       "stages": [
         "postestimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Display, aggregate, post, or export results from the active csdid estimation.",
+      "capabilities": [
+        "Redisplays ATT(g,t), computes simple, group, calendar, or dynamic aggregations, and presents the dynamic aggregation as an event coefficient vector, with window and missing-event controls.",
+        "Can place an aggregation in e(b) and e(V) via post or save tidy and model-summary datasets for downstream use."
+      ],
+      "required_input_state": [
+        "An active estimation result produced by csdid is required."
+      ],
+      "output_interface": [
+        "event, simple, group, calendar, and dynamic store displayed results in r(table); post also places coefficient and covariance results in e(b) and e(V).",
+        "tidy and glance, each with saving(), can write result datasets."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "It does not estimate ATT(g,t) from outcome, time, and treatment data; it operates on csdid results.",
+        "Likelihood information criteria, bootstrap estat, predict, and margins are not supported."
+      ]
     },
     {
       "command": "ddml",
@@ -563,9 +779,25 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Configure, cross-fit, and estimate double/debiased machine-learning models for treatment or structural parameters.",
+      "capabilities": [
+        "Supports partially linear, IV, flexible IV, interactive treatment, and interactive IV model classes for ATE, ATET, or LATE targets as applicable.",
+        "Separates model initialization, nuisance-equation learner registration, cross-fitting, and final estimation, with multiple learners and resampling repetitions.",
+        "Provides extraction and model summaries, overlap diagnostics for interactive models, and CSV export of estimated conditional expectations."
+      ],
+      "required_input_state": [
+        "A named ddml model must be initialized, populated with the nuisance equations required by its model class, and cross-fitted before ddml estimate.",
+        "Learner commands must accept standard regression syntax and if qualifiers and provide compatible predict output."
+      ],
+      "output_interface": [
+        "Model definitions, learners, folds, predictions, and results are held in a named Mata object; crossfit creates out-of-sample prediction variables.",
+        "ddml estimate posts final parameter estimates and variance results as active estimation results."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "ddml is a stateful multistep workflow, whereas qddml provides a one-line interface with less direct control over model setup.",
+        "It orchestrates causal estimation around external learners and is not itself a general-purpose prediction learner.",
+        "Learner availability and syntax are inherited from separately installed estimation commands."
+      ]
     },
     {
       "command": "did_imputation",
@@ -575,9 +807,25 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Estimate dynamic or aggregated effects of staggered absorbing binary treatment by imputing untreated potential outcomes.",
+      "capabilities": [
+        "Fits an untreated-outcome model on never-treated and not-yet-treated observations, imputes untreated outcomes for treated observations, and averages treatment-effect estimates.",
+        "Supports unit and time fixed effects, controls, event horizons or custom weights, subgroup heterogeneity, pretrend tests, repeated cross sections, and triple-difference extensions.",
+        "Can save observation-level effect, weight, and residual variables."
+      ],
+      "required_input_state": [
+        "Long-form outcome, unit, time, and first-treatment-date variables are required; never-treated units have missing treatment date and treatment is assumed to equal 1 from that date onward.",
+        "The untreated-outcome specification must be identifiable on untreated observations for every treated observation contributing to a requested estimand.",
+        "reghdfe is required."
+      ],
+      "output_interface": [
+        "e(b) and e(V) contain requested treatment-effect and pretrend coefficients; e(Nt), pretest statistics, and e(sample) describe their support.",
+        "saveestimates(), saveweights, and saveresid() can add observation-level variables to the active dataset."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "It does not accommodate treatment switching off, repeated treatment changes, or nonbinary treatment doses.",
+        "autosample drops observations whose effects cannot be imputed and is incompatible with sum or hbalance."
+      ]
     },
     {
       "command": "did_multiplegt_dyn",
@@ -587,9 +835,26 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Estimate event-study effects around the first treatment switch when treatment paths may be nonbinary or nonabsorbing.",
+      "capabilities": [
+        "Computes heterogeneity-robust effects and placebos by comparing switchers with not-yet switchers sharing the same baseline treatment.",
+        "Supports discrete or continuous doses, later increases or decreases, normalized per-dose effects, lagged-treatment reset windows, and switcher-specific samples.",
+        "Allows controls and trends, clustered or bootstrap inference, automatic event-study graphs, and saved result or sample datasets."
+      ],
+      "required_input_state": [
+        "Long-form outcome, group, evenly spaced time, and treatment variables are required; the design is organized by each group's first treatment change.",
+        "At least some valid comparisons must remain between switchers and not-yet switchers with the same baseline treatment; all groups cannot first switch in the same period.",
+        "gtools is required."
+      ],
+      "output_interface": [
+        "e(b) and e(V) store effect and placebo estimates; additional effect, placebo, and diagnostic results are returned in e().",
+        "The command displays an event-study graph by default and can save results, the estimation sample, and effect indicators to datasets or variables."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Normalized effects divide cumulative outcome effects by cumulative treatment changes and do not separately identify contemporaneous and lag-specific dose effects.",
+        "The estimand follows treatment paths from the first switch and therefore differs from absorbing binary-adoption estimators such as csdid and did_imputation.",
+        "Uneven time spacing is incompatible unless the data are recoded to equally spaced periods."
+      ]
     },
     {
       "command": "dtable",
@@ -600,9 +865,24 @@
         "descriptives_balance_sample_flow",
         "exports"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Build a customizable Table 1 of descriptive statistics, group comparisons, and optional hypothesis tests.",
+      "capabilities": [
+        "Summarizes continuous and factor variables overall or by groups, with selectable statistics, tests, composites, formats, titles, and notes.",
+        "Supports survey and subpopulation analysis and stores the table in a collection for further collect styling.",
+        "Can export the table directly to supported document, web, PDF, spreadsheet, TeX, SMCL, text, and Markdown files."
+      ],
+      "required_input_state": [
+        "An active dataset containing continuous variables and/or factor-variable specifications is required; survey results require svyset data and the svy option.",
+        "dtable accepts factor notation for categorical variables but not interaction or time-series operators."
+      ],
+      "output_interface": [
+        "Displays the table and stores it as a named collection, DTable by default, for collect operations.",
+        "export() can write the collection to a supported file; a new call replaces a collection with the same name unless another name is supplied."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "It produces descriptive and comparison tables rather than estimation-result tables from e().",
+        "A call replaces an existing collection with the same name, and by-group tests are table comparisons rather than model estimation."
+      ]
     },
     {
       "command": "duplicates",
@@ -612,9 +892,23 @@
       "stages": [
         "data_integrity"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Report, inspect, tag, or drop observations that are duplicated on all variables or a specified key.",
+      "capabilities": [
+        "Reports duplicate-group counts, lists duplicated observations, and shows representative duplicate examples.",
+        "Generates a tag equal to the number of surplus copies in each duplicate group.",
+        "Drops repeated observations while retaining one copy."
+      ],
+      "required_input_state": [
+        "An active dataset is required; omitting varlist defines duplicates using all variables, while supplying varlist defines duplicate keys.",
+        "duplicates drop with a varlist requires force because variables outside the key may differ."
+      ],
+      "output_interface": [
+        "All subcommands return r(N); report adds r(unique_value), while drop adds r(N_drop) and changes the active dataset; tag creates a new variable."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Dropping by a partial key can discard observations that differ in nonkey variables, which is why force is required.",
+        "It identifies repeated records in place; it does not replace the dataset with one observation per key and frequencies as contract does."
+      ]
     },
     {
       "command": "egen",
@@ -624,9 +918,21 @@
       "stages": [
         "cleaning_labels"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Create a new variable with an extended generation function operating across observations, groups, or variables within an observation.",
+      "capabilities": [
+        "Provides grouped or overall summary-statistic functions, rowwise functions, within-variable orderings, standardized values, sequences, group identifiers and tags, and string construction or parsing.",
+        "Allows by: with functions documented as group-aware and supports user-written egen functions."
+      ],
+      "required_input_state": [
+        "An active dataset and a function-specific expression, varlist, or numlist are required; availability of by:, if, in, and options depends on the chosen egen function."
+      ],
+      "output_interface": [
+        "Creates one new numeric or string variable in the active dataset, optionally with a value label for functions such as group()."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "egen functions have function-specific syntax and missing-value behavior; not every function allows by:, if, or in.",
+        "egen total() returns an overall or within-group constant, unlike generate's running sum(); row functions operate across variables within observations."
+      ]
     },
     {
       "command": "encode",
@@ -636,9 +942,22 @@
       "stages": [
         "cleaning_labels"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Convert a categorical string variable into a labeled numeric variable.",
+      "capabilities": [
+        "Alphabetizes distinct strings into numeric codes while creating and applying a value label.",
+        "Can use or extend an existing named value label, or reject unseen strings with noextend."
+      ],
+      "required_input_state": [
+        "The source must be a string variable whose text represents categories rather than numbers stored as strings.",
+        "A value label can contain at most 65,536 mappings, and each retained string label is limited to 32,000 bytes."
+      ],
+      "output_interface": [
+        "Creates a new int variable and an associated value label; empty strings become numeric missing."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "It does not parse numeric text; destring or real() is for numbers stored as strings.",
+        "By default it extends an existing label with unseen categories, so code mappings depend on that label's prior contents."
+      ]
     },
     {
       "command": "decode",
@@ -648,9 +967,21 @@
       "stages": [
         "cleaning_labels"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Convert a value-labeled numeric variable into a string variable containing its label text.",
+      "capabilities": [
+        "Uses the numeric variable's attached value label to create strings and automatically selects the shortest adequate string storage type.",
+        "Can cap retained label text at a specified byte length with maxlength()."
+      ],
+      "required_input_state": [
+        "The source must be numeric and have an associated value label."
+      ],
+      "output_interface": [
+        "Creates a new string variable sized to the retained label values."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "It uses label text rather than the numeric display format and does not perform general numeric-to-string conversion.",
+        "It is not the inverse of destring for numeric text; it recovers categorical labels from numeric codes."
+      ]
     },
     {
       "command": "destring",
@@ -660,9 +991,22 @@
       "stages": [
         "cleaning_labels"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Convert numeric text stored in string variables into numeric variables.",
+      "capabilities": [
+        "Converts selected or all string variables in place or into new variables while recognizing system and extended missing-value strings.",
+        "Can remove specified characters, parse percentage values or decimal commas, and optionally map remaining nonnumeric strings to missing.",
+        "Preserves variable labels and characteristics and records conversion characteristics."
+      ],
+      "required_input_state": [
+        "Source variables must be strings intended to represent numbers; nonnumeric characters must be removable via ignore() or force must be explicitly requested."
+      ],
+      "output_interface": [
+        "generate() creates corresponding numeric variables, while replace changes the source variables in the active dataset; conversion details are saved as variable characteristics."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "It does not create categorical codes and value labels from arbitrary strings; encode serves that role.",
+        "force converts otherwise invalid strings to missing, and replace removes the original string representation."
+      ]
     },
     {
       "command": "estadd",
@@ -672,9 +1016,23 @@
       "stages": [
         "postestimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Add macros, scalars, matrices, or derived statistics to active or stored estimation results.",
+      "capabilities": [
+        "Adds user-supplied e() results or copies compatible r() scalars and matrices.",
+        "Computes coefficient-level diagnostics, regressor or dependent-variable summaries, fit statistics, likelihood-ratio tests, and margins-derived results through subcommands.",
+        "Targets the active estimates or selected stored estimates, with optional prefixes and controlled replacement."
+      ],
+      "required_input_state": [
+        "An active estimation result or named stored estimation sets are required; subcommands that use the estimation sample require e(sample).",
+        "Model-specific subcommands require compatible estimation results or separately installed commands."
+      ],
+      "output_interface": [
+        "Adds named results to e() in the active and/or selected stored estimation sets for later estout or esttab use."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "It augments existing results but does not store models, format tables, or post arbitrary non-estimation commands.",
+        "Existing e() names are protected unless replace is specified, and some subcommands work only after particular estimators."
+      ]
     },
     {
       "command": "estout",
@@ -684,9 +1042,24 @@
       "stages": [
         "exports"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Assemble and display or write tables from stored estimation results or Stata matrices.",
+      "capabilities": [
+        "Combines coefficients, standard errors, test statistics, confidence intervals, custom e() statistics, and model summary statistics across one or more estimation sets.",
+        "Controls coefficient and equation selection, transformations, labels, grouping, significance symbols, and table layout.",
+        "Can tabulate named matrices or e()/r() matrices and write SMCL, tab-delimited, fixed, TeX, HTML, or user-defined text styles."
+      ],
+      "required_input_state": [
+        "Stored e-class results from estimates store or eststo, active estimates denoted by a period, or a named Stata, e(), or r() matrix are required.",
+        "Requested cell and summary statistics must exist or be derivable from the supplied estimation results."
+      ],
+      "output_interface": [
+        "Displays the assembled table or writes it to a text file, with replace or append control.",
+        "r(coefs), r(stats), model names, and table-dimension scalars describe the assembled table."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "It formats existing results and does not estimate models, store estimation sets, or post non-e-class command results.",
+        "Its default screen and file outputs are SMCL and tab-delimited text; fully formatted end products may require explicit style and layout options."
+      ]
     },
     {
       "command": "estpost",
@@ -697,9 +1070,24 @@
         "descriptives_balance_sample_flow",
         "exports"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Run supported descriptive, test, correlation, confidence-interval, survey-table, or margins commands and post their results into e().",
+      "capabilities": [
+        "Wraps summarize, tabstat or gtabstat, ttest, prtest, tabulate, correlate, ci, stci, and margins with command-specific options.",
+        "Posts result vectors, labels, test statistics, and optional e(sample) in layouts designed for estout or esttab.",
+        "Supports one- and two-way tables, survey tabulations, grouped summaries, pairwise or matrix correlations, and confidence intervals."
+      ],
+      "required_input_state": [
+        "An active dataset satisfying the wrapped command's variables, weights, survey, or survival-time requirements is required.",
+        "Only the documented estpost subcommands are supported; gtabstat additionally requires gtools.",
+        "estpost margins additionally requires an active model compatible with margins."
+      ],
+      "output_interface": [
+        "Replaces the active e() results with posted matrices, scalars, macros, labels, and optional e(sample) for estout, esttab, or eststo."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "It does not fit regression models or format or export the final table; it makes non-estimation results available for downstream tabulation.",
+        "Available statistics, missing-data handling, and weights follow the selected subcommand rather than one uniform interface."
+      ]
     },
     {
       "command": "eststo",
@@ -710,9 +1098,21 @@
         "estimation",
         "postestimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Store copies of active estimation results for later restoration or tabulation.",
+      "capabilities": [
+        "Stores after estimation or as a prefix, assigns explicit or automatic names, and can overwrite, list, drop, or clear eststo sets.",
+        "Can omit e(sample), add scalar statistics at storage time, and store separate results by groups for compatible estimation commands."
+      ],
+      "required_input_state": [
+        "An active e-class result is required unless eststo prefixes an estimation command; by-prefix use requires a standard if-compatible command and excludes svy commands."
+      ],
+      "output_interface": [
+        "Creates in-memory stored estimation sets, records each set's name in e(_estimates_name), and maintains $eststo and $eststo_counter."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "It stores results but does not add general postestimation content or format tables; estadd and estout perform those tasks.",
+        "Omitting e(sample) saves memory but can make postestimation commands that require the estimation sample unavailable."
+      ]
     },
     {
       "command": "esttab",
@@ -722,9 +1122,22 @@
       "stages": [
         "exports"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Format active or stored estimation results or Stata matrices as compact publication-style tables.",
+      "capabilities": [
+        "tabulate multiple named, eststo-managed, or active estimation results with selected coefficient and model statistics",
+        "tabulate Stata matrices or e()- and r()-matrices",
+        "display tables in the Results window or write text, CSV, RTF, HTML, LaTeX, or Markdown files"
+      ],
+      "required_input_state": [
+        "Compatible active or stored estimation results are required unless matrix(), e(), or r() input is specified."
+      ],
+      "output_interface": [
+        "formatted table in the Results window and log, or an external table file that can be replaced or appended"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "esttab is a wrapper for estout and does not estimate models or create a collect collection.",
+        "Some advanced estout options override or disable corresponding esttab options."
+      ]
     },
     {
       "command": "etable",
@@ -734,9 +1147,22 @@
       "stages": [
         "exports"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Create a customizable estimation-results table from active or stored estimates or immediately preceding margins results.",
+      "capabilities": [
+        "select and format coefficient statistics, model statistics, equations, stars, titles, and notes",
+        "build or append results in a named collect collection",
+        "export directly to Word, HTML, PDF, Excel, LaTeX, SMCL, text, or Markdown"
+      ],
+      "required_input_state": [
+        "Active e-class results or named stored estimates are required; margins mode consumes the immediately preceding margins results."
+      ],
+      "output_interface": [
+        "an in-memory collection named ETable by default, a rendered table, and an optional external document file"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "etable is a table builder and exporter, not an estimator.",
+        "A normal call replaces the default ETable collection unless append or replay is specified, and a loaded style file cannot replace etable's predefined layout."
+      ]
     },
     {
       "command": "eventdd",
@@ -746,9 +1172,23 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Estimate a panel difference-in-differences event study and plot its lead and lag coefficients with confidence intervals.",
+      "capabilities": [
+        "fit by OLS with regress, by fixed-effects with xtreg, fe, or by HDFE with reghdfe",
+        "accumulate or restrict displayed event periods and estimate separate event studies by discrete groups",
+        "produce analytic or wild-bootstrap confidence intervals and support joint lead and lag tests"
+      ],
+      "required_input_state": [
+        "A sequential standardized event-time variable is required, with 0 at the event and missing values for pure control units.",
+        "matsort is required; the chosen method also requires its corresponding fixed-effect specification and dependencies, and wild bootstrap additionally requires boottest."
+      ],
+      "output_interface": [
+        "an event-study graph and e-class results including e(b), e(V), event-time estimate matrices, and group-specific matrices when over() is used"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "eventdd estimates and plots a model, whereas event_plot only visualizes supplied estimates.",
+        "Wild-bootstrap inference cannot be combined with the hdfe method, and accum, keepbal, or inrange requires explicit leads() and lags()."
+      ]
     },
     {
       "command": "event_plot",
@@ -758,9 +1198,22 @@
       "stages": [
         "figures"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Plot existing staggered-adoption event-study coefficients and confidence intervals from estimation results or matrices.",
+      "capabilities": [
+        "read current or stored e() results or arbitrary coefficient and variance matrices",
+        "map lead and lag coefficient names through stubs and combine up to eight models",
+        "save the plot's underlying variables or report the generated graph command for further customization"
+      ],
+      "required_input_state": [
+        "A coefficient vector is required, with a compatible variance source for confidence intervals; nondefault coefficient names require appropriate lead and lag stubs."
+      ],
+      "output_interface": [
+        "a Stata graph and, with savecoef, variables containing event times, positions, coefficients, and confidence limits"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "event_plot does not estimate treatment effects or choose an event-study estimator.",
+        "Automatic naming support is limited, and combined plots must share plottype and together settings."
+      ]
     },
     {
       "command": "eventstudyinteract",
@@ -770,9 +1223,23 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Estimate Sun-Abraham interaction-weighted dynamic treatment effects for absorbing treatments with cohort heterogeneity.",
+      "capabilities": [
+        "fit cohort-by-relative-time interactions with reghdfe and aggregate them using estimated cohort shares",
+        "use never-treated or last-treated control cohorts and allow covariates and documented robust or clustered covariance estimators",
+        "retain cohort-specific effects, cohort shares, and their variance information"
+      ],
+      "required_input_state": [
+        "Data must be long at the unit-time level with relative-time indicators set to zero for never-treated units, a cohort variable missing for never-treated units, a binary control-cohort indicator, and unit and time effects in absorb().",
+        "The command requires reghdfe and avar; last-treated controls require excluding their treated periods."
+      ],
+      "output_interface": [
+        "interaction-weighted estimates in e(b_iw) and e(V_iw), cohort-specific estimates and shares in additional e() matrices, and underlying reghdfe results in e(b) and e(V)"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "The command estimates interaction-weighted effects rather than a conventional TWFE event study and does not create an event-study graph.",
+        "Standard postestimation commands read e(b) and e(V), so using the IW results with them requires reposting e(b_iw) and e(V_iw); the guide notes that formal validity is established for balanced panels without covariates even though the command does not enforce balance."
+      ]
     },
     {
       "command": "export_excel",
@@ -784,9 +1251,22 @@
       "stages": [
         "exports"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Export all or a selected subset of the dataset in memory to an Excel workbook.",
+      "capabilities": [
+        "write .xls or .xlsx workbooks to a selected worksheet and starting cell",
+        "export variable names or labels, underlying numeric values, formatted datetimes, and chosen missing-value representations",
+        "modify or replace worksheets and preserve existing cell formatting when requested"
+      ],
+      "required_input_state": [
+        "A dataset must be in memory; worksheet modification or cell-format preservation additionally requires an existing compatible workbook or sheet."
+      ],
+      "output_interface": [
+        "an external .xls or .xlsx workbook; the dataset in memory is not replaced"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "export excel writes observation-level data, not estimation results or collect tables.",
+        "Workbook replace cannot be combined with sheet modify or sheet replace, and Excel format-specific row, column, and string limits apply."
+      ]
     },
     {
       "command": "export_delimited",
@@ -798,9 +1278,22 @@
       "stages": [
         "exports"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Export all or a selected subset of the dataset in memory to a UTF-8 delimited text file.",
+      "capabilities": [
+        "write comma-, tab-, or custom-delimited observations with optional variable names",
+        "choose value labels versus numeric values, raw versus display-formatted numbers, and conditional quoting",
+        "restrict output by varlist, if, and in"
+      ],
+      "required_input_state": [
+        "A dataset must be in memory."
+      ],
+      "output_interface": [
+        "an external UTF-8 text file, with .csv assumed when no extension is supplied; the dataset in memory is not replaced"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "export delimited writes flat observation data rather than a workbook, formatted estimation table, or collect table.",
+        "It has no worksheet, cell-formatting, or append interface, and replace is required to overwrite an existing file."
+      ]
     },
     {
       "command": "gcollapse",
@@ -810,9 +1303,22 @@
       "stages": [
         "merge_reshape"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Replace the active dataset with overall or grouped summary-statistic observations using gtools.",
+      "capabilities": [
+        "compute multiple weighted or unweighted summary statistics, quantiles, selections, and distribution measures in one call",
+        "aggregate by numeric or string groups with variablewise or casewise missing-data handling",
+        "merge group statistics back to the original observations and retain group frequencies when requested"
+      ],
+      "required_input_state": [
+        "Source variables in the collapse list must be numeric, and requested weights must be compatible with each statistic."
+      ],
+      "output_interface": [
+        "a collapsed dataset in memory, or new group-statistic variables on the original data with merge, plus r() observation and group counts"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "The default operation removes observation-level records, unlike gegen or gstats transform; merge changes that interface explicitly.",
+        "String sources are not supported for first, last, firstnm, or lastnm statistics, and gcollapse can use more memory than collapse or fcollapse even when it is faster in many settings."
+      ]
     },
     {
       "command": "gegen",
@@ -822,9 +1328,22 @@
       "stages": [
         "cleaning_labels"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Create one variable with a by-able egen-style or gtools-native function.",
+      "capabilities": [
+        "create group identifiers, tags, counts, unique counts, and group-level summary values repeated across observations",
+        "call gtools implementations of quantile, standardization, moving, range, cumulative, shift, and winsor functions",
+        "fall back to compatible egen functions that are not implemented natively"
+      ],
+      "required_input_state": [
+        "The requested function determines whether its arguments are an expression, varlist, or numlist and whether weights or by() are allowed; group() and tag() cannot be combined with by()."
+      ],
+      "output_interface": [
+        "a new variable in the active dataset, or a replaced target when replace is specified"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "gegen preserves the observation structure and creates one target, whereas gcollapse creates grouped observations or multiple merged statistics.",
+        "Nonnative functions delegate to egen and are not guaranteed to be faster; multiple summaries from one source may be more efficiently produced by gcollapse, merge."
+      ]
     },
     {
       "command": "generate",
@@ -834,9 +1353,22 @@
       "stages": [
         "cleaning_labels"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Create one new variable from a Stata expression.",
+      "capabilities": [
+        "create numeric or string variables with automatic or explicit storage types",
+        "restrict expression evaluation with if or in and evaluate within by-groups",
+        "associate a value label at creation and position the new variable before or after an existing variable"
+      ],
+      "required_input_state": [
+        "The target variable name must not already exist, and the expression must be evaluable in the active dataset and requested observation context."
+      ],
+      "output_interface": [
+        "one new variable in the dataset in memory; observations excluded by if or in receive missing values"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "generate refuses to overwrite an existing variable; changing existing values requires replace.",
+        "It evaluates an expression directly and does not supply the extended grouped functions of egen or gegen."
+      ]
     },
     {
       "command": "graph",
@@ -846,9 +1378,22 @@
       "stages": [
         "figures"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Dispatch Stata's graph drawing, storage, display, combination, export, printing, and management subcommands.",
+      "capabilities": [
+        "invoke graph families such as twoway, matrix, bar, dot, box, and pie",
+        "save, use, display, replay, combine, or export graphs",
+        "list, describe, rename, copy, drop, or close graphs held in memory and query graphics schemes or styles"
+      ],
+      "required_input_state": [
+        "Input requirements depend on the selected graph subcommand; display, replay, combine, save, or export operations require the corresponding existing graph state."
+      ],
+      "output_interface": [
+        "graphs in memory or graph windows and, for the relevant subcommands, saved .gph or exported external files"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "graph is an umbrella command and does not itself specify a particular statistical plot or its data mapping.",
+        "graph export exports a graph rather than observation-level data or a table."
+      ]
     },
     {
       "command": "graph_bar",
@@ -858,9 +1403,22 @@
       "stages": [
         "figures"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Draw vertical or horizontal bar charts of supplied values or computed summary statistics across categorical groups.",
+      "capabilities": [
+        "calculate means, counts, percentages, quantiles, confidence intervals, and other collapse-style statistics for bar heights",
+        "group bars with repeated over() dimensions or by() panels and sort categories by values, heights, or derived statistics",
+        "draw grouped, overlapping, stacked, or percentage bars with labels and graph styling"
+      ],
+      "required_input_state": [
+        "Bar statistics generally require numeric y-variables; over() categories may be numeric or string, and requested weights must be compatible with the statistic."
+      ],
+      "output_interface": [
+        "a Stata bar or horizontal-bar graph, optionally saved through standard graph options; the dataset remains in memory"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "graph bar is specialized for a numerical axis against categorical groups rather than general twoway geometry.",
+        "At most two over() dimensions are allowed with multiple y-variables and three with one y-variable; stack is incompatible with meanci and allcategories is incompatible with by()."
+      ]
     },
     {
       "command": "greshape",
@@ -870,9 +1428,22 @@
       "stages": [
         "merge_reshape"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Convert the active dataset between wide and long forms or perform tidyr-style gather and spread operations using gtools.",
+      "capabilities": [
+        "reshape with multiple identifier variables and, for supported directions, multiple key variables",
+        "match or replace stub suffixes with literal or regular-expression patterns",
+        "gather named variables into key-value form or spread key values into variables"
+      ],
+      "required_input_state": [
+        "The data must contain the identifiers, keys, stubs, or named variables required by the chosen direction; uniqueness and nonmissing-key conditions apply unless their checks are explicitly disabled."
+      ],
+      "output_interface": [
+        "a reshaped dataset in memory with generated key, value, or wide variables"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "greshape does not implement reshape mode or the advanced reshape clear, error, query, i, j, xij, or xi subcommands.",
+        "gather does not check duplicates or sort data, while fast, unsorted, nodupcheck, nomisscheck, and nochecks trade protective checks or restoration for speed."
+      ]
     },
     {
       "command": "gstats",
@@ -882,9 +1453,23 @@
       "stages": [
         "descriptives_balance_sample_flow"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Run gtools subcommands for HDFE residualization, winsorization, grouped summaries, or observation-level statistical transformations.",
+      "capabilities": [
+        "residualize variables against high-dimensional fixed effects with optional grouping and weights",
+        "winsorize or trim variables at specified quantiles",
+        "produce fast grouped summarize or tabstat-style output and optionally retain it in a Mata object",
+        "create demeaned, standardized, moving-window, range, cumulative, or shifted variables"
+      ],
+      "required_input_state": [
+        "The selected subcommand determines the required sources, targets, grouping, windows, cutoffs, or absorb variables; gstats hdfe is beta functionality and requires GTOOLS_BETA to be enabled."
+      ],
+      "output_interface": [
+        "new or replaced variables for hdfe, winsor, and transform; displayed summary tables and optional Mata GstatsOutput for summarize or tabstat; subcommand-specific r() results"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "gstats is an umbrella with materially different data and returned-state interfaces across subcommands, not a single summary or transformation command.",
+        "gstats summarize and tabstat leave the dataset unchanged and do not store the full grouped table in r(), while gcollapse replaces the dataset with grouped observations."
+      ]
     },
     {
       "command": "gquantiles",
@@ -894,9 +1479,23 @@
       "stages": [
         "cleaning_labels"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Compute quantile cutpoints, percentile variables, quantile categories, and bin frequencies using gtools.",
+      "capabilities": [
+        "operate in pctile, xtile, or _pctile style and combine percentile, category, and frequency outputs",
+        "use arbitrary requested percentages, numeric cutoffs, variable cutpoints, or matrix-supplied quantiles and cutoffs",
+        "compute pctile and xtile outputs by groups and retain group identifiers when requested"
+      ],
+      "required_input_state": [
+        "A numeric source expression is required; at most one quantile or cutoff method may be specified, with nquantiles(2) used by default.",
+        "by() is unavailable in _pctile mode, and altdef cannot be weighted."
+      ],
+      "output_interface": [
+        "new or replaced percentile, category, percentage, frequency, or group variables and subcommand-specific r() scalars, macros, and matrices"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "gquantiles creates quantile-related outputs and does not reduce the dataset to general grouped summary observations.",
+        "Grouped pctile output requires strict, which skips groups with insufficient nonmissing observations, and large _pctile requests may exceed the practical returned-value interface controlled by returnlimit()."
+      ]
     },
     {
       "command": "histogram",
@@ -906,9 +1505,24 @@
       "stages": [
         "figures"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Draw a histogram of one numeric variable, with optional discrete binning and density overlays.",
+      "capabilities": [
+        "Controls the bin count, width, and starting point and can assign one bin to each distinct value with discrete.",
+        "Uses density by default and can instead scale bars as fractions, frequencies, or percentages.",
+        "Adds normal or kernel-density overlays and accepts graph options, by(), and addplot()."
+      ],
+      "required_input_state": [
+        "A numeric variable is present in memory.",
+        "Only frequency weights are accepted when weights are used."
+      ],
+      "output_interface": [
+        "Produces a Stata graph whose bar heights use the requested histogram scale."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "It summarizes one variable into bins rather than producing a general multivariate twoway plot.",
+        "width() changes bin construction, whereas barwidth() changes only the rendered bar width.",
+        "Without discrete, distinct observed values are not guaranteed to receive separate bins."
+      ]
     },
     {
       "command": "import",
@@ -918,9 +1532,19 @@
       "stages": [
         "import"
       ],
-      "required_input_state": [],
+      "role": "Describe Stata's pathways for bringing data from non-Stata formats and external data systems into memory.",
+      "capabilities": [
+        "Maps spreadsheet, delimited-text, SAS, SPSS, dBase, Parquet, FRED, Haver, JDBC, ODBC, and fixed-format sources to their format-specific import interfaces.",
+        "Distinguishes direct import commands from infile, infix, spshape2dta, and data-source-specific access methods."
+      ],
+      "required_input_state": [
+        "The source format and access method must be identified before a concrete importer can be invoked."
+      ],
       "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "tradeoffs_and_incompatibilities": [
+        "import is an overview entry rather than one universal executable importer, so it does not itself define a shared syntax or stored-result contract.",
+        "Format-specific controls such as worksheet ranges, delimiters, encodings, or database connections belong to the corresponding concrete command."
+      ]
     },
     {
       "command": "import_delimited",
@@ -932,9 +1556,25 @@
       "stages": [
         "import"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Load delimited text data, such as CSV or tab-delimited files, into Stata memory.",
+      "capabilities": [
+        "Detects or accepts delimiters, variable-name rows, encodings, quote binding, and row or column subsets.",
+        "Controls imported storage types, decimal and group separators, case handling, and whitespace or quote stripping.",
+        "Reads a delimited text file through the command's filename interface."
+      ],
+      "required_input_state": [
+        "An accessible delimited text file is available.",
+        "clear is required when the import must replace data already in memory."
+      ],
+      "output_interface": [
+        "Replaces the dataset in memory with the imported observations and variables.",
+        "Returns r(N), r(k), r(delimiter), and r(encoding)."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "It interprets delimited text rather than workbook sheets, cell ranges, or native Excel types.",
+        "Semicolons and other nondefault separators require an explicit delimiters() setting.",
+        "Long numeric identifiers or mixed-format columns may require explicit string or double-storage controls to avoid unintended conversion."
+      ]
     },
     {
       "command": "import_excel",
@@ -946,9 +1586,25 @@
       "stages": [
         "import"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Load a worksheet or cell range from an Excel .xls or .xlsx workbook into Stata memory.",
+      "capabilities": [
+        "Lists workbook worksheets and ranges without importing data.",
+        "Imports a selected worksheet, cell range, or variable subset and can derive variable names and labels from the first row.",
+        "Can import all cells as strings and adjust variable-name case."
+      ],
+      "required_input_state": [
+        "An accessible .xls or .xlsx workbook is available.",
+        "clear is required when the import must replace data already in memory."
+      ],
+      "output_interface": [
+        "Replaces the dataset in memory with the selected worksheet cells.",
+        "The describe form returns worksheet names and ranges in r(N_worksheet), r(worksheet_#), and r(range_#)."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "firstrow may not be combined with an explicit extended variable list.",
+        "The documented .xlsx import interface is limited to workbooks of 40 MB or smaller.",
+        "It preserves workbook sheet and cell-range semantics but does not parse arbitrary delimited-text conventions."
+      ]
     },
     {
       "command": "isid",
@@ -958,9 +1614,23 @@
       "stages": [
         "data_integrity"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Assert that one variable or a variable list uniquely identifies observations in memory or in a Stata dataset on disk.",
+      "capabilities": [
+        "Checks uniqueness in the active dataset or a dataset named with using.",
+        "Can allow missing key values with missok and sort observations by the identifier with sort."
+      ],
+      "required_input_state": [
+        "Every identifier variable exists in the dataset being checked.",
+        "Missing identifier values are rejected unless missok is specified."
+      ],
+      "output_interface": [
+        "Returns successfully when the identifier is unique and otherwise stops with return code 459.",
+        "sort can reorder the active dataset or save the using dataset in identifier order."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "It asserts uniqueness but does not enumerate, tag, or repair duplicate observations.",
+        "missok relaxes only the missing-value restriction and does not relax the uniqueness requirement."
+      ]
     },
     {
       "command": "ivreg2",
@@ -970,9 +1640,26 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Fit single-equation linear IV, GMM, LIML, k-class, or OLS models with extensive identification and specification diagnostics.",
+      "capabilities": [
+        "Estimates OLS, 2SLS, two-step or continuously updated GMM, LIML, k-class, and HOLS specifications.",
+        "Provides heteroskedastic, one- or two-way clustered, autocorrelation-consistent, HAC, Kiefer, and Driscoll-Kraay covariance choices.",
+        "Reports underidentification, weak-identification, overidentification, endogeneity, and instrument-redundancy diagnostics and can display or save first-stage and reduced-form equations."
+      ],
+      "required_input_state": [
+        "A single-equation linear specification supplies enough excluded instruments for the endogenous regressors and satisfies the applicable order and rank conditions.",
+        "ranktest is required for the documented robust identification statistics.",
+        "Time-series settings or an explicit time variable are required by covariance estimators that use the observation time order."
+      ],
+      "output_interface": [
+        "Stores coefficients, covariance estimates, the estimation sample, estimator and VCE metadata, first-stage summaries, identification statistics, and applicable weighting or moment-covariance matrices in e().",
+        "first, savefirst, and saverf can expose or store first-stage and reduced-form estimation results for downstream use."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "It does not provide ivreghdfe's reghdfe-style absorb() interface for high-dimensional fixed effects.",
+        "Variables removed through partial() do not receive reported coefficients, and postestimation prediction is then limited to residuals.",
+        "Available diagnostics and statistics depend on the estimator, covariance, clustering, and kernel choices rather than forming one invariant output set."
+      ]
     },
     {
       "command": "ivregress",
@@ -982,9 +1669,25 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Fit an official single-equation instrumental-variables model by 2SLS, LIML, or GMM.",
+      "capabilities": [
+        "Estimates 2SLS, LIML, two-step GMM, or iterated GMM specifications.",
+        "Supports robust, clustered, multiway-clustered, HAC, bootstrap, and jackknife covariance interfaces where documented.",
+        "For 2SLS, can absorb categorical fixed effects and report first-stage regression summaries."
+      ],
+      "required_input_state": [
+        "The specification identifies endogenous regressors and supplies sufficient excluded instruments to satisfy the applicable order and rank conditions.",
+        "Time-series settings are required for HAC weighting or covariance calculations that use a time index."
+      ],
+      "output_interface": [
+        "Stores e(b), e(V), e(sample), estimator and instrument metadata, absorbed-variable metadata when applicable, and GMM weighting or covariance matrices where applicable.",
+        "Replay makes the coefficient table available in r(table), and predict and margins consume the active estimation result."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "absorb() is available only with 2sls and is incompatible with multiway clustering and HAC VCE choices.",
+        "The command does not expose ivreg2's CUE, k-class, HOLS, or full diagnostic interface within ivregress itself.",
+        "Estimator, weighting-matrix, and VCE combinations impose documented compatibility restrictions."
+      ]
     },
     {
       "command": "ivreghdfe",
@@ -994,9 +1697,24 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Fit ivreg2-style instrumental-variables models while absorbing high-dimensional fixed effects through reghdfe.",
+      "capabilities": [
+        "Combines ivreg2 estimation syntax with reghdfe's absorb() interface and optimization options.",
+        "Provides experimental margins support for fitted models."
+      ],
+      "required_input_state": [
+        "ftools, reghdfe, and ivreg2 are installed as command dependencies.",
+        "The IV specification and absorbed fixed effects are expressed through the delegated ivreg2 and reghdfe interfaces."
+      ],
+      "output_interface": [
+        "Produces an estimation result that can be passed to the command's documented experimental margins support.",
+        "The command guide does not enumerate a complete e() stored-result contract."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "It adds reghdfe-style absorption to ivreg2 rather than duplicating ivregress's official estimator interface.",
+        "margins support is explicitly experimental, and advanced nonlinear expressions are not tested.",
+        "Detailed estimator and absorption behavior remains governed by the installed ivreg2 and reghdfe dependencies."
+      ]
     },
     {
       "command": "jwdid",
@@ -1006,9 +1724,24 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Estimate staggered-adoption difference-in-differences effects through a saturated cohort-by-time extended TWFE specification.",
+      "capabilities": [
+        "Handles panel or repeated-cross-section data and can use never-treated or not-yet-treated observations as controls.",
+        "Parameterizes treatment heterogeneity by cohort and time, cohort, time, event time, or a restricted TWFE form and can interact covariates with the documented heterogeneity dimensions.",
+        "Uses a linear reghdfe specification by default and offers documented Poisson, logit, and ppmlhdfe nonlinear methods."
+      ],
+      "required_input_state": [
+        "The outcome and calendar-time variable are defined together with either a cohort or adoption-time variable or the documented treatment-indicator alternative for an absorbing-treatment design.",
+        "Panel specifications identify the panel unit; repeated-cross-section variants supply the documented treatment indicators or treatment-group variables when needed."
+      ],
+      "output_interface": [
+        "Produces cohort-time interaction estimates whose active estimation state is intended for aggregate estimation through jwdid_postestimation."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "The fully interacted specification can create a very large number of parameters.",
+        "Nonlinear methods use the documented group-fixed-effect conventions, and individual- and group-fixed-effect estimates need not coincide in unbalanced panels.",
+        "Changing the control group or heterogeneity parameterization changes the comparison set or estimand rather than serving as a display-only option."
+      ]
     },
     {
       "command": "jwdidstacked",
@@ -1018,9 +1751,16 @@
       "stages": [
         "estimation"
       ],
+      "role": "Record that no generation role is currently established because authoritative command-specific documentation is unavailable.",
+      "capabilities": [
+        "Exposes no generation capability until authoritative command-specific evidence is available."
+      ],
       "required_input_state": [],
       "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "tradeoffs_and_incompatibilities": [
+        "The Phase 2 full guide is unavailable; if this command is required, generation must abort rather than infer syntax, behavior, or a substitute command.",
+        "This is an explicit unavailable sentinel rather than a functional label and must remain coupled with guide_available=false during canonical integration."
+      ]
     },
     {
       "command": "jregress",
@@ -1030,9 +1770,25 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Fit an OLS linear regression with jackknife standard errors and adjusted t-based inference.",
+      "capabilities": [
+        "Computes jackknife standard errors for nonclustered data or one-way clustered dependence.",
+        "Uses a scaled Student t approximation for p-values and confidence intervals and can display the adjustment coefficients.",
+        "Can include fixed effects defined at the cluster level."
+      ],
+      "required_input_state": [
+        "A numeric outcome and regressors are available for an OLS specification.",
+        "A cluster variable is supplied for clustered inference and for the documented cluster-level fixed-effect option."
+      ],
+      "output_interface": [
+        "Displays coefficients with jackknife standard errors, p-values, and confidence intervals; dfdisplay adds the inference-adjustment coefficients.",
+        "The author guide does not document an e() or r() stored-result contract."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Its clustering interface is one-way rather than multiway.",
+        "The fe option is tied to cluster-level fixed effects rather than an arbitrary high-dimensional absorb() interface.",
+        "noadjust replaces the adjusted reference distribution with the conventional Student t calculation."
+      ]
     },
     {
       "command": "label",
@@ -1042,9 +1798,26 @@
       "stages": [
         "cleaning_labels"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Create, attach, inspect, rename, copy, save, or remove dataset, variable, and value-label metadata.",
+      "capabilities": [
+        "Sets dataset and variable labels and defines mappings from numeric values to displayed text.",
+        "Attaches value-label definitions to variables and can list, copy, rename, drop, or inspect definitions across frames.",
+        "Writes value-label reconstruction commands to a do-file with label save."
+      ],
+      "required_input_state": [
+        "The target dataset, variables, frames, or existing value-label definitions are present for the requested label operation.",
+        "Value labels map numeric values; string variables may carry variable labels but cannot be assigned numeric value-label definitions."
+      ],
+      "output_interface": [
+        "Updates label metadata associated with the active dataset or frames; attached labels are displayed by downstream listings, tables, and graphs.",
+        "label list and label dir return documented label counts, ranges, missing-value status, or names in r().",
+        "label save writes a do-file containing commands that recreate selected value-label definitions."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Label operations change metadata and display mappings rather than recoding the underlying data values.",
+        "Defining a value label and attaching it to a variable are separate operations.",
+        "label save exports label-definition commands rather than observations or a labeled data extract."
+      ]
     },
     {
       "command": "lincom",
@@ -1054,9 +1827,24 @@
       "stages": [
         "postestimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Compute and test one linear combination of coefficients from the active estimation result.",
+      "capabilities": [
+        "Combines coefficients within or across equations and reports the estimate, standard error, test statistic, p-value, and confidence interval.",
+        "Can exponentiate a linear combination and label the result as an odds ratio, hazard ratio, incidence-rate ratio, relative-risk ratio, or generic exponentiated coefficient.",
+        "Supports coefficient references through equation names, factor-variable notation, and _b[] or _coef[] syntax."
+      ],
+      "required_input_state": [
+        "A compatible estimation command has left active coefficient and covariance results on which test can operate."
+      ],
+      "output_interface": [
+        "Returns r(estimate), r(se), r(df), r(t) or r(z), r(p), r(lb), r(ub), and r(level).",
+        "Displays a one-row table for the requested linear combination and can feed collection output through the documented table interfaces."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "The expression must be linear in estimated coefficients; nonlinear functions require a nonlinear-combination interface.",
+        "An equals sign is not allowed in the expression, and additive constants are not allowed with exponentiated display options.",
+        "One invocation evaluates one linear combination rather than a joint set of restrictions."
+      ]
     },
     {
       "command": "logit",
@@ -1066,9 +1854,25 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Fit maximum-likelihood binary logistic regression and report log-odds coefficients by default.",
+      "capabilities": [
+        "Models a binary outcome coded as zero versus nonzero with continuous or factor-variable predictors.",
+        "Supports frequency, importance, and probability weights and the documented robust, clustered, bootstrap, jackknife, and survey interfaces.",
+        "Can replay results as odds ratios and supports prediction and margins postestimation."
+      ],
+      "required_input_state": [
+        "The dependent variable has two outcome states interpreted as zero and nonzero after exclusions.",
+        "The estimation sample must contain observations that identify the requested coefficients; perfect predictors may cause variables or observations to be omitted."
+      ],
+      "output_interface": [
+        "Stores coefficients, covariance estimates, the estimation sample, likelihood statistics, outcome counts, and model metadata in e().",
+        "Replay makes its coefficient table available in r(table), and predict or margins consumes the active estimation result."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Its default display is the log-odds coefficient scale; logistic fits the same model but defaults to odds-ratio display.",
+        "The or option changes presentation rather than the fitted likelihood or underlying coefficient vector.",
+        "Panel, multilevel, and matched conditional logistic structures are handled by distinct estimation commands rather than this cross-sectional likelihood."
+      ]
     },
     {
       "command": "logistic",
@@ -1078,9 +1882,25 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Fit the same maximum-likelihood binary logistic model as logit and report odds ratios by default.",
+      "capabilities": [
+        "Models a binary outcome coded as zero versus nonzero with continuous or factor-variable predictors.",
+        "Supports frequency, importance, and probability weights and the documented robust, clustered, bootstrap, jackknife, and survey interfaces.",
+        "Can replay results as log-odds coefficients and supports prediction and margins postestimation."
+      ],
+      "required_input_state": [
+        "The dependent variable has two outcome states interpreted as zero and nonzero after exclusions.",
+        "The estimation sample must contain observations that identify the requested coefficients; perfect predictors may cause variables or observations to be omitted."
+      ],
+      "output_interface": [
+        "Stores the underlying coefficient vector, covariance estimates, the estimation sample, likelihood statistics, outcome counts, and model metadata in e().",
+        "Replay makes its current table available in r(table), and predict or margins consumes the active estimation result."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Its default display exponentiates coefficients as odds ratios; logit fits the same model but defaults to the log-odds scale.",
+        "The coef option changes presentation rather than the fitted likelihood or underlying coefficient vector.",
+        "Panel, multilevel, and matched conditional logistic structures are handled by distinct estimation commands rather than this cross-sectional likelihood."
+      ]
     },
     {
       "command": "margins",
@@ -1090,9 +1910,24 @@
       "stages": [
         "postestimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Estimate postestimation margins of model responses or derivatives at specified covariate values and over observed or balanced covariate distributions.",
+      "capabilities": [
+        "average predictions, marginal effects, elasticities, or contrasts over observations or specified subpopulations",
+        "evaluate model responses at covariate scenarios and across factor levels while propagating estimation uncertainty",
+        "post margins and their covariance for subsequent hypothesis tests when requested"
+      ],
+      "required_input_state": [
+        "Active estimation results from a command whose predict interface supplies the requested statistic, together with the estimation data or equivalent covariates needed for evaluation.",
+        "Categorical variables and transformed terms must be represented so margins can identify their relationship to the fitted model."
+      ],
+      "output_interface": [
+        "displayed margins table and r(b), r(V), r(table), and design metadata, or e(b) and e(V) with post",
+        "results consumable by marginsplot and by postestimation tests such as test and lincom"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "margins is a postestimation calculation rather than a model estimator; available responses and derivatives are limited by the preceding command's predict interface.",
+        "Unlike predict, it averages or contrasts scenario-specific results with uncertainty rather than merely creating observation-level predictions."
+      ]
     },
     {
       "command": "marginsplot",
@@ -1102,9 +1937,22 @@
       "stages": [
         "figures"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Graph results from the immediately preceding margins command as profile, interaction, contrast, comparison, or marginal-effect plots.",
+      "capabilities": [
+        "map margins dimensions to x axes, plot groups, by panels, and separate graphs",
+        "display confidence intervals and recast both estimates and intervals through twoway graph types",
+        "plot eligible contrast and pairwise-comparison results recorded by margins"
+      ],
+      "required_input_state": [
+        "Immediately preceding margins results, or another documented command that leaves compatible margins-style results."
+      ],
+      "output_interface": [
+        "Stata graph in memory with standard graph naming and saving interfaces"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "marginsplot does not fit a model or recompute margins; plotted values and dimensions come from the preceding results.",
+        "A desired subset of margins must be produced by a suitably restricted margins call rather than selected arbitrarily inside marginsplot."
+      ]
     },
     {
       "command": "merge",
@@ -1114,9 +1962,23 @@
       "stages": [
         "merge_reshape"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Join variables and matched observations from Stata-format using data to the dataset in memory by specified keys or observation order.",
+      "capabilities": [
+        "perform one-to-one, many-to-one, one-to-many, or observation-order joins",
+        "classify master-only, using-only, matched, updated, and conflicting observations with a merge-status variable",
+        "update missing master values or replace conflicting master values from using data under explicit controls"
+      ],
+      "required_input_state": [
+        "A master dataset in memory and at least one accessible Stata-format using dataset.",
+        "Key variables must have compatible types and satisfy the uniqueness implied by the selected merge cardinality; strL variables cannot be keys."
+      ],
+      "output_interface": [
+        "merged dataset in memory with an optional merge-status variable identifying observation provenance and update outcomes"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "merge matches records by keys or observation order rather than stacking rows as append does.",
+        "Many-to-many and observation-order matches depend on within-key or row order and are not equivalent to a relational many-to-many join."
+      ]
     },
     {
       "command": "misstable",
@@ -1126,9 +1988,23 @@
       "stages": [
         "data_integrity"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Describe counts, patterns, trees, or nesting relationships for missing values in the dataset in memory.",
+      "capabilities": [
+        "summarize missing and nonmissing values across variables",
+        "enumerate missing-value patterns or display them as trees and nested rules",
+        "generate variables that indicate whether selected source variables are missing"
+      ],
+      "required_input_state": [
+        "A dataset in memory containing the variables whose missing values are to be examined."
+      ],
+      "output_interface": [
+        "displayed diagnostics and subcommand-specific r() results",
+        "generated missingness indicators, or a replacement pattern-frequency dataset from misstable patterns"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "misstable diagnoses missingness but does not impute values or estimate a missing-data model.",
+        "misstable patterns replaces the dataset in memory, and nested-pattern enumeration can be computationally intensive when many variables are included."
+      ]
     },
     {
       "command": "nbreg",
@@ -1138,9 +2014,23 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Fit negative binomial regression for a nonnegative count outcome with extra-Poisson variation.",
+      "capabilities": [
+        "fit the default NB2 variance function or the NB1 constant-dispersion variant",
+        "incorporate an exposure or offset and report coefficients or incidence-rate ratios",
+        "provide model-based, robust, clustered, resampling, or supported survey-design inference"
+      ],
+      "required_input_state": [
+        "A nonnegative count dependent variable and covariates; any exposure or offset variables required by the specification must be present."
+      ],
+      "output_interface": [
+        "e-class estimation results including e(b), e(V), e(sample), the estimated dispersion parameter, and likelihood statistics",
+        "active results for predict, margins, tests, and other supported postestimation commands"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Unlike poisson, nbreg estimates a negative-binomial dispersion parameter and is not a model for underdispersion.",
+        "A dispersion parameter that varies with covariates requires gnbreg rather than nbreg."
+      ]
     },
     {
       "command": "outreg2",
@@ -1150,9 +2040,23 @@
       "stages": [
         "exports"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Format existing estimation, summary, or tabulation results as publication-style tables.",
+      "capabilities": [
+        "combine active or stored model results across successive table columns",
+        "select, order, label, and format coefficients and reported statistics while adding custom text or returned results",
+        "write ASCII, Word-readable, Excel-readable, LaTeX, or Stata-format table files"
+      ],
+      "required_input_state": [
+        "Compatible active or stored estimation results, or source variables for the documented summary and tabulation modes.",
+        "The destination must be writable, and an output file open in Word or Excel cannot be updated."
+      ],
+      "output_interface": [
+        "external table file, with optional Stata-format table data and seeout browser handoff"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "outreg2 formats supplied results and does not estimate models or construct arbitrary workbook cell layouts.",
+        "LaTeX output cannot be appended directly; multi-column LaTeX workflows append an intermediate ASCII table before the final conversion."
+      ]
     },
     {
       "command": "poisson",
@@ -1162,9 +2066,23 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Fit Poisson regression for a nonnegative count outcome with a log mean and optional exposure or offset.",
+      "capabilities": [
+        "estimate log-linear conditional means and display coefficients or incidence-rate ratios",
+        "include exposure or offset terms",
+        "provide model-based, robust, clustered, resampling, or supported survey-design inference"
+      ],
+      "required_input_state": [
+        "A nonnegative count dependent variable and covariates; any exposure or offset variables required by the specification must be present."
+      ],
+      "output_interface": [
+        "e-class estimation results including e(b), e(V), e(sample), likelihood statistics, and model metadata",
+        "active results for predict, margins, tests, and other supported postestimation commands"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "The Poisson model has no negative-binomial dispersion parameter; nbreg explicitly models extra-Poisson variation.",
+        "poisson does not provide ppmlhdfe's absorb() interface for multiple high-dimensional fixed effects or its separation-removal controls."
+      ]
     },
     {
       "command": "ppmlhdfe",
@@ -1174,9 +2092,24 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Fit Poisson pseudo-maximum-likelihood regression while absorbing multiple high-dimensional fixed effects and heterogeneous slopes.",
+      "capabilities": [
+        "absorb multiple categorical fixed effects and fixed-effect-specific slopes without adding their full indicator sets",
+        "detect and remove separated observations using documented separation methods",
+        "support exposure or offset terms and robust or multiway-clustered inference for count or other nonnegative outcomes"
+      ],
+      "required_input_state": [
+        "A nonnegative dependent variable, covariates, and the variables defining requested absorbed effects or clusters.",
+        "Compatible reghdfe and ftools dependencies must be installed; prediction beyond xb requires the saved sum of fixed effects from d()."
+      ],
+      "output_interface": [
+        "e-class results including e(b), e(V), e(sample), convergence, absorbed-effect, separation, singleton, and cluster metadata",
+        "optional generated fixed-effect or absorbed-component variables and supported predict, margins, test, and estat handoffs"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "ppmlhdfe is a PPML mean estimator and does not estimate the negative-binomial dispersion modeled by nbreg.",
+        "Separated observations and, by default, singleton observations are removed; saved fixed-effect estimates are generally not uniquely identified without additional normalization."
+      ]
     },
     {
       "command": "predict",
@@ -1186,9 +2119,22 @@
       "stages": [
         "postestimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Create observation-level predictions, residuals, scores, or related statistics from the active estimation results.",
+      "capabilities": [
+        "generate the preceding estimator's default prediction or supported alternatives such as linear predictions, standard errors, and scores",
+        "target equations in multiple-equation models and include or suppress fitted offsets where supported",
+        "form predictions outside the estimation sample or in another dataset when all required model variables are available"
+      ],
+      "required_input_state": [
+        "Active e-class estimation results with a predict program and data containing every covariate and transformation needed for the requested prediction."
+      ],
+      "output_interface": [
+        "one or more new variables in the dataset in memory"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Available prediction statistics and their sample restrictions are estimator specific; some are defined only for e(sample).",
+        "Unlike margins, predict does not average counterfactual scenarios, form contrasts, or attach delta-method inference to those averages."
+      ]
     },
     {
       "command": "psmatch2",
@@ -1198,9 +2144,24 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Estimate matched treated-versus-control outcome effects using propensity-score or Mahalanobis matching.",
+      "capabilities": [
+        "estimate or accept a propensity score and perform nearest-neighbor, caliper, radius, kernel, local-linear, spline, or Mahalanobis matching",
+        "estimate ATT and, when requested, ATU or ATE with common-support and trimming controls",
+        "produce matched weights, neighbor identifiers, support indicators, scores, and matched outcome components"
+      ],
+      "required_input_state": [
+        "A treatment variable coded 0 and 1, matching covariates or a supplied propensity score, and nonmissing outcome data for each requested effect.",
+        "Matching order must be defined reproducibly when ties or nearest-neighbor choices can depend on sort order."
+      ],
+      "output_interface": [
+        "generated variables such as _treated, _support, _pscore, _weight, _id, _n1 and matched outcome components",
+        "r() treatment-effect estimates, standard errors, sample counts, and a compact results table"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Default analytical standard errors treat weights as fixed and do not account for estimation of the propensity score; the documented nearest-neighbor bootstrap has unresolved validity.",
+        "Requesting multiple outcomes restricts estimation to their common nonmissing sample, and tied nearest-neighbor matches may change with observation order."
+      ]
     },
     {
       "command": "pstest",
@@ -1211,9 +2172,23 @@
         "postestimation",
         "figures"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Assess and optionally graph covariate balance between raw or matched treated and control samples.",
+      "capabilities": [
+        "report standardized bias, mean comparisons, variance ratios, and joint propensity-model balance diagnostics before or after matching",
+        "summarize mean and median bias, pseudo-R2, likelihood-ratio tests, and Rubin's B and R",
+        "draw standardized-bias, density, or box plots for documented balance views"
+      ],
+      "required_input_state": [
+        "A binary treatment indicator and covariates, plus compatible matching weights and support information for after-matching diagnostics or active results left by psmatch2."
+      ],
+      "output_interface": [
+        "displayed balance tables and graphs",
+        "r() balance statistics, joint diagnostics, sample information, and the covariate list when the selected mode returns them"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "pstest diagnoses balance and does not perform matching or estimate a treatment effect.",
+        "Its after-matching diagnostics are not meaningful for the documented spline and default local-linear psmatch2 estimators; density and box modes are graphical rather than full diagnostic-result modes."
+      ]
     },
     {
       "command": "probit",
@@ -1223,9 +2198,23 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Fit a maximum-likelihood binary-response model whose positive-outcome probability follows the standard normal cumulative distribution function.",
+      "capabilities": [
+        "estimate binary-response coefficients with factor variables, offsets, and linear constraints",
+        "provide model-based, robust, clustered, resampling, or supported survey-design inference",
+        "detect perfect predictors and omit the associated variables and observations when needed for finite estimation"
+      ],
+      "required_input_state": [
+        "A dependent variable in which zero denotes failure and any nonzero nonmissing value denotes success, together with the model covariates."
+      ],
+      "output_interface": [
+        "e-class estimation results including e(b), e(V), e(sample), likelihood statistics, convergence state, and perfect-prediction metadata",
+        "active results for predict, margins, tests, and other supported postestimation commands"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "probit uses the normal cumulative link rather than the logistic link used by logit and logistic.",
+        "Its coefficients index a latent normal scale rather than probability changes; probability levels and marginal effects require postestimation calculations such as predict or margins."
+      ]
     },
     {
       "command": "putexcel",
@@ -1235,9 +2224,23 @@
       "stages": [
         "exports"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Write Stata expressions, matrices, returned results, tables, formulas, links, and images to formatted cells in an Excel workbook.",
+      "capabilities": [
+        "create, replace, or modify .xls and .xlsx workbooks and worksheets through explicit cell ranges",
+        "export matrices, e() or r() results, estimation tables, and current or named collections",
+        "apply worksheet settings and cell-level number, alignment, font, border, fill, and merge formatting"
+      ],
+      "required_input_state": [
+        "A destination workbook must first be declared with putexcel set; each exported object must already exist in Stata or as a supported image file."
+      ],
+      "output_interface": [
+        "created or modified Excel workbook with selected worksheet content and formatting",
+        "s() collection and do-file metadata when exporting a collection"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "putexcel controls workbook cells but does not estimate results or define the analytical content of a collection.",
+        "Excel formulas and hyperlinks are passed through without validation, and graphs must first be exported to a supported image format before insertion."
+      ]
     },
     {
       "command": "qddml",
@@ -1247,9 +2250,24 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Run ddml setup, nuisance-model cross-fitting, and final estimation through a one-line interface.",
+      "capabilities": [
+        "fit partial, interactive, instrumental-variable, flexible-instrumental-variable, and LATE double/debiased machine-learning models",
+        "use random, clustered, or supplied cross-fitting folds with repeated sample splitting",
+        "run pystacked or another supported learner and request short, standard, or pooled stacking where the selected model permits"
+      ],
+      "required_input_state": [
+        "Outcome, treatment, high-dimensional controls, and any instruments required by the selected model, together with installed ddml and learner dependencies.",
+        "The default pystacked learner requires Stata 16 or newer, Python 3.x, and scikit-learn 0.24 or newer."
+      ],
+      "output_interface": [
+        "named DDML model state, generated sample, fold, and cross-fitted prediction variables, and final estimates",
+        "downstream access through ddml postestimation commands such as estimate and extract"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Unlike staged ddml, qddml does not register multiple separate learner commands for the same reduced-form equation; a single command such as pystacked may itself combine base learners.",
+        "Some stacking modes are unavailable or must be run separately for the flexible IV model, and the default learner adds external Python and scikit-learn requirements."
+      ]
     },
     {
       "command": "rangestat",
@@ -1259,9 +2277,23 @@
       "stages": [
         "merge_reshape"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Generate observation-level statistics from observations whose numeric key lies within each observation's specified interval.",
+      "capabilities": [
+        "calculate summary statistics over degenerate, rolling, recursive, reversed-recursive, or observation-specific windows within optional groups",
+        "compute built-in correlations, covariances, and rolling OLS regressions",
+        "call a user-supplied Mata function on each interval's data matrix"
+      ],
+      "required_input_state": [
+        "A numeric key variable and required closed interval bounds expressed as constants, variables, or system missing values; input variables for calculations must be numeric.",
+        "Observations with missing key values are excluded both as targets and as contributors, and by() variables are needed when ranges must remain within groups."
+      ],
+      "output_interface": [
+        "new variables in the dataset in memory containing each requested interval statistic and r(newvars) listing their names"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "rangestat uses numeric key ranges and ignores tsset or xtset declarations; it is not a calendar-aware time-series window command.",
+        "if and in restrict both the observations receiving results and the observations contributing to intervals, while excludeself suppresses current input values without removing the observation from raw counts."
+      ]
     },
     {
       "command": "rdbwselect",
@@ -1271,9 +2303,22 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Compute data-driven bandwidths for local-polynomial regression-discontinuity estimation and inference.",
+      "capabilities": [
+        "Select MSE- or coverage-error-rate-optimal point-estimation and bias-correction bandwidths, either common or side specific.",
+        "Support sharp, fuzzy, kink, and fuzzy-kink designs with covariates, weights, kernels, mass-point adjustment, and documented variance estimators."
+      ],
+      "required_input_state": [
+        "An outcome variable and a running variable; the cutoff defaults to zero.",
+        "Stata 16 or later; fuzzy treatment, covariates, weights, or cluster identifiers are conditional inputs."
+      ],
+      "output_interface": [
+        "E-class bandwidth results, including e(mat_h), e(mat_b), method-specific scalar selectors, and design metadata."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Selects bandwidths but does not estimate an RD treatment effect or construct an RD plot.",
+        "MSE and coverage-error-rate selectors target different criteria, and common and side-specific selectors are distinct."
+      ]
     },
     {
       "command": "rdplot",
@@ -1283,9 +2328,23 @@
       "stages": [
         "figures"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Construct regression-discontinuity plots from binned outcome means and side-specific global polynomial fits.",
+      "capabilities": [
+        "Use evenly or quantile-spaced bins with IMSE-optimal, variability-mimicking, or manually specified bin counts.",
+        "Add confidence intervals or shading, covariate adjustment, weights, mass-point handling, graph customization, and optional generated plot-data variables."
+      ],
+      "required_input_state": [
+        "An outcome variable and a running variable; the cutoff defaults to zero.",
+        "Stata 16 or later; covariates and weights are conditional inputs."
+      ],
+      "output_interface": [
+        "A Stata graph unless hide is specified, plus e-class bin counts, polynomial equations, and polynomial coefficients.",
+        "genvars optionally creates rdplot_* variables containing bin, mean, interval, and fitted-value data in memory."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Visualizes the discontinuity but does not provide the treatment-effect inference of rdrobust or the selector output of rdbwselect.",
+        "Manual nbins() precludes binselect(); p() and h() govern the plotted global polynomial fits rather than rdrobust's local-polynomial inference interface."
+      ]
     },
     {
       "command": "rdrobust",
@@ -1295,9 +2354,23 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Estimate local-polynomial regression-discontinuity effects with conventional and robust bias-corrected inference.",
+      "capabilities": [
+        "Estimate sharp, fuzzy, kink, and fuzzy-kink designs using automatic or user-supplied point and bias bandwidths.",
+        "Support covariate adjustment, weights, kernels, mass-point handling, MSE or coverage-error-rate bandwidth selection, and documented heteroskedasticity- or cluster-robust variance estimators."
+      ],
+      "required_input_state": [
+        "An outcome variable and a running variable; the cutoff defaults to zero.",
+        "Stata 16 or later; fuzzy treatment, covariates, weights, or cluster identifiers are conditional inputs."
+      ],
+      "output_interface": [
+        "E-class effects, standard errors, p-values, confidence intervals, effective sample counts, bandwidths, and side-specific polynomial objects.",
+        "e(b) distinguishes Conventional, Bias-corrected, and Robust columns, with documented variances in e(V)."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Estimates the RD effect, unlike selector-only rdbwselect and visualization-only rdplot.",
+        "The bias-corrected coefficient paired with the conventional standard error is not the intended robust bias-corrected inferential object; the Robust pairing carries that inference."
+      ]
     },
     {
       "command": "recode",
@@ -1307,9 +2380,21 @@
       "stages": [
         "cleaning_labels"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Transform values of numeric variables using ordered value, range, missing-value, or catch-all rules.",
+      "capabilities": [
+        "Recode exact values, inclusive ranges, variable-specific min and max, system or extended missing values, and multiple variables.",
+        "Create generated or prefixed variables, define and attach value labels, copy unselected observations, and report overlapping or unused rules with test."
+      ],
+      "required_input_state": [
+        "Numeric, non-alias variables in memory; with if or in, min and max are computed over the restricted observations."
+      ],
+      "output_interface": [
+        "By default mutates the source variables in memory; generate() or prefix() instead creates new variables, optionally with value labels."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Rules are evaluated left to right and only the first match applies; keyword rules must come last, and else cannot be combined with missing or nonmissing.",
+        "Generated variables are missing outside an if or in selection unless copyrest is specified, whereas in-place recoding leaves those values unchanged; string and alias variables are unsupported."
+      ]
     },
     {
       "command": "regress",
@@ -1319,9 +2404,23 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Fit ordinary or weighted least-squares linear regression.",
+      "capabilities": [
+        "Accept factor-variable and time-series syntax together with analytic, frequency, importance, or probability weights.",
+        "Provide conventional, heteroskedasticity-robust, one- or multiway cluster-robust, HC2 or HC3, bootstrap, jackknife, and supported HAC or survey inference."
+      ],
+      "required_input_state": [
+        "A dependent variable and any regressors in memory; cluster variables, weights, or survey settings are conditional inputs.",
+        "HAC variance estimation requires tsset data."
+      ],
+      "output_interface": [
+        "Standard estimation state including e(b), e(V), e(sample), fit statistics, model tests, VCE metadata, and prediction or margins hooks.",
+        "Replay makes coefficient-table statistics available in r(table), which later r-class commands can replace."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Has no absorb() interface; robust or clustered VCE changes uncertainty calculations rather than adding fixed effects.",
+        "HAC disallows frequency, probability, and importance weights; probability weights disallow HC3; beta is incompatible with clustered VCE and svy."
+      ]
     },
     {
       "command": "reghdfe",
@@ -1331,9 +2430,24 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Fit linear least-squares regressions while absorbing one or more high-dimensional fixed effects.",
+      "capabilities": [
+        "Absorb categorical interactions, heterogeneous slopes, and individual fixed effects in models with group-level outcomes.",
+        "Support robust, multiway-clustered, and Driscoll-Kraay VCEs and optionally save residuals or fixed-effect estimates."
+      ],
+      "required_input_state": [
+        "absorb() identifiers and the ftools dependency are required for fixed-effect estimation; Driscoll-Kraay VCE requires tsset or xtset data.",
+        "Individual-FE models with group-level outcomes require long data uniquely identified by group and individual, group-constant outcomes and regressors, group() and individual(), and the individual identifier in absorb()."
+      ],
+      "output_interface": [
+        "Estimation results in e(b), e(V), and normally e(sample), plus absorbed-effect, cluster, degrees-of-freedom, singleton, iteration, and convergence metadata.",
+        "Optional residual and fixed-effect variables; documented tested postestimation is limited to estat summarize, predict, and test."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Singletons are dropped iteratively by default, degrees-of-freedom losses beyond two fixed effects are conservatively approximated, and saved fixed effects may not be identified.",
+        "Solver and tolerance choices trade speed against numerical accuracy, and fastregress is less numerically stable.",
+        "IV estimation and nonlinear Poisson fixed-effects models are outside this command; suest is documented as producing incorrect results after reghdfe."
+      ]
     },
     {
       "command": "replace",
@@ -1343,9 +2457,21 @@
       "stages": [
         "cleaning_labels"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Change values of an existing variable for selected observations.",
+      "capabilities": [
+        "Evaluate an expression under if, in, or by and report the number of actual changes.",
+        "Automatically promote numeric or string storage when replacement values require more capacity."
+      ],
+      "required_input_state": [
+        "The target variable must already exist, cannot be an alias variable, and must be type-compatible with the expression."
+      ],
+      "output_interface": [
+        "Mutates the target variable in the dataset in memory, potentially promoting its storage type."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Modifies existing data rather than creating a new variable and therefore cannot be abbreviated.",
+        "nopromote prevents storage expansion but can truncate replacement values to the existing type."
+      ]
     },
     {
       "command": "reshape",
@@ -1355,9 +2481,23 @@
       "stages": [
         "merge_reshape"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Convert the active dataset between wide and long organization.",
+      "capabilities": [
+        "Reshape multiple stubs with numeric or string j values, explicit j values, and @ placement within variable names.",
+        "Diagnose failed reshapes and retain definitions that permit argument-free reversal."
+      ],
+      "required_input_state": [
+        "The data cannot contain alias variables; i() identifies logical observations and is required.",
+        "i() must be unique in wide data, i() plus j() must be unique in long data, and variables omitted from a long-to-wide reshape must be constant within i()."
+      ],
+      "output_interface": [
+        "Replaces the dataset layout in memory, creates j when going long, and drops j when going wide.",
+        "Stores dta[ReS...] dataset characteristics so reshape definitions can survive save and support later reversal."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "favor(speed) is faster but may require roughly twice the dataset's memory, whereas favor(memory) is slower.",
+        "Wide-to-long can represent absent stub variables with missing values and retain unintentionally omitted wide variables; broad or string stubs can capture similarly named variables unexpectedly."
+      ]
     },
     {
       "command": "ritest",
@@ -1367,9 +2507,24 @@
       "stages": [
         "robustness"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Compute randomization-inference or permutation-test p-values by resampling an assignment variable and rerunning a supplied command.",
+      "capabilities": [
+        "Resample within strata or at an assignment-cluster level, hold treatment levels fixed, or use file-supplied or program-generated assignments.",
+        "Test nonzero sharp nulls with one- or two-sided statistics and optionally save draws, assignments, or a density graph."
+      ],
+      "required_input_state": [
+        "A resampling variable, expressions retrievable after each execution, and a valid wrapped Stata command without a by prefix.",
+        "File-based assignments require resampvar1, resampvar2, and subsequent variables with valid match identifiers; program-based assignments require a compatible user program."
+      ],
+      "output_interface": [
+        "Displayed observed and resampled statistics and p-values.",
+        "Optional .dta files containing collected estimates or resampled assignments, plus an optional density graph; the guide does not document a returned-result contract."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Monte Carlo precision depends on the replication count and RNG state; failed commands or missing statistics invalidate replications.",
+        "Default weak inequalities are conservative under ties, while strict is weakly overconfident and requires eps(0); weights require force.",
+        "cluster() constrains assignment resampling and does not request cluster-robust covariance estimation in the wrapped command."
+      ]
     },
     {
       "command": "save",
@@ -1379,9 +2534,22 @@
       "stages": [
         "exports"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Persist the dataset currently in memory as a Stata .dta file.",
+      "capabilities": [
+        "Use an explicit filename or the dataset's last-known c(filename), with .dta added when omitted.",
+        "Optionally include unattached value labels, e(sample), or an otherwise empty dataset."
+      ],
+      "required_input_state": [
+        "A dataset in memory; omitting the filename requires a usable last-known filename.",
+        "An existing destination requires the replace option, and a zero-observation, zero-variable dataset requires emptyok."
+      ],
+      "output_interface": [
+        "Writes a Stata-format dataset for later use and records the in-memory dataset as saved under that filename."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Provides Stata-native persistence rather than interchange-format export; older formats require saveold.",
+        "nolabel omits value-label definitions while retaining label-name associations, and alias variables must be dropped or materialized for older-version compatibility."
+      ]
     },
     {
       "command": "sdid",
@@ -1391,9 +2559,24 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Estimate the average treatment effect on the treated using synthetic difference-in-differences in group-by-time panels.",
+      "capabilities": [
+        "Handle single-date or staggered adoption with optimally weighted units and periods under synthetic DID, DID, or synthetic-control methods.",
+        "Provide bootstrap, jackknife, placebo, or no inference; optimized or projected covariate adjustment; cluster-level resampling; and unit-weight, time-weight, or outcome-trend graphs."
+      ],
+      "required_input_state": [
+        "Outcome, group, time, and treatment variables with treated and untreated units.",
+        "Bootstrap requires multiple treated units, jackknife requires multiple treated units within each adoption period, and placebo inference requires more controls than treated units."
+      ],
+      "output_interface": [
+        "E-class ATT, confidence limits, standard error, e(b), e(V), adoption-specific effects, unit and time weights, adoption periods, and trend-series matrices.",
+        "returnweights adds weight variables to the dataset, and graph_export() writes graph files."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Bootstrap can be computationally expensive; jackknife is lighter but has stricter treated-unit requirements.",
+        "method(did) and method(sc) change the estimator rather than only its reporting, and sdid_event is a separate event-study wrapper.",
+        "Optimized and projected covariate adjustment use different procedures and comparison information; _not_yet changes the projected-adjustment comparison pool."
+      ]
     },
     {
       "command": "stackedev",
@@ -1403,9 +2586,22 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Fit a stacked staggered-adoption event study that compares each treatment cohort with never-treated units.",
+      "capabilities": [
+        "Create and append cohort-specific stacks, then estimate with unit-by-stack and time-by-stack fixed effects and unit-by-stack clustering through reghdfe.",
+        "Accept covariates, additional fixed effects, and optional stack interactions for covariates."
+      ],
+      "required_input_state": [
+        "Long unit-time data with preconstructed lead and lag indicators, a treatment-cohort variable missing for never-treated units, numeric time, a never-treated indicator, and unit fixed-effect and clustering identifiers.",
+        "Requires avar, ftools, and reghdfe."
+      ],
+      "output_interface": [
+        "Estimation results in e(b), e(V), and e(dof_table); the guide does not document a file export or stable stacked-dataset handoff."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Uses never-treated controls rather than already-treated or not-yet-treated comparisons.",
+        "Is a specialized stacked event-study estimator rather than a general two-way fixed-effects command and relies on external estimation dependencies."
+      ]
     },
     {
       "command": "stcox",
@@ -1415,9 +2611,23 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Fit Cox proportional-hazards models to survival-time data declared with stset.",
+      "capabilities": [
+        "Handle single- or multiple-record data with single or multiple failures, stratified baseline hazards, shared gamma frailty, offsets, and time-varying covariate effects.",
+        "Provide Breslow, Efron, exact marginal, or exact partial tie handling and supported model-based, robust, clustered, bootstrap, jackknife, or survey inference."
+      ],
+      "required_input_state": [
+        "Data must already be stset; analysis time, failures, subject identity, entry and exit, and weights are inherited from that declaration."
+      ],
+      "output_interface": [
+        "E-class coefficients, covariance, estimation sample, subject and failure counts, risk time, tie method, VCE, strata or frailty metadata, and postestimation hooks.",
+        "Replay creates r(table); supported predictions include cumulative baseline hazard, survivor functions, residuals, and frailty effects."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Breslow is the fastest default but can approximate poorly with many ties; Efron and exact methods cost more, and exact partial can be very slow.",
+        "exactm and exactp are incompatible with tvc(), robust VCE, and clustered VCE; weights are unsupported with Efron and exact partial methods.",
+        "shared() is unavailable with delayed entry or gaps, and most predictions are unavailable after tvc()."
+      ]
     },
     {
       "command": "stset",
@@ -1427,9 +2637,24 @@
       "stages": [
         "panel_construction"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Declare and validate the in-memory dataset as survival-time data for downstream st commands.",
+      "capabilities": [
+        "Define analysis time, observation windows, failures, subjects, origins, scaling, entry and exit, gaps, repeated failures, and weights for single- or multiple-record data.",
+        "Reset or display the declaration and support documented past- or future-history data management."
+      ],
+      "required_input_state": [
+        "An exit-time variable; multiple-record declarations require id() and failure().",
+        "Weighted multiple-record data require weights that are constant within subject."
+      ],
+      "output_interface": [
+        "Adds or recomputes _st, _d, _t, and _t0 and stores the survival declaration with the dataset for downstream st commands.",
+        "Marks excluded records rather than dropping them; stset, clear removes the declaration without removing substantive observations."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "origin(), enter(), and time0() represent different time concepts and are not substitutes.",
+        "Default exit(failure) excludes records after the first failure, so repeated-failure analysis requires an explicit alternative exit rule.",
+        "Many inconsistencies produce warnings and _st=0 exclusions rather than stopping execution, so the retained analysis sample must be inspected; stset is not an estimator."
+      ]
     },
     {
       "command": "summarize",
@@ -1439,9 +2664,23 @@
       "stages": [
         "descriptives_balance_sample_flow"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Calculate and display univariate descriptive statistics for numeric variables.",
+      "capabilities": [
+        "Report observation count, mean, standard deviation, minimum, and maximum, with detail adding percentiles, skewness, kurtosis, variance, and extreme values.",
+        "Support grouped execution, factor variables, time-series operators, analytic, frequency, or importance weights, and a fast non-displaying meanonly interface."
+      ],
+      "required_input_state": [
+        "Numeric variables in memory; omitting the varlist summarizes all applicable variables.",
+        "Importance weights cannot be combined with detail."
+      ],
+      "output_interface": [
+        "Displayed summaries plus r-class scalars for the most recent variable, including N, mean, standard deviation, minimum, maximum, weighted sum, sum, and variance, with additional distribution statistics under detail.",
+        "Does not mutate the dataset or create a persistent table object."
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "meanonly cannot be combined with detail and suppresses variance calculation.",
+        "Provides descriptive statistics rather than confidence intervals for means; factor-variable summaries are indicator means or proportions rather than cumulative category tables."
+      ]
     },
     {
       "command": "table",
@@ -1452,9 +2691,24 @@
         "descriptives_balance_sample_flow",
         "exports"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Create one- or multiway tables of frequencies, summary statistics, ratios, and results collected from Stata commands.",
+      "capabilities": [
+        "arrange repeated statistic() and command() results across row, column, and separate-table dimensions",
+        "collect posted r() or e() results into the default or a named collection for later collect customization",
+        "format and export the table directly to DOCX, HTML, PDF, Excel, LaTeX, SMCL, text, or Markdown"
+      ],
+      "required_input_state": [
+        "A dataset and the required grouping or statistic variables must be in memory; strL variables are not allowed.",
+        "Results named in command() must be posted by the embedded command, while if, in, and weights are specified on table itself.",
+        "Frequency, analytic, importance, and probability weights are supported."
+      ],
+      "output_interface": [
+        "displayed table, the default Table or a named collection, r(N), and optional markvar() indicator or exported table file"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Unlike tabstat, table supports n-way layouts and command-result collection; unlike tabulate, it does not expose the same dedicated one- or two-way association tests, indicator generation, or frequency matrices.",
+        "Without listwise, requested statistics can use variable-specific nonmissing samples; file append is limited to HTML, LaTeX, SMCL, text, or Markdown, while Excel uses modify, sheet(), and cell()."
+      ]
     },
     {
       "command": "tabstat",
@@ -1464,9 +2718,23 @@
       "stages": [
         "descriptives_balance_sample_flow"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Display selected summary statistics for multiple numeric variables in one compact table, optionally by one grouping variable.",
+      "capabilities": [
+        "report chosen location, dispersion, count, percentile, and shape statistics",
+        "calculate statistics for each level of one numeric or string by() variable and switch whether variables or statistics form the columns",
+        "save overall and group-specific statistics as r() matrices"
+      ],
+      "required_input_state": [
+        "Numeric variables must be in memory; only analytic and frequency weights are supported.",
+        "The default uses each variable's available observations, while casewise requests a common complete-case sample."
+      ],
+      "output_interface": [
+        "displayed compact table and, with save, r(StatTotal), group matrices r(Stat#), and group-name macros r(name#)"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Its by() option accepts one grouping variable, and it has no native n-way row, column, and separate-table layout or direct file export.",
+        "It summarizes numeric variables without replacing the dataset; it does not provide tabulate's contingency-table association tests or collapse's aggregate dataset."
+      ]
     },
     {
       "command": "tabulate",
@@ -1476,9 +2744,23 @@
       "stages": [
         "descriptives_balance_sample_flow"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Produce a one-way frequency distribution or a two-way contingency table with optional percentages and association tests.",
+      "capabilities": [
+        "report one-way frequencies, percentages, cumulative percentages, and an optional relative-frequency plot",
+        "report two-way cell, row, and column percentages with documented chi-squared, exact, and ordinal association measures",
+        "store frequency and level matrices, generate one-way category indicators, or place results in a Tabulate collection"
+      ],
+      "required_input_state": [
+        "One or two categorical variables must be in memory.",
+        "Frequency, analytic, and importance weights are accepted, but analytic and importance weights are incompatible with Pearson or likelihood-ratio chi-squared and several association measures; exact tests can be memory intensive for large tables."
+      ],
+      "output_interface": [
+        "displayed table; r() counts and requested test statistics; optional matrices, indicator variables, graph, or Tabulate collection"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Its direct table is limited to one or two dimensions, unlike table's n-way layouts and mixed command results.",
+        "Its core output is categorical frequencies and association measures rather than tabstat-style numeric summaries; generate() adds variables, and file output from a Tabulate collection requires a separate collect export step."
+      ]
     },
     {
       "command": "testparm",
@@ -1488,9 +2770,22 @@
       "stages": [
         "postestimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Perform postestimation Wald tests over coefficient sets selected with Stata varlist notation.",
+      "capabilities": [
+        "jointly test selected coefficients against zero or, with equal, against one another",
+        "expand factor-variable, time-series, range, and wildcard notation and restrict matching to a specified equation by name or number",
+        "apply documented survey adjustment or a specified denominator degree of freedom"
+      ],
+      "required_input_state": [
+        "Active estimation results with a coefficient vector and covariance matrix are required, and the current dataset is used to expand the varlist."
+      ],
+      "output_interface": [
+        "displayed F or chi-squared test and r(p), r(F) or r(chi2), degrees of freedom, and dropped-constraint indicators"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "It selects coefficient sets by varlist and does not express arbitrary linear combinations, constants, cross-equation equalities, or nonlinear restrictions.",
+        "Expanded variables absent from the fitted model are ignored, and testparm has no accumulate or multiple-testing-adjustment interface."
+      ]
     },
     {
       "command": "test",
@@ -1500,9 +2795,22 @@
       "stages": [
         "postestimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Perform postestimation Wald tests of simple or composite linear restrictions on fitted-model parameters.",
+      "capabilities": [
+        "test coefficients or linear combinations against constants and impose within- or cross-equation equalities",
+        "accumulate restrictions and report individual plus joint tests with documented multiple-testing adjustments",
+        "save the variance-covariance matrix of the tested linear combinations with matvlc()"
+      ],
+      "required_input_state": [
+        "Active fitted-model coefficients and their estimated covariance matrix are required."
+      ],
+      "output_interface": [
+        "displayed F or chi-squared test; r(p), r(F) or r(chi2), degrees of freedom, and dropped constraints; optional r(mtest) and r(mtmethod)"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "It handles linear restrictions only; nonlinear restrictions require a different interface and likelihood-ratio tests are distinct from its covariance-based Wald test.",
+        "Asterisk and hyphen are arithmetic operators rather than varlist wildcards or ranges, and redundant or inconsistent constraints may be dropped."
+      ]
     },
     {
       "command": "tostring",
@@ -1512,9 +2820,23 @@
       "stages": [
         "cleaning_labels"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Convert numeric variables to string variables by generating new variables or replacing the originals.",
+      "capabilities": [
+        "generate one string variable for each numeric source or replace the source variables in place",
+        "control string representations with an explicit numeric format or each variable's display format",
+        "preserve or copy variable labels and characteristics and record conversion characteristics"
+      ],
+      "required_input_state": [
+        "Numeric source variables must be in memory, and exactly one of generate() or replace is required.",
+        "generate() must name one new variable per source; a conversion that is not reversible is refused unless force is specified."
+      ],
+      "output_interface": [
+        "new string variables or in-place string replacements in the active dataset, with conversion characteristics attached to each converted variable"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "It stringifies underlying numeric values rather than decoding value-label text, and force can allow information-losing conversion.",
+        "format() and usedisplayformat are mutually exclusive; generate() preserves the numeric sources whereas replace removes them."
+      ]
     },
     {
       "command": "tsfill",
@@ -1524,9 +2846,21 @@
       "stages": [
         "panel_construction"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Add observations for missing time points in an already declared time series or panel time series.",
+      "capabilities": [
+        "fill gaps within a single series or within each panel's observed endpoints",
+        "extend every panel to the dataset-wide minimum and maximum time with full, producing a strongly balanced time span"
+      ],
+      "required_input_state": [
+        "The dataset must be tsset or xtset with a time variable; full is available only for panel data."
+      ],
+      "output_interface": [
+        "additional in-memory observations with the time identifier and, when specified, the panel identifier filled, and all other variables missing"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "It changes the observation topology but does not interpolate or impute non-key variables.",
+        "Default panel filling preserves panel-specific endpoints, while full may add observations outside them; filling gaps is not required for time-series operators to respect the declared time variable."
+      ]
     },
     {
       "command": "tsset",
@@ -1536,9 +2870,22 @@
       "stages": [
         "panel_construction"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Declare and manage a single time series or a panel time series with a panel and time variable.",
+      "capabilities": [
+        "set the time unit, display format, and delta used by time-series operators",
+        "display, clear, and persist the declaration with the saved dataset",
+        "activate lag, lead, difference, and seasonal-difference operators and ts commands, plus xt commands when panelvar and timevar are both declared"
+      ],
+      "required_input_state": [
+        "Time and optional panel variables must be numeric and integer valued, and the declared delta must fit the observed spacing."
+      ],
+      "output_interface": [
+        "persistent dataset time-series metadata, data sorted in declared order, and r() macros and scalars describing variables, range, delta, gaps, units, and balance"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "It declares time structure but neither fills gaps nor balances panels, and the delta determines how operators locate adjacent periods.",
+        "The panel-time form is equivalent to xtset panelvar timevar, but tsset has a timevar-only form and no panelvar-only form."
+      ]
     },
     {
       "command": "twoway",
@@ -1548,9 +2895,22 @@
       "stages": [
         "figures"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Compose one or more plot types on numeric y and x scales into a single two-way graph.",
+      "capabilities": [
+        "overlay heterogeneous plot types using parenthesized specifications or double-bar separators",
+        "apply sample restrictions and options to individual plots or to the overall composite graph",
+        "combine data-rendering, fitted or transformed, immediate, and function plot types"
+      ],
+      "required_input_state": [
+        "The chosen plot types require compatible numeric axes and their documented varlists, immediate arguments, or function specifications."
+      ],
+      "output_interface": [
+        "one graph containing the requested plots, with saving() available as a graph twoway option"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Plot-specific options cannot be supplied at the overall twoway level, and plot-level versus command-level if or in restrictions have different scope.",
+        "Multiple y variables may share one x variable in a scatter specification, but different x variables require separate plot specifications."
+      ]
     },
     {
       "command": "ttest",
@@ -1560,9 +2920,23 @@
       "stages": [
         "descriptives_balance_sample_flow"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Test one-sample, independent two-sample, or paired-sample hypotheses about means.",
+      "capabilities": [
+        "compare one sample mean with a specified value or compare two groups defined by by()",
+        "treat two variables as matched pairs or, with unpaired, as independent samples",
+        "for unpaired comparisons, use equal-variance, Satterthwaite unequal-variance, or Welch inference, and reverse the reported by() group contrast"
+      ],
+      "required_input_state": [
+        "Numeric outcome variables are required; by() must identify two groups, and paired variables must represent matched observations in the same rows.",
+        "No active estimation result is required."
+      ],
+      "output_interface": [
+        "displayed means, uncertainty, confidence intervals, t statistic, degrees of freedom, and one- and two-sided p-values, with corresponding sample and test quantities in r()"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "It tests raw mean hypotheses rather than restrictions on fitted-model coefficients and has no documented weight or arbitrary VCE interface.",
+        "Two variables are paired by default unless unpaired is specified, by() implies independent samples, and the command does not jointly compare more than two groups."
+      ]
     },
     {
       "command": "use",
@@ -1572,9 +2946,22 @@
       "stages": [
         "import"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Load a Stata-format dataset, or a selected variable and observation subset, into current memory.",
+      "capabilities": [
+        "load a complete .dta dataset from a local path or URL",
+        "load only named variables and observations selected by if or in",
+        "omit saved value-label definitions with nolabel"
+      ],
+      "required_input_state": [
+        "An accessible dataset saved in Stata format is required; clear is needed to discard changed, unsaved data already in memory."
+      ],
+      "output_interface": [
+        "the requested complete dataset or subset replaces the current in-memory dataset, with saved value labels loaded unless nolabel is specified"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "It replaces the active data in memory and loads Stata-format datasets rather than non-Stata formats.",
+        "Older Stata versions may not read newer file formats, and Stata/BE can load SE or MP files only when their dimensions fit BE limits."
+      ]
     },
     {
       "command": "winsor2",
@@ -1584,9 +2971,22 @@
       "stages": [
         "cleaning_labels"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Winsorize or trim numeric variables at specified percentile cutpoints.",
+      "capabilities": [
+        "cap tail values at the cutpoints or, with trim, set tail values to missing",
+        "apply default, custom, or one-sided cutpoints and calculate them separately within by() groups",
+        "generate suffixed variables or overwrite the original variables"
+      ],
+      "required_input_state": [
+        "Numeric target variables and any by() grouping variables must be in memory."
+      ],
+      "output_interface": [
+        "new variables with _w, _tr, or a requested suffix, or overwritten source variables when replace is specified"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Trimming changes outlying values to missing rather than dropping observations, whereas winsorizing caps them.",
+        "replace cannot be combined with suffix(), and by() uses group-specific rather than pooled cutpoints."
+      ]
     },
     {
       "command": "xtivreg",
@@ -1596,9 +2996,23 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Fit linear panel-data instrumental-variables models using random-effects, between-effects, fixed-effects, or first-differenced 2SLS estimators.",
+      "capabilities": [
+        "estimate G2SLS or EC2SLS random effects and between-, fixed-, or first-differenced 2SLS models",
+        "separate endogenous regressors from excluded instruments in the model syntax and optionally display first-stage regressions",
+        "use conventional, robust, one-way clustered, bootstrap, or jackknife covariance estimates"
+      ],
+      "required_input_state": [
+        "The panel variable must be xtset; first-differenced estimation also requires a declared time variable.",
+        "The excluded-instrument count must be at least the endogenous-regressor count; the command documents no weights, and first-differenced models do not allow factor variables."
+      ],
+      "output_interface": [
+        "e-class estimates including e(b), e(V), e(sample), endogenous and exogenous variable lists, model and VCE metadata, panel counts, fit measures, variance components, and predict or margins handoff metadata"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Unlike xtreg it supports explicit panel IV estimation but not correlated random effects, random-effects ML, population-averaged models, or additional-effect absorption.",
+        "Fixed effects do not identify time-invariant covariate coefficients; the regress option retains varlist2 as regressors, treats all covariates as exogenous, and ignores only the excluded-instrument list varlistiv."
+      ]
     },
     {
       "command": "xtreg",
@@ -1608,9 +3022,24 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Fit linear panel-data models using random-effects, correlated-random-effects, between-effects, fixed-effects, random-effects maximum-likelihood, or population-averaged estimators.",
+      "capabilities": [
+        "estimate GLS random effects, Mundlak correlated random effects, between effects, within fixed effects, Gaussian random-effects ML, or Gaussian identity-link GEE",
+        "absorb additional categorical effects in fixed-effects models and use model-specific robust, clustered, resampling, HC2, HC3, or Driscoll-Kraay covariance estimators where documented",
+        "return model-specific variance components and fit measures, Mundlak or panel-effect tests where applicable, and an estimated working-correlation matrix for population-averaged estimation"
+      ],
+      "required_input_state": [
+        "A panel variable must be xtset; population-averaged correlation structures other than exchangeable and independent, and fixed-effects Driscoll-Kraay VCE, also require a declared time variable.",
+        "Permitted weights and covariance estimators differ by model, and allowed weights must be constant within panel."
+      ],
+      "output_interface": [
+        "model-specific e-class estimates including e(b), e(V), e(sample), panel counts, fit and variance-component results, VCE metadata, and predict or margins handoff state",
+        "population-averaged estimation stores e(cmd)=xtgee, e(cmd2)=xtreg, and e(R) for the estimated working-correlation matrix"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "It has no endogenous-regressor or excluded-instrument syntax; xtivreg supplies panel 2SLS, and xtreg does not fit dynamic-panel GMM.",
+        "Fixed effects do not estimate time-invariant regressor coefficients; model-specific weight and VCE options are not interchangeable; the continuous and categorical-by-continuous absorb() extension, HC3, Driscoll-Kraay, and apcriterion() are marked StataNow-only."
+      ]
     },
     {
       "command": "xtset",
@@ -1620,9 +3049,22 @@
       "stages": [
         "panel_construction"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Declare and manage panel data, optionally including a time variable and time-series settings within panels.",
+      "capabilities": [
+        "declare panelvar alone or panelvar with timevar",
+        "set time units, display format, and delta when time is declared",
+        "display, clear, and persist the declaration, activate xt commands, and activate panel-aware time-series operators when timevar is specified"
+      ],
+      "required_input_state": [
+        "Panel and optional time variables must be numeric and integer valued; with time declared, the delta must fit observed spacing."
+      ],
+      "output_interface": [
+        "persistent panel and optional time metadata plus r() macros and scalars describing variables, range, delta, gaps, units, and panel balance; time-declared data are sorted by panel and time"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "A panel-only declaration does not establish within-panel time order or enable time-series operators and is not resorted by an argument-free xtset.",
+        "It reports rather than fills gaps or balances panels; xtset panelvar timevar is equivalent to the two-variable tsset form, while only xtset supports panelvar alone."
+      ]
     },
     {
       "command": "xtabond2",
@@ -1632,9 +3074,25 @@
       "stages": [
         "estimation"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Fit linear dynamic panel models designed for small-T, large-N data by difference or system GMM with explicit internal and standard instrument construction.",
+      "capabilities": [
+        "estimate default system GMM or difference GMM using first differences, or forward orthogonal deviations in the Mata implementation",
+        "build GMM-style and IV-style instrument sets with lag, equation, collapse, or principal-component controls",
+        "fit one- or two-step models with robust or cluster-defined covariance estimation, including multiway clustering, and report serial-correlation and overidentification diagnostics"
+      ],
+      "required_input_state": [
+        "Panel-time data must be tsset, and regressors must be classified by their exogeneity and valid lag moments.",
+        "System GMM requires the additional orthogonality conditions that justify instruments for the level equation."
+      ],
+      "output_interface": [
+        "e-class estimates including coefficients, covariance, sample, panel and time metadata, instrument count and specification, Sargan and where applicable Hansen and difference-in-Sargan or Hansen tests, and Arellano-Bond tests; predict fitted values or residuals in levels or first differences, with optional saved matrices or variables in Mata speed mode"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "System GMM adds a level equation and instruments beyond difference GMM but relies on additional initial-condition assumptions.",
+        "Instrument proliferation can overfit instrumented variables and weaken Hansen tests; collapse reduces instrument width and computation but lowers large-sample efficiency, while lag limits or PCA reduce the GMM-style instrument count by restricting or replacing the set.",
+        "Two-step uncorrected standard errors can be downward biased, while twostep robust invokes the documented Windmeijer correction.",
+        "Holding the instrument set fixed, first differences and orthogonal deviations give identical coefficients in balanced panels, while orthogonal deviations can preserve more observations when panels contain gaps."
+      ]
     },
     {
       "command": "asdoc",
@@ -1645,9 +3103,23 @@
         "descriptives_balance_sample_flow",
         "exports"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Prefix supported Stata commands to write their results and user-assembled text or statistics to a Word or RTF document.",
+      "capabilities": [
+        "export summary, correlation, frequency and tabulation results, means, proportions, ratios, t-tests, and regression results in detailed, nested, or wide table layouts",
+        "write lists, matrices, variable descriptions, text, and custom rows assembled from returned statistics",
+        "append to, replace, or continue compatible table structures within the output document"
+      ],
+      "required_input_state": [
+        "The wrapped command and its required data state must be available, and the destination must be writable.",
+        "Unrecognized user-written regression output requires a compatible standard r(table) and can be identified with isreg; wmat and survey-prefixed uses require an existing matrix or survey declaration."
+      ],
+      "output_interface": [
+        "Myfile.doc in the current directory by default, or a save()-named .doc or .rtf file; replace overwrites, append continues the file, and when both are omitted asdoc appends if the target exists and otherwise creates it, with rowappend and table-continuation modes for compatible structures"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "This guide version documents Word or RTF rather than native DOCX, XLSX, or TeX output, and asdoc is an exporter rather than an estimator.",
+        "Nonstandard result-window output may be less structured, commands with no displayed output may add nothing, and some wrapped commands or options have documented parsing and layout limits."
+      ]
     },
     {
       "command": "fcollapse",
@@ -1658,9 +3130,26 @@
         "merge_reshape",
         "descriptives_balance_sample_flow"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Replace the in-memory dataset with overall or grouped summary-statistic observations using the ftools aggregation interface.",
+      "capabilities": [
+        "compute means, medians, percentiles, sums, nonmissing counts and percentages, extrema, interquartile ranges, and first or last variants in one clist",
+        "aggregate by numeric or string groups or produce one overall observation",
+        "merge collapsed statistics back to the original observations, append collapsed rows, create raw frequencies, or register custom Mata aggregators"
+      ],
+      "required_input_state": [
+        "A dataset and source variables must be in memory; string sources are limited to first, last, firstnm, and lastnm.",
+        "Weight support is partial and zero weights are ignored; register() requires matching aggregate_* Mata functions."
+      ],
+      "output_interface": [
+        "a summary-statistics dataset in memory by default, the original observations augmented under merge, or original plus collapsed rows under append; optional frequency variable and no documented returned-results interface"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "The default operation replaces observation-level data with aggregate rows.",
+        "smart may invoke collapse when the data are already sorted because collapse might then be faster.",
+        "fast does not restore the original dataset after Break and may leave the data unusable.",
+        "The merge option adds collapsed statistics back to the original data and is documented as faster than egen or collapse followed by merge when the data are not sorted by the by() groups; append adds collapsed rows for totals.",
+        "Lower pool() values reduce memory use at a speed cost."
+      ]
     },
     {
       "command": "fmerge",
@@ -1670,9 +3159,24 @@
       "stages": [
         "merge_reshape"
       ],
-      "required_input_state": [],
-      "output_interface": [],
-      "tradeoffs_and_incompatibilities": []
+      "role": "Merge a using dataset into the in-memory master through the ftools join wrapper for one-to-one or many-to-one keys.",
+      "capabilities": [
+        "perform 1:1 or m:1 key merges and limit variables read from the using data",
+        "retain or require selected match outcomes with keep() and assert(), and create, name, or suppress the merge marker",
+        "copy value-label definitions and notes and optionally display the underlying join command"
+      ],
+      "required_input_state": [
+        "A master dataset must be in memory, a using dataset and valid 1:1 or m:1 keys must be supplied, and the operation must not require update or replace semantics."
+      ],
+      "output_interface": [
+        "merged observations and variables in memory, _merge or a generate()-named marker unless suppressed, copied labels and notes unless disabled, and no documented returned-results interface"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "The maintainer guide documents only 1:1 and m:1 joins.",
+        "update and replace are explicitly unavailable.",
+        "force and sorted are accepted but ignored.",
+        "verbose is an added diagnostic option that displays debug information and the underlying join command."
+      ]
     }
   ]
 }

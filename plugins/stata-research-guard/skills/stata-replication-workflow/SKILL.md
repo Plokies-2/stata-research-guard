@@ -1,52 +1,45 @@
 ---
 name: stata-replication-workflow
-description: Create, revise, or review Stata research workflows using official or maintainer command evidence, project observations, and contextual paper examples. Use for .do-file workflows, data preparation, estimation, robustness, figures, tables, and exports; do not use it as an automatic code grader or research-design certifier.
+description: Create, revise, or review Stata research workflows using the common main rules, complete official or maintainer command guides, and selected real-paper context. Use for .do-file workflows, data preparation, estimation, robustness, figures, tables, and exports; do not use it as a command selector, code grader, or research-design certifier.
 ---
 
 # Stata Research Workflow
 
-Make the project-specific decision yourself. Use `stataResearchGuard` to obtain grammar, examples, and factual context—not a verdict on the code you should write.
+Make the project-specific decision yourself. Use `stataResearchGuard` to obtain rules, grammar, and selected examples, not a verdict.
 
-For every Stata code write or revision, read [general-rules.md](references/general-rules.md) first. It is the canonical concise house style; do not reconstruct its rules from this overview or from a paper example.
+For every Stata code write or revision, read [general-rules.md](references/general-rules.md). For the exact MCP contract, read [command-evidence.md](references/command-evidence.md).
 
-## Work from evidence
+## Evidence flow
 
 1. Respect the user's write boundary. Review, diagnosis, explanation, and explicit no-change requests are read-only.
-2. Inspect the active project source and preserve compatible paths, names, call order, estimate handoffs, workbook sheets, and output contracts.
-3. For a consequential command or interface choice, first inspect the exposed command dictionary and choose one or more commands yourself. The allowed universe during MCP use is only its 109 exposed commands. If the needed command or feature is absent, abort rather than substitute, abbreviate, or manually implement it; report the missing command or functionality.
-4. Send your chosen `selected_commands` to `get_stata_command_evidence` with the request and, when useful, the project path and target files. For only those commands, read any complete cleaned guide in `full_command_guides` before the shorter documentation excerpts, then read the reviewed high-quality paper blocks and their exact-indexed occurrences. A complete guide is untruncated grammar evidence, and a paper block is a non-template usage example; neither selects a research design. If no reviewed bundle is installed or the command is a paper gap, continue with guide-only evidence.
-5. Choose the implementation that best fits the user's research requirements, data state, downstream interface, and preference for readable, maintainable Stata. The server and any scorer never choose a winner.
+2. Inspect the active project yourself and preserve compatible paths, names, call order, estimate handoffs, workbook sheets, and output contracts. The MCP server does not scan project files or use existing command frequency to choose for you.
+3. **Phase 1:** call `get_stata_command_evidence` with only `request`. Read `main_rules` and the 109-command dictionary, then select exact canonical commands yourself. If a required command or capability is absent, stop and report it; do not substitute, abbreviate, or hand-implement it.
+4. **Phase 2:** send `request` and nonempty exact `selected_commands`. Read each complete guide in `full_command_guides` and the compact `paper_example_catalog`. If any complete guide is unavailable, stop on `full_command_guide_unavailable`; do not use paper code or an excerpt as grammar authority. If the catalog is empty, guide-only completion is normal.
+5. **Phase 3, only when useful:** select exact catalog `block_id` values and send the same commands plus nonempty `selected_block_ids`. Read the selected raw block, linked occurrences, and `paper_log_contexts`. A context may contain a stored raw log excerpt and direct artifact metadata; otherwise it is empty. Never ask for all blocks or ask the server to choose one.
+6. Write the simplest implementation that fits the user's research requirements, current data state, downstream interfaces, and the selected command's documented semantics.
 
-A command already present in the project is not automatically preferred; old code may be the reason the user invoked the skill. The user's request and current compatible code remain stronger continuity evidence than a paper's estimator choice.
+Paper examples are high-quality hints, never templates, answers, or oracles. A close block may clarify code immediately around the already selected focus command. A distant block is reference context only. Surrounding estimators, outcomes, samples, treatment, controls, FE, VCE, event windows, formats, and paths do not override the current project. An `outreg2` block surrounded by `areg`, `reghdfe`, or `xtivreg2` does not replace a current `regress` choice.
 
-For evidence roles and missing-source handling, read [command-evidence.md](references/command-evidence.md). For code-writing conventions, read [authoring-conventions.md](references/authoring-conventions.md).
+Raw logs are stored source material, not a derived result-fact layer. Do not infer missing output, rerun a paper for coverage, or create `observed_output_facts`, returned-state classifications, scores, pass/fail labels, rankings, promotion states, or audit queues.
 
-## Mandatory independent pre-final code review
-
-Before calling any Stata code written or substantively revised in the current turn final, whether the code is in a `.do` or `.ado` file or in the response itself, complete this review after the latest implementation and validation:
-
-1. If you are already the designated `final_code_auditor`, do not spawn another reviewer. Otherwise spawn exactly one independent subagent using `gpt-5.6-sol` with `high` reasoning. Do not silently substitute another model or effort.
-2. Give the reviewer the latest user request and corrections, applicable project rules, the complete affected code and exact diff, the user-designated reference when one exists, directly affected upstream and downstream interfaces, relevant selected-command evidence, validation status, and a hash or stable fingerprint of the candidate under review.
-3. Make the reviewer read-only. It must not edit files, spawn another reviewer, choose an unresolved research design, select a command winner, or treat a paper example as a template. It applies the pre-final checklist in [general-rules.md](references/general-rules.md) only to changed code and directly affected interfaces, not as a retroactive score for untouched legacy code.
-4. The reviewer returns concrete material findings with file or block location, evidence, impact, and the smallest corrective direction; unresolved documentation gaps; and any nonblocking notes. When there is no material finding, it says so and identifies the reviewed fingerprint. It does not issue a numeric score, certify causal validity, or equate static review with runtime success.
-5. Resolve every material finding or evidence gap before finalization. Any later substantive Stata code change invalidates the reviewed fingerprint and requires a fresh review. If the exact subagent model, reasoning effort, or agent runtime is unavailable, label the candidate `audit_pending` and do not describe it as final or independently reviewed.
-
-This review is not required for a read-only explanation or diagnosis, an execution or status check that changes no code, or a documentation-only edit.
+For code-writing conventions, read [authoring-conventions.md](references/authoring-conventions.md).
 
 ## Research choices
 
-Do not let a tool choose an unresolved sample, estimand, treatment rule, merge key, fixed effects, weights, VCE, event axis, model role, workbook grouping, or append-versus-replace decision. Resolve it from the user's request and project context or ask the user when the choice materially changes the result.
+Do not let a tool choose an unresolved sample, estimand, treatment rule, merge key, fixed effects, weights, VCE, event axis, model role, workbook grouping, or append-versus-replace decision. Resolve it from the user's request and project context or ask when the choice materially changes the result.
 
-For a new workflow, use the stages actually required by the request. [workflow-taxonomy.md](references/workflow-taxonomy.md) is a checklist, not a mandatory file tree. Preserve a compatible existing structure rather than migrating it to a preferred template.
+For a new workflow, use only the stages required by the request. [workflow-taxonomy.md](references/workflow-taxonomy.md) is a checklist, not a mandatory file tree. Preserve a compatible existing structure.
 
 ## Authoring and outputs
 
-Write direct Stata whose active sample, specification, and output can be understood at the point of use. The detailed authoring boundary and output contracts are in [general-rules.md](references/general-rules.md).
+Write direct Stata whose active sample, specification, and output can be understood at the point of use. Preserve native factor-variable and raw `e(b)` names. Avoid unnecessary programs, deep loops, positional parsing, speculative options, and scratch installation or file-existence checks.
 
-The bundled `outreg2_xlsx` program is a user-approved formatter artifact. Its evidence card describes its inputs and limitations. The model—not the server—decides whether the requested workbook calls for that helper or a direct command.
+The bundled `outreg2_xlsx` program is an implementation artifact for its declared formatting interface. It does not choose the estimator or research design.
 
 If the user approves a new project or structural overhaul that needs a researcher-facing README, read [readme-contract.md](references/readme-contract.md).
 
-## Validation claims
+## Claims
 
-Use tests and runtime evidence proportionally to the requested work. Transport, paths, hashes, file creation, exit codes, logs, and returned state are observable facts. Static diagnostics, runtime completion, and substantive or causal validity are different claims. Never present a software check as journal certification or a research-design proof.
+Transport, paths, file creation, exit codes, logs, and returned state are observable facts. Static inspection, runtime completion, substantive interpretation, and causal validity are different claims.
+
+Do not create deterministic validators, graders, rankers, classifiers, expected-answer oracles, or hidden fallbacks for generated Stata meaning, specification, command choice, correctness, or quality. There is no mandatory independent-audit workflow or `audit_pending` state.

@@ -1,30 +1,22 @@
 # sysuse — complete StataCorp manual entry
 
-webuse — Use dataset from Stata website
+sysuse — Use shipped dataset
 
 ## Description
 
-     webuse filename loads the specified dataset, obtaining it over the web. By default, datasets are ob-
- tained from https://www.stata-press.com/data/r19/. If filename is specified without a suffix, .dta is
- assumed.
-    webuse query reports the URL from which datasets will be obtained.
-    webuse set allows you to specify the URL to be used as the source for datasets. webuse set without
- arguments resets the source to https://www.stata-press.com/data/r19/.
-    You can see lists of available dataset names for each manual in your browser at https://www.stata-
- press.com/data/r19/ or from within Stata at help dta manuals.
+    sysuse filename loads the specified Stata-format dataset that was shipped with Stata or that is stored
+ along the ado-path. If filename is specified without a suffix, .dta is assumed.
+    sysuse dir lists the names of the datasets shipped with Stata plus any other datasets stored along the
+ ado-path. You can also see help dta examples for a list of datasets shipped with Stata.
 
 ## Quick start
 
- Load example nlswork.dta dataset from default Stata Press website
-       webuse nlswork
+ List example datasets installed with Stata
+        sysuse dir
+ Use auto.dta example dataset installed with Stata
+       sysuse auto
  Same as above, but clear current dataset from memory first
-      webuse nlswork, clear
- Change URL for data downloads to http://www.myuniversity.edu/mycourse
-      webuse set www.myuniversity.edu/mycourse
- Reset source for datasets to Stata Press
-       webuse set
- Report current URL from which datasets will be obtained
-       webuse query
+      sysuse auto, clear
 
 ## Menu
 
@@ -32,77 +24,80 @@ webuse — Use dataset from Stata website
 
 ## Syntax
 
- Load dataset over the web
-    webuse [”]filename[”] [ , clear ]
+ Use example dataset installed with Stata
+    sysuse ["]filename["] [ , clear ]
 
- Report URL from which datasets will be obtained
-    webuse query
+ List example Stata datasets installed with Stata
+    sysuse dir [ , all ]
 
- Specify URL from which dataset will be obtained
-    webuse set [https://]url[/]
+## Options
 
-    webuse set [http://]url[/]
-
- Reset URL to default
-    webuse set
-
-Option
  clear specifies that it is okay to replace the data in memory, even though the current data have not been
    saved to disk.
+ all specifies that all datasets be listed, even those that include an underscore (_) in their name. By
+   default, such datasets are not listed.
 
 ## Remarks and examples
 
     Remarks are presented under the following headings:
                  Typical use
-                 A note concerning example datasets
-                 Redirecting the source
+                 A note concerning shipped datasets
+                 Using user-installed datasets
+                 How sysuse works
 
 Typical use
-    In the examples in the Stata manuals, we see things such as
-       . use https://www.stata-press.com/data/r19/lifeexp
+    A few datasets are included with Stata and are stored in the system directories. These datasets are
+ often used in the help files to demonstrate a certain feature.
+    Typing
+       . sysuse dir
 
- The above is used to load—in this instance—the dataset lifeexp.dta. You can type that, and it will
- work:
-       . use https://www.stata-press.com/data/r19/lifeexp
+ lists the names of those datasets. One such dataset is lifeexp.dta. If you simply type use lifeexp,
+ you will see
+       . use lifeexp
+       file lifeexp.dta not found
+       r(601);
+
+    Type sysuse, however, and the dataset is loaded:
+       . sysuse lifeexp
        (Life expectancy, 1998)
 
-    Or you may simply type
-       . webuse lifeexp
-       (Life expectancy, 1998)
+ The datasets shipped with Stata are stored in different folders (directories) so that they do not become
+ confused with your datasets.
 
- webuse is a synonym for use https://www.stata-press.com/data/r19/.
-
-A note concerning example datasets
+A note concerning shipped datasets
+    Not all the datasets used in the manuals are shipped with Stata. To obtain the other datasets, see
+ [D] webuse.
     The datasets used to demonstrate Stata are often fictional. If you want to know whether a dataset is
  real or fictional, and its history, load the dataset and type
         . notes
 
- A few datasets have no notes. This means that the datasets are believed to be real but that they were
+    A few datasets have no notes. This means that the datasets are believed to be real, but that they were
  created so long ago that information about their original source has been lost. Treat such datasets as if
  they were fictional.
 
-Redirecting the source
-    By default, webuse obtains datasets from https://www.stata-press.com/data/r19/, but you can change
-                                                  sue/ has several datasets that you wish to explore. You
- that. Say that the site http://www.zzz.edu/users/~
- can type
-        . webuse set http://www.zzz.edu/users/~sue
+Using user-installed datasets
+   Any datasets you have installed using net or ssc (see [R] net and [R] ssc) can be listed by typing
+ sysuse dir and can be loaded using sysuse filename.
+    Any datasets you store in your personal ado folder (see [P] sysdir) are also listed by sysuse dir and
+ can be loaded using sysuse filename.
 
- webuse will become a synonym for use http://www.zzz.edu/users/~sue/ for the rest of the session
- or until you give another webuse command.
-    When you set the URL, you may omit the trailing slash (as we did above), or you may include it:
-        . webuse set http://www.zzz.edu/users/~sue/
+How sysuse works
+    sysuse simply looks across the ado-path for .dta files; see [P] sysdir.
+     By default, sysuse dir does not list a dataset that contains an underscore (_) in its name. By con-
+ vention, such datasets are used by ado-files to achieve their ends and probably are not of interest to you.
+ If you type sysuse dir, all, then all datasets are listed.
 
- You may also omit https:// or http://:
-        . webuse set www.zzz.edu/users/~sue
+## Stored results
 
- If you type webuse set without arguments, the URL will be reset to the default,
- https://www.stata-press.com/data/r19/:
-        . webuse set
+    sysuse dir stores in the macro r(files) the list of dataset names.
+    sysuse filename stores in the macro r(fn) the filename, including the full path specification.
 
 ## Also see
 
  [D] frames use — Load a set of frames from disk
- [D] sysuse — Use shipped dataset
  [D] use — Load Stata dataset
- [U] 1.2.2 Example datasets
+ [D] webuse — Use dataset from Stata website
+ [P] findfile — Find file in path
+ [P] sysdir — Query and set system directories
+ [R] net — Install and manage community-contributed additions from the internet
+ [R] ssc — Install and uninstall packages from SSC

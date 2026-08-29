@@ -4,47 +4,37 @@ Use this reference when choosing a consequential Stata command or output interfa
 
 ## Required flow
 
-1. Inspect the exposed discovery dictionary. During MCP use, the allowed command universe is only its 109 listed commands.
-2. The model chooses one or more commands from that dictionary based on the user request and current project context. Neither the server nor a scorer selects a winner, ranks one as preferred, or gates the model's choice.
-3. Request `get_stata_command_evidence` with those `selected_commands`. The response must include the common [general-rules.md](general-rules.md), plus the selected commands' guide material and any available paper usage cards on demand. When `full_command_guides` is nonempty, read that complete, hash-linked body before relying on a shorter excerpt; it is never silently truncated.
-4. Apply the general rules and the official or maintainer guide, then write the simplest code that preserves the user's research choices and real project contracts.
+Every response includes the common `main_rules` from [general-rules.md](general-rules.md).
 
-If no listed command supplies a needed command or feature, stop. Do not invent a manual implementation, substitute an unrequested command, or abbreviate the required functionality. Report the missing command or feature to the user. A document-free manual implementation is prohibited.
+1. **Phase 1 — dictionary:** call `get_stata_command_evidence` with only `request`. Read the 109 canonical command records in registry order.
+2. **Model selection:** choose one or more nonempty exact canonical keys from the user's requirements and current project context. The server and paper examples do not choose for you.
+3. **Phase 2 — guide and catalog:** call the tool with `request` and exact `selected_commands`. Read only those commands' complete guides and compact paper profiles. No project path or target-file fields are accepted.
+4. **Optional Phase 3 — raw paper context:** choose exact `selected_block_ids` from the Phase 2 catalog only when useful. Call the tool with the same command boundary and those IDs. Read the exact raw blocks, linked original occurrences, and optional `paper_log_contexts` in requested order.
+5. Apply the guide and main rules, then write the simplest code that preserves the user's research choices and project contracts.
+
+Empty, duplicate, unknown, case-changed, alias-like, out-of-command, and `all` selections are errors. If a required command is outside the dictionary, report the missing command or feature and stop. If a selected command lacks a complete guide, Phase 2 aborts with `full_command_guide_unavailable`; do not substitute an excerpt, implementation source, paper code, memory, another command, or a manual implementation.
 
 ## Evidence roles
 
-- StataCorp manual and help material governs official-command syntax, options, returned state, version notes, and documented incompatibilities.
-- Maintainer help, repositories, and SSC/RePEc documentation governs user-written-command syntax and package behavior.
-- Project observations report literal paths, lines, commands, options, input/output bindings, calls, and estimate handoffs. They do not rank candidates.
-- `paper_usage_occurrence` preserves a paper's exact target use. A separately reviewed `high_quality_example` block preserves the manually chosen working context around that use. Neither is rewritten to satisfy a house rule. The server accepts them only with the 109-command exact index and hash-linked review summary, and returns blocks only for `selected_commands`.
+- StataCorp manual and help material governs official-command grammar.
+- Maintainer help, repositories, and SSC/RePEc documentation governs user-written-command grammar.
+- A compact paper profile helps the model decide whether a real block is worth reading without exposing the raw code in Phase 2.
+- A selected paper block preserves the actual source span around the focus command. Its linked occurrences preserve the original target context.
+- `paper_log_contexts` optionally carries a directly linked raw log excerpt and direct artifact metadata. It is source material, not an interpreted result-fact layer.
+- `main_rules` supplies the shared prospective authoring boundary.
 
-Do not combine these roles into a numeric score. Documentation establishes grammar; the user and model establish the research design.
+These roles do not combine into a score, ranking, winner, pass/fail result, promotion state, or automatic-selection rule.
 
-## Using the router
+## Direct lookup boundary
 
-The dictionary is a discovery step, not an automatic recommender. First select commands yourself, then call `get_stata_command_evidence` with the request and `selected_commands`. The server may split the request into functional atoms such as `estimation.linear` and `export.regression_excel`, but it does not choose the command.
+The server uses `command_registry.json` for Phase 1, groups `paper_example_profiles.jsonl` and `high_quality_paper_blocks.jsonl` directly by `focus_command`, links occurrences named by the selected block, and attaches optional contexts by `parent_block_id`.
 
-Read a returned complete guide before using unfamiliar syntax or options. It preserves syntax, option meanings, warnings, examples, postestimation, and stored results in source order while removing viewer-only presentation. It remains grammar evidence under `general-rules.md`, not a template or a reason to add unrelated options. If no complete guide is indexed, use the readable excerpt and `unresolved_facts`; do not fill a material gap from memory. A document-derived runtime fixture is adapted code, not a verbatim quotation.
-
-The server returns factual context only. It never returns a winner, score, pass/fail decision, promotion status, or automatic-selection decision. Do not construct a validator, ranker, or promotion gate around this evidence.
-
-## Choosing a command
-
-Consider:
-
-- the user's current estimand, sample, panel structure, fixed effects, weights, VCE, version, and output requirements;
-- the command's documented semantics and returned state;
-- compatibility with downstream postestimation, stored estimates, tables, and figures;
-- the factual current-project interfaces;
-- the nearest useful reviewed paper block, when available; and
-- the simplest readable implementation that satisfies the contract.
-
-Existing usage is a continuity consideration only after it passes this substantive comparison. A manual workaround, duplicate loop, fragile export, or outdated command can be evidence in favor of migration.
+It does not depend on `command_paper_index`, paper-review summaries, integrity inventories, audit JSON, INCLUDE/EXCLUDE decisions, or coverage queues. It does not scan the user's project in Phase 2. Do not restore those layers or build a parallel validator around the data.
 
 ## Paper boundary
 
-Never search or return an entire raw archive as if it were a reviewed example. A paper card must carry a manually bounded high-quality block with source path, source-file hash, span, exact code, focus command, target spans, boundary rationale, and explicit carry-over limits. The reviewed occurrence, exact index, block, review-summary, and passing final-audit files must be installed together; unreviewed rows and partial data are not a fallback. If that block does not exist, return no paper card and say so.
+Paper examples are high-quality hints, not templates, answers, or oracles. Their surrounding estimator, sample, fixed effects, VCE, output code, and upstream or downstream choices do not own the current design. An `outreg2` block containing `areg` or `reghdfe` does not change a current `regress` specification.
 
-Use guide-only evidence when no reviewed paper block exists. For an available block, focus on the selected command. Its surrounding estimator and upstream/downstream code are reference context, not an instruction to adopt that paper's design: an `outreg2` block containing `areg` does not change a current `regress` specification into `areg`.
+Use a close block only to understand and harmonize code around the already selected focus command. Treat a distant block as reference context and write direct code under the guide and main rules. Multiple blocks may be chosen when the model needs genuinely different variants; the server does not rank or reorder them.
 
-When a block is close to the current task, harmonize only the selected command's immediately surrounding before/after code with the current project and the guide. When it is distant, do not force it into a template; write direct code using model judgment. A complex command may use two or more blocks when material variants differ. In every case, the user-selected or current-code command has priority over a paper example.
+Return raw stored log text and direct artifact metadata as-is. Do not extract `observed_output_facts`, classify returned state, add factual-limit labels, score output, infer missing results, or rerun papers to fill coverage. An empty `paper_log_contexts` array is normal.

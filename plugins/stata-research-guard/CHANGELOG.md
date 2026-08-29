@@ -1,5 +1,24 @@
 # Changelog
 
+## 2026-08-30 — direct guide and paper-context lookup
+
+- Removed `command_paper_index`, paper review summary, paper integrity audit, project scanning, and exhaustive paper hash/span gates from the product path.
+- Reduced the MCP contract to the common main rules plus three direct lookups: the 109-command dictionary, selected full guides with compact profiles, and exact selected paper blocks with linked occurrences and optional raw log or artifact context.
+- Kept 166 paper profiles and blocks and 12 optional raw-context attachments without turning attachment count into a coverage target.
+- Replaced the broad paper-audit and semantic tests with narrow Node smoke tests for transport shape and raw-material attachment. No Python command-evidence validator, audit queue, scoring, ranking, winner, promotion, or `audit_pending` state remains.
+- Preserved the nonbinding paper boundary: surrounding estimators in an `outreg2` example cannot replace the model's current `regress` selection.
+
+## 2026-08-29 — stateless three-phase exact evidence routing
+
+- Replaced the two-phase payload with one public tool and three exact stateless input shapes: request-only neutral discovery, model-selected command guides and compact profile catalog, and optional model-selected raw paper blocks.
+- Kept Phase 1 in canonical registry order and removed paper availability, counts, profiles, code, project observations, frequency, score, rank, recommendations, and winner signals from command discovery.
+- Made Phase 2 return every selected command's complete untruncated guide, fail the entire request closed with `reason=full_command_guide_unavailable` for `cgmreg` or `jwdidstacked`, and stop normally at guide-only evidence when no paper profile exists.
+- Added exact one-to-one ID, focus-command, source-block-hash, registry-order, and raw-order readback for all 166 compact profiles without grading their prose or generated Stata semantics.
+- Made Phase 3 reject empty, unknown, duplicate, case-changed, all-block, mixed-phase, and command-mismatched selections, preserve requested block order, and return only the selected raw blocks and linked occurrences without repeating Phase 2 payloads.
+- Added optional raw `paper_log_contexts` to a selected Phase 3 paper block when a directly linked deposited log or isolated run exists; no result-fact extraction, returned-state inference, score, or validation layer is exposed.
+- Repeated the model-autonomy, closed-dictionary, guide-priority, nonbinding-paper, direct-authoring, and deterministic-semantic-validation boundaries in every response. The validation prohibition does not restrict model reasoning, user review, or the exact independent read-only final audit.
+- Documented that surrounding `areg`, `reghdfe`, or `xtivreg2` in an `outreg2` example never replaces the current selected estimator, and that the model may select multiple materially different blocks for a complex variant.
+
 ## 2026-08-29 — audited 107-command full-guide bundle
 
 - Bundled complete cleaned official or maintainer guides for 107 of the 109 closed-dictionary commands and preserved every indexed primary source plus nine required supplemental sources.

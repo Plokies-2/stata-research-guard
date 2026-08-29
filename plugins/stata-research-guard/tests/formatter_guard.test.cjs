@@ -25,18 +25,3 @@ test("approved outreg2_xlsx source remains exact", () => {
   assert.match(text, /erase "`scratch'\.txt"/);
   assert.match(text, /capture confirm file "`scratch'\.txt"/);
 });
-
-test("evidence server presents formatter as an interface, not a selector exception", () => {
-  const { buildCommandEvidence } = require(path.join(ROOT, "mcp", "server.cjs"));
-  const evidence = buildCommandEvidence({
-    request: "Export regression tables to an Excel workbook",
-    selected_commands: ["outreg2"],
-  });
-  const card = evidence.related_artifacts.find((row) => row.artifact === "outreg2_xlsx");
-  assert.ok(card);
-  assert.equal(card.source_hash, EXPECTED_SOURCE_SHA256);
-  assert.ok(card.required_input_state.some((item) => item.includes("already chosen")));
-  assert.ok(card.boundaries.some((item) => item.includes("does not choose or replace the estimator")));
-  assert.equal(Object.hasOwn(card, "promotion_status"), false);
-  assert.equal(Object.hasOwn(card, "auto_selectable"), false);
-});

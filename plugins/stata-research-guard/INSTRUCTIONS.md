@@ -1,25 +1,31 @@
 # Stata Research Guard Instructions
 
-Use this plugin to obtain command evidence before making a consequential Stata command or output-interface choice. The evidence supports the model's judgment; it does not replace it. The exposed command dictionary is the hard command boundary while the plugin is in use.
+Use this plugin as a source of command grammar and real-paper context. The model remains responsible for command choice, project-specific research design, and implementation.
 
-## Evidence request
+## Evidence flow
 
-First call `get_stata_command_evidence` without `selected_commands` and read the complete command dictionary. Choose one or more canonical command keys yourself. Then call it again with those `selected_commands`; only their guide and paper evidence should be loaded. Add `project_path` and project-relative `target_files` when current project facts matter.
+Every tool response includes the common `main_rules` from `general-rules.md`.
 
-Do not generate, substitute, abbreviate, or hand-implement a command outside the dictionary. If the requested workflow genuinely needs an absent command, abort and report the missing command or capability. An empty, duplicated, or unknown selection is an error rather than a fallback.
+1. Call `get_stata_command_evidence` with `request` only. Read the registry-ordered 109-command dictionary and choose one or more exact canonical command keys yourself.
+2. Call it with `request` and nonempty exact `selected_commands`. Read every returned complete official or maintainer guide and the compact `paper_example_catalog`. Phase 2 contains no raw paper code, occurrences, logs, project scan, command cards, ranking, or recommendation.
+3. Only when a paper example is useful, choose one or more exact `block_id` values from that catalog and call Phase 3 with the same command boundary plus `selected_block_ids`. Read the selected raw paper blocks, linked original occurrences, and optional `paper_log_contexts`. Do not request an empty or `all` selection and do not ask the server to choose a block.
 
-Read the returned complete official or maintainer guide first when `full_command_guides` is nonempty; it is supplied in full so syntax, warnings, examples, postestimation, and returned results can be resolved in the same request. Do not request a shorter excerpt to replace it or silently truncate it. Then apply the accompanying `general-rules.md`. The guide is grammar evidence, not permission to copy every option or change the research design.
+If a selected command lacks a complete guide, the request aborts with `full_command_guide_unavailable`. Do not replace the guide with an excerpt, implementation source, paper code, memory, another command, or a manual implementation. If the necessary command is outside the dictionary, report the missing command or capability and stop.
 
-A paper usage card contains a manually bounded `high_quality_example` block and any linked unmodified occurrences for the selected focus command. It is not a template. Treat its surrounding estimator, sample, fixed effects, VCE, and downstream code as context only; an `outreg2` example never authorizes replacing the project's chosen estimator. A project observation records what exists at a path and line; it is not a recommendation to preserve an old command or workaround.
+## Paper boundary
 
-If the reviewed occurrence, exact-index, high-quality-block, review-summary, and passing integrity-audit files are not installed together, or a selected command has no reviewed block, use the guide-only path. Never fall back to an unreviewed corpus row. If guide evidence or a material research choice is incomplete, report the gap or ask the user rather than inventing syntax. A close block can guide minimal harmonization around the selected command; a distant block is a hint, not a compulsory template.
+Paper examples are high-quality hints, not templates, answers, or oracles. Keep the current project's command and research specification. Surrounding outcomes, samples, controls, estimators, FE, VCE, event windows, output formats, and paths are nonbinding. An `outreg2` example containing `areg` or `reghdfe` does not change a selected `regress`.
+
+When a directly linked log or artifact exists, `paper_log_contexts` carries the stored raw excerpt and direct metadata. Do not reinterpret it into result facts, returned-state classifications, scores, validation labels, or recommendations. When no context exists, accept the empty array; do not rerun the paper or infer missing output.
+
+The product does not use `command_paper_index`, paper-review summaries, integrity audit JSON, INCLUDE/EXCLUDE decisions, pass/fail flags, promotion queues, or project scans. Do not restore them.
 
 ## Writing boundary
 
-Preserve the user's literal scope and compatible project interfaces. Review-only requests authorize no project write. For a write, inspect the current source and choose the simplest implementation that satisfies the declared research and output requirements.
+Preserve the user's literal scope and compatible project interfaces. Review-only requests authorize no write. For approved edits, inspect the current source and implement the simplest readable solution under `general-rules.md`.
 
-Prefer direct, readable Stata under `general-rules.md`. Keep samples, models, fixed effects, weights, VCE, event windows, and output destinations visible. Avoid manual factor-variable substitutes, manual coefficient or standard-error reconstruction, unnecessary programs, positional dispatch, speculative options, and nested control flow that hides research choices. Do not add score, promotion, pass/fail, or generated-code grading logic.
+Keep samples, models, fixed effects, weights, VCE, event windows, and output destinations visible. Preserve native factor-variable and raw `e(b)` names. Avoid unnecessary programs, deep loops, positional dispatch, speculative options, manual coefficient reconstruction, and scratch package or file checks.
 
-Preserve native factor-variable and raw `e(b)` names. Preserve raw `outreg2` coefficient, standard-error, omitted/base, and note rows. Use the approved `outreg2_xlsx` helper only as a formatter after the model has decided that its declared interface fits the requested workbook. Do not treat the helper as a general selection exception.
+Do not build deterministic software that scores, ranks, selects, promotes, grades, classifies, or certifies generated Stata semantics, command choices, research specifications, or code quality. Model reasoning and ordinary source-grounded review remain allowed; there is no `audit_pending` product state or mandatory audit queue.
 
-When execution is requested, report runtime exit, log, produced files, and returned state as observations. Keep runtime completion, static diagnostics, and substantive or causal judgment distinct.
+When execution is requested, report runtime exit, logs, produced files, and returned state as observations. Keep transport checks, runtime completion, substantive interpretation, and causal validity distinct.

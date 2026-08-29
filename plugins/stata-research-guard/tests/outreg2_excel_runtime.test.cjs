@@ -8,7 +8,6 @@ const path = require("node:path");
 const test = require("node:test");
 
 const PLUGIN_ROOT = path.resolve(__dirname, "..");
-const WORKSPACE_ROOT = path.resolve(PLUGIN_ROOT, "..", "..");
 const FIXTURE = path.join(PLUGIN_ROOT, "tests", "fixtures", "outreg2_excel_runtime.do");
 const STATA_CANDIDATES = [
   process.env.STATA_EXE,
@@ -36,13 +35,15 @@ test("outreg2 Excel fixture runs freshly in StataMP and preserves raw-output mar
   if (!stata) return t.skip("StataMP-64 is unavailable");
 
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-outreg2-excel-"));
-  const stataBootstrapLog = path.join(WORKSPACE_ROOT, `${path.basename(root)}.log`);
   t.after(() => {
-    fs.rmSync(root, { recursive: true, force: true });
-    fs.rmSync(stataBootstrapLog, { force: true });
+    try {
+      fs.rmSync(root, { recursive: true, force: true });
+    } catch (error) {
+      if (error.code !== "EPERM") throw error;
+    }
   });
   const completed = childProcess.spawnSync(stata, ["/e", "do", FIXTURE, root], {
-    cwd: WORKSPACE_ROOT,
+    cwd: root,
     encoding: "utf8",
     timeout: 120000,
     windowsHide: true,
