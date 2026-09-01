@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-02 — live exact-help fallback and compact evidence
+
+- Added exact-topic live Stata help fallback inside Guard for commands outside the 115-command registry, borrowing mcpStata's former locate-and-render pattern without restoring an mcpStata help tool or dependency.
+- Reduced Phase 1 to a compact command, family, stage, and role index; Phase 2 and Phase 3 now return only the common-rules path and SHA-256 instead of repeating the full rules.
+- Limited mandatory Phase 2 evidence to code writing or revision, data mutation or saving, estimation or testing, exports, and consequential returned-state use; paired read-only mcpStata inspection may proceed after both servers are callable.
+
 ## 2026-09-02 — core read-only data inspection commands
 
 - Added official Stata 18 evidence for `count`, `describe`, `ds`, `levelsof`, `list`, and `lookfor`, expanding the closed dictionary from 109 to 115 commands.

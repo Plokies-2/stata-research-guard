@@ -1,7 +1,7 @@
 {
   "name": "stata-research-guard",
-  "version": "0.3.0+codex.20260901163045",
-  "description": "Provides Stata main rules, a closed command dictionary, Stata 18 help-first evidence, and command-selective expanded documentation plus selected paper context.",
+  "version": "0.3.0+codex.20260901173849",
+  "description": "Provides Stata main rules, a compact command index, Stata 18 help-first evidence with live exact-help fallback, and command-selective expanded documentation plus selected paper context.",
   "author": {
     "name": "song7"
   },
@@ -9,7 +9,7 @@
   "interface": {
     "displayName": "Stata Research Guard",
     "shortDescription": "Stata 18 help-first command and research context.",
-    "longDescription": "Lets the model inspect a closed 115-command Stata dictionary, choose exact canonical commands, and retrieve only those commands' Stata 18-rendered official or maintainer help, factual expanded-documentation status, and compact paper profiles. When help is insufficient, combined Phase 3 supplies whole command entries from installed Stata 18 PDF manuals or a clearly limited author supplement only for an exact expanded_commands subset, plus optional exact paper code and directly linked raw log or artifact excerpts. Commands outside the dictionary abort, while unavailable help is reported per command without hiding its paper catalog. The model decides which selected commands to expand and which paper blocks to request. The plugin does not scan projects, score or rank candidates, promote templates, productize paper audits, grade generated code, or certify a research design.",
+    "longDescription": "Lets the model inspect a compact 115-command Stata index, choose exact commands, and retrieve bundled Stata 18 official or maintainer help for registered commands. Exact commands outside the index are resolved on demand from the active Stata installation inside this Guard MCP, without restoring an mcpStata help tool. When bundled help is insufficient, Phase 3 supplies registered commands' whole Stata 18 PDF entries or a limited author supplement plus optional exact paper code and directly linked raw log or artifact excerpts. The model decides commands and context. The plugin does not scan projects, score or rank candidates, promote templates, grade generated code, or certify a research design.",
     "developerName": "song7",
     "category": "Developer Tools",
     "capabilities": [
@@ -17,7 +17,7 @@
       "Skills"
     ],
     "defaultPrompt": [
-      "Use the skill and get_stata_command_evidence to read the main rules and command dictionary, choose exact commands, then read their Stata 18-rendered help first.",
+      "Use the skill and get_stata_command_evidence to read the main rules and compact command index, choose exact commands, then read bundled or live installed help first.",
       "When more context is needed, request expanded documentation only for the exact selected-command subset that needs it, and request exact paper blocks independently.",
       "Treat paper examples and optional raw logs as nonbinding source context; preserve the current project and selected research specification.",
       "Proceed from help when it fully explains the requested action and the code follows directly; report material help gaps and do not treat paper examples as grammar authority."

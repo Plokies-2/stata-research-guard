@@ -8,8 +8,9 @@ Stata Research Guard는 Codex가 연구 목적에 맞는 Stata 명령을 고르�
 
 | 자료 | 내용 | 활용 방식 |
 | --- | --- | --- |
-| Command dictionary | 115개 canonical Stata command의 역할, 기능, 입력 상태, 출력 형태와 주요 tradeoff | 모델이 현재 작업에 필요한 명령을 고를 때 사용 |
+| Command index | 115개 등록 명령의 command, family, stage와 한 줄 역할 | 모델이 현재 작업에 필요한 명령을 고를 때 사용하는 간결한 출발점 |
 | Command help | 115개 명령의 Stata-rendered 공식·maintainer help: 113개 `available`, 2개 `unavailable` | 선택한 명령의 기본 문법, option, warning, stored result 확인 |
+| Live exact help | 사전 밖 exact command의 활성 Stata `.sthlp`·`.hlp` | 등록되지 않은 명령도 Guard 안에서 온디맨드로 문법 확인 |
 | Expanded documentation | 공식 명령 69개의 설치된 Stata 18 PDF command entry, `jregress` 저자 보충문서 1개 | help만으로 부족할 때 Phase 3에서 선택 명령별로 추가 확인 |
 | Paper example | 166개 실제 논문 코드 블록과 target occurrence | 선택한 명령이 데이터 준비, 추정, 저장, 표·그림 작성과 이어지는 방식 참고 |
 | Raw log and artifact | 논문 블록과 직접 연결된 12개 원문 log 또는 artifact 정보 | 해당 코드가 남긴 원문 실행 기록과 산출물 위치 확인 |
@@ -25,7 +26,7 @@ Stata Research Guard는 Codex가 연구 목적에 맞는 Stata 명령을 고르�
 get_stata_command_evidence
 ```
 
-모든 응답에는 `general-rules.md`가 `main_rules`로 함께 들어갑니다. 자료는 세 단계로 불러옵니다.
+Phase 1에는 `general-rules.md` 전문이 한 번 들어갑니다. Phase 2·3은 같은 규칙의 path와 SHA-256만 반환해 컨텍스트 반복을 피합니다. 자료는 세 단계로 불러옵니다.
 
 ### 1. 명령 선택
 
@@ -37,7 +38,7 @@ get_stata_command_evidence
 }
 ```
 
-응답의 `command_dictionary`에는 115개 명령의 간결한 설명이 담깁니다. 모델은 연구 목적과 현재 프로젝트를 바탕으로 사용할 command key를 직접 고릅니다.
+응답의 `command_dictionary`에는 115개 등록 명령의 command, family, stage와 한 줄 역할만 담깁니다. 모델은 연구 목적과 현재 프로젝트를 바탕으로 사용할 exact command를 직접 고릅니다. 이 목록은 출발점이지 닫힌 실행 경계가 아닙니다.
 
 ### 2. 선택한 명령의 help와 논문 목록 확인
 
@@ -50,7 +51,7 @@ get_stata_command_evidence
 }
 ```
 
-응답의 `command_evidence`에는 요청 순서대로 command별 packet이 들어갑니다. 각 packet에는 `help_status`, Stata가 `smcl2txt`로 렌더링한 `command_help`, `expanded_documentation` 상태, 관련 논문 profile 목록이 들어갑니다. `xtreg`와 `cgmreg`에는 help 본문이 들어가고, help가 없는 `jregress`와 `jwdidstacked`는 `command_help=null`로 반환됩니다. help가 없어도 논문 catalog 자체는 감추지 않지만, catalog를 명령 문법의 근거로 사용해서는 안 됩니다.
+응답의 `command_evidence`에는 요청 순서대로 command별 packet이 들어갑니다. 등록 명령에는 Stata가 `smcl2txt`로 렌더링한 bundled help, expanded-documentation 상태와 논문 profile이 들어갑니다. 사전 밖 exact command는 Guard가 활성 Stata ado-path에서 `.sthlp` 또는 `.hlp`를 찾아 같은 방식으로 렌더링하며 `registry_status=outside_dictionary`로 표시합니다. 이 live fallback에는 bundled PDF expansion이나 paper catalog가 없습니다. exact help도 없으면 해당 command branch만 중단합니다.
 
 help에 사용자가 하려는 행동이 모두 설명되어 있고, 그 설명을 직접 적용해 어렵지 않게 코드를 쓸 수 있으며, version·option 상호작용·returned result·후속 표/그림/저장 연결에 중요한 의문이 남지 않으면 여기서 멈춥니다. 명령이 통계 명령이거나 user-written이라는 이유, 데이터를 바꾸거나 출력과 이어진다는 이유만으로 더 긴 자료를 요구하지 않습니다.
 
@@ -79,6 +80,10 @@ Phase 2에서는 공식·maintainer help가 명령 문법의 첫 기준입니다
 논문 코드는 실제 연구자가 그 명령을 어떻게 사용했는지 보여 주는 고품질 참고 예시입니다. 현재 프로젝트의 표본과 회귀 사양을 대신하는 template은 아닙니다. 예를 들어 `outreg2` 예시 주변에 `areg`나 `reghdfe`가 있더라도, 현재 모형이 `regress`라면 estimator는 그대로 두고 `outreg2` 사용 부분만 참고합니다.
 
 가까운 예시는 선택한 명령의 앞뒤 흐름을 현재 코드에 맞게 조화시키는 데 활용할 수 있습니다. 연구 환경이 다른 예시는 일반적인 사용 방식만 참고합니다. 원문 log와 artifact 정보도 당시 실행을 이해하기 위한 자료이며, 현재 연구 결과를 대신하지 않습니다.
+
+## 읽기와 실행의 경계
+
+Guard와 mcpStata가 모두 연결됐다면 세션 목록, 메모리 안으로의 데이터 로드, 구조화된 metadata·count·variable·value·row·log·graph 목록과 returned-state 확인 같은 읽기 전용 inspection은 매 행동마다 Phase 2를 다시 받지 않고 진행할 수 있습니다. Stata 코드를 쓰거나 고칠 때, 데이터를 변경·저장할 때, 추정·검정·export를 할 때, 반환 상태를 후속 코드가 실질적으로 소비할 때는 먼저 해당 exact command의 Phase 2 help를 확인합니다.
 
 ## Stata 코드 작성 원칙
 

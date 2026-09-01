@@ -4,6 +4,8 @@ const fs = require("node:fs");
 const path = require("node:path");
 const readline = require("node:readline");
 const crypto = require("node:crypto");
+const os = require("node:os");
+const childProcess = require("node:child_process");
 
 const PLUGIN_ROOT = path.resolve(__dirname, "..");
 const DATA_ROOT = path.join(PLUGIN_ROOT, "data");
@@ -22,6 +24,8 @@ const GENERAL_RULES_PATH = path.join(
   "general-rules.md",
 );
 const GENERAL_RULES_SOURCE_PATH = "skills/stata-replication-workflow/references/general-rules.md";
+const EXACT_HELP_TOPIC = /^[A-Za-z][A-Za-z0-9_]*$/;
+const LIVE_HELP_CACHE = new Map();
 
 function readUtf8(file) {
   return new TextDecoder("utf-8", { fatal: true }).decode(fs.readFileSync(file));
@@ -87,21 +91,45 @@ const CURATED_LOG_RANGES = new Map([
 ]);
 
 function mainRules() {
+  const content = readUtf8(GENERAL_RULES_PATH);
   return {
     source_path: GENERAL_RULES_SOURCE_PATH,
-    content: readUtf8(GENERAL_RULES_PATH),
+    sha256: sha256Text(content),
+    content,
   };
+}
+
+function mainRulesReference() {
+  const content = readUtf8(GENERAL_RULES_PATH);
+  return {
+    source_path: GENERAL_RULES_SOURCE_PATH,
+    sha256: sha256Text(content),
+  };
+}
+
+function compactCommandDictionary() {
+  return registry.commands.map(({ command, family_id, stages, role }) => ({
+    command,
+    family_id,
+    stages,
+    role,
+  }));
+}
+
+function exactHelpTopic(command) {
+  if (typeof command !== "string" || !EXACT_HELP_TOPIC.test(command)) {
+    throw new Error(`ABORT invalid_help_topic: ${JSON.stringify(command)}`);
+  }
+  return command;
 }
 
 function selectedCommandsFrom(args) {
   if (!Array.isArray(args.selected_commands) || args.selected_commands.length === 0) {
-    throw new Error("ABORT command_not_in_dictionary: selected_commands must be a non-empty array of canonical registry keys");
+    throw new Error("ABORT empty_command_selection: selected_commands must be a non-empty array of exact command topics");
   }
   const seen = new Set();
   for (const command of args.selected_commands) {
-    if (typeof command !== "string" || !commandsByName.has(command)) {
-      throw new Error(`ABORT command_not_in_dictionary: ${JSON.stringify(command)}`);
-    }
+    exactHelpTopic(command);
     if (seen.has(command)) {
       throw new Error(`ABORT duplicate_selected_command: ${JSON.stringify(command)}`);
     }
@@ -140,7 +168,7 @@ function optionalExpandedCommandsFrom(args, selectedCommands) {
   const seen = new Set();
   for (const command of args.expanded_commands) {
     if (typeof command !== "string" || !commandsByName.has(command)) {
-      throw new Error(`ABORT command_not_in_dictionary: ${JSON.stringify(command)}`);
+      throw new Error(`ABORT expanded_command_not_registered: ${JSON.stringify(command)}`);
     }
     if (seen.has(command)) {
       throw new Error(`ABORT duplicate_expanded_command: ${JSON.stringify(command)}`);
@@ -203,7 +231,241 @@ function commandHelp(command) {
   return { ...entry, content: readUtf8(contentPath) };
 }
 
-function commandEvidence(command) {
+function sleepSync(milliseconds) {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, milliseconds);
+}
+
+function stataPathCandidates() {
+  const candidates = [];
+  if (process.env.STATA_PATH) candidates.push(process.env.STATA_PATH);
+  if (process.platform === "win32") {
+    candidates.push(
+      "C:\\Program Files\\Stata18\\StataMP-64.exe",
+      "C:\\Program Files\\Stata18\\StataSE-64.exe",
+      "C:\\Program Files\\Stata18\\StataBE-64.exe",
+      "C:\\Program Files\\Stata18\\Stata-64.exe",
+    );
+  } else {
+    for (const name of ["stata-mp", "stata-se", "stata"]) {
+      const located = childProcess.spawnSync("which", [name], { encoding: "utf8" });
+      if (located.status === 0 && located.stdout.trim()) candidates.push(located.stdout.trim());
+    }
+  }
+  return [...new Set(candidates.map((candidate) => path.resolve(candidate)))];
+}
+
+function discoverStataPath() {
+  return stataPathCandidates().find((candidate) => fs.existsSync(candidate)) || null;
+}
+
+function stataPath(file) {
+  return path.resolve(file).replaceAll("\\", "/").replaceAll('"', '""');
+}
+
+function runStataBatch(stata, doFile, cwd, marker, timeoutMs = 60000) {
+  const completed = childProcess.spawnSync(stata, ["/e", "do", doFile], {
+    cwd,
+    encoding: "utf8",
+    windowsHide: true,
+    timeout: timeoutMs,
+  });
+  const deadline = Date.now() + Math.min(timeoutMs, 10000);
+  while (!fs.existsSync(marker) && Date.now() < deadline) sleepSync(100);
+  return completed;
+}
+
+function locateInstalledHelp(stata, topic, workspace) {
+  const resultFile = path.join(workspace, "located.txt");
+  const doFile = path.join(workspace, "locate.do");
+  fs.writeFileSync(doFile, [
+    "version 18",
+    "set more off",
+    `capture findfile ${topic}.sthlp`,
+    "local lookup_rc = _rc",
+    "if `lookup_rc' {",
+    `    capture findfile ${topic}.hlp`,
+    "    local lookup_rc = _rc",
+    "}",
+    "if !`lookup_rc' local help_path `\"`r(fn)'\"'",
+    `file open guard_help using "${stataPath(resultFile)}", write text replace`,
+    "if `lookup_rc' file write guard_help \"NOT_FOUND\"",
+    "else {",
+    "    file write guard_help \"FOUND\" _n",
+    "    file write guard_help `\"`help_path'\"'",
+    "}",
+    "file close guard_help",
+    "exit, clear",
+  ].join("\n"), "utf8");
+  const completed = runStataBatch(stata, doFile, workspace, resultFile);
+  if (!fs.existsSync(resultFile)) {
+    const detail = completed.error?.message || completed.stderr || completed.stdout || "no lookup result";
+    throw new Error(`live Stata help lookup failed: ${String(detail).trim()}`);
+  }
+  const [status, ...sourceLines] = fs.readFileSync(resultFile, "utf8").split(/\r?\n/);
+  return status.trim() === "FOUND" ? sourceLines.join("\n").trim() : null;
+}
+
+function includeCandidates(sourceFile, includeName) {
+  const sourceDir = path.dirname(sourceFile);
+  const parentDir = path.dirname(sourceDir);
+  const fileName = includeName.endsWith(".ihlp") ? includeName : `${includeName}.ihlp`;
+  const first = fileName[0].toLowerCase();
+  return [
+    path.join(sourceDir, fileName),
+    path.join(sourceDir, first, fileName),
+    path.join(parentDir, fileName),
+    path.join(parentDir, first, fileName),
+  ];
+}
+
+function expandHelpIncludes(sourceFile, seen = new Set(), depth = 0) {
+  const resolved = path.resolve(sourceFile);
+  if (depth > 8 || seen.has(resolved)) return { content: "", missing: [] };
+  seen.add(resolved);
+  const missing = [];
+  const output = [];
+  for (const line of fs.readFileSync(resolved, "utf8").split(/\r?\n/)) {
+    const match = line.trim().match(/^INCLUDE\s+help\s+([A-Za-z0-9_.]+)$/i);
+    if (!match) {
+      output.push(line);
+      continue;
+    }
+    const includeFile = includeCandidates(resolved, match[1]).find((candidate) => fs.existsSync(candidate));
+    if (!includeFile) {
+      missing.push(match[1]);
+      continue;
+    }
+    const expanded = expandHelpIncludes(includeFile, seen, depth + 1);
+    output.push(expanded.content);
+    missing.push(...expanded.missing);
+  }
+  return { content: output.join("\n"), missing: [...new Set(missing)] };
+}
+
+function renderInstalledHelp(stata, sourceFile, topic, workspace) {
+  const expandedFile = path.join(workspace, `${topic}.sthlp`);
+  const renderedFile = path.join(workspace, `${topic}.txt`);
+  const statusFile = path.join(workspace, "rendered.status");
+  const doFile = path.join(workspace, "render.do");
+  const expanded = expandHelpIncludes(sourceFile);
+  fs.writeFileSync(expandedFile, expanded.content, "utf8");
+  fs.writeFileSync(doFile, [
+    "version 18",
+    "set more off",
+    `capture noisily translate "${stataPath(expandedFile)}" "${stataPath(renderedFile)}", translator(smcl2txt) replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)`,
+    "local translate_rc = _rc",
+    `file open guard_status using "${stataPath(statusFile)}", write text replace`,
+    "file write guard_status `\"`translate_rc'\"'",
+    "file close guard_status",
+    "exit, clear",
+  ].join("\n"), "utf8");
+  const completed = runStataBatch(stata, doFile, workspace, statusFile);
+  const rc = fs.existsSync(statusFile) ? fs.readFileSync(statusFile, "utf8").trim() : null;
+  if (rc !== "0" || !fs.existsSync(renderedFile)) {
+    const detail = completed.error?.message || completed.stderr || completed.stdout || `translate rc=${rc}`;
+    throw new Error(`live Stata help rendering failed: ${String(detail).trim()}`);
+  }
+  return {
+    content: fs.readFileSync(renderedFile, "utf8").trim(),
+    missingIncludes: expanded.missing,
+  };
+}
+
+function liveHelpAuthority(sourceFile) {
+  const normalized = sourceFile.replaceAll("\\", "/").toLowerCase();
+  return normalized.includes("/stata18/ado/base/") || normalized.includes("/stata18/ado/updates/")
+    ? "StataCorp official help from active Stata 18 installation"
+    : "installed package help from active Stata ado-path";
+}
+
+function lookupLiveStataHelp(command) {
+  const topic = exactHelpTopic(command);
+  if (LIVE_HELP_CACHE.has(topic)) return LIVE_HELP_CACHE.get(topic);
+  const stata = discoverStataPath();
+  if (!stata) {
+    const unavailable = {
+      status: "unavailable",
+      help: null,
+      limitations: ["No Stata executable was found through STATA_PATH or the supported Stata 18 installation paths."],
+    };
+    LIVE_HELP_CACHE.set(topic, unavailable);
+    return unavailable;
+  }
+  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), "stata-guard-help-"));
+  try {
+    const sourceFile = locateInstalledHelp(stata, topic, workspace);
+    if (!sourceFile || !fs.existsSync(sourceFile)) {
+      const unavailable = {
+        status: "unavailable",
+        help: null,
+        limitations: [`help ${topic} was not found on the active Stata ado-path.`],
+      };
+      LIVE_HELP_CACHE.set(topic, unavailable);
+      return unavailable;
+    }
+    const rendered = renderInstalledHelp(stata, sourceFile, topic, workspace);
+    const limitations = [
+      "This exact-topic fallback is read from the active Stata installation and is not a bundled registry entry.",
+      "No bundled PDF expansion or paper example catalog is attached for an out-of-dictionary topic.",
+    ];
+    if (rendered.missingIncludes.length > 0) {
+      limitations.push(`Unresolved INCLUDE help fragments: ${rendered.missingIncludes.join(", ")}.`);
+    }
+    const available = {
+      status: "available",
+      help: {
+        command: topic,
+        authority: liveHelpAuthority(sourceFile),
+        source_kind: "live_installed_help",
+        source_version: "active Stata installation",
+        source_path: sourceFile,
+        help_topics: [topic],
+        limitations,
+        content: rendered.content,
+      },
+      limitations,
+    };
+    LIVE_HELP_CACHE.set(topic, available);
+    return available;
+  } catch (error) {
+    const unavailable = {
+      status: "unavailable",
+      help: null,
+      limitations: [error.message],
+    };
+    LIVE_HELP_CACHE.set(topic, unavailable);
+    return unavailable;
+  } finally {
+    try {
+      fs.rmSync(workspace, { recursive: true, force: true });
+    } catch {
+      // Stata can briefly retain a batch-log handle on Windows; temp cleanup is best effort.
+    }
+  }
+}
+
+function dynamicCommandEvidence(command, liveHelpLookup) {
+  const live = liveHelpLookup(command);
+  return {
+    command,
+    registry_status: "outside_dictionary",
+    help_status: live.status,
+    command_help: live.help,
+    limitations: live.limitations,
+    expanded_documentation: {
+      status: "unavailable",
+      authority: null,
+      source_kind: null,
+      source_version: null,
+      source_relation_to_help: null,
+      limitations: ["Out-of-dictionary exact help topics do not have bundled expanded documentation."],
+    },
+    paper_example_catalog: [],
+  };
+}
+
+function commandEvidence(command, liveHelpLookup = lookupLiveStataHelp) {
+  if (!commandsByName.has(command)) return dynamicCommandEvidence(command, liveHelpLookup);
   const entry = helpGuidesByCommand.get(command);
   if (!entry) throw new Error(`command help index is missing registry command: ${command}`);
   return {
@@ -319,23 +581,24 @@ function paperCard(blockId) {
   };
 }
 
-function buildCommandEvidence(args) {
+function buildCommandEvidence(args, options = {}) {
   const { phase, selectedCommands, selectedBlockIds, expandedCommands } = validateArguments(args);
+  const liveHelpLookup = options.liveHelpLookup || lookupLiveStataHelp;
 
   if (phase === "discovery") {
     return {
       phase: "discovery",
       main_rules: mainRules(),
-      command_dictionary: registry.commands,
+      command_dictionary: compactCommandDictionary(),
     };
   }
 
   if (phase === "selected_command_evidence") {
     return {
       phase: "selected_command_evidence",
-      main_rules: mainRules(),
+      main_rules: mainRulesReference(),
       selected_commands: selectedCommands,
-      command_evidence: selectedCommands.map(commandEvidence),
+      command_evidence: selectedCommands.map((command) => commandEvidence(command, liveHelpLookup)),
     };
   }
 
@@ -349,7 +612,7 @@ function buildCommandEvidence(args) {
   }
   return {
     phase: "expanded_context",
-    main_rules: mainRules(),
+    main_rules: mainRulesReference(),
     selected_commands: selectedCommands,
     expanded_commands: expandedCommands,
     selected_block_ids: selectedBlockIds,
@@ -364,18 +627,18 @@ function buildCommandEvidence(args) {
 const TOOL_DEFINITIONS = [
   {
     name: "get_stata_command_evidence",
-    description: "Stateless three-phase exact-key Stata evidence lookup. Every phase includes the common main rules. Phase 1 returns the 115-command neutral dictionary. The model autonomously selects exact canonical commands. Phase 2 returns Stata 18-rendered official or maintainer help, factual expanded-documentation status, and a compact paper-profile catalog. When help does not fully settle the requested action, Phase 3 can combine whole Stata 18 manual entries for only the exact expanded_commands subset with optional exact paper blocks and directly linked raw log or artifact excerpts. The model chooses which selected commands to expand and which exact block IDs to request; the server never scores, ranks, recommends, promotes, audits, semantically validates, or automatically chooses commands, blocks, specifications, or outputs.",
+    description: "Stateless three-phase Stata evidence lookup. Phase 1 returns the common rules once and a compact neutral index of 115 bundled commands. The model autonomously selects exact command topics. Phase 2 returns bundled Stata 18 official or maintainer help for registered commands and, for an exact out-of-dictionary topic, queries and renders help from the active Stata installation inside this Guard MCP. Later phases carry only the rules reference. Phase 3 can combine whole bundled documentation for exact registered expanded_commands with optional exact paper blocks and directly linked raw log or artifact excerpts. The server never scores, ranks, recommends, promotes, audits, semantically validates, or automatically chooses commands, blocks, specifications, or outputs.",
     inputSchema: {
       oneOf: [
         {
-          title: "Phase 1 command dictionary",
+          title: "Phase 1 compact command index",
           type: "object",
           additionalProperties: false,
           required: ["request"],
           properties: { request: { type: "string", minLength: 1 } },
         },
         {
-          title: "Phase 2 selected command help and paper profiles",
+          title: "Phase 2 bundled or live exact command help",
           type: "object",
           additionalProperties: false,
           required: ["request", "selected_commands"],
@@ -471,4 +734,5 @@ module.exports = {
   TOOL_DEFINITIONS,
   buildCommandEvidence,
   dispatch,
+  lookupLiveStataHelp,
 };

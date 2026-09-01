@@ -5,10 +5,16 @@ Read these rules for every Stata code write or revision. They are concise prospe
 ## Priority and command boundary
 
 1. The user's and project's research choices come first: estimand, sample, treatment rule, merge key, fixed effects, weights, VCE, event axis, model role, output grouping, and append-versus-replace decision remain the model's responsibility when the user has specified them. Resolve a material gap from current context or ask the user.
-2. While using MCP, use only the 115 commands in the exposed command dictionary. Choose the command yourself from discovery, then request guide and paper evidence for `selected_commands`. If the required command or feature is outside the dictionary, abort and report exactly what is unavailable. Do not manually implement, replace, or abbreviate it.
+2. Choose the exact command yourself. The compact 115-command dictionary is a curated starting index, not a closed execution boundary. For a registered command, request its bundled guide and paper catalog. For an exact command outside the dictionary, request Phase 2 with that command name so Guard can query installed Stata help on demand. If the exact installed help is unavailable, stop only the affected command branch and report the gap; do not invent syntax, abbreviate the topic, or use another command merely to evade the missing evidence.
 3. If the appropriate command is clear from the request and project context, select only that command. When multiple commands are genuinely needed for different stages or more than one command remains a plausible alternative, you may request only those relevant evidence packets together and compare their documented purpose, required input state, syntax, output or returned state, tradeoffs, and incompatibilities. Make the final choice yourself; do not ask the server to rank or choose, and do not add candidates without a concrete reason.
 4. Official documentation governs official-command syntax, options, returned state, version notes, and incompatibilities. Maintainer documentation governs the corresponding facts for user-written commands. Do not use undocumented manual implementations.
 5. A paper occurrence is an exact, command-focused starting example, not syntax authority or a command-selection rule. Keep its source usage unchanged. Use its nearby context only to understand and harmonize the selected command; retain the user's or current code's command choice unless the research decision calls for another one.
+
+## Evidence boundary
+
+- After both Guard and mcpStata are confirmed callable, read-only session and data inspection may proceed without a separate Phase 2 lookup for every inspection action. This includes session lifecycle checks, loading a dataset into memory without saving it, and structured metadata, count, variable, value, row, log, graph-list, or returned-state inspection.
+- Obtain Guard help before writing or revising a Stata command, changing or saving data, estimating or testing a model, exporting an artifact, or consequentially using a command's returned state downstream. A visible Phase 2 packet may be reused only while the exact command, version, material options, returned-result interface, and downstream use remain unchanged.
+- Registered commands retain curated bundled evidence. Out-of-dictionary exact help is read from the active Stata installation and carries no bundled PDF expansion or paper catalog unless the command is later added to the registry.
 
 ## Direct Stata
 

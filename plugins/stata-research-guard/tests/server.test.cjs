@@ -11,6 +11,7 @@ const {
   TOOL_DEFINITIONS,
   buildCommandEvidence,
   dispatch,
+  lookupLiveStataHelp,
 } = require(SERVER_PATH);
 
 function readJsonl(name) {
@@ -52,7 +53,7 @@ test("MCP exposes one simple exact-key three-phase lookup tool", () => {
   assert.doesNotMatch(JSON.stringify(TOOL_DEFINITIONS), /project_path|target_files|known_constraints/);
 });
 
-test("Phase 1 returns common main rules and the neutral 115-command dictionary only", () => {
+test("Phase 1 returns common main rules and a compact neutral 115-command index", () => {
   const result = buildCommandEvidence({ request: "Choose Stata commands" });
   assert.deepEqual(Object.keys(result), ["phase", "main_rules", "command_dictionary"]);
   assert.equal(result.phase, "discovery");
@@ -69,15 +70,22 @@ test("Phase 1 returns common main rules and the neutral 115-command dictionary o
   for (const command of result.command_dictionary) {
     for (const field of [
       "command",
+      "family_id",
+      "stages",
       "role",
+    ]) {
+      assert.ok(Object.hasOwn(command, field), `${command.command} lacks ${field}`);
+    }
+    for (const omitted of [
       "capabilities",
       "required_input_state",
       "output_interface",
       "tradeoffs_and_incompatibilities",
     ]) {
-      assert.ok(Object.hasOwn(command, field), `${command.command} lacks ${field}`);
+      assert.equal(Object.hasOwn(command, omitted), false, `${command.command} retained ${omitted}`);
     }
   }
+  assert.ok(JSON.stringify(result).length < 40000, "Phase 1 should remain compact");
 
   const keys = deepKeys(result);
   for (const key of [
@@ -121,6 +129,8 @@ test("Phase 2 returns Stata-rendered xtreg help and its three exact profiles", (
     "selected_commands",
     "command_evidence",
   ]);
+  assert.equal("content" in result.main_rules, false);
+  assert.match(result.main_rules.sha256, /^[a-f0-9]{64}$/);
   assert.deepEqual(result.selected_commands, ["xtreg"]);
   assert.equal(result.command_evidence.length, 1);
   const evidence = result.command_evidence[0];
@@ -331,11 +341,37 @@ test("paper data stays at 166 blocks and 12 optional raw-log attachments", () =>
   assert.equal(PAPER_EXECUTION_CONTEXTS.length, 12);
 });
 
-test("missing dictionary commands abort while unavailable help remains command-local", () => {
-  assert.throws(
-    () => buildCommandEvidence({ request: "Use madeup", selected_commands: ["madeup"] }),
-    /ABORT command_not_in_dictionary/,
+test("out-of-dictionary exact topics use live help without restoring an mcpStata help tool", () => {
+  const result = buildCommandEvidence(
+    { request: "Use anova", selected_commands: ["anova"] },
+    {
+      liveHelpLookup: (command) => ({
+        status: "available",
+        help: {
+          command,
+          authority: "StataCorp official help from active Stata 18 installation",
+          source_kind: "live_installed_help",
+          content: "anova depvar termlist",
+          limitations: [],
+        },
+        limitations: [],
+      }),
+    },
   );
+  const evidence = result.command_evidence[0];
+  assert.equal(evidence.command, "anova");
+  assert.equal(evidence.registry_status, "outside_dictionary");
+  assert.equal(evidence.help_status, "available");
+  assert.equal(evidence.command_help.source_kind, "live_installed_help");
+  assert.match(evidence.command_help.content, /anova depvar/);
+  assert.equal(evidence.expanded_documentation.status, "unavailable");
+  assert.deepEqual(evidence.paper_example_catalog, []);
+
+  assert.throws(
+    () => buildCommandEvidence({ request: "Unsafe topic", selected_commands: ["anova;erase"] }),
+    /ABORT invalid_help_topic/,
+  );
+
   for (const command of ["jregress", "jwdidstacked"]) {
     const result = buildCommandEvidence({ request: `Use ${command}`, selected_commands: [command] });
     const evidence = result.command_evidence[0];
@@ -344,6 +380,34 @@ test("missing dictionary commands abort while unavailable help remains command-l
     assert.equal(evidence.command_help, null);
     assert.ok(evidence.paper_example_catalog.length > 0);
   }
+});
+
+test("an unavailable live-help topic stops only that evidence branch", () => {
+  const result = buildCommandEvidence(
+    { request: "Inspect two topics", selected_commands: ["regress", "notarealstatatopic"] },
+    {
+      liveHelpLookup: () => ({
+        status: "unavailable",
+        help: null,
+        limitations: ["No matching installed Stata help file was found."],
+      }),
+    },
+  );
+  assert.equal(result.command_evidence[0].command, "regress");
+  assert.match(result.command_evidence[0].command_help.authority, /StataCorp official/);
+  assert.equal(result.command_evidence[1].registry_status, "outside_dictionary");
+  assert.equal(result.command_evidence[1].help_status, "unavailable");
+  assert.deepEqual(result.command_evidence[1].limitations, ["No matching installed Stata help file was found."]);
+});
+
+test("live Stata exact-help fallback renders an unregistered official topic when Stata 18 is installed", (t) => {
+  const stata = process.env.STATA_PATH || "C:\\Program Files\\Stata18\\StataMP-64.exe";
+  if (!fs.existsSync(stata)) return t.skip("Stata 18 is unavailable");
+  const result = lookupLiveStataHelp("anova");
+  assert.equal(result.status, "available");
+  assert.equal(result.help.source_kind, "live_installed_help");
+  assert.match(result.help.authority, /StataCorp official/);
+  assert.match(result.help.content, /Analysis of variance and covariance/i);
 });
 
 test("Phase 3 reports duplicate maintainer help and the limited jregress supplement honestly", () => {
@@ -420,6 +484,15 @@ test("phase arguments and exact IDs fail closed", () => {
       expanded_commands: ["regress"],
     }),
     /ABORT expanded_command_not_selected/,
+  );
+  assert.throws(
+    () => buildCommandEvidence({
+      request: "Expand a live-only topic",
+      selected_commands: ["anova"],
+      expanded: true,
+      expanded_commands: ["anova"],
+    }),
+    /ABORT expanded_command_not_registered/,
   );
 });
 

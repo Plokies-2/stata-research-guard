@@ -4,15 +4,15 @@ Use this plugin as a source of command grammar and real-paper context. The model
 
 ## Evidence flow
 
-Every tool response includes the common `main_rules` from `general-rules.md`.
+Phase 1 includes the full common `main_rules`; later phases carry its source path and SHA-256 reference without repeating the text.
 
-1. Call `get_stata_command_evidence` with `request` only. Read the registry-ordered 115-command dictionary and choose one exact canonical command key when the fit is clear. Choose multiple keys only when different stages need them or genuine alternatives remain.
-2. Call it with `request` and nonempty exact `selected_commands`. Read every returned `command_evidence` packet. When multiple packets were requested, compare documented purpose, required inputs, syntax, outputs, tradeoffs, and incompatibilities before choosing the implementation. Each packet independently contains `help_status`, Stata-rendered official or maintainer `command_help`, factual `expanded_documentation` status, and a compact `paper_example_catalog`. Phase 2 contains no expanded document, raw paper code, occurrences, logs, project scan, ranking, or recommendation.
+1. Call `get_stata_command_evidence` with `request` only. Read the registry-ordered compact 115-command index and choose the exact command yourself. The index is a curated starting point, not a closed boundary.
+2. Call it with `request` and nonempty exact `selected_commands`. Registered commands return bundled evidence. An exact out-of-dictionary command triggers live installed-help lookup inside Guard and returns no bundled expansion or paper catalog. Read every packet and compare interfaces when multiple commands were genuinely needed.
 3. When more context would materially help, call combined Phase 3 with the same `selected_commands` boundary and `expanded: true`. Put only the commands whose longer documentation is actually needed in the nonempty exact `expanded_commands` subset. Independently add one or more exact `block_id` values as `selected_block_ids` when paper context would help. Documentation-only, paper-only, and combined requests are valid, but at least one of those two selections must be present. Read only the returned Stata 18 manual entries or limited author supplement and the selected slim raw paper cards with optional `paper_log_contexts`. Do not expand every selected command by default, request an empty or `all` selection, or ask the server to choose a command or block.
 
 After reading help, proceed without more evidence when it explains every action required for the current request, the code follows directly and is not difficult, and no material version, option interaction, returned-result, or downstream-interface question remains. Expand when one of those points is unresolved, difficult code would benefit from worked source context, or the user requests explanation or a research-use example beyond syntax. Do not request more context merely because a command is statistical, user-written, data-changing, or connected to an output step.
 
-If a selected command reports `help_status=partial` or `help_status=unavailable`, or a material syntax or behavior detail remains unclear, state the limitation for that command branch. Do not treat the paper catalog, implementation source, memory, another command, or a manual implementation as grammar authority. The catalog remains available as factual context, including for commands without help, but it does not fill a help gap. If the necessary command is outside the dictionary, report the missing command or capability and stop.
+If bundled or live help is unavailable, or a material syntax or behavior detail remains unclear, state the limitation and stop only that command branch. Do not treat paper code, implementation source, memory, another command, or a manual implementation as grammar authority.
 
 When help or expanded documentation reports explicitly marked StataNow-only features, do not use those options in a base Stata 18 workflow unless the active environment actually provides the relevant StataNow features.
 
@@ -25,6 +25,8 @@ When a directly linked log or artifact exists, `paper_log_contexts` carries the 
 The product does not use `command_paper_index`, paper-review summaries, integrity audit JSON, INCLUDE/EXCLUDE decisions, pass/fail flags, promotion queues, or project scans. Do not restore them.
 
 ## Writing boundary
+
+After Guard and mcpStata are both callable, read-only session lifecycle and structured data, metadata, value, row, log, graph-list, or returned-state inspection may proceed without a fresh Phase 2 lookup for each action. Obtain Phase 2 before writing or revising Stata code, changing or saving data, estimation or testing, export, or consequential downstream use of returned state.
 
 Preserve the user's literal scope and compatible project interfaces. Review-only requests authorize no write. For approved edits, inspect the current source and implement the simplest readable solution under `general-rules.md`.
 
