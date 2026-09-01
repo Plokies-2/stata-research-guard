@@ -240,6 +240,164 @@
     },
     {
       "record_type": "command_help_guide",
+      "command": "count",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "count"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/c/count.sthlp",
+          "source_sha256": "e00d286a362bd0e556a1fe4d1faa1ae039eb0d54ffe5e0dbe94ac8b9812ce71d"
+        }
+      ],
+      "content_file": "command_help_guides/count.txt",
+      "content_sha256": "9c8fcb88a782d1b0403fcfde5a0f1e0687bc61aea25719079d012d9d75aa46ca",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "describe",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "describe"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/d/describe.sthlp",
+          "source_sha256": "9e275e794676a1b98f02189c396217b4cfe45b917c280f78f692e8cb5c0ca164"
+        }
+      ],
+      "content_file": "command_help_guides/describe.txt",
+      "content_sha256": "2dbc37c9fc63f7cf290f4c1db3b6854a37b672df8d1a77460d7bd96ad5d7f2d1",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "ds",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "ds"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/d/ds.sthlp",
+          "source_sha256": "399e483561a6483c0d0f6531484e0bb66ea10cb295397dd84c566ca40b706650"
+        }
+      ],
+      "content_file": "command_help_guides/ds.txt",
+      "content_sha256": "216a055e3f0d8304348eb68f5fe50dcb2881b46854b307454f620cafa96e5b94",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "levelsof",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "levelsof"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/l/levelsof.sthlp",
+          "source_sha256": "d02450348cc87b9dceaca2cac0b63d83f4ac1692f7548a65bda2936588499bf6"
+        }
+      ],
+      "content_file": "command_help_guides/levelsof.txt",
+      "content_sha256": "29065ce53fa1dba764ece589df9b27dd0a6424d71a1604459b00ed412463b05e",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "list",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "list"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/l/list.sthlp",
+          "source_sha256": "669ed6ffdf015adc16653ba57f5d98aeca247563ae251f1b6ffb894141c9f94c"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/sncmdnote.ihlp",
+          "source_sha256": "5e45ca7afa414564d8db98db16217f9f18765a7e4ced8d9f12a1432e709269d0"
+        },
+        {
+          "source_path": "Stata18/ado/base/s/snfeaturesnote.ihlp",
+          "source_sha256": "7036a7354ac16fe04f2ffe9234eb64e5a4c73142515afb8c70b3f43052318b92"
+        }
+      ],
+      "content_file": "command_help_guides/list.txt",
+      "content_sha256": "e1732a99b7a4091f9acfee6096cb98146aa95cfbb91b91e5e453be32734199ee",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "lookfor",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "lookfor"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/l/lookfor.sthlp",
+          "source_sha256": "2720d119717934985b726ef04d2b5ed21722db9633a602a632ad23498382e616"
+        }
+      ],
+      "content_file": "command_help_guides/lookfor.txt",
+      "content_sha256": "81d04f722eac6abb19c8cb591990273fbe53fb878d00b42bfbd65b27475d2f96",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
       "command": "coefplot",
       "help_status": "available",
       "authority": "maintainer or package documentation",

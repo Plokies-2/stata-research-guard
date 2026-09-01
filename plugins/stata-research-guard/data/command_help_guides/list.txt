@@ -1,0 +1,284 @@
+[D] list -- List values of variables+
+            (View complete PDF manual entry)
+
++This command includes features that are part of StataNow.
+
+
+
+Syntax
+
+        list [varlist] [if] [in] [, options]
+
+        flist is equivalent to list with the fast option.
+
+    options                Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Main
+      compress             compress width of columns in both table and display formats
+      nocompress           use display format of each variable
+      fast                 synonym for nocompress; no delay in output of large datasets
+      abbreviate(#)        abbreviate variable names to # display columns; default is ab(8)
+      string(#)            truncate string variables to # display columns
+      noobs                do not list observation numbers
+      fvall                display all levels of factor variables
+
+    Options
+      table                force table format
+      display              force display format
+      header               display variable header once; default is table mode
+      noheader             suppress variable header
+      header(#)            display variable header every # lines
+    + footer               display variable names as a footer
+      clean                force table format with no divider or separator lines
+      divider              draw divider lines between columns
+      separator(#)         draw a separator line every # lines; default is separator(5)
+      sepby(varlist2)      draw a separator line whenever varlist2 values change
+    + sepbyexp(exp)        draw a separator line whenever value of exp changes
+      ds                   use double-spaced lines
+      nolabel              display numeric codes rather than label values
+
+    Summary
+      mean[(varlist2)]     add line reporting the mean for the (specified) variables
+      sum[(varlist2)]      add line reporting the sum for the (specified) variables
+      N[(varlist2)]        add line reporting the number of nonmissing values for the (specified) variables
+      labvar(varname)      substitute Mean, Sum, or N for value of varname in added line reporting mean, sum, or N
+
+    Advanced
+      constant[(varlist2)] separate and list variables that are constant only once
+      notrim               suppress string trimming
+      absolute             display overall observation numbers when using by varlist:
+    + relative             display relative observation numbers for a subset of observations specified by qualifiers if and in
+      nodotz               display numerical values equal to .z as field of blanks
+      subvarname           substitute characteristic for variable name in header
+      linesize(#)          columns per line; default is linesize(79)
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    + These features are part of StataNow.
+
+    varlist may contain factor variables; see fvvarlist.
+    varlist may contain time-series operators; see tsvarlist.
+    by is allowed with list; see [D] by.
+
+
+Menu
+
+    Data > Describe data > List data
+
+
+Description
+
+    list displays the values of variables.  If no varlist is specified, the values of all the variables are displayed.  Also see browse in [D] edit.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+        +------+
+    ----+ Main +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    compress and nocompress change the width of the columns in both table and display formats.  By default, list examines the data and allocates the needed width to each variable.  For instance, a variable might be a string with a %18s format, and yet
+        the longest string will be only 12 characters long.  Or a numeric variable might have a %9.0g format, and yet, given the values actually present, the widest number needs only four columns.
+
+        nocompress prevents list from examining the data.  Widths will be set according to the display format of each variable.  Output generally looks better when nocompress is not specified, but for very large datasets (say 1,000,000 observations or
+            more), nocompress can speed up the execution of list.
+
+        compress allows list to engage in a little more compression than it otherwise would by telling list to abbreviate variable names to fewer than eight characters.
+
+    fast is a synonym for nocompress.  fast may be of interest to those with very large datasets who wish to see output appear without delay.
+
+    abbreviate(#) is an alternative to compress that allows you to specify the minimum abbreviation of variable names to be considered.  For example, you could specify abbreviate(16) if you never wanted variables abbreviated to less than 16 display
+        columns.  For most users, the number of display columns is equal to the number of characters.  However, some languages, such as Chinese, Japanese, and Korean (CJK), require two display columns per character.
+
+    string(#) specifies that when string variables are listed, they be truncated to # display columns in the output.  Any value that is truncated will be appended with ".." to indicate the truncation.  string() is useful for displaying just a part of
+        long strings.
+
+    noobs suppresses the listing of the observation numbers.
+
+    fvall specifies that the entire dataset be used to determine how many levels are in any factor variables specified in varlist.  The default is to determine the number of levels by using only the observations in the if and in qualifiers.
+
+        +---------+
+    ----+ Options +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    table and display determines the style of output.  By default, list determines whether to use table or display on the basis of the width of your screen and the linesize() option, if you specify it.
+
+        table forces table format.  Forcing table format when list would have chosen otherwise generally produces impossible-to-read output because of the linewraps.  However, if you are logging output in SMCL format and plan to print the output on wide
+            paper later, specifying table can be a reasonable thing to do.
+
+        display forces display format.
+
+    header, noheader, header(#), and footer specify how the variable header or footer is to be displayed.
+
+        header is the default in table mode and displays the variable header once, at the top of the table.
+
+        noheader suppresses the header altogether.
+
+        header(#) redisplays the variable header every # observations.  For example, header(10) would display a new header every 10 observations.
+
+        footer displays variable names as a footer.  With footer, a variable header is also displayed; footer cannot be combined with noheader.  This option is part of StataNow.
+
+        The default in display mode is to display the variable names interweaved with the data:
+
+             +---------------------------------------------------------+
+          1. | make        | price | mpg | rep78  | headroom  | trunk  |
+             | AMC Concord | 4,099 |  22 |     3  |      2.5  |    11  |
+             |---------------------------------------------------------|
+             | weight | length | turn | displa~t | gear_r~o |  foreign |
+             |  2,930 |    186 |   40 |      121 |     3.58 | Domestic |
+             +---------------------------------------------------------+
+
+        However, if you specify header, the header is displayed once, at the top of the table:
+
+             +---------------------------------------------------------+
+             | make        | price | mpg | rep78  | headroom  | trunk  |
+             |---------------------------------------------------------|
+             | weight | length | turn | displa~t | gear_r~o |  foreign |
+             +---------------------------------------------------------+
+
+             +---------------------------------------------------------+
+          1. | AMC Concord | 4,099 |  22 |     3  |      2.5  |    11  |
+             |---------------------------------------------------------|
+             |  2,930 |    186 |   40 |      121 |     3.58 | Domestic |
+             +---------------------------------------------------------+
+
+    clean is a better alternative to table when you want to force table format and your goal is to produce more readable output on the screen.  clean implies table, and it removes dividing and separating lines, which is what makes wrapped table output
+        nearly impossible to read.  Blank separator lines may be included by specifying the ds option.
+
+    divider, separator(#), sepby(varlist2), sepbyexp(exp), and ds specify how dividers and separator lines should be displayed.  These five options affect only table format.
+
+        divider specifies that divider lines be drawn between columns.  The default is to not display a divider.
+
+        separator(#) and sepby(varlist2) indicate when separator lines should be drawn between rows.  To make these separator lines blank, specify the ds option.
+
+            separator(#) specifies how often separator lines should be drawn between rows.  The default is separator(5), meaning every 5 observations.  You may specify separator(0) to suppress separators altogether.
+
+            sepby(varlist2) specifies that a separator line be drawn whenever any of the variables in sepby(varlist2) change their values; up to 10 variables may be specified.  You need not make sure the data were sorted on sepby(varlist2) before
+                issuing the list command.  The variables in sepby(varlist2) also need not be among the variables being listed.
+
+        sepbyexp(exp) specifies that a separator line be drawn whenever the value of exp changes.  exp can be any expression and does not necessarily have to refer to the variables being listed.  This option is part of StataNow.
+
+        ds specifies that the lines be double spaced, meaning that a blank separator line be inserted after every observation. To control when blank separator lines are inserted, specify ds with separator(#), sepby(varlist2), or sepbyexp(exp).
+
+        By default, separator lines are suppressed when specifying the clean option unless ds is specified, in which case blank separator lines will be used.
+
+    nolabel specifies that the numeric codes be displayed rather than label values.
+
+        +---------+
+    ----+ Summary +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    mean, sum, N, mean(varlist2), sum(varlist2), and N(varlist2) all specify that lines be added to the output reporting the mean, sum, or number of nonmissing values for the (specified) variables.  If you do not specify the variables, all numeric
+        variables in the varlist following list are used.
+
+    labvar(varname) is for use with mean[()], sum[()], and N[()].  list displays Mean, Sum, or N where the observation number would usually appear to indicate the end of the table -- where a row represents the calculated mean, sum, or number of
+        observations.
+
+        labvar(varname) changes that.  Instead, Mean, Sum, or N is displayed where the value for varname would be displayed.  For instance, you might type
+
+            . list group costs profits, sum(costs profits) labvar(group)
+        
+                 +-------------------------+
+                 | group   costs   profits |
+                 |-------------------------|
+              1. |     1      47         5 |
+              2. |     2     123        10 |
+              3. |     3      22         2 |
+                 |-------------------------|
+                 |   Sum     192        17 |
+                 +-------------------------+
+
+        and then also specify the noobs option to suppress the observation numbers.
+
+        +----------+
+    ----+ Advanced +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    constant and constant(varlist2) specify that variables that do not vary observation by observation be separated out and listed only once.
+
+        constant specifies that list determine for itself which variables are constant.
+
+        constant(varlist2) allows you to specify which of the constant variables you want listed separately.  list verifies that the variables you specify really are constant and issues an error message if they are not.
+
+        constant and constant() respect if exp and in range.  If you type
+
+            . list if group==3
+
+        variable x might be constant in the selected observations, even though the variable varies in the entire dataset.
+
+    notrim affects how string variables are listed.  The default is to trim strings at the width implied by the widest possible column given your screen width (or linesize(), if you specified that).  notrim specifies that strings not be trimmed.  notrim
+        implies clean (see above) and, in fact, is equivalent to the clean option, so specifying either makes no difference.
+
+    absolute affects output only when list is prefixed with by varlist:.  Observation numbers are displayed, but the overall observation numbers are used rather than the observation numbers within each by-group.  For example, if the first group had 4
+        observations and the second had 2, by default the observations would be numbered 1, 2, 3, 4 and 1, 2.  If absolute is specified, the observations will be numbered 1, 2, 3, 4 and 5, 6.
+
+    relative affects output only when a subset of observations is listed by using qualifiers if and in.  Observation numbers are displayed, but the observations are numbered 1, 2, 3, etc.  When list is prefixed with by varlist: and relative is
+        specified, relative observation numbers will be used for each subgroup formed by varlist.  This option is part of StataNow.
+
+    nodotz is a programmer's option that specifies that numerical values equal to .z be listed as a field of blanks rather than .z.
+
+    subvarname is a programmer's option.  If a variable has the characteristic var[varname] set, then the contents of that characteristic will be used in place of the variable's name in the headers.
+
+    linesize(#) specifies the width of the page to be used for determining whether table or display format should be used and for formatting the resulting table.  Specifying a value of linesize() that is wider than your screen width can produce truly
+        ugly output on the screen, but that output can nevertheless be useful if you are logging output and plan to print the log later on a wide printer.
+
+
+Remarks
+
+    list, typed by itself, lists all the observations and variables in the dataset. If you specify varlist, only those variables are listed.  Specifying one or both of in range and if exp limits the observations listed.
+
+    list respects line size.  That is, if you resize the Results window (in windowed versions of Stata) before running list, it will take advantage of the available horizontal space.  Stata for Unix(console) users can instead use the set linesize
+    command to take advantage of this feature.
+
+    list may not display all the large strings.  You have 2 choices:  1) you can specify the clean option, which makes a different, less attractive listing, or 2) you can increase line size, as discussed above.
+
+    list has two output formats, known as table and display.  The table format is suitable for listing a few variables, whereas the display format is suitable for listing an unlimited number of variables.  Stata chooses automatically between those two
+    formats, or you may specify the table or display options.  The table format looks like this:
+
+        . list make-rep78 in 1/4, table
+        
+             +-------------------------------------+
+             | make            price   mpg   rep78 |
+             |-------------------------------------|
+          1. | AMC Concord     4,099    22       3 |
+          2. | AMC Pacer       4,749    17       3 |
+          3. | AMC Spirit      3,799    22       . |
+          4. | Buick Century   4,816    20       3 |
+             +-------------------------------------+
+
+    The display format looks like this:
+
+        . list in 1/2, display
+
+             +---------------------------------------------------------+
+          1. | make        | price | mpg | rep78  | headroom  | trunk  |
+             | AMC Concord | 4,099 |  22 |     3  |      2.5  |    11  |
+             |---------------------------------------------------------|
+             | weight | length | turn | displa~t | gear_r~o |  foreign |
+             |  2,930 |    186 |   40 |      121 |     3.58 | Domestic |
+             +---------------------------------------------------------+
+
+             +---------------------------------------------------------+
+          2. | make        | price | mpg | rep78  | headroom  | trunk  |
+             | AMC Pacer   | 4,749 |  17 |     3  |      3.0  |    11  |
+             |---------------------------------------------------------|
+             | weight | length | turn | displa~t | gear_r~o |  foreign |
+             |  3,350 |    173 |   40 |      258 |     2.53 | Domestic |
+             +---------------------------------------------------------+
+
+
+Examples
+
+    . sysuse auto
+    . list
+    . list in 1/10
+    . list mpg weight
+    . list mpg weight in 1/20
+    . list if mpg>20
+    . list mpg weight if mpg>20
+    . list mpg weight if mpg>20 in 1/10
+
+    . by rep78, sort: list, constant

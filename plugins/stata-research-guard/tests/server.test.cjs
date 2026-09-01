@@ -52,7 +52,7 @@ test("MCP exposes one simple exact-key three-phase lookup tool", () => {
   assert.doesNotMatch(JSON.stringify(TOOL_DEFINITIONS), /project_path|target_files|known_constraints/);
 });
 
-test("Phase 1 returns common main rules and the neutral 109-command dictionary only", () => {
+test("Phase 1 returns common main rules and the neutral 115-command dictionary only", () => {
   const result = buildCommandEvidence({ request: "Choose Stata commands" });
   assert.deepEqual(Object.keys(result), ["phase", "main_rules", "command_dictionary"]);
   assert.equal(result.phase, "discovery");
@@ -64,7 +64,7 @@ test("Phase 1 returns common main rules and the neutral 109-command dictionary o
   assert.match(result.main_rules.content, /Indent only inside a real control-flow scope/);
   assert.match(result.main_rules.content, /In each core regression or estimation call/);
   assert.match(result.main_rules.content, /Do not replace them with local or global macros/);
-  assert.equal(result.command_dictionary.length, 109);
+  assert.equal(result.command_dictionary.length, 115);
 
   for (const command of result.command_dictionary) {
     for (const field of [
@@ -91,6 +91,26 @@ test("Phase 1 returns common main rules and the neutral 109-command dictionary o
   ]) {
     assert.equal(keys.has(key), false);
   }
+});
+
+test("Phase 2 returns official help for the six core data-inspection commands", () => {
+  const commands = ["count", "describe", "ds", "levelsof", "list", "lookfor"];
+  const result = buildCommandEvidence({
+    request: "Inspect data structure, variables, values, levels, and sample size",
+    selected_commands: commands,
+  });
+  assert.deepEqual(result.command_evidence.map((row) => row.command), commands);
+  assert.deepEqual(result.command_evidence.map((row) => row.help_status), commands.map(() => "available"));
+  for (const evidence of result.command_evidence) {
+    assert.equal(evidence.command_help.authority, "StataCorp official");
+    assert.equal(evidence.expanded_documentation.status, "available");
+  }
+  assert.match(result.command_evidence[0].command_help.content, /count observations/i);
+  assert.match(result.command_evidence[1].command_help.content, /describe data in memory/i);
+  assert.match(result.command_evidence[2].command_help.content, /r\(varlist\)/);
+  assert.match(result.command_evidence[3].command_help.content, /distinct levels/i);
+  assert.match(result.command_evidence[4].command_help.content, /displays the values of variables/i);
+  assert.match(result.command_evidence[5].command_help.content, /variable names and labels/i);
 });
 
 test("Phase 2 returns Stata-rendered xtreg help and its three exact profiles", () => {
@@ -151,12 +171,12 @@ test("Phase 2 resolves multiple selected commands independently in request order
   assert.equal(jwdidstacked.paper_example_catalog.length, 1);
 });
 
-test("the Stata 18 help and expanded-document indexes cover all 109 commands", () => {
-  assert.equal(COMMAND_SOURCE_CATALOG.commands.length, 109);
+test("the Stata 18 help and expanded-document indexes cover all 115 commands", () => {
+  assert.equal(COMMAND_SOURCE_CATALOG.commands.length, 115);
   assert.doesNotMatch(JSON.stringify(COMMAND_SOURCE_CATALOG), /full_command_guides/);
-  assert.equal(COMMAND_HELP_INDEX.guides.length, 109);
+  assert.equal(COMMAND_HELP_INDEX.guides.length, 115);
   const counts = Object.groupBy(COMMAND_HELP_INDEX.guides, (row) => row.help_status);
-  assert.equal(counts.available.length, 107);
+  assert.equal(counts.available.length, 113);
   assert.equal(counts.partial, undefined);
   assert.equal(counts.unavailable.length, 2);
   assert.deepEqual(counts.unavailable.map((row) => row.command).sort(), ["jregress", "jwdidstacked"]);
@@ -168,12 +188,12 @@ test("the Stata 18 help and expanded-document indexes cover all 109 commands", (
   const content = fs.readFileSync(path.join(ROOT, "data", collectStyle.content_file), "utf8");
   assert.match(content, /collect style _cons/);
 
-  assert.equal(EXPANDED_GUIDE_INDEX.guides.length, 109);
+  assert.equal(EXPANDED_GUIDE_INDEX.guides.length, 115);
   const expandedCounts = Object.groupBy(
     EXPANDED_GUIDE_INDEX.guides,
     (row) => row.expanded_documentation_status,
   );
-  assert.equal(expandedCounts.available.length, 63);
+  assert.equal(expandedCounts.available.length, 69);
   assert.equal(expandedCounts.same_source_as_help.length, 44);
   assert.equal(expandedCounts.supplemental.length, 1);
   assert.equal(expandedCounts.unavailable.length, 1);
@@ -414,6 +434,6 @@ test("JSON-RPC transport lists and calls the lookup tool", () => {
     params: { name: "get_stata_command_evidence", arguments: { request: "Discover" } },
   });
   assert.equal(call.result.isError, undefined);
-  assert.equal(JSON.parse(call.result.content[0].text).command_dictionary.length, 109);
+  assert.equal(JSON.parse(call.result.content[0].text).command_dictionary.length, 115);
   assert.equal(dispatch({ jsonrpc: "2.0", method: "notifications/initialized" }), null);
 });

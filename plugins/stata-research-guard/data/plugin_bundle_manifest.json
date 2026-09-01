@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.3.0+codex.20260829223728"
+    "version": "0.3.0+codex.20260901163045"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
       "bytes": 2228,
-      "sha256": "3f49ec21deeb0a3f9faaae56b4985bf43f8a277a325ffbffe95c6c32e5d35e3b"
+      "sha256": "be45d71f9f21cd44a7c96bdbe5f7a91b8535db3e963d36b3638522031a951ecc"
     },
     {
       "path": ".mcp.json",
@@ -22,8 +22,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 11110,
-      "sha256": "2360e06768fccc2b0f264e7a97356187e36494d25ddd858e61ea4d7f5ca3e55f"
+      "bytes": 11622,
+      "sha256": "fd85c7532b84bb6742abdab06f674e2ec4d6a48dfbdcfa5a87d4796aa0522829"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -96,6 +96,11 @@
       "sha256": "9bcb2d533ded94e9f6499b0d4b9bdf4498f6fae0f0acd32f1c7b5e01e0547aaf"
     },
     {
+      "path": "data/command_help_guides/count.txt",
+      "bytes": 950,
+      "sha256": "9c8fcb88a782d1b0403fcfde5a0f1e0687bc61aea25719079d012d9d75aa46ca"
+    },
+    {
       "path": "data/command_help_guides/crossfit.txt",
       "bytes": 8789,
       "sha256": "dae981bfcdbe6e4bdef920288e2f86c36ad8468185a2358f27f5fd3c6232e199"
@@ -121,6 +126,11 @@
       "sha256": "c81cec1e3cdcf32ab01bf8d5a73a325df8aa79af407fc2d70117e90892b5bafb"
     },
     {
+      "path": "data/command_help_guides/describe.txt",
+      "bytes": 10518,
+      "sha256": "2dbc37c9fc63f7cf290f4c1db3b6854a37b672df8d1a77460d7bd96ad5d7f2d1"
+    },
+    {
       "path": "data/command_help_guides/destring.txt",
       "bytes": 11248,
       "sha256": "2d52afa3d4750b892965a766c413ce7f80c3541e77eb156e3eb158199ae2539d"
@@ -134,6 +144,11 @@
       "path": "data/command_help_guides/did_multiplegt_dyn.txt",
       "bytes": 47256,
       "sha256": "47113ec7c6ba8d4326eea37a2d0cab5ce8547fb8d13a77d10ea70d91b9c8d739"
+    },
+    {
+      "path": "data/command_help_guides/ds.txt",
+      "bytes": 10332,
+      "sha256": "216a055e3f0d8304348eb68f5fe50dcb2881b46854b307454f620cafa96e5b94"
     },
     {
       "path": "data/command_help_guides/dtable.txt",
@@ -311,9 +326,19 @@
       "sha256": "47bd939e8fd9d1ef44b83eeaa64d70b1d56b0815cd28dd5a199ffd33afa00eb1"
     },
     {
+      "path": "data/command_help_guides/levelsof.txt",
+      "bytes": 5046,
+      "sha256": "29065ce53fa1dba764ece589df9b27dd0a6424d71a1604459b00ed412463b05e"
+    },
+    {
       "path": "data/command_help_guides/lincom.txt",
       "bytes": 5726,
       "sha256": "9f99d2280ab37719d2ca7f3c63cc9c8dd70b568d826aa5396340daac4b181087"
+    },
+    {
+      "path": "data/command_help_guides/list.txt",
+      "bytes": 18565,
+      "sha256": "e1732a99b7a4091f9acfee6096cb98146aa95cfbb91b91e5e453be32734199ee"
     },
     {
       "path": "data/command_help_guides/logistic.txt",
@@ -324,6 +349,11 @@
       "path": "data/command_help_guides/logit.txt",
       "bytes": 10889,
       "sha256": "0f37e640b7a580e15ea768486fe0a99da1c4c15fddeb2943ed815d7573e66203"
+    },
+    {
+      "path": "data/command_help_guides/lookfor.txt",
+      "bytes": 2146,
+      "sha256": "81d04f722eac6abb19c8cb591990273fbe53fb878d00b42bfbd65b27475d2f96"
     },
     {
       "path": "data/command_help_guides/margins.txt",
@@ -562,8 +592,8 @@
     },
     {
       "path": "data/command_help_guides.json",
-      "bytes": 138215,
-      "sha256": "dc3c96069fdebb72a9efaba237704787c813345679b60fcb8b255095c92dc83b"
+      "bytes": 144272,
+      "sha256": "4e186d3ec0e3cec01f945c4ff23ce8ad679dcf8390bb4a31a1d27a958335f819"
     },
     {
       "path": "data/command_help_sources/acreg-ssc-acreg.sthlp",
@@ -822,13 +852,13 @@
     },
     {
       "path": "data/command_registry.json",
-      "bytes": 169948,
-      "sha256": "842440abde66b7214a3915516da20b5987f3ac094e2f2c09cf70f59f2718d4d4"
+      "bytes": 177218,
+      "sha256": "35a59b97cf4e1c41e190399bef6a62e83ffe70f3d3c78b41e74fe843e9c02236"
     },
     {
       "path": "data/command_source_catalog.json",
-      "bytes": 30204,
-      "sha256": "c21c79c0de14d686c201bcf4a7c44e89bd0086d4a7d51818c28b349e6e53ebfd"
+      "bytes": 30874,
+      "sha256": "679dacbc430b116477524738cb14a96ec80c94bfe1400d00442b7d619ee3d66b"
     },
     {
       "path": "data/expanded_command_guides/append.txt",
@@ -876,14 +906,29 @@
       "sha256": "ba8832048f5472f5707c67341439204393187228aaa530968e3b2cfd3fb6ef17"
     },
     {
+      "path": "data/expanded_command_guides/count.txt",
+      "bytes": 2292,
+      "sha256": "e404502dd2d5bce6ceeb155ff5d18fa18232af8072057d1975cb9768a8dbbe53"
+    },
+    {
       "path": "data/expanded_command_guides/decode.txt",
       "bytes": 15409,
       "sha256": "c1a2b00b6cb6b514013fb46b51a294eff0f329d801c14250aa428c969020b057"
     },
     {
+      "path": "data/expanded_command_guides/describe.txt",
+      "bytes": 17133,
+      "sha256": "c4fba2033b1878b77dfb4cd6681f8344496c567f3971ce73969d225d01c3d761"
+    },
+    {
       "path": "data/expanded_command_guides/destring.txt",
       "bytes": 20200,
       "sha256": "8bde93df3ed8add390516324694f8c13cbacf81210cd9bfff62eab19dfab98ab"
+    },
+    {
+      "path": "data/expanded_command_guides/ds.txt",
+      "bytes": 11869,
+      "sha256": "3e0732814e10a960da8d35bddf048f7f3d614f5c7857481dc923fcff401d5757"
     },
     {
       "path": "data/expanded_command_guides/dtable.txt",
@@ -976,9 +1021,19 @@
       "sha256": "b2572ccb9e3a0521adbdf569b18aa3939401b64381d02b80ee3a3c1967f2e5b9"
     },
     {
+      "path": "data/expanded_command_guides/levelsof.txt",
+      "bytes": 8195,
+      "sha256": "2bea8add46f84ec39f3bd3f0867d850d99eccdb5eb37e5995a49ba6a136a359c"
+    },
+    {
       "path": "data/expanded_command_guides/lincom.txt",
       "bytes": 17793,
       "sha256": "ca5626dafb10e9a72a0374d56fc98a0c551194d2748675f3e92b6832017145c3"
+    },
+    {
+      "path": "data/expanded_command_guides/list.txt",
+      "bytes": 28746,
+      "sha256": "c4ed13e9c605d9a3b2e3784c969c42f7a5481fb47e3b6777eea2ee110a308e14"
     },
     {
       "path": "data/expanded_command_guides/logistic.txt",
@@ -989,6 +1044,11 @@
       "path": "data/expanded_command_guides/logit.txt",
       "bytes": 37057,
       "sha256": "06300c2fca26cb56c21e2dec8d4a3433c7945e04a3a4245797ae890cad7540d2"
+    },
+    {
+      "path": "data/expanded_command_guides/lookfor.txt",
+      "bytes": 3635,
+      "sha256": "8156101bd9039121ba4f91a15d88fb6dab461697ab9ea83dbe0b7367498dc50b"
     },
     {
       "path": "data/expanded_command_guides/margins.txt",
@@ -1152,8 +1212,8 @@
     },
     {
       "path": "data/expanded_command_guides.json",
-      "bytes": 106656,
-      "sha256": "c5e2c1ac73a09ea75dc2acc21a99f5239e40293e83bec2b3687824fdb931ead0"
+      "bytes": 113432,
+      "sha256": "bc33a4c64ebe728caaeb02eeacb87011332307ef8ea3df14a36371f0ebb07fe4"
     },
     {
       "path": "data/expanded_command_sources/jregress-author-guide.md",
@@ -1443,17 +1503,17 @@
     {
       "path": "INSTRUCTIONS.md",
       "bytes": 5505,
-      "sha256": "f25f8802ac27294a2073e0e7990f2c50342b04cc416ca5fb8ade4c1aa058d94b"
+      "sha256": "038aa8e94487da378f77a7a220d47093ec2eb53c2cbe7e23036ac2142ccff4db"
     },
     {
       "path": "mcp/server.cjs",
       "bytes": 18604,
-      "sha256": "f6f7ebad7a33ef509502e60bacde4eb5c60f6767b22cb775f875b3ff15d46814"
+      "sha256": "6d77a7dc154be672c5f6e14cca3b5f0c93d209785769fa346a164faebdcac4a1"
     },
     {
       "path": "README.md",
-      "bytes": 9545,
-      "sha256": "5ea4725f0390274e25680ed49c661e857d5b83ed452eadbd701b14acdb7b9a64"
+      "bytes": 9565,
+      "sha256": "328130c584a3c45854ddfd3db0e26158ee981eda0a97bc3860dd5e7cee9280a9"
     },
     {
       "path": "scripts/build_clean_command_guide.py",
@@ -1493,12 +1553,12 @@
     {
       "path": "skills/stata-replication-workflow/references/command-evidence.md",
       "bytes": 6435,
-      "sha256": "8a26441158168ac9023f003ab5ed0e4bd6d439c9e5671f920db4413879f233e5"
+      "sha256": "b81578a7ac7c039041f8f006ba6377a233ac07581e6a4a59eb24013ba2ef2642"
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rules.md",
       "bytes": 8472,
-      "sha256": "2d8e46252064893f6bf26afd5f62719ec75813950cddd67a96254d9a15fc3560"
+      "sha256": "36268fd6d5466f563adf8da8b24ce7fb4242030b02b1d66ac8b68d2cf444d1c5"
     },
     {
       "path": "skills/stata-replication-workflow/references/readme-contract.md",
@@ -1513,7 +1573,7 @@
     {
       "path": "skills/stata-replication-workflow/SKILL.md",
       "bytes": 6858,
-      "sha256": "a92a066bc05a615ec9aa5cd6706da699b3020f6c355b60bd7025dcf7e43335bf"
+      "sha256": "56b9cbbff516346738d7c11cd8450a13965c12e45fb5d629281302d2a7893b08"
     },
     {
       "path": "tests/fixtures/outreg2_excel_runtime.do",
@@ -1537,8 +1597,8 @@
     },
     {
       "path": "tests/server.test.cjs",
-      "bytes": 17188,
-      "sha256": "51c2aa69a60335af62d92ee26398fb97bf2a77b8c3969df5fedf56bdfdb211c3"
+      "bytes": 18455,
+      "sha256": "92c97d315b8b0ab79e78df0deb2bb5ca657881a02b48653326a17ae713980864"
     }
   ],
   "semantic_anchors": [
@@ -1554,7 +1614,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.3.0+codex.20260829223728"
+      "value": "0.3.0+codex.20260901163045"
     },
     {
       "id": "readme.heading",

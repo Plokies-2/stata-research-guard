@@ -55,6 +55,36 @@
       "stata_manual_code": "d"
     },
     {
+      "command": "count",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "describe",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "ds",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "levelsof",
+      "authority": "StataCorp official",
+      "stata_manual_code": "p"
+    },
+    {
+      "command": "list",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
+      "command": "lookfor",
+      "authority": "StataCorp official",
+      "stata_manual_code": "d"
+    },
+    {
       "command": "coefplot",
       "authority": "maintainer or package documentation",
       "source_kind": "maintainer raw STHLP",

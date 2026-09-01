@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-02 — core read-only data inspection commands
+
+- Added official Stata 18 evidence for `count`, `describe`, `ds`, `levelsof`, `list`, and `lookfor`, expanding the closed dictionary from 109 to 115 commands.
+- Rendered each command's installed Stata 18 help and attached the corresponding whole PDF manual entry for command-selective Phase 3 expansion.
+- Kept `inspect` outside the dictionary because its descriptive diagnostics substantially overlap the existing `codebook` and `summarize` coverage.
+
 ## 2026-08-30 — Stata 18 selective combined expanded context
 
 - Added `expanded_commands` as an exact subset of `selected_commands`, so combined Phase 3 returns whole documentation only for commands the model explicitly expands; paper-only, documentation-only, and combined requests remain separate choices in the same call.

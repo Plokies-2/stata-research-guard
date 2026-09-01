@@ -1,0 +1,103 @@
+[P] levelsof -- Distinct levels of a variable
+                (View complete PDF manual entry)
+
+
+Syntax
+
+        levelsof varname [if] [in] [, options]
+
+    options                Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    clean                  display string values without compound double quotes
+    local(macname)         insert the list of values in the local macro macname
+    missing                include missing values of varname in calculation
+    separate(separator)    separator to serve as punctuation for the values of returned list; default is a space
+    matcell(matname)       save frequencies of distinct values in matname
+    matrow(matname)        save distinct values of varname in matname
+    hexadecimal            use hexadecimal format for numerical values
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    collect is allowed; see prefix.
+
+
+Description
+
+    levelsof displays a sorted list of the distinct values of varname.
+
+
+Links to PDF documentation
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+    clean displays string values without compound double quotes.  By default, each distinct string value is displayed within compound double quotes, as these are the most general delimiters.  If you know that the string values in varname do not include
+        embedded spaces or embedded quotes, this is an appropriate option.  clean does not affect the display of values from numeric variables.
+
+    local(macname) inserts the list of values in local macro macname within the calling program's space.  Hence, that macro will be accessible after levelsof has finished.  This is helpful for subsequent use, especially with foreach.
+
+    missing specifies that missing values of varname be included in the calculation.  The default is to exclude them.
+
+    separate(separator) specifies a separator to serve as punctuation for the values of the returned list.  The default is a space.  A useful alternative is a comma.
+
+    matcell(matname) saves the frequencies of the distinct values in matname.
+
+    matrow(matname) saves the distinct values of varname in matname.  matrow() may not be specified if varname is a string.
+
+    hexadecimal specifies that hexadecimal format %21x be used when varname is numeric.  See [D] format.  This option guarantees that the values in the macro that levelsof creates are exactly numerically equal to their values in varname.  For integer
+        data, except for extremely large integers (absolute value > 1e19), levelsof always produces values that give equality without this option.  For noninteger data or extremely large integers, exact numerical equality may not be true in all cases by
+        default.  Specifying hexadecimal guarantees equality in all cases.
+
+
+Remarks
+
+    levelsof serves two different functions.  First, it gives a compact display of the distinct values of varname.  More commonly, it is useful when you desire to cycle through the distinct values of varname with (say) foreach; see [P] foreach.
+    levelsof leaves behind a list in r(levels) that may be used in a subsequent command.  When wanting to get the levels of noninteger data, one may use matrow(matname) to obtain the levels in full precision.
+
+    levelsof may hit the limits imposed by your Stata.  However, it is typically used when the number of distinct values of varname is not extremely large.
+
+    The terminology of levels of a factor has long been standard in experimental design.  See Cochran and Cox (1957, 148), Fisher (1942), or Yates (1937, 5).
+
+
+Examples
+
+    . sysuse auto
+
+    . levelsof rep78
+    . display "`r(levels)'"
+
+    . levelsof rep78, miss local(mylevs)
+    . display "`mylevs'"
+
+    . levelsof rep78, sep(,)
+    . display "`r(levels)'"
+
+    Showing value labels when defined:
+    . levelsof factor, local(levels)
+    . foreach l of local levels {
+    .        di "-> factor = `: label (factor) `l''"
+    .        whatever if factor == `l'
+    . }
+
+
+Stored results
+
+    levelsof stores the following in r():
+
+    Scalars   
+      r(N)           number of observations
+      r(r)           number of distinct values
+
+    Macros    
+      r(levels)      list of distinct values
+
+
+References
+
+    Cochran, W. G., and G. M. Cox. 1957. Experimental Designs. 2nd ed.  New York: Wiley.
+
+    Fisher, R. A. 1942. The theory of confounding in factorial experiments in relation to the theory of groups.  Annals of Eugenics 11: 341-353.
+
+    Yates, F. 1937. The Design and Analysis of Factorial Experiments.  Harpenden, England: Technical Communication 35, Imperial Bureau of Soil Science.

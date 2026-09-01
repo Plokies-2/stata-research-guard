@@ -1,0 +1,61 @@
+[D] lookfor -- Search for string in variable names and labels
+               (View complete PDF manual entry)
+
+
+Syntax
+
+        lookfor string [string [...]]
+
+    collect is allowed; see prefix.
+
+
+Description
+
+    lookfor helps you find variables by searching for string among all variable names and labels.  If multiple strings are specified, lookfor will search for each of them separately.  You may search for a phrase by enclosing string in double quotes.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Examples
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse nlswork
+
+    Find all occurrences of code in variable names and labels
+        . lookfor code
+
+    Find all occurrences of married in variable names and labels
+        . lookfor married
+
+    Find all occurrences of gnp in variable names and labels
+        . lookfor gnp
+
+    Find all occurrences of code or married in variable names and labels
+        . lookfor code married
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . sysuse sp500
+
+    Find all occurrences of price in variable names and labels
+        . lookfor price
+
+    Find all occurrences of the phrase price change in variable names and labels
+        . lookfor "price change"
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Stored results
+
+    lookfor stores the following in r():
+
+    Macros    
+      r(varlist)     the varlist of found variables

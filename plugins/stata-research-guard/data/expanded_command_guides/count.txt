@@ -1,0 +1,82 @@
+count — Count observations satisfying specified conditions
+
+                   Description                   Quick start       Menu         Syntax
+                   Remarks and examples          Stored results    References   Also see
+
+
+Description
+    count counts the number of observations that satisfy the specified conditions. If no conditions are
+ specified, count displays the number of observations in the data.
+
+
+Quick start
+ Count the number of observations
+       count
+ Same as above, but where catvar equals 3
+      count if catvar==3
+ Count observations for each value of catvar
+       by catvar: count
+
+
+Menu
+ Data > Data utilities > Count observations satisfying condition
+
+
+Syntax
+    count [ if ] [ in ]
+
+ by and collect are allowed; see [U] 11.1.10 Prefix commands.
+
+
+Remarks and examples
+    count may strike you as an almost useless command, but it can be one of Stata’s handiest.
+
+ Example 1
+    How many times have you obtained a statistical result and then asked yourself how it was possible?
+ You think a moment and then mutter aloud, “Wait a minute. Is income ever negative in these data?” or
+ “Is sex ever equal to 3?” count can quickly answer those questions:
+
+
+
+
+                                                        90
+
+. use https://www.stata-press.com/data/r18/countxmpl
+        (1980 Census data by state)
+        . count
+          641
+        . count if income<0
+          0
+        . count if sex==3
+          1
+        . by division: count if sex==3
+
+        -> division = New England
+          0
+
+        -> division = Mountain
+          0
+
+        -> division = Pacific
+          1
+
+   We have 641 observations. income is never negative. sex, however, takes on the value 3 once. When
+ we decompose the count by division, we see that it takes on that odd value in the Pacific division.
+
+
+
+Stored results
+    count stores the following in r():
+    Scalars
+         r(N)         number of observations
+
+
+
+References
+ Cox, N. J. 2007a. Speaking Stata: Counting groups, especially panels. Stata Journal 7: 571–581.
+ ———. 2007b. Speaking Stata: Making it count. Stata Journal 7: 117–130.
+ ———. 2007c. Stata tip 51: Events in intervals. Stata Journal 7: 440–443.
+
+
+Also see
+ [R] tabulate oneway — One-way table of frequencies

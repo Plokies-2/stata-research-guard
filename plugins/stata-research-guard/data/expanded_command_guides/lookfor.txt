@@ -1,0 +1,96 @@
+lookfor — Search for string in variable names and labels
+
+                   Description          Quick start       Syntax      Remarks and examples
+                   Stored results       Reference         Also see
+
+
+Description
+    lookfor helps you find variables by searching for string among all variable names and labels. If
+ multiple strings are specified, lookfor will search for each of them separately. You may search for a
+ phrase by enclosing string in double quotes.
+
+
+Quick start
+ Search variable names and variable labels for the phrase “my text” regardless of case
+       lookfor ”my text”
+ Search for “word1” or “word2”
+       lookfor word1 word2
+
+
+Syntax
+    lookfor string [ string [. . .] ]
+
+ collect is allowed; see [U] 11.1.10 Prefix commands.
+
+
+Remarks and examples
+
+ Example 1
+    lookfor finds variables by searching for string, ignoring case, among the variable names and labels.
+        . use https://www.stata-press.com/data/r18/nlswork
+        (National Longitudinal Survey of Young Women, 14-24 years old in 1968)
+        . lookfor code
+        Variable        Storage     Display       Value
+            name           type      format       label        Variable label
+
+        idcode             int      %8.0g                      NLS ID
+        ind_code           byte     %8.0g                      Industry of employment
+        occ_code           byte     %8.0g                      Occupation
+
+ Three variable names contain the word code.
+        . lookfor married
+        Variable        Storage     Display       Value
+            name           type      format       label        Variable label
+
+        msp                byte     %8.0g                      1 if married, spouse present
+        nev_mar            byte     %8.0g                      1 if never married
+
+ Two variable labels contain the word married.
+
+                                                        678
+
+. lookfor gnp
+        Variable         Storage      Display        Value
+            name            type       format        label       Variable label
+
+        ln_wage             float     %9.0g                      ln(wage/GNP deflator)
+
+ lookfor ignores case, so lookfor gnp found GNP in a variable label.
+
+
+ Example 2
+    If multiple strings are specified, all variable names or labels containing any of the strings are listed.
+        . lookfor code married
+        Variable         Storage      Display        Value
+            name            type       format        label       Variable label
+
+        idcode              int       %8.0g                      NLS ID
+        msp                 byte      %8.0g                      1 if married, spouse present
+        nev_mar             byte      %8.0g                      1 if never married
+        ind_code            byte      %8.0g                      Industry of employment
+        occ_code            byte      %8.0g                      Occupation
+
+
+    To search for a phrase, enclose string in double quotes.
+        . lookfor ”never married”
+        Variable         Storage      Display        Value
+            name            type       format        label       Variable label
+
+        nev_mar             byte      %8.0g                      1 if never married
+
+
+
+Stored results
+    lookfor stores the following in r():
+    Macros
+        r(varlist)       the varlist of found variables
+
+
+
+Reference
+ Cox, N. J. 2010. Speaking Stata: Finding variables. Stata Journal 10: 281–296.
+
+
+Also see
+ [D] describe — Describe data in memory or in a file
+ [D] ds — Compactly list variables with specified properties

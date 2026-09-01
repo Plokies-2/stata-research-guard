@@ -1,0 +1,212 @@
+[D] describe -- Describe data in memory or in a file
+                (View complete PDF manual entry)
+
+
+Syntax
+
+    Describe data in memory
+
+        describe [varlist] [, memory_options]
+
+
+    Describe data in a file
+
+        describe [varlist] using filename [, file_options]
+
+
+    memory_options        Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    simple                display only variable names
+    short                 display only general information
+    fullnames             do not abbreviate variable names
+    numbers               display variable number along with name
+    replace               make dataset, not written report, of description
+    clear                 for use with replace
+
+    varlist               store r(varlist) and r(sortlist) in addition to usual stored results; programmer's option
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    varlist does not appear in the dialog box.
+
+    file_options          Description
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    short                 display only general information
+    simple                display only variable names
+
+    varlist               store r(varlist) and r(sortlist) in addition to usual stored results; programmer's option
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    varlist does not appear in the dialog box.
+
+
+    collect is allowed; see prefix.
+
+
+Menu
+
+        Data > Describe data > Describe data in memory or in a file
+
+
+Description
+
+    describe produces a summary of the dataset in memory or of the data stored in a Stata-format dataset.
+
+    For a compact listing of variable names, use describe, simple.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options to describe data in memory
+
+    simple displays only the variable names in a compact format.  simple may not be combined with other options.
+
+    short suppresses the specific information for each variable.  Only the general information (number of observations, number of variables, and sort order) is displayed.
+
+    fullnames specifies that describe display the full names of the variables.  The default is to present an abbreviation when the variable name is longer than 15 characters.  describe using always shows the full names of the variables, so fullnames may
+        not be specified with describe using.
+
+    numbers specifies that describe present the variable number with the variable name.  If numbers is specified, variable names are abbreviated when the name is longer than eight characters.  The numbers and fullnames options may not be specified
+        together.  numbers may not be specified with describe using.
+
+    replace and clear are alternatives to the options above.  describe usually produces a written report, and the options above specify what the report is to contain.  If you specify replace, however, no report is produced; the data in memory are
+        instead replaced with data containing the information that the report would have presented.  Each observation of the new data describes a variable in the original data; see describe, replace below.
+
+        clear may be specified only when replace is specified.  clear specifies that the data in memory be cleared and replaced with the description information, even if the original data have not been saved to disk.
+
+    The following option is available with describe but is not shown in the dialog box:
+
+    varlist, an option for programmers, specifies that, in addition to the usual stored results, r(varlist) and r(sortlist) be stored, too.  r(varlist) will contain the names of the variables in the dataset.  r(sortlist) will contain the names of the
+        variables by which the data are sorted.
+
+
+Options to describe data in a file
+
+    short suppresses the specific information for each variable.  Only the general information (number of observations, number of variables, and sort order) is displayed.
+
+    simple displays only the variable names in a compact format.  simple may not be combined with other options.
+
+    The following option is available with describe but is not shown in the dialog box:
+
+    varlist, an option for programmers, specifies that, in addition to the usual stored results, r(varlist) and r(sortlist) be stored, too.  r(varlist) will contain the names of the variables in the dataset.  r(sortlist) will contain the names of the
+        variables by which the data are sorted.
+
+        Because Stata/MP and Stata/SE can create truly large datasets, there might be too many variables in a dataset for their names to be stored in r(varlist), given the current maximum length of macros, as determined by set maxvar.  Should that
+        occur, describe using will issue the error message "too many variables", r(103).
+
+
+Remarks
+
+    Remarks are presented under the following headings:
+
+        describe
+        describe, replace
+
+
+describe
+
+    If describe is typed with no operands, the contents of the dataset currently in memory are described.
+
+    The varlist in the describe using syntax differs from standard Stata varlists in two ways.  First, you cannot abbreviate variable names; that is, you have to type displacement rather than displ.  However, you can use the wildcard character (~) to
+    indicate abbreviations, for example, displ~.  Second, you may not refer to a range of variables; specifying age-income is considered an error.
+
+
+describe, replace
+
+    describe with the replace option is rarely used, although you may sometimes find it convenient.
+
+    Think of describe, replace as separate from but related to describe without the replace option.  Rather than producing a written report, describe, replace produces a new dataset that contains the same information a written report would.  For
+    instance, try the following:
+
+        . sysuse auto, clear
+
+        . describe
+        (report appears; data in memory unchanged)
+
+        . list
+        (visual proof that data are unchanged)
+
+        . describe, replace
+        (no report appears, but the data in memory are changed!)
+
+        . list
+        (visual proof that data are changed)
+
+    describe, replace changes the original data in memory into a dataset containing an observation for each variable in the original data.  Each observation in the new data describes a variable in the original data.  The new variables are
+
+        1. position, a variable containing the numeric position of the original variable (1, 2, 3, ...).
+
+        2. name, a variable containing the name of the original variable, such as "make", "price", "mpg", ....
+
+        3. type, a variable containing the storage type of the original variable, such as "str18", "int", "float", ....
+
+        4. isnumeric, a variable equal to 1 if the original variable was numeric and equal to 0 if it was string.
+
+        5. format, a variable containing the display format of the original variable, such as "%-18s", "%8.0gc", ....
+
+        6. vallab, a variable containing the name of the value label associated with the original variable, if any.
+
+        7. varlab, a variable containing the variable label of the original variable, such as "Make and model", "Price", "Mileage (mpg)", ....
+
+    In addition, the data contain the following characteristics:
+
+            _dta[d_filename], the name of the file containing the original data.
+
+            _dta[d_filedate], the date and time the file was written.
+
+            _dta[d_N], the number of observations in the original data.
+
+            _dta[d_sortedby], the variables on which the original data were sorted, if any.
+
+
+Examples
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . webuse states
+
+    Describe dataset in memory
+        . describe
+
+    Describe dataset in memory, displaying full variable names
+        . describe, fullnames
+
+    Describe dataset in memory, suppressing specific information about each variable
+        . describe, short
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Setup
+        . sysuse census
+
+    Describe all variables whose names begin with pop* for the dataset in memory
+        . describe pop*
+
+    Describe the variables state, region, and pop18p for the dataset in memory
+        . describe state region pop18p
+
+    Describe the states dataset located at the https://www.stata-press.com website
+        . describe using https://www.stata-press.com/data/r18/states
+
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Stored results
+
+    describe stores the following in r():
+
+    Scalars        
+      r(N)                number of observations
+      r(k)                number of variables
+      r(width)            width of dataset
+      r(changed)          flag indicating data have changed since last saved
+
+    Macros         
+      r(datalabel)        dataset label
+      r(varlist)          variables in dataset (if varlist specified)
+      r(sortlist)         variables by which data are sorted (if varlist specified)
+
+    describe, replace stores nothing in r().

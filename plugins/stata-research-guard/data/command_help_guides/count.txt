@@ -1,0 +1,48 @@
+[D] count -- Count observations satisfying specified conditions
+             (View complete PDF manual entry)
+
+
+Syntax
+
+        count [if] [in]
+
+    by and collect are allowed; see prefix.
+
+
+Menu
+
+    Data > Data utilities > Count observations satisfying condition
+
+
+Description
+
+    count counts the number of observations that satisfy the specified conditions.  If no conditions are specified, count displays the number of observations in the data.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Examples
+
+    Setup
+        . sysuse auto
+
+    Count the number of observations having rep78>4
+        . count if rep78>4
+
+    By categories of foreign, count the number of observations having rep78>4
+        . by foreign: count if rep78>4
+
+
+Stored results
+
+    count stores the following in r():
+
+    Scalars   
+      r(N)           number of observations

@@ -8,9 +8,9 @@ Stata Research Guard는 Codex가 연구 목적에 맞는 Stata 명령을 고르�
 
 | 자료 | 내용 | 활용 방식 |
 | --- | --- | --- |
-| Command dictionary | 109개 canonical Stata command의 역할, 기능, 입력 상태, 출력 형태와 주요 tradeoff | 모델이 현재 작업에 필요한 명령을 고를 때 사용 |
-| Command help | 107개 명령의 Stata-rendered 공식·maintainer help: 107개 `available` | 선택한 명령의 기본 문법, option, warning, stored result 확인 |
-| Expanded documentation | 공식 명령 63개의 설치된 Stata 18 PDF command entry, `jregress` 저자 보충문서 1개 | help만으로 부족할 때 Phase 3에서 선택 명령별로 추가 확인 |
+| Command dictionary | 115개 canonical Stata command의 역할, 기능, 입력 상태, 출력 형태와 주요 tradeoff | 모델이 현재 작업에 필요한 명령을 고를 때 사용 |
+| Command help | 115개 명령의 Stata-rendered 공식·maintainer help: 113개 `available`, 2개 `unavailable` | 선택한 명령의 기본 문법, option, warning, stored result 확인 |
+| Expanded documentation | 공식 명령 69개의 설치된 Stata 18 PDF command entry, `jregress` 저자 보충문서 1개 | help만으로 부족할 때 Phase 3에서 선택 명령별로 추가 확인 |
 | Paper example | 166개 실제 논문 코드 블록과 target occurrence | 선택한 명령이 데이터 준비, 추정, 저장, 표·그림 작성과 이어지는 방식 참고 |
 | Raw log and artifact | 논문 블록과 직접 연결된 12개 원문 log 또는 artifact 정보 | 해당 코드가 남긴 원문 실행 기록과 산출물 위치 확인 |
 | General rules | 직접적이고 읽기 쉬운 Stata를 위한 공통 원칙 | 현재 프로젝트용 코드를 작성할 때 함께 적용 |
@@ -37,7 +37,7 @@ get_stata_command_evidence
 }
 ```
 
-응답의 `command_dictionary`에는 109개 명령의 간결한 설명이 담깁니다. 모델은 연구 목적과 현재 프로젝트를 바탕으로 사용할 command key를 직접 고릅니다.
+응답의 `command_dictionary`에는 115개 명령의 간결한 설명이 담깁니다. 모델은 연구 목적과 현재 프로젝트를 바탕으로 사용할 command key를 직접 고릅니다.
 
 ### 2. 선택한 명령의 help와 논문 목록 확인
 
@@ -93,7 +93,7 @@ Phase 2에서는 공식·maintainer help가 명령 문법의 첫 기준입니다
 
 ## 개발 확인
 
-플러그인을 수정한 뒤에는 MCP 응답과 bundle 구성이 정상인지 다음 명령으로 확인합니다. `data/command_source_catalog.json`은 109개 명령의 Stata manual code와 보존할 maintainer 원문을 연결합니다. help를 다시 렌더링할 때는 `scripts/build_command_help_guides.cjs`가 이 catalog에서 Stata용 do-file을 준비하고, 그 do-file을 mcpStata에서 실행한 뒤 같은 스크립트의 `finalize` 단계로 index를 갱신합니다. Stata 18 PDF 원문을 다시 추출할 때는 Poppler `-layout` text를 준비한 뒤 `scripts/build_expanded_command_guides.py`에 해당 폴더를 넘깁니다.
+플러그인을 수정한 뒤에는 MCP 응답과 bundle 구성이 정상인지 다음 명령으로 확인합니다. `data/command_source_catalog.json`은 115개 명령의 Stata manual code와 보존할 maintainer 원문을 연결합니다. help를 다시 렌더링할 때는 `scripts/build_command_help_guides.cjs`가 이 catalog에서 Stata용 do-file을 준비하고, 그 do-file을 mcpStata에서 실행한 뒤 같은 스크립트의 `finalize` 단계로 index를 갱신합니다. Stata 18 PDF 원문을 다시 추출할 때는 Poppler `-layout` text를 준비한 뒤 `scripts/build_expanded_command_guides.py`에 해당 폴더를 넘깁니다.
 
 ```powershell
 node --test tests/server.test.cjs

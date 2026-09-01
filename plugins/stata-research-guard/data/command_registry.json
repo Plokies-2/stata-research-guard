@@ -19,6 +19,14 @@
       "features": []
     },
     {
+      "family_id": "official_data_inspection",
+      "display_name": "Official data inspection and metadata",
+      "ownership": "StataCorp official",
+      "category": "inspection",
+      "evidence": "StataCorp data-management and programming manuals",
+      "features": []
+    },
+    {
       "family_id": "official_integrity",
       "display_name": "Official integrity diagnostics",
       "ownership": "StataCorp official",
@@ -542,6 +550,157 @@
       "tradeoffs_and_incompatibilities": [
         "Provides descriptive diagnostics rather than enforcing claims, and its problem report does not cover every possible data defect.",
         "Missing-pattern analysis with mv is CPU intensive; compact and problems impose documented display-option limits."
+      ]
+    },
+    {
+      "command": "count",
+      "family_id": "official_data_inspection",
+      "invocation": "count",
+      "aliases": [],
+      "stages": [
+        "data_inspection",
+        "descriptives_balance_sample_flow"
+      ],
+      "role": "Count observations in memory, optionally restricting the count with if or in.",
+      "capabilities": [
+        "count every observation in the active dataset",
+        "count observations satisfying a logical condition or observation-range restriction"
+      ],
+      "required_input_state": [
+        "A dataset must be in memory; any if expression or in range must be valid for the active data."
+      ],
+      "output_interface": [
+        "displays the count and stores it in r(N) without changing the dataset"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Returns one observation count rather than frequencies by category or descriptive statistics for variables.",
+        "The result reflects only the stated if or in restriction and does not preserve a reusable sample indicator."
+      ]
+    },
+    {
+      "command": "describe",
+      "family_id": "official_data_inspection",
+      "invocation": "describe",
+      "aliases": [],
+      "stages": [
+        "data_inspection"
+      ],
+      "role": "Display dataset and variable metadata for data in memory or for a Stata dataset on disk.",
+      "capabilities": [
+        "report observation and variable counts, storage types, display formats, value-label names, variable labels, dataset label, sort order, and changed state",
+        "display a compact variable-name list or dataset-level summary",
+        "inspect metadata for a Stata dataset named with using without loading it"
+      ],
+      "required_input_state": [
+        "Either a dataset must be in memory or an accessible Stata-format dataset must be supplied with using."
+      ],
+      "output_interface": [
+        "displayed metadata plus r(N), r(k), r(width), r(changed), and r(datalabel); varlist additionally stores r(varlist) and r(sortlist)"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Describes structure and labels rather than displaying observation values or computing variable distributions.",
+        "The replace option creates a description dataset and is not a read-only display operation."
+      ]
+    },
+    {
+      "command": "ds",
+      "family_id": "official_data_inspection",
+      "invocation": "ds",
+      "aliases": [],
+      "stages": [
+        "data_inspection",
+        "cleaning_labels"
+      ],
+      "role": "List and select variables in memory by name or documented variable properties.",
+      "capabilities": [
+        "list variables compactly or with details",
+        "select variables by storage type, format, value-label attachment, variable label, or characteristic",
+        "exclude variables matching documented name or property conditions"
+      ],
+      "required_input_state": [
+        "A dataset must be in memory; requested names and property filters must follow ds syntax."
+      ],
+      "output_interface": [
+        "displays matching variable names and stores the selected names in r(varlist) without changing the dataset"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Selects variables from metadata rather than observations from their values.",
+        "An empty match leaves no variable list for a downstream command, so subsequent use of r(varlist) must reflect the observed result."
+      ]
+    },
+    {
+      "command": "levelsof",
+      "family_id": "official_data_inspection",
+      "invocation": "levelsof",
+      "aliases": [],
+      "stages": [
+        "data_inspection",
+        "descriptives_balance_sample_flow"
+      ],
+      "role": "Display the sorted distinct values of one variable for the requested sample.",
+      "capabilities": [
+        "enumerate distinct numeric or string values under if or in restrictions",
+        "include missing values, control delimiters and quoting, or place the levels in a named local macro",
+        "store noninteger numeric levels at full precision in a row matrix"
+      ],
+      "required_input_state": [
+        "One variable must exist in the active dataset; the selected sample must be meaningful for the intended level enumeration."
+      ],
+      "output_interface": [
+        "displays distinct levels and stores r(N), r(r), and r(levels), with optional local() or matrow() output"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Operates on one variable at a time and returns a macro representation whose quoting matters for string values.",
+        "Very many distinct values can exceed the practical size of displayed or macro-held output; matrow() applies only to numeric variables."
+      ]
+    },
+    {
+      "command": "list",
+      "family_id": "official_data_inspection",
+      "invocation": "list",
+      "aliases": [],
+      "stages": [
+        "data_inspection"
+      ],
+      "role": "Display observation-level values for selected variables and observations.",
+      "capabilities": [
+        "display all or selected variables under if or in restrictions",
+        "control observation numbers, labels, formats, headers, separators, and grouping breaks",
+        "append simple mean, sum, or nonmissing-count lines for selected displayed variables"
+      ],
+      "required_input_state": [
+        "A dataset must be in memory; omitted varlist or sample restrictions can produce a large display."
+      ],
+      "output_interface": [
+        "displayed observation values only; the active dataset is not changed and no documented returned-results interface is provided"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Large unrestricted listings can be impractical, so use an explicit varlist and if or in restriction when only a sample is needed.",
+        "It displays raw or formatted values rather than producing reusable summary statistics or a saved extract."
+      ]
+    },
+    {
+      "command": "lookfor",
+      "family_id": "official_data_inspection",
+      "invocation": "lookfor",
+      "aliases": [],
+      "stages": [
+        "data_inspection"
+      ],
+      "role": "Search variable names and variable labels for one or more text strings.",
+      "capabilities": [
+        "find variables whose names or labels contain any supplied search string",
+        "perform case-insensitive metadata searches and display matching names and labels"
+      ],
+      "required_input_state": [
+        "A dataset must be in memory and at least one search string must be supplied."
+      ],
+      "output_interface": [
+        "displays matching variables and stores their names in r(varlist) without changing the dataset"
+      ],
+      "tradeoffs_and_incompatibilities": [
+        "Searches variable names and labels rather than observation contents or value-label text.",
+        "Multiple search strings are combined as alternative matches, so a result need not contain every supplied string."
       ]
     },
     {
