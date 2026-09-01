@@ -1,13 +1,13 @@
 interface:
   display_name: "Stata Research Workflow"
   short_description: "Help-first Stata 18 command and research evidence"
-  default_prompt: "Use $stata-replication-workflow to inspect the allowed command dictionary, choose canonical commands, and read their Stata 18 help first. When more context would materially help, expand only the exact selected-command subset that needs longer documentation and choose exact paper blocks independently. Follow the common general rules and abort with the missing capability if the dictionary cannot supply it."
+  default_prompt: "Use $stata-replication-workflow as command evidence, not as a command selector. Skip lookup for read-only explanation and syntax-preserving comment, formatting, literal, or relocation changes. When a material command is already clear, call Phase 2 directly; use Phase 1 only for unresolved command discovery. Expand only the exact selected-command subset that needs longer documentation and choose paper blocks independently. Follow the common general rules and stop only a materially unresolved command branch."
 
 dependencies:
   tools:
     - type: "mcp"
       value: "stataResearchGuard"
-      description: "Closed Stata command dictionary, main rules, Stata 18 help-first evidence, and command-selective expanded documentation plus selected raw paper context"
+      description: "Open-ended Stata command evidence with a compact discovery index, live installed-help fallback, main rules, command-selective expanded documentation, and selected raw paper context"
       transport: "stdio"
 
 policy:

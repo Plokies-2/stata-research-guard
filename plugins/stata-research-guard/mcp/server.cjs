@@ -25,6 +25,13 @@ const GENERAL_RULES_PATH = path.join(
 );
 const GENERAL_RULES_SOURCE_PATH = "skills/stata-replication-workflow/references/general-rules.md";
 const EXACT_HELP_TOPIC = /^[A-Za-z][A-Za-z0-9_]*$/;
+const STATA_COMMAND_WORDS = /^[A-Za-z][A-Za-z0-9_]*(?: [A-Za-z][A-Za-z0-9_]*)+$/;
+const LIVE_HELP_TOPIC_ALIASES = new Map([
+  ["global", "macro"],
+  ["local", "macro"],
+  ["tempfile", "macro"],
+  ["tempname", "macro"],
+]);
 const LIVE_HELP_CACHE = new Map();
 
 function readUtf8(file) {
@@ -123,19 +130,44 @@ function exactHelpTopic(command) {
   return command;
 }
 
+function selectedHelpTopic(command) {
+  if (typeof command === "string" && EXACT_HELP_TOPIC.test(command)) {
+    return { requested: command, resolved: command, normalization: null };
+  }
+  if (typeof command === "string" && STATA_COMMAND_WORDS.test(command)) {
+    const resolved = command.replaceAll(" ", "_");
+    if (commandsByName.has(resolved)) {
+      return {
+        requested: command,
+        resolved,
+        normalization: {
+          requested: command,
+          resolved,
+          reason: "registered_multiword_command",
+        },
+      };
+    }
+  }
+  throw new Error(`ABORT invalid_help_topic: ${JSON.stringify(command)}`);
+}
+
 function selectedCommandsFrom(args) {
   if (!Array.isArray(args.selected_commands) || args.selected_commands.length === 0) {
     throw new Error("ABORT empty_command_selection: selected_commands must be a non-empty array of exact command topics");
   }
   const seen = new Set();
+  const selectedCommands = [];
+  const topicNormalizations = [];
   for (const command of args.selected_commands) {
-    exactHelpTopic(command);
-    if (seen.has(command)) {
-      throw new Error(`ABORT duplicate_selected_command: ${JSON.stringify(command)}`);
+    const topic = selectedHelpTopic(command);
+    if (seen.has(topic.resolved)) {
+      throw new Error(`ABORT duplicate_selected_command: ${JSON.stringify(topic.resolved)}`);
     }
-    seen.add(command);
+    seen.add(topic.resolved);
+    selectedCommands.push(topic.resolved);
+    if (topic.normalization) topicNormalizations.push(topic.normalization);
   }
-  return [...args.selected_commands];
+  return { selectedCommands, topicNormalizations };
 }
 
 function selectedBlockIdsFrom(args) {
@@ -157,28 +189,33 @@ function selectedBlockIdsFrom(args) {
 
 function optionalSelectedBlockIdsFrom(args) {
   if (!Object.prototype.hasOwnProperty.call(args, "selected_block_ids")) return [];
+  if (Array.isArray(args.selected_block_ids) && args.selected_block_ids.length === 0) return [];
   return selectedBlockIdsFrom(args);
 }
 
 function optionalExpandedCommandsFrom(args, selectedCommands) {
   if (!Object.prototype.hasOwnProperty.call(args, "expanded_commands")) return [];
-  if (!Array.isArray(args.expanded_commands) || args.expanded_commands.length === 0) {
-    throw new Error("ABORT empty_expanded_command_selection: expanded_commands must be a non-empty array of exact selected command keys");
+  if (!Array.isArray(args.expanded_commands)) {
+    throw new Error("ABORT invalid_expanded_command_selection: expanded_commands must be an array of exact selected command keys");
   }
+  if (args.expanded_commands.length === 0) return [];
   const seen = new Set();
+  const expandedCommands = [];
   for (const command of args.expanded_commands) {
-    if (typeof command !== "string" || !commandsByName.has(command)) {
-      throw new Error(`ABORT expanded_command_not_registered: ${JSON.stringify(command)}`);
+    const topic = selectedHelpTopic(command);
+    if (!commandsByName.has(topic.resolved)) {
+      throw new Error(`ABORT expanded_command_not_registered: ${JSON.stringify(topic.resolved)}`);
     }
-    if (seen.has(command)) {
-      throw new Error(`ABORT duplicate_expanded_command: ${JSON.stringify(command)}`);
+    if (seen.has(topic.resolved)) {
+      throw new Error(`ABORT duplicate_expanded_command: ${JSON.stringify(topic.resolved)}`);
     }
-    if (!selectedCommands.includes(command)) {
-      throw new Error(`ABORT expanded_command_not_selected: ${JSON.stringify(command)}`);
+    if (!selectedCommands.includes(topic.resolved)) {
+      throw new Error(`ABORT expanded_command_not_selected: ${JSON.stringify(topic.resolved)}`);
     }
-    seen.add(command);
+    seen.add(topic.resolved);
+    expandedCommands.push(topic.resolved);
   }
-  return [...args.expanded_commands];
+  return expandedCommands;
 }
 
 function validateArguments(args) {
@@ -212,7 +249,10 @@ function validateArguments(args) {
     throw new Error("ABORT invalid_phase_arguments: selected_block_ids requires expanded: true");
   }
 
-  const selectedCommands = phase === "discovery" ? null : selectedCommandsFrom(args);
+  const selected = phase === "discovery"
+    ? { selectedCommands: null, topicNormalizations: [] }
+    : selectedCommandsFrom(args);
+  const selectedCommands = selected.selectedCommands;
   const selectedBlockIds = phase === "expanded_context" ? optionalSelectedBlockIdsFrom(args) : null;
   const expandedCommands = phase === "expanded_context"
     ? optionalExpandedCommandsFrom(args, selectedCommands)
@@ -221,7 +261,13 @@ function validateArguments(args) {
     throw new Error("ABORT empty_expanded_context: supply expanded_commands, selected_block_ids, or both");
   }
 
-  return { phase, selectedCommands, selectedBlockIds, expandedCommands };
+  return {
+    phase,
+    selectedCommands,
+    selectedBlockIds,
+    expandedCommands,
+    topicNormalizations: selected.topicNormalizations,
+  };
 }
 
 function commandHelp(command) {
@@ -445,9 +491,11 @@ function lookupLiveStataHelp(command) {
 }
 
 function dynamicCommandEvidence(command, liveHelpLookup) {
-  const live = liveHelpLookup(command);
+  const helpTopic = LIVE_HELP_TOPIC_ALIASES.get(command) || command;
+  const live = liveHelpLookup(helpTopic);
   return {
     command,
+    help_topic: helpTopic,
     registry_status: "outside_dictionary",
     help_status: live.status,
     command_help: live.help,
@@ -582,7 +630,13 @@ function paperCard(blockId) {
 }
 
 function buildCommandEvidence(args, options = {}) {
-  const { phase, selectedCommands, selectedBlockIds, expandedCommands } = validateArguments(args);
+  const {
+    phase,
+    selectedCommands,
+    selectedBlockIds,
+    expandedCommands,
+    topicNormalizations,
+  } = validateArguments(args);
   const liveHelpLookup = options.liveHelpLookup || lookupLiveStataHelp;
 
   if (phase === "discovery") {
@@ -594,12 +648,14 @@ function buildCommandEvidence(args, options = {}) {
   }
 
   if (phase === "selected_command_evidence") {
-    return {
+    const result = {
       phase: "selected_command_evidence",
       main_rules: mainRulesReference(),
       selected_commands: selectedCommands,
       command_evidence: selectedCommands.map((command) => commandEvidence(command, liveHelpLookup)),
     };
+    if (topicNormalizations.length > 0) result.topic_normalizations = topicNormalizations;
+    return result;
   }
 
   for (const blockId of selectedBlockIds) {
@@ -610,7 +666,7 @@ function buildCommandEvidence(args, options = {}) {
       );
     }
   }
-  return {
+  const result = {
     phase: "expanded_context",
     main_rules: mainRulesReference(),
     selected_commands: selectedCommands,
@@ -622,12 +678,14 @@ function buildCommandEvidence(args, options = {}) {
     })),
     paper_usage_cards: selectedBlockIds.map(paperCard),
   };
+  if (topicNormalizations.length > 0) result.topic_normalizations = topicNormalizations;
+  return result;
 }
 
 const TOOL_DEFINITIONS = [
   {
     name: "get_stata_command_evidence",
-    description: "Stateless three-phase Stata evidence lookup. Phase 1 returns the common rules once and a compact neutral index of 115 bundled commands. The model autonomously selects exact command topics. Phase 2 returns bundled Stata 18 official or maintainer help for registered commands and, for an exact out-of-dictionary topic, queries and renders help from the active Stata installation inside this Guard MCP. Later phases carry only the rules reference. Phase 3 can combine whole bundled documentation for exact registered expanded_commands with optional exact paper blocks and directly linked raw log or artifact excerpts. The server never scores, ranks, recommends, promotes, audits, semantically validates, or automatically chooses commands, blocks, specifications, or outputs.",
+    description: "Stateless Stata evidence lookup. Phase 1 is optional discovery when the exact command is not yet clear; a model that already knows the material command may call Phase 2 directly. Read-only explanation, comment-only edits, formatting-only edits, and verbatim relocation of unchanged commands do not require a lookup. Phase 2 returns bundled Stata 18 official or maintainer help for registered commands and queries active installed help for an exact out-of-dictionary topic. Registered multiword Stata spelling such as export excel is normalized transparently to export_excel; global, local, tempfile, and tempname retain their requested labels while using official macro help. Phase 3 adds only explicitly requested expanded documentation or paper blocks. The server never scores, ranks, recommends, promotes, audits, semantically validates, or automatically chooses commands, blocks, specifications, or outputs.",
     inputSchema: {
       oneOf: [
         {
@@ -660,8 +718,8 @@ const TOOL_DEFINITIONS = [
             request: { type: "string", minLength: 1 },
             selected_commands: { type: "array", minItems: 1, items: { type: "string", minLength: 1 } },
             expanded: { const: true },
-            expanded_commands: { type: "array", minItems: 1, items: { type: "string", minLength: 1 } },
-            selected_block_ids: { type: "array", minItems: 1, items: { type: "string", minLength: 1 } },
+            expanded_commands: { type: "array", items: { type: "string", minLength: 1 } },
+            selected_block_ids: { type: "array", items: { type: "string", minLength: 1 } },
           },
         },
       ],

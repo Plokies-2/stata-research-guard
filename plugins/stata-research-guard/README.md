@@ -26,11 +26,11 @@ Stata Research Guard는 Codex가 연구 목적에 맞는 Stata 명령을 고르�
 get_stata_command_evidence
 ```
 
-Phase 1에는 `general-rules.md` 전문이 한 번 들어갑니다. Phase 2·3은 같은 규칙의 path와 SHA-256만 반환해 컨텍스트 반복을 피합니다. 자료는 세 단계로 불러옵니다.
+Phase 1은 명령이 아직 불명확할 때 쓰는 선택적 discovery입니다. 이미 중요한 명령을 알고 있으면 Phase 1을 건너뛰고 Phase 2로 바로 갈 수 있습니다. 읽기 전용 설명·검토, 주석·북마크·공백·formatting만의 수정, command interface를 바꾸지 않는 literal 교체와 기존 block의 그대로 이동에는 Guard lookup이 필요하지 않습니다. Phase 1을 쓸 때는 `general-rules.md` 전문이 한 번 들어가고, Phase 2·3은 같은 규칙의 path와 SHA-256만 반환합니다.
 
 ### 1. 명령 선택
 
-처음에는 연구 요청만 보냅니다.
+명령을 아직 고르지 못했을 때만 연구 요청을 보냅니다.
 
 ```json
 {
@@ -52,6 +52,8 @@ Phase 1에는 `general-rules.md` 전문이 한 번 들어갑니다. Phase 2·3�
 ```
 
 응답의 `command_evidence`에는 요청 순서대로 command별 packet이 들어갑니다. 등록 명령에는 Stata가 `smcl2txt`로 렌더링한 bundled help, expanded-documentation 상태와 논문 profile이 들어갑니다. 사전 밖 exact command는 Guard가 활성 Stata ado-path에서 `.sthlp` 또는 `.hlp`를 찾아 같은 방식으로 렌더링하며 `registry_status=outside_dictionary`로 표시합니다. 이 live fallback에는 bundled PDF expansion이나 paper catalog가 없습니다. exact help도 없으면 해당 command branch만 중단합니다.
+
+실제 Stata 표기인 `export excel`과 `import excel`은 각각 등록 key `export_excel`, `import_excel`로 투명하게 정규화되고 그 mapping을 응답에 남깁니다. `global`, `local`, `tempfile`, `tempname`은 요청 label을 유지하면서 공식 `macro` help를 조회합니다. programming `if`의 help topic은 `ifcmd`이고, `if` topic은 observation qualifier입니다. 한 block의 모든 보조 token을 나열하지 말고 실제로 문법·option·returned result가 쟁점인 command만 선택합니다.
 
 help에 사용자가 하려는 행동이 모두 설명되어 있고, 그 설명을 직접 적용해 어렵지 않게 코드를 쓸 수 있으며, version·option 상호작용·returned result·후속 표/그림/저장 연결에 중요한 의문이 남지 않으면 여기서 멈춥니다. 명령이 통계 명령이거나 user-written이라는 이유, 데이터를 바꾸거나 출력과 이어진다는 이유만으로 더 긴 자료를 요구하지 않습니다.
 
@@ -83,7 +85,7 @@ Phase 2에서는 공식·maintainer help가 명령 문법의 첫 기준입니다
 
 ## 읽기와 실행의 경계
 
-Guard와 mcpStata가 모두 연결됐다면 세션 목록, 메모리 안으로의 데이터 로드, 구조화된 metadata·count·variable·value·row·log·graph 목록과 returned-state 확인 같은 읽기 전용 inspection은 매 행동마다 Phase 2를 다시 받지 않고 진행할 수 있습니다. Stata 코드를 쓰거나 고칠 때, 데이터를 변경·저장할 때, 추정·검정·export를 할 때, 반환 상태를 후속 코드가 실질적으로 소비할 때는 먼저 해당 exact command의 Phase 2 help를 확인합니다.
+Guard와 mcpStata가 모두 연결됐다면 세션 목록, 메모리 안으로의 데이터 로드, 구조화된 metadata·count·variable·value·row·log·graph 목록과 returned-state 확인 같은 읽기 전용 inspection은 매 행동마다 Phase 2를 다시 받지 않고 진행할 수 있습니다. Material Stata command를 쓰거나 고칠 때, 데이터를 변경·저장할 때, 추정·검정·export를 할 때, 반환 상태를 후속 코드가 실질적으로 소비할 때는 해당 interface의 Phase 2 help를 확인합니다. 같은 command·version·material option·returned interface·downstream use라면 기존 packet을 재사용하며, 주석·layout·literal path·코드 위치만 달라졌다고 다시 조회하지 않습니다.
 
 ## Stata 코드 작성 원칙
 

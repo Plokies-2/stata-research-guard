@@ -1,6 +1,6 @@
 {
   "name": "stata-research-guard",
-  "version": "0.3.0+codex.20260901173849",
+  "version": "0.3.0+codex.20260901204649",
   "description": "Provides Stata main rules, a compact command index, Stata 18 help-first evidence with live exact-help fallback, and command-selective expanded documentation plus selected paper context.",
   "author": {
     "name": "song7"
@@ -17,7 +17,8 @@
       "Skills"
     ],
     "defaultPrompt": [
-      "Use the skill and get_stata_command_evidence to read the main rules and compact command index, choose exact commands, then read bundled or live installed help first.",
+      "Use Phase 1 discovery only when the material command is unresolved; when it is already clear, call Phase 2 directly for the commands whose interface matters.",
+      "Do not call Guard for read-only explanation, comment or formatting-only edits, literal-only changes, or verbatim relocation of unchanged commands.",
       "When more context is needed, request expanded documentation only for the exact selected-command subset that needs it, and request exact paper blocks independently.",
       "Treat paper examples and optional raw logs as nonbinding source context; preserve the current project and selected research specification.",
       "Proceed from help when it fully explains the requested action and the code follows directly; report material help gaps and do not treat paper examples as grammar authority."

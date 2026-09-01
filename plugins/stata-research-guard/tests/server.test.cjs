@@ -51,6 +51,8 @@ test("MCP exposes one simple exact-key three-phase lookup tool", () => {
   assert.equal(TOOL_DEFINITIONS[0].inputSchema.oneOf[2].anyOf.length, 2);
   assert.equal("outputSchema" in TOOL_DEFINITIONS[0], false);
   assert.doesNotMatch(JSON.stringify(TOOL_DEFINITIONS), /project_path|target_files|known_constraints/);
+  assert.match(TOOL_DEFINITIONS[0].description, /Phase 1 is optional discovery/);
+  assert.match(TOOL_DEFINITIONS[0].description, /comment-only edits/);
 });
 
 test("Phase 1 returns common main rules and a compact neutral 115-command index", () => {
@@ -65,6 +67,8 @@ test("Phase 1 returns common main rules and a compact neutral 115-command index"
   assert.match(result.main_rules.content, /Indent only inside a real control-flow scope/);
   assert.match(result.main_rules.content, /In each core regression or estimation call/);
   assert.match(result.main_rules.content, /Do not replace them with local or global macros/);
+  assert.match(result.main_rules.content, /When the exact material command is already clear, call Phase 2 directly/);
+  assert.match(result.main_rules.content, /Do not call Guard for read-only explanation or review/);
   assert.equal(result.command_dictionary.length, 115);
 
   for (const command of result.command_dictionary) {
@@ -380,6 +384,83 @@ test("out-of-dictionary exact topics use live help without restoring an mcpStata
     assert.equal(evidence.command_help, null);
     assert.ok(evidence.paper_example_catalog.length > 0);
   }
+});
+
+test("registered multiword Stata spelling normalizes transparently", () => {
+  const result = buildCommandEvidence({
+    request: "Export the workbook",
+    selected_commands: ["export excel", "import excel"],
+  });
+  assert.deepEqual(result.selected_commands, ["export_excel", "import_excel"]);
+  assert.deepEqual(result.topic_normalizations, [
+    {
+      requested: "export excel",
+      resolved: "export_excel",
+      reason: "registered_multiword_command",
+    },
+    {
+      requested: "import excel",
+      resolved: "import_excel",
+      reason: "registered_multiword_command",
+    },
+  ]);
+  assert.equal(result.command_evidence[0].help_status, "available");
+  assert.equal(result.command_evidence[1].help_status, "available");
+});
+
+test("Stata language tokens retain their labels while using official macro help", () => {
+  const lookedUp = [];
+  const result = buildCommandEvidence(
+    {
+      request: "Check macro language constructs",
+      selected_commands: ["global", "local", "tempfile", "tempname"],
+    },
+    {
+      liveHelpLookup: (topic) => {
+        lookedUp.push(topic);
+        return {
+          status: "available",
+          help: { command: topic, source_kind: "live_installed_help", content: "macro syntax" },
+          limitations: [],
+        };
+      },
+    },
+  );
+  assert.deepEqual(lookedUp, ["macro", "macro", "macro", "macro"]);
+  assert.deepEqual(result.command_evidence.map((row) => row.command), [
+    "global",
+    "local",
+    "tempfile",
+    "tempname",
+  ]);
+  assert.deepEqual(result.command_evidence.map((row) => row.help_topic), [
+    "macro",
+    "macro",
+    "macro",
+    "macro",
+  ]);
+});
+
+test("empty optional Phase 3 arrays are equivalent to omission", () => {
+  const documentationOnly = buildCommandEvidence({
+    request: "Expand putexcel only",
+    selected_commands: ["putexcel"],
+    expanded: true,
+    expanded_commands: ["putexcel"],
+    selected_block_ids: [],
+  });
+  assert.deepEqual(documentationOnly.selected_block_ids, []);
+  assert.equal(documentationOnly.expanded_command_evidence.length, 1);
+
+  const paperOnly = buildCommandEvidence({
+    request: "Read one paper block only",
+    selected_commands: ["xtreg"],
+    expanded: true,
+    expanded_commands: [],
+    selected_block_ids: ["block-139-184-033"],
+  });
+  assert.deepEqual(paperOnly.expanded_commands, []);
+  assert.equal(paperOnly.paper_usage_cards.length, 1);
 });
 
 test("an unavailable live-help topic stops only that evidence branch", () => {

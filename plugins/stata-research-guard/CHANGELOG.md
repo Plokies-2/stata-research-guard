@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-02 — autonomy-preserving lookup boundaries and topic routing
+
+- Made Phase 1 optional discovery: direct Phase 2 is the normal path when the material command is already clear, while read-only explanation, comment or formatting-only edits, literal-only changes, and verbatim relocation of unchanged commands require no Guard lookup.
+- Added transparent normalization from registered multiword Stata spelling such as `export excel` to `export_excel`, plus official `macro` help routing for `global`, `local`, `tempfile`, and `tempname` without changing the model's requested command label.
+- Treated empty optional Phase 3 arrays as omission so documentation-only or paper-only requests do not fail on an unused empty field.
+- Preserved the direct-authoring, visible research specification, shallow-loop, source-authority, live out-of-dictionary help, and branch-local missing-help rules.
+
 ## 2026-09-02 — live exact-help fallback and compact evidence
 
 - Added exact-topic live Stata help fallback inside Guard for commands outside the 115-command registry, borrowing mcpStata's former locate-and-render pattern without restoring an mcpStata help tool or dependency.
