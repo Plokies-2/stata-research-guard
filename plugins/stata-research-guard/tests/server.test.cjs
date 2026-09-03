@@ -95,6 +95,9 @@ test("Phase 1 returns common main rules and a compact neutral 115-command index"
     /separate step.*official or maintainer installation guidance.*restart Stata.*original command/,
     /`cleaning_data\.do`.*`placebo\.do`.*Do not retroactively rename/,
     /native factor-variable syntax and raw `e\(b\)` names/,
+    /For repeated estimation, try one flat readable loop first/,
+    /documented command's own options.*before manual code/,
+    /let `outreg2` produce its native coefficients, standard errors, significance markers, headers, and notes/,
     /Excel for tables, PDF for figures, and `.ster`/,
     /semantic validators, graders, rankers/,
   ]) {

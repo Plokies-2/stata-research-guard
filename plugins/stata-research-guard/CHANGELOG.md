@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-04 — native-command-first peer audit
+
+- Made the peer audit try documented command and exporter capabilities before manual reconstruction, with manual code limited to a concrete unsupported remainder.
+- Made shallow research-readable loops the first response to repeated estimation, while keeping the estimator and consequential specification visible instead of introducing specification catalogs or generic estimator wrappers.
+- Clarified the approved `outreg2` boundary: `outreg2` produces the native statistical table and a small formatter may assemble required workbook sheets, but no second path reconstructs statistics or significance markers.
+- Added review criteria for parameter-heavy helpers, excessive variable indirection, speculative options, nested branches, stable `.ster` ordering, and downstream reuse of stored estimates without adding a semantic validator.
+
 ## 2026-09-03 — clean-context Stata peer audit
 
 - Added a prospective runtime-install boundary: when a selected documented command is observed missing, install only the needed package in a separate official or maintainer-guided step, restart Stata, and use the original command without restoring availability probes or inline substitutes.

@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.3.0+codex.20260903141642"
+    "version": "0.3.0+codex.20260903174428"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
-      "bytes": 2465,
-      "sha256": "1ff6c5aa7566a67c3772319709e80244885f724c9bb1bd592a4090ae66d00af2"
+      "bytes": 2655,
+      "sha256": "c905f3f7fcd5f8dec51979ed36a03aeb089e80560ccdc70f382ceef404a50810"
     },
     {
       "path": ".mcp.json",
@@ -22,8 +22,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 15464,
-      "sha256": "c1d9385ab529d15053b2eaf900613ed656cef9028fe3c585814a374ed80877bd"
+      "bytes": 16354,
+      "sha256": "9a7a8ea5acb97055e86539017f817adab592c73b6749e6858fd5905870cfb0ed"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -1512,8 +1512,8 @@
     },
     {
       "path": "INSTRUCTIONS.md",
-      "bytes": 7342,
-      "sha256": "20d05f74dcbfd6b1d8e3b3c0bef417b9115afb12d4c09d6c71289e185ddef98f"
+      "bytes": 7803,
+      "sha256": "42cc81e9b2a31993f64b79cbd2535b5e9a11a617a83a08e6ee657a2cdee2f1cf"
     },
     {
       "path": "mcp/server.cjs",
@@ -1522,8 +1522,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 13834,
-      "sha256": "833bc3e637a172a4764046f2049b0cdf76d342a7e2e5fb72aa096d53a1708df5"
+      "bytes": 14394,
+      "sha256": "f563ca3cbdc9ec56996771d829a48270dd0e8d8ff247543e319f3ea023476ee6"
     },
     {
       "path": "scripts/build_clean_command_guide.py",
@@ -1552,8 +1552,8 @@
     },
     {
       "path": "skills/stata-peer-audit/SKILL.md",
-      "bytes": 3682,
-      "sha256": "eaff952dc7a6d77aca1cf72c5dbd02cc45cd105ba30ac1a2fb2180fb011c84e3"
+      "bytes": 5259,
+      "sha256": "70a4599d312729def174bbf8599e50719a8c97090cf13895a6e4a71336216887"
     },
     {
       "path": "skills/stata-replication-workflow/agents/openai.yaml",
@@ -1572,8 +1572,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rules.md",
-      "bytes": 5403,
-      "sha256": "7e01465999c96ece88775e2c6b02e65d01031af32df27eee7341a1af2e39568f"
+      "bytes": 5951,
+      "sha256": "7b4da4a7cbdfabf24584efd6ec0e6d6d2f6e9974006e851f09dc82006a9ed328"
     },
     {
       "path": "skills/stata-replication-workflow/references/readme-contract.md",
@@ -1587,8 +1587,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/SKILL.md",
-      "bytes": 5039,
-      "sha256": "500e7acd5863f62654aa486d4c92abf9e58cb68ee4863f81d69abff60112fb8f"
+      "bytes": 5261,
+      "sha256": "ab77e90ccd681d04f6891ed08b3e5c91755326e667eab06659acf20776222c22"
     },
     {
       "path": "tests/fixtures/outreg2_excel_runtime.do",
@@ -1612,8 +1612,8 @@
     },
     {
       "path": "tests/server.test.cjs",
-      "bytes": 26063,
-      "sha256": "5384b0c8f05822217d65c011857cab7e2d112ac2f52197459b02721c11eea659"
+      "bytes": 26300,
+      "sha256": "db7a00767ef9677d0d0d910811aa307c71a0f022bd1cb207b36c3daef7732d09"
     }
   ],
   "semantic_anchors": [
@@ -1629,7 +1629,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.3.0+codex.20260903141642"
+      "value": "0.3.0+codex.20260903174428"
     },
     {
       "id": "readme.heading",

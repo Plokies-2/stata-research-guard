@@ -98,7 +98,7 @@ Guard 근거로 선택한 공식·maintainer command가 실제 Stata에서 미�
 
 ## Stata 코드 작성 원칙
 
-번들에 포함된 skill은 적절한 command가 명확하면 하나만 고르고, 여러 단계에 서로 다른 command가 필요하거나 실제 대안이 남을 때만 관련 후보를 함께 받아 공식·maintainer 문법, 입력 상태, 출력, tradeoff와 incompatibility를 비교하게 합니다. 핵심 회귀문에는 outcome, treatment·event term, 중요한 sample, controls, fixed effects, weights와 VCE 변수명을 macro로 숨기지 않고 직접 적습니다. Stata의 factor-variable 문법과 raw `e(b)` 이름을 유지하고, 실제 제어흐름 밖의 들여쓰기, 현재 작업에 필요하지 않은 `program`, 깊은 loop, positional dispatcher와 미래용 추상화를 만들지 않습니다. 기존 permutation이나 robustness 분석을 보존하라는 요청도 그 자체로 새 mode, positional argument, dispatcher 또는 조건 분기를 추가하라는 뜻은 아닙니다.
+번들에 포함된 skill은 적절한 command가 명확하면 하나만 고르고, 여러 단계에 서로 다른 command가 필요하거나 실제 대안이 남을 때만 관련 후보를 함께 받아 공식·maintainer 문법, 입력 상태, 출력, tradeoff와 incompatibility를 비교하게 합니다. 핵심 회귀문에는 outcome, treatment·event term, 중요한 sample, controls, fixed effects, weights와 VCE 변수명을 macro로 숨기지 않고 직접 적습니다. 반복 회귀는 먼저 estimator가 보이는 얕은 loop로 줄이며 specification catalog나 generic estimator wrapper로 옮기지 않습니다. 기본 command와 exporter가 제공하는 option·returned result·append·export 기능을 먼저 쓰고, 수동 코드는 지원되지 않는 마지막 변환에만 둡니다. 예를 들어 multi-sheet workbook은 `outreg2`가 coefficient·standard error·significance marker·header·note를 만든 다음 작은 formatter가 sheet를 조립하며, 통계를 별도 경로로 재구성하지 않습니다. Stata의 factor-variable 문법과 raw `e(b)` 이름을 유지하고, 실제 제어흐름 밖의 들여쓰기, 현재 작업에 필요하지 않은 `program`, 깊은 loop, positional dispatcher와 미래용 추상화를 만들지 않습니다. 기존 permutation이나 robustness 분석을 보존하라는 요청도 그 자체로 새 mode, positional argument, dispatcher 또는 조건 분기를 추가하라는 뜻은 아닙니다.
 
 주요 참고 문서는 다음과 같습니다.
 
