@@ -90,15 +90,15 @@ Guard와 mcpStata가 모두 연결됐다면 세션 목록, 메모리 안으로�
 
 ## 동료 연구자 audit
 
-기존 분석을 리팩터링하거나 전체 구조를 보강할 때는 편집 전에 fresh read-only SA가 `stata-peer-audit`을 사용해 원본 코드, direct call chain과 입력·출력을 읽고 구현 방향을 제시합니다. 실질적인 Stata 코드 작성이나 수정 뒤에는 실제 실행과 산출물 확인 후 다른 fresh SA가 같은 skill로 코드를 한 번 검토합니다. 주석·공백·formatting, command interface가 같은 literal path·label 변경, verbatim 이동과 unchanged-file 실행은 audit 대상이 아닙니다.
+기존 분석을 리팩터링하거나 전체 구조를 보강할 때는 편집 전에 fresh read-only SA가 `stata-peer-audit`을 사용해 `general-rules.md` 전문부터 읽고, 원본 코드와 리팩터링 계약을 나란히 다시 읽은 뒤 구현 방향을 제시합니다. 실질적인 Stata 코드 작성이나 수정 뒤에는 실제 실행과 산출물 확인 후 다른 fresh SA가 같은 순서로 코드를 한 번 검토합니다. 주석·공백·formatting, command interface가 같은 literal path·label 변경, verbatim 이동과 unchanged-file 실행은 audit 대상이 아닙니다.
 
-Audit SA에는 상위 대화 전체 대신 phase, 사용자 요청, 정확한 대상 파일, call chain, 입력·출력, 실행 산출물과 관련 Guard 근거를 직접 전달합니다. Audit은 파일을 수정하거나 점수·pass/fail·상태 파일을 만들지 않으며, finding이 있으면 주 agent가 한 번의 집중 수정으로 반영합니다. `SessionStart` hook은 이 호출 경계만 짧게 상기하며 상세 audit 지시를 반복 주입하지 않습니다.
+Audit SA에는 상위 대화 전체 대신 phase, 사용자 요청, 정확한 대상 파일, call chain, 입력·출력, 실행 산출물, 관련 Guard 근거와 정본 `general-rules.md` 경로를 직접 전달합니다. 규칙 요약으로 전문 읽기를 대신하지 않습니다. Audit은 파일을 수정하거나 점수·pass/fail·상태 파일을 만들지 않으며, finding이 있으면 주 agent가 한 번의 집중 수정으로 반영합니다. `SessionStart` hook도 이 읽기 순서와 리팩터링 정의를 짧게 상기합니다.
 
 Guard 근거로 선택한 공식·maintainer command가 실제 Stata에서 미설치로 확인되면 회귀·추정 코드 안에 설치문을 섞거나 임시 대체 command를 만들지 않습니다. 공식·maintainer 설치 근거에 따라 필요한 패키지만 별도 단계에서 설치하고 Stata를 재시작한 뒤 원래 command를 사용합니다. 새로 만드는 `.do`와 사용자가 승인한 구조 리팩터링의 rename은 `cleaning_data.do`, `summary.do`, `regression.do`, `robustness.do`, `permutation.do`, `placebo.do`처럼 workflow 역할로 이름을 붙이고 관련 master·call site·문서를 함께 바꿉니다. 기존 파일은 소급 rename하지 않습니다.
 
 ## Stata 코드 작성 원칙
 
-번들에 포함된 skill은 적절한 command가 명확하면 하나만 고르고, 여러 단계에 서로 다른 command가 필요하거나 실제 대안이 남을 때만 관련 후보를 함께 받아 공식·maintainer 문법, 입력 상태, 출력, tradeoff와 incompatibility를 비교하게 합니다. 핵심 회귀문에는 outcome, treatment·event term, 중요한 sample, controls, fixed effects, weights와 VCE 변수명을 macro로 숨기지 않고 직접 적습니다. 반복 회귀는 먼저 estimator가 보이는 얕은 loop로 줄이며 specification catalog나 generic estimator wrapper로 옮기지 않습니다. 기본 command와 exporter가 제공하는 option·returned result·append·export 기능을 먼저 쓰고, 수동 코드는 지원되지 않는 마지막 변환에만 둡니다. 예를 들어 multi-sheet workbook은 `outreg2`가 coefficient·standard error·significance marker·header·note를 만든 다음 작은 formatter가 sheet를 조립하며, 통계를 별도 경로로 재구성하지 않습니다. Stata의 factor-variable 문법과 raw `e(b)` 이름을 유지하고, 실제 제어흐름 밖의 들여쓰기, 현재 작업에 필요하지 않은 `program`, 깊은 loop, positional dispatcher와 미래용 추상화를 만들지 않습니다. 기존 permutation이나 robustness 분석을 보존하라는 요청도 그 자체로 새 mode, positional argument, dispatcher 또는 조건 분기를 추가하라는 뜻은 아닙니다.
+번들에 포함된 skill은 적절한 command가 명확하면 하나만 고르고, 여러 단계에 서로 다른 command가 필요하거나 실제 대안이 남을 때만 관련 후보를 함께 받아 공식·maintainer 문법, 입력 상태, 출력, tradeoff와 incompatibility를 비교하게 합니다. 좋은 연구 코드 리팩터링은 줄 수나 중복이 아니라 데이터·표본·사양·estimator·저장·출력 사이의 간접성을 줄입니다. 핵심 회귀문에는 outcome, treatment·event term, 중요한 sample, controls, fixed effects, weights와 VCE 변수명을 macro로 숨기지 않고 직접 적습니다. 반복 회귀는 estimator와 exporter가 보이는 얕은 loop로 정리하며, 반복·DRY·재사용·중앙화·줄 수 감소만으로 새 `program`, ado, estimator/exporter wrapper, generic helper 또는 option-heavy interface를 만들지 않습니다. `run_model, outcome() controls() absorb() weight() cluster()`처럼 옵션만 보이는 호출도 핵심 estimator를 숨기는 parameter plumbing입니다. 기본 command와 exporter가 제공하는 option·returned result·append·export 기능을 먼저 쓰고, 수동 코드는 지원되지 않는 마지막 변환에만 둡니다. 예를 들어 multi-sheet workbook은 `outreg2`가 coefficient·standard error·significance marker·header·note를 만든 다음 작은 formatter가 sheet를 조립하며, 통계를 별도 경로로 재구성하지 않습니다. Stata의 factor-variable 문법과 raw `e(b)` 이름을 유지하고, 실제 제어흐름 밖의 들여쓰기, 깊은 loop, positional dispatcher와 미래용 추상화를 만들지 않습니다. 기존 permutation이나 robustness 분석을 보존하라는 요청도 그 자체로 새 mode, positional argument, dispatcher 또는 조건 분기를 추가하라는 뜻은 아닙니다.
 
 주요 참고 문서는 다음과 같습니다.
 

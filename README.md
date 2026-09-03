@@ -2,7 +2,7 @@
 
 Stata Research Guard는 Codex가 연구 목적에 맞는 Stata 명령을 고르고, 공식 문법과 실제 논문의 사용 맥락을 확인해 현재 프로젝트용 코드를 작성하도록 돕는 플러그인입니다.
 
-현재 배포 버전은 `0.3.0+codex.20260903174428`입니다.
+현재 배포 버전은 `0.3.0+codex.20260903175747`입니다.
 
 ## 주요 기능
 
@@ -16,6 +16,8 @@ Stata Research Guard는 Codex가 연구 목적에 맞는 Stata 명령을 고르�
 - 모든 evidence phase에서 빠짐없이 전달되는 압축 공통 작성 원칙 본문
 - 기존 분석 리팩터링 전과 material Stata 수정 후에 새 컨텍스트의 동료 연구자 SA를 부르는 `stata-peer-audit` skill
 - 반복 회귀는 estimator가 보이는 얕은 loop로 정리하고 기본 command·exporter 기능을 먼저 쓰며, 지원되지 않는 마지막 변환에만 수동 코드를 허용하는 audit 원칙
+- 리팩터링을 줄 수 감소가 아니라 연구 흐름의 간접성 감소로 정의하고, 반복·DRY·재사용만으로 새 `program`이나 estimator/exporter helper를 만들지 못하게 하는 공통 계약
+- 주 agent와 pre/post-audit agent가 규칙 전문을 먼저 읽고 리팩터링 계약을 현재 코드와 나란히 다시 읽는 명시적 순서
 - startup·resume·compact 때 위 audit 순서를 짧게 되살리는 `SessionStart` hook
 - 선택한 공식·maintainer command의 미설치가 실제 실행에서 확인되면 별도 설치·Stata 재시작 뒤 원래 command로 돌아가는 작성 원칙
 - 새 모듈과 승인된 구조 rename에 workflow 역할 기반 `.do` 이름을 사용하고 관련 call·문서를 함께 갱신하는 원칙
@@ -30,13 +32,13 @@ Stata Research Guard는 Codex가 연구 목적에 맞는 Stata 명령을 고르�
 2. 선택한 중요한 명령의 help와 관련 논문 profile 목록을 확인합니다. Index 밖 exact topic이면 Guard MCP가 설치된 Stata help를 조회합니다. `export excel` 같은 실제 Stata 표기는 내부 key로 투명하게 연결되고, `global`·`local` 등은 공식 `macro` help로 연결됩니다.
 3. help로 충분하지 않으면 `expanded: true`와 exact `expanded_commands` subset으로 필요한 명령의 Stata 18 확장문서만 받고, 도움이 되는 profile이 있을 때는 exact block의 원문 코드와 연결 log 또는 artifact를 독립적으로 선택합니다.
 
-`general-rules.md` 본문과 path, SHA-256은 모든 Phase에서 전달됩니다. 따라서 명령을 이미 알아 Phase 1을 건너뛰고 Phase 2로 바로 가도 공통 작성 원칙이 빠지지 않습니다. Phase 2는 help와 compact paper profile만 전달하고, 긴 확장문서와 raw paper code는 주입하지 않습니다. help가 사용자가 하려는 행동을 모두 설명하고, 코드가 직접 따라 나오며 어렵지 않고, version·option 상호작용·returned result·후속 interface에 중요한 의문이 없으면 추가 자료 없이 작성합니다. 그렇지 않으면 결합 Phase 3에서 긴 문서가 필요한 등록 명령만 `expanded_commands`로 고르고, 논문 예시도 필요할 때만 별도로 고릅니다. 문서만, 논문만, 둘을 함께 요청할 수 있습니다.
+`general-rules.md` 본문과 path, SHA-256은 모든 Phase에서 전달됩니다. 따라서 명령을 이미 알아 Phase 1을 건너뛰고 Phase 2로 바로 가도 공통 작성 원칙이 빠지지 않습니다. Stata 코드를 계획하기 전에 전문을 읽고, 리팩터링 때에는 해당 계약을 현재 코드 및 제안된 call site와 나란히 다시 읽습니다. Phase 2는 help와 compact paper profile만 전달하고, 긴 확장문서와 raw paper code는 주입하지 않습니다. help가 사용자가 하려는 행동을 모두 설명하고, 코드가 직접 따라 나오며 어렵지 않고, version·option 상호작용·returned result·후속 interface에 중요한 의문이 없으면 추가 자료 없이 작성합니다. 그렇지 않으면 결합 Phase 3에서 긴 문서가 필요한 등록 명령만 `expanded_commands`로 고르고, 논문 예시도 필요할 때만 별도로 고릅니다. 문서만, 논문만, 둘을 함께 요청할 수 있습니다.
 
 기존 분석, robustness check, placebo, permutation 또는 export를 보존하라는 요청은 그 자체로 새 runtime mode, positional argument, dispatcher 또는 조건 분기를 만들라는 뜻이 아닙니다. 그런 interface는 사용자가 명시적으로 요청했거나 현재 프로젝트가 이미 요구할 때만 추가합니다.
 
 기존 분석 리팩터링이나 전체 구조 보강은 수정 전에 `stata-peer-audit`의 `pre-audit`을 거칩니다. Material Stata 코드를 작성·수정한 뒤에는 실제 실행 결과와 산출물을 확인하고 `post-audit`을 한 번 거칩니다. 두 audit은 대화 이력을 물려받지 않는 읽기 전용 SA가 수행하며, 점수·합격 판정·audit 파일·자동 validator를 만들지 않습니다. 주석·서식·literal path만의 변경과 그대로의 실행은 제외됩니다.
 
-Audit은 반복 회귀를 발견하면 먼저 estimator와 연구 사양이 그대로 보이는 얕은 loop로 정리할 수 있는지 봅니다. Specification catalog, generic estimator wrapper와 parameter-heavy helper는 그 뒤의 예외입니다. 표도 `outreg2` 같은 exporter가 coefficient, standard error, significance marker, header와 note를 직접 만들게 하고, 필요한 multi-sheet workbook 조립처럼 exporter가 지원하지 않는 마지막 layout만 작은 formatter로 처리합니다.
+Audit은 반복 회귀를 발견하면 먼저 estimator와 연구 사양이 그대로 보이는 얕은 loop로 정리합니다. 반복, DRY, 재사용, 중앙화와 줄 수 감소는 새 `program`, ado, estimator/exporter wrapper, generic helper 또는 option-heavy interface의 근거가 될 수 없습니다. `run_model, outcome() controls() absorb() weight() cluster()`처럼 옵션만 보이는 호출도 핵심 estimator를 숨기는 parameter plumbing으로 봅니다. 표는 `outreg2` 같은 exporter가 coefficient, standard error, significance marker, header와 note를 직접 만들게 하고, 필요한 multi-sheet workbook 조립처럼 exporter가 지원하지 않는 마지막 layout만 작은 formatter로 처리합니다.
 
 선택한 공식·maintainer command가 실제 Stata 실행에서 미설치로 확인되면 회귀·추정 코드 안에 설치문을 넣거나 대체 구현을 만들지 않습니다. 공식·maintainer 근거에 따라 필요한 패키지만 별도 단계에서 설치하고 Stata를 재시작한 뒤 원래 command를 사용합니다. 새 `.do`와 사용자가 승인한 구조 rename은 `cleaning_data.do`, `summary.do`, `regression.do`, `robustness.do`, `permutation.do`, `placebo.do`처럼 workflow 역할로 이름을 붙이고 관련 master·call site·문서를 함께 갱신합니다. 기존 파일의 소급 rename은 요구하지 않습니다.
 

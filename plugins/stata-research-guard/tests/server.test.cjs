@@ -57,6 +57,8 @@ test("SessionStart hook emits the compact peer-audit reminder", () => {
   const output = childProcess.execFileSync(process.execPath, [HOOK_PATH], { encoding: "utf8" });
   assert.ok(Buffer.byteLength(output, "utf8") < 800);
   assert.match(output, /fresh read-only stata-peer-audit before edits and after runtime inspection/);
+  assert.match(output, /Read complete general-rules.*reread the refactoring contract alongside code/);
+  assert.match(output, /Refactoring reduces indirection, not lines.*repetition never authorizes a new program/);
   assert.match(output, /install it separately.*restart Stata.*original command/);
   assert.match(output, /workflow-role names.*calls and docs together.*do not retroactively rename/);
   assert.doesNotMatch(output, /UserPromptSubmit|Stop hook|score|ledger/);
@@ -83,11 +85,13 @@ test("Phase 1 returns common main rules and a compact neutral 115-command index"
   assert.deepEqual(Object.keys(result), ["phase", "main_rules", "command_dictionary"]);
   assert.equal(result.phase, "discovery");
   assert.match(result.main_rules.content, /# General Rules/);
-  assert.ok(Buffer.byteLength(result.main_rules.content, "utf8") < 6000);
+  assert.ok(Buffer.byteLength(result.main_rules.content, "utf8") < 7500);
   for (const pattern of [
     /registries, modes, dispatchers/,
     /Locals are only for iterators/,
-    /Add a `program` only for a command interface/,
+    /Repeated calls alone never justify one/,
+    /Never present line-count reduction as evidence/,
+    /parameter plumbing that hides the estimator/,
     /indent once per real scope/,
     /depth two only.*never depth three/,
     /Do not multiply `if` or conditional branches/,
@@ -95,7 +99,7 @@ test("Phase 1 returns common main rules and a compact neutral 115-command index"
     /separate step.*official or maintainer installation guidance.*restart Stata.*original command/,
     /`cleaning_data\.do`.*`placebo\.do`.*Do not retroactively rename/,
     /native factor-variable syntax and raw `e\(b\)` names/,
-    /For repeated estimation, try one flat readable loop first/,
+    /native bulk or append interface, then a flat loop, then a mechanical two-axis loop/,
     /documented command's own options.*before manual code/,
     /let `outreg2` produce its native coefficients, standard errors, significance markers, headers, and notes/,
     /Excel for tables, PDF for figures, and `.ster`/,

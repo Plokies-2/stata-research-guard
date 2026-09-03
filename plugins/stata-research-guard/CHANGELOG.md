@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-04 — explicit research-refactoring contract
+
+- Defined good research-code refactoring as reducing indirection from sample and specification through estimator and output, not minimizing lines, eliminating repetition, or applying DRY.
+- Required the main author and both peer-audit phases to read the complete common rules first and reread the refactoring contract alongside current and proposed call sites.
+- Made repetition, deduplication, centralized output handling, reuse, and line-count reduction insufficient reasons for a new `program`, ado, estimator or exporter wrapper, generic helper, or option-heavy interface.
+- Required pre-audits to name visible loop axes and estimator/exporter locations, and post-audits to flag unauthorized new helpers even when runtime succeeds and outputs match.
+
 ## 2026-09-04 — native-command-first peer audit
 
 - Made the peer audit try documented command and exporter capabilities before manual reconstruction, with manual code limited to a concrete unsupported remainder.
