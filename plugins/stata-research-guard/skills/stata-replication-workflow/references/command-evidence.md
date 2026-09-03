@@ -4,7 +4,7 @@ Use this reference when choosing a consequential Stata command or output interfa
 
 ## Decision flow
 
-Phase 1 includes the full common `main_rules` from [general-rules.md](general-rules.md). Later phases include its source path and SHA-256 reference without repeating the full text.
+Every phase includes the full common `main_rules` from [general-rules.md](general-rules.md), its source path, and its SHA-256. Read and apply the returned rules even when Phase 1 discovery is skipped.
 
 1. **Decide whether lookup is needed:** skip Guard for read-only explanation or review and for syntax-preserving comment, formatting, literal, or relocation changes. When a material command interface is at issue, continue.
 2. **Discovery only when needed:** if the exact command is unresolved, call Phase 1 with only `request` and use the compact index. If the exact material command is already clear, skip Phase 1 and call Phase 2 directly. The server and paper examples do not choose for you.
@@ -22,7 +22,7 @@ Empty, duplicate, unsafe, case-changed, compound, and `all` topics are errors. A
 - A compact paper profile helps the model decide whether a real block is worth reading without exposing the raw code in Phase 2.
 - A selected paper block preserves the actual source span around the focus command. Its linked occurrences preserve the original target context.
 - `paper_log_contexts` optionally carries a directly linked raw log excerpt and direct artifact metadata. It is source material, not an interpreted result-fact layer.
-- Phase 1 `main_rules` supplies the shared prospective authoring boundary; later `main_rules` objects identify that exact text by path and hash.
+- Every phase's `main_rules` supplies the same shared prospective authoring boundary and identifies it by path and hash.
 
 These roles do not combine into a score, ranking, winner, pass/fail result, promotion state, or automatic-selection rule.
 

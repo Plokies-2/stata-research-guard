@@ -52,6 +52,7 @@ test("MCP exposes one simple exact-key three-phase lookup tool", () => {
   assert.equal("outputSchema" in TOOL_DEFINITIONS[0], false);
   assert.doesNotMatch(JSON.stringify(TOOL_DEFINITIONS), /project_path|target_files|known_constraints/);
   assert.match(TOOL_DEFINITIONS[0].description, /Phase 1 is optional discovery/);
+  assert.match(TOOL_DEFINITIONS[0].description, /Every phase returns the full common main rules/);
   assert.match(TOOL_DEFINITIONS[0].description, /comment-only edits/);
 });
 
@@ -133,7 +134,7 @@ test("Phase 2 returns Stata-rendered xtreg help and its three exact profiles", (
     "selected_commands",
     "command_evidence",
   ]);
-  assert.equal("content" in result.main_rules, false);
+  assert.match(result.main_rules.content, /Keeping an existing analysis, robustness check, placebo, permutation, or export/);
   assert.match(result.main_rules.sha256, /^[a-f0-9]{64}$/);
   assert.deepEqual(result.selected_commands, ["xtreg"]);
   assert.equal(result.command_evidence.length, 1);
@@ -251,6 +252,7 @@ test("Phase 3 returns one slim exact xtreg paper card with an empty log array", 
   ]);
   assert.deepEqual(result.expanded_commands, []);
   assert.deepEqual(result.expanded_command_evidence, []);
+  assert.match(result.main_rules.content, /does not by itself authorize a new mode, positional argument, dispatcher, or conditional control-flow branch/);
   assert.equal(result.paper_usage_cards.length, 1);
   const card = result.paper_usage_cards[0];
   assert.equal(card.block_id, "block-139-184-033");

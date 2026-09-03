@@ -4,7 +4,7 @@ Use this plugin as a source of command grammar and real-paper context. The model
 
 ## Evidence flow
 
-Phase 1 includes the full common `main_rules`; later phases carry its source path and SHA-256 reference without repeating the text.
+Every phase includes the full common `main_rules` together with its source path and SHA-256. Read and apply it before writing or revising Stata code, including when Phase 1 discovery is skipped.
 
 1. Do not call Guard for read-only explanation or review, comment/bookmark/whitespace-only edits, formatting-only source changes, literal path or label replacement that leaves the command interface unchanged, verbatim relocation of an existing command block, or execution of an unchanged file when no command semantic is in question.
 2. When the material command is unresolved, call `get_stata_command_evidence` with `request` only and use the compact 115-command index to choose. When the exact material command is already clear, skip Phase 1 and call Phase 2 directly. The index is a curated starting point, not a closed boundary.
@@ -29,7 +29,7 @@ The product does not use `command_paper_index`, paper-review summaries, integrit
 
 After Guard and mcpStata are both callable, read-only session lifecycle and structured data, metadata, value, row, log, graph-list, or returned-state inspection may proceed without a fresh Phase 2 lookup for each action. Obtain Phase 2 before writing or revising a material Stata command, changing or saving data, estimation or testing, export, or consequential downstream use of returned state. Reuse it while the command, version, material options, returned-result interface, and downstream use remain unchanged; comments, layout, literal paths, and code location do not invalidate it.
 
-Preserve the user's literal scope and compatible project interfaces. Review-only requests authorize no write. For approved edits, inspect the current source and implement the simplest readable solution under `general-rules.md`.
+Preserve the user's literal scope and compatible project interfaces. Retaining an existing analysis, robustness check, placebo, permutation, or export does not authorize a new mode, positional argument, dispatcher, or conditional branch unless the user explicitly requests that interface or the current project already requires it. Review-only requests authorize no write. For approved edits, inspect the current source and implement the simplest readable solution under `general-rules.md`.
 
 Keep samples, models, fixed effects, weights, VCE, event windows, and output destinations visible. In each core regression or estimation call, write the outcome, treatment or event terms, consequential sample, controls, fixed effects, weights, and VCE variable names literally rather than hiding them in macros. Preserve native factor-variable and raw `e(b)` names. Indent only real control-flow scopes and avoid unnecessary programs, deep loops, positional dispatch, speculative options, manual coefficient reconstruction, and scratch package or file checks.
 

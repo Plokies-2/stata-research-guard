@@ -106,14 +106,6 @@ function mainRules() {
   };
 }
 
-function mainRulesReference() {
-  const content = readUtf8(GENERAL_RULES_PATH);
-  return {
-    source_path: GENERAL_RULES_SOURCE_PATH,
-    sha256: sha256Text(content),
-  };
-}
-
 function compactCommandDictionary() {
   return registry.commands.map(({ command, family_id, stages, role }) => ({
     command,
@@ -650,7 +642,7 @@ function buildCommandEvidence(args, options = {}) {
   if (phase === "selected_command_evidence") {
     const result = {
       phase: "selected_command_evidence",
-      main_rules: mainRulesReference(),
+      main_rules: mainRules(),
       selected_commands: selectedCommands,
       command_evidence: selectedCommands.map((command) => commandEvidence(command, liveHelpLookup)),
     };
@@ -668,7 +660,7 @@ function buildCommandEvidence(args, options = {}) {
   }
   const result = {
     phase: "expanded_context",
-    main_rules: mainRulesReference(),
+    main_rules: mainRules(),
     selected_commands: selectedCommands,
     expanded_commands: expandedCommands,
     selected_block_ids: selectedBlockIds,
@@ -685,7 +677,7 @@ function buildCommandEvidence(args, options = {}) {
 const TOOL_DEFINITIONS = [
   {
     name: "get_stata_command_evidence",
-    description: "Stateless Stata evidence lookup. Phase 1 is optional discovery when the exact command is not yet clear; a model that already knows the material command may call Phase 2 directly. Read-only explanation, comment-only edits, formatting-only edits, and verbatim relocation of unchanged commands do not require a lookup. Phase 2 returns bundled Stata 18 official or maintainer help for registered commands and queries active installed help for an exact out-of-dictionary topic. Registered multiword Stata spelling such as export excel is normalized transparently to export_excel; global, local, tempfile, and tempname retain their requested labels while using official macro help. Phase 3 adds only explicitly requested expanded documentation or paper blocks. The server never scores, ranks, recommends, promotes, audits, semantically validates, or automatically chooses commands, blocks, specifications, or outputs.",
+    description: "Stateless Stata evidence lookup. Every phase returns the full common main rules. Phase 1 is optional discovery when the exact command is not yet clear; a model that already knows the material command may call Phase 2 directly. Read-only explanation, comment-only edits, formatting-only edits, and verbatim relocation of unchanged commands do not require a lookup. Phase 2 returns bundled Stata 18 official or maintainer help for registered commands and queries active installed help for an exact out-of-dictionary topic. Registered multiword Stata spelling such as export excel is normalized transparently to export_excel; global, local, tempfile, and tempname retain their requested labels while using official macro help. Phase 3 adds only explicitly requested expanded documentation or paper blocks. The server never scores, ranks, recommends, promotes, audits, semantically validates, or automatically chooses commands, blocks, specifications, or outputs.",
     inputSchema: {
       oneOf: [
         {

@@ -26,7 +26,7 @@ Stata Research Guard는 Codex가 연구 목적에 맞는 Stata 명령을 고르�
 get_stata_command_evidence
 ```
 
-Phase 1은 명령이 아직 불명확할 때 쓰는 선택적 discovery입니다. 이미 중요한 명령을 알고 있으면 Phase 1을 건너뛰고 Phase 2로 바로 갈 수 있습니다. 읽기 전용 설명·검토, 주석·북마크·공백·formatting만의 수정, command interface를 바꾸지 않는 literal 교체와 기존 block의 그대로 이동에는 Guard lookup이 필요하지 않습니다. Phase 1을 쓸 때는 `general-rules.md` 전문이 한 번 들어가고, Phase 2·3은 같은 규칙의 path와 SHA-256만 반환합니다.
+Phase 1은 명령이 아직 불명확할 때 쓰는 선택적 discovery입니다. 이미 중요한 명령을 알고 있으면 Phase 1을 건너뛰고 Phase 2로 바로 갈 수 있습니다. 읽기 전용 설명·검토, 주석·북마크·공백·formatting만의 수정, command interface를 바꾸지 않는 literal 교체와 기존 block의 그대로 이동에는 Guard lookup이 필요하지 않습니다. 어느 Phase를 호출해도 `general-rules.md` 전문과 path, SHA-256이 함께 들어가므로 Phase 1을 건너뛰어도 공통 작성 원칙이 누락되지 않습니다.
 
 ### 1. 명령 선택
 
@@ -89,7 +89,7 @@ Guard와 mcpStata가 모두 연결됐다면 세션 목록, 메모리 안으로�
 
 ## Stata 코드 작성 원칙
 
-번들에 포함된 skill은 적절한 command가 명확하면 하나만 고르고, 여러 단계에 서로 다른 command가 필요하거나 실제 대안이 남을 때만 관련 후보를 함께 받아 공식·maintainer 문법, 입력 상태, 출력, tradeoff와 incompatibility를 비교하게 합니다. 핵심 회귀문에는 outcome, treatment·event term, 중요한 sample, controls, fixed effects, weights와 VCE 변수명을 macro로 숨기지 않고 직접 적습니다. Stata의 factor-variable 문법과 raw `e(b)` 이름을 유지하고, 실제 제어흐름 밖의 들여쓰기, 현재 작업에 필요하지 않은 `program`, 깊은 loop, positional dispatcher와 미래용 추상화를 만들지 않습니다.
+번들에 포함된 skill은 적절한 command가 명확하면 하나만 고르고, 여러 단계에 서로 다른 command가 필요하거나 실제 대안이 남을 때만 관련 후보를 함께 받아 공식·maintainer 문법, 입력 상태, 출력, tradeoff와 incompatibility를 비교하게 합니다. 핵심 회귀문에는 outcome, treatment·event term, 중요한 sample, controls, fixed effects, weights와 VCE 변수명을 macro로 숨기지 않고 직접 적습니다. Stata의 factor-variable 문법과 raw `e(b)` 이름을 유지하고, 실제 제어흐름 밖의 들여쓰기, 현재 작업에 필요하지 않은 `program`, 깊은 loop, positional dispatcher와 미래용 추상화를 만들지 않습니다. 기존 permutation이나 robustness 분석을 보존하라는 요청도 그 자체로 새 mode, positional argument, dispatcher 또는 조건 분기를 추가하라는 뜻은 아닙니다.
 
 주요 참고 문서는 다음과 같습니다.
 

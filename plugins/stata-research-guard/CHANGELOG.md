@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-09-03 — common rules in every evidence phase
+
+- Returned the full common `main_rules` content, source path, and SHA-256 in Phases 1, 2, and 3 so a direct Phase 2 call cannot omit the prospective authoring boundary.
+- Clarified that preserving an existing analysis, robustness check, placebo, permutation, or export does not authorize a new runtime mode, positional argument, dispatcher, or conditional branch unless the user explicitly requests that interface or the project already requires it.
+
 ## 2026-09-02 — autonomy-preserving lookup boundaries and topic routing
 
 - Made Phase 1 optional discovery: direct Phase 2 is the normal path when the material command is already clear, while read-only explanation, comment or formatting-only edits, literal-only changes, and verbatim relocation of unchanged commands require no Guard lookup.
