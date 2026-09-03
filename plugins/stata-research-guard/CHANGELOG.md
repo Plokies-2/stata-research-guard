@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-03 — clean-context Stata peer audit
+
+- Added a focused `stata-peer-audit` skill that reviews existing-analysis refactors before editing and material Stata changes after runtime inspection without modifying files or producing scores, pass states, ledgers, or certificates.
+- Made the main workflow dispatch and await fresh read-only audit subagents with exact task briefs instead of inherited session history, with one focused correction pass and no re-audit chain.
+- Added a compact `SessionStart` reminder for startup, resume, and post-compaction continuity; no `UserPromptSubmit` or `Stop` gate, transcript inspection, or audit state was added.
+
 ## 2026-09-03 — compact rules in every evidence phase
 
 - Compressed the common authoring rules and skill routing while preserving direct Phase 2 delivery of the complete rules, including the no-abstraction, visible-specification, program, indentation, conditional-branch, and loop-depth boundaries.

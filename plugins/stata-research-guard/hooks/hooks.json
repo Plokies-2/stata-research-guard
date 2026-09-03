@@ -1,0 +1,19 @@
+{
+  "description": "Keep the Stata peer-audit boundary visible across session starts and compaction.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/hooks/session-start.cjs\"",
+            "timeout": 5,
+            "statusMessage": "Loading Stata peer-audit reminder",
+            "additionalContextLimit": 800
+          }
+        ]
+      }
+    ]
+  }
+}

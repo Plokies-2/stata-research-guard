@@ -15,6 +15,7 @@ Stata Research Guard는 Codex가 연구 목적에 맞는 Stata 명령을 고르�
 | Paper example | 166개 실제 논문 코드 블록과 target occurrence | 선택한 명령이 데이터 준비, 추정, 저장, 표·그림 작성과 이어지는 방식 참고 |
 | Raw log and artifact | 논문 블록과 직접 연결된 12개 원문 log 또는 artifact 정보 | 해당 코드가 남긴 원문 실행 기록과 산출물 위치 확인 |
 | General rules | 직접적이고 읽기 쉬운 Stata를 위한 공통 원칙 | 현재 프로젝트용 코드를 작성할 때 함께 적용 |
+| Peer audit | clean-context의 read-only 동료 연구자 검토 | 기존 분석 리팩터링 전 방향을 점검하고, 실질적 코드 수정 후 실행 결과와 산출물을 한 번 더 검토 |
 
 `jregress`와 `jwdidstacked`는 별도 help가 없어 `help_status=unavailable`로 반환합니다. `jregress`의 저자 PDF guide는 Phase 3에서 보충 설명으로만 제공하며, 문법 근거를 대신하지 않습니다. `cgmreg`는 인터넷에서 확인한 Judson Caskey 배포판의 실제 `cgmreg.hlp`를 사용하며, 원 저자 배포본과 일치한다고 단정할 수 없다는 제한도 함께 보냅니다. `collect_style`은 Stata 18에 존재하는 19개 하위 help를 모두 제공해 Stata 18 범위에서는 `available`입니다. 이후 Stata 19에 추가된 `collect style smcl`과 `collect style txt`는 Stata 18 대상 문법에 섞지 않습니다.
 
@@ -86,6 +87,12 @@ Phase 2에서는 공식·maintainer help가 명령 문법의 첫 기준입니다
 ## 읽기와 실행의 경계
 
 Guard와 mcpStata가 모두 연결됐다면 세션 목록, 메모리 안으로의 데이터 로드, 구조화된 metadata·count·variable·value·row·log·graph 목록과 returned-state 확인 같은 읽기 전용 inspection은 매 행동마다 Phase 2를 다시 받지 않고 진행할 수 있습니다. Material Stata command를 쓰거나 고칠 때, 데이터를 변경·저장할 때, 추정·검정·export를 할 때, 반환 상태를 후속 코드가 실질적으로 소비할 때는 해당 interface의 Phase 2 help를 확인합니다. 같은 command·version·material option·returned interface·downstream use라면 기존 packet을 재사용하며, 주석·layout·literal path·코드 위치만 달라졌다고 다시 조회하지 않습니다.
+
+## 동료 연구자 audit
+
+기존 분석을 리팩터링하거나 전체 구조를 보강할 때는 편집 전에 fresh read-only SA가 `stata-peer-audit`을 사용해 원본 코드, direct call chain과 입력·출력을 읽고 구현 방향을 제시합니다. 실질적인 Stata 코드 작성이나 수정 뒤에는 실제 실행과 산출물 확인 후 다른 fresh SA가 같은 skill로 코드를 한 번 검토합니다. 주석·공백·formatting, command interface가 같은 literal path·label 변경, verbatim 이동과 unchanged-file 실행은 audit 대상이 아닙니다.
+
+Audit SA에는 상위 대화 전체 대신 phase, 사용자 요청, 정확한 대상 파일, call chain, 입력·출력, 실행 산출물과 관련 Guard 근거를 직접 전달합니다. Audit은 파일을 수정하거나 점수·pass/fail·상태 파일을 만들지 않으며, finding이 있으면 주 agent가 한 번의 집중 수정으로 반영합니다. `SessionStart` hook은 이 호출 경계만 짧게 상기하며 상세 audit 지시를 반복 주입하지 않습니다.
 
 ## Stata 코드 작성 원칙
 

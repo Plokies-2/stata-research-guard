@@ -3,10 +3,12 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
+const childProcess = require("node:child_process");
 const test = require("node:test");
 
 const ROOT = path.resolve(__dirname, "..");
 const SERVER_PATH = path.join(ROOT, "mcp", "server.cjs");
+const HOOK_PATH = path.join(ROOT, "hooks", "session-start.cjs");
 const {
   TOOL_DEFINITIONS,
   buildCommandEvidence,
@@ -43,6 +45,19 @@ const PAPER_EXECUTION_CONTEXTS = readJsonl("paper_execution_contexts.jsonl");
 const COMMAND_HELP_INDEX = readJson("command_help_guides.json");
 const EXPANDED_GUIDE_INDEX = readJson("expanded_command_guides.json");
 const COMMAND_SOURCE_CATALOG = readJson("command_source_catalog.json");
+
+test("SessionStart hook emits the compact peer-audit reminder", () => {
+  const hooks = JSON.parse(fs.readFileSync(path.join(ROOT, "hooks", "hooks.json"), "utf8"));
+  const sessionStart = hooks.hooks.SessionStart;
+  assert.equal(sessionStart.length, 1);
+  assert.equal(sessionStart[0].matcher, "startup|resume|compact");
+  assert.equal(sessionStart[0].hooks[0].additionalContextLimit, 800);
+
+  const output = childProcess.execFileSync(process.execPath, [HOOK_PATH], { encoding: "utf8" });
+  assert.ok(Buffer.byteLength(output, "utf8") < 800);
+  assert.match(output, /fresh read-only stata-peer-audit before edits and after runtime inspection/);
+  assert.doesNotMatch(output, /UserPromptSubmit|Stop hook|score|ledger/);
+});
 
 test("MCP exposes one simple exact-key three-phase lookup tool", () => {
   assert.equal(TOOL_DEFINITIONS.length, 1);

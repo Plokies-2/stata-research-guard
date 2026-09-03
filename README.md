@@ -2,7 +2,7 @@
 
 Stata Research Guard는 Codex가 연구 목적에 맞는 Stata 명령을 고르고, 공식 문법과 실제 논문의 사용 맥락을 확인해 현재 프로젝트용 코드를 작성하도록 돕는 플러그인입니다.
 
-현재 배포 버전은 `0.3.0+codex.20260903104025`입니다.
+현재 배포 버전은 `0.3.0+codex.20260903131248`입니다.
 
 ## 주요 기능
 
@@ -14,6 +14,8 @@ Stata Research Guard는 Codex가 연구 목적에 맞는 Stata 명령을 고르�
 - 논문 코드와 직접 연결된 경우 함께 제공되는 원문 log와 artifact 정보
 - 직접적이고 읽기 쉬운 Stata 코드를 위한 공통 작성 원칙
 - 모든 evidence phase에서 빠짐없이 전달되는 압축 공통 작성 원칙 본문
+- 기존 분석 리팩터링 전과 material Stata 수정 후에 새 컨텍스트의 동료 연구자 SA를 부르는 `stata-peer-audit` skill
+- startup·resume·compact 때 위 audit 순서를 짧게 되살리는 `SessionStart` hook
 
 플러그인은 연구자가 정한 목적과 현재 프로젝트의 맥락을 모델이 해석할 수 있도록 필요한 자료를 제공합니다. 표본, 회귀 사양, fixed effects, VCE와 출력 형식은 모델이 현재 연구에 맞게 결정합니다.
 
@@ -28,6 +30,8 @@ Stata Research Guard는 Codex가 연구 목적에 맞는 Stata 명령을 고르�
 `general-rules.md` 본문과 path, SHA-256은 모든 Phase에서 전달됩니다. 따라서 명령을 이미 알아 Phase 1을 건너뛰고 Phase 2로 바로 가도 공통 작성 원칙이 빠지지 않습니다. Phase 2는 help와 compact paper profile만 전달하고, 긴 확장문서와 raw paper code는 주입하지 않습니다. help가 사용자가 하려는 행동을 모두 설명하고, 코드가 직접 따라 나오며 어렵지 않고, version·option 상호작용·returned result·후속 interface에 중요한 의문이 없으면 추가 자료 없이 작성합니다. 그렇지 않으면 결합 Phase 3에서 긴 문서가 필요한 등록 명령만 `expanded_commands`로 고르고, 논문 예시도 필요할 때만 별도로 고릅니다. 문서만, 논문만, 둘을 함께 요청할 수 있습니다.
 
 기존 분석, robustness check, placebo, permutation 또는 export를 보존하라는 요청은 그 자체로 새 runtime mode, positional argument, dispatcher 또는 조건 분기를 만들라는 뜻이 아닙니다. 그런 interface는 사용자가 명시적으로 요청했거나 현재 프로젝트가 이미 요구할 때만 추가합니다.
+
+기존 분석 리팩터링이나 전체 구조 보강은 수정 전에 `stata-peer-audit`의 `pre-audit`을 거칩니다. Material Stata 코드를 작성·수정한 뒤에는 실제 실행 결과와 산출물을 확인하고 `post-audit`을 한 번 거칩니다. 두 audit은 대화 이력을 물려받지 않는 읽기 전용 SA가 수행하며, 점수·합격 판정·audit 파일·자동 validator를 만들지 않습니다. 주석·서식·literal path만의 변경과 그대로의 실행은 제외됩니다.
 
 두 MCP가 호출 가능한 상태라면 데이터·코드·기존 로그·표·그림의 읽기 전용 확인은 매번 Phase 2를 거치지 않아도 됩니다. 읽기 전용 설명, 주석·formatting만의 수정, literal 교체와 기존 block의 그대로 이동도 lookup 대상이 아닙니다. Material command 작성·수정, 데이터 변경·저장, 추정·검정, export와 중요한 returned result 해석 전에는 관련 interface의 Phase 2 근거를 확인합니다.
 
@@ -52,8 +56,8 @@ Index 밖 live help는 mcpStata의 help 기능을 복구한 것이 아닙니다.
 | Author supplement | 1 (`jregress`) |
 | Paper profiles and code blocks | 166 |
 | Optional raw log or artifact attachments | 12 |
-| Bundle files | 319 |
-| Automated smoke/runtime tests | 30 |
+| Bundle files | 322 |
+| Automated smoke/runtime tests | 31 |
 
 ## 설치
 

@@ -12,10 +12,18 @@ For every Stata code write or revision, read [general-rules.md](references/gener
 ## Flow
 
 1. Respect the user's write boundary and inspect the active project. Preserve compatible paths, names, call order, estimate handoffs, workbook sheets, and outputs.
-2. Confirm both `stataResearchGuard` and mcpStata are callable before material Stata work. Use mcpStata for the live session, execution, logs, graphs, returned state, and produced artifacts.
-3. Skip Guard for read-only review or explanation, comment or formatting-only edits, literal path or label changes with an unchanged command interface, verbatim relocation, and unchanged-file execution with no semantic issue. When a material command is unresolved, use Phase 1 discovery. When it is clear, call Phase 2 directly for only the commands whose interface matters.
-4. Stop after Phase 2 when the help resolves the requested action. Use Phase 3 only for exact selected commands that need longer documentation or exact paper blocks that would materially help. Never expand everything by default.
-5. Write the simplest direct implementation consistent with the data, research specification, documented command semantics, and downstream interfaces. Run safe requested work, then inspect the actual data, logs, tables, figures, estimates, and files before revising or concluding.
+2. Before editing an existing analysis as a refactor or reinforcing its overall structure, dispatch a fresh read-only `gpt-5.6-terra` subagent at `high` reasoning with `fork_turns: "none"`, and require it to use `stata-peer-audit` in `pre-audit` mode. Wait for its findings. If a fresh audit cannot run, stop before editing and report that limitation.
+3. Confirm both `stataResearchGuard` and mcpStata are callable before material Stata work. Use mcpStata for the live session, execution, logs, graphs, returned state, and produced artifacts.
+4. Skip Guard for read-only review or explanation, comment or formatting-only edits, literal path or label changes with an unchanged command interface, verbatim relocation, and unchanged-file execution with no semantic issue. When a material command is unresolved, use Phase 1 discovery. When it is clear, call Phase 2 directly for only the commands whose interface matters.
+5. Stop after Phase 2 when the help resolves the requested action. Use Phase 3 only for exact selected commands that need longer documentation or exact paper blocks that would materially help. Never expand everything by default.
+6. Write the simplest direct implementation consistent with the data, research specification, documented command semantics, and downstream interfaces. Run safe requested work, then inspect the actual data, logs, tables, figures, estimates, and files.
+7. After any material one-shot Stata write or revision, dispatch another fresh read-only `gpt-5.6-terra` subagent at `high` reasoning with `fork_turns: "none"`, and require it to use `stata-peer-audit` in `post-audit` mode. Wait for its findings before delivery. Make at most one focused correction pass; do not create a re-audit chain. If the audit cannot run, stop before delivery and report that limitation.
+
+## Audit handoff
+
+- Do not audit read-only explanation, comments, whitespace, formatting-only work, literal path or label changes with unchanged command interfaces, verbatim relocation, or unchanged-file execution with no semantic issue.
+- Give the audit subagent the exact phase, user request, target files, direct call chain, relevant inputs and outputs, observed runtime artifacts, and selected Guard evidence. Name `stata-peer-audit` explicitly. Do not send the parent session history as a substitute for this brief.
+- The audit is a clean-context peer-researcher review, not a validator. It returns concrete findings and implementation direction without editing files, assigning scores, or issuing pass or fail states.
 
 ## Boundaries
 
