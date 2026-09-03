@@ -2,6 +2,9 @@
 
 ## 2026-09-03 — clean-context Stata peer audit
 
+- Added a prospective runtime-install boundary: when a selected documented command is observed missing, install only the needed package in a separate official or maintainer-guided step, restart Stata, and use the original command without restoring availability probes or inline substitutes.
+- Added role-based names for new or user-approved structurally renamed `.do` modules, with synchronized master calls, call sites, and documentation and no retroactive rename requirement.
+- Kept both rules visible in the common evidence payload, the clean-context peer review, and the compact `SessionStart` reminder without adding audit state or semantic validation.
 - Added a focused `stata-peer-audit` skill that reviews existing-analysis refactors before editing and material Stata changes after runtime inspection without modifying files or producing scores, pass states, ledgers, or certificates.
 - Made the main workflow dispatch and await fresh read-only audit subagents with exact task briefs instead of inherited session history, with one focused correction pass and no re-audit chain.
 - Added a compact `SessionStart` reminder for startup, resume, and post-compaction continuity; no `UserPromptSubmit` or `Stop` gate, transcript inspection, or audit state was added.

@@ -1,6 +1,6 @@
 {
   "name": "stata-research-guard",
-  "version": "0.3.0+codex.20260903131248",
+  "version": "0.3.0+codex.20260903141642",
   "description": "Provides Stata authoring rules, an independent peer-audit workflow, Stata 18 help-first command evidence, and selected paper context.",
   "author": {
     "name": "song7"

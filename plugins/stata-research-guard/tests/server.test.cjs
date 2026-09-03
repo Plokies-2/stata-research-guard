@@ -9,6 +9,7 @@ const test = require("node:test");
 const ROOT = path.resolve(__dirname, "..");
 const SERVER_PATH = path.join(ROOT, "mcp", "server.cjs");
 const HOOK_PATH = path.join(ROOT, "hooks", "session-start.cjs");
+const PEER_AUDIT_PATH = path.join(ROOT, "skills", "stata-peer-audit", "SKILL.md");
 const {
   TOOL_DEFINITIONS,
   buildCommandEvidence,
@@ -56,7 +57,14 @@ test("SessionStart hook emits the compact peer-audit reminder", () => {
   const output = childProcess.execFileSync(process.execPath, [HOOK_PATH], { encoding: "utf8" });
   assert.ok(Buffer.byteLength(output, "utf8") < 800);
   assert.match(output, /fresh read-only stata-peer-audit before edits and after runtime inspection/);
+  assert.match(output, /install it separately.*restart Stata.*original command/);
+  assert.match(output, /workflow-role names.*calls and docs together.*do not retroactively rename/);
   assert.doesNotMatch(output, /UserPromptSubmit|Stop hook|score|ledger/);
+
+  const peerAudit = fs.readFileSync(PEER_AUDIT_PATH, "utf8");
+  assert.match(peerAudit, /installation is a separate, authority-bounded step/);
+  assert.match(peerAudit, /`cleaning_data\.do`.*`placebo\.do`/);
+  assert.doesNotMatch(peerAudit, /pass\/fail|scorecard|audit state/);
 });
 
 test("MCP exposes one simple exact-key three-phase lookup tool", () => {
@@ -75,7 +83,7 @@ test("Phase 1 returns common main rules and a compact neutral 115-command index"
   assert.deepEqual(Object.keys(result), ["phase", "main_rules", "command_dictionary"]);
   assert.equal(result.phase, "discovery");
   assert.match(result.main_rules.content, /# General Rules/);
-  assert.ok(Buffer.byteLength(result.main_rules.content, "utf8") < 5000);
+  assert.ok(Buffer.byteLength(result.main_rules.content, "utf8") < 6000);
   for (const pattern of [
     /registries, modes, dispatchers/,
     /Locals are only for iterators/,
@@ -84,6 +92,8 @@ test("Phase 1 returns common main rules and a compact neutral 115-command index"
     /depth two only.*never depth three/,
     /Do not multiply `if` or conditional branches/,
     /`which`, `capture which`, `findfile`, `ado dir`, or `confirm command`/,
+    /separate step.*official or maintainer installation guidance.*restart Stata.*original command/,
+    /`cleaning_data\.do`.*`placebo\.do`.*Do not retroactively rename/,
     /native factor-variable syntax and raw `e\(b\)` names/,
     /Excel for tables, PDF for figures, and `.ster`/,
     /semantic validators, graders, rankers/,

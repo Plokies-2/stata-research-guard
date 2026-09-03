@@ -2,7 +2,7 @@
 
 Stata Research Guard는 Codex가 연구 목적에 맞는 Stata 명령을 고르고, 공식 문법과 실제 논문의 사용 맥락을 확인해 현재 프로젝트용 코드를 작성하도록 돕는 플러그인입니다.
 
-현재 배포 버전은 `0.3.0+codex.20260903131248`입니다.
+현재 배포 버전은 `0.3.0+codex.20260903141642`입니다.
 
 ## 주요 기능
 
@@ -16,6 +16,8 @@ Stata Research Guard는 Codex가 연구 목적에 맞는 Stata 명령을 고르�
 - 모든 evidence phase에서 빠짐없이 전달되는 압축 공통 작성 원칙 본문
 - 기존 분석 리팩터링 전과 material Stata 수정 후에 새 컨텍스트의 동료 연구자 SA를 부르는 `stata-peer-audit` skill
 - startup·resume·compact 때 위 audit 순서를 짧게 되살리는 `SessionStart` hook
+- 선택한 공식·maintainer command의 미설치가 실제 실행에서 확인되면 별도 설치·Stata 재시작 뒤 원래 command로 돌아가는 작성 원칙
+- 새 모듈과 승인된 구조 rename에 workflow 역할 기반 `.do` 이름을 사용하고 관련 call·문서를 함께 갱신하는 원칙
 
 플러그인은 연구자가 정한 목적과 현재 프로젝트의 맥락을 모델이 해석할 수 있도록 필요한 자료를 제공합니다. 표본, 회귀 사양, fixed effects, VCE와 출력 형식은 모델이 현재 연구에 맞게 결정합니다.
 
@@ -32,6 +34,8 @@ Stata Research Guard는 Codex가 연구 목적에 맞는 Stata 명령을 고르�
 기존 분석, robustness check, placebo, permutation 또는 export를 보존하라는 요청은 그 자체로 새 runtime mode, positional argument, dispatcher 또는 조건 분기를 만들라는 뜻이 아닙니다. 그런 interface는 사용자가 명시적으로 요청했거나 현재 프로젝트가 이미 요구할 때만 추가합니다.
 
 기존 분석 리팩터링이나 전체 구조 보강은 수정 전에 `stata-peer-audit`의 `pre-audit`을 거칩니다. Material Stata 코드를 작성·수정한 뒤에는 실제 실행 결과와 산출물을 확인하고 `post-audit`을 한 번 거칩니다. 두 audit은 대화 이력을 물려받지 않는 읽기 전용 SA가 수행하며, 점수·합격 판정·audit 파일·자동 validator를 만들지 않습니다. 주석·서식·literal path만의 변경과 그대로의 실행은 제외됩니다.
+
+선택한 공식·maintainer command가 실제 Stata 실행에서 미설치로 확인되면 회귀·추정 코드 안에 설치문을 넣거나 대체 구현을 만들지 않습니다. 공식·maintainer 근거에 따라 필요한 패키지만 별도 단계에서 설치하고 Stata를 재시작한 뒤 원래 command를 사용합니다. 새 `.do`와 사용자가 승인한 구조 rename은 `cleaning_data.do`, `summary.do`, `regression.do`, `robustness.do`, `permutation.do`, `placebo.do`처럼 workflow 역할로 이름을 붙이고 관련 master·call site·문서를 함께 갱신합니다. 기존 파일의 소급 rename은 요구하지 않습니다.
 
 두 MCP가 호출 가능한 상태라면 데이터·코드·기존 로그·표·그림의 읽기 전용 확인은 매번 Phase 2를 거치지 않아도 됩니다. 읽기 전용 설명, 주석·formatting만의 수정, literal 교체와 기존 block의 그대로 이동도 lookup 대상이 아닙니다. Material command 작성·수정, 데이터 변경·저장, 추정·검정, export와 중요한 returned result 해석 전에는 관련 interface의 Phase 2 근거를 확인합니다.
 
