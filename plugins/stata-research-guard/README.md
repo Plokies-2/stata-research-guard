@@ -26,7 +26,7 @@ Stata Research Guard는 Codex가 연구 목적에 맞는 Stata 명령을 고르�
 get_stata_command_evidence
 ```
 
-Phase 1은 명령이 아직 불명확할 때 쓰는 선택적 discovery입니다. 이미 중요한 명령을 알고 있으면 Phase 1을 건너뛰고 Phase 2로 바로 갈 수 있습니다. 읽기 전용 설명·검토, 주석·북마크·공백·formatting만의 수정, command interface를 바꾸지 않는 literal 교체와 기존 block의 그대로 이동에는 Guard lookup이 필요하지 않습니다. 어느 Phase를 호출해도 `general-rules.md` 전문과 path, SHA-256이 함께 들어가므로 Phase 1을 건너뛰어도 공통 작성 원칙이 누락되지 않습니다.
+Phase 1은 명령이 아직 불명확할 때 쓰는 선택적 discovery입니다. 이미 중요한 명령을 알고 있으면 Phase 1을 건너뛰고 Phase 2로 바로 갈 수 있습니다. 읽기 전용 설명·검토, 주석·북마크·공백·formatting만의 수정, command interface를 바꾸지 않는 literal 교체와 기존 block의 그대로 이동에는 Guard lookup이 필요하지 않습니다. 어느 Phase를 호출해도 압축된 `general-rules.md` 전문과 path, SHA-256이 함께 들어가므로 Phase 1을 건너뛰어도 핵심 작성 원칙이 누락되지 않습니다.
 
 ### 1. 명령 선택
 

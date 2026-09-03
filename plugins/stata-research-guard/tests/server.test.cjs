@@ -51,9 +51,8 @@ test("MCP exposes one simple exact-key three-phase lookup tool", () => {
   assert.equal(TOOL_DEFINITIONS[0].inputSchema.oneOf[2].anyOf.length, 2);
   assert.equal("outputSchema" in TOOL_DEFINITIONS[0], false);
   assert.doesNotMatch(JSON.stringify(TOOL_DEFINITIONS), /project_path|target_files|known_constraints/);
-  assert.match(TOOL_DEFINITIONS[0].description, /Phase 1 is optional discovery/);
-  assert.match(TOOL_DEFINITIONS[0].description, /Every phase returns the full common main rules/);
-  assert.match(TOOL_DEFINITIONS[0].description, /comment-only edits/);
+  assert.match(TOOL_DEFINITIONS[0].description, /complete compact main rules/);
+  assert.match(TOOL_DEFINITIONS[0].description, /call Phase 2 directly/);
 });
 
 test("Phase 1 returns common main rules and a compact neutral 115-command index", () => {
@@ -61,16 +60,33 @@ test("Phase 1 returns common main rules and a compact neutral 115-command index"
   assert.deepEqual(Object.keys(result), ["phase", "main_rules", "command_dictionary"]);
   assert.equal(result.phase, "discovery");
   assert.match(result.main_rules.content, /# General Rules/);
-  assert.match(result.main_rules.content, /If the appropriate command is clear from the request and project context, select only that command/);
-  assert.match(result.main_rules.content, /When multiple commands are genuinely needed/);
-  assert.match(result.main_rules.content, /you may request only those relevant evidence packets together/);
-  assert.match(result.main_rules.content, /Do not create a `program` merely to shorten one call or anticipate future reuse/);
-  assert.match(result.main_rules.content, /Indent only inside a real control-flow scope/);
-  assert.match(result.main_rules.content, /In each core regression or estimation call/);
-  assert.match(result.main_rules.content, /Do not replace them with local or global macros/);
-  assert.match(result.main_rules.content, /When the exact material command is already clear, call Phase 2 directly/);
-  assert.match(result.main_rules.content, /Do not call Guard for read-only explanation or review/);
+  assert.ok(Buffer.byteLength(result.main_rules.content, "utf8") < 5000);
+  for (const pattern of [
+    /registries, modes, dispatchers/,
+    /Locals are only for iterators/,
+    /Add a `program` only for a command interface/,
+    /indent once per real scope/,
+    /depth two only.*never depth three/,
+    /Do not multiply `if` or conditional branches/,
+    /`which`, `capture which`, `findfile`, `ado dir`, or `confirm command`/,
+    /native factor-variable syntax and raw `e\(b\)` names/,
+    /Excel for tables, PDF for figures, and `.ster`/,
+    /semantic validators, graders, rankers/,
+  ]) {
+    assert.match(result.main_rules.content, pattern);
+  }
   assert.equal(result.command_dictionary.length, 115);
+
+  const directPhase2 = buildCommandEvidence({ request: "Use count", selected_commands: ["count"] });
+  const directPhase3 = buildCommandEvidence({
+    request: "Expand count",
+    selected_commands: ["count"],
+    expanded: true,
+    expanded_commands: ["count"],
+  });
+  assert.deepEqual(directPhase2.main_rules, result.main_rules);
+  assert.deepEqual(directPhase3.main_rules, result.main_rules);
+  assert.equal("command_dictionary" in directPhase2, false);
 
   for (const command of result.command_dictionary) {
     for (const field of [
@@ -134,7 +150,7 @@ test("Phase 2 returns Stata-rendered xtreg help and its three exact profiles", (
     "selected_commands",
     "command_evidence",
   ]);
-  assert.match(result.main_rules.content, /Keeping an existing analysis, robustness check, placebo, permutation, or export/);
+  assert.match(result.main_rules.content, /registries, modes, dispatchers/);
   assert.match(result.main_rules.sha256, /^[a-f0-9]{64}$/);
   assert.deepEqual(result.selected_commands, ["xtreg"]);
   assert.equal(result.command_evidence.length, 1);
@@ -252,7 +268,7 @@ test("Phase 3 returns one slim exact xtreg paper card with an empty log array", 
   ]);
   assert.deepEqual(result.expanded_commands, []);
   assert.deepEqual(result.expanded_command_evidence, []);
-  assert.match(result.main_rules.content, /does not by itself authorize a new mode, positional argument, dispatcher, or conditional control-flow branch/);
+  assert.match(result.main_rules.content, /merely to retain an analysis, robustness check, placebo, permutation, or export/);
   assert.equal(result.paper_usage_cards.length, 1);
   const card = result.paper_usage_cards[0];
   assert.equal(card.block_id, "block-139-184-033");

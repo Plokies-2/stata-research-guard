@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-09-03 — compact rules in every evidence phase
+
+- Compressed the common authoring rules and skill routing while preserving direct Phase 2 delivery of the complete rules, including the no-abstraction, visible-specification, program, indentation, conditional-branch, and loop-depth boundaries.
+- Serialized MCP results as compact JSON to remove presentation whitespace without changing the response schema.
+
 ## 2026-09-03 — common rules in every evidence phase
 
 - Returned the full common `main_rules` content, source path, and SHA-256 in Phases 1, 2, and 3 so a direct Phase 2 call cannot omit the prospective authoring boundary.

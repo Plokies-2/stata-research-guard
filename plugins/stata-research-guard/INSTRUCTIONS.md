@@ -4,7 +4,7 @@ Use this plugin as a source of command grammar and real-paper context. The model
 
 ## Evidence flow
 
-Every phase includes the full common `main_rules` together with its source path and SHA-256. Read and apply it before writing or revising Stata code, including when Phase 1 discovery is skipped.
+Every phase includes the complete compact `main_rules` together with its source path and SHA-256. Read and apply it before writing or revising Stata code, including when Phase 1 discovery is skipped.
 
 1. Do not call Guard for read-only explanation or review, comment/bookmark/whitespace-only edits, formatting-only source changes, literal path or label replacement that leaves the command interface unchanged, verbatim relocation of an existing command block, or execution of an unchanged file when no command semantic is in question.
 2. When the material command is unresolved, call `get_stata_command_evidence` with `request` only and use the compact 115-command index to choose. When the exact material command is already clear, skip Phase 1 and call Phase 2 directly. The index is a curated starting point, not a closed boundary.

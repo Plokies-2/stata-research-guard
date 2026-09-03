@@ -1,6 +1,6 @@
 {
   "name": "stata-research-guard",
-  "version": "0.3.0+codex.20260903094857",
+  "version": "0.3.0+codex.20260903104025",
   "description": "Provides Stata main rules in every evidence phase, a compact command index, Stata 18 help-first evidence with live exact-help fallback, and command-selective expanded documentation plus selected paper context.",
   "author": {
     "name": "song7"
@@ -18,7 +18,7 @@
     ],
     "defaultPrompt": [
       "Use Phase 1 discovery only when the material command is unresolved; when it is already clear, call Phase 2 directly for the commands whose interface matters.",
-      "Do not call Guard for read-only explanation, comment or formatting-only edits, literal-only changes, or verbatim relocation of unchanged commands.",
+      "Do not call Guard for read-only explanation, comment or formatting-only edits, literal path or label changes with an unchanged command interface, verbatim relocation, or unchanged-file execution with no semantic issue.",
       "When more context is needed, request expanded documentation only for the exact selected-command subset that needs it, and request exact paper blocks independently.",
       "Do not turn a request to retain an existing analysis, robustness check, placebo, permutation, or export into a new mode, positional argument, dispatcher, or conditional branch unless that interface was explicitly requested or already required by the project.",
       "Treat paper examples and optional raw logs as nonbinding source context; preserve the current project and selected research specification.",
