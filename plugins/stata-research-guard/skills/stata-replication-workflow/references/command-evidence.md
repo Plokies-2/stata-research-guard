@@ -8,7 +8,7 @@ Skip Guard for read-only explanation/review, comments or formatting, literal pat
 
 Use Phase 1 (`request` only) when the command is unresolved. When it is clear, go directly to Phase 2 (`request` and exact `selected_commands`). Full bundled official/maintainer help is the default. Exact outside-dictionary topics use installed help; no paper example is required to use a documented command.
 
-Reuse visible evidence while command, version, material options, returned interface, and downstream use remain unchanged. Expand only for a remaining question or useful worked context. A missing topic stops only the affected branch.
+Reuse visible evidence while command, version, material options, returned interface, and downstream use remain unchanged. Expand only for a remaining question or useful worked context. A command may share a differently named official help topic: `postfile`, `postclose`, and `postutil` are documented under `post`. Guard resolves known aliases while preserving the requested command label. If an exact topic is absent, follow an identified official help cross-reference before concluding its grammar is unavailable; do not guess syntax or substitute a different analysis command. Stop only the branch whose needed grammar remains unavailable.
 
 ## Complete rules without repetition
 

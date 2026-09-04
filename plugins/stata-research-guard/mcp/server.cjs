@@ -30,6 +30,9 @@ const LIVE_HELP_TOPIC_ALIASES = new Map([
   ["local", "macro"],
   ["tempfile", "macro"],
   ["tempname", "macro"],
+  ["postfile", "post"],
+  ["postclose", "post"],
+  ["postutil", "post"],
 ]);
 
 function readUtf8(file) {

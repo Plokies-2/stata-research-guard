@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.3.0+codex.20260904214914"
+    "version": "0.3.0+codex.20260904222006"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
-      "bytes": 1292,
-      "sha256": "a49b044dcbe6ab685ac045ebf0b43ea085f17ce95711d0ebb82e374a2a37d4cc"
+      "bytes": 1316,
+      "sha256": "d6268b89dfe61fc99f1cff057629c3cab8f396515cfbe4da7bcac62d575416c9"
     },
     {
       "path": ".mcp.json",
@@ -22,8 +22,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 18783,
-      "sha256": "952922ed509408d09f1003de3de9abb3eecdeee3fca5838ac3c24e4f383f8b05"
+      "bytes": 19390,
+      "sha256": "743db7c63f5b36e59bde0cfe8c3b122da3f8c9ebaae197391ad549b0732e950d"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -1517,8 +1517,8 @@
     },
     {
       "path": "mcp/server.cjs",
-      "bytes": 25177,
-      "sha256": "382db12c0947a56a4b9ccbc60ed4218936fe79773e1c56d30c41d9b563080beb"
+      "bytes": 25250,
+      "sha256": "b3c863219b588f9d2e4fc16c702050759fc77eb38a3e061c4a1cdff2878d3135"
     },
     {
       "path": "README.md",
@@ -1567,8 +1567,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/command-evidence.md",
-      "bytes": 5520,
-      "sha256": "7378d1e6a25da93a614f121f8d84f4dbdf0938587a7f1d3152234ed6e7583e53"
+      "bytes": 5930,
+      "sha256": "499dc98b69909d174fa81acc444bbd604371d0ebdd8a2a5a97f452ef9b4cbd61"
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rules.md",
@@ -1617,8 +1617,8 @@
     },
     {
       "path": "tests/server.test.cjs",
-      "bytes": 27211,
-      "sha256": "06ea6d2ad967c389d5038241f5573458f891e452cfec01f969913d1585b6f5d1"
+      "bytes": 28029,
+      "sha256": "e538f24d825fc01296266df8ad11954716f95ee9abed7e4fe7b9e4a2fc5ba98f"
     }
   ],
   "semantic_anchors": [
@@ -1634,7 +1634,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.3.0+codex.20260904214914"
+      "value": "0.3.0+codex.20260904222006"
     },
     {
       "id": "readme.heading",

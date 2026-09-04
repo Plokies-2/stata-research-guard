@@ -441,6 +441,21 @@ test("Stata language tokens retain their labels while using official macro help"
   ]);
 });
 
+test("posting commands retain their labels and use the documented post help topic", async () => {
+  const commands = ["postfile", "postclose", "postutil"];
+  const lookedUp = [];
+  const result = await buildCommandEvidence({ request: "Read posting command help", selected_commands: commands }, {
+    liveHelpLookup: async (topic) => {
+      lookedUp.push(topic);
+      return { status: "available", help: { command: topic, content: "official post help" }, limitations: [] };
+    },
+  });
+  assert.deepEqual(lookedUp, ["post", "post", "post"]);
+  assert.deepEqual(result.command_evidence.map((row) => row.command), commands);
+  assert.deepEqual(result.command_evidence.map((row) => row.help_topic), lookedUp);
+  assert.ok(result.command_evidence.every((row) => row.command_help.content === "official post help"));
+});
+
 test("empty optional Phase 3 arrays are equivalent to omission", async () => {
   const documentationOnly = await buildCommandEvidence({
     request: "Expand putexcel only",

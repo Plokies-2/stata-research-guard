@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-05 — feedback from the ai-econ research run
+
+- Resolved `postfile`, `postclose`, and `postutil` to their documented official `post` help topic while retaining the requested command labels. An actual research task had incorrectly received unavailable help for `postfile`.
+- Clarified that an absent exact help filename is not itself evidence that a command lacks documented syntax; follow an identified official topic cross-reference before stopping the affected branch.
+- Added one focused alias/source-delivery test. The next research refactoring run remains a separate user-controlled task.
+
 ## 2026-09-05 — direct research flow and original-source navigation
 
 - Made refactoring advice concrete before implementation and tied post-review to the user's actual readability problems, including existing helpers and excessive file splitting.
