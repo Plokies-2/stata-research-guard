@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-05
+
+- Made peer review proportional to research complexity and explicit requests; removed reviewer-availability stops.
+- Read shared rules once per relevant task and reuse unchanged evidence.
+- Removed the duplicate SessionStart instruction hook and its obsolete test.
+- Kept command evidence, research specifications, and paper sources unchanged.
+
 ## 2026-09-04 — explicit research-refactoring contract
 
 - Defined good research-code refactoring as reducing indirection from sample and specification through estimator and output, not minimizing lines, eliminating repetition, or applying DRY.

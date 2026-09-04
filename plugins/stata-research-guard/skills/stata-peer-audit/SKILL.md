@@ -1,13 +1,13 @@
 ---
 name: stata-peer-audit
-description: Independently review material Stata research code before an existing-analysis refactor or after implementation. Use when the Stata workflow delegates a pre-audit for refactoring or structural reinforcement, or a post-audit after material code changes; do not use for comments, whitespace, formatting-only work, literal path or label changes, verbatim moves, or unchanged execution.
+description: Provide an independent research review when requested or useful for large data construction or complex Stata specification changes; return concrete findings without certification.
 ---
 
 # Stata Peer Audit
 
 Act as a clean-context peer researcher. Read the work directly and return useful criticism; do not certify it.
 
-Before reviewing any target, read `../stata-replication-workflow/references/general-rules.md` completely from top to bottom. For a refactor, reread its research-refactoring contract while reading the existing source and proposed or changed call sites side by side. Do not accept the parent's summary, a successful run, unchanged outputs, or fewer lines as a substitute.
+Read `../stata-replication-workflow/references/general-rules.md` once for this review, then inspect the relevant source and call sites directly. Revisit rules if scope changes. The parent's conclusions, successful execution, or fewer lines do not substitute for reading the work.
 
 ## Inputs
 
@@ -17,7 +17,7 @@ The parent must provide the audit phase (`pre-audit` or `post-audit`), user requ
 
 1. Read applicable project instructions, every target file, and enough directly called or calling code to reconstruct the actual workflow. Inspect relevant data metadata, logs, tables, figures, and stored estimates when supplied or safely available.
 2. In `pre-audit`, identify the concrete problems that the refactor must solve and give a direct implementation direction before any edits occur. Name the visible loop axes and where each core estimator and exporter will remain. State explicitly whether the proposal introduces any `program`, ado, wrapper, or helper; repetition and line-count reduction are never sufficient reasons.
-3. In `post-audit`, compare the implementation with the request and pre-audit findings, then inspect observed execution and produced artifacts before concluding. Read every newly introduced `program`, wrapper, helper, and parameterized call site; flag it when no explicit user request or pre-existing project interface requires it, even if the run succeeds and outputs match.
+3. In `post-audit`, compare the implementation with the request and any available pre-audit findings, then inspect observed execution and produced artifacts before concluding. Read every newly introduced `program`, wrapper, helper, and parameterized call site; flag it when no explicit user request or pre-existing project interface requires it, even if the run succeeds and outputs match.
 4. Follow the analysis from source preparation through combined analysis data, descriptive statistics, main estimation, and robustness. Flag a broken or obscured dependency order when it changes what later stages consume.
 5. For each material task, first ask whether the selected documented Stata command or exporter already provides the needed operation, option, bulk syntax, returned result, statistic, row, note, append or replace behavior, or output. Prefer that native interface. Allow manual code only for a concrete remaining requirement, keep it after the native command when practical, and limit it to the missing transformation. For example, let `outreg2` produce coefficients, standard errors, significance markers, headers, and notes; a small formatter may then assemble those native tables into required workbook sheets, but must not reconstruct the statistics or use a parallel sidecar as a second source.
 6. When estimation is repeated, require the shallowest research-readable loop first: one flat loop, or a simple two-axis loop only when both axes are genuinely mechanical. Keep the estimator and consequential outcome, treatment or event terms, sample, controls, FE, weights, VCE, and output destination visible where the loop runs. Derive `.ster` names and stable `replace` then `append` order from those axes when practical, and reuse stored estimates downstream instead of rerunning models.

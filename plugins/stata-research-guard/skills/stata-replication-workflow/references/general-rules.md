@@ -1,6 +1,6 @@
 # General Rules
 
-Read this entire file before planning every Stata write or revision. For a refactor, reread the refactoring contract while comparing the existing code and proposed call sites side by side; do not substitute a summary, remembered rule, successful run, or unchanged output.
+Read these rules once for the relevant Stata task, from this file or a complete current Guard response. Revisit affected sections if scope or rules change. For a refactor, compare the source and proposed call sites directly.
 
 ## Research judgment and evidence
 

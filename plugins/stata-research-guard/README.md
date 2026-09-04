@@ -90,9 +90,9 @@ Guard와 mcpStata가 모두 연결됐다면 세션 목록, 메모리 안으로�
 
 ## 동료 연구자 audit
 
-기존 분석을 리팩터링하거나 전체 구조를 보강할 때는 편집 전에 fresh read-only SA가 `stata-peer-audit`을 사용해 `general-rules.md` 전문부터 읽고, 원본 코드와 리팩터링 계약을 나란히 다시 읽은 뒤 구현 방향을 제시합니다. 실질적인 Stata 코드 작성이나 수정 뒤에는 실제 실행과 산출물 확인 후 다른 fresh SA가 같은 순서로 코드를 한 번 검토합니다. 주석·공백·formatting, command interface가 같은 literal path·label 변경, verbatim 이동과 unchanged-file 실행은 audit 대상이 아닙니다.
+대규모 자료 구축, 복잡한 연구 사양 변경 또는 사용자 요청에 맞춰 새 컨텍스트의 읽기 전용 동료 연구자 검토를 사용합니다. 해결되지 않은 구조 선택은 편집 전에, 구현과 결과는 실행 후에 검토하되 모든 수정에 두 검토를 강제하지 않습니다. 주 에이전트가 최종 판단을 책임집니다.
 
-Audit SA에는 상위 대화 전체 대신 phase, 사용자 요청, 정확한 대상 파일, call chain, 입력·출력, 실행 산출물, 관련 Guard 근거와 정본 `general-rules.md` 경로를 직접 전달합니다. 규칙 요약으로 전문 읽기를 대신하지 않습니다. Audit은 파일을 수정하거나 점수·pass/fail·상태 파일을 만들지 않으며, finding이 있으면 주 agent가 한 번의 집중 수정으로 반영합니다. `SessionStart` hook도 이 읽기 순서와 리팩터링 정의를 짧게 상기합니다.
+검토자에게 요청, 대상 파일, 직접 연결된 코드·자료와 실행 결과, 관련 규칙 경로를 전달합니다. 규칙은 해당 검토에서 한 번 읽고 범위가 달라지면 필요한 부분을 다시 확인합니다. 발견사항과 수정 의견만 반환하며 점수·합격·승인 상태를 만들지 않습니다. 검토자를 사용할 수 없으면 수행한 확인과 남은 한계를 밝히고 가능한 작업을 계속합니다. 시작 시 지침을 반복 주입하는 훅은 사용하지 않습니다.
 
 Guard 근거로 선택한 공식·maintainer command가 실제 Stata에서 미설치로 확인되면 회귀·추정 코드 안에 설치문을 섞거나 임시 대체 command를 만들지 않습니다. 공식·maintainer 설치 근거에 따라 필요한 패키지만 별도 단계에서 설치하고 Stata를 재시작한 뒤 원래 command를 사용합니다. 새로 만드는 `.do`와 사용자가 승인한 구조 리팩터링의 rename은 `cleaning_data.do`, `summary.do`, `regression.do`, `robustness.do`, `permutation.do`, `placebo.do`처럼 workflow 역할로 이름을 붙이고 관련 master·call site·문서를 함께 바꿉니다. 기존 파일은 소급 rename하지 않습니다.
 

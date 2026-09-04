@@ -1,7 +1,7 @@
 {
   "name": "stata-research-guard",
-  "version": "0.3.0+codex.20260903175747",
-  "description": "Provides Stata authoring rules, an independent peer-audit workflow, Stata 18 help-first command evidence, and selected paper context.",
+  "version": "0.3.0+codex.20260904204537",
+  "description": "Stata command evidence and research authoring guidance with proportionate peer review.",
   "author": {
     "name": "song7"
   },
@@ -9,16 +9,15 @@
   "interface": {
     "displayName": "Stata Research Guard",
     "shortDescription": "Stata 18 help-first command and research context.",
-    "longDescription": "Lets the model inspect a compact 115-command Stata index, choose exact commands, and retrieve bundled Stata 18 official or maintainer help for registered commands. Exact commands outside the index are resolved on demand from the active Stata installation inside this Guard MCP. A separate peer-audit skill gives existing-analysis refactors a clean-context review before edits and gives material Stata changes one read-only review after runtime inspection. The model decides commands and research context. The plugin does not scan projects, score or rank candidates, promote templates, grade generated code, or certify a research design.",
+    "longDescription": "Provides official or maintainer Stata command help and selected paper context. Research choices remain with the model and user. Peer review supports large data construction, complex specification changes, or explicit requests; no automatic review gate or startup hook.",
     "developerName": "song7",
     "category": "Developer Tools",
     "capabilities": [
       "MCP",
-      "Skills",
-      "Hooks"
+      "Skills"
     ],
     "defaultPrompt": [
-      "Before planning any Stata write or revision, read the complete general rules. During a refactor, reread the research-refactoring contract alongside the current code and proposed call sites; do not substitute a summary, successful run, unchanged output, or fewer lines.",
+      "Read the general rules once for the relevant Stata task, and revisit affected sections when the scope or rules change. Compare the actual research code and proposed call sites directly.",
       "Use Phase 1 discovery only when the material command is unresolved; when it is already clear, call Phase 2 directly for the commands whose interface matters.",
       "Do not call Guard for read-only explanation, comment or formatting-only edits, literal path or label changes with an unchanged command interface, verbatim relocation, or unchanged-file execution with no semantic issue.",
       "When more context is needed, request expanded documentation only for the exact selected-command subset that needs it, and request exact paper blocks independently.",
