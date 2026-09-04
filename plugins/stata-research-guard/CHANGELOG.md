@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-09-05 — direct research flow and original-source navigation
+
+- Made refactoring advice concrete before implementation and tied post-review to the user's actual readability problems, including existing helpers and excessive file splitting.
+- Defaulted to integrated preparation, descriptives, regression with its outputs, and requested robustness; clarified native-command callback exceptions and visible research specifications.
+- Kept full raw help as the default; added exact source-native sections for outreg2 and collect_style, with explicit scope and complete-help fallback.
+- Added caller-controlled reuse of visible complete rules by hash, with full rules on new/changed contexts and no server-side read-state inference.
+- Made live-help lookup asynchronous and bounded, removed failure caching, added explicit successful-snapshot refresh, and preserved/reported repeated, missing, and cyclic INCLUDE context.
+- Loaded paper details only when an exact block is requested; retained the original paper code and raw-log attachment behavior.
+- Replaced wording assertions with raw-source delivery checks and added focused transport/cache/section tests. Research readability is assessed by reading actual code and results, not by these tests.
+
 ## 2026-09-05
 
 - Made peer review proportional to research complexity and explicit requests; removed reviewer-availability stops.

@@ -1,6 +1,6 @@
 # Stata Authoring Conventions
 
-For every newly written or actively revised Stata block, read and follow [general-rules.md](general-rules.md). That file is the canonical house style and applies prospectively, not as a retroactive error list for untouched legacy code.
+Follow the current [general-rules.md](general-rules.md) already read for this task; do not reread it for every block. Apply it prospectively, not as a retroactive error list for untouched legacy code.
 
 Use this companion only for details that do not replace the common rules:
 

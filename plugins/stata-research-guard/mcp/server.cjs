@@ -4,8 +4,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const readline = require("node:readline");
 const crypto = require("node:crypto");
-const os = require("node:os");
-const childProcess = require("node:child_process");
+const { lookupLiveStataHelp } = require("./live-help.cjs");
 
 const PLUGIN_ROOT = path.resolve(__dirname, "..");
 const DATA_ROOT = path.join(PLUGIN_ROOT, "data");
@@ -32,7 +31,6 @@ const LIVE_HELP_TOPIC_ALIASES = new Map([
   ["tempfile", "macro"],
   ["tempname", "macro"],
 ]);
-const LIVE_HELP_CACHE = new Map();
 
 function readUtf8(file) {
   return new TextDecoder("utf-8", { fatal: true }).decode(fs.readFileSync(file));
@@ -67,22 +65,25 @@ const commandsByName = new Map(registry.commands.map((row) => [row.command, row]
 
 const helpGuideIndex = readJson(COMMAND_HELP_GUIDES_PATH);
 const helpGuidesByCommand = new Map(helpGuideIndex.guides.map((row) => [row.command, row]));
+const helpSectionsByCommand = new Map(readJson(path.join(DATA_ROOT, "command_help_sections.json")).guides.map((row) => [row.command, row]));
 
 const expandedGuideIndex = readJson(EXPANDED_COMMAND_GUIDES_PATH);
 const expandedGuidesByCommand = new Map(expandedGuideIndex.guides.map((row) => [row.command, row]));
 
 const paperProfiles = readJsonl(PAPER_PROFILES_PATH);
-const paperBlocks = readJsonl(PAPER_BLOCKS_PATH);
-const paperOccurrences = readJsonl(PAPER_OCCURRENCES_PATH);
-const paperExecutionContexts = fs.existsSync(PAPER_EXECUTION_CONTEXTS_PATH)
-  ? readJsonl(PAPER_EXECUTION_CONTEXTS_PATH)
-  : [];
-
 const profilesById = new Map(paperProfiles.map((row) => [row.block_id, row]));
 const profilesByCommand = groupBy(paperProfiles, "focus_command");
-const blocksById = new Map(paperBlocks.map((row) => [row.block_id, row]));
-const occurrencesById = new Map(paperOccurrences.map((row) => [row.occurrence_id, row]));
-const executionContextsByBlock = groupBy(paperExecutionContexts, "parent_block_id");
+let blocksById, occurrencesById, executionContextsByBlock;
+
+function loadPaperDetails() {
+  if (blocksById) return;
+  const blocks = new Map(readJsonl(PAPER_BLOCKS_PATH).map((row) => [row.block_id, row]));
+  const occurrences = new Map(readJsonl(PAPER_OCCURRENCES_PATH).map((row) => [row.occurrence_id, row]));
+  const contexts = fs.existsSync(PAPER_EXECUTION_CONTEXTS_PATH) ? readJsonl(PAPER_EXECUTION_CONTEXTS_PATH) : [];
+  blocksById = blocks;
+  occurrencesById = occurrences;
+  executionContextsByBlock = groupBy(contexts, "parent_block_id");
+}
 
 // This one stored run contains 510 nuisance-coefficient rows.  These exact,
 // manually chosen source ranges retain the output header, focal coefficient,
@@ -97,12 +98,13 @@ const CURATED_LOG_RANGES = new Map([
   ],
 ]);
 
-function mainRules() {
+function mainRules(knownHash) {
   const content = readUtf8(GENERAL_RULES_PATH);
+  const sha256 = sha256Text(content);
   return {
     source_path: GENERAL_RULES_SOURCE_PATH,
-    sha256: sha256Text(content),
-    content,
+    sha256,
+    ...(knownHash === sha256 ? { unchanged: true } : { content }),
   };
 }
 
@@ -226,10 +228,10 @@ function validateArguments(args) {
   }
   const phase = hasExpanded ? "expanded_context" : hasCommands ? "selected_command_evidence" : "discovery";
   const allowed = phase === "discovery"
-    ? new Set(["request"])
+    ? new Set(["request", "known_rules_sha256"])
     : phase === "selected_command_evidence"
-      ? new Set(["request", "selected_commands"])
-      : new Set(["request", "selected_commands", "expanded", "expanded_commands", "selected_block_ids"]);
+      ? new Set(["request", "selected_commands", "known_rules_sha256", "help_view", "help_sections", "refresh_live_help"])
+      : new Set(["request", "selected_commands", "expanded", "expanded_commands", "selected_block_ids", "known_rules_sha256"]);
   const unexpected = Object.keys(args).filter((key) => !allowed.has(key));
   if (unexpected.length > 0) {
     throw new Error(`ABORT invalid_phase_arguments: ${phase} does not allow ${unexpected.join(", ")}`);
@@ -245,6 +247,24 @@ function validateArguments(args) {
     ? { selectedCommands: null, topicNormalizations: [] }
     : selectedCommandsFrom(args);
   const selectedCommands = selected.selectedCommands;
+  if (args.known_rules_sha256 !== undefined && (typeof args.known_rules_sha256 !== "string" || !/^[a-f0-9]{64}$/.test(args.known_rules_sha256))) {
+    throw new Error("known_rules_sha256 must be the SHA-256 of complete rules still visible in this context");
+  }
+  if (args.help_view !== undefined && args.help_view !== "catalog") throw new Error("help_view must be catalog when supplied");
+  if (args.refresh_live_help !== undefined && typeof args.refresh_live_help !== "boolean") throw new Error("refresh_live_help must be boolean");
+  if (args.help_sections !== undefined) {
+    if (!args.help_sections || typeof args.help_sections !== "object" || Array.isArray(args.help_sections) || Object.keys(args.help_sections).length === 0) {
+      throw new Error("help_sections must map selected command keys to nonempty exact section IDs");
+    }
+    if (args.help_view) throw new Error("help_view catalog and help_sections are separate requests");
+    for (const [command, ids] of Object.entries(args.help_sections)) {
+      const guide = helpSectionsByCommand.get(command);
+      if (!selectedCommands.includes(command) || !guide) throw new Error(`help sections unavailable for selected command: ${command}`);
+      if (!Array.isArray(ids) || ids.length === 0 || new Set(ids).size !== ids.length || ids.some((id) => !guide.sections.some((section) => section.id === id))) {
+        throw new Error(`invalid exact help section selection: ${command}`);
+      }
+    }
+  }
   const selectedBlockIds = phase === "expanded_context" ? optionalSelectedBlockIdsFrom(args) : null;
   const expandedCommands = phase === "expanded_context"
     ? optionalExpandedCommandsFrom(args, selectedCommands)
@@ -262,229 +282,35 @@ function validateArguments(args) {
   };
 }
 
-function commandHelp(command) {
+function commandHelp(command, args) {
   const entry = helpGuidesByCommand.get(command);
   if (!entry || !entry.content_file) return null;
   const contentPath = path.join(DATA_ROOT, entry.content_file);
-  return { ...entry, content: readUtf8(contentPath) };
-}
-
-function sleepSync(milliseconds) {
-  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, milliseconds);
-}
-
-function stataPathCandidates() {
-  const candidates = [];
-  if (process.env.STATA_PATH) candidates.push(process.env.STATA_PATH);
-  if (process.platform === "win32") {
-    candidates.push(
-      "C:\\Program Files\\Stata18\\StataMP-64.exe",
-      "C:\\Program Files\\Stata18\\StataSE-64.exe",
-      "C:\\Program Files\\Stata18\\StataBE-64.exe",
-      "C:\\Program Files\\Stata18\\Stata-64.exe",
-    );
-  } else {
-    for (const name of ["stata-mp", "stata-se", "stata"]) {
-      const located = childProcess.spawnSync("which", [name], { encoding: "utf8" });
-      if (located.status === 0 && located.stdout.trim()) candidates.push(located.stdout.trim());
-    }
+  const content = readUtf8(contentPath);
+  const navigation = helpSectionsByCommand.get(command);
+  if (!navigation || (!args.help_view && !args.help_sections?.[command])) return { ...entry, content };
+  // Identity of this selected source only; never a corpus or semantic gate.
+  if (sha256Text(content) !== navigation.content_sha256) {
+    return { ...entry, content, delivery: "full_help", navigation_note: "Section map is stale; complete current help returned." };
   }
-  return [...new Set(candidates.map((candidate) => path.resolve(candidate)))];
-}
-
-function discoverStataPath() {
-  return stataPathCandidates().find((candidate) => fs.existsSync(candidate)) || null;
-}
-
-function stataPath(file) {
-  return path.resolve(file).replaceAll("\\", "/").replaceAll('"', '""');
-}
-
-function runStataBatch(stata, doFile, cwd, marker, timeoutMs = 60000) {
-  const completed = childProcess.spawnSync(stata, ["/e", "do", doFile], {
-    cwd,
-    encoding: "utf8",
-    windowsHide: true,
-    timeout: timeoutMs,
-  });
-  const deadline = Date.now() + Math.min(timeoutMs, 10000);
-  while (!fs.existsSync(marker) && Date.now() < deadline) sleepSync(100);
-  return completed;
-}
-
-function locateInstalledHelp(stata, topic, workspace) {
-  const resultFile = path.join(workspace, "located.txt");
-  const doFile = path.join(workspace, "locate.do");
-  fs.writeFileSync(doFile, [
-    "version 18",
-    "set more off",
-    `capture findfile ${topic}.sthlp`,
-    "local lookup_rc = _rc",
-    "if `lookup_rc' {",
-    `    capture findfile ${topic}.hlp`,
-    "    local lookup_rc = _rc",
-    "}",
-    "if !`lookup_rc' local help_path `\"`r(fn)'\"'",
-    `file open guard_help using "${stataPath(resultFile)}", write text replace`,
-    "if `lookup_rc' file write guard_help \"NOT_FOUND\"",
-    "else {",
-    "    file write guard_help \"FOUND\" _n",
-    "    file write guard_help `\"`help_path'\"'",
-    "}",
-    "file close guard_help",
-    "exit, clear",
-  ].join("\n"), "utf8");
-  const completed = runStataBatch(stata, doFile, workspace, resultFile);
-  if (!fs.existsSync(resultFile)) {
-    const detail = completed.error?.message || completed.stderr || completed.stdout || "no lookup result";
-    throw new Error(`live Stata help lookup failed: ${String(detail).trim()}`);
+  if (args.help_view === "catalog") {
+    return { ...entry, content: null, delivery: "catalog_only", section_catalog: navigation.sections };
   }
-  const [status, ...sourceLines] = fs.readFileSync(resultFile, "utf8").split(/\r?\n/);
-  return status.trim() === "FOUND" ? sourceLines.join("\n").trim() : null;
-}
-
-function includeCandidates(sourceFile, includeName) {
-  const sourceDir = path.dirname(sourceFile);
-  const parentDir = path.dirname(sourceDir);
-  const fileName = includeName.endsWith(".ihlp") ? includeName : `${includeName}.ihlp`;
-  const first = fileName[0].toLowerCase();
-  return [
-    path.join(sourceDir, fileName),
-    path.join(sourceDir, first, fileName),
-    path.join(parentDir, fileName),
-    path.join(parentDir, first, fileName),
-  ];
-}
-
-function expandHelpIncludes(sourceFile, seen = new Set(), depth = 0) {
-  const resolved = path.resolve(sourceFile);
-  if (depth > 8 || seen.has(resolved)) return { content: "", missing: [] };
-  seen.add(resolved);
-  const missing = [];
-  const output = [];
-  for (const line of fs.readFileSync(resolved, "utf8").split(/\r?\n/)) {
-    const match = line.trim().match(/^INCLUDE\s+help\s+([A-Za-z0-9_.]+)$/i);
-    if (!match) {
-      output.push(line);
-      continue;
-    }
-    const includeFile = includeCandidates(resolved, match[1]).find((candidate) => fs.existsSync(candidate));
-    if (!includeFile) {
-      missing.push(match[1]);
-      continue;
-    }
-    const expanded = expandHelpIncludes(includeFile, seen, depth + 1);
-    output.push(expanded.content);
-    missing.push(...expanded.missing);
-  }
-  return { content: output.join("\n"), missing: [...new Set(missing)] };
-}
-
-function renderInstalledHelp(stata, sourceFile, topic, workspace) {
-  const expandedFile = path.join(workspace, `${topic}.sthlp`);
-  const renderedFile = path.join(workspace, `${topic}.txt`);
-  const statusFile = path.join(workspace, "rendered.status");
-  const doFile = path.join(workspace, "render.do");
-  const expanded = expandHelpIncludes(sourceFile);
-  fs.writeFileSync(expandedFile, expanded.content, "utf8");
-  fs.writeFileSync(doFile, [
-    "version 18",
-    "set more off",
-    `capture noisily translate "${stataPath(expandedFile)}" "${stataPath(renderedFile)}", translator(smcl2txt) replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)`,
-    "local translate_rc = _rc",
-    `file open guard_status using "${stataPath(statusFile)}", write text replace`,
-    "file write guard_status `\"`translate_rc'\"'",
-    "file close guard_status",
-    "exit, clear",
-  ].join("\n"), "utf8");
-  const completed = runStataBatch(stata, doFile, workspace, statusFile);
-  const rc = fs.existsSync(statusFile) ? fs.readFileSync(statusFile, "utf8").trim() : null;
-  if (rc !== "0" || !fs.existsSync(renderedFile)) {
-    const detail = completed.error?.message || completed.stderr || completed.stdout || `translate rc=${rc}`;
-    throw new Error(`live Stata help rendering failed: ${String(detail).trim()}`);
-  }
+  const selected = new Set(args.help_sections[command]);
+  const lines = content.match(/[^\n]*\n|[^\n]+$/g) || [];
+  const sections = navigation.sections.filter((section) => selected.has(section.id));
   return {
-    content: fs.readFileSync(renderedFile, "utf8").trim(),
-    missingIncludes: expanded.missing,
+    ...entry,
+    delivery: "selected_source_sections",
+    selected_sections: sections,
+    content: sections.map((section) => lines.slice(section.start - 1, section.end).join("")).join("\n"),
+    scope_note: "Only the named source sections were delivered. Follow unresolved cross-references or request complete help before relying on uncovered semantics.",
   };
 }
 
-function liveHelpAuthority(sourceFile) {
-  const normalized = sourceFile.replaceAll("\\", "/").toLowerCase();
-  return normalized.includes("/stata18/ado/base/") || normalized.includes("/stata18/ado/updates/")
-    ? "StataCorp official help from active Stata 18 installation"
-    : "installed package help from active Stata ado-path";
-}
-
-function lookupLiveStataHelp(command) {
-  const topic = exactHelpTopic(command);
-  if (LIVE_HELP_CACHE.has(topic)) return LIVE_HELP_CACHE.get(topic);
-  const stata = discoverStataPath();
-  if (!stata) {
-    const unavailable = {
-      status: "unavailable",
-      help: null,
-      limitations: ["No Stata executable was found through STATA_PATH or the supported Stata 18 installation paths."],
-    };
-    LIVE_HELP_CACHE.set(topic, unavailable);
-    return unavailable;
-  }
-  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), "stata-guard-help-"));
-  try {
-    const sourceFile = locateInstalledHelp(stata, topic, workspace);
-    if (!sourceFile || !fs.existsSync(sourceFile)) {
-      const unavailable = {
-        status: "unavailable",
-        help: null,
-        limitations: [`help ${topic} was not found on the active Stata ado-path.`],
-      };
-      LIVE_HELP_CACHE.set(topic, unavailable);
-      return unavailable;
-    }
-    const rendered = renderInstalledHelp(stata, sourceFile, topic, workspace);
-    const limitations = [
-      "This exact-topic fallback is read from the active Stata installation and is not a bundled registry entry.",
-      "No bundled PDF expansion or paper example catalog is attached for an out-of-dictionary topic.",
-    ];
-    if (rendered.missingIncludes.length > 0) {
-      limitations.push(`Unresolved INCLUDE help fragments: ${rendered.missingIncludes.join(", ")}.`);
-    }
-    const available = {
-      status: "available",
-      help: {
-        command: topic,
-        authority: liveHelpAuthority(sourceFile),
-        source_kind: "live_installed_help",
-        source_version: "active Stata installation",
-        source_path: sourceFile,
-        help_topics: [topic],
-        limitations,
-        content: rendered.content,
-      },
-      limitations,
-    };
-    LIVE_HELP_CACHE.set(topic, available);
-    return available;
-  } catch (error) {
-    const unavailable = {
-      status: "unavailable",
-      help: null,
-      limitations: [error.message],
-    };
-    LIVE_HELP_CACHE.set(topic, unavailable);
-    return unavailable;
-  } finally {
-    try {
-      fs.rmSync(workspace, { recursive: true, force: true });
-    } catch {
-      // Stata can briefly retain a batch-log handle on Windows; temp cleanup is best effort.
-    }
-  }
-}
-
-function dynamicCommandEvidence(command, liveHelpLookup) {
+async function dynamicCommandEvidence(command, liveHelpLookup, args) {
   const helpTopic = LIVE_HELP_TOPIC_ALIASES.get(command) || command;
-  const live = liveHelpLookup(helpTopic);
+  const live = await liveHelpLookup(helpTopic, { refresh: args.refresh_live_help === true });
   return {
     command,
     help_topic: helpTopic,
@@ -504,14 +330,14 @@ function dynamicCommandEvidence(command, liveHelpLookup) {
   };
 }
 
-function commandEvidence(command, liveHelpLookup = lookupLiveStataHelp) {
-  if (!commandsByName.has(command)) return dynamicCommandEvidence(command, liveHelpLookup);
+async function commandEvidence(command, liveHelpLookup, args) {
+  if (!commandsByName.has(command)) return dynamicCommandEvidence(command, liveHelpLookup, args);
   const entry = helpGuidesByCommand.get(command);
   if (!entry) throw new Error(`command help index is missing registry command: ${command}`);
   return {
     command,
     help_status: entry.help_status,
-    command_help: commandHelp(command),
+    command_help: commandHelp(command, args),
     expanded_documentation: expandedDocumentationSummary(command),
     paper_example_catalog: profilesByCommand.get(command) || [],
   };
@@ -603,6 +429,7 @@ function sourceProvenanceForBlock(block) {
 }
 
 function paperCard(blockId) {
+  loadPaperDetails();
   const block = blocksById.get(blockId);
   if (!block) {
     throw new Error(`ABORT paper_block_not_in_catalog: ${JSON.stringify(blockId)}`);
@@ -621,7 +448,7 @@ function paperCard(blockId) {
   };
 }
 
-function buildCommandEvidence(args, options = {}) {
+async function buildCommandEvidence(args, options = {}) {
   const {
     phase,
     selectedCommands,
@@ -634,7 +461,7 @@ function buildCommandEvidence(args, options = {}) {
   if (phase === "discovery") {
     return {
       phase: "discovery",
-      main_rules: mainRules(),
+      main_rules: mainRules(args.known_rules_sha256),
       command_dictionary: compactCommandDictionary(),
     };
   }
@@ -642,9 +469,9 @@ function buildCommandEvidence(args, options = {}) {
   if (phase === "selected_command_evidence") {
     const result = {
       phase: "selected_command_evidence",
-      main_rules: mainRules(),
+      main_rules: mainRules(args.known_rules_sha256),
       selected_commands: selectedCommands,
-      command_evidence: selectedCommands.map((command) => commandEvidence(command, liveHelpLookup)),
+      command_evidence: await Promise.all(selectedCommands.map((command) => commandEvidence(command, liveHelpLookup, args))),
     };
     if (topicNormalizations.length > 0) result.topic_normalizations = topicNormalizations;
     return result;
@@ -660,7 +487,7 @@ function buildCommandEvidence(args, options = {}) {
   }
   const result = {
     phase: "expanded_context",
-    main_rules: mainRules(),
+    main_rules: mainRules(args.known_rules_sha256),
     selected_commands: selectedCommands,
     expanded_commands: expandedCommands,
     selected_block_ids: selectedBlockIds,
@@ -677,7 +504,7 @@ function buildCommandEvidence(args, options = {}) {
 const TOOL_DEFINITIONS = [
   {
     name: "get_stata_command_evidence",
-    description: "Stateless Stata evidence lookup. Every phase returns the complete compact main rules. Use Phase 1 only when the exact material command is unresolved; otherwise call Phase 2 directly with exact selected commands. Phase 2 returns bundled or active installed help and a compact paper catalog. Phase 3 adds only explicitly selected longer documentation or paper blocks. The server never chooses, ranks, scores, validates, or certifies commands, specifications, code, or results.",
+    description: "Stata command evidence, not command selection or research judgment. Call Phase 2 directly for known commands; discovery is optional. Full raw help is the default. Optional help_view catalog and exact help_sections navigate large source documents without rewriting them. Phase 3 adds selected manuals or complete paper blocks. Rules are included unless known_rules_sha256 matches complete rules still visible to the caller; omit it in fresh or compacted contexts. refresh_live_help rereads changed installations.",
     inputSchema: {
       oneOf: [
         {
@@ -685,7 +512,10 @@ const TOOL_DEFINITIONS = [
           type: "object",
           additionalProperties: false,
           required: ["request"],
-          properties: { request: { type: "string", minLength: 1 } },
+          properties: {
+            request: { type: "string", minLength: 1 },
+            known_rules_sha256: { type: "string", pattern: "^[a-f0-9]{64}$" },
+          },
         },
         {
           title: "Phase 2 bundled or live exact command help",
@@ -695,6 +525,10 @@ const TOOL_DEFINITIONS = [
           properties: {
             request: { type: "string", minLength: 1 },
             selected_commands: { type: "array", minItems: 1, items: { type: "string", minLength: 1 } },
+            known_rules_sha256: { type: "string", pattern: "^[a-f0-9]{64}$" },
+            help_view: { const: "catalog" },
+            help_sections: { type: "object", minProperties: 1, additionalProperties: { type: "array", minItems: 1, uniqueItems: true, items: { type: "string", minLength: 1 } } },
+            refresh_live_help: { type: "boolean" },
           },
         },
         {
@@ -710,6 +544,7 @@ const TOOL_DEFINITIONS = [
             request: { type: "string", minLength: 1 },
             selected_commands: { type: "array", minItems: 1, items: { type: "string", minLength: 1 } },
             expanded: { const: true },
+            known_rules_sha256: { type: "string", pattern: "^[a-f0-9]{64}$" },
             expanded_commands: { type: "array", items: { type: "string", minLength: 1 } },
             selected_block_ids: { type: "array", items: { type: "string", minLength: 1 } },
           },
@@ -727,7 +562,7 @@ function errorResult(message) {
   return { isError: true, content: [{ type: "text", text: String(message) }] };
 }
 
-function dispatch(message) {
+async function dispatch(message) {
   if (!message || typeof message !== "object") return null;
   if (message.id === undefined || message.id === null) return null;
   if (message.method === "initialize") {
@@ -750,7 +585,7 @@ function dispatch(message) {
       return { jsonrpc: "2.0", id: message.id, result: errorResult(`unknown tool: ${name}`) };
     }
     try {
-      return { jsonrpc: "2.0", id: message.id, result: textResult(buildCommandEvidence(message.params?.arguments || {})) };
+      return { jsonrpc: "2.0", id: message.id, result: textResult(await buildCommandEvidence(message.params?.arguments || {})) };
     } catch (error) {
       return { jsonrpc: "2.0", id: message.id, result: errorResult(error.message) };
     }
@@ -764,7 +599,7 @@ function send(message) {
 
 function main() {
   const input = readline.createInterface({ input: process.stdin, crlfDelay: Infinity });
-  input.on("line", (line) => {
+  input.on("line", async (line) => {
     if (!line.trim()) return;
     let message;
     try {
@@ -773,7 +608,7 @@ function main() {
       send({ jsonrpc: "2.0", id: null, error: { code: -32700, message: error.message } });
       return;
     }
-    const response = dispatch(message);
+    const response = await dispatch(message);
     if (response) send(response);
   });
 }

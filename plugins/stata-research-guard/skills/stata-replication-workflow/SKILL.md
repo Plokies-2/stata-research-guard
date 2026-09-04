@@ -1,34 +1,37 @@
 ---
 name: stata-replication-workflow
-description: Create, revise, or review Stata research workflows using compact authoring rules, official or maintainer command evidence, and selected real-paper context; do not use it as a command selector, code grader, or research-design certifier.
+description: Write, refactor, and run researcher-readable Stata workflows with official command help, optional paper context, and independent review of substantive code changes.
 ---
 
 # Stata Research Workflow
 
-Make project-specific research decisions yourself. Guard supplies rules, grammar, and selected examples, not a verdict.
+Help the researcher follow data and sample construction through the visible estimator, specification, stored estimates, and outputs. Guard supplies evidence; the model and researcher make the research choices.
 
-Read [general-rules.md](references/general-rules.md) once when beginning the relevant Stata task, from the file or a current complete Guard response. Revisit affected sections when the task scope or rules change. Compare source and changed call sites directly; runtime success or fewer lines alone does not establish research readability. [command-evidence.md](references/command-evidence.md) defines all lookup, exemption, and reuse boundaries.
+Read [general-rules.md](references/general-rules.md) once for the relevant task, from this file or a current complete Guard response. Reuse it while visible and unchanged. [command-evidence.md](references/command-evidence.md) owns lookup, exemption, and reuse details; read it when command evidence is needed.
 
-## Flow
+## Work from the actual project
 
-1. Respect the user's write boundary and inspect the active project. Preserve compatible paths, names, call order, estimate handoffs, workbook sheets, and outputs. Apply the role-based `.do` naming rule only to new modules or an approved structural rename, updating related calls and documentation together.
-2. For large data construction, complex specification changes, or an explicit review request, use a fresh read-only peer researcher with `stata-peer-audit` when it will add useful independent judgment. Choose pre-edit review for unresolved structural choices or post-run review for implementation and results; do not require both for every change. Prefer `gpt-5.6-terra` at `high` with `fork_turns: "none"` unless current user or project instructions specify otherwise.
-3. Confirm both `stataResearchGuard` and mcpStata are callable before material Stata work. Use mcpStata for the live session, execution, logs, graphs, returned state, and produced artifacts.
-4. Skip Guard for read-only review or explanation, comment or formatting-only edits, literal path or label changes with an unchanged command interface, verbatim relocation, and unchanged-file execution with no semantic issue. When a material command is unresolved, use Phase 1 discovery. When it is clear, call Phase 2 directly for only the commands whose interface matters.
-5. Stop after Phase 2 when the help resolves the requested action. Use Phase 3 only for exact selected commands that need longer documentation or exact paper blocks that would materially help. Never expand everything by default.
-6. Write the simplest direct implementation consistent with the data, research specification, documented command semantics, and downstream interfaces. For a refactor, reduce indirection and manual reconstruction rather than lines: repeated calls do not authorize a new `program`, estimator wrapper, exporter wrapper, or parameter-heavy helper. Run safe requested work, then inspect the actual data, logs, tables, figures, estimates, and files. If runtime shows a selected documented command is not installed, use a separate, authority-bounded installation step, restart Stata, and resume with that command; never insert the installation into estimation code or invent a substitute.
-7. Review the changed code and observed results proportionately. Address concrete findings and repeat checks only for changes or unresolved concerns. If independent review is unavailable, perform the checks you can and disclose the remaining limitation; do not stop editing or delivery solely because a reviewer could not run. Honor an explicit user requirement for independent review without claiming it was completed.
+Inspect the requested files and their direct inputs, callers, and outputs. Preserve the user's scope, research specification, baseline data, and output contracts. A refactor must improve the actual analysis, not just its master file or comments.
 
-## Audit handoff
+Prefer a short master and four coherent stages when needed: integrated preparation and analysis panel; summary statistics and descriptive figures; regression with its estimates, tables, and figures; requested robustness. Smaller work can stay in one file. Keep import, merge, variable construction, and sample preparation together; do not create a file per command, outcome, table, graph, or helper. [workflow-taxonomy.md](references/workflow-taxonomy.md) explains the few reasons to split further. Preserve adequate existing names; use role names for new or approved renamed modules.
 
-- Do not audit read-only explanation, comments, whitespace, formatting-only work, literal path or label changes with unchanged command interfaces, verbatim relocation, or unchanged-file execution with no semantic issue.
-- Give the audit subagent the exact phase, user request, target files, direct call chain, relevant inputs and outputs, observed runtime artifacts, selected Guard evidence, and the canonical `general-rules.md` path. Have it read the relevant rules itself and inspect the actual source and call sites. Name `stata-peer-audit` explicitly. Do not send the parent session history or a rules summary as a substitute.
-- The audit is a clean-context peer-researcher review, not a validator. It returns concrete findings and implementation direction without editing files, assigning scores, or issuing pass or fail states.
+## Refactor with concrete independent advice
 
-## Boundaries
+For an existing-code refactor or substantial structural repair, invoke a fresh read-only peer with `stata-peer-audit` before editing. Give it the user request and actual source so it can identify what to change: affected blocks, native command alternatives, visible loop axes, estimate handoffs, and files to combine. Wait for that advice and use your judgment to implement it. Do not interpret "simplify" or "remove duplication" as permission for a wrapper.
 
-- The model and researcher choose the sample, estimand, treatment, merge key, controls, FE, weights, VCE, event axis, model role, workbook grouping, and append or replace decision. Guard, examples, frequency, tests, and servers do not choose them.
-- Paper examples and optional raw logs are nonbinding source context. Do not infer missing output, rerun papers for coverage, or turn them into templates, scores, result-fact layers, pass or fail labels, rankings, promotion states, or audit queues.
-- Preserve native factor-variable syntax and raw `e(b)` names. Use documented command and exporter capabilities before manual code. The bundled `outreg2_xlsx` program is only an approved post-export formatting interface: `outreg2` still produces the native statistical table, while the formatter supplies required workbook-sheet layout without choosing an estimator, design, or reconstructing statistics.
-- Use [authoring-conventions.md](references/authoring-conventions.md) only when detailed source formatting is at issue, [workflow-taxonomy.md](references/workflow-taxonomy.md) only when designing a new workflow, and [readme-contract.md](references/readme-contract.md) only for an approved researcher-facing README.
-- Keep transport, paths, file creation, exit codes, and returned state separate from substantive interpretation and causal validity. Do not build semantic validators, graders, classifiers, expected-answer oracles, or hidden fallbacks.
+After substantive code authoring or modification, execution, and your own artifact inspection, use an independent peer to read the resulting code and observed results. It should check the requested improvement and earlier findings, not merely successful execution or fewer lines. Address concrete findings; repeat execution only for affected changes or unresolved concerns. Do not create repeated reviewer chains or an approval system.
+
+Read-only explanation, comments, formatting, literal path or label changes with an unchanged interface, verbatim relocation, and unchanged-file execution do not need code-change review. A small local correction need not have a pre-edit review. If a reviewer is unavailable, continue independent work and disclose what remains unreviewed; never claim an explicitly requested independent review occurred.
+
+## Command evidence and execution
+
+1. Confirm current-task Guard and mcpStata are callable before material Stata work. Use Guard for grammar and optional usage context, and mcpStata for execution, data, logs, returned state, and artifacts.
+2. When a material command is clear, request its exact help directly. Use discovery only for an unresolved command; do not inventory every token in a block. Expand documentation or selected paper context only for a remaining question.
+3. Write direct code using documented native capabilities first. Keep estimator, consequential sample and specification, storage, and exporter visible. A reference paper or existing bad implementation does not authorize a new mode, dispatcher, helper, or manual substitute.
+4. Run the requested work and inspect relevant data counts, logs, estimates, tables, and figures. If a selected package is actually missing, install it separately from analysis code using official or maintainer guidance within the user's authority, refresh the runtime as needed, and return to the original command.
+
+## Peer handoff
+
+Pass the phase, user request, exact source files and direct call chain, relevant inputs and outputs, available runtime artifacts and selected evidence, and paths to `stata-peer-audit` and the canonical general rules. Use fresh context (`fork_turns: "none"`); let the peer read the sources itself. Choose model and effort for the judgment required, honoring the user's choice. Do not pass the parent's entire conversation or conclusions as a substitute for the work. For post-review, include concrete pre-review findings and explain intentionally unadopted advice.
+
+Use [authoring-conventions.md](references/authoring-conventions.md) for source-formatting details and [readme-contract.md](references/readme-contract.md) only when a researcher-facing README is needed. Runtime completion is evidence about execution, not research or causal certification. Do not build semantic validators, graders, scores, or audit state.

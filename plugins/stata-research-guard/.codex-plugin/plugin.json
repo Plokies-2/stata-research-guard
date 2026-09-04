@@ -1,15 +1,15 @@
 {
   "name": "stata-research-guard",
-  "version": "0.3.0+codex.20260904204537",
-  "description": "Stata command evidence and research authoring guidance with proportionate peer review.",
+  "version": "0.3.0+codex.20260904214914",
+  "description": "Researcher-readable Stata with original command evidence and concrete independent review.",
   "author": {
     "name": "song7"
   },
   "skills": "./skills/",
   "interface": {
     "displayName": "Stata Research Guard",
-    "shortDescription": "Stata 18 help-first command and research context.",
-    "longDescription": "Provides official or maintainer Stata command help and selected paper context. Research choices remain with the model and user. Peer review supports large data construction, complex specification changes, or explicit requests; no automatic review gate or startup hook.",
+    "shortDescription": "Readable Stata, original help, concrete peer advice.",
+    "longDescription": "Write coherent research stages with visible specifications and native Stata commands. Original help and selected paper context support implementation; fresh peer advice makes refactoring defects explicit. Optional source-section navigation and caller-controlled rule reuse reduce repetition without replacing source evidence.",
     "developerName": "song7",
     "category": "Developer Tools",
     "capabilities": [
@@ -17,14 +17,7 @@
       "Skills"
     ],
     "defaultPrompt": [
-      "Read the general rules once for the relevant Stata task, and revisit affected sections when the scope or rules change. Compare the actual research code and proposed call sites directly.",
-      "Use Phase 1 discovery only when the material command is unresolved; when it is already clear, call Phase 2 directly for the commands whose interface matters.",
-      "Do not call Guard for read-only explanation, comment or formatting-only edits, literal path or label changes with an unchanged command interface, verbatim relocation, or unchanged-file execution with no semantic issue.",
-      "When more context is needed, request expanded documentation only for the exact selected-command subset that needs it, and request exact paper blocks independently.",
-      "Do not turn a request to retain an existing analysis, robustness check, placebo, permutation, or export into a new mode, positional argument, dispatcher, or conditional branch unless that interface was explicitly requested or already required by the project.",
-      "Refactoring reduces indirection rather than lines. Repetition alone never authorizes a new program, ado, estimator or exporter wrapper, generic helper, or option-heavy interface; keep the estimator and exporter visible in the shallowest readable loop.",
-      "Treat paper examples and optional raw logs as nonbinding source context; preserve the current project and selected research specification.",
-      "Proceed from help when it fully explains the requested action and the code follows directly; report material help gaps and do not treat paper examples as grammar authority."
+      "Use $stata-replication-workflow to inspect the actual project, obtain the needed original command evidence, and write direct researcher-readable Stata. For refactoring, get concrete fresh peer advice and carry it through implementation, execution, and review. Keep broad research stages together and preserve the user's research and output contracts."
     ]
   },
   "mcpServers": "./.mcp.json"

@@ -1,120 +1,79 @@
 # Stata Research Guard
 
-Stata Research Guard는 Codex가 연구 목적에 맞는 Stata 명령을 고르고, 정확한 문법과 실제 연구에서의 사용 맥락을 확인한 뒤 읽기 쉬운 코드를 작성하도록 돕는 플러그인입니다.
+연구자가 자료와 표본에서 회귀 사양, 추정치 저장, 표·그림까지 직접 따라갈 수 있는 Stata 코드를 작성하도록 돕는 Codex 플러그인입니다. 명령 사전, 공식·maintainer 도움말, 실제 논문 코드와 독립 검토를 제공합니다. 연구 선택은 사용자와 모델이 합니다.
 
-플러그인은 명령 사전, 공식·maintainer 가이드, 실제 논문 코드 예시, 공통 작성 원칙을 제공합니다. 표본, 회귀 사양, fixed effects, VCE와 출력 방식 같은 연구 선택은 현재 프로젝트를 이해하는 모델이 맡습니다.
+## 연구 코드 작성 흐름
 
-## 제공하는 자료
+`stata-replication-workflow`는 실제 파일과 호출 관계를 읽은 뒤 필요한 근거를 확인하고, 코드를 작성·실행해 결과를 읽도록 안내합니다. 기존 코드 리팩터링 전에는 독립된 동료 연구자가 구체적인 수정점을 제시하고, 실질적 코드 변경 후에는 코드와 실행 결과를 검토합니다. 읽기·주석·서식·동일 interface의 경로 수정에는 이 검토를 일괄 적용하지 않습니다.
 
-| 자료 | 내용 | 활용 방식 |
-| --- | --- | --- |
-| Command index | 115개 등록 명령의 command, family, stage와 한 줄 역할 | 모델이 현재 작업에 필요한 명령을 고를 때 사용하는 간결한 출발점 |
-| Command help | 115개 명령의 Stata-rendered 공식·maintainer help: 113개 `available`, 2개 `unavailable` | 선택한 명령의 기본 문법, option, warning, stored result 확인 |
-| Live exact help | 사전 밖 exact command의 활성 Stata `.sthlp`·`.hlp` | 등록되지 않은 명령도 Guard 안에서 온디맨드로 문법 확인 |
-| Expanded documentation | 공식 명령 69개의 설치된 Stata 18 PDF command entry, `jregress` 저자 보충문서 1개 | help만으로 부족할 때 Phase 3에서 선택 명령별로 추가 확인 |
-| Paper example | 166개 실제 논문 코드 블록과 target occurrence | 선택한 명령이 데이터 준비, 추정, 저장, 표·그림 작성과 이어지는 방식 참고 |
-| Raw log and artifact | 논문 블록과 직접 연결된 12개 원문 log 또는 artifact 정보 | 해당 코드가 남긴 원문 실행 기록과 산출물 위치 확인 |
-| General rules | 직접적이고 읽기 쉬운 Stata를 위한 공통 원칙 | 현재 프로젝트용 코드를 작성할 때 함께 적용 |
-| Peer audit | clean-context의 read-only 동료 연구자 검토 | 기존 분석 리팩터링 전 방향을 점검하고, 실질적 코드 수정 후 실행 결과와 산출물을 한 번 더 검토 |
+기본 구조는 필요한 단계만 둡니다.
 
-`jregress`와 `jwdidstacked`는 별도 help가 없어 `help_status=unavailable`로 반환합니다. `jregress`의 저자 PDF guide는 Phase 3에서 보충 설명으로만 제공하며, 문법 근거를 대신하지 않습니다. `cgmreg`는 인터넷에서 확인한 Judson Caskey 배포판의 실제 `cgmreg.hlp`를 사용하며, 원 저자 배포본과 일치한다고 단정할 수 없다는 제한도 함께 보냅니다. `collect_style`은 Stata 18에 존재하는 19개 하위 help를 모두 제공해 Stata 18 범위에서는 `available`입니다. 이후 Stata 19에 추가된 `collect style smcl`과 `collect style txt`는 Stata 18 대상 문법에 섞지 않습니다.
+- `cleaning_data.do`: 자료 불러오기, 병합, 변수·표본 구성과 통합 분석 패널 저장
+- `summary.do`: 기초통계, 결측·표본 설명, 기초 표와 그림
+- `regression.do`: 본 회귀, 추정치 저장, 회귀 표와 그림
+- `robustness.do`: 요청받은 강건성 분석과 산출물
 
-## 사용하는 방법
+작은 분석은 한 파일에 두어도 됩니다. 명령·outcome·표·그림마다 파일을 만들지 않습니다. 적절한 기존 이름은 유지하고, 별도 파일이 필요하면 독립 입력·기존 interface·비용이 큰 작업의 재시작처럼 실제 이유를 설명합니다.
 
-`stataResearchGuard` MCP 서버는 다음 도구 하나를 제공합니다.
+반복은 estimator와 연구 사양이 보이는 얕은 loop로 정리합니다. 줄 수 감소나 DRY만으로 helper를 만들지 않으며, 기존 helper도 실제 외부 호출이나 사용자 요구가 필요한지 검토합니다. Native command와 exporter의 기능을 먼저 쓰고 지원되지 않는 후처리만 직접 작성합니다. Native command가 요구하는 좁은 callback을 피하려고 permutation 등의 알고리즘을 수동 재구현하지 않습니다.
 
-```text
-get_stata_command_evidence
+## 제공하는 근거
+
+| 자료 | 내용 |
+| --- | --- |
+| Command index | 115개 명령의 이름, family, 단계와 역할 |
+| Command help | Stata가 렌더링한 공식·maintainer 도움말: 113개 available, 2개 unavailable |
+| Live exact help | 사전 밖 exact topic을 선택된 Stata 설치에서 조회 |
+| Expanded documentation | 69개 공식 Stata 18 PDF entry와 1개 저자 보충문서 |
+| Paper example | 166개 원문 코드 블록과 선택 명령의 사용 문맥 |
+| Raw log/artifact | 직접 연결된 12개 원문 실행 기록 또는 산출물 정보 |
+
+`jregress`와 `jwdidstacked`는 bundled help가 없습니다. `jregress`의 저자 PDF는 보충 설명이며 누락된 문법 근거를 대신하지 않습니다. `cgmreg`의 공개 help 출처 한계, StataNow 기능과 Stata 18의 차이도 해당 응답에 남깁니다.
+
+## 필요한 만큼 읽기
+
+도구는 `get_stata_command_evidence` 하나입니다. 명령이 명확하면 Phase 2로 바로 갑니다.
+
+```json
+{"request":"Read the relevant regression syntax","selected_commands":["regress"]}
 ```
 
-Phase 1은 명령이 아직 불명확할 때 쓰는 선택적 discovery입니다. 이미 중요한 명령을 알고 있으면 Phase 1을 건너뛰고 Phase 2로 바로 갈 수 있습니다. 읽기 전용 설명·검토, 주석·북마크·공백·formatting만의 수정, command interface를 바꾸지 않는 literal 교체와 기존 block의 그대로 이동에는 Guard lookup이 필요하지 않습니다. 어느 Phase를 호출해도 압축된 `general-rules.md` 전문과 path, SHA-256이 함께 들어가므로 Phase 1을 건너뛰어도 핵심 작성 원칙이 누락되지 않습니다.
+명령을 정하지 못한 경우만 `request`로 Phase 1 사전을 읽습니다. Help로 해결되지 않는 질문에는 Phase 3의 `expanded_commands`로 긴 문서를, `selected_block_ids`로 논문 블록을 선택합니다. 두 선택은 독립적이며 모든 자료를 확장할 필요는 없습니다.
 
-### 1. 명령 선택
-
-명령을 아직 고르지 못했을 때만 연구 요청을 보냅니다.
+전체 원문 help가 기본입니다. 큰 문서 중 `outreg2`와 `collect_style`는 원문 구획을 그대로 선택할 수도 있습니다. `help_view: "catalog"`로 목록을 확인하거나 이미 아는 ID를 바로 요청합니다.
 
 ```json
 {
-  "request": "패널 자료에서 개체 고정효과 모형을 추정한다."
+  "request":"Read syntax, stored-estimate handling, and Excel output",
+  "selected_commands":["outreg2"],
+  "help_sections":{"outreg2":["reference","example-3","example-12"]}
 }
 ```
 
-응답의 `command_dictionary`에는 115개 등록 명령의 command, family, stage와 한 줄 역할만 담깁니다. 모델은 연구 목적과 현재 프로젝트를 바탕으로 사용할 exact command를 직접 고릅니다. 이 목록은 출발점이지 닫힌 실행 경계가 아닙니다.
+`reference`는 description·syntax·모든 options를 포함합니다. 예시는 maintainer가 나눈 단위 전체이며, `collect_style`는 각 공식 help topic 전체입니다. 고정 줄 수나 자동 요약으로 문법을 잘라내지 않습니다. 선택하지 않은 문맥이 필요하면 추가 구획이나 전체 help를 읽습니다. Catalog는 본문을 읽었다는 증거가 아니며, source map이 오래되면 전체 help로 돌아갑니다.
 
-### 2. 선택한 명령의 help와 논문 목록 확인
+공통 규칙은 기본 응답에 본문을 포함합니다. 이미 읽은 동일 본문이 현재 문맥에 남아 있을 때만 `known_rules_sha256`를 보내 중복을 생략할 수 있습니다. 새 작업이나 압축 후 본문이 없으면 hash를 보내지 않습니다. 서버가 읽기 상태를 추측하거나 다른 작업의 hash만 보고 규칙을 읽었다고 처리하지 않습니다.
 
-고른 명령을 `selected_commands`에 넣습니다.
+Live help는 성공한 설치 시점의 snapshot을 재사용합니다. 패키지 설치·변경 뒤에는 `refresh_live_help: true`로 다시 읽습니다. 실패와 partial 응답은 캐시하지 않고, 누락·순환 INCLUDE를 명시합니다. 조회 작업은 대기를 포함해 55초로 제한하고 다른 bundled 요청을 막지 않습니다.
 
-```json
-{
-  "request": "패널 자료에서 개체 고정효과 모형을 추정한다.",
-  "selected_commands": ["xtreg", "cgmreg"]
-}
-```
+선택한 논문 블록은 앞·target·뒤 원문과 연결된 raw log를 유지합니다. 논문의 다른 estimator·표본·중첩 loop는 현재 프로젝트의 지시가 아닙니다. 논문 예시나 log가 없어도 도움말로 해결되면 진행합니다.
 
-응답의 `command_evidence`에는 요청 순서대로 command별 packet이 들어갑니다. 등록 명령에는 Stata가 `smcl2txt`로 렌더링한 bundled help, expanded-documentation 상태와 논문 profile이 들어갑니다. 사전 밖 exact command는 Guard가 활성 Stata ado-path에서 `.sthlp` 또는 `.hlp`를 찾아 같은 방식으로 렌더링하며 `registry_status=outside_dictionary`로 표시합니다. 이 live fallback에는 bundled PDF expansion이나 paper catalog가 없습니다. exact help도 없으면 해당 command branch만 중단합니다.
+## 설치와 개발
 
-실제 Stata 표기인 `export excel`과 `import excel`은 각각 등록 key `export_excel`, `import_excel`로 투명하게 정규화되고 그 mapping을 응답에 남깁니다. `global`, `local`, `tempfile`, `tempname`은 요청 label을 유지하면서 공식 `macro` help를 조회합니다. programming `if`의 help topic은 `ifcmd`이고, `if` topic은 observation qualifier입니다. 한 block의 모든 보조 token을 나열하지 말고 실제로 문법·option·returned result가 쟁점인 command만 선택합니다.
+Node.js와 Stata 18 환경을 기본으로 사용합니다. `CODEX_MCP_NODE_PATH`로 Node 실행 파일을, `STATA_PATH`로 live help용 Stata 실행 파일을 지정할 수 있습니다. Stata 분석 실행과 산출물 관찰은 별도 mcpStata가 담당합니다.
 
-help에 사용자가 하려는 행동이 모두 설명되어 있고, 그 설명을 직접 적용해 어렵지 않게 코드를 쓸 수 있으며, version·option 상호작용·returned result·후속 표/그림/저장 연결에 중요한 의문이 남지 않으면 여기서 멈춥니다. 명령이 통계 명령이거나 user-written이라는 이유, 데이터를 바꾸거나 출력과 이어진다는 이유만으로 더 긴 자료를 요구하지 않습니다.
+플러그인 갱신 뒤에는 Codex를 새로고침하고 새 작업에서 실제 도구 호출을 확인합니다. CLI 설치 성공이나 파일 readback만으로 실행 중인 앱이 새 MCP를 로드했다고 판단하지 않습니다. 새 작업에서도 초기 연결이 실패하면 앱 로그의 시작 오류를 확인하고, 재시작 후 다시 호출합니다. 연구 코드 작성·실행 확인은 이 연결 확인과 구분합니다.
 
-### 3. 필요한 확장 문서와 논문 코드 확인
+- [연구 workflow](skills/stata-replication-workflow/SKILL.md)
+- [공통 작성 원칙](skills/stata-replication-workflow/references/general-rules.md)
+- [조회·재사용·선택 구획 사용법](skills/stata-replication-workflow/references/command-evidence.md)
+- [독립 검토](skills/stata-peer-audit/SKILL.md)
 
-help만으로 위 종료 조건을 만족하지 못하면 `expanded: true`를 보내되, 긴 문서가 실제로 필요한 command만 `expanded_commands`에 넣습니다. `selected_commands`는 Phase 2에서 고른 전체 명령 경계이고, `expanded_commands`는 그 안의 exact subset입니다. 논문 profile도 도움이 될 때만 exact block ID를 `selected_block_ids`로 함께 보냅니다. 문서만, 논문만, 둘을 함께 요청할 수 있지만 두 선택이 모두 비어 있을 수는 없습니다.
-
-```json
-{
-  "request": "패널 자료에서 개체 고정효과 모형을 추정한다.",
-  "selected_commands": ["xtreg", "margins"],
-  "expanded": true,
-  "expanded_commands": ["xtreg"],
-  "selected_block_ids": ["block-139-184-033"]
-}
-```
-
-응답의 `expanded_command_evidence`에는 `expanded_commands`로 고른 명령만 들어갑니다. 위 예에서는 `margins`도 Phase 2의 선택 경계 안에 있지만 긴 문서는 `xtreg` 하나만 주입됩니다. 공식 명령은 Stata 18 PDF command entry를 반환합니다. user-written 명령은 Phase 2 help와 원자료가 같으면 `same_source_as_help`로 표시하고 같은 글을 다시 주입하지 않습니다. `jregress`만 저자 PDF를 `supplemental`로 반환합니다.
-
-`paper_usage_cards`는 선택한 원문 code span과 필요한 출처만 담는 얇은 카드입니다. parser 내부정보와 중복된 occurrence 전체를 되풀이하지 않습니다. 같은 논문 패키지에 직접 연결된 log나 artifact가 있으면 원문 excerpt와 직접 metadata만 포함하며, 없으면 빈 배열입니다. 매우 긴 nuisance-coefficient 표 하나는 자동 길이 제한이 아니라 사람이 고른 정확한 원문 행 범위로 줄였습니다.
-
-## 자료를 읽는 기준
-
-Phase 2에서는 공식·maintainer help가 명령 문법의 첫 기준입니다. Phase 3의 공식 명령 확장문서는 설치된 Stata 18 PDF에서 command entry 전체를 뽑아 version을 맞췄습니다. help와 확장문서에 StataNow-only로 표시된 기능은 현재 환경이 해당 StataNow 기능을 제공할 때만 사용합니다. 다시 빌드하는 데 필요한 maintainer 원문과 `jregress` 보충자료는 작은 source catalog로 보존하고, 요청과 빌드에 쓰지 않는 이전 Stata 19 PDF·중복 정리본은 번들에 두지 않습니다. 논문 code와 log, `jregress` 저자 PDF는 실제 사용 맥락을 돕는 보충자료이며 문법 근거를 대신하지 않습니다.
-
-논문 코드는 실제 연구자가 그 명령을 어떻게 사용했는지 보여 주는 고품질 참고 예시입니다. 현재 프로젝트의 표본과 회귀 사양을 대신하는 template은 아닙니다. 예를 들어 `outreg2` 예시 주변에 `areg`나 `reghdfe`가 있더라도, 현재 모형이 `regress`라면 estimator는 그대로 두고 `outreg2` 사용 부분만 참고합니다.
-
-가까운 예시는 선택한 명령의 앞뒤 흐름을 현재 코드에 맞게 조화시키는 데 활용할 수 있습니다. 연구 환경이 다른 예시는 일반적인 사용 방식만 참고합니다. 원문 log와 artifact 정보도 당시 실행을 이해하기 위한 자료이며, 현재 연구 결과를 대신하지 않습니다.
-
-## 읽기와 실행의 경계
-
-Guard와 mcpStata가 모두 연결됐다면 세션 목록, 메모리 안으로의 데이터 로드, 구조화된 metadata·count·variable·value·row·log·graph 목록과 returned-state 확인 같은 읽기 전용 inspection은 매 행동마다 Phase 2를 다시 받지 않고 진행할 수 있습니다. Material Stata command를 쓰거나 고칠 때, 데이터를 변경·저장할 때, 추정·검정·export를 할 때, 반환 상태를 후속 코드가 실질적으로 소비할 때는 해당 interface의 Phase 2 help를 확인합니다. 같은 command·version·material option·returned interface·downstream use라면 기존 packet을 재사용하며, 주석·layout·literal path·코드 위치만 달라졌다고 다시 조회하지 않습니다.
-
-## 동료 연구자 audit
-
-대규모 자료 구축, 복잡한 연구 사양 변경 또는 사용자 요청에 맞춰 새 컨텍스트의 읽기 전용 동료 연구자 검토를 사용합니다. 해결되지 않은 구조 선택은 편집 전에, 구현과 결과는 실행 후에 검토하되 모든 수정에 두 검토를 강제하지 않습니다. 주 에이전트가 최종 판단을 책임집니다.
-
-검토자에게 요청, 대상 파일, 직접 연결된 코드·자료와 실행 결과, 관련 규칙 경로를 전달합니다. 규칙은 해당 검토에서 한 번 읽고 범위가 달라지면 필요한 부분을 다시 확인합니다. 발견사항과 수정 의견만 반환하며 점수·합격·승인 상태를 만들지 않습니다. 검토자를 사용할 수 없으면 수행한 확인과 남은 한계를 밝히고 가능한 작업을 계속합니다. 시작 시 지침을 반복 주입하는 훅은 사용하지 않습니다.
-
-Guard 근거로 선택한 공식·maintainer command가 실제 Stata에서 미설치로 확인되면 회귀·추정 코드 안에 설치문을 섞거나 임시 대체 command를 만들지 않습니다. 공식·maintainer 설치 근거에 따라 필요한 패키지만 별도 단계에서 설치하고 Stata를 재시작한 뒤 원래 command를 사용합니다. 새로 만드는 `.do`와 사용자가 승인한 구조 리팩터링의 rename은 `cleaning_data.do`, `summary.do`, `regression.do`, `robustness.do`, `permutation.do`, `placebo.do`처럼 workflow 역할로 이름을 붙이고 관련 master·call site·문서를 함께 바꿉니다. 기존 파일은 소급 rename하지 않습니다.
-
-## Stata 코드 작성 원칙
-
-번들에 포함된 skill은 적절한 command가 명확하면 하나만 고르고, 여러 단계에 서로 다른 command가 필요하거나 실제 대안이 남을 때만 관련 후보를 함께 받아 공식·maintainer 문법, 입력 상태, 출력, tradeoff와 incompatibility를 비교하게 합니다. 좋은 연구 코드 리팩터링은 줄 수나 중복이 아니라 데이터·표본·사양·estimator·저장·출력 사이의 간접성을 줄입니다. 핵심 회귀문에는 outcome, treatment·event term, 중요한 sample, controls, fixed effects, weights와 VCE 변수명을 macro로 숨기지 않고 직접 적습니다. 반복 회귀는 estimator와 exporter가 보이는 얕은 loop로 정리하며, 반복·DRY·재사용·중앙화·줄 수 감소만으로 새 `program`, ado, estimator/exporter wrapper, generic helper 또는 option-heavy interface를 만들지 않습니다. `run_model, outcome() controls() absorb() weight() cluster()`처럼 옵션만 보이는 호출도 핵심 estimator를 숨기는 parameter plumbing입니다. 기본 command와 exporter가 제공하는 option·returned result·append·export 기능을 먼저 쓰고, 수동 코드는 지원되지 않는 마지막 변환에만 둡니다. 예를 들어 multi-sheet workbook은 `outreg2`가 coefficient·standard error·significance marker·header·note를 만든 다음 작은 formatter가 sheet를 조립하며, 통계를 별도 경로로 재구성하지 않습니다. Stata의 factor-variable 문법과 raw `e(b)` 이름을 유지하고, 실제 제어흐름 밖의 들여쓰기, 깊은 loop, positional dispatcher와 미래용 추상화를 만들지 않습니다. 기존 permutation이나 robustness 분석을 보존하라는 요청도 그 자체로 새 mode, positional argument, dispatcher 또는 조건 분기를 추가하라는 뜻은 아닙니다.
-
-주요 참고 문서는 다음과 같습니다.
-
-- `skills/stata-replication-workflow/references/general-rules.md`
-- `skills/stata-replication-workflow/references/command-evidence.md`
-- `skills/stata-replication-workflow/references/authoring-conventions.md`
-- `skills/stata-replication-workflow/references/workflow-taxonomy.md`
-
-## 개발 확인
-
-플러그인을 수정한 뒤에는 MCP 응답과 bundle 구성이 정상인지 다음 명령으로 확인합니다. `data/command_source_catalog.json`은 115개 명령의 Stata manual code와 보존할 maintainer 원문을 연결합니다. help를 다시 렌더링할 때는 `scripts/build_command_help_guides.cjs`가 이 catalog에서 Stata용 do-file을 준비하고, 그 do-file을 mcpStata에서 실행한 뒤 같은 스크립트의 `finalize` 단계로 index를 갱신합니다. Stata 18 PDF 원문을 다시 추출할 때는 Poppler `-layout` text를 준비한 뒤 `scripts/build_expanded_command_guides.py`에 해당 폴더를 넘깁니다.
+변경이 모인 뒤 해당 transport와 bundle을 확인합니다. 예를 들어 서버·live help 변경은 다음 명령으로 검사합니다.
 
 ```powershell
-node --test tests/server.test.cjs
-Get-ChildItem tests\*.test.cjs | ForEach-Object { node --test $_.FullName }
-node scripts\verify_plugin_bundle.cjs
+node --test tests/server.test.cjs tests/live-help.test.cjs tests/plugin_bundle_manifest.test.cjs
+node scripts/verify_plugin_bundle.cjs
 ```
 
-이 검사는 도구 호출, 선택한 help·code·log 전달과 bundle 구성을 확인합니다.
+이 검사는 호출·원문 전달·설치 구성을 확인합니다. 코드의 가독성이나 연구 타당성은 실제 코드·로그·표·그림을 읽어 판단하며 자동 점수나 합격 판정으로 바꾸지 않습니다.

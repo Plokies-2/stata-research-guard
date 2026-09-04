@@ -1,0 +1,270 @@
+{
+  "guides": [
+    {
+      "command": "outreg2",
+      "content_file": "command_help_guides/outreg2.txt",
+      "content_sha256": "0cbaea0a0fe28a0a5eef1d508f675ec576a2d3cf446fb63df3e4bb108a13d90e",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Description, syntax, and all options",
+          "start": 1,
+          "end": 327
+        },
+        {
+          "id": "example-0",
+          "title": "Example 0. Basic game plan",
+          "start": 328,
+          "end": 355
+        },
+        {
+          "id": "example-1",
+          "title": "Example 1. Prefix and -bys:-",
+          "start": 356,
+          "end": 370
+        },
+        {
+          "id": "example-2",
+          "title": "Example 2. Running loops",
+          "start": 371,
+          "end": 394
+        },
+        {
+          "id": "example-3",
+          "title": "Example 3. Stored estimates",
+          "start": 395,
+          "end": 425
+        },
+        {
+          "id": "example-4",
+          "title": "Example 4. Shorthand",
+          "start": 426,
+          "end": 448
+        },
+        {
+          "id": "example-5",
+          "title": "Example 5. Decimal places",
+          "start": 449,
+          "end": 460
+        },
+        {
+          "id": "example-6",
+          "title": "Example 6. Sideway display",
+          "start": 461,
+          "end": 481
+        },
+        {
+          "id": "example-7",
+          "title": "Example 7. Summary tables",
+          "start": 482,
+          "end": 501
+        },
+        {
+          "id": "example-8",
+          "title": "Example 8. Drop/keep/order variables",
+          "start": 502,
+          "end": 540
+        },
+        {
+          "id": "example-9",
+          "title": "Example 9. Adding r( ) e( ) scalars",
+          "start": 541,
+          "end": 580
+        },
+        {
+          "id": "example-10",
+          "title": "Example 10. Odds ratios and exponentials",
+          "start": 581,
+          "end": 600
+        },
+        {
+          "id": "example-11",
+          "title": "Example 11. Marginal Effects",
+          "start": 601,
+          "end": 644
+        },
+        {
+          "id": "example-12",
+          "title": "Example 12. Word or Excel files",
+          "start": 645,
+          "end": 669
+        },
+        {
+          "id": "example-13",
+          "title": "Example 13. TeX files",
+          "start": 670,
+          "end": 723
+        },
+        {
+          "id": "example-14",
+          "title": "Example 14. Adding column titles or notes",
+          "start": 724,
+          "end": 743
+        },
+        {
+          "id": "example-15",
+          "title": "Example 15. n-way cross-tabulation",
+          "start": 744,
+          "end": 761
+        },
+        {
+          "id": "example-16",
+          "title": "Example 16. Group summary table",
+          "start": 762,
+          "end": 782
+        },
+        {
+          "id": "example-17",
+          "title": "Example 17. Fixed effects or legends",
+          "start": 783,
+          "end": 807
+        },
+        {
+          "id": "example-19",
+          "title": "Example 19. Matching policy variables across regressions",
+          "start": 808,
+          "end": 821
+        },
+        {
+          "id": "example-18",
+          "title": "Example 18. Stats transformation/manipulation",
+          "start": 822,
+          "end": 878
+        },
+        {
+          "id": "example-20",
+          "title": "Example 20. Insert r-class cmd( ) outputs",
+          "start": 879,
+          "end": 968
+        },
+        {
+          "id": "faq-and-source",
+          "title": "Frequently asked questions",
+          "start": 969,
+          "end": 1015
+        }
+      ]
+    },
+    {
+      "command": "collect_style",
+      "content_file": "command_help_guides/collect_style.txt",
+      "content_sha256": "80941de4a1be32f4a58c0edc2f24b27b1453429c4563e9f8a31974c36093ccb6",
+      "sections": [
+        {
+          "id": "collect_style__cons",
+          "title": "collect_style__cons",
+          "start": 1,
+          "end": 55
+        },
+        {
+          "id": "collect_style_autolevels",
+          "title": "collect_style_autolevels",
+          "start": 56,
+          "end": 120
+        },
+        {
+          "id": "collect_style_cell",
+          "title": "collect_style_cell",
+          "start": 121,
+          "end": 437
+        },
+        {
+          "id": "collect_style_clear",
+          "title": "collect_style_clear",
+          "start": 438,
+          "end": 485
+        },
+        {
+          "id": "collect_style_column",
+          "title": "collect_style_column",
+          "start": 486,
+          "end": 611
+        },
+        {
+          "id": "collect_style_header",
+          "title": "collect_style_header",
+          "start": 612,
+          "end": 722
+        },
+        {
+          "id": "collect_style_html",
+          "title": "collect_style_html",
+          "start": 723,
+          "end": 812
+        },
+        {
+          "id": "collect_style_notes",
+          "title": "collect_style_notes",
+          "start": 813,
+          "end": 967
+        },
+        {
+          "id": "collect_style_putdocx",
+          "title": "collect_style_putdocx",
+          "start": 968,
+          "end": 1089
+        },
+        {
+          "id": "collect_style_putpdf",
+          "title": "collect_style_putpdf",
+          "start": 1090,
+          "end": 1199
+        },
+        {
+          "id": "collect_style_row",
+          "title": "collect_style_row",
+          "start": 1200,
+          "end": 1400
+        },
+        {
+          "id": "collect_style_save",
+          "title": "collect_style_save",
+          "start": 1401,
+          "end": 1466
+        },
+        {
+          "id": "collect_style_showbase",
+          "title": "collect_style_showbase",
+          "start": 1467,
+          "end": 1526
+        },
+        {
+          "id": "collect_style_showempty",
+          "title": "collect_style_showempty",
+          "start": 1527,
+          "end": 1586
+        },
+        {
+          "id": "collect_style_showomit",
+          "title": "collect_style_showomit",
+          "start": 1587,
+          "end": 1643
+        },
+        {
+          "id": "collect_style_table",
+          "title": "collect_style_table",
+          "start": 1644,
+          "end": 1735
+        },
+        {
+          "id": "collect_style_tex",
+          "title": "collect_style_tex",
+          "start": 1736,
+          "end": 1831
+        },
+        {
+          "id": "collect_style_title",
+          "title": "collect_style_title",
+          "start": 1832,
+          "end": 1985
+        },
+        {
+          "id": "collect_style_use",
+          "title": "collect_style_use",
+          "start": 1986,
+          "end": 2081
+        }
+      ]
+    }
+  ]
+}
