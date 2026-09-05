@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-06 — reduce repeated policy and restore source context
+
+- Keep workflow triggers, research principles and lookup details in their respective references; shorten entry prompts and align peer review with explicit requests and material usefulness.
+- Retain substantial-work paper reading, user house rules and necessary local/callback exceptions. Narrow README work to the definitions actually needed and existing codebook links.
+- Attach the existing bibliographic provenance directly to three outreg2 blocks without occurrence IDs; preserve their original code and avoid synthetic occurrences.
+- Clarify that live-help refresh applies only to outside-dictionary topics. Help-section boundaries and required attachments are unchanged pending historical review and a separate decision.
+
 ## 2026-09-06 — research purpose before editing tactics
 
 - Clarify the existing purpose rule: understand the research role of a block before choosing a rewrite, and prefer arrangements a researcher can interpret directly.

@@ -1,7 +1,7 @@
 interface:
   display_name: "Stata Research Workflow"
-  short_description: "Help-first Stata 18 command and research evidence"
-  default_prompt: "Use $stata-replication-workflow to write or refactor researcher-readable Stata from the actual project. For substantial workflow work, critically read a relevant paper's connected data-to-output code independently of command-help needs; choose a better source when useful. Prefer documented command automation, keep specifications visible, and integrate the comparison into concrete peer advice."
+  short_description: "Researcher-readable Stata from data to outputs"
+  default_prompt: "Use $stata-replication-workflow to inspect the actual project and write, refactor, or run Stata whose research reasoning and outputs are easy to follow."
 
 dependencies:
   tools:

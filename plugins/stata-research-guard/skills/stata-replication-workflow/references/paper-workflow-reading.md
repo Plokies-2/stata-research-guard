@@ -26,7 +26,7 @@ Explain in ordinary prose, with original file/section locations, what the paper 
 
 Keep current user choices, material sample/specification/output contracts, and official/maintainer command semantics authoritative. A paper's locals, manual interactions, estimator wrappers, TeX exports, output-specific files, or old software conventions are not permissions to overwrite those choices. Equally, do not reject a necessary callback or research-specific operation simply because a preferred example lacks it. A paper may contain mistakes; recognize and decline them without claiming a full replication or causal assessment.
 
-The writing model reads the sources itself. Give the existing peer the sources and current work so it can independently challenge the choice and the resulting implementation. Reuse this reading in the existing post-change review; do not add producer/auditor/reauditor stages. Keep judgments in model reasoning and concise prose. Do not implement Python or other-language validators, regex checks, expected-output oracles, ratings, or code-shape gates for this obligation.
+The writing model reads the sources itself. When a peer is used under the workflow's review policy, give it the sources and current work so it can independently challenge the choice and implementation. Reuse the reading in that review; do not add producer/auditor/reauditor stages. Keep judgments in model reasoning and concise prose. Do not implement Python or other-language validators, regex checks, expected-output oracles, ratings, or code-shape gates for this obligation.
 
 ## Obtain only the material needed
 

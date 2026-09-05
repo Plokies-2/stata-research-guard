@@ -397,6 +397,9 @@ function projectedExecutionContext(context) {
 }
 
 function sourceProvenanceForBlock(block) {
+  if (Array.isArray(block.source_provenance) && block.source_provenance.length > 0) {
+    return block.source_provenance;
+  }
   return block.target_occurrence_ids.map((occurrenceId) => {
     const occurrence = occurrencesById.get(occurrenceId);
     const provenance = occurrence?.provenance || {};
@@ -489,7 +492,7 @@ async function buildCommandEvidence(args, options = {}) {
 const TOOL_DEFINITIONS = [
   {
     name: "get_stata_command_evidence",
-    description: "Stata command evidence, not command selection or research judgment. Call Phase 2 directly for known commands; discovery is optional. Help over 24000 Unicode characters returns a section catalog first, including live help and expanded manuals. Select exact help_sections in Phase 2 or expanded_sections in Phase 3; foundation sections accompany selections. help_view full explicitly retrieves the complete source, and catalog requests navigation. Small help remains complete by default. Paper blocks are unchanged. Rules are included unless known_rules_sha256 matches complete rules still visible to the caller; omit it in fresh or compacted contexts. refresh_live_help rereads changed installations.",
+    description: "Stata command evidence, not command selection or research judgment. Call Phase 2 directly for known commands; discovery is optional. Help over 24000 Unicode characters returns a section catalog first, including live help and expanded manuals. Select exact help_sections in Phase 2 or expanded_sections in Phase 3; foundation sections accompany selections. help_view full explicitly retrieves the complete source, and catalog requests navigation. Small help remains complete by default. Paper blocks are unchanged. Rules are included unless known_rules_sha256 matches complete rules still visible to the caller; omit it in fresh or compacted contexts. refresh_live_help refreshes outside-dictionary live topics only; registered commands use bundled documentation.",
     inputSchema: {
       oneOf: [
         {

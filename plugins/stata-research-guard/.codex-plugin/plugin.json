@@ -1,6 +1,6 @@
 {
   "name": "stata-research-guard",
-  "version": "0.3.0+codex.20260905161609",
+  "version": "0.3.0+codex.20260905170445",
   "description": "Researcher-readable Stata with original command evidence and concrete independent review.",
   "author": {
     "name": "song7"
@@ -9,7 +9,7 @@
   "interface": {
     "displayName": "Stata Research Guard",
     "shortDescription": "Readable Stata, original help, concrete peer advice.",
-    "longDescription": "Write coherent research stages with visible specifications and native Stata commands. Original help and paper context support implementation; fresh peer advice makes refactoring defects explicit. Large help opens with source-section navigation and includes required foundations on selection. Complete source retrieval remains available.",
+    "longDescription": "Write researcher-readable Stata from actual project evidence, original command help and relevant paper workflows. The workflow skill coordinates reading, execution and peer advice when requested or useful.",
     "developerName": "song7",
     "category": "Developer Tools",
     "capabilities": [
@@ -17,7 +17,7 @@
       "Skills"
     ],
     "defaultPrompt": [
-      "Use $stata-replication-workflow to inspect the actual project and write direct researcher-readable Stata. For substantial workflow work, critically read a relevant paper's connected data-to-output code independently of command-help needs. Choose sources yourself, prefer documented command automation, preserve research contracts, and integrate the comparison into existing peer advice and execution review."
+      "Use $stata-replication-workflow to work from the actual research project, preserve its requirements, and write Stata a researcher can follow."
     ]
   },
   "mcpServers": "./.mcp.json"
