@@ -30,6 +30,8 @@
 | Paper example | 166개 원문 코드 블록과 선택 명령의 사용 문맥 |
 | Raw log/artifact | 직접 연결된 12개 원문 실행 기록 또는 산출물 정보 |
 
+명령별 블록과 별개로 [workflow 읽기 안내](plugins/stata-research-guard/skills/stata-replication-workflow/references/paper-workflow-reading.md)에서 원문 파일을 직접 따라갈 수 있습니다. 이번에 추가한 *Revealing Stereotypes*의 코드 3개와 README는 학교 단위 재배정부터 분포 그림까지 읽는 선택 자료이며, 전체 코드의 모범 인증이나 자동 선택 기준은 아닙니다.
+
 `jregress`와 `jwdidstacked`는 bundled help가 없습니다. `jregress`의 저자 PDF는 보충 설명이며 누락된 문법 근거를 대신하지 않습니다. `cgmreg`의 공개 help 출처 한계, StataNow 기능과 Stata 18의 차이도 해당 응답에 남깁니다.
 
 ## 필요한 만큼 읽기
@@ -82,4 +84,4 @@ node scripts/verify_plugin_bundle.cjs
 
 이 검사는 호출·원문 전달·설치 구성을 확인합니다. 코드의 가독성이나 연구 타당성은 실제 코드·로그·표·그림을 읽어 판단하며 자동 점수나 합격 판정으로 바꾸지 않습니다.
 
-배포 버전: `0.3.0+codex.20260905075442`. Bundle은 327개 파일입니다. 기존 호출·원문 전달·bundle 검사 41개를 정본에서 확인했습니다. 이번 지침을 적용한 연구 코드 생성·실행 및 앱 재시작 테스트는 하지 않았습니다. 이 검사는 연구 타당성을 인증하지 않습니다.
+배포 버전: `0.3.0+codex.20260905091333`. Bundle은 331개 파일입니다. 원문 코드와 README를 추가하고 읽기 안내를 연결했습니다. 사용자 요청에 따라 이번 자료 추가의 코드 실행·앱 재시작·구현 테스트는 하지 않았습니다.

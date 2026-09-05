@@ -30,6 +30,8 @@
 | Paper example | 166개 원문 코드 블록과 선택 명령의 사용 문맥 |
 | Raw log/artifact | 직접 연결된 12개 원문 실행 기록 또는 산출물 정보 |
 
+명령별 블록과 별개로 [workflow 읽기 안내](skills/stata-replication-workflow/references/paper-workflow-reading.md)에서 원문 파일을 직접 따라갈 수 있습니다. 이번에 추가한 *Revealing Stereotypes*의 코드 3개와 README는 학교 단위 재배정부터 분포 그림까지 읽는 선택 자료이며, 전체 코드의 모범 인증이나 자동 선택 기준은 아닙니다.
+
 `jregress`와 `jwdidstacked`는 bundled help가 없습니다. `jregress`의 저자 PDF는 보충 설명이며 누락된 문법 근거를 대신하지 않습니다. `cgmreg`의 공개 help 출처 한계, StataNow 기능과 Stata 18의 차이도 해당 응답에 남깁니다.
 
 ## 필요한 만큼 읽기

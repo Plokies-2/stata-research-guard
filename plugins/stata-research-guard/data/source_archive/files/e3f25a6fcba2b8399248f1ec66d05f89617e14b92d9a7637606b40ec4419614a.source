@@ -1,0 +1,3688 @@
+/******************************************************************************	
+	
+	Project: Revealing Steretypes
+	PI: Michela Carlana, Eliana La Ferrara, Paolo Pinotti
+	RA: Gaia Gaudenzi
+	
+--------------	
+    GENERAL:	
+--------------	
+
+	ATTENTION: PLEASE ONLY USE SLASH (/) AND NOT BACKSLASH (\). MacOS does not
+	recognizes backslash.
+	
+--------------	
+    THIS CODE:	
+--------------
+
+	Date Created: June 2022	
+	Code description: Analysis of data
+
+--------------------
+	DATA MANAGEMENT:
+--------------------
+	Who: 
+	Last revision:
+	
+--------------------
+	MAIN SECTIONS:
+--------------------
+	
+	
+******************************************************************************/
+
+********************************************************************************
+****************************** TABLES AND FIGURES ******************************	
+******************************        MAIN        ******************************
+********************************************************************************
+
+*** Output global
+
+
+
+
+
+*** Global controls
+	global controlsX 	  "female  high_edu_mother  miss_edu_mother med_occ_father high_occ_father miss_occfather" 
+	global invalsi3  	  "invalsi_8_2 invalsi_8 invalsi_8_3"
+	global cohort 	 	  "cohort1 cohort2 cohort5 cohort4"
+	global variables_exp1 "d_score_race female math adv_math t_N t_age full_contract t_exp has_children low_edu_mother med_edu_mother high_edu_mother laude wvs_imm"
+	global variables_exp2 "IAT female_teacher regionborn_3 Q04_teaching_years Math_Science Italian_History_Geography  underestimate_IAT"
+	global varc			  "female immigrant first_gen_imm grade_ita_giu1516 grade_mat_giu1516  grade_ita_giu1415 grade_mat_giu1415 low_edu_mother  high_edu_mother low_occ_mother med_occ_mother high_occ_mother low_edu_father  high_edu_father low_occ_father med_occ_father high_occ_father"
+	global order_iat 	 "i.order ordercompatiblerace first_q_then_IAT"
+	
+	global controls "female first_gen_imm  low_edu_mother high_edu_mother miss_edu_mother TO MI GE PD female_imm  low_edu_mother_imm high_edu_mother_imm miss_edu_mother_imm TO_imm MI_imm GE_imm PD_imm" 
+	
+	global tech_controls "teacher_female    t_N   t_N_miss t_age t_age2 t_age_miss teacher_female_imm t_N_imm   t_N_miss_imm t_age_imm t_age2_imm t_age_miss_imm"
+	global tech_controlsX "teacher_female teacher_female_miss   t_N   t_N_miss t_age t_age2 t_age_miss     "
+	
+	global tchr_variables "d_score_race female math t_N t_age full_contract t_exp has_children low_edu_mother med_edu_mother high_edu_mother laude wvs_imm gapprejudice high_D2_1 high_D2_2 high_D2_3 high_D2_4 high_D2_5"
+	global stud_variables "female immigrant high_edu_mother high_occ_mother med_occ_mother high_edu_father  high_occ_father med_occ_father grade_mat_giu1516 grade_ita_giu1516"
+	global invalsi3 " invalsi_8_2 invalsi_8 invalsi_8_3"
+	global covariates1_2 "female_teacher regionborn_1 regionborn_2 regionborn_3   before_first_reminder"
+	global covariates1   "female_teacher regionborn_1 regionborn_2 regionborn_3 IAT_std iscongruentfirst before_first_reminder"
+	global covariates1_2 "female_teacher regionborn_1 regionborn_2 regionborn_3   before_first_reminder"
+	global covariates2    "m_Q21_jobs_scarsity m_Q31_1_influence_econ_reason m_Q31_2_influence_behav_reason m_Q31_3_influence_sk_reason m_Q31_4_influence_lang_reason m_Q31_5_influence_noinf_reason m_Q31_6_influence_prej_reason"
+
+	local covariates1_m  "" //no missing
+	global covariates1_m2 ""
+	global variables_school "female immigrant immigrant_first immigrant_second test_score_gr_8   low_edu_mother med_edu_mother high_edu_mother low_edu_father med_edu_father high_edu_father low_occ_mother med_occ_mother high_occ_mother low_occ_father med_occ_father high_occ_father n_stud_prev"
+
+global student_covar2 "female_student class_*"
+
+
+
+** -----------------------------------------------------------------------------
+**# Figure 1: Timeline of Data Collection for Experiment 1
+** -----------------------------------------------------------------------------
+
+* NA
+
+** -----------------------------------------------------------------------------
+**# Figure 2: Distribution of the race IAT score across teachers
+** -----------------------------------------------------------------------------
+
+* Load dataset 1
+use "$data_final/AlesinaCarlanaLaFerraraPinotti_onlineexperiment.dta", replace
+	
+	* Restrict sample *****************
+	duplicates drop teacher_id,force
+	keep if student_id!=""
+	keep if IAT!=.
+	rename IAT d_score_race
+	rename Math_Science math
+	***********************************
+	
+	ksmirnov d_score_race, by(math) exact
+	
+	* Graph
+	twoway (kdensity d_score_race if math==1, color(green)) 				///
+		   (kdensity d_score_race if math==0, xline(-0.15) xline(0.15) 		///
+		   xline(0.35) xline(0.6) color(blue)), 							///
+		   graphregion(color(white)) title("Online experiment") 					///
+		   legend(order(1 "Math" 2 "Literature")) 							///
+		   ytitle("kdensity d-score IAT") xtitle("Immigrant-Native Implicit Association Test") xlabel(-1.05(0.15)1.8) ///
+		   note("P-value of Kolmogorov-Smirnov: 0.871")
+	
+	* Save intermediate graph
+	graph copy exp2, replace
+
+* Load dataset 2
+use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment_teachers.dta",clear
+
+	ksmirnov d_score_race, by(math) exact
+
+	twoway (kdensity d_score_race if math==1, color(green)) 				///
+		   (kdensity d_score_race if math==0, xline(-0.15) xline(0.15) 		///
+		   xline(0.35) xline(0.6) color(blue)), 							///
+		   graphregion(color(white)) title("Field experiment") 					///
+		   legend(order(1 "Math" 2 "Literature")) 							///
+		   ytitle("kdensity d-score IAT") xtitle("Immigrant-Native Implicit Association Test") xlabel(-1.05(0.15)1.8) ///
+		   note("P-value of Kolmogorov-Smirnov: 0.920")
+	
+	* Save intermediate graph		   
+	graph copy exp1, replace
+	
+	* Combine the two graphs
+	graph combine exp1 exp2 , col(1) rows(2) 								///
+							  title("") ///
+							  graphregion(color(white)) 
+	
+	* Export graph
+	graph export "$figures/F2dscore_sub_both.pdf", replace
+
+** -----------------------------------------------------------------------------
+**# Figure 3: Distribution of grades
+** -----------------------------------------------------------------------------
+
+* Load data
+use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment.dta",clear
+	
+preserve
+	
+	* Modify variables for graph
+	replace grade_8=3 if grade_8<3
+	replace grade_8=grade_8+0.2 if immigrant==1
+	replace grade_8=grade_8-0.2 if immigrant==0
+	
+	* Restrict sample ************************
+	keep if grade_8!=. & invalsi_8!=. & IAT!=. 
+	******************************************
+	
+	* Create graph
+	twoway (kdensity invalsi_8  if immigrant==0, scheme(s1color) color(blue)  bwidth(5) ) ///
+		   (kdensity invalsi_8  if immigrant==1, color(red*0.9)  bwidth(5) ), ///
+			xtitle("") title("Standardized test scores")ytitle("kdensity")  ///
+			legend(order(1 "Natives" 2 "Immigrants" ))
+	
+	* Save intermediate results
+	graph copy invalsi, replace
+
+	twoway (histogram grade_8  if immigrant==0, scheme(s1color) frac color(blue*0.8) width(0.2)) ///
+		   (histogram grade_8  if immigrant==1, frac color(red*0.8) width(0.2)) ///
+			, xtitle("")  title("Teacher-assigned grades")  ///
+			legend(order(1 "Natives" 2 "Immigrants" )) xscale(range(2.8 10.2)) xlabel(3(1)10)
+			
+	* Save intermediate results		
+	graph copy grade, replace
+	
+restore
+	
+	* Combine graphs to export
+	graph combine  grade invalsi, col(2) scheme(s1color)
+	
+	* Export graph
+	graph export "$figures/F3gradesblindnoblind.pdf", replace	
+
+** -----------------------------------------------------------------------------
+**# Figure 4: Teacher-assigned grades vs. blindly-graded, standardized test scores
+** -----------------------------------------------------------------------------
+
+* Load data
+use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment.dta",clear
+
+preserve
+	
+	* Restrict sample ************************
+	keep if grade_8!=. & invalsi_8!=. & IAT!=. 
+	******************************************
+	
+	gen obs=1
+	
+	collapse (mean) grade_8  (sd)sdgrade_8 = grade_8 (sum) obs, by(immigrant invalsi)
+	
+	foreach var in grade_8 {
+		generate up$_var   = $_var + invttail(obs-1,0.05)*(sd$_var / sqrt(obs))
+		generate down$_var = $_var - invttail(obs-1,0.05)*(sd$_var / sqrt(obs))
+	}
+	
+	* Create graph
+	twoway (rcap upgrade_8 downgrade_8 invalsi if immigrant==0, lcolor(green)) ///
+		   (line grade_8 invalsi if immigrant==0, lcolor(green)) ///
+		   (scatter grade_8 invalsi if immigrant==0, mcolor(green)) ///
+		   (rcap upgrade_8 downgrade_8 invalsi if immigrant==1, lcolor(red)) ///
+		   (line grade_8 invalsi if immigrant==1, lcolor(red)) ///
+		   (scatter grade_8 invalsi if immigrant==1, ///
+		   mcolor(red) msymbol(circle_hollow)), legend(order(3 "Natives" 6 "Immigrants"))  ///
+		   xlabel(1(1)5) title("")  xtitle("Blind test score (INVALSI), quintiles") ///
+		   ytitle("Teacher-assigned grades")
+		   
+	* Export graph
+	graph export "$figures/F4graph_bias.pdf", replace
+
+restore
+
+** -----------------------------------------------------------------------------
+**# Figure 5: The correlation between Teacher Assigned Grades and Implicit 
+*			  Association Test for Immigrants and Natives
+** -----------------------------------------------------------------------------
+	
+	eststo clear
+	estimates drop _all
+	
+* Load data
+use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment.dta",clear
+
+	* Graphical evidence grade
+	 reghdfe grade_8  $invalsi3 $cohort $controlsX  if IAT!=. , absorb(i.teacher_id)  resid
+	 predict grade_hat, res
+
+	* Create graph
+	 twoway (lpolyci grade_hat IAT if immigrant==1,  n(100) ciplot(rline) pstyle(ci2) lcolor(lavender) lwidth(medthick)  blpattern(dash)  bwidth(.15) ) ///
+			(lpolyci grade_hat IAT if immigrant==0,  n(20) ciplot(rline) pstyle(ci2)  lcolor(black) lwidth(medthick)  blpattern(dash)     bwidth(.15)), ///
+			title("") scheme(s1color) xtitle("Teacher Immigrant-Native IAT") ytitle("Teacher Assigned Grade (Residual)") ///
+			yscale(range(-0.1 0.2)) ylabel(-0.1(0.05)0.2) legend(order(4 "Natives(95% CI)" 2 "Immigrants(95% CI)" )) 
+
+* Export graph
+graph export "$figures/F5Figure_distribution_immigrant2.pdf", replace
+
+** -----------------------------------------------------------------------------
+**# Figure 6: Teacher-assigned grades vs. blindly-graded, standardized test 
+*				scores by Teacher IAT (High vs. Low)
+** -----------------------------------------------------------------------------
+	
+use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment.dta",clear
+			
+preserve
+	
+	* Restrict sample ************************
+	keep if grade_8!=. & invalsi_8!=. & IAT!=. 
+	keep if immigrant==1
+	******************************************
+	
+	gen obs=1
+	count
+	collapse (mean) grade_8  (sd)sdgrade_8 = grade_8 (sum) obs, by(high_IAT invalsi)
+	
+	foreach var in grade_8 {
+		generate up$_var = $_var + invttail(obs-1,0.05)*(sd$_var / sqrt(obs))
+		generate down$_var = $_var - invttail(obs-1,0.05)*(sd$_var / sqrt(obs))
+}
+
+twoway (rcap upgrade_8 downgrade_8 invalsi if high_IAT==0, lcolor(navy)) ///
+	   (line grade_8 invalsi if high_IAT==0, lcolor(navy)) ///
+	   (scatter grade_8 invalsi if high_IAT==0, mcolor(navy)) ///
+	   (rcap upgrade_8 downgrade_8 invalsi if high_IAT==1, lcolor(orange)) ///
+	   (line grade_8 invalsi if high_IAT==1, lcolor(orange)) ///
+	   (scatter grade_8 invalsi if high_IAT==1, mcolor(orange) msymbol(circle_hollow)), ///
+	   legend(order(3 "Low IAT" 6 "High IAT"))  xlabel(1(1)5) title("Immigrants")  ///
+	   xtitle("Blind test score (INVALSI), quintiles") ytitle("Teacher-assigned grades")
+	   graph copy imm, replace
+
+restore
+
+preserve
+
+	* Restrict sample ************************
+	keep if grade_8!=. & invalsi_8!=. & IAT!=. 
+	keep if immigrant==0
+	******************************************
+	gen obs=1
+	count
+	
+	collapse (mean) grade_8  (sd)sdgrade_8 = grade_8 (sum) obs, by(high_IAT invalsi)
+	
+	foreach var in grade_8 {
+		
+		generate up$_var = $_var + invttail(obs-1,0.05)*(sd$_var / sqrt(obs))
+		generate down$_var = $_var - invttail(obs-1,0.05)*(sd$_var / sqrt(obs))
+	}
+	
+	* Graph
+	twoway (rcap upgrade_8 downgrade_8 invalsi if high_IAT==0, lcolor(navy)) 			///
+		   (line grade_8 invalsi if high_IAT==0, lcolor(navy)) 						///
+		   (scatter grade_8 invalsi if high_IAT==0, mcolor(navy)) 					///
+		   (rcap upgrade_8 downgrade_8 invalsi if high_IAT==1, lcolor(orange)) 		///
+		   (line grade_8 invalsi if high_IAT==1, lcolor(orange)) 					///
+	  	   (scatter grade_8 invalsi if high_IAT==1, mcolor(orange) msymbol(circle_hollow)), ///
+		   legend(order(3 "Low IAT" 6 "High IAT"))  xlabel(1(1)5) title("Natives")  ///
+		    xtitle("Blind test score (INVALSI), quintiles") ytitle("Teacher-assigned grades")
+			graph copy nat, replace
+	restore
+
+	graph combine imm nat, cols(2) scale(.7) ysize(4) xsize(7) title("")
+
+	graph save "$figures/F6graph_bias_by_IAT",replace
+	graph export "$figures/F6graph_bias_by_IAT.pdf", replace
+	
+	   
+
+** -----------------------------------------------------------------------------
+**# Figure 7: Online Experiment: The impact of Revealing Stereotypes to teachers 
+*			  on grading of immigrant and native students
+** -----------------------------------------------------------------------------
+* Panel A
+
+
+clear all
+
+
+use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment.dta",clear
+
+		* Restrict sample *****************
+	keep if IAT!=.
+	keep if grade_genIII!=.
+	drop if school_id==101 
+	keep if randomization_feedback!=.
+	keep if grade_genIII!=.
+	keep if iat_done==1
+	***********************************		*******************
+		* Regression
+	reg grade_genIII    $controlsX $tech_controlsX , robust cluster (school_id)
+		predict test_hat, res
+
+		* Generate variables based on predicted values
+		gen test_hat_i=test_hat if immigrant==1
+		replace test_hat_i=0 if test_hat_i==.
+
+		gen test_hat_n=test_hat if immigrant==0
+		replace test_hat_n=0 if test_hat_n==.
+		
+		bys teacher_id: egen num_imm=sum(immigrant) 
+		bys teacher_id: egen num_stu=count(immigrant) 
+		egen num_imm_tot=sum(immigrant) 
+		egen num_stu_tot=count(immigrant) 
+		gen share_imm_t=num_imm/num_imm_tot
+		gen share_stu_t=num_stu/num_stu_tot		
+
+		bys teacher_id: egen test_hat_imm=wmean(test_hat_i), weight(share_imm_t)
+		bys teacher_id: egen test_hat_nat=wmean(test_hat_n), weight(share_imm_t)
+		
+		
+		gen 	dif_test_hat_nat_imm=test_hat_nat-test_hat_imm
+		lab var dif_test_hat_nat_imm "Native-Immigrant grade (residuals)"
+
+		* Restrict sample ******************
+		duplicates drop teacher_id, force
+		*drop if IAT <-.65
+		************************************
+	gen control=1-randomization_feedback
+	la def la_control 1 "Control" 0 "Generic Debiasing+Feedback", modify
+	la var control
+	la val control la_control
+	
+		* Graph
+		twoway   lpolyci dif_test_hat_nat_imm IAT , by(control) bwidth(.25) yline(0)   ///
+				xtitle("Immigrant-Native Implicit Association Test") 	 	  ///
+				ytitle("Native-Immigrant teacher-assigned grade (residual)")   ///
+				yscale(range(-0.2 0.3)) ylabel(-0.2(0.1)0.3) legend(off) 
+		graph copy one, replace 
+		graph export "$figures/F7Aresults_exp1_difference.pdf", replace
+
+		
+* Panel B
+
+
+
+	u "$data_final/AlesinaCarlanaLaFerraraPinotti_onlineexperiment.dta", replace
+
+		* Restrict sample *
+		keep if grade_tassigned!=.
+		*******************
+
+		* Regression
+		reg grade_tassigned Math_Science Italian_History_Geography English i.order_question i.grade_orig $student_covar2 $covariates1_2 $covariates1_m2, cluster(school_code)
+		predict test_hat, res
+
+		* Generate variables based on predicted values
+		gen test_hat_i=test_hat if immigrant==1
+		replace test_hat_i=0 if test_hat_i==.
+
+		gen test_hat_n=test_hat if immigrant==0
+		replace test_hat_n=0 if test_hat_n==.
+
+		bys teacher_id: egen test_hat_imm=mean(test_hat_i) 
+		bys teacher_id: egen test_hat_nat=mean(test_hat_n) 
+		
+		gen 	dif_test_hat_nat_imm=test_hat_nat-test_hat_imm
+		lab var dif_test_hat_nat_imm "Native-Immigrant grade (residuals)"
+
+		* Restrict sample ******************
+		duplicates drop teacher_id, force
+		drop if IAT <-.65
+		************************************
+	gen control=1-treat
+
+	la def la_control 1 "Generic Debiasing" 0 "Generic Debiasing+Feedback", modify
+	la var control
+	la val control la_control
+		* Graph
+		twoway   lpolyci dif_test_hat_nat_imm IAT , by(control) bwidth(.25) yline(0)  ///
+				xtitle("Immigrant-Native Implicit Association Test") 			  ///
+				ytitle("Native-Immigrant teacher-assigned grade (residual)")   ///
+				yscale(range(-0.7 0.5)) ylabel(-0.7(0.1)0.5) legend(off) 
+		graph copy two, replace 	
+		graph export "$figures/F7Bresults_exp2_difference.pdf", replace
+
+	graph combine one, title("Panel A: Field Experiment")
+	graph copy a, replace
+
+	graph combine two, title("Panel B: Online Experiment")
+	graph copy b, replace
+		
+graph combine a b, xsize(3) ysize(4) col(1) scale(1) title("") graphregion(color(white)) 
+
+
+graph export "$figures/F7results_exp_difference.pdf", replace
+
+
+
+
+** -----------------------------------------------------------------------------
+**# Table 1: Balance table - Teacher characteristics
+** -----------------------------------------------------------------------------
+
+preserve
+
+	*** BALANCE TABLE SETUP ************************************
+	local filename balance_table_teacher_char
+
+	* Experiment 1
+	local varlist_exp1 $variables_exp1
+	local byvar_exp1 randomization_feedback
+	local byvar0_exp1 "Control"
+	local byvar1_exp1 "Treated"
+
+	* Experiment 2
+	local varlist_exp2 $variables_exp2
+	local byvar_exp2 treat
+	local byvar0_exp2 "Control"
+	local byvar1_exp2 "Treated"
+	*************************************************************
+	
+* Open file
+cap file close sumstat
+	file open  sumstat using "$tables/T1`filename'.tex", write replace
+	file write sumstat 	"\begin{tabular}{lccccc}  \\ \toprule "  _n     // table header
+
+	* Create header for experiment 1
+	file write sumstat "\multicolumn{6}{l}{\textbf{Panel A: Teachers in the Field Experiment}}\\  " _n
+	file write sumstat 	"\midrule " _n 
+	file write sumstat	"  & (1) & (2) & (3) & (4) & (5) \\  " _n 
+	file write sumstat	"  & Full sample & `byvar0_exp1' & `byvar1_exp1' & p-value & Norm. Diff. \\  " _n
+	file write sumstat 	"\midrule " _n 
+	
+	* LOAD DATASET FOR EXPERIMENT 1
+	use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment_teachers.dta",clear
+		
+		* Restrict sample **********
+		keep if final_sample == 1
+		drop if d_score_race==.
+		****************************
+		
+		
+		lab var d_score_race "IAT"
+	
+local i=1
+
+	foreach var in `varlist_exp1' {
+		
+		cap drop stand_diff
+		
+		di "Calculating stats for variable: `var'"
+		
+		* Store label
+		local varlab: variable label `var'  
+		
+		* Ttest
+		ttest `var', by(`byvar_exp1')
+				
+		* Store byvar == 0 values
+		local controlmean: di %7.3f `r(mu_1)'
+		local 	controlsd: di %7.3f `r(sd_1)'
+				
+		* Store byvar == 1 values
+		local treatmean: di %7.3f `r(mu_2)'
+		local 	treatsd:  di %7.3f `r(sd_2)'	
+
+		* Store pvalue for clustered data **********************
+		reg `var' `byvar_exp1', vce(cluster school_id)
+		test `byvar_exp1'
+		local pvalue: di %7.3f `r(p)'	
+		********************************************************	
+		
+		* Standard difference
+		gen stand_diff = (`treatmean'-`controlmean')/ (sqrt((`treatsd'^2)+(`controlsd'^2)))
+		sum stand_diff
+		local stand_diff: di %7.3f `r(mean)'
+		
+		sum `var' 
+		local totalmean: di %7.3f `r(mean)'	
+		local 	totalsd: di %7.3f `r(sd)'
+		
+		count if `byvar_exp1'==1 
+		local treat: di %7.0fc `r(N)'
+
+		count if `byvar_exp1'==0 
+		local control: di %7.0fc `r(N)'
+		
+		count if !mi(`var')
+		local total: di %7.0g `r(N)'
+
+		file write sumstat "`varlab' & `totalmean' &  `controlmean' & `treatmean' & `pvalue' & `stand_diff'  \\ " _n  
+		file write sumstat "  		 &  (`totalsd') &  (`controlsd')  & (`treatsd') &   &   \\     " _n 
+		
+		drop stand_diff
+		
+		local ++i
+
+		}
+	
+	file write sumstat "\midrule " _n 
+	file write sumstat "Observations & `total' & `control' & `treat' &   & \\   " _n 
+	file write sumstat "\bottomrule" _n           
+	
+	* Create header for experiment 2
+	file write sumstat "\multicolumn{6}{l}{\textbf{Panel B: Teachers in the Online Experiment}}\\  " _n
+	file write sumstat 	"\midrule " _n 
+	file write sumstat	"  & (1) & (2) & (3) & (4) & (5) \\  " _n 
+	file write sumstat	"  & Full sample & `byvar0_exp2' & `byvar1_exp2' & p-value & Norm. Diff. \\  " _n
+	file write sumstat 	"\midrule " _n 
+	***
+	
+	* LOAD DATASET FOR EXPERIMENT 2
+	use  "$data_final/AlesinaCarlanaLaFerraraPinotti_onlineexperiment.dta", replace
+	
+	* Restrict sample *****************
+	duplicates drop teacher_id,force
+	keep if student_id!=""
+	keep if IAT!=.
+	***********************************
+	
+	drop wvs // generate a new version of wvs
+	gen wvs=(m_Q21_jobs_scarsity==1|m_Q21_jobs_scarsity)
+	lab var wvs 						"WVS Immigrants' Rights to Job"
+	
+	* Label for exporting
+	lab var female_teacher 				"Female"
+	lab var regionborn_3 				"Born in the North"
+	lab var Q04_teaching_years 			"Experience"
+	lab var Math_Science 				"Teaching Math"
+	lab var Italian_History_Geography 	"Teaching Italian"
+	lab var IAT 						"IAT"
+
+local i=1
+
+	foreach var in `varlist_exp2' {
+		
+		cap drop stand_diff
+		
+		di "Calculating stats for variable: `var'"
+		
+		* Store label
+		local varlab: variable label `var'  
+		
+		* Ttest
+		ttest `var', by(`byvar_exp2')
+				
+		* Store byvar == 0 values
+		local controlmean: di %7.3f `r(mu_1)'
+		local 	controlsd: di %7.3f `r(sd_1)'
+				
+		* Store byvar == 1 values
+		local treatmean: di %7.3f `r(mu_2)'
+		local 	treatsd:  di %7.3f `r(sd_2)'	
+
+		* Store pvalue for clustered data **********************
+		reg `var' `byvar_exp2', vce(cluster school_code)
+		test `byvar_exp2'
+		local pvalue: di %7.3f `r(p)'	
+		********************************************************	
+		
+		* Standard difference
+		gen stand_diff = (`treatmean'-`controlmean')/ (sqrt((`treatsd'^2)+(`controlsd'^2)))
+		sum stand_diff
+		local stand_diff: di %7.3f `r(mean)'
+		
+		sum `var' 
+		local totalmean: di %7.3f `r(mean)'	
+		local 	totalsd: di %7.3f `r(sd)'
+		
+		count if `byvar_exp2'==1 
+		local treat: di %7.0fc `r(N)'
+
+		count if `byvar_exp2'==0 
+		local control: di %7.0fc `r(N)'
+		
+		count if !mi(`var')
+		local total: di %7.0g `r(N)'
+
+		file write sumstat "`varlab' & `totalmean' &  `controlmean' & `treatmean' & `pvalue' & `stand_diff'  \\ " _n  
+		file write sumstat "  		 &  (`totalsd') &  (`controlsd')  & (`treatsd') &   &   \\     " _n 
+		
+		drop stand_diff
+		
+		local ++i
+
+		}
+	
+	file write sumstat "\midrule " _n 
+	file write sumstat "Observations & `total' & `control' & `treat' &   & \\   " _n 
+	file write sumstat "\bottomrule" _n           // table footer
+	file write sumstat "\end{tabular}" _n
+
+	file close sumstat
+
+restore
+
+** -----------------------------------------------------------------------------
+**# Table 2: Correlation between teachers characteristics and IAT
+** -----------------------------------------------------------------------------
+
+***** EXPERIMENT 1
+
+	use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment_teachers.dta",clear
+
+	cap file close soutput
+	
+	file open soutput using "$tables/T2Correlation_iat_characteristics_v2.tex", write replace
+	file write soutput "\begin{tabular}{lcccccccc}  \\ \hline "  _n
+    file write soutput "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \hline " _n
+	file write soutput "\multicolumn{9}{l}{\textbf{Panel A. Dependent Variable: IAT Score (stereotypes against immigrants) in Field Experiment}} \\  \hline "
+	file write soutput "\midrule"  _n
+	
+	local i = 1
+	
+	* 1) 
+	xi:reg d_score_race female $order_iat,  cluster(mecc_code_plesse)
+	
+	local beta_`i'  = _b[female]
+	local sigma_`i' = _se[female]
+	local beta_`i' : di %8.3f `beta_`i''
+	local sigma_`i' : di %8.3f `sigma_`i''
+	local N`i' =  e(N)
+	local R`i' = e(r2) 
+	local R`i' : di %8.3f `R`i''
+	matrix rtable = r(table)
+	local pvalue  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue' < 0.1 local star`i'= "*" 
+		if `pvalue' < 0.05 local star`i' = "**" 
+		if `pvalue' < 0.01 local star`i' = "***" 
+	
+	* 2)
+	xi:reg d_score_race t_N  $order_iat,  cluster(mecc_code_plesse)
+	
+	local ++i
+	local beta_`i'  = _b[t_N]
+	local sigma_`i' = _se[t_N]
+	local beta_`i' : di %8.3f `beta_`i''
+	local sigma_`i' : di %8.3f `sigma_`i''
+	local N`i' =  e(N)
+	local R`i' = e(r2) 
+	local R`i' : di %8.3f `R`i''
+	matrix rtable = r(table)
+	local pvalue  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue' < 0.1 local star`i'= "*" 
+		if `pvalue' < 0.05 local star`i' = "**" 
+		if `pvalue' < 0.01 local star`i' = "***" 
+	
+	* 3)
+	xi:reg d_score_race t_exp t_exp_miss $order_iat,  cluster(mecc_code_plesse)
+
+	local ++i
+	local beta_`i'  = _b[t_exp]
+	local sigma_`i' = _se[t_exp]
+	local beta_`i' : di %8.3f `beta_`i''
+	local sigma_`i' : di %8.3f `sigma_`i''
+	local N`i' =  e(N)
+	local R`i' = e(r2) 
+	local R`i' : di %8.3f `R`i''
+	matrix rtable = r(table)
+	local pvalue  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue' < 0.1 local star`i'= "*" 
+		if `pvalue' < 0.05 local star`i' = "**" 
+		if `pvalue' < 0.01 local star`i' = "***" 
+	
+	* 4)
+	xi: reg d_score_race  wvs_imm wvs_imm_miss $order_iat,  cluster(mecc_code_plesse)
+	
+	local ++i
+	local beta_`i'  = _b[wvs_imm]
+	local sigma_`i' = _se[wvs_imm]
+	local beta_`i' : di %8.3f `beta_`i''
+	local sigma_`i' : di %8.3f `sigma_`i''
+	local N`i' =  e(N)
+	local R`i' = e(r2) 
+	local R`i' : di %8.3f `R`i''
+	matrix rtable = r(table)
+	local pvalue  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue' < 0.1 local star`i'= "*" 
+		if `pvalue' < 0.05 local star`i' = "**" 
+		if `pvalue' < 0.01 local star`i' = "***" 
+	
+	* 5)
+	xi:reg d_score_race share_imm $order_iat ,  cluster(mecc_code_plesse)
+	
+	local ++i
+	local beta_`i'  = _b[share_imm]
+	local sigma_`i' = _se[share_imm]
+	local beta_`i' : di %8.3f `beta_`i''
+	local sigma_`i' : di %8.3f `sigma_`i''
+	local N`i' =  e(N)
+	local R`i' = e(r2) 
+	local R`i' : di %8.3f `R`i''
+	matrix rtable = r(table)
+	local pvalue  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue' < 0.1 local star`i'= "*" 
+		if `pvalue' < 0.05 local star`i' = "**" 
+		if `pvalue' < 0.01 local star`i' = "***" 
+	
+	* 6)
+	xi:reg d_score_race dif_invalsi $order_iat ,  cluster(mecc_code_plesse)
+	
+	local ++i
+	local beta_`i'  = _b[dif_invalsi]
+	local sigma_`i' = _se[dif_invalsi]
+	local beta_`i' : di %8.3f `beta_`i''
+	local sigma_`i' : di %8.3f `sigma_`i''
+	local N`i' =  e(N)
+	local R`i' = e(r2) 
+	local R`i' : di %8.3f `R`i''
+	matrix rtable = r(table)
+	local pvalue  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue' < 0.1 local star`i'= "*" 
+		if `pvalue' < 0.05 local star`i' = "**" 
+		if `pvalue' < 0.01 local star`i' = "***" 
+		
+	* 7)	
+	xi:reg d_score_race female t_N t_exp wvs_imm share_imm dif_invalsi $order_iat t_exp_miss t_N_miss wvs_imm_miss D25_miss,  cluster(mecc_code_plesse)
+	
+	local ++i
+	local beta1_`i'  = _b[female]
+	local sigma1_`i' = _se[female]
+	local beta1_`i' : di %8.3f `beta1_`i''
+	local sigma1_`i' : di %8.3f `sigma1_`i''
+	matrix rtable = r(table)
+	
+	local pvalue1_`i'  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue1_`i'' < 0.1 local star1_`i'= "*" 
+		if `pvalue1_`i'' < 0.05 local star1_`i' = "**" 
+		if `pvalue1_`i'' < 0.01 local star1_`i' = "***" 
+
+	local beta2_`i'  = _b[t_N]
+	local sigma2_`i' = _se[t_N]
+	local beta2_`i' : di %8.3f `beta2_`i''
+	local sigma2_`i' : di %8.3f `sigma2_`i''
+	matrix rtable = r(table)
+		local pvalue2_`i'  = rtable[4,2]  
+		local star`i' = ""
+		if `pvalue2_`i'' < 0.1 local star2_`i'= "*" 
+		if `pvalue2_`i'' < 0.05 local star2_`i' = "**" 
+		if `pvalue2_`i'' < 0.01 local star2_`i' = "***" 
+			
+	local beta3_`i'  = _b[t_exp]
+	local sigma3_`i' = _se[t_exp]
+	local beta3_`i' : di %8.3f `beta3_`i''
+	local sigma3_`i' : di %8.3f `sigma3_`i''
+	matrix rtable = r(table)
+	local pvalue3_`i'  = rtable[4,3]  
+		local star`i' = ""
+		if `pvalue3_`i'' < 0.1 local star3_`i'= "*" 
+		if `pvalue3_`i'' < 0.05 local star3_`i' = "**" 
+		if `pvalue3_`i'' < 0.01 local star3_`i' = "***" 
+
+	local beta4_`i'  = _b[wvs_imm]
+	local sigma4_`i' = _se[wvs_imm]
+	local beta4_`i' : di %8.3f `beta4_`i''
+	local sigma4_`i' : di %8.3f `sigma4_`i''
+	matrix rtable = r(table)
+	local pvalue4_`i'  = rtable[4,4]  
+		local star`i' = ""
+		if `pvalue4_`i'' < 0.1 local star4_`i'= "*" 
+		if `pvalue4_`i'' < 0.05 local star4_`i' = "**" 
+		if `pvalue4_`i'' < 0.01 local star4_`i' = "***" 
+	
+	local beta5_`i'  = _b[share_imm]
+	local sigma5_`i' = _se[share_imm]
+	local beta5_`i' : di %8.3f `beta5_`i''
+	local sigma5_`i' : di %8.3f `sigma5_`i''
+	matrix rtable = r(table)
+	local pvalue5_`i'  = rtable[4,5]  
+		local star`i' = ""
+		if `pvalue5_`i'' < 0.1 local star5_`i'= "*" 
+		if `pvalue5_`i'' < 0.05 local star5_`i' = "**" 
+		if `pvalue5_`i'' < 0.01 local star5_`i' = "***" 
+		
+
+	local beta6_`i'  = _b[dif_invalsi]
+	local sigma6_`i' = _se[dif_invalsi]
+	local beta6_`i' : di %8.3f `beta6_`i''
+	local sigma6_`i' : di %8.3f `sigma6_`i''
+	matrix rtable = r(table)
+	local pvalue6_`i'  = rtable[4,6]  
+		local star`i' = ""
+		if `pvalue6_`i'' < 0.1 local star6_`i'= "*" 
+		if `pvalue6_`i'' < 0.05 local star6_`i' = "**" 
+		if `pvalue6_`i'' < 0.01 local star6_`i' = "***" 
+
+		local N`i' =  e(N)
+		local R`i' = e(r2) 
+		local R`i' : di %8.3f `R`i''
+	
+	* 8) 
+	xi:reg d_score_race female t_N t_exp wvs_imm share_imm dif_invalsi $order_iat t_exp_miss t_N_miss wvs_imm_miss D25_miss,  cluster(mecc_code_plesse) absorb(mecc_code_plesse)
+	
+	local ++i
+	local beta1_`i'  = _b[female]
+	local sigma1_`i' = _se[female]
+	local beta1_`i' : di %8.3f `beta1_`i''
+	local sigma1_`i' : di %8.3f `sigma1_`i''
+	matrix rtable = r(table)
+	
+	local pvalue1_`i'  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue1_`i'' < 0.1 local star1_`i'= "*" 
+		if `pvalue1_`i'' < 0.05 local star1_`i' = "**" 
+		if `pvalue1_`i'' < 0.01 local star1_`i' = "***" 
+
+	local beta2_`i'  = _b[t_N]
+	local sigma2_`i' = _se[t_N]
+	local beta2_`i' : di %8.3f `beta2_`i''
+	local sigma2_`i' : di %8.3f `sigma2_`i''
+	matrix rtable = r(table)
+		local pvalue2_`i'  = rtable[4,2]  
+		local star`i' = ""
+		if `pvalue2_`i'' < 0.1 local star2_`i'= "*" 
+		if `pvalue2_`i'' < 0.05 local star2_`i' = "**" 
+		if `pvalue2_`i'' < 0.01 local star2_`i' = "***" 
+			
+	local beta3_`i'  = _b[t_exp]
+	local sigma3_`i' = _se[t_exp]
+	local beta3_`i' : di %8.3f `beta3_`i''
+	local sigma3_`i' : di %8.3f `sigma3_`i''
+	matrix rtable = r(table)
+	local pvalue3_`i'  = rtable[4,3]  
+		local star`i' = ""
+		if `pvalue3_`i'' < 0.1 local star3_`i'= "*" 
+		if `pvalue3_`i'' < 0.05 local star3_`i' = "**" 
+		if `pvalue3_`i'' < 0.01 local star3_`i' = "***" 
+
+	local beta4_`i'  = _b[wvs_imm]
+	local sigma4_`i' = _se[wvs_imm]
+	local beta4_`i' : di %8.3f `beta4_`i''
+	local sigma4_`i' : di %8.3f `sigma4_`i''
+	matrix rtable = r(table)
+	local pvalue4_`i'  = rtable[4,4]  
+		local star`i' = ""
+		if `pvalue4_`i'' < 0.1 local star4_`i'= "*" 
+		if `pvalue4_`i'' < 0.05 local star4_`i' = "**" 
+		if `pvalue4_`i'' < 0.01 local star4_`i' = "***" 
+	
+	local beta5_`i'  = _b[share_imm]
+	local sigma5_`i' = _se[share_imm]
+	local beta5_`i' : di %8.3f `beta5_`i''
+	local sigma5_`i' : di %8.3f `sigma5_`i''
+	matrix rtable = r(table)
+	local pvalue5_`i'  = rtable[4,5]  
+		local star`i' = ""
+		if `pvalue5_`i'' < 0.1 local star5_`i'= "*" 
+		if `pvalue5_`i'' < 0.05 local star5_`i' = "**" 
+		if `pvalue5_`i'' < 0.01 local star5_`i' = "***" 
+		
+	local beta6_`i'  = _b[dif_invalsi]
+	local sigma6_`i' = _se[dif_invalsi]
+	local beta6_`i' : di %8.3f `beta6_`i''
+	local sigma6_`i' : di %8.3f `sigma6_`i''
+	matrix rtable = r(table)
+	local pvalue6_`i'  = rtable[4,6]  
+		local star`i' = ""
+		if `pvalue6_`i'' < 0.1 local star6_`i'= "*" 
+		if `pvalue6_`i'' < 0.05 local star6_`i' = "**" 
+		if `pvalue6_`i'' < 0.01 local star6_`i' = "***" 
+		
+		local N`i' =  e(N)
+		local R`i' = e(r2) 
+		local R`i' : di %8.3f `R`i''
+		
+		
+		file write soutput " Female  						& `beta_1' &  &  &  &  &  &  `beta1_7' &  				`beta1_8'    \\" _n
+		file write soutput "   								& (`sigma_1') &  &  &  &  &  	 &  (`sigma1_7')		   &  (`sigma1_8')      \\" _n
+		file write soutput " Born in the North  			&  & `beta_2' &  &  &  &  &  `beta2_7' &  				`beta2_8'    \\" _n
+		file write soutput "   								&  & (`sigma_2') &  &  &  &  	 &  (`sigma2_7')		   &  (`sigma2_8')      \\" _n
+		file write soutput " Experience/10 years  			&  &  & `beta_3' &  &  &  &  `beta3_7' &  				`beta3_8'    \\" _n
+		file write soutput "   								&  &  & (`sigma_3') &  &  &  	 &  (`sigma3_7')		   &  (`sigma3_8')      \\" _n
+		file write soutput " WVS Immigrants' Rights to Job  &  &  &  &`beta_4'  &  &  &  `beta4_7' &  				`beta4_8'    \\" _n
+		file write soutput "   								&  &  &  & (`sigma_4') &  &  	 &  (`sigma4_7')		   &  (`sigma4_8')      \\" _n
+		file write soutput " Share of Immigrants  	   		&  &  &  &  & `beta_5' &  &  `beta5_7' &  				`beta5_8'    \\" _n
+		file write soutput "   								&  &  &  &  & (`sigma_5') &  	 &  (`sigma5_7')		   &  (`sigma5_8')      \\" _n
+		file write soutput " Native-Imm INVALSI(/100)  		&  &  &  &  &  & `beta_6' &  `beta6_7' &  				`beta6_8'    \\" _n
+		file write soutput "   								&  &  &  &  &  &  (`sigma_6')	 &  (`sigma6_7')		   &  (`sigma6_8')      \\" _n
+		file write soutput"\midrule"  _n
+		file write soutput " School FE						& No & No & No & No & No &  No &  No &  Yes      \\" _n
+		file write soutput"\midrule"  _n
+		file write soutput " Obs  & `N1' &  `N2' &  `N3' &   `N4'    &   `N5'  &   `N6'  &  `N7'  &   `N8'    \\" _n
+		file write soutput " R$^2$  & `R1' & `R2' & `R3' &  `R4'    &  `R5'  & `R6'  & `R7'  & `R8'    \\" _n
+		
+		file write soutput "\midrule"  _n
+		file write soutput "\multicolumn{9}{l}{\textbf{Panel B. Dependent Variable: IAT score (stereotypes against immigrants) in Online Experiment}} \\  \hline "
+		file write soutput "\midrule"  _n
+
+	
+***** EXPERIMENT 2
+
+use  "$data_final/AlesinaCarlanaLaFerraraPinotti_onlineexperiment.dta", replace
+	
+	* Restrict sample *****************
+	duplicates drop teacher_id,force
+	keep if student_id!=""
+	keep if IAT!=.
+	***********************************
+	
+	* Clean
+	drop wvs // create new version of WVS
+	gen wvs=(m_Q21_jobs_scarsity==1)
+	lab var wvs "WVS Immigrants' Rights to Job"
+	replace Q04_teaching_years=Q04_teaching_years/10
+	lab var Q04_teaching_years "Experience/10 years"
+	
+local i = 1
+	
+	*Experience
+	xi:reg IAT female_teacher iscongruentfirst,  cluster(school_code)
+	
+	local beta_`i'  = _b[female_teacher]
+	local sigma_`i' = _se[female_teacher]
+	local beta_`i' : di %8.3f `beta_`i''
+	local sigma_`i' : di %8.3f `sigma_`i''
+	local N`i' =  e(N)
+	local R`i' = e(r2) 
+	local R`i' : di %8.3f `R`i''
+	matrix rtable = r(table)
+		local pvalue  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue' < 0.1 local star`i'= "*" 
+		if `pvalue' < 0.05 local star`i' = "**" 
+		if `pvalue' < 0.01 local star`i' = "***"
+	
+
+	xi:reg IAT regionborn_3  iscongruentfirst,  cluster(school_code)
+	
+	local ++i
+	local beta_`i'  = _b[regionborn_3]
+	local sigma_`i' = _se[regionborn_3]
+	local beta_`i' : di %8.3f `beta_`i''
+	local sigma_`i' : di %8.3f `sigma_`i''
+	local N`i' =  e(N)
+	local R`i' = e(r2) 
+	local R`i' : di %8.3f `R`i''
+	matrix rtable = r(table)
+	local pvalue  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue' < 0.1 local star`i'= "*" 
+		if `pvalue' < 0.05 local star`i' = "**" 
+		if `pvalue' < 0.01 local star`i' = "***" 
+		
+
+	xi:reg IAT Q04_teaching_years  iscongruentfirst,  cluster(school_code)
+	
+	local ++i
+	local beta_`i'  = _b[Q04_teaching_years]
+	local sigma_`i' = _se[Q04_teaching_years]
+	local beta_`i' : di %8.3f `beta_`i''
+	local sigma_`i' : di %8.3f `sigma_`i''
+	local N`i' =  e(N)
+	local R`i' = e(r2) 
+	local R`i' : di %8.3f `R`i''
+	matrix rtable = r(table)
+	local pvalue  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue' < 0.1 local star`i'= "*" 
+		if `pvalue' < 0.05 local star`i' = "**" 
+		if `pvalue' < 0.01 local star`i' = "***" 
+	
+
+	xi:reg IAT wvs  iscongruentfirst, cluster(school_code)
+	
+	local ++i
+	local beta_`i'  = _b[wvs]
+	local sigma_`i' = _se[wvs]
+	local beta_`i' : di %8.3f `beta_`i''
+	local sigma_`i' : di %8.3f `sigma_`i''
+	local N`i' =  e(N)
+	local R`i' = e(r2) 
+	local R`i' : di %8.3f `R`i''
+	matrix rtable = r(table)
+	local pvalue  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue' < 0.1 local star`i'= "*" 
+		if `pvalue' < 0.05 local star`i' = "**" 
+		if `pvalue' < 0.01 local star`i' = "***" 
+
+	xi:reg IAT female_teacher regionborn_3 Q04_teaching_years wvs iscongruentfirst,  cluster(school_code)
+	
+	
+	local ++i
+	local beta1_`i'  = _b[female_teacher]
+	local sigma1_`i' = _se[female_teacher]
+	local beta1_`i' : di %8.3f `beta1_`i''
+	local sigma1_`i' : di %8.3f `sigma1_`i''
+	matrix rtable = r(table)
+	
+	local pvalue1_`i'  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue1_`i'' < 0.1 local star1_`i'= "*" 
+		if `pvalue1_`i'' < 0.05 local star1_`i' = "**" 
+		if `pvalue1_`i'' < 0.01 local star1_`i' = "***" 
+
+	local beta2_`i'  = _b[regionborn_3]
+	local sigma2_`i' = _se[regionborn_3]
+	local beta2_`i' : di %8.3f `beta2_`i''
+	local sigma2_`i' : di %8.3f `sigma2_`i''
+	matrix rtable = r(table)
+		local pvalue2_`i'  = rtable[4,2]  
+		local star`i' = ""
+		if `pvalue2_`i'' < 0.1 local star2_`i'= "*" 
+		if `pvalue2_`i'' < 0.05 local star2_`i' = "**" 
+		if `pvalue2_`i'' < 0.01 local star2_`i' = "***" 
+			
+	local beta3_`i'  = _b[Q04_teaching_years]
+	local sigma3_`i' = _se[Q04_teaching_years]
+	local beta3_`i' : di %8.3f `beta3_`i''
+	local sigma3_`i' : di %8.3f `sigma3_`i''
+	matrix rtable = r(table)
+	local pvalue3_`i'  = rtable[4,3]  
+		local star`i' = ""
+		if `pvalue3_`i'' < 0.1 local star3_`i'= "*" 
+		if `pvalue3_`i'' < 0.05 local star3_`i' = "**" 
+		if `pvalue3_`i'' < 0.01 local star3_`i' = "***" 
+
+	local beta4_`i'  = _b[wvs]
+	local sigma4_`i' = _se[wvs]
+	local beta4_`i' : di %8.3f `beta4_`i''
+	local sigma4_`i' : di %8.3f `sigma4_`i''
+	matrix rtable = r(table)
+	local pvalue4_`i'  = rtable[4,4]  
+		local star`i' = ""
+		if `pvalue4_`i'' < 0.1 local star4_`i'= "*" 
+		if `pvalue4_`i'' < 0.05 local star4_`i' = "**" 
+		if `pvalue4_`i'' < 0.01 local star4_`i' = "***" 
+
+		local N`i' =  e(N)
+		local R`i' = e(r2) 
+		local R`i' : di %8.3f `R`i''
+
+	reg IAT female_teacher regionborn_3 Q04_teaching_years wvs     iscongruentfirst i.school,  cluster(school_code)
+	
+	local ++i
+	local beta1_`i'  = _b[female_teacher]
+	local sigma1_`i' = _se[female_teacher]
+	local beta1_`i' : di %8.3f `beta1_`i''
+	local sigma1_`i' : di %8.3f `sigma1_`i''
+	matrix rtable = r(table)
+	
+	local pvalue1_`i'  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue1_`i'' < 0.1 local star1_`i'= "*" 
+		if `pvalue1_`i'' < 0.05 local star1_`i' = "**" 
+		if `pvalue1_`i'' < 0.01 local star1_`i' = "***" 
+
+	local beta2_`i'  = _b[regionborn_3]
+	local sigma2_`i' = _se[regionborn_3]
+	local beta2_`i' : di %8.3f `beta2_`i''
+	local sigma2_`i' : di %8.3f `sigma2_`i''
+	matrix rtable = r(table)
+		local pvalue2_`i'  = rtable[4,2]  
+		local star`i' = ""
+		if `pvalue2_`i'' < 0.1 local star2_`i'= "*" 
+		if `pvalue2_`i'' < 0.05 local star2_`i' = "**" 
+		if `pvalue2_`i'' < 0.01 local star2_`i' = "***" 
+			
+	local beta3_`i'  = _b[Q04_teaching_years]
+	local sigma3_`i' = _se[Q04_teaching_years]
+	local beta3_`i' : di %8.3f `beta3_`i''
+	local sigma3_`i' : di %8.3f `sigma3_`i''
+	matrix rtable = r(table)
+	local pvalue3_`i'  = rtable[4,3]  
+		local star`i' = ""
+		if `pvalue3_`i'' < 0.1 local star3_`i'= "*" 
+		if `pvalue3_`i'' < 0.05 local star3_`i' = "**" 
+		if `pvalue3_`i'' < 0.01 local star3_`i' = "***" 
+
+	local beta4_`i'  = _b[wvs]
+	local sigma4_`i' = _se[wvs]
+	local beta4_`i' : di %8.3f `beta4_`i''
+	local sigma4_`i' : di %8.3f `sigma4_`i''
+	matrix rtable = r(table)
+	local pvalue4_`i'  = rtable[4,4]  
+		local star`i' = ""
+		if `pvalue4_`i'' < 0.1 local star4_`i'= "*" 
+		if `pvalue4_`i'' < 0.05 local star4_`i' = "**" 
+		if `pvalue4_`i'' < 0.01 local star4_`i' = "***" 
+		
+	local N`i' =  e(N)
+	local R`i' = e(r2) 
+	local R`i' : di %8.3f `R`i''
+	
+	file write soutput " Female  						& `beta_1' &  &  &  &  &  &  `beta1_5' &  					`beta1_6'    \\" _n
+	file write soutput "   								& (`sigma_1') &  &  &  &  &  	 &  (`sigma1_5')		   &  (`sigma1_6')      \\" _n
+	file write soutput " Born in the North  			&  & `beta_2' &  &  &  &  &  `beta2_5' &  					`beta2_6'    \\" _n
+	file write soutput "   								&  & (`sigma_2') &  &  &  &  	 &  (`sigma2_5')		   &  (`sigma2_6')      \\" _n
+	file write soutput " Experience/10 years  			&  &  & `beta_3' &  &  &  &  `beta3_5' &  					`beta3_6'    \\" _n
+	file write soutput "   								&  &  & (`sigma_3') &  &  &  	 &  (`sigma3_5')		   &  (`sigma3_6')      \\" _n
+	file write soutput " WVS Immigrants' Rights to Job  &  &  &  &`beta_4'  &  &  &  `beta4_5' &  					`beta4_6'    \\" _n
+	file write soutput "   								&  &  &  & (`sigma_4') &  &  	 &  (`sigma4_5')		   &  (`sigma4_6')      \\" _n
+	file write soutput"\midrule"  _n
+	file write soutput " School FE						& No & No & No & No &  &  & No &  Yes      \\" _n
+	file write soutput"\midrule"  _n
+	file write soutput " Obs  & `N1' &  `N2' &  `N3' &   `N4'    &    &    &  `N5'  &   `N6'    \\" _n
+	file write soutput " R$^2$  & `R1' & `R2' & `R3' &  `R4'    &    &  & `R5'  & `R6'    \\" _n
+
+	file write soutput "  \hline \hline" _n
+	file write soutput "\end{tabular}" _n
+	file close soutput
+
+** -----------------------------------------------------------------------------
+**# Table 3: Bias in Grading and Teachers' IAT scores
+** -----------------------------------------------------------------------------
+
+use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment.dta",clear
+	
+eststo clear
+est drop _all
+
+
+
+foreach outcome in grade_8  {
+	
+	*1
+	reghdfe `outcome'  immigrant  $invalsi3 $cohort if IAT!=., absorb(i.teacher_id)  cluster(teacher_id) 
+
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"No"
+		estadd local stu_control_imm	"No"
+		estadd local tcr_control_imm	"No"
+	
+	est store `outcome'_1
+	
+	*2
+	reghdfe `outcome'  imm_IAT immigrant  $invalsi3 $cohort if IAT!=. , absorb(i.teacher_id)  cluster(teacher_id) 
+
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"No"
+		estadd local stu_control_imm	"No"
+		estadd local tcr_control_imm	"No"
+		
+	est store `outcome'_2	
+	
+	*3
+	reghdfe `outcome'  imm_IAT immigrant  $invalsi3 $cohort $controls $tech_controls if IAT!=. , absorb(i.teacher_id)  cluster(teacher_id)
+
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"Yes"
+		estadd local stu_control_imm	"Yes"
+		estadd local tcr_control_imm	"Yes"
+		
+	est store `outcome'_3
+	
+	*4
+	reghdfe `outcome'  immigrant  $invalsi3 $cohort if IAT!=. & invalsi>2, absorb(i.teacher_id)  cluster(teacher_id) 
+
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"No"
+		estadd local stu_control_imm	"No"
+		estadd local tcr_control_imm	"No"
+		
+	est store `outcome'_4
+	
+	*5
+	reghdfe `outcome'  imm_IAT immigrant  $invalsi3 $cohort if IAT!=. & invalsi>2 , absorb(i.teacher_id)  cluster(teacher_id) 
+	
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"No"
+		estadd local stu_control_imm	"No"
+		estadd local tcr_control_imm	"No"
+		
+	est store `outcome'_5	
+	
+	*6
+	reghdfe `outcome'  imm_IAT immigrant  $invalsi3 $cohort $controls $tech_controls if IAT!=. & invalsi>2 , absorb(i.teacher_id)  cluster(teacher_id) 
+	
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"Yes"
+		estadd local stu_control_imm	"Yes"
+		estadd local tcr_control_imm	"Yes"
+		
+	est store `outcome'_6
+	
+	*7
+	reghdfe `outcome' immigrant  $invalsi3 $cohort if IAT!=. & invalsi<3, absorb(i.teacher_id)  cluster(teacher_id)
+	
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"No"
+		estadd local stu_control_imm	"No"
+		estadd local tcr_control_imm	"No"
+		
+	est store `outcome'_7
+	
+	*8
+	reghdfe `outcome'  imm_IAT immigrant  $invalsi3 $cohort if IAT!=. & invalsi<3, absorb(i.teacher_id)  cluster(teacher_id) 
+	
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"No"
+		estadd local stu_control_imm	"No"
+		estadd local tcr_control_imm	"No"
+		
+	est store `outcome'_8	
+	
+	*9
+	reghdfe `outcome'  imm_IAT immigrant  $invalsi3 $cohort $controls $tech_controls if IAT!=. & invalsi<3 , absorb(i.teacher_id)  cluster(teacher_id) 
+	
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"Yes"
+		estadd local stu_control_imm	"Yes"
+		estadd local tcr_control_imm	"Yes"
+		
+	est store `outcome'_9  
+
+* PANEL A
+esttab  `outcome'_1 `outcome'_2 `outcome'_3 using "$tables/T3bias_grading_subject_`outcome'.tex", /// 
+prehead("\begin{tabular}{lccc} \toprule \multicolumn{4}{l}{\textbf{Dependent Variable: Teacher Grade}} \\ \midrule") ///
+posthead("\hline \textit{Panel A: All} \\") ///
+cells(b(fmt(3)) se(par fmt(3))) ///
+stats(N r2, labels("\hline Obs." "\(R^{2}\)") fmt(0 3)) nostar ///
+keep(imm_IAT immigrant)  ///
+collabels(none) ///
+fragment ///
+nolines noomitted noobs noconstant nomtitles ///
+label ///
+replace
+
+* PANEL B
+ 
+esttab `outcome'_4 `outcome'_5 `outcome'_6 using "$tables/T3bias_grading_subject_`outcome'.tex", ///
+posthead("\midrule \textit{Panel B: High Ability} \\") ///
+cells(b(fmt(3)) se(par fmt(3))) ///
+stats(N r2 , labels("\hline Obs." "\(R^{2}\)") fmt(0 3)) nostar ///
+keep(imm_IAT immigrant)  ///
+fragment ///
+append ///
+collabels(none) ///
+nomtitles nonumbers nolines noomitted nobaselevels noobs noconstant ///
+label
+* PANEL C
+ 
+esttab `outcome'_7 `outcome'_8 `outcome'_9 using "$tables/T3bias_grading_subject_`outcome'.tex", ///
+posthead("\midrule \textit{Panel C: Low Ability} \\") ///
+cells(b(fmt(3)) se(par fmt(3))) ///
+stats(N r2 fe invalsi3 stu_control stu_control_imm tcr_control_imm, labels("\hline Obs." "\(R^{2}\)" "\midrule Teacher FE" "INVALSI cubic" "Student Controls" "Student Controls*Imm" "Teacher Controls*Imm") fmt(0 3)) ///
+keep(imm_IAT immigrant)  ///
+nostar ///
+fragment ///
+append ///
+collabels(none) ///
+nomtitles nonumbers nolines noomitted noobs nobaselevels noconstant ///
+postfoot("\bottomrule \end{tabular}}") ///
+label
+		  
+}
+
+
+** -----------------------------------------------------------------------------
+**# Table 4: Impact of revealing stereotypes to teachers on grades and on the 
+* 			 probability of failing students
+** -----------------------------------------------------------------------------
+
+use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment.dta",clear
+
+
+ lab var randomization_feedback "IAT Feedback"
+  lab var imm_randomization_feedback "IAT Feedback*Immigrant"
+	
+	* Restrict sample *****************
+	keep if IAT!=.
+	keep if grade_genIII!=.
+	drop if school_id==101 
+	keep if randomization_feedback!=.
+	keep if grade_genIII!=.
+	keep if iat_done==1
+	***********************************
+
+	cap file close soutput
+	
+	file open soutput using "$tables/T4teacher_revealbias.tex", write replace
+	file write soutput "\begin{tabular}{lcccccc}"_n
+	file write soutput "\toprule"_n
+	file write soutput "& (1) & (2) & (3) & (4) & (5) & (6) \\"_n
+	file write soutput "\hline"_n
+	file write soutput "\multicolumn{7}{l}{\textbf{Panel A: Intention to Treat}} \\"_n
+	file write soutput "\midrule \\"_n
+	file write soutput "\multicolumn{1}{l}{\textbf{Dependent Variable:}} & \multicolumn{3}{c}{\textbf{Grade}} & \multicolumn{3}{c}{\textbf{Fail (Grade $<$ 6)}}\\"_n
+	file write soutput "\cmidrule(lr){2-4} \cmidrule(lr){5-7}"_n
+
+	
+	local i = 1
+*** Experiment 1
+
+	* 1) 
+	reg grade_genIII imm_randomization_feedback immigrant randomization_feedback, robust  cluster (school_id)
+	
+	local beta1_`i'  = _b[imm_randomization_feedback]
+	local sigma1_`i' = _se[imm_randomization_feedback]
+	local beta1_`i' : di %8.3f `beta1_`i''
+	local sigma1_`i' : di %8.3f `sigma1_`i''
+	matrix rtable = r(table)
+	
+	local pvalue1_`i'  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue1_`i'' < 0.1 local star1_`i'= "*" 
+		if `pvalue1_`i'' < 0.05 local star1_`i' = "**" 
+		if `pvalue1_`i'' < 0.01 local star1_`i' = "***" 
+
+	local beta2_`i'  = _b[immigrant]
+	local sigma2_`i' = _se[immigrant]
+	local beta2_`i' : di %8.3f `beta2_`i''
+	local sigma2_`i' : di %8.3f `sigma2_`i''
+	matrix rtable = r(table)
+		local pvalue2_`i'  = rtable[4,2]  
+		local star`i' = ""
+		if `pvalue2_`i'' < 0.1 local star2_`i'= "*" 
+		if `pvalue2_`i'' < 0.05 local star2_`i' = "**" 
+		if `pvalue2_`i'' < 0.01 local star2_`i' = "***" 
+			
+	local beta3_`i'  = _b[randomization_feedback]
+	local sigma3_`i' = _se[randomization_feedback]
+	local beta3_`i' : di %8.3f `beta3_`i''
+	local sigma3_`i' : di %8.3f `sigma3_`i''
+	matrix rtable = r(table)
+	local pvalue3_`i'  = rtable[4,3]  
+		local star`i' = ""
+		if `pvalue3_`i'' < 0.1 local star3_`i'= "*" 
+		if `pvalue3_`i'' < 0.05 local star3_`i' = "**" 
+		if `pvalue3_`i'' < 0.01 local star3_`i' = "***"
+
+		local N`i' =  e(N)
+		local Rt = e(r2) 
+		local R`i' : di %8.3f `Rt'
+	*2 
+	reg grade_genIII imm_randomization_feedback immigrant randomization_feedback $controls, robust cluster (school_id)
+	
+	local ++ i
+	local beta1_`i'  = _b[imm_randomization_feedback]
+	local sigma1_`i' = _se[imm_randomization_feedback]
+	local beta1_`i' : di %8.3f `beta1_`i''
+	local sigma1_`i' : di %8.3f `sigma1_`i''
+	matrix rtable = r(table)
+	
+	local pvalue1_`i'  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue1_`i'' < 0.1 local star1_`i'= "*" 
+		if `pvalue1_`i'' < 0.05 local star1_`i' = "**" 
+		if `pvalue1_`i'' < 0.01 local star1_`i' = "***" 
+
+	local beta2_`i'  = _b[immigrant]
+	local sigma2_`i' = _se[immigrant]
+	local beta2_`i' : di %8.3f `beta2_`i''
+	local sigma2_`i' : di %8.3f `sigma2_`i''
+	matrix rtable = r(table)
+		local pvalue2_`i'  = rtable[4,2]  
+		local star`i' = ""
+		if `pvalue2_`i'' < 0.1 local star2_`i'= "*" 
+		if `pvalue2_`i'' < 0.05 local star2_`i' = "**" 
+		if `pvalue2_`i'' < 0.01 local star2_`i' = "***" 
+			
+	local beta3_`i'  = _b[randomization_feedback]
+	local sigma3_`i' = _se[randomization_feedback]
+	local beta3_`i' : di %8.3f `beta3_`i''
+	local sigma3_`i' : di %8.3f `sigma3_`i''
+	matrix rtable = r(table)
+	local pvalue3_`i'  = rtable[4,3]  
+		local star`i' = ""
+		if `pvalue3_`i'' < 0.1 local star3_`i'= "*" 
+		if `pvalue3_`i'' < 0.05 local star3_`i' = "**" 
+		if `pvalue3_`i'' < 0.01 local star3_`i' = "***"
+		local N`i' =  e(N)
+		local Rt = e(r2) 
+		local R`i' : di %8.3f `Rt'	
+	*3)
+	reg grade_genIII imm_randomization_feedback immigrant randomization_feedback $controls $tech_controls , robust cluster (school_id)
+	
+	local ++ i
+	local beta1_`i'  = _b[imm_randomization_feedback]
+	local sigma1_`i' = _se[imm_randomization_feedback]
+	local beta1_`i' : di %8.3f `beta1_`i''
+	local sigma1_`i' : di %8.3f `sigma1_`i''
+	matrix rtable = r(table)
+	
+	local pvalue1_`i'  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue1_`i'' < 0.1 local star1_`i'= "*" 
+		if `pvalue1_`i'' < 0.05 local star1_`i' = "**" 
+		if `pvalue1_`i'' < 0.01 local star1_`i' = "***" 
+
+	local beta2_`i'  = _b[immigrant]
+	local sigma2_`i' = _se[immigrant]
+	local beta2_`i' : di %8.3f `beta2_`i''
+	local sigma2_`i' : di %8.3f `sigma2_`i''
+	matrix rtable = r(table)
+		local pvalue2_`i'  = rtable[4,2]  
+		local star`i' = ""
+		if `pvalue2_`i'' < 0.1 local star2_`i'= "*" 
+		if `pvalue2_`i'' < 0.05 local star2_`i' = "**" 
+		if `pvalue2_`i'' < 0.01 local star2_`i' = "***" 
+			
+	local beta3_`i'  = _b[randomization_feedback]
+	local sigma3_`i' = _se[randomization_feedback]
+	local beta3_`i' : di %8.3f `beta3_`i''
+	local sigma3_`i' : di %8.3f `sigma3_`i''
+	matrix rtable = r(table)
+	local pvalue3_`i'  = rtable[4,3]  
+		local star`i' = ""
+		if `pvalue3_`i'' < 0.1 local star3_`i'= "*" 
+		if `pvalue3_`i'' < 0.05 local star3_`i' = "**" 
+		if `pvalue3_`i'' < 0.01 local star3_`i' = "***"
+		local N`i' =  e(N)
+		local Rt = e(r2) 
+		local R`i' : di %8.3f `Rt'	
+	*1)
+	reg fail imm_randomization_feedback immigrant randomization_feedback, robust  cluster (school_id)
+	
+	local ++ i
+	local beta1_`i'  = _b[imm_randomization_feedback]
+	local sigma1_`i' = _se[imm_randomization_feedback]
+	local beta1_`i' : di %8.3f `beta1_`i''
+	local sigma1_`i' : di %8.3f `sigma1_`i''
+	matrix rtable = r(table)
+	
+	local pvalue1_`i'  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue1_`i'' < 0.1 local star1_`i'= "*" 
+		if `pvalue1_`i'' < 0.05 local star1_`i' = "**" 
+		if `pvalue1_`i'' < 0.01 local star1_`i' = "***" 
+
+	local beta2_`i'  = _b[immigrant]
+	local sigma2_`i' = _se[immigrant]
+	local beta2_`i' : di %8.3f `beta2_`i''
+	local sigma2_`i' : di %8.3f `sigma2_`i''
+	matrix rtable = r(table)
+		local pvalue2_`i'  = rtable[4,2]  
+		local star`i' = ""
+		if `pvalue2_`i'' < 0.1 local star2_`i'= "*" 
+		if `pvalue2_`i'' < 0.05 local star2_`i' = "**" 
+		if `pvalue2_`i'' < 0.01 local star2_`i' = "***" 
+			
+	local beta3_`i'  = _b[randomization_feedback]
+	local sigma3_`i' = _se[randomization_feedback]
+	local beta3_`i' : di %8.3f `beta3_`i''
+	local sigma3_`i' : di %8.3f `sigma3_`i''
+	matrix rtable = r(table)
+	local pvalue3_`i'  = rtable[4,3]  
+		local star`i' = ""
+		if `pvalue3_`i'' < 0.1 local star3_`i'= "*" 
+		if `pvalue3_`i'' < 0.05 local star3_`i' = "**" 
+		if `pvalue3_`i'' < 0.01 local star3_`i' = "***"
+		local N`i' =  e(N)
+		local Rt = e(r2) 
+		local R`i' : di %8.3f `Rt'	
+	*2)
+	reg fail imm_randomization_feedback immigrant randomization_feedback $controls, robust cluster (school_id)
+	
+	local ++ i
+	local beta1_`i'  = _b[imm_randomization_feedback]
+	local sigma1_`i' = _se[imm_randomization_feedback]
+	local beta1_`i' : di %8.3f `beta1_`i''
+	local sigma1_`i' : di %8.3f `sigma1_`i''
+	matrix rtable = r(table)
+	
+	local pvalue1_`i'  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue1_`i'' < 0.1 local star1_`i'= "*" 
+		if `pvalue1_`i'' < 0.05 local star1_`i' = "**" 
+		if `pvalue1_`i'' < 0.01 local star1_`i' = "***" 
+
+	local beta2_`i'  = _b[immigrant]
+	local sigma2_`i' = _se[immigrant]
+	local beta2_`i' : di %8.3f `beta2_`i''
+	local sigma2_`i' : di %8.3f `sigma2_`i''
+	matrix rtable = r(table)
+		local pvalue2_`i'  = rtable[4,2]  
+		local star`i' = ""
+		if `pvalue2_`i'' < 0.1 local star2_`i'= "*" 
+		if `pvalue2_`i'' < 0.05 local star2_`i' = "**" 
+		if `pvalue2_`i'' < 0.01 local star2_`i' = "***" 
+			
+	local beta3_`i'  = _b[randomization_feedback]
+	local sigma3_`i' = _se[randomization_feedback]
+	local beta3_`i' : di %8.3f `beta3_`i''
+	local sigma3_`i' : di %8.3f `sigma3_`i''
+	matrix rtable = r(table)
+	local pvalue3_`i'  = rtable[4,3]  
+		local star`i' = ""
+		if `pvalue3_`i'' < 0.1 local star3_`i'= "*" 
+		if `pvalue3_`i'' < 0.05 local star3_`i' = "**" 
+		if `pvalue3_`i'' < 0.01 local star3_`i' = "***"
+		local N`i' =  e(N)
+		local Rt = e(r2) 
+		local R`i' : di %8.3f `Rt'	
+	*3)
+	reg fail imm_randomization_feedback immigrant randomization_feedback $controls $tech_controls , robust cluster (school_id)
+	
+	local ++ i
+	local beta1_`i'  = _b[imm_randomization_feedback]
+	local sigma1_`i' = _se[imm_randomization_feedback]
+	local beta1_`i' : di %8.3f `beta1_`i''
+	local sigma1_`i' : di %8.3f `sigma1_`i''
+	matrix rtable = r(table)
+	
+	local pvalue1_`i'  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue1_`i'' < 0.1 local star1_`i'= "*" 
+		if `pvalue1_`i'' < 0.05 local star1_`i' = "**" 
+		if `pvalue1_`i'' < 0.01 local star1_`i' = "***" 
+
+	local beta2_`i'  = _b[immigrant]
+	local sigma2_`i' = _se[immigrant]
+	local beta2_`i' : di %8.3f `beta2_`i''
+	local sigma2_`i' : di %8.3f `sigma2_`i''
+	matrix rtable = r(table)
+		local pvalue2_`i'  = rtable[4,2]  
+		local star`i' = ""
+		if `pvalue2_`i'' < 0.1 local star2_`i'= "*" 
+		if `pvalue2_`i'' < 0.05 local star2_`i' = "**" 
+		if `pvalue2_`i'' < 0.01 local star2_`i' = "***" 
+			
+	local beta3_`i'  = _b[randomization_feedback]
+	local sigma3_`i' = _se[randomization_feedback]
+	local beta3_`i' : di %8.3f `beta3_`i''
+	local sigma3_`i' : di %8.3f `sigma3_`i''
+	matrix rtable = r(table)
+	local pvalue3_`i'  = rtable[4,3]  
+		local star`i' = ""
+		if `pvalue3_`i'' < 0.1 local star3_`i'= "*" 
+		if `pvalue3_`i'' < 0.05 local star3_`i' = "**" 
+		if `pvalue3_`i'' < 0.01 local star3_`i' = "***"
+		local N`i' =  e(N)
+		local Rt = e(r2) 
+		local R`i' : di %8.3f `Rt'	
+*** LATE
+	file write soutput "IAT Feedback*Immigrant & `beta1_1'		 & `beta1_2'		  & `beta1_3'			 & `beta1_4'			 & `beta1_5'			 & `beta1_6' \\" _n
+	file write soutput "  						  & (`sigma1_1') 	   & (`sigma1_2')		 & (`sigma1_3') 	  & (`sigma1_4') 	   & (`sigma1_5') 	 	& (`sigma1_6') \\" _n
+	file write soutput "Immigrant  			  & `beta2_1'		 & `beta2_2'		  & `beta2_3'			 & `beta2_4'			 & `beta2_5'			 & `beta2_6' \\" _n
+	file write soutput "   			  			  & (`sigma2_1') 	   & (`sigma2_2') 		 & (`sigma2_3')       & (`sigma2_4') 	   & (`sigma2_5') 		& (`sigma2_6') \\" _n
+	file write soutput "IAT Feedback  		  & `beta3_1'		 &  `beta3_2'		  & `beta3_3'			 & `beta3_4'			 & `beta3_5'			 & `beta3_6' \\" _n
+	file write soutput "   			  			  & (`sigma3_1') 	   & (`sigma3_2') 		 & (`sigma3_3') 	  & (`sigma3_4') 	   & (`sigma3_5') 		& (`sigma3_6') \\" _n
+	file write soutput " \hline" _n
+	file write soutput " Obs  & `N1' &  `N2' &  `N3' &   `N4'    &   `N5'  &   `N6'      \\" _n
+	file write soutput " R$^2$  & `R1' & `R2' & `R3' &  `R4'    &  `R5'  & `R6'    \\" _n
+	file write soutput " \midrule"
+	file write soutput " \\"
+	file write soutput "\multicolumn{7}{l}{\textbf{Panel B: Local Average Treatment Effect}} \\"_n
+	file write soutput "\midrule \\"_n
+	file write soutput "\multicolumn{1}{l}{\textbf{Dependent Variable:}} & \multicolumn{3}{c}{\textbf{Grade}} & \multicolumn{3}{c}{\textbf{Fail (Grade $<$ 6)}}\\"_n
+	file write soutput "\cmidrule(lr){2-4} \cmidrule(lr){5-7}"_n
+	
+	
+	ivreg2 grade_genIII (yesemailtreat imm_yesemailtreat= randomization_feedback imm_randomization_feedback)  immigrant , robust  cluster (school_id)
+	
+	local i=1
+	local beta1_`i'  = _b[imm_yesemailtreat]
+	local sigma1_`i' = _se[imm_yesemailtreat]
+	local beta1_`i' : di %8.3f `beta1_`i''
+	local sigma1_`i' : di %8.3f `sigma1_`i''
+	matrix rtable = r(table)
+	
+	local pvalue1_`i'  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue1_`i'' < 0.1 local star1_`i'= "*" 
+		if `pvalue1_`i'' < 0.05 local star1_`i' = "**" 
+		if `pvalue1_`i'' < 0.01 local star1_`i' = "***" 
+
+	local beta2_`i'  = _b[immigrant]
+	local sigma2_`i' = _se[immigrant]
+	local beta2_`i' : di %8.3f `beta2_`i''
+	local sigma2_`i' : di %8.3f `sigma2_`i''
+	matrix rtable = r(table)
+		local pvalue2_`i'  = rtable[4,2]  
+		local star`i' = ""
+		if `pvalue2_`i'' < 0.1 local star2_`i'= "*" 
+		if `pvalue2_`i'' < 0.05 local star2_`i' = "**" 
+		if `pvalue2_`i'' < 0.01 local star2_`i' = "***" 
+			
+	local beta3_`i'  = _b[yesemailtreat]
+	local sigma3_`i' = _se[yesemailtreat]
+	local beta3_`i' : di %8.3f `beta3_`i''
+	local sigma3_`i' : di %8.3f `sigma3_`i''
+	matrix rtable = r(table)
+	local pvalue3_`i'  = rtable[4,3]  
+		local star`i' = ""
+		if `pvalue3_`i'' < 0.1 local star3_`i'= "*" 
+		if `pvalue3_`i'' < 0.05 local star3_`i' = "**" 
+		if `pvalue3_`i'' < 0.01 local star3_`i' = "***"
+		
+	ivreg2 grade_genIII (yesemailtreat imm_yesemailtreat= randomization_feedback imm_randomization_feedback)  immigrant $controls , robust  cluster (school_id)
+	
+		local ++ i
+	local beta1_`i'  = _b[imm_yesemailtreat]
+	local sigma1_`i' = _se[imm_yesemailtreat]
+	local beta1_`i' : di %8.3f `beta1_`i''
+	local sigma1_`i' : di %8.3f `sigma1_`i''
+	matrix rtable = r(table)
+	
+	local pvalue1_`i'  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue1_`i'' < 0.1 local star1_`i'= "*" 
+		if `pvalue1_`i'' < 0.05 local star1_`i' = "**" 
+		if `pvalue1_`i'' < 0.01 local star1_`i' = "***" 
+
+	local beta2_`i'  = _b[immigrant]
+	local sigma2_`i' = _se[immigrant]
+	local beta2_`i' : di %8.3f `beta2_`i''
+	local sigma2_`i' : di %8.3f `sigma2_`i''
+	matrix rtable = r(table)
+		local pvalue2_`i'  = rtable[4,2]  
+		local star`i' = ""
+		if `pvalue2_`i'' < 0.1 local star2_`i'= "*" 
+		if `pvalue2_`i'' < 0.05 local star2_`i' = "**" 
+		if `pvalue2_`i'' < 0.01 local star2_`i' = "***" 
+			
+	local beta3_`i'  = _b[yesemailtreat]
+	local sigma3_`i' = _se[yesemailtreat]
+	local beta3_`i' : di %8.3f `beta3_`i''
+	local sigma3_`i' : di %8.3f `sigma3_`i''
+	matrix rtable = r(table)
+	local pvalue3_`i'  = rtable[4,3]  
+		local star`i' = ""
+		if `pvalue3_`i'' < 0.1 local star3_`i'= "*" 
+		if `pvalue3_`i'' < 0.05 local star3_`i' = "**" 
+		if `pvalue3_`i'' < 0.01 local star3_`i' = "***"
+	
+	ivreg2 grade_genIII (yesemailtreat imm_yesemailtreat= randomization_feedback imm_randomization_feedback)  immigrant $controls $tech_controls, robust  cluster (school_id)
+	
+		local ++ i
+	local beta1_`i'  = _b[imm_yesemailtreat]
+	local sigma1_`i' = _se[imm_yesemailtreat]
+	local beta1_`i' : di %8.3f `beta1_`i''
+	local sigma1_`i' : di %8.3f `sigma1_`i''
+	matrix rtable = r(table)
+	
+	local pvalue1_`i'  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue1_`i'' < 0.1 local star1_`i'= "*" 
+		if `pvalue1_`i'' < 0.05 local star1_`i' = "**" 
+		if `pvalue1_`i'' < 0.01 local star1_`i' = "***" 
+
+	local beta2_`i'  = _b[immigrant]
+	local sigma2_`i' = _se[immigrant]
+	local beta2_`i' : di %8.3f `beta2_`i''
+	local sigma2_`i' : di %8.3f `sigma2_`i''
+	matrix rtable = r(table)
+		local pvalue2_`i'  = rtable[4,2]  
+		local star`i' = ""
+		if `pvalue2_`i'' < 0.1 local star2_`i'= "*" 
+		if `pvalue2_`i'' < 0.05 local star2_`i' = "**" 
+		if `pvalue2_`i'' < 0.01 local star2_`i' = "***" 
+			
+	local beta3_`i'  = _b[yesemailtreat]
+	local sigma3_`i' = _se[yesemailtreat]
+	local beta3_`i' : di %8.3f `beta3_`i''
+	local sigma3_`i' : di %8.3f `sigma3_`i''
+	matrix rtable = r(table)
+	local pvalue3_`i'  = rtable[4,3]  
+		local star`i' = ""
+		if `pvalue3_`i'' < 0.1 local star3_`i'= "*" 
+		if `pvalue3_`i'' < 0.05 local star3_`i' = "**" 
+		if `pvalue3_`i'' < 0.01 local star3_`i' = "***"
+	
+	****
+
+	ivreg2 fail (yesemailtreat imm_yesemailtreat= randomization_feedback imm_randomization_feedback)  immigrant , robust  cluster (school_id)
+	
+	local ++i
+	local beta1_`i'  = _b[imm_yesemailtreat]
+	local sigma1_`i' = _se[imm_yesemailtreat]
+	local beta1_`i' : di %8.3f `beta1_`i''
+	local sigma1_`i' : di %8.3f `sigma1_`i''
+	matrix rtable = r(table)
+	
+	local pvalue1_`i'  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue1_`i'' < 0.1 local star1_`i'= "*" 
+		if `pvalue1_`i'' < 0.05 local star1_`i' = "**" 
+		if `pvalue1_`i'' < 0.01 local star1_`i' = "***" 
+
+	local beta2_`i'  = _b[immigrant]
+	local sigma2_`i' = _se[immigrant]
+	local beta2_`i' : di %8.3f `beta2_`i''
+	local sigma2_`i' : di %8.3f `sigma2_`i''
+	matrix rtable = r(table)
+		local pvalue2_`i'  = rtable[4,2]  
+		local star`i' = ""
+		if `pvalue2_`i'' < 0.1 local star2_`i'= "*" 
+		if `pvalue2_`i'' < 0.05 local star2_`i' = "**" 
+		if `pvalue2_`i'' < 0.01 local star2_`i' = "***" 
+			
+	local beta3_`i'  = _b[yesemailtreat]
+	local sigma3_`i' = _se[yesemailtreat]
+	local beta3_`i' : di %8.3f `beta3_`i''
+	local sigma3_`i' : di %8.3f `sigma3_`i''
+	matrix rtable = r(table)
+	local pvalue3_`i'  = rtable[4,3]  
+		local star`i' = ""
+		if `pvalue3_`i'' < 0.1 local star3_`i'= "*" 
+		if `pvalue3_`i'' < 0.05 local star3_`i' = "**" 
+		if `pvalue3_`i'' < 0.01 local star3_`i' = "***"
+		
+	ivreg2 fail (yesemailtreat imm_yesemailtreat= randomization_feedback imm_randomization_feedback)  immigrant $controls , robust  cluster (school_id)
+	
+		local ++ i
+	local beta1_`i'  = _b[imm_yesemailtreat]
+	local sigma1_`i' = _se[imm_yesemailtreat]
+	local beta1_`i' : di %8.3f `beta1_`i''
+	local sigma1_`i' : di %8.3f `sigma1_`i''
+	matrix rtable = r(table)
+	
+	local pvalue1_`i'  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue1_`i'' < 0.1 local star1_`i'= "*" 
+		if `pvalue1_`i'' < 0.05 local star1_`i' = "**" 
+		if `pvalue1_`i'' < 0.01 local star1_`i' = "***" 
+
+	local beta2_`i'  = _b[immigrant]
+	local sigma2_`i' = _se[immigrant]
+	local beta2_`i' : di %8.3f `beta2_`i''
+	local sigma2_`i' : di %8.3f `sigma2_`i''
+	matrix rtable = r(table)
+		local pvalue2_`i'  = rtable[4,2]  
+		local star`i' = ""
+		if `pvalue2_`i'' < 0.1 local star2_`i'= "*" 
+		if `pvalue2_`i'' < 0.05 local star2_`i' = "**" 
+		if `pvalue2_`i'' < 0.01 local star2_`i' = "***" 
+			
+	local beta3_`i'  = _b[yesemailtreat]
+	local sigma3_`i' = _se[yesemailtreat]
+	local beta3_`i' : di %8.3f `beta3_`i''
+	local sigma3_`i' : di %8.3f `sigma3_`i''
+	matrix rtable = r(table)
+	local pvalue3_`i'  = rtable[4,3]  
+		local star`i' = ""
+		if `pvalue3_`i'' < 0.1 local star3_`i'= "*" 
+		if `pvalue3_`i'' < 0.05 local star3_`i' = "**" 
+		if `pvalue3_`i'' < 0.01 local star3_`i' = "***"
+	
+	ivreg2 fail (yesemailtreat imm_yesemailtreat= randomization_feedback imm_randomization_feedback)  immigrant $controls $tech_controls, robust  cluster (school_id)
+	
+	local ++ i
+	local beta1_`i'  = _b[imm_yesemailtreat]
+	local sigma1_`i' = _se[imm_yesemailtreat]
+	local beta1_`i' : di %8.3f `beta1_`i''
+	local sigma1_`i' : di %8.3f `sigma1_`i''
+	matrix rtable = r(table)
+	
+	local pvalue1_`i'  = rtable[4,1]  
+		local star`i' = ""
+		if `pvalue1_`i'' < 0.1 local star1_`i'= "*" 
+		if `pvalue1_`i'' < 0.05 local star1_`i' = "**" 
+		if `pvalue1_`i'' < 0.01 local star1_`i' = "***" 
+
+	local beta2_`i'  = _b[immigrant]
+	local sigma2_`i' = _se[immigrant]
+	local beta2_`i' : di %8.3f `beta2_`i''
+	local sigma2_`i' : di %8.3f `sigma2_`i''
+	matrix rtable = r(table)
+		local pvalue2_`i'  = rtable[4,2]  
+		local star`i' = ""
+		if `pvalue2_`i'' < 0.1 local star2_`i'= "*" 
+		if `pvalue2_`i'' < 0.05 local star2_`i' = "**" 
+		if `pvalue2_`i'' < 0.01 local star2_`i' = "***" 
+			
+	local beta3_`i'  = _b[yesemailtreat]
+	local sigma3_`i' = _se[yesemailtreat]
+	local beta3_`i' : di %8.3f `beta3_`i''
+	local sigma3_`i' : di %8.3f `sigma3_`i''
+	matrix rtable = r(table)
+	local pvalue3_`i'  = rtable[4,3]  
+		local star`i' = ""
+		if `pvalue3_`i'' < 0.1 local star3_`i'= "*" 
+		if `pvalue3_`i'' < 0.05 local star3_`i' = "**" 
+		if `pvalue3_`i'' < 0.01 local star3_`i' = "***"
+		
+	file write soutput "Email*Immigrant & `beta1_1' 					& `beta1_2'  		& `beta1_3' 			& `beta1_4' 	&	 `beta1_5'		 & `beta1_6' \\" _n
+	file write soutput "  						  & (`sigma1_1') 	   & (`sigma1_2')		 & (`sigma1_3') 	  & (`sigma1_4') 	   & (`sigma1_5') 	 	& (`sigma1_6') \\" _n
+	file write soutput "Immigrant  	    & `beta2_1' 					& `beta2_2'  		& `beta2_3' 			& `beta2_4' 	&	 `beta2_5'		 & `beta2_6' \\" _n
+	file write soutput "   			  			  & (`sigma2_1') 	   & (`sigma2_2') 		 & (`sigma2_3')       & (`sigma2_4') 	   & (`sigma2_5') 		& (`sigma2_6') \\" _n
+	file write soutput "Email  		    & `beta3_1' 					&  `beta3_2' 		& `beta3_3' 			& `beta3_4' 	&	 `beta3_5'		 & `beta3_6' \\" _n
+	file write soutput "   			  			  & (`sigma3_1') 	   & (`sigma3_2') 		 & (`sigma3_3') 	  & (`sigma3_4') 	   & (`sigma3_5') 		& (`sigma3_6') \\" _n
+	
+	file write soutput " \hline"
+	file write soutput " Obs  & `N1' &  `N2' &  `N3' &   `N4'    &   `N5'  &   `N6'      \\" _n
+	file write soutput " R$^2$  & `R1' & `R2' & `R3' &  `R4'    &  `R5'  & `R6'    \\" _n
+	file write soutput "  \hline"_n
+	
+	
+	su grade_genIII if immigrant == 0 & yesemailtreat == 0
+	local meanc1_native : di %8.2f `r(mean)'
+	
+	su grade_genIII if immigrant == 1 & yesemailtreat == 0
+	local meanc1_imm : di %8.2f `r(mean)'
+	
+	su fail if immigrant == 0 & yesemailtreat == 0
+	local meanc2_native : di %8.2f `r(mean)'
+	
+	su fail if immigrant == 1 & yesemailtreat == 0
+	local meanc2_imm : di %8.2f `r(mean)'
+	
+	file write soutput " Mean Control Natives    & `meanc1_native' & `meanc1_native' & `meanc1_native' & `meanc2_native' & `meanc2_native' & `meanc2_native'  \\" _n
+	file write soutput " Mean Control Immigrants & `meanc1_imm'    & `meanc1_imm'    & `meanc1_imm'    & `meanc2_imm' & `meanc2_imm' & `meanc2_imm' \\" _n
+	file write soutput "  \hline" _n
+	file write soutput " Students Controls   &  No & Yes & Yes & No & Yes & Yes  \\" _n
+	file write soutput " Students Controls*Imm   &  No & Yes & Yes & No & Yes & Yes   \\" _n
+	file write soutput " Teacher Controls     &  No & No & Yes & No & No & Yes    \\" _n
+	file write soutput " Teacher Controls*Imm    &  No & No & Yes & No & No & Yes   \\" _n
+		
+	file write soutput "  \hline \hline" _n
+	file write soutput "\end{tabular}" _n
+	
+	file close soutput	
+	
+** -----------------------------------------------------------------------------
+**# Table 5: Impact of revealing stereotypes by IAT
+** -----------------------------------------------------------------------------'
+
+use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment.dta",clear
+	
+	* Restrict sample *****************
+	keep if IAT!=.
+	keep if grade_genIII!=.
+	drop if school_id==101 
+	keep if randomization_feedback!=.
+	keep if grade_genIII!=.
+	keep if iat_done==1
+	***********************************
+	
+	la def la_immigrant 1 "Immigrant" 0 "Native", modify
+	la val immigrant la_immigrant
+	
+	lab var immigrant "Immigrant"
+	lab var randomization_feedback "IAT Feedback"
+	lab var imm_randomization_feedback "IAT Feedback $\times$ Immigrant"
+	lab var rand_IAT "IAT Feedback $\times$ IAT Score"
+	lab var imm_rand_IAT "IAT Feedback $\times$ Immigrant $\times$ IAT Score"
+	lab var IAT "IAT Score"
+	lab var imm_IAT "Immigrant $\times$ IAT Score"
+	
+	preserve
+	
+	*IMMIGRANT								
+											*immigrant
+	*IAT FEEDBACK
+		rename randomization_feedback 		treat 
+	*IAT FEEDBACK x IMMIGRANT
+		rename imm_randomization_feedback   treat_immigrant
+	*IAT FEEDBACK x IAT SCORE
+		rename rand_IAT 					treat_IAT
+	*IAT FEEDBACK x IMMIGRANT x IAT SCORE
+		rename imm_rand_IAT					treat_immigrant_IAT		
+	*IAT SCORE								
+											*IAT		
+	*IMMIGRANT x IAT SCORE
+		rename imm_IAT						immigrant_IAT
+
+	lab var immigrant_IAT "Immigrant $\times$ IAT Score"
+
+	*1)
+	reg grade_genIII treat immigrant treat_immigrant  $controls $tech_controls , robust cluster (school_id)
+	su grade_genIII if treat == 0
+	estadd scalar cmean `r(mean)'
+	estadd local fe No
+	estadd local sc Yes
+	estadd local tc Yes
+	est store reg1
+	
+	*2)
+	reg grade_genIII treat immigrant treat_immigrant $controls $tech_controls treat_immigrant_IAT IAT immigrant_IAT treat_IAT , robust cluster (school_id)
+	su grade_genIII if treat == 0
+	estadd scalar cmean `r(mean)'
+	estadd local fe No
+	estadd local sc Yes
+	estadd local tc Yes
+	est store reg2
+
+	restore
+	
+	u "$data_final/AlesinaCarlanaLaFerraraPinotti_onlineexperiment.dta", replace
+	
+	
+	global student_covar2 "female_student class_*"
+	global covariates1_2 "female_teacher regionborn_1 regionborn_2 regionborn_3   before_first_reminder"
+	global covariates1_m2 ""
+	
+	la def la_imm 1 "Immigrant" 0 "Native"
+	la val immigrant la_imm
+	
+	la def la_treat 1 "IAT Feedback" 0 " ", modify
+	la val treat la_treat
+	
+	la de la_underestimate_IAT 1 "Underestimate own IAT"
+	la val underestimate_IAT la_underestimate_IAT
+	
+	gen fail=(grade_tassigned<6)
+	replace fail=. if grade_tassigned==.
+	
+	*IMMIGRANT								immigrant
+		lab var immigrant "Immigrant"
+	*IAT FEEDBACK							treat
+		lab var treat "IAT Feedback"
+	*IAT SCORE								IAT		
+		lab var IAT "IAT Score"
+	*IMMIGRANT x IAT SCORE
+		lab var IAT_imm "Immigrant $\times$ IAT Score"
+	
+	*IAT FEEDBACK x IMMIGRANT
+		gen  treat_immigrant = treat*immigrant 
+		lab var treat_immigrant "IAT Feedback $\times$ Immigrant"
+	*IAT FEEDBACK x IAT SCORE
+		gen  treat_IAT = treat*IAT 
+		lab var treat_IAT "IAT Feedback $\times$ IAT Score"
+	*IAT FEEDBACK x IMMIGRANT x IAT SCORE
+		gen  treat_immigrant_IAT = treat*immigrant*IAT 
+		lab var treat_immigrant_IAT "IAT Feedback $\times$ Immigrant $\times$ IAT Score"
+				
+		
+preserve
+	rename  IAT_imm immigrant_IAT
+	lab var immigrant_IAT "Immigrant $\times$ IAT Score"
+
+	
+	* 3)
+	reg fail treat immigrant treat_immigrant Math_Science Italian_History_Geography English i.order_question i.grade_orig $student_covar2 $covariates1_2 $covariates1_m2  , cluster(school_code) robust 
+	reg fail treat immigrant IAT treat_immigrant treat_IAT immigrant_IAT treat_immigrant_IAT iscongruentfirst  Math_Science Italian_History_Geography English i.order_question i.grade_orig $student_covar2 $covariates1_2 $covariates1_m2  , cluster(school_code) robust
+
+		
+	reg grade_tassigned treat immigrant treat_immigrant Math_Science Italian_History_Geography English i.order_question i.grade_orig $student_covar2 $covariates1_2 $covariates1_m2  , cluster(school_code) robust 
+	
+	su grade_tassigned if treat == 0
+	estadd scalar cmean `r(mean)'
+	estadd local fe Yes
+	estadd local sc Yes
+	estadd local tc Yes
+	est store reg3
+	
+		* 4)
+	reg grade_tassigned treat immigrant IAT treat_immigrant treat_IAT immigrant_IAT treat_immigrant_IAT iscongruentfirst  Math_Science Italian_History_Geography English i.order_question i.grade_orig $student_covar2 $covariates1_2 $covariates1_m2  , cluster(school_code) robust
+	
+	su grade_tassigned if treat == 0
+	estadd scalar cmean `r(mean)'
+	estadd local fe Yes
+	estadd local sc Yes
+	estadd local tc Yes
+	est store reg4
+	 
+esttab   reg1 reg2 reg3 reg4  ///
+			 using "$tables/T5results_experiments.tex", label replace ///
+		     nomtitle nostar noomit booktabs collabels(none) noconstant ///
+			 keep(treat immigrant IAT treat_immigrant treat_IAT treat_immigrant_IAT  immigrant_IAT) order(immigrant treat treat_immigrant treat_IAT treat_immigrant_IAT IAT immigrant_IAT) ///
+			 b(3) se(3)   ///
+			 stats(cmean N r2 fe sc tc, labels (`"Control Mean"' `"\midrule Obs."' `"\(R^{2}\)"' `"\midrule Subject, Order, Original Grade FE"' `"Student Controls"' `"Teacher Controls"') fmt(3 0 3)) ///
+			 prehead("\begin{tabular}{l*{4}{c}} \toprule \multicolumn{5}{l}{ {\bf Dependent Variable: Teacher-Assigned Grade}} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5} & \multicolumn{2}{l}{ {\bf Field Experiment}} & \multicolumn{2}{l}{ {\bf Online Experiment}} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}") ///
+		     postfoot("\bottomrule \end{tabular}")
+
+restore
+
+** -----------------------------------------------------------------------------
+**# Table 6: Impact of revealing stereotypes to teachers on grades (vs. general 
+	*		 debiasing) in the Online Experiment
+** -----------------------------------------------------------------------------
+
+
+eststo clear
+estimates drop _all
+
+	u "$data_final/AlesinaCarlanaLaFerraraPinotti_onlineexperiment.dta", replace
+	
+	global student_covar2 "female_student class_*"
+	global covariates1_2 "female_teacher regionborn_1 regionborn_2 regionborn_3   before_first_reminder"
+	global covariates1_m2 ""
+	
+	la def la_imm 1 "Immigrant" 0 "Native"
+	la val immigrant la_imm
+	
+	
+	la def la_treat 1 "IAT Feedback" 0 "Generic Debiasing", modify
+	la var treat
+	la val treat la_treat
+	
+	la var IAT "IAT Score"
+	la de la_underestimate_IAT 1 "Underestimate own IAT"
+	la val underestimate_IAT la_underestimate_IAT
+	lab var treat "IAT Feedback"
+	
+	la var IAT_imm "Immigrant x IAT Score"
+
+	gen 	cat_IAT=3 if IAT>0.6
+	replace cat_IAT=2 if IAT>0.35 & IAT<0.6
+	replace cat_IAT=1 if IAT>0.15 & IAT<0.35
+	replace cat_IAT=0 if IAT>-0.15 & IAT<0.15
+	replace cat_IAT=-1 if IAT>-0.35 & IAT<-0.15
+	replace cat_IAT=-2 if IAT>-0.6 & IAT<-0.35
+	replace cat_IAT=-3 if IAT<-0.6 & IAT!=.
+	
+	gen cat_IAT2=cat_IAT
+	replace cat_IAT2=0 if cat_IAT<0
+	replace cat_IAT2=1 if cat_IAT>1
+	*replace cat_IAT2=2 if cat_IAT>2
+	lab var cat_IAT2 "IAT$>$0.15"
+	
+	gen cat_IAT3=(IAT>0.35)
+	lab var cat_IAT3 "IAT$>$0.35"
+	la def la_cat_IAT3 1 "Moderate/Severe IAT" 0 "", modify
+	la var cat_IAT3
+	la val cat_IAT3 la_cat_IAT3
+
+	gen cat_IAT4=cat_IAT
+	replace cat_IAT4=0 if cat_IAT<0
+	replace cat_IAT4=1 if cat_IAT>1
+	replace cat_IAT4=2 if cat_IAT>2
+	lab var cat_IAT4 "IAT (3 categories)"
+	
+	
+	gen exp_cat_IAT=Q23_1_sortnames_diff_native-4	// put into same scale of IAT
+	
+	gen dif_exp_IAT=cat_IAT-exp_cat_IAT
+	
+	gen exp_cont_IAT=exp_cat_IAT
+	replace exp_cont_IAT=-0.77 if exp_cat_IAT==-3 
+	replace exp_cont_IAT=-0.475 if exp_cat_IAT==-2 //0
+	replace exp_cont_IAT=-0.25 if exp_cat_IAT==-1 //-0.24
+	replace exp_cont_IAT=0.25 if exp_cat_IAT==1 //0.30
+	replace exp_cont_IAT=0.475 if exp_cat_IAT==2 //0.50
+	replace exp_cont_IAT=1.01 if exp_cat_IAT==3
+					
+	gen dif_exp_IAT2=dif_exp_IAT
+	replace dif_exp_IAT2=0 if dif_exp_IAT<0
+	replace dif_exp_IAT2=1 if dif_exp_IAT>1
+
+	gen dif_exp_IAT4=dif_exp_IAT
+	replace dif_exp_IAT4=0 if dif_exp_IAT<0
+	replace dif_exp_IAT4=1 if dif_exp_IAT==2
+	replace dif_exp_IAT4=2 if dif_exp_IAT>2
+	lab var dif_exp_IAT4 "Dif IAT-Exp IAT (3 categories)"
+	
+	gen dif_exp_cont_IAT=IAT-exp_cont_IAT
+	lab var dif_exp_cont_IAT "Dif IAT-Exp IAT"
+	
+	gen dif_exp_cont_IAT_miss=(dif_exp_cont_IAT==.)
+	replace dif_exp_cont_IAT=0 if dif_exp_cont_IAT==.
+	
+	gen dif_exp_IAT_miss=(dif_exp_IAT==.)
+	replace dif_exp_IAT=0 if dif_exp_IAT==.
+	
+	
+	
+	
+* 1)
+	reg grade_tassigned treat##immigrant##cat_IAT3 iscongruentfirst  Math_Science Italian_History_Geography English i.order_question i.grade_orig $student_covar2 $covariates1_2 $covariates1_m2  , cluster(school_code) robust
+	
+	su grade_tassigned if treat == 0
+	estadd scalar cmean `r(mean)'
+	estadd local fe Yes
+	estadd local sc Yes
+	estadd local tc Yes
+	est store reg1
+	
+	* 2)
+	reg grade_tassigned treat##immigrant##underestimate_IAT treat##immigrant##underestimate_IAT_miss  Math_Science Italian_History_Geography English i.order_question i.grade_orig $student_covar2 $covariates1_2 $covariates1_m2, cluster(school_code) robust
+	
+	su grade_tassigned if treat == 0
+	estadd scalar cmean `r(mean)'
+	estadd local fe Yes
+	estadd local sc Yes
+	estadd local tc Yes
+	est store reg2
+	
+	* 3)
+	reg grade_tassigned treat##immigrant##underestimate_IAT immigrant##cat_IAT3  treat##immigrant##underestimate_IAT_miss   Math_Science Italian_History_Geography English i.order_question i.grade_orig $student_covar2 $covariates1_2 $covariates1_m2, cluster(school_code) robust 
+	
+	su grade_tassigned if treat == 0
+	estadd scalar cmean `r(mean)'
+	estadd local fe Yes
+	estadd local sc Yes
+	estadd local tc Yes
+	est store reg3
+
+	* 4)
+	reg grade_tassigned treat##immigrant##underestimate_IAT treat##immigrant##cat_IAT3  treat##immigrant##underestimate_IAT_miss   Math_Science Italian_History_Geography English i.order_question i.grade_orig $student_covar2 $covariates1_2 $covariates1_m2, cluster(school_code) robust 
+	
+	su grade_tassigned if treat == 0
+	estadd scalar cmean `r(mean)'
+	estadd local fe Yes
+	estadd local sc Yes
+	estadd local tc Yes
+	est store reg4
+
+	esttab   reg1 reg2 reg3 reg4   ///
+			 using "$tables/T6results_experiment2_beliefupdating.tex", ///
+			 label replace  ///
+		     nomtitle nostar noomit booktabs collabels(none) noconstant ///
+			 keep(1.treat 1.immigrant 1.treat#1.immigrant 1.cat_IAT3 1.treat#1.cat_IAT3 1.immigrant#1.cat_IAT3 1.treat#1.immigrant#1.cat_IAT3 1.underestimate_IAT 1.treat#1.underestimate_IAT 1.immigrant#1.underestimate_IAT 1.treat#1.immigrant#1.underestimate_IAT) ///
+			 b(3) se(3) ///
+			 nogaps stats(cmean N r2 fe sc tc, labels (`"Control Mean"' `"\midrule Obs."' `"\(R^{2}\)"' `"\midrule Subject, Order, Original Grade FE"' `"Student Controls"' `"Teacher Controls"') fmt(3 0 3)) ///
+			prehead("\begin{tabular}{l*{4}{c}} \toprule \multicolumn{6}{l}{ {\bf Dependent Variable: Teacher-Assigned Grade}} \\ \cmidrule(lr){2-5}") ///
+		  postfoot("\bottomrule \end{tabular}")
+
+********************************************************************************
+****************************** TABLES AND FIGURES ******************************	
+******************************      APPENDIX      ******************************
+********************************************************************************
+
+** -----------------------------------------------------------------------------
+**# Figure A.1: Teacher-assigned grades in Online Experiment vs. Original Grades
+** -----------------------------------------------------------------------------
+
+u "$data_final/AlesinaCarlanaLaFerraraPinotti_onlineexperiment.dta", replace
+
+	* Restrict sample *
+	keep if grade_tassigned!=.
+	*******************
+
+	binscatter grade_tassigned grade_orig, msymbol(circle) mcolor(maroon%20) lcolor(maroon) ///
+			   ytitle("Grade assigned by the teacher", margin(right)) ///
+			   xtitle("Original grade", margin(top)) scheme(small) nbins(10) ///
+			   graphregion(color(white)) name(graph_corr, replace)
+			   
+	graph display graph_corr
+
+graph export "$figuresAppendix/AF1correlation_graph.pdf", replace 
+
+		
+
+
+
+** -----------------------------------------------------------------------------
+**# Figure A.2: Correlation between Bias in Grading and IAT
+** -----------------------------------------------------------------------------
+
+
+*PANEL A : Correlation IAT Bias in Grading naive approach
+** -----------------------------------------------------------------------------
+ * Load data
+use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment.dta",clear
+*** Cleaning
+		
+	* Restrict sample
+	keep if grade_8!=.
+	keep if invalsi_8!=.
+	keep if teacher_id!=.
+	** Keep only who has at least one italian and one immigrant
+	g 		no_immigrant = immigrant == 0
+	replace no_immigrant = . if mi(immigrant)
+	bys 	teacher_id: egen count_stud_imm=sum(immigrant) // 621 obs == 0
+	bys 	teacher_id: egen count_stud_ita=sum(no_immigrant) // 13 obs == 0
+	levelsof teacher_id if (count_stud_imm == 0 | count_stud_ita == 0)
+		di `r(r)' // display number of distinct teachers who do not have immigrants OR italian
+		di `r(N)' // display total nr of students we'll drop
+	keep if count_stud_imm >= 3   // 2,372 drop with 3 and 3
+	
+	g count_stud=count_stud_imm+count_stud_ita
+	keep if count_stud>10
+	
+	
+*** Generate Bias in grading at teacher level
+	
+	foreach grade in std_grade_8 std_invalsi_8 {
+		
+		bys  teacher_id: egen temp_avg_`grade'_nat = mean(`grade') if immigrant == 0
+		bys  teacher_id: egen avg_`grade'_nat = max(temp_avg_`grade'_nat )
+		
+		bys  teacher_id: egen  temp_avg_`grade'_imm = mean(`grade') if immigrant == 1
+		bys  teacher_id: egen avg_`grade'_imm = max(temp_avg_`grade'_imm )
+		
+		drop temp_*
+	}
+	
+	g bias_grading_did = (avg_std_grade_8_nat-avg_std_invalsi_8_nat)-(avg_std_grade_8_imm-avg_std_invalsi_8_imm)
+		
+	count if !mi(bias_grading_did)
+	
+*** Graph
+preserve
+	duplicates drop teacher_id, force
+	drop if mi(teacher_id)
+	reg bias_grading_did IAT
+	corr bias_grading_did IAT
+	
+		binscatter bias_grading_did IAT, msymbol(circle) mcolor(maroon%20) lcolor(maroon) ///
+					   ytitle("Bias in grading (Difference in Differences)", margin(right)) ///
+					   xtitle("IAT", margin(top)) scheme(small) nbins(20) ///
+					   graphregion(color(white)) name(bias_IAT, replace)
+	
+restore
+	
+	contract teacher_id bias_grading_did
+	drop _freq
+	graph copy A2A, replace
+
+
+
+*PANEL B : Correlation IAT Bias in Grading Bayesian approach
+** -----------------------------------------------------------------------------
+	
+use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment.dta",clear
+
+	* Merge Empirical Bayes Estimates
+	merge m:1 teacher_id using "$data_temp/EBE_tomerge"
+	drop if _m == 2
+	drop _m
+	
+	* Bias in grading
+	gen bias_grading=-std_EBE 
+		
+	lab var bias_grading "Bias Grading"
+
+
+	*Correlation IAT Bias in Grading
+	preserve
+	
+		duplicates drop teacher_id, force
+		reg bias_grading IAT
+		binscatter bias_grading IAT
+		
+		binscatter bias_grading IAT, msymbol(circle) mcolor(maroon%20) lcolor(maroon) ///
+				   ytitle("Bias in grading (Bayesian)", margin(right)) ///
+				   xtitle("IAT", margin(top)) scheme(small) nbins(20) ///
+				   graphregion(color(white)) name(bias_IAT, replace)
+
+		graph copy A2B, replace
+	restore
+
+	
+	graph combine A2A A2B, col(2) xsize(5) ysize(1.8) scale(1.2)
+	graph export "$figuresAppendix/AF2bias_IAT.pdf", replace 
+
+
+** -----------------------------------------------------------------------------
+**# Figure A.3: Distribution of grades
+** -----------------------------------------------------------------------------
+
+use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment.dta",clear
+
+preserve
+	
+	* Restrict sample ************************
+	keep if grade_8!=. & invalsi_8!=. & IAT!=. 
+	******************************************
+	
+	replace grade_8=3 if grade_8<3
+	replace grade_8=grade_8+0.2 if immigrant==1
+	replace grade_8=grade_8-0.2 if immigrant==0
+	
+	* Graph 1
+	twoway (kdensity invalsi_8  if immigrant==0 & subject_math==1, color(blue)  bwidth(5) ) ///
+		   (kdensity invalsi_8  if immigrant==1 & subject_math==1, color(red*0.9)  bwidth(5) ), ///
+	xtitle("") title("Math")ytitle("kdensity")  legend(order(1 "Natives" 2 "Immigrants" ))
+	graph copy a, replace
+	
+	* Graph 2
+	twoway (histogram grade_8  if immigrant==0 & subject_math==1, frac color(blue*0.8) width(0.2)) ///
+		   (histogram grade_8  if immigrant==1 & subject_math==1, frac color(red*0.8) width(0.2)) ///
+			, xtitle("")  title("Math")  legend(order(1 "Natives" 2 "Immigrants" )) xscale(range(2.8 10.2)) xlabel(3(1)10)
+	graph copy b, replace
+	
+	* Graph 3
+	twoway (kdensity invalsi_8  if immigrant==0 & subject_math==0, color(blue)  bwidth(5) ) ///
+		   (kdensity invalsi_8  if immigrant==1 & subject_math==0, color(red*0.9)  bwidth(5) ), ///
+	xtitle("") ytitle("kdensity") title("Literature") legend(order(1 "Natives" 2 "Immigrants" ))
+	graph copy c, replace
+	
+	* Graph 4
+	twoway (histogram grade_8  if immigrant==0 & subject_math==0, frac color(blue*0.8) width(0.2)) ///
+		   (histogram grade_8  if immigrant==1 & subject_math==1, frac color(red*0.8) width(0.2)) ///
+			, xtitle("")  title("Literature")  legend(order(1 "Natives" 2 "Immigrants" )) xscale(range(2.8 10.2)) xlabel(3(1)10)
+	graph copy d, replace
+		
+	graph combine b d, title("Panel A: Teacher-assigned grades")
+	graph copy e, replace
+
+	graph combine a c, title("Panel B: Standardized test scores (blindly graded)")
+	graph copy f, replace
+
+	graph combine e f, col(1) 
+	graph export "$figuresAppendix/AF3gradesblindnoblind_by_subject.pdf", replace
+
+restore
+
+
+** -----------------------------------------------------------------------------
+**# Figure A.5: Field experiment: The impact of Revealing Stereotypes to teachers 
+*   		  on grading of immigrant and native students
+** -----------------------------------------------------------------------------
+
+* Load data
+use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment.dta",clear
+	
+preserve
+	
+	* Restrict sample ****************************
+	keep if IAT!=.
+	keep if grade_genIII!=.
+	drop if school_id==101 
+	keep if randomization_feedback!=.
+	keep if grade_genIII!=.
+	keep if iat_done==1
+	keep if immigrant==1
+	replace grade_genIII= grade_genIII-0.5
+	tab grade_genIII randomization_feedback, freq
+	**********************************************
+	
+	* Graph
+	twoway (histogram grade_genIII if randomization_feedback ==1,  width(1) color(ltblue)) ///
+		   (histogram grade_genIII if randomization_feedback ==0,  width(1) ///
+		   fcolor(none) lcolor(black)), xtitle("") title("Immigrants")  ///
+		   legend(order(1 "Feedback" 2 "No Feedback" )) xscale(range(4 10)) ///
+		   xlabel(4(1)10) graphregion(color(white)) 
+	graph copy one, replace
+restore
+
+preserve
+
+	* Restrict sample ****************************
+	keep if IAT!=.
+	keep if grade_genIII!=.
+	drop if school_id==101 
+	keep if randomization_feedback!=.
+	keep if grade_genIII!=.
+	keep if iat_done==1
+	keep if immigrant==0
+	replace grade_genIII= grade_genIII-0.5
+	tab grade_genIII randomization_feedback, freq
+	**********************************************
+
+	twoway (histogram grade_genIII if randomization_feedback ==1,  width(1) color(ltblue) ) ///
+		   (histogram grade_genIII if randomization_feedback ==0,  width(1) ///
+		   fcolor(none) lcolor(black)), xtitle("") title("Natives")  ///
+		   legend(order(1 "Feedback" 2 "No Feedback" )) xscale(range(4 10)) ///
+		   xlabel(4(1)10) graphregion(color(white)) 
+	graph copy two, replace
+restore
+
+	graph combine one, title("Panel A: Teacher-assigned grades")
+	graph copy a, replace
+
+	graph combine two, title("Panel B: Standardized test scores (blindly graded)")
+	graph copy b, replace
+	
+	
+graph combine one two , xsize(4) ysize(2) col(2) scale(1) title("") graphregion(color(white)) 
+graph export "$figuresAppendix/AF5grades_feedbacks.pdf", replace
+
+** -----------------------------------------------------------------------------
+**# Figure A.4: Teacher-assigned grades vs. blindly-graded, standardized test
+*				scores by subject
+** -----------------------------------------------------------------------------
+use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment.dta",clear
+drop invalsi 
+********************************* math *************************************
+preserve
+	
+	* Restrict sample *******************************************
+	keep if subject_math==1 & grade_8!=. & invalsi_8!=. &  stdIAT!=.
+	*************************************************************
+	xtile invalsi= invalsi_8, nq(5)
+	
+	gen obs=1
+	count
+	collapse (mean) grade_8  (sd)sdgrade_8 = grade_8 (sum) obs, by(immigrant invalsi)
+	
+	foreach var in grade_8 {
+		
+		generate up$_var = $_var + invttail(obs-1,0.05)*(sd$_var / sqrt(obs))
+		generate down$_var = $_var - invttail(obs-1,0.05)*(sd$_var / sqrt(obs))
+		
+	}
+	twoway (rcap upgrade_8 downgrade_8 invalsi if immigrant==0, lcolor(green)) ///
+		   (line grade_8 invalsi if immigrant==0, lcolor(green)) ///
+		   (scatter grade_8 invalsi if immigrant==0, mcolor(green)) ///
+		   (rcap upgrade_8 downgrade_8 invalsi if immigrant==1, lcolor(red)) ///
+		   (line grade_8 invalsi if immigrant==1, lcolor(red)) ///
+		   (scatter grade_8 invalsi if immigrant==1, mcolor(red) msymbol(circle_hollow)), ///
+		   legend(order(3 "Italians" 6 "Immigrants"))  xlabel(1(1)5) title("Mathematics")  ///
+		   xtitle("Blind test score (INVALSI), quintiles") ytitle("Teacher-assigned grades")
+	graph copy grade_mat8, replace
+	
+restore
+********************************* italian *************************************
+preserve
+	* Restrict sample *******************************************
+	keep if subject_math==0 & grade_8!=. & invalsi_8!=. &  stdIAT!=.
+	*************************************************************
+	
+	xtile invalsi= invalsi_8, nq(5)
+	
+	gen obs=1
+	count
+	collapse (mean) grade_8  (sd)sdgrade_8 = grade_8 (sum) obs, by(immigrant invalsi)
+	foreach var in grade_8 {
+		
+		generate up$_var = $_var + invttail(obs-1,0.05)*(sd$_var / sqrt(obs))
+		generate down$_var = $_var - invttail(obs-1,0.05)*(sd$_var / sqrt(obs))
+		
+	}
+	twoway (rcap upgrade_8 downgrade_8 invalsi if immigrant==0, lcolor(green)) ///
+		   (line grade_8 invalsi if immigrant==0, lcolor(green)) ///
+		   (scatter grade_8 invalsi if immigrant==0, mcolor(green)) ///
+		   (rcap upgrade_8 downgrade_8 invalsi if immigrant==1, lcolor(red)) ///
+		   (line grade_8 invalsi if immigrant==1, lcolor(red)) ///
+		   (scatter grade_8 invalsi if immigrant==1, mcolor(red) msymbol(circle_hollow)), ///
+		   legend(order(3 "Italians" 6 "Immigrants"))  xlabel(1(1)5) title("Literature")  ///
+		   xtitle("Blind test score (INVALSI), quintiles") ytitle("Teacher-assigned grades")
+	graph copy grade_ita8, replace
+	
+restore
+graph combine grade_mat8 grade_ita8, cols(2) scale(.7) ysize(4) xsize(7) title("")
+graph save  "$figuresAppendix/AF4graph_bias_by_subject",replace
+graph export "$figuresAppendix/AF4graph_bias_by_subject.pdf", replace
+
+** -----------------------------------------------------------------------------
+**# Figure A.6: Permutation test
+** -----------------------------------------------------------------------------
+
+u 	"$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment.dta", clear
+
+	* Restrict sample *****************
+	keep if IAT!=.
+	keep if grade_genIII!=.
+	drop if school_id==101 
+	keep if randomization_feedback!=.
+	keep if grade_genIII!=.
+	keep if iat_done==1
+	***********************************
+	
+compress
+
+* Delete temporary datasets and estimation
+eststo clear
+estimates drop _all
+cap erase "$data_temp/permutation/dataset_permutation_test2.dta"
+cap erase "$data_temp/permutation/dataset_permutation_test_estimates2.dta"
+
+* Permute treatment variable = randomization_feedback
+ritest randomization_feedback _b[1.randomization_feedback#1.immigrant], seed(123456789) kdensity reps(1000) cluster(school_id) saving("$data_temp/permutation/dataset_permutation_test_estimates2")   : reg grade_genIII randomization_feedback##immigrant $controls $tech_controls , robust  cluster (school_id)																														
+	
+	* Save graph
+	graph save "kdens_permutation" , replace
+	* Modify before export
+	graph use kdens_permutation
+	gr_edit .xaxis1.title.text = {"IAT Feedback*Immigrant"}
+	
+* Export graph
+graph export "$figuresAppendix/AF6Permutation_graph.pdf", replace
+shell del "kdens_permutation.gph"
+
+
+** -----------------------------------------------------------------------------
+**# Table A.1: Country of birth of immigrant students (school year 2016-2017)
+** -----------------------------------------------------------------------------
+
+** NA
+
+** -----------------------------------------------------------------------------
+**# Table A.2: Balance between schools in the sample and out of the sample
+** -----------------------------------------------------------------------------
+	
+	* Load data
+	u "$data_other/Invalsi_math_1112_1617", replace
+	***
+	
+	global variables_school "female immigrant immigrant_first immigrant_second test_score_gr_8   low_edu_mother med_edu_mother high_edu_mother low_edu_father med_edu_father high_edu_father low_occ_mother med_occ_mother high_occ_mother low_occ_father med_occ_father high_occ_father n_stud_prev"
+
+	
+	
+	*** BALANCE TABLE SETUP ************************************
+	local filename balance_table_sample_all_v2
+	local varlist $variables_school
+	local byvar school_in_selprov_sample
+	local byvar0 "Not in sample" // N.B. USE PACKAGE MAKECELL IN LATEX PREAMBLE
+	local byvar1 "Exp. sample"
+	************************************************************
+	
+	* Open file
+cap file close sumstat
+	file open  sumstat using "$tablesAppendix/A2`filename'.tex", write replace
+	file write sumstat 	"\begin{tabular}{lccccc}  \\ \toprule "  _n     // table header
+	
+	* Create header for experiment 1
+	file write sumstat	"  & (1) & (2) & (3) & (4) & (5) \\  " _n 
+	file write sumstat 	"\midrule " _n
+	file write sumstat  "\multirow{2}{*}{} & \multirow{2}{*}{All students in Italy} & \multicolumn{2}{c}{  Students in 5 provinces in Northern Italy  } & \multirow{2}{*}{ \makecell{p-value \\ (3)-(2)} } & \multirow{2}{*}{ \makecell{Std. Diff.\\ (3)-(2)}} \\\cline{3-4}" _n 
+	file write sumstat "& & `byvar0' &`byvar1' &&\\" _n
+	file write sumstat 	"\midrule " _n 	
+
+local i=1
+
+	foreach var in `varlist' {
+		
+		cap drop stand_diff
+		
+		di "Calculating stats for variable: `var'"
+		
+		* Store label
+		local varlab: variable label `var' 
+		
+		* Ttest
+		ttest `var', by(`byvar')
+				
+		* Store byvar == 0 values
+		local controlmean: di %7.3f `r(mu_1)'
+		local 	controlsd: di %7.3f `r(sd_1)'
+				
+		* Store byvar == 1 values
+		local treatmean:  di %7.3f `r(mu_2)'
+		local 	treatsd:  di %7.3f `r(sd_2)'	
+
+		* Store pvalue
+		local pvalue: di %7.3f `r(p)'	
+		
+		* Standard difference
+		gen   stand_diff = (`treatmean'-`controlmean')/ (sqrt((`treatsd'^2)+(`controlsd'^2)))
+		sum   stand_diff
+		local stand_diff: di %7.3f `r(mean)'
+		
+		sum `var' 
+		local totalmean: di %7.3f `r(mean)'	
+		local 	totalsd: di %7.3f `r(sd)'
+		
+		count if `byvar'==1 & !mi(female) // count sample only when a significative variable is defined
+		local treat: di %7.0fc `r(N)'
+
+		count if `byvar'==0 & !mi(female)
+		local control: di %9.0fc `r(N)'
+		
+		count if !mi(`var')
+		local total: di %9.0fc `r(N)'
+		
+		* For total number of observation, we take a variable always defined
+		
+		count if !mi(female)
+		local totalobs: di %9.0fc `r(N)'
+		
+		foreach x in treatsd controlsd totalsd  { // remove leading blanks in parentheses
+		
+			local `x'=trim(string(``x'',"%7.3f"))
+				
+			}
+	
+
+		file write sumstat "`varlab' & `totalmean' &  `controlmean' & `treatmean' & `pvalue' & `stand_diff'  \\ " _n  
+		file write sumstat "  		 &  (`totalsd') &  (`controlsd')  & (`treatsd') &   &   \\     " _n 
+		
+		drop stand_diff
+		
+		local ++i
+
+		}
+	
+	file write sumstat "\midrule " _n 
+	file write sumstat "Observations & `totalobs' & `control' & `treat' &   & \\   " _n 
+	file write sumstat "\bottomrule" _n           // table footer
+	file write sumstat "\end{tabular}" _n
+	file close sumstat
+
+
+
+** -----------------------------------------------------------------------------
+**# Table A.3: Balance table - Teacher characteristics (Firel experiment)
+** -----------------------------------------------------------------------------
+use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment_teachers.dta",clear
+
+	* Restrict sample ******
+	drop if d_score_race==.
+	keep if !mi(final_sample)
+		lab var d_score_race "Immigrant-Native IAT"
+	************************
+	
+	*** BALANCE TABLE SETUP ************************************
+
+	local byvar_exp2 final_sample
+	local byvar0_exp2 "Not in the Sample"
+	local byvar1_exp2 "Final Sample"
+
+	************************************************************
+	
+* Open file
+cap file close sumstat
+	file open sumstat using  "$tablesAppendix/A3balance_table_sample_exp1_v2.tex", write replace
+	file write sumstat 	"\begin{tabular}{lccccc}  \\ \toprule "  _n     // table header
+
+	
+	* Create header for experiment 2
+		file write sumstat 	"\midrule " _n 
+	file write sumstat	"  & (1) & (2) & (3) & (4) & (5) \\  " _n 
+	file write sumstat	"  & Full sample & `byvar0_exp2' & `byvar1_exp2' & p-value & Std. Diff. \\  " _n
+	file write sumstat 	"\midrule " _n 
+	***
+	
+
+local i=1
+
+	foreach var in $tchr_variables{
+		
+		cap drop stand_diff
+		
+		di "Calculating stats for variable: `var'"
+		
+		* Store label
+		local varlab: variable label `var'  
+		
+		* Ttest
+		ttest `var', by(`byvar_exp2')
+				
+		* Store byvar == 0 values
+		local controlmean: di %7.3f `r(mu_1)'
+		local 	controlsd: di %7.3f `r(sd_1)'
+				
+		* Store byvar == 1 values
+		local treatmean: di %7.3f `r(mu_2)'
+		local 	treatsd:  di %7.3f `r(sd_2)'	
+
+		* Store pvalue for clustered data **********************
+		reg `var' `byvar_exp2', vce(cluster school_id)
+		test `byvar_exp2'
+		local pvalue: di %7.3f `r(p)'	
+		********************************************************	
+		
+		* Standard difference
+		gen stand_diff = (`treatmean'-`controlmean')/ (sqrt((`treatsd'^2)+(`controlsd'^2)))
+		sum stand_diff
+		local stand_diff: di %7.3f `r(mean)'
+		
+		sum `var' 
+		local totalmean: di %7.3f `r(mean)'	
+		local 	totalsd: di %7.3f `r(sd)'
+		
+		count if `byvar_exp2'==1 
+		local treat: di %7.0fc `r(N)'
+
+		count if `byvar_exp2'==0 
+		local control: di %7.0fc `r(N)'
+		
+		count if !mi(`var')
+		local total: di %7.0g `r(N)'
+
+		file write sumstat "`varlab' & `totalmean' &  `controlmean' & `treatmean' & `pvalue' & `stand_diff'  \\ " _n  
+		file write sumstat "  		 &  (`totalsd') &  (`controlsd')  & (`treatsd') &   &   \\     " _n 
+		
+		drop stand_diff
+		
+		local ++i
+
+		}
+	
+	file write sumstat "\midrule " _n 
+	file write sumstat "Observations & `total' & `control' & `treat' &   & \\   " _n 
+	file write sumstat "\bottomrule" _n           // table footer
+	file write sumstat "\end{tabular}" _n
+	file close sumstat
+
+	
+
+** -----------------------------------------------------------------------------
+**# Table A.4: Balance table -Student characteristics across schools included and not included in the experiment
+** -----------------------------------------------------------------------------
+
+use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment.dta",clear
+	
+preserve
+	* Restrict sample ************************
+	keep if IAT!=.
+	keep if grade_genIII!=.
+	drop if school_id==101
+	duplicates drop anon_stud_id, force
+	******************************************
+	
+	* label for exporting
+	la var high_edu_mother "\midrule High education Mother"
+	la var high_edu_father "\midrule High education Father"
+	la var grade_mat_giu1516 "\midrule Grade Math June '16'"
+	
+	la var high_occ_mother 	"High-wage occupation Mother"
+	la var med_occ_mother  	"Medium-wage occupation Mother"
+	la var high_occ_father  "High-wage occupation Father"
+	la var med_occ_father  	"High-wage occupation Father"
+	 
+			 
+	*** BALANCE TABLE SETUP ************************************
+
+	local byvar_exp2 final_sample
+	local byvar0_exp2 "Not in the Sample"
+	local byvar1_exp2 "Final Sample"
+
+	************************************************************
+	
+* Open file
+cap file close sumstat
+	file open sumstat using  "$tablesAppendix/A4balance_table_intotreatment_students.tex", write replace
+	file write sumstat 	"\begin{tabular}{lccccc}  \\ \toprule "  _n     // table header
+
+	
+	* Create header for experiment 2
+		file write sumstat 	"\midrule " _n 
+	file write sumstat	"  & (1) & (2) & (3) & (4) & (5) \\  " _n 
+	file write sumstat	"  & Full sample & `byvar0_exp2' & `byvar1_exp2' & p-value & Std. Diff. \\  " _n
+	file write sumstat 	"\midrule " _n 
+	***
+	
+
+local i=1
+
+	foreach var in $stud_variables{
+		
+		cap drop stand_diff
+		
+		di "Calculating stats for variable: `var'"
+		
+		* Store label
+		local varlab: variable label `var'  
+		
+		* Ttest
+		ttest `var', by(`byvar_exp2')
+				
+		* Store byvar == 0 values
+		local controlmean: di %7.3f `r(mu_1)'
+		local 	controlsd: di %7.3f `r(sd_1)'
+				
+		* Store byvar == 1 values
+		local treatmean: di %7.3f `r(mu_2)'
+		local 	treatsd:  di %7.3f `r(sd_2)'	
+
+		* Store pvalue for clustered data **********************
+		reg `var' `byvar_exp2', vce(cluster school_id)
+		test `byvar_exp2'
+		local pvalue: di %7.3f `r(p)'	
+		********************************************************	
+		
+		* Standard difference
+		gen stand_diff = (`treatmean'-`controlmean')/ (sqrt((`treatsd'^2)+(`controlsd'^2)))
+		sum stand_diff
+		local stand_diff: di %7.3f `r(mean)'
+		
+		sum `var' 
+		local totalmean: di %7.3f `r(mean)'	
+		local 	totalsd: di %7.3f `r(sd)'
+		
+		count if `byvar_exp2'==1 
+		local treat: di %7.0fc `r(N)'
+
+		count if `byvar_exp2'==0 
+		local control: di %7.0fc `r(N)'
+		
+		count if !mi(`var')
+		local total: di %7.0g `r(N)'
+
+		file write sumstat "`varlab' & `totalmean' &  `controlmean' & `treatmean' & `pvalue' & `stand_diff'  \\ " _n  
+		file write sumstat "  		 &  (`totalsd') &  (`controlsd')  & (`treatsd') &   &   \\     " _n 
+		
+		drop stand_diff
+		
+		local ++i
+
+		}
+	
+	file write sumstat "\midrule " _n 
+	file write sumstat "Observations & `total' & `control' & `treat' &   & \\   " _n 
+	file write sumstat "\bottomrule" _n           // table footer
+	file write sumstat "\end{tabular}" _n
+	file close sumstat
+restore
+
+** -----------------------------------------------------------------------------
+**# Table A.5: Correlation between teachers characteristics and willingness to 
+**			   receive the feedback
+** -----------------------------------------------------------------------------
+
+use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment_teachers.dta",clear
+
+	
+	* Restrict sample ******
+	drop if d_score_race==.
+	lab var d_score_race "Immigrant-Native IAT"
+	************************
+		sum yes_email
+		local mcontrol = r(mean)	
+		local mcontrola: di %8.2f `mcontrol'	
+
+	
+reg yes_email d_score_race , robust cluster(school_id)
+estadd local fe "No"
+estadd local add "`mcontrola'"
+est store a
+
+reg yes_email math , robust cluster(school_id)
+estadd local fe "No"
+estadd local add "`mcontrola'"
+est store b
+
+reg yes_email female  , robust cluster(school_id)
+estadd local fe "No"
+estadd local add "`mcontrola'"
+est store c
+
+reg yes_email  wvs_imm wvs_imm_miss, robust cluster(school_id)
+estadd local fe "No"
+estadd local add "`mcontrola'"
+est store d
+
+reg yes_email  slow fast miss_speed, robust cluster(school_id)
+estadd local fe "No"
+estadd local add "`mcontrola'"
+est store e
+
+reg yes_email d_score_race math female  wvs_imm wvs_imm_miss slow fast miss_speed, robust cluster(school_id)
+estadd local fe "No"
+estadd local add "`mcontrola'"
+est store f
+
+areg yes_email d_score_race math female wvs_imm wvs_imm_miss slow fast miss_speed, absorb(school_id) robust cluster(school_id)
+estadd local fe "Yes"
+estadd local add "`mcontrola'"
+est store g
+
+* 
+
+esttab a b c d e f g using "$tablesAppendix/A5Correlation_email_characteristics_v2.tex", ///
+					 label ///
+					 drop(*_miss _cons) ///
+					 replace b(3) se(3) nomtitle nostar noomit booktabs collabels(none) noconstant ///
+					 stats(fe add N r2 , labels (`"FE school "' `"Mean dependent variable"' `"\midrule Obs."' `"\(R^{2}\)"' ) fmt(0 2 0 3))  ///
+					 prehead("\begin{tabular}{l*{7}{c}} \toprule \multicolumn{8}{c}{ {\bf Dependent variable: Dummy for whether the teacher wants to receive the feedback} } \\ \midrule") ///
+					 postfoot("\bottomrule \end{tabular}")
+
+
+** -----------------------------------------------------------------------------
+**# Table A.6: Correlation between teachers characteristics and IAT (Teachers in Fiedl Experiment)
+** -----------------------------------------------------------------------------
+
+use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment_teachers.dta",clear
+	
+	xi:reg d_score_race  has_children  $order_iat, robust cluster(mecc_code_plesse)
+	est store race10
+
+	xi:reg d_score_race  med_edu_mother high_edu_mother t_edu_mother_miss  $order_iat, robust cluster(mecc_code_plesse)
+	est store race11
+
+	xi:reg d_score_race  high_D2_1 high_D2_2 high_D2_3 high_D2_4 high_D2_5 gapprejudice $order_iat , robust cluster(mecc_code_plesse)
+	est store race7
+
+	xi:reg d_score_race high_D2_1 high_D2_2 high_D2_3 high_D2_4 high_D2_5  med_edu_mother high_edu_mother t_edu_mother_miss has_children t_exp t_exp_miss   female t_N wvs_imm gapprejudice  gapprejudice_miss  $order_iat t_N_miss   wvs_imm_miss D25_miss,  cluster(mecc_code_plesse)
+	est store race5
+
+	xi:reg d_score_race high_D2_1 high_D2_2 high_D2_3 high_D2_4 high_D2_5 med_edu_mother high_edu_mother t_edu_mother_miss has_children t_exp t_exp_miss   female t_N  wvs_imm gapprejudice  gapprejudice_miss $order_iat t_N_miss   wvs_imm_miss D25_miss ,  cluster(mecc_code_plesse) absorb(mecc_code_plesse)
+	est store race6
+	
+	
+esttab  race10 race11 race7 race5 race6 using "$tablesAppendix/A6Correlation_iat_characteristics_add_v2.tex", ///
+ label replace nostar nomtitle nostar noomit booktabs collabels(none) noconstant ///
+ b(3) se(3)  drop(*_miss ) ///
+ nogaps stats(N r2, labels (`"Obs."' `"\(R^{2}\)"') fmt(0 3)) indicate(IAT order controls=gapprejudice_miss t_N_miss t_exp_miss  wvs_imm_miss D25_miss  ordercompatiblerace first_q_then_IAT _*) ///
+ prehead("\begin{tabular}{l*{5}{c}} \toprule \multicolumn{6}{c}{ {\bf Dependent Variable.: IAT score (stereotypes against immigrants) in Field Experiment} } \\ \midrule") ///
+ postfoot("\bottomrule \end{tabular}")
+
+
+
+** -----------------------------------------------------------------------------
+**# Table A.7: Balance table - Student characteristics (FIELD EXPERIMENT)
+** -----------------------------------------------------------------------------
+preserve
+
+	*** BALANCE TABLE SETUP ************************************
+	local filename balance_table_students_v2
+	local varlist_stu $varc
+	local byvar randomization_feedback
+	local byvar0 "Control"
+	local byvar1 "Treated"
+	************************************************************
+	
+* Open file
+cap file close sumstat
+	file open sumstat using "$tablesAppendix/A7`filename'.tex", write replace
+	file write sumstat 	"\begin{tabular}{lccccc}  \\ \toprule "  _n     // table header
+	
+	* LOAD DATASET FOR STUDENT BALANCE TABLE
+	
+	use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment.dta",clear
+	
+	* Restrict sample **********************
+	keep if IAT!=.
+	keep if grade_genIII!=.
+	drop if school_id==101 
+	keep if final_sample == 1
+	duplicates drop anon_stud_id, force
+	****************************************
+	
+	* Create header for experiment 1
+	file write sumstat 	"\midrule " _n 
+	file write sumstat	"  & (1) & (2) & (3) & (4) & (5) \\  " _n 
+	file write sumstat	"  & Full sample & `byvar0' & `byvar1' & p-value & Norm. Diff. \\  " _n
+	file write sumstat 	"\midrule " _n 
+
+local i=1
+
+	foreach var in `varlist_stu' {
+		
+		cap drop stand_diff
+		
+		di "Calculating stats for variable: `var'"
+		
+		* Put intermediate lines
+		if `i'== 4 | `i'== 8 | `i'== 13 {
+			
+			file write sumstat "\midrule " _n 
+		}
+		
+		* Store label
+		local varlab: variable label `var'  
+		
+		* Ttest
+		ttest `var', by(`byvar')
+				
+		* Store byvar == 0 values
+		local controlmean: di %7.3f `r(mu_1)'
+		local 	controlsd: di %7.3f `r(sd_1)'
+				
+		* Store byvar == 1 values
+		local treatmean: di %7.3f `r(mu_2)'
+		local 	treatsd:  di %7.3f `r(sd_2)'	
+
+		* Store pvalue for clustered data **********************
+		reg `var' `byvar', vce(cluster school_id)
+		test randomization_feedback
+		local pvalue: di %7.3f `r(p)'	
+		********************************************************	
+		
+		* Standard difference
+		gen stand_diff = (`treatmean'-`controlmean')/ (sqrt((`treatsd'^2)+(`controlsd'^2)))
+		sum stand_diff
+		local stand_diff: di %7.3f `r(mean)'
+		
+		sum `var' 
+		local totalmean: di %7.3f `r(mean)'	
+		local 	totalsd: di %7.3f `r(sd)'
+		
+		count if `byvar'==1 
+		local treat: di %7.0fc `r(N)'
+
+		count if `byvar'==0 
+		local control: di %7.0fc `r(N)'
+		
+		count if !mi(`var')
+		local total: di %7.0g `r(N)'
+
+		file write sumstat "`varlab' & `totalmean' &  `controlmean' & `treatmean' & `pvalue' & `stand_diff'  \\ " _n  
+		file write sumstat "  		 &  (`totalsd') &  (`controlsd')  & (`treatsd') &   &   \\     " _n 
+		
+		drop stand_diff
+		
+		local ++i
+
+		}
+	
+	file write sumstat "\midrule " _n 
+	file write sumstat "Observations & `total' & `control' & `treat' &   & \\   " _n 
+	file write sumstat "\bottomrule" _n           // table footer
+	file write sumstat "\end{tabular}" _n
+	file close sumstat
+	
+restore
+
+
+
+** -----------------------------------------------------------------------------
+**# Table A.8: Bias in Grading and Teachers' IAT scores
+** -----------------------------------------------------------------------------
+
+use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment.dta",clear
+	
+eststo clear
+est drop _all
+
+rename first_difference_std_grade first_diff_std_grade
+
+foreach outcome in  first_diff_std_grade {
+	
+	*1
+	reghdfe `outcome'  immigrant  $invalsi3 $cohort if IAT!=., absorb(i.teacher_id)  cluster(teacher_id) 
+
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"No"
+		estadd local stu_control_imm	"No"
+		estadd local tcr_control_imm	"No"
+	
+	est store `outcome'_1
+	
+	*2
+	reghdfe `outcome'  imm_IAT immigrant  $invalsi3 $cohort if IAT!=. , absorb(i.teacher_id)  cluster(teacher_id) 
+
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"No"
+		estadd local stu_control_imm	"No"
+		estadd local tcr_control_imm	"No"
+		
+	est store `outcome'_2	
+	
+	*3
+	reghdfe `outcome'  imm_IAT immigrant  $invalsi3 $cohort $controls $tech_controls if IAT!=. , absorb(i.teacher_id)  cluster(teacher_id)
+
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"Yes"
+		estadd local stu_control_imm	"Yes"
+		estadd local tcr_control_imm	"Yes"
+		
+	est store `outcome'_3
+	
+	*4
+	reghdfe `outcome'  immigrant  $invalsi3 $cohort if IAT!=. & invalsi>2, absorb(i.teacher_id)  cluster(teacher_id) 
+
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"No"
+		estadd local stu_control_imm	"No"
+		estadd local tcr_control_imm	"No"
+		
+	est store `outcome'_4
+	
+	*5
+	reghdfe `outcome'  imm_IAT immigrant  $invalsi3 $cohort if IAT!=. & invalsi>2 , absorb(i.teacher_id)  cluster(teacher_id) 
+	
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"No"
+		estadd local stu_control_imm	"No"
+		estadd local tcr_control_imm	"No"
+		
+	est store `outcome'_5	
+	
+	*6
+	reghdfe `outcome'  imm_IAT immigrant  $invalsi3 $cohort $controls $tech_controls if IAT!=. & invalsi>2 , absorb(i.teacher_id)  cluster(teacher_id) 
+	
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"Yes"
+		estadd local stu_control_imm	"Yes"
+		estadd local tcr_control_imm	"Yes"
+		
+	est store `outcome'_6
+	
+	*7
+	reghdfe `outcome' immigrant  $invalsi3 $cohort if IAT!=. & invalsi<3, absorb(i.teacher_id)  cluster(teacher_id)
+	
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"No"
+		estadd local stu_control_imm	"No"
+		estadd local tcr_control_imm	"No"
+		
+	est store `outcome'_7
+	
+	*8
+	reghdfe `outcome'  imm_IAT immigrant  $invalsi3 $cohort if IAT!=. & invalsi<3, absorb(i.teacher_id)  cluster(teacher_id) 
+	
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"No"
+		estadd local stu_control_imm	"No"
+		estadd local tcr_control_imm	"No"
+		
+	est store `outcome'_8	
+	
+	*9
+	reghdfe `outcome'  imm_IAT immigrant  $invalsi3 $cohort $controls $tech_controls if IAT!=. & invalsi<3 , absorb(i.teacher_id)  cluster(teacher_id) 
+	
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"Yes"
+		estadd local stu_control_imm	"Yes"
+		estadd local tcr_control_imm	"Yes"
+		
+	est store `outcome'_9
+	  
+	esttab `outcome'_* using "$tablesAppendix/A8bias_grading_subject_`outcome'.tex", 	///
+		  b(3) se(3) label replace nomtitle nostar noomit booktabs collabels(none) noconstant ///
+		  keep(imm_IAT immigrant) stats(N r2 fe invalsi3 stu_control stu_control_imm tcr_control_imm, ///
+		  labels("Obs." "\(R^{2}\)" "\midrule Teacher FE" "INVALSI cubic" "Student Controls" "Student Controls*Imm" "Teacher Controls*Imm") fmt(0 3)) ///
+		  prehead("\begin{tabular}{l*{9}{c}} \toprule \multicolumn{6}{c}{{\bf Outcome: First Difference, Std Grade-Std Test Score}} \\ \midrule \multicolumn{1}{c}{} & \multicolumn{3}{c}{All} & \multicolumn{3}{c}{High Ability} & \multicolumn{3}{c}{Low Ability} \\ \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}") ///
+		  postfoot("\bottomrule \end{tabular}")
+	
+}
+					 
+****************************************************************************************
+**# Table A.9 Impact of revealing stereotypes to teachers on grades and the 
+* 			   probability of failing students
+****************************************************************************************
+
+use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment.dta",clear
+
+* Transition matrix
+
+gen grade_genIII_transition=6 if grade_genIII==3 & immigrant==1
+replace grade_genIII_transition=6.05 if grade_genIII==4 & immigrant==1
+replace grade_genIII_transition=6.16 if grade_genIII==5 & immigrant==1
+replace grade_genIII_transition=6.30 if grade_genIII==6 & immigrant==1
+replace grade_genIII_transition=6.95 if grade_genIII==7 & immigrant==1
+replace grade_genIII_transition=7.66 if grade_genIII==8 & immigrant==1
+replace grade_genIII_transition=8.61 if grade_genIII==9 & immigrant==1
+replace grade_genIII_transition=9.17 if grade_genIII==10 & immigrant==1
+replace grade_genIII_transition=10 if grade_genIII==11 & immigrant==1
+
+replace grade_genIII_transition=6 if grade_genIII==3 & immigrant==0
+replace grade_genIII_transition=6.1 if grade_genIII==4 & immigrant==0
+replace grade_genIII_transition=6.19 if grade_genIII==5 & immigrant==0
+replace grade_genIII_transition=6.44 if grade_genIII==6 & immigrant==0
+replace grade_genIII_transition=7.18 if grade_genIII==7 & immigrant==0
+replace grade_genIII_transition=7.98 if grade_genIII==8 & immigrant==0
+replace grade_genIII_transition=8.83 if grade_genIII==9 & immigrant==0
+replace grade_genIII_transition=9.38 if grade_genIII==10 & immigrant==0
+replace grade_genIII_transition=10 if grade_genIII==11 & immigrant==0
+
+
+cap gen imm_randomization_feedback=immigrant*randomization_feedback
+lab var imm_randomization_feedback "Early Feedback*Immigrant"
+cap gen imm_rand_wvs=immigrant*randomization_feedback*wvs
+lab var imm_rand_wvs "WVS*IAT Feedback*Immigrant"
+cap gen rand_wvs=randomization_feedback*wvs
+lab var rand_wvs "WVS* Early Feedback"
+cap gen imm_rand_wvs_miss=immigrant*randomization_feedback*wvs_miss
+cap gen rand_wvs_miss=randomization_feedback*wvs
+cap gen imm_yesemailtreat=immigrant*yesemailtreat
+cap gen imm_rand_IAT=immigrant*randomization_feedback*IAT
+cap gen rand_IAT=randomization_feedback*IAT
+lab var IAT "Teacher IAT"
+lab var rand_IAT "Teacher IAT*IAT Feedback"
+lab var imm_rand_IAT "Teacher IAT*IAT Feedback*Immigrant"
+
+ lab var randomization_feedback "IAT Feedback"
+  lab var imm_randomization_feedback "IAT Feedback*Immigrant"
+keep if IAT!=.
+keep if grade_genIII!=.
+drop if school_id==101 
+****************************************
+
+foreach var in  grade_genIII_transition {
+reg `var' imm_randomization_feedback immigrant randomization_feedback, robust  cluster (school_id)
+
+	estadd local sc No
+	estadd local tc No
+	est store `var'1
+	
+reg `var' imm_randomization_feedback immigrant randomization_feedback $controls, robust cluster (school_id)
+	
+	estadd local sc Yes
+	estadd local tc No
+	est store `var'2
+	
+reg `var' imm_randomization_feedback immigrant randomization_feedback $controls $tech_controls , robust cluster (school_id)
+	
+	estadd local sc Yes
+	estadd local tc Yes
+	est store `var'3
+
+}
+
+esttab grade_genIII_transition1 grade_genIII_transition2 grade_genIII_transition3 using "$tablesAppendix/A9teacher_revealbias_transition.tex", label replace ///
+ keep(imm_randomization_feedback immigrant randomization_feedback) order(imm_randomization_feedback immigrant randomization_feedback) ///
+ b(3) se(3) stats(sc tc N r2, labels (`" Student Controls"' `"Teacher Controls"' `"\hline Obs."' `"\(R^{2}\)"' ) fmt(0 0 0 3)) ///
+ nomtitle nostar noomit booktabs collabels(none) noconstant ///
+ prehead("\begin{tabular}{l*{3}{c}} \toprule \multicolumn{6}{c}{{\bf Dependent Variable: Teacher-Assigned Grade (Transformed)}} \\ \midrule") ///
+ postfoot("\bottomrule \end{tabular}")
+ 
+
+
+** -----------------------------------------------------------------------------
+**# Table A.10: Estimation of the impact of revealing stereotypes to teachers on 
+*			 student grades
+** -----------------------------------------------------------------------------
+
+ u "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment.dta", clear
+
+ lab var randomization_feedback "IAT Feedback"
+  lab var imm_randomization_feedback "IAT Feedback*Immigrant"
+  lab var imm_rand_wvs "IAT Feedback*WVS*Immigrant"
+  lab var rand_wvs "IAT Feedback*WVS"
+  lab var imm_rand_gapprejudice "IAT Feedback*Reason Gap Prejudice*Immigrant"
+  lab var rand_gapprejudice "IAT Feedback*Reason Gap Prejudice"
+	* Restrict sample *********************
+	keep if IAT!=.
+	keep if grade_genIII!=.
+	drop if school_id==101
+	keep if randomization_feedback!=.
+	keep if grade_genIII!=.
+	keep if iat_done==1
+	replace grade_genIII= grade_genIII-0.5
+	*********************+*****************
+	
+eststo clear
+
+*OLS
+
+foreach var in   grade_genIII  {
+	
+	* 1)
+	reg `var' imm_randomization_feedback immigrant randomization_feedback $controls $tech_controls , robust cluster (school_id)
+	
+** Store control means
+	* Mean control natives
+	su `var' if immigrant == 0 & randomization_feedback == 0
+	local cnmean : di %8.2f `r(mean)' 
+	estadd scalar cnmean `cnmean'
+	
+	* Mean control immigrants
+	su `var' if immigrant == 1 & randomization_feedback == 0
+	local cimean : di %8.2f `r(mean)' 
+	estadd scalar cimean `cimean'
+	
+	estadd local sc 	"Yes"
+	estadd local sc_i 	"Yes"
+	estadd local tc 	"Yes"
+	estadd local tc_i 	"Yes"
+	est store `var'3
+	
+	* 2)
+	reg `var' imm_randomization_feedback immigrant randomization_feedback $controls $tech_controls imm_rand_wvs rand_wvs wvs wvs_imm  wvs_miss wvs_imm_miss imm_rand_wvs_miss rand_wvs_miss, robust cluster (school_id)
+
+** Store control means
+	* Mean control natives
+	su `var' if immigrant == 0 & randomization_feedback == 0
+	local cnmean : di %8.2f `r(mean)' 
+	estadd scalar cnmean `cnmean'
+	
+	* Mean control immigrants
+	su `var' if immigrant == 1 & randomization_feedback == 0
+	local cimean : di %8.2f `r(mean)' 
+	estadd scalar cimean `cimean'
+	
+	estadd local sc 	"Yes"
+	estadd local sc_i 	"Yes"
+	estadd local tc 	"Yes"
+	estadd local tc_i 	"Yes"
+	est store `var'4
+	
+	* 3)
+	reg `var' imm_randomization_feedback immigrant randomization_feedback $controls $tech_controls gapprejudice imm_rand_gapprejudice imm_rand_gapprejudice_miss gapprejudice_miss imm_gapprejudice imm_gapprejudice_miss rand_gapprejudice rand_gapprejudice_miss, robust cluster (school_id)
+	estadd local sc 	"Yes"
+	estadd local sc_i 	"Yes"
+	estadd local tc 	"Yes"
+	estadd local tc_i 	"Yes"
+	est store `var'6
+	
+** Store control means
+	* Mean control natives
+	su `var' if immigrant == 0 & randomization_feedback == 0
+	local cnmean : di %8.2f `r(mean)' 
+	estadd scalar cnmean `cnmean'
+	
+	* Mean control immigrants
+	su `var' if immigrant == 1 & randomization_feedback == 0
+	local cimean : di %8.2f `r(mean)' 
+	estadd scalar cimean `cimean'	
+	
+	* 4)  
+	reg `var' imm_randomization_feedback immigrant randomization_feedback $controls $tech_controls imm_rand_IAT IAT imm_IAT rand_IAT , robust cluster (school_id)
+	
+	** Store control means
+	* Mean control natives
+	su `var' if immigrant == 0 & randomization_feedback == 0
+	local cnmean : di %8.2f `r(mean)' 
+	estadd scalar cnmean `cnmean'
+	
+	* Mean control immigrants
+	su `var' if immigrant == 1 & randomization_feedback == 0
+	local cimean : di %8.2f `r(mean)' 
+	estadd scalar cimean `cimean'
+	
+	estadd local sc 	"Yes"
+	estadd local sc_i 	"Yes"
+	estadd local tc 	"Yes"
+	estadd local tc_i 	"Yes"
+	est store `var'5
+	
+	* 5)
+	reg `var' imm_randomization_feedback immigrant randomization_feedback $controls $tech_controls imm_rand_IAT IAT imm_IAT rand_IAT if wvs==1 , robust cluster (school_id)
+	
+	** Store control means
+	* Mean control natives
+	su `var' if immigrant == 0 & randomization_feedback == 0
+	local cnmean : di %8.2f `r(mean)' 
+	estadd scalar cnmean `cnmean'
+	
+	* Mean control immigrants
+	su `var' if immigrant == 1 & randomization_feedback == 0
+	local cimean : di %8.2f `r(mean)' 
+	estadd scalar cimean `cimean'
+	
+	estadd local sc 	"Yes"
+	estadd local sc_i 	"Yes"
+	estadd local tc 	"Yes"
+	estadd local tc_i 	"Yes"
+	est store `var'7
+	
+	* 6)
+	
+	reg `var' imm_randomization_feedback immigrant randomization_feedback $controls $tech_controls imm_rand_IAT IAT imm_IAT rand_IAT if wvs!=1, robust cluster (school_id)
+	
+	** Store control means
+	* Mean control natives
+	su `var' if immigrant == 0 & randomization_feedback == 0
+	local cnmean : di %8.2f `r(mean)' 
+	estadd scalar cnmean `cnmean'
+	
+	* Mean control immigrants
+	su `var' if immigrant == 1 & randomization_feedback == 0
+	local cimean : di %8.2f `r(mean)' 
+	estadd scalar cimean `cimean'
+	
+	estadd local sc 	"Yes"
+	estadd local sc_i 	"Yes"
+	estadd local tc 	"Yes"
+	estadd local tc_i 	"Yes"
+	est store `var'8
+
+}
+
+
+		 
+esttab   grade_genIII3 grade_genIII4 grade_genIII6     ///
+		 using "$tablesAppendix/A10teacher_revealbias_grade_IAT_wvs.tex", ///
+	     label replace  ///
+		 nomtitle nostar noomit booktabs collabels(none) noconstant ///
+		 keep(imm_randomization_feedback immigrant randomization_feedback imm_rand_wvs rand_wvs imm_rand_gapprejudice rand_gapprejudice) ///
+		 b(3) se(3) ///
+		 nogaps stats(N r2 cnmean cimean sc sc_i tc tc_i, labels (`"Obs."' `"\(R^{2}\)"' `"\midrule Mean Control Natives"' `"Mean Control Immigrants"' `"\midrule Student Controls"' `"Student Controls*Imm"' `"Teacher Controls"' `"Teacher Controls*Imm"') fmt(0 3 2 2)) ///
+		 prehead("\textbf{Dependent Variable: Teacher Assigned Grades} \\ \midrule ") ///
+		 posthead(" \cmidrule(lr){2-4} ") ///
+		 postfoot("")
+
+
+** -----------------------------------------------------------------------------
+**# Table A.11: Impact of revealing stereotypes to teachers on grades (vs. general 
+	*		 debiasing) in the Online Experiment
+** -----------------------------------------------------------------------------
+
+
+eststo clear
+estimates drop _all
+
+	u "$data_final/AlesinaCarlanaLaFerraraPinotti_onlineexperiment.dta", replace
+	
+	global student_covar2 "female_student class_*"
+	global covariates1_2 "female_teacher regionborn_1 regionborn_2 regionborn_3   before_first_reminder"
+	global covariates1_m2 ""
+	
+	la def la_imm 1 "Immigrant" 0 "Native"
+	la val immigrant la_imm
+	
+	
+	la def la_treat 1 "IAT Feedback" 0 "Generic Debiasing", modify
+	la var treat
+	la val treat la_treat
+	
+	la var IAT "IAT Score"
+	la de la_underestimate_IAT 1 "Underestimate own IAT"
+	la val underestimate_IAT la_underestimate_IAT
+	lab var treat "IAT Feedback"
+	
+	la var IAT_imm "Immigrant x IAT Score"
+
+	gen 	cat_IAT=3 if IAT>0.6
+	replace cat_IAT=2 if IAT>0.35 & IAT<0.6
+	replace cat_IAT=1 if IAT>0.15 & IAT<0.35
+	replace cat_IAT=0 if IAT>-0.15 & IAT<0.15
+	replace cat_IAT=-1 if IAT>-0.35 & IAT<-0.15
+	replace cat_IAT=-2 if IAT>-0.6 & IAT<-0.35
+	replace cat_IAT=-3 if IAT<-0.6 & IAT!=.
+	
+	gen cat_IAT2=cat_IAT
+	replace cat_IAT2=0 if cat_IAT<0
+	replace cat_IAT2=1 if cat_IAT>1
+	*replace cat_IAT2=2 if cat_IAT>2
+	lab var cat_IAT2 "IAT$>$0.15"
+	
+	gen cat_IAT3=(IAT>0.35)
+	lab var cat_IAT3 "IAT$>$0.35"
+	la def la_cat_IAT3 1 "Moderate/Severe IAT" 0 "", modify
+	la var cat_IAT3
+	la val cat_IAT3 la_cat_IAT3
+
+	gen exp_cat_IAT=Q23_1_sortnames_diff_native-4	// put into same scale of IAT
+	
+	gen dif_exp_IAT=cat_IAT-exp_cat_IAT
+	
+	gen exp_cont_IAT=exp_cat_IAT
+	replace exp_cont_IAT=-0.77 if exp_cat_IAT==-3 
+	replace exp_cont_IAT=-0.475 if exp_cat_IAT==-2 //0
+	replace exp_cont_IAT=-0.25 if exp_cat_IAT==-1 //-0.24
+	replace exp_cont_IAT=0.25 if exp_cat_IAT==1 //0.30
+	replace exp_cont_IAT=0.475 if exp_cat_IAT==2 //0.50
+	replace exp_cont_IAT=1.01 if exp_cat_IAT==3
+	
+	
+	gen dif_exp_cont_IAT=IAT-exp_cont_IAT
+	lab var dif_exp_cont_IAT "(IAT-Expected IAT)"
+	
+	gen dif_exp_cont_IAT_miss=(dif_exp_cont_IAT==.)
+	replace dif_exp_cont_IAT=0 if dif_exp_cont_IAT==.
+	
+	
+	reg grade_tassigned treat##immigrant##c.IAT iscongruentfirst  Math_Science Italian_History_Geography English i.order_question i.grade_orig $student_covar2 $covariates1_2 $covariates1_m2  , cluster(school_code) robust
+	
+	su grade_tassigned if treat == 0
+	estadd scalar cmean `r(mean)'
+	estadd local fe Yes
+	estadd local sc Yes
+	estadd local tc Yes
+	est store reg1
+	
+	* 2)
+	reg grade_tassigned treat##immigrant##c.dif_exp_cont_IAT treat##immigrant##dif_exp_cont_IAT_miss  Math_Science Italian_History_Geography English i.order_question i.grade_orig $student_covar2 $covariates1_2 $covariates1_m2, cluster(school_code) robust
+	
+	su grade_tassigned if treat == 0
+	estadd scalar cmean `r(mean)'
+	estadd local fe Yes
+	estadd local sc Yes
+	estadd local tc Yes
+	est store reg2
+	
+	* 3)
+	reg grade_tassigned treat##immigrant##c.dif_exp_cont_IAT immigrant##c.IAT  treat##immigrant##dif_exp_cont_IAT_miss   Math_Science Italian_History_Geography English i.order_question i.grade_orig $student_covar2 $covariates1_2 $covariates1_m2, cluster(school_code) robust 
+	
+	su grade_tassigned if treat == 0
+	estadd scalar cmean `r(mean)'
+	estadd local fe Yes
+	estadd local sc Yes
+	estadd local tc Yes
+	est store reg3
+
+	* 4)
+	reg grade_tassigned treat##immigrant##c.dif_exp_cont_IAT treat##immigrant##c.IAT  treat##immigrant##dif_exp_cont_IAT_miss   Math_Science Italian_History_Geography English i.order_question i.grade_orig $student_covar2 $covariates1_2 $covariates1_m2, cluster(school_code) robust 
+	
+	su grade_tassigned if treat == 0
+	estadd scalar cmean `r(mean)'
+	estadd local fe Yes
+	estadd local sc Yes
+	estadd local tc Yes
+	est store reg4
+
+			 
+	esttab   reg1 reg2 reg3 reg4   ///
+			 using "$tablesAppendix/A11results_experiment2_beliefupdating_2.tex", ///
+			 label replace ///
+		  nomtitle nostar noomit booktabs collabels(none) noconstant ///
+			 drop(0.treat* 0.immigrant *.order_question *.grade_orig *miss* $student_covar2 $covariates1_2 $covariates1_m2 Math_Science Italian_History_Geography iscongruentfirst) ///
+			 b(3) se(3) ///
+			 stats(cmean N r2 fe sc tc, labels (`"Control Mean"' `"\midrule Obs."' `"\(R^{2}\)"' `"\midrule Subject, Order, Original Grade FE"' `"Student Controls"' `"Teacher Controls"') fmt(3 0 3)) ///
+			 prehead("") postfoot("")
+
+** -----------------------------------------------------------------------------
+**# Table D.1 - PANELS A and B: Bias in Grading and Teachers' IAT scores
+** -----------------------------------------------------------------------------
+
+use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment.dta",clear
+	
+eststo clear
+est drop _all
+
+lab var imm_IAT_g "IAT Gender Specific * Immigrant"
+
+rename first_difference_std_grade first_diff_std_grade 
+
+foreach outcome in grade_8 first_diff_std_grade {   
+	
+	*1
+	reghdfe `outcome'  immigrant  $invalsi3 $cohort if imm_IAT_g!=., absorb(i.teacher_id)  cluster(teacher_id) 
+
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"No"
+		estadd local stu_control_imm	"No"
+		estadd local tcr_control_imm	"No"
+	
+	est store `outcome'_1
+	
+	*2
+	reghdfe `outcome'  imm_IAT_g immigrant  $invalsi3 $cohort if imm_IAT_g!=. , absorb(i.teacher_id)  cluster(teacher_id) 
+
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"No"
+		estadd local stu_control_imm	"No"
+		estadd local tcr_control_imm	"No"
+		
+	est store `outcome'_2	
+	
+	*3
+	reghdfe `outcome'  imm_IAT_g immigrant  $invalsi3 $cohort $controls $tech_controls if imm_IAT_g!=. , absorb(i.teacher_id)  cluster(teacher_id)
+
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"Yes"
+		estadd local stu_control_imm	"Yes"
+		estadd local tcr_control_imm	"Yes"
+		
+	est store `outcome'_3
+	
+	*4
+	reghdfe `outcome'  immigrant  $invalsi3 $cohort if imm_IAT_g!=. & invalsi>2, absorb(i.teacher_id)  cluster(teacher_id) 
+
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"No"
+		estadd local stu_control_imm	"No"
+		estadd local tcr_control_imm	"No"
+		
+	est store `outcome'_4
+	
+	*5
+	reghdfe `outcome'  imm_IAT_g immigrant  $invalsi3 $cohort if imm_IAT_g!=. & invalsi>2 , absorb(i.teacher_id)  cluster(teacher_id) 
+	
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"No"
+		estadd local stu_control_imm	"No"
+		estadd local tcr_control_imm	"No"
+		
+	est store `outcome'_5	
+	
+	*6
+	reghdfe `outcome'  imm_IAT_g immigrant  $invalsi3 $cohort $controls $tech_controls if imm_IAT_g!=. & invalsi>2 , absorb(i.teacher_id)  cluster(teacher_id) 
+	
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"Yes"
+		estadd local stu_control_imm	"Yes"
+		estadd local tcr_control_imm	"Yes"
+		
+	est store `outcome'_6
+	
+	*7
+	reghdfe `outcome' immigrant  $invalsi3 $cohort if imm_IAT_g!=. & invalsi<3, absorb(i.teacher_id)  cluster(teacher_id)
+	
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"No"
+		estadd local stu_control_imm	"No"
+		estadd local tcr_control_imm	"No"
+		
+	est store `outcome'_7
+	
+	*8
+	reghdfe `outcome'  imm_IAT_g immigrant  $invalsi3 $cohort if imm_IAT_g!=. & invalsi<3, absorb(i.teacher_id)  cluster(teacher_id) 
+	
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"No"
+		estadd local stu_control_imm	"No"
+		estadd local tcr_control_imm	"No"
+		
+	est store `outcome'_8	
+	
+	*9
+	reghdfe `outcome'  imm_IAT_g immigrant  $invalsi3 $cohort $controls $tech_controls if imm_IAT_g!=. & invalsi<3 , absorb(i.teacher_id)  cluster(teacher_id) 
+	
+		estadd local fe 				"Yes"
+		estadd local invalsi3			"Yes"
+		estadd local stu_control		"Yes"
+		estadd local stu_control_imm	"Yes"
+		estadd local tcr_control_imm	"Yes"
+		
+	est store `outcome'_9
+	
+	if  `outcome' == grade_8 {
+	esttab `outcome'_* using "$tablesAppendix/D1Abias_grading_subject_`outcome'_gs.tex", 	///
+		  b(3) se(3) label replace nomtitle nostar noomit collabels(none) noconstant ///
+		  keep(imm_IAT_g immigrant) stats(N r2 fe invalsi3 stu_control stu_control_imm tcr_control_imm, ///
+		  labels("Obs." "\(R^{2}\)" "\midrule Teacher FE" "INVALSI cubic" "Student Controls" "Student Controls*Imm" "Teacher Controls*Imm") fmt(0 3)) ///
+		  prehead("\multicolumn{10}{l}{\textbf{Panel A-- Outcome: Teacher Grade}} \\ \midrule \multicolumn{1}{c}{} & \multicolumn{3}{c}{All} & \multicolumn{3}{c}{High Ability} & \multicolumn{3}{c}{Low Ability} \\ \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}") ///
+		  postfoot("")
+	}
+	
+	if  `outcome' == first_diff_std_grade {
+	esttab `outcome'_* using "$tablesAppendix/D1Bbias_grading_subject_`outcome'_gs.tex", 	///
+		  b(3) se(3) label replace nomtitle nostar noomit collabels(none) noconstant ///
+		  keep(imm_IAT_g immigrant) stats(N r2 fe invalsi3 stu_control stu_control_imm tcr_control_imm, ///
+		  labels("Obs." "\(R^{2}\)" "\midrule Teacher FE" "INVALSI cubic" "Student Controls" "Student Controls*Imm" "Teacher Controls*Imm") fmt(0 3)) ///
+		  prehead("\\ \multicolumn{10}{l}{{\bf Panel B– Outcome: First Difference, Std Grade–Std Test Score}} \\ \midrule \multicolumn{1}{c}{} & \multicolumn{3}{c}{All} & \multicolumn{3}{c}{High Ability} & \multicolumn{3}{c}{Low Ability} \\ \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}") ///
+		  postfoot("")
+		  
+	}
+		  
+}
+
+
+** -----------------------------------------------------------------------------
+**# Table D.2 - The impact of revealing stereotypes in the field and online experiment, by teacher IAT
+** -----------------------------------------------------------------------------
+
+use "$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment.dta",clear
+
+gen IAT_g=IAT_m 
+replace IAT_g=IAT_f if female==1
+
+	
+	* Restrict sample *****************
+	keep if IAT!=.
+	keep if grade_genIII!=.
+	drop if school_id==101 
+	keep if randomization_feedback!=.
+	keep if grade_genIII!=.
+	keep if iat_done==1
+	***********************************
+	gen rand_IAT_g=randomization_feedback*IAT_g
+	gen imm_rand_IAT_g=randomization_feedback*IAT_g*immigrant
+	lab var IAT_g "IAT Gender Specific"	
+	lab var imm_IAT_g "Immigrant $\times$ IAT Gender Specific"
+	lab var rand_IAT_g "Feedback $\times$ IAT Gender Specific"
+	lab var randomization_feedback "Feedback"
+	lab var imm_randomization_feedback "Feedback $\times$ Immigrant"
+	lab var imm_rand_IAT_g "Feedback $\times$ Immigrant $\times$ IAT Gender Specific"
+	la def la_immigrant 1 "Immigrant" 0 "Native", modify
+	la var immigrant
+	la val immigrant la_immigrant
+	lab var immigrant "Immigrant"
+
+corr IAT_g imm_IAT_g if immigrant==0	
+	
+	reg grade_genIII imm_randomization_feedback immigrant randomization_feedback $controls $tech_controls , robust cluster (school_id)
+	su grade_genIII if randomization_feedback == 0
+	estadd scalar cmean `r(mean)'
+	estadd local fe No
+	estadd local sc Yes
+	estadd local tc Yes
+	est store reg1
+	
+	reg grade_genIII imm_randomization_feedback immigrant randomization_feedback $controls $tech_controls imm_rand_IAT_g IAT_g imm_IAT_g rand_IAT_g , robust cluster (school_id)
+	su grade_genIII if randomization_feedback == 0
+	estadd scalar cmean `r(mean)'
+	estadd local fe No
+	estadd local sc Yes
+	estadd local tc Yes
+	est store reg2
+
+		
+	esttab   reg1 reg2   ///
+			 using "$tablesAppendix/D2results_experiments_gs.tex", ///
+			 label replace ///
+			 nomtitle nostar noomit booktabs collabels(none) noconstant ///
+			 drop($controls $tech_controls) ///
+			 b(3) se(3) ///
+			 stats(cmean N r2  sc tc, labels (`"Control Mean"' `"\midrule Obs."' `"\(R^{2}\)"'  `"Student Controls"' `"Teacher Controls"') fmt(3 0 3)) ///
+			 prehead("\multicolumn{5}{l}{ {\bf Dependent Variable: Teacher-Assigned Grade}} \\ \hline & \multicolumn{2}{l}{ {\bf Field Experiment}} \\ \cmidrule(lr){2-3}") postfoot("")
+	
+
+
+*********************
+erase "$data_temp/EBE_tomerge.dta"
+erase "$data_temp/AlesinaCarlanaLaFerraraPinotti_dataset_bayes.dta"

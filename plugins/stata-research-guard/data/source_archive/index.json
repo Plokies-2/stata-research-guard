@@ -245,6 +245,21 @@
       "archive_path": "data/source_archive/files/e98c97dfd21e7e4cffd8a0b0520de256afd36dceae8437cbf8a774a2f2b1a473.source",
       "bytes": 4094,
       "sha256": "e98c97dfd21e7e4cffd8a0b0520de256afd36dceae8437cbf8a774a2f2b1a473"
+    },
+    "openicpsr/197984/fcr:versions/V1/Data_codes_replication_public/Code/0_master_Revealing_Stereotypes.do": {
+      "archive_path": "data/source_archive/files/e2e17a8610e1126a432d944b89c13eaaad3ac0b8d752e170ac5b46c55c55210e.source",
+      "bytes": 4940,
+      "sha256": "e2e17a8610e1126a432d944b89c13eaaad3ac0b8d752e170ac5b46c55c55210e"
+    },
+    "openicpsr/197984/fcr:versions/V1/Data_codes_replication_public/Code/1_EBE.do": {
+      "archive_path": "data/source_archive/files/de0b48a2cd6377c8243895a26c35104e634306fdc5cd5a5c877644056214b9e6.source",
+      "bytes": 4229,
+      "sha256": "de0b48a2cd6377c8243895a26c35104e634306fdc5cd5a5c877644056214b9e6"
+    },
+    "openicpsr/197984/fcr:versions/V1/Data_codes_replication_public/Code/2_tables_and_figures.do": {
+      "archive_path": "data/source_archive/files/e3f25a6fcba2b8399248f1ec66d05f89617e14b92d9a7637606b40ec4419614a.source",
+      "bytes": 134181,
+      "sha256": "e3f25a6fcba2b8399248f1ec66d05f89617e14b92d9a7637606b40ec4419614a"
     }
   }
 }

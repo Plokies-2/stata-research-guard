@@ -1,0 +1,147 @@
+/******************************************************************************	
+	
+	Project: Revealing Stereotypes
+	PI: 	 Michela Carlana, Eliana La Ferrara, Paolo Pinotti
+	
+--------------	
+    GENERAL:	
+--------------	
+
+	ATTENTION: PLEASE ONLY USE SLASH (/) AND NOT BACKSLASH (\). 
+	MacOS does not recognizes backslash.
+	
+--------------	
+    THIS CODE:	
+--------------
+
+	Date Created: 27 Jan 2022
+	Code description: EBE
+	Author: Gaia Gaudenzi
+	
+--------------------
+	DATA MANAGEMENT:
+--------------------
+	Who: Gaia 
+	Last revision: 27 Jan 2022
+	
+--------------------
+	MAIN SECTIONS:
+--------------------
+	
+	- Creates empirical Bayes estimates of teacher bias 
+	
+	
+******************************************************************************/
+	
+** -----------------------------------------------------------------------------
+** Setup
+** -----------------------------------------------------------------------------
+
+* Globals
+global controls_EBE 	"invalsi_8 female" //invalsi_8_3 invalsi_8_2 female low_edu_mother high_edu_mother miss_edu_mother low_occ_father high_occ_father miss_occfather 
+global invalsi3 		"invalsi_8_2 invalsi_8 invalsi_8_3"
+global tech_controls0 	"teacher_female t_N t_N_miss t_age t_age2 t_age_miss"
+global tech_controls 	"teacher_female t_N t_N_miss t_age t_age2 t_age_miss teacher_female_imm t_N_imm   t_N_miss_imm t_age_imm t_age2_imm t_age_miss_imm"
+global controls 		"female immigrant first_gen_imm  low_edu_mother high_edu_mother miss_edu_mother TO MI GE PD " 
+***
+	
+eststo clear
+clear all
+
+** -----------------------------------------------------------------------------
+**# 1. Create Empirical Bayes Estimates 
+** -----------------------------------------------------------------------------
+
+ * Load data
+u 	"$data_final/AlesinaCarlanaLaFerraraPinotti_fieldexperiment.dta", clear
+	
+compress
+
+**# 1.1 Cleaning
+		
+	* Restrict sample
+	keep if grade_8!=.
+	keep if invalsi_8!=.
+	keep if teacher_id!=.
+
+	** Keep only who has at least one italian and one immigrant
+	g 		no_immigrant = immigrant == 0 
+	replace no_immigrant = . if mi(immigrant)
+	bys 	teacher_id: egen count_stud_imm=sum(immigrant) // 621 obs == 0
+	bys 	teacher_id: egen count_stud_ita=sum(no_immigrant) // 13 obs == 0
+	levelsof teacher_id if (count_stud_imm == 0 | count_stud_ita == 0) 
+		di `r(r)' // display number of distinct teachers who do not have immigrants OR italian
+		di `r(N)' // display total nr of students we'll drop
+	keep if count_stud_imm >= 3 & count_stud_ita >= 3 // 2,372 drop
+	
+	g count_stud=count_stud_imm+count_stud_ita
+	*keep if count_stud>15
+	**
+	
+	gen dif_grade_noblind_blind	= std_grade_8-std_invalsi_8
+save "$data_temp/AlesinaCarlanaLaFerraraPinotti_dataset_bayes.dta", replace
+
+**# Load dataset
+	
+u "$data_temp/AlesinaCarlanaLaFerraraPinotti_dataset_bayes.dta", clear
+**# 1.2 STEP 1: Estimate IMMIGRANT bias coefficient and st error
+	
+	eststo clear
+	estimates drop _all 
+	* Loop over teacher_id to store coefficient and st error
+	levelsof teacher_id, local(teacher_id)
+	foreach id of 		 local teacher_id {
+		
+		*local id 15614
+		* Regression
+		display " Regressing for ID `id'"
+		eststo clear
+		estimates drop _all
+		reg dif_grade_noblind_blind immigrant $controls_EBE if teacher_id == `id'
+		g 	b_`id'	= _b[immigrant]
+		g 	se_`id' = _se[immigrant]
+		g 	N_`id'  = e(N)
+		estimates drop _all
+		eststo clear
+
+	}
+
+	
+	*** Reshape dataset to create teacher-level dataset
+	* Keep relevant vars
+	keep 	b_* se_* N_*
+	keep if _n == 1
+	g 		fakeid = 1
+	reshape long b_ se_ N_, i(fakeid) j(teacher_id) str
+	drop 	fakeid
+	***
+	
+**# 1.3 STEP 2: Calculate Reliability Ratio to correct estimates
+	
+	* Calculate Noise: squared standard-error of the bias estimate
+	g se2_noise = se_^2
+	
+	* Mean Error Variance: average of the squared standard errors of the estimated teacher bias
+	egen MEV = mean(se2_noise)
+	
+	* Variance of observed bias
+	sum b_, d
+	g var_obs_bias= `r(Var)'
+	
+	
+	* True variance
+	g 	true_var = var_obs_bias - MEV
+	
+	* Reliability ratio
+	g 	RR = true_var/ ///
+			(true_var+se2_noise)
+	
+	* Empirical Bayes estimator
+	g 	EBE = b_*RR
+	
+	destring teacher_id, replace
+	
+	egen std_EBE=std(EBE)
+**# 1.4 STEP 3: Save dataset with Empirical Bayes estimates of teacher bias
+		save "$data_temp/EBE_tomerge", replace
+	

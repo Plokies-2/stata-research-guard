@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-05 — selected randomization-workflow source
+
+- Added three unmodified code files and the original README from Alesina et al., Revealing Stereotypes (AER 2024), ICPSR E197984 V1, with attribution and source navigation. No datasets were collected.
+- Linked its sample-to-school-reassignment-to-density-figure path as a narrow optional reference, including the actual control redefinitions and limits of the example. It is not a new default template or command-selection signal.
+- Reviewed existing workflow candidates and an outside code set before collecting this supplement. No server/schema change, generated Stata, or implementation test.
+
 ## 2026-09-05 — critical whole-workflow reading
 
 - Require actual connected paper-code reading for substantial workflow authoring/restructuring independently of optional command-local examples. Integrate the comparison into existing peer advice.

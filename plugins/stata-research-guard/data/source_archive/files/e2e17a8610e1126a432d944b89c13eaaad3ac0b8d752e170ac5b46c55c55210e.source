@@ -1,0 +1,171 @@
+/*==================================================================================================
+Project:       Revealing Steretypes
+Authors:       Michela Carlana, Eliana La Ferrara, Paolo Pinotti
+Purpose:       This is the master code to replicate all of the tables and figures in the paper.
+---------------------------------------------------------------------------------------------------
+Index:		   A. Log File and System Diagnostics
+
+			   B. Setting Path Directories
+
+			   C. Executing Programs
+---------------------------------------------------------------------------------------------------
+			   			   
+*** NOTE: TABLES AND FIGURES NOT GENERATED ON STATA ***************************
+
+	* Figure 1: timeline
+	* Figure A.4: taken from IAT. Implicit Project 
+	* Appendix Table A.1: data from MIUR
+	
+(check numbers)
+	
+*******************************************************************************
+ 
+ // this version: Updated January 2024
+
+===================================================================================================*/
+
+
+*capture log close
+
+clear all
+clear mata
+macro drop _all
+set more off
+set mem 1000m
+set seed 27062007
+set matsize 11000
+set maxvar 10000
+set scheme s1color
+
+
+*replicability settings:
+version 17
+*set processors 1 
+set sortseed 123456789
+set seed 123456789
+
+
+
+	//-------------- FOR REPLICATION: THESE ARE THE ONLY TWO GLOBALS TO CHANGE  --------------- // 
+
+*local user "name" 
+*global root "/Users/`user'/OneDrive - Università Commerciale Luigi Bocconi/Revealing_Stereotypes_2/Data work" // (defines the reference folder)
+
+
+local stata_programs = 0    //set to 1 to install the programs, 0 to skip 
+	//------------------------------------------------------------------------------------------ //
+
+
+*root (to delete in final version) 
+
+if "`c(username)'"== "adagn" {
+    global root   "\Users\adagn\OneDrive - Università Commerciale Luigi Bocconi\Revealing_Stereotypes_2\Submission_AER\Data_codes_replication"
+}
+
+	
+
+if "`c(username)'"== "mic965" {
+	global root   "/Users/mic965/Dropbox (Personal)/Discrimination_immigrants/Submission_AER/Data_codes_replication"
+}
+	
+
+*global root "C:\Users\lucac\Università Commerciale Luigi Bocconi\Michela Carlana - Revealing_Stereotypes_2\Submission_AER\Data_codes_replication"
+/*===============================================================================================
+								A. Log File and System Diagnostics
+===============================================================================================*/
+
+*log using "$root/logfile_19jan.smcl"
+
+
+						di "======== SYSTEM DIAGNOSTICS ========"
+						di "Stata version: `c(stata_version)'"
+						di "Updated as of: `c(born_date)'"
+						di "Variant:       `variant'"
+						di "Processors:    `c(processors)'"
+						di "OS:            `c(os)' `c(osdtl)'"
+						di "Machine type:  `c(machine_type)'"
+						di "===================================="
+
+
+						
+/*===============================================================================================
+                                  B. Setting Path Directories
+===============================================================================================*/
+
+* Code directories
+global codes		"$root/Code"
+
+
+* Data directories
+
+global data   		"$root/Data"
+global data_other	"$root/Data/other"
+global data_final	"$root/Data/final"
+global data_temp	"$root/Data/temp"
+
+capture mkdir permutation "$data_temp/permutation"
+global permutation	"$permutation"
+
+
+* OUTPUT FOLDER
+
+capture mkdir 		"$root/Output"
+global output 		"$root/Output"
+
+
+* Main output
+capture mkdir 		"$root/Output/main"
+
+capture mkdir 		"$root/Output/main/tables"
+global tables 		"$output/main/tables"
+
+capture mkdir 		"$root/Output/main/figures"
+global figures 		"$output/main/figures"
+
+* Appendix output
+capture mkdir 		"$root/Output/appendix"
+
+capture mkdir 		"$root/Output/appendix/tables"
+
+global tablesAppendix 	"$output/appendix/tables"
+
+capture mkdir 		"$root/Output/appendix/figures"
+global figuresAppendix 	"$output/appendix/figures"
+
+
+/*===============================================================================================
+                                  C. Executing Programs
+===============================================================================================*/
+
+* Note: The following lines of code must be run in order
+
+cd "$root"
+	
+	*installing the few non standard packages used in the following code
+	
+	if `stata_programs' == 1 {
+	ssc install _gwmean
+	ssc install ivreg2
+	ssc install ranktest
+	ssc install binscatter
+	ssc install ritest
+	ssc install estout
+	ssc install _gwmean
+	ssc install binscatter
+	ssc install ritest
+	}
+	
+
+	
+	*code execution
+	do "$codes/1_EBE" 						//Empirical Bias Estimates
+	do "$codes/2_tables_and_figures.do"	//Tables and Figures for main paper and appendix 
+
+
+***************************************************************************************************
+
+*log close
+
+
+*sistema il log file
+	
