@@ -4,6 +4,7 @@
 
 - Trace affected output meaning and structure backward to estimates, effective samples, observation units and inputs, alongside forward code reading. Never target desired numerical findings.
 - Define the purpose of that reading: uncover concrete meaning/sample/result handoff errors or redundant work, explain necessary exceptions, and connect findings to the smallest correction or retention decision. A dependency listing alone is insufficient.
+- Add nonbinding discovery-to-correction examples inspired by dbt output-grain planning and K-Dense result interfaces: unintended observation weighting, wrong-sample or overwritten statistics, and redundant plot/table construction. Retain intentional differences and supported remaining manual work.
 - Connect proposed manual operations to relevant documented options and returned interfaces, including their downstream consumers. Reuse current evidence and stop when the concrete question is resolved.
 - Integrate both practices into existing workflow and peer instructions. No new checklist, mock output, scanner, validator, source corpus, or implementation test.
 

@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.3.0+codex.20260905095015"
+    "version": "0.3.0+codex.20260905095315"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
       "bytes": 1360,
-      "sha256": "e103c3de272626ccbe6ca66932d97f99d8ad8fd2b81cfe9c7a1ee6c929607285"
+      "sha256": "ddabc9ef7237eb3bc24d720f605413ab6e9dbd8a092011f3d82497de5d48a5ca"
     },
     {
       "path": ".mcp.json",
@@ -22,8 +22,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 22262,
-      "sha256": "e8ed62e92ed78d60480751cd1bd1ae9f55db0fb7c872fb47ebc8a3f8c5a0e584"
+      "bytes": 22562,
+      "sha256": "61fd4b78f4baa8a2fe486860ec02ab90ab4e9d43c4572f7d92d71eeeadc98470"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -1582,8 +1582,8 @@
     },
     {
       "path": "skills/stata-peer-audit/SKILL.md",
-      "bytes": 6315,
-      "sha256": "4903ce97f0c03c7f43c10c66c6417a3b26824e2d4a3efb8694bda98e0fb2d264"
+      "bytes": 6574,
+      "sha256": "1df1de7d766dd781a9867d105c5e8189c060147f83be2cdc4c2854e3c5618655"
     },
     {
       "path": "skills/stata-replication-workflow/agents/openai.yaml",
@@ -1597,8 +1597,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/command-evidence.md",
-      "bytes": 7974,
-      "sha256": "e12e0bf0d44eed7057a2d2a4d87796ddcd03fca365927367ecaeca0e99ae75f4"
+      "bytes": 10684,
+      "sha256": "fd9a6940b1f1b26d48bc48c36253c84ee55cbea5d5dbcee65dead442ef3f7a45"
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rules.md",
@@ -1622,8 +1622,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/SKILL.md",
-      "bytes": 7282,
-      "sha256": "bcbbf204cb4a9a1b7bf6f060ca0755488ce45b364a62e26f05b21dcd32e5486d"
+      "bytes": 7531,
+      "sha256": "d422f95ec830bd953935ff3d773341a634d99edf325512d7a4996c2b9090966a"
     },
     {
       "path": "tests/fixtures/outreg2_excel_runtime.do",
@@ -1674,7 +1674,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.3.0+codex.20260905095015"
+      "value": "0.3.0+codex.20260905095315"
     },
     {
       "id": "readme.heading",
