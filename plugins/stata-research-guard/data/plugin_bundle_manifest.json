@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.3.0+codex.20260905040952"
+    "version": "0.3.0+codex.20260905073717"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
       "bytes": 1327,
-      "sha256": "d151080e471685dede64a0e7ec4100c9a81b81bfff4a806025483427c4312c2d"
+      "sha256": "b124e7eec09d059f1536ff0f9a4a2edc572fcc02d5895fb289af6f6d651959d7"
     },
     {
       "path": ".mcp.json",
@@ -1582,8 +1582,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rules.md",
-      "bytes": 6995,
-      "sha256": "703129f1978b5c4bd1ba750aa7996b86f2f84dabaf6ec52e4c606e48e6142456"
+      "bytes": 7235,
+      "sha256": "e4fa14a35f1141229f99e7f47bf819cd214d307de151445c48b118c80faa582f"
     },
     {
       "path": "skills/stata-replication-workflow/references/readme-contract.md",
@@ -1649,7 +1649,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.3.0+codex.20260905040952"
+      "value": "0.3.0+codex.20260905073717"
     },
     {
       "id": "readme.heading",
