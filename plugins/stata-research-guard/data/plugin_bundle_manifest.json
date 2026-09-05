@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.3.0+codex.20260904222006"
+    "version": "0.3.0+codex.20260905040952"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
-      "bytes": 1316,
-      "sha256": "d6268b89dfe61fc99f1cff057629c3cab8f396515cfbe4da7bcac62d575416c9"
+      "bytes": 1327,
+      "sha256": "d151080e471685dede64a0e7ec4100c9a81b81bfff4a806025483427c4312c2d"
     },
     {
       "path": ".mcp.json",
@@ -22,8 +22,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 19390,
-      "sha256": "743db7c63f5b36e59bde0cfe8c3b122da3f8c9ebaae197391ad549b0732e950d"
+      "bytes": 19988,
+      "sha256": "6c10d8d03caa24203f96a780ee9c6766a7aaa2b86e0fc54997cd00ecb652eb2f"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -597,8 +597,8 @@
     },
     {
       "path": "data/command_help_sections.json",
-      "bytes": 7036,
-      "sha256": "9346445ffa70ee33d97b1685b9fa010d786f7eeaa2db39441d5cf62828f50eaf"
+      "bytes": 52352,
+      "sha256": "cc898429505c9a9bdeef2683369a1af2c7a782c7d0c358171acb04c5b08a94a7"
     },
     {
       "path": "data/command_help_sources/acreg-ssc-acreg.sthlp",
@@ -1231,6 +1231,11 @@
       "sha256": "b0db4dc34ad7fb1b02cc0641a1a4317080331c4231ab160c1ba5e5bbd00e0b3b"
     },
     {
+      "path": "data/expanded_help_sections.json",
+      "bytes": 68260,
+      "sha256": "6bfe1abc5fdbc0ec5f498b9f43257b07a862299b6cf5a033ff8f766dd9c90485"
+    },
+    {
       "path": "data/high_quality_paper_blocks.jsonl",
       "bytes": 341892,
       "sha256": "deca72efcbf14233f0f762ed614e22ba26216b4853818339efe08e5bb719e248"
@@ -1507,8 +1512,13 @@
     },
     {
       "path": "INSTRUCTIONS.md",
-      "bytes": 1647,
-      "sha256": "9d36fb1fd2211d4707c24dac060cfd7704583b4b0de6dd416044b51b4c9fafd1"
+      "bytes": 1732,
+      "sha256": "a1a73fbfe8094388fc607eb2241e6a3c75606229972b84435e37e08071069873"
+    },
+    {
+      "path": "mcp/help-sections.cjs",
+      "bytes": 2955,
+      "sha256": "f88bd5fc2fff8bbcdf5f58ec2dce9ab16bd789f447df2ba6730629a08e942f2d"
     },
     {
       "path": "mcp/live-help.cjs",
@@ -1517,13 +1527,13 @@
     },
     {
       "path": "mcp/server.cjs",
-      "bytes": 25250,
-      "sha256": "b3c863219b588f9d2e4fc16c702050759fc77eb38a3e061c4a1cdff2878d3135"
+      "bytes": 25169,
+      "sha256": "e859a281c86d19cca68d9602cc224694b202be39e5ec9007fbf4cf8e5508cfb1"
     },
     {
       "path": "README.md",
-      "bytes": 6934,
-      "sha256": "d7daea42ac22d5451b15486cf7920e501af40152d5b36e2e6e859fe97c3f3a25"
+      "bytes": 7681,
+      "sha256": "4aeb5de5dc97825f3b41ef433d5509beca87aba81c3742536afa40c763758c2f"
     },
     {
       "path": "scripts/build_clean_command_guide.py",
@@ -1567,8 +1577,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/command-evidence.md",
-      "bytes": 5930,
-      "sha256": "499dc98b69909d174fa81acc444bbd604371d0ebdd8a2a5a97f452ef9b4cbd61"
+      "bytes": 6844,
+      "sha256": "4c0bb42115822affb3cf605ba35e115b141dd0970f2a6fa896340882809d20b9"
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rules.md",
@@ -1601,6 +1611,11 @@
       "sha256": "460de0adb08c8f70ba5041d034483d50db43f20f72ae9642fd58a7ecf3253b8e"
     },
     {
+      "path": "tests/help-sections.test.cjs",
+      "bytes": 4798,
+      "sha256": "facb45722e5854d86a92aa920087c0bfb6894e829ed61dcdb16048bb88a42b37"
+    },
+    {
       "path": "tests/live-help.test.cjs",
       "bytes": 6526,
       "sha256": "81053c44a9b31780ebaa9186afcb90c869715fe01984e794452604b68994de19"
@@ -1617,8 +1632,8 @@
     },
     {
       "path": "tests/server.test.cjs",
-      "bytes": 28029,
-      "sha256": "e538f24d825fc01296266df8ad11954716f95ee9abed7e4fe7b9e4a2fc5ba98f"
+      "bytes": 28292,
+      "sha256": "23f839ab605d3a7307bff2861ab568a673cba6deb70c0611d3ffdd216b8b3752"
     }
   ],
   "semantic_anchors": [
@@ -1634,7 +1649,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.3.0+codex.20260904222006"
+      "value": "0.3.0+codex.20260905040952"
     },
     {
       "id": "readme.heading",

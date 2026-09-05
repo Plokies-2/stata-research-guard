@@ -1,6 +1,6 @@
 {
   "name": "stata-research-guard",
-  "version": "0.3.0+codex.20260904222006",
+  "version": "0.3.0+codex.20260905040952",
   "description": "Researcher-readable Stata with original command evidence and concrete independent review.",
   "author": {
     "name": "song7"
@@ -9,7 +9,7 @@
   "interface": {
     "displayName": "Stata Research Guard",
     "shortDescription": "Readable Stata, original help, concrete peer advice.",
-    "longDescription": "Write coherent research stages with visible specifications and native Stata commands. Original help and selected paper context support implementation; fresh peer advice makes refactoring defects explicit. Optional source-section navigation and caller-controlled rule reuse reduce repetition without replacing source evidence.",
+    "longDescription": "Write coherent research stages with visible specifications and native Stata commands. Original help and paper context support implementation; fresh peer advice makes refactoring defects explicit. Large help opens with source-section navigation and includes required foundations on selection. Complete source retrieval remains available.",
     "developerName": "song7",
     "category": "Developer Tools",
     "capabilities": [

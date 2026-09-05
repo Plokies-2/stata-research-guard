@@ -127,7 +127,7 @@ test("Phase 2 returns official help for the six core data-inspection commands", 
 });
 
 test("Phase 2 returns Stata-rendered xtreg help and its three exact profiles", async () => {
-  const result = await buildCommandEvidence({ request: "Use xtreg", selected_commands: ["xtreg"] });
+  const result = await buildCommandEvidence({ request: "Use xtreg", selected_commands: ["xtreg"], help_view: "full" });
   assert.deepEqual(Object.keys(result), [
     "phase",
     "main_rules",
@@ -216,6 +216,7 @@ test("the Stata 18 help and expanded-document indexes cover all 115 commands", a
 test("Phase 3 expands only the exact requested command subset without requiring a paper block", async () => {
   const result = await buildCommandEvidence({
     request: "Read more about regress",
+    help_view: "full",
     selected_commands: ["regress", "margins", "marginsplot", "outreg2"],
     expanded: true,
     expanded_commands: ["regress"],
@@ -237,6 +238,7 @@ test("Phase 3 returns one slim exact xtreg paper card with an empty log array", 
   const result = await buildCommandEvidence({
     request: "Inspect the selected xtreg example",
     selected_commands: ["xtreg"],
+    help_view: "full",
     expanded: true,
     selected_block_ids: ["block-139-184-033"],
   });
@@ -470,6 +472,7 @@ test("empty optional Phase 3 arrays are equivalent to omission", async () => {
   const paperOnly = await buildCommandEvidence({
     request: "Read one paper block only",
     selected_commands: ["xtreg"],
+    help_view: "full",
     expanded: true,
     expanded_commands: [],
     selected_block_ids: ["block-139-184-033"],
@@ -540,7 +543,8 @@ test("Phase 3 returns available paper blocks when another selected command lacks
 
 test("phase arguments and exact IDs fail closed", async () => {
   await assert.rejects(
-    () => buildCommandEvidence({ request: "Scan", selected_commands: ["xtreg"], project_path: "." }),
+    () => buildCommandEvidence({ request: "Scan", selected_commands: ["xtreg"],
+    help_view: "full", project_path: "." }),
     /ABORT invalid_phase_arguments/,
   );
   await assert.rejects(
@@ -551,6 +555,7 @@ test("phase arguments and exact IDs fail closed", async () => {
     () => buildCommandEvidence({
       request: "Wrong command",
       selected_commands: ["xtreg"],
+    help_view: "full",
       expanded: true,
       selected_block_ids: ["block-139-184-032"],
     }),
@@ -560,6 +565,7 @@ test("phase arguments and exact IDs fail closed", async () => {
     () => buildCommandEvidence({
       request: "Missing expanded flag",
       selected_commands: ["xtreg"],
+    help_view: "full",
       selected_block_ids: ["block-139-184-033"],
     }),
     /ABORT invalid_phase_arguments/,
@@ -568,6 +574,7 @@ test("phase arguments and exact IDs fail closed", async () => {
     () => buildCommandEvidence({
       request: "Empty expanded context",
       selected_commands: ["xtreg"],
+    help_view: "full",
       expanded: true,
     }),
     /ABORT empty_expanded_context/,
@@ -576,6 +583,7 @@ test("phase arguments and exact IDs fail closed", async () => {
     () => buildCommandEvidence({
       request: "Expansion outside selected boundary",
       selected_commands: ["xtreg"],
+    help_view: "full",
       expanded: true,
       expanded_commands: ["regress"],
     }),
@@ -618,18 +626,18 @@ test("complete rules are the default and caller hash reuse never suppresses chan
   assert.equal(fresh.main_rules.content, first.main_rules.content);
 });
 
-test("help section navigation preserves exact selected source ranges and full-help default", async () => {
+test("help section navigation preserves exact selected source ranges and explicit full help", async () => {
   const catalog = await buildCommandEvidence({ request: "Navigate help", selected_commands: ["outreg2", "regress"], help_view: "catalog" });
   assert.equal(catalog.command_evidence[0].command_help.content, null);
   assert.equal(catalog.command_evidence[0].command_help.delivery, "catalog_only");
-  assert.ok(catalog.command_evidence[1].command_help.content);
-  const full = await buildCommandEvidence({ request: "Full source", selected_commands: ["outreg2"] });
+  assert.equal(catalog.command_evidence[1].command_help.content, null);
+  const full = await buildCommandEvidence({ request: "Full source", selected_commands: ["outreg2"], help_view: "full" });
   const raw = fs.readFileSync(path.join(ROOT, "data/command_help_guides/outreg2.txt"), "utf8");
   assert.equal(full.command_evidence[0].command_help.content, raw);
   const result = await buildCommandEvidence({ request: "Selected original sections", selected_commands: ["outreg2"], help_sections: { outreg2: ["example-12", "reference", "example-3"] } });
   const help = result.command_evidence[0].command_help;
   const lines = raw.match(/[^\n]*\n|[^\n]+$/g);
-  assert.deepEqual(help.selected_sections.map((row) => row.id), ["reference", "example-3", "example-12"]);
+  assert.deepEqual(help.selected_sections.map((row) => row.id), ["reference", "example-0", "example-3", "example-12", "faq-and-source"]);
   assert.equal(help.content, help.selected_sections.map((row) => lines.slice(row.start - 1, row.end).join("")).join("\n"));
   await assert.rejects(() => buildCommandEvidence({ request: "Unknown ID", selected_commands: ["outreg2"], help_sections: { outreg2: ["invented"] } }), /invalid exact help section/);
   await assert.rejects(() => buildCommandEvidence({ request: "Wrong command", selected_commands: ["regress"], help_sections: { outreg2: ["reference"] } }), /unavailable for selected command/);

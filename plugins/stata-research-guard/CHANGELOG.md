@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-05 — large-source navigation
+
+- Help above 24,000 Unicode characters now returns source navigation before its body, across bundled help, live help, and expanded manuals. Full-source retrieval remains explicit.
+- Added reviewed original-boundary maps and automatic intact foundation sections; retained whole source units when a current reviewed internal map is unavailable.
+- Kept raw source text unchanged and added transport checks for full coverage, required-section delivery, stale maps, and live-source navigation. These checks do not judge section semantics or research quality.
+
 ## 2026-09-05 — feedback from the ai-econ research run
 
 - Resolved `postfile`, `postclose`, and `postutil` to their documented official `post` help topic while retaining the requested command labels. An actual research task had incorrectly received unavailable help for `postfile`.

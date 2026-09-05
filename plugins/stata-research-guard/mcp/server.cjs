@@ -5,6 +5,7 @@ const path = require("node:path");
 const readline = require("node:readline");
 const crypto = require("node:crypto");
 const { lookupLiveStataHelp } = require("./live-help.cjs");
+const { deliverHelp } = require("./help-sections.cjs");
 
 const PLUGIN_ROOT = path.resolve(__dirname, "..");
 const DATA_ROOT = path.join(PLUGIN_ROOT, "data");
@@ -72,6 +73,7 @@ const helpSectionsByCommand = new Map(readJson(path.join(DATA_ROOT, "command_hel
 
 const expandedGuideIndex = readJson(EXPANDED_COMMAND_GUIDES_PATH);
 const expandedGuidesByCommand = new Map(expandedGuideIndex.guides.map((row) => [row.command, row]));
+const expandedSectionsByCommand = new Map(readJson(path.join(DATA_ROOT, "expanded_help_sections.json")).guides.map((row) => [row.command, row]));
 
 const paperProfiles = readJsonl(PAPER_PROFILES_PATH);
 const profilesById = new Map(paperProfiles.map((row) => [row.block_id, row]));
@@ -234,7 +236,7 @@ function validateArguments(args) {
     ? new Set(["request", "known_rules_sha256"])
     : phase === "selected_command_evidence"
       ? new Set(["request", "selected_commands", "known_rules_sha256", "help_view", "help_sections", "refresh_live_help"])
-      : new Set(["request", "selected_commands", "expanded", "expanded_commands", "selected_block_ids", "known_rules_sha256"]);
+      : new Set(["request", "selected_commands", "expanded", "expanded_commands", "selected_block_ids", "known_rules_sha256", "help_view", "expanded_sections"]);
   const unexpected = Object.keys(args).filter((key) => !allowed.has(key));
   if (unexpected.length > 0) {
     throw new Error(`ABORT invalid_phase_arguments: ${phase} does not allow ${unexpected.join(", ")}`);
@@ -253,25 +255,24 @@ function validateArguments(args) {
   if (args.known_rules_sha256 !== undefined && (typeof args.known_rules_sha256 !== "string" || !/^[a-f0-9]{64}$/.test(args.known_rules_sha256))) {
     throw new Error("known_rules_sha256 must be the SHA-256 of complete rules still visible in this context");
   }
-  if (args.help_view !== undefined && args.help_view !== "catalog") throw new Error("help_view must be catalog when supplied");
+  if (args.help_view !== undefined && !["catalog", "full"].includes(args.help_view)) throw new Error("help_view must be catalog or full");
   if (args.refresh_live_help !== undefined && typeof args.refresh_live_help !== "boolean") throw new Error("refresh_live_help must be boolean");
-  if (args.help_sections !== undefined) {
-    if (!args.help_sections || typeof args.help_sections !== "object" || Array.isArray(args.help_sections) || Object.keys(args.help_sections).length === 0) {
-      throw new Error("help_sections must map selected command keys to nonempty exact section IDs");
+  const selectedBlockIds = phase === "expanded_context" ? optionalSelectedBlockIdsFrom(args) : null;
+  const expandedCommands = phase === "expanded_context" ? optionalExpandedCommandsFrom(args, selectedCommands) : null;
+  const sectionRequest = args.help_sections !== undefined ? args.help_sections : args.expanded_sections;
+  if (sectionRequest !== undefined) {
+    if (!sectionRequest || typeof sectionRequest !== "object" || Array.isArray(sectionRequest) || Object.keys(sectionRequest).length === 0) {
+      throw new Error("help sections must map selected command keys to nonempty exact section IDs");
     }
-    if (args.help_view) throw new Error("help_view catalog and help_sections are separate requests");
-    for (const [command, ids] of Object.entries(args.help_sections)) {
-      const guide = helpSectionsByCommand.get(command);
-      if (!selectedCommands.includes(command) || !guide) throw new Error(`help sections unavailable for selected command: ${command}`);
-      if (!Array.isArray(ids) || ids.length === 0 || new Set(ids).size !== ids.length || ids.some((id) => !guide.sections.some((section) => section.id === id))) {
+    if (args.help_view) throw new Error("help_view and section selections are separate requests");
+    const availableCommands = phase === "expanded_context" ? expandedCommands : selectedCommands;
+    for (const [command, ids] of Object.entries(sectionRequest)) {
+      if (!availableCommands.includes(command)) throw new Error(`help sections unavailable for selected command: ${command}`);
+      if (!Array.isArray(ids) || ids.length === 0 || new Set(ids).size !== ids.length || ids.some((id) => typeof id !== "string" || !id)) {
         throw new Error(`invalid exact help section selection: ${command}`);
       }
     }
   }
-  const selectedBlockIds = phase === "expanded_context" ? optionalSelectedBlockIdsFrom(args) : null;
-  const expandedCommands = phase === "expanded_context"
-    ? optionalExpandedCommandsFrom(args, selectedCommands)
-    : null;
   if (phase === "expanded_context" && expandedCommands.length === 0 && selectedBlockIds.length === 0) {
     throw new Error("ABORT empty_expanded_context: supply expanded_commands, selected_block_ids, or both");
   }
@@ -288,27 +289,8 @@ function validateArguments(args) {
 function commandHelp(command, args) {
   const entry = helpGuidesByCommand.get(command);
   if (!entry || !entry.content_file) return null;
-  const contentPath = path.join(DATA_ROOT, entry.content_file);
-  const content = readUtf8(contentPath);
-  const navigation = helpSectionsByCommand.get(command);
-  if (!navigation || (!args.help_view && !args.help_sections?.[command])) return { ...entry, content };
-  // Identity of this selected source only; never a corpus or semantic gate.
-  if (sha256Text(content) !== navigation.content_sha256) {
-    return { ...entry, content, delivery: "full_help", navigation_note: "Section map is stale; complete current help returned." };
-  }
-  if (args.help_view === "catalog") {
-    return { ...entry, content: null, delivery: "catalog_only", section_catalog: navigation.sections };
-  }
-  const selected = new Set(args.help_sections[command]);
-  const lines = content.match(/[^\n]*\n|[^\n]+$/g) || [];
-  const sections = navigation.sections.filter((section) => selected.has(section.id));
-  return {
-    ...entry,
-    delivery: "selected_source_sections",
-    selected_sections: sections,
-    content: sections.map((section) => lines.slice(section.start - 1, section.end).join("")).join("\n"),
-    scope_note: "Only the named source sections were delivered. Follow unresolved cross-references or request complete help before relying on uncovered semantics.",
-  };
+  return deliverHelp({ ...entry, content: readUtf8(path.join(DATA_ROOT, entry.content_file)) },
+    helpSectionsByCommand.get(command), args.help_sections?.[command], args.help_view);
 }
 
 async function dynamicCommandEvidence(command, liveHelpLookup, args) {
@@ -319,7 +301,7 @@ async function dynamicCommandEvidence(command, liveHelpLookup, args) {
     help_topic: helpTopic,
     registry_status: "outside_dictionary",
     help_status: live.status,
-    command_help: live.help,
+    command_help: live.help ? deliverHelp(live.help, null, args.help_sections?.[command], args.help_view) : null,
     limitations: live.limitations,
     expanded_documentation: {
       status: "unavailable",
@@ -359,10 +341,10 @@ function expandedDocumentationSummary(command) {
   };
 }
 
-function expandedDocumentation(command) {
+function expandedDocumentation(command, args) {
   const entry = expandedGuidesByCommand.get(command);
   const content = entry?.content_file ? readUtf8(path.join(DATA_ROOT, entry.content_file)) : null;
-  return { ...entry, content };
+  return deliverHelp({ ...entry, content }, expandedSectionsByCommand.get(command), args.expanded_sections?.[command], args.help_view);
 }
 
 function sha256Text(text) {
@@ -496,7 +478,7 @@ async function buildCommandEvidence(args, options = {}) {
     selected_block_ids: selectedBlockIds,
     expanded_command_evidence: expandedCommands.map((command) => ({
       command,
-      expanded_documentation: expandedDocumentation(command),
+      expanded_documentation: expandedDocumentation(command, args),
     })),
     paper_usage_cards: selectedBlockIds.map(paperCard),
   };
@@ -507,7 +489,7 @@ async function buildCommandEvidence(args, options = {}) {
 const TOOL_DEFINITIONS = [
   {
     name: "get_stata_command_evidence",
-    description: "Stata command evidence, not command selection or research judgment. Call Phase 2 directly for known commands; discovery is optional. Full raw help is the default. Optional help_view catalog and exact help_sections navigate large source documents without rewriting them. Phase 3 adds selected manuals or complete paper blocks. Rules are included unless known_rules_sha256 matches complete rules still visible to the caller; omit it in fresh or compacted contexts. refresh_live_help rereads changed installations.",
+    description: "Stata command evidence, not command selection or research judgment. Call Phase 2 directly for known commands; discovery is optional. Help over 24000 Unicode characters returns a section catalog first, including live help and expanded manuals. Select exact help_sections in Phase 2 or expanded_sections in Phase 3; foundation sections accompany selections. help_view full explicitly retrieves the complete source, and catalog requests navigation. Small help remains complete by default. Paper blocks are unchanged. Rules are included unless known_rules_sha256 matches complete rules still visible to the caller; omit it in fresh or compacted contexts. refresh_live_help rereads changed installations.",
     inputSchema: {
       oneOf: [
         {
@@ -529,7 +511,7 @@ const TOOL_DEFINITIONS = [
             request: { type: "string", minLength: 1 },
             selected_commands: { type: "array", minItems: 1, items: { type: "string", minLength: 1 } },
             known_rules_sha256: { type: "string", pattern: "^[a-f0-9]{64}$" },
-            help_view: { const: "catalog" },
+            help_view: { type: "string", enum: ["catalog", "full"] },
             help_sections: { type: "object", minProperties: 1, additionalProperties: { type: "array", minItems: 1, uniqueItems: true, items: { type: "string", minLength: 1 } } },
             refresh_live_help: { type: "boolean" },
           },
@@ -548,6 +530,8 @@ const TOOL_DEFINITIONS = [
             selected_commands: { type: "array", minItems: 1, items: { type: "string", minLength: 1 } },
             expanded: { const: true },
             known_rules_sha256: { type: "string", pattern: "^[a-f0-9]{64}$" },
+            help_view: { type: "string", enum: ["catalog", "full"] },
+            expanded_sections: { type: "object", minProperties: 1, additionalProperties: { type: "array", minItems: 1, uniqueItems: true, items: { type: "string", minLength: 1 } } },
             expanded_commands: { type: "array", items: { type: "string", minLength: 1 } },
             selected_block_ids: { type: "array", items: { type: "string", minLength: 1 } },
           },

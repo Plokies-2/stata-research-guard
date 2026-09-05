@@ -1,6 +1,1415 @@
 {
   "guides": [
     {
+      "command": "asdoc",
+      "content_file": "command_help_guides/asdoc.txt",
+      "content_sha256": "5b95913fa2d594c272a3c343cabe503dcabf8abe4845b60fc201aae1d0a957d0",
+      "sections": [
+        {
+          "id": "syntax",
+          "title": "Syntax",
+          "start": 1,
+          "end": 109
+        },
+        {
+          "id": "description",
+          "title": "DESCRIPTION",
+          "start": 110,
+          "end": 115
+        },
+        {
+          "id": "options",
+          "title": "1. ASDOC OPTIONS",
+          "start": 116,
+          "end": 283
+        },
+        {
+          "id": "summary-statistics",
+          "title": "2. SUMMARY STATISTICS",
+          "start": 284,
+          "end": 383
+        },
+        {
+          "id": "correlations",
+          "title": "3. CORRELATIONS",
+          "start": 384,
+          "end": 473
+        },
+        {
+          "id": "regressions",
+          "title": "4. REGRESSIONS",
+          "start": 474,
+          "end": 835
+        },
+        {
+          "id": "frequency-tables",
+          "title": "5. FREQUENCY TABLES",
+          "start": 836,
+          "end": 915
+        },
+        {
+          "id": "tabstat",
+          "title": "6. COMPACT TABLES (TABSTAT)",
+          "start": 916,
+          "end": 956
+        },
+        {
+          "id": "table",
+          "title": "7. FLEXIBLE TABLE OF SUMMARY STATS (TABLE)",
+          "start": 957,
+          "end": 1038
+        },
+        {
+          "id": "ttest",
+          "title": "8. T-TESTS (TTEST)",
+          "start": 1039,
+          "end": 1118
+        },
+        {
+          "id": "tabsum",
+          "title": "9. TABLE OF MEANS (TABSUM)",
+          "start": 1119,
+          "end": 1122
+        },
+        {
+          "id": "means",
+          "title": "10. MEANS, PROPORTIONS, RATIO, TOTAL",
+          "start": 1123,
+          "end": 1157
+        },
+        {
+          "id": "list",
+          "title": "11. EXPORTING DATASET (LIST)",
+          "start": 1158,
+          "end": 1173
+        },
+        {
+          "id": "matrix",
+          "title": "12. EXPORTING A MATRIX",
+          "start": 1174,
+          "end": 1198
+        },
+        {
+          "id": "survey",
+          "title": "13. The survey prefix command",
+          "start": 1199,
+          "end": 1240
+        },
+        {
+          "id": "aslist",
+          "title": "14. ASLIST : LIST OF UNIQUE VALUES",
+          "start": 1241,
+          "end": 1251
+        },
+        {
+          "id": "describe",
+          "title": "15. DESCRIBE : EXPORT VARIABLE NAMES AND LABELS",
+          "start": 1252,
+          "end": 1279
+        },
+        {
+          "id": "row",
+          "title": "16. BUILDING TABLES ROW BY ROW (row)",
+          "start": 1280,
+          "end": 1316
+        },
+        {
+          "id": "accum",
+          "title": "17. ACCUMULATING TEXT AND STATISTICS (accum)",
+          "start": 1317,
+          "end": 1376
+        },
+        {
+          "id": "other-commands",
+          "title": "18. OTHER Stata COMMANDS",
+          "start": 1377,
+          "end": 1390
+        },
+        {
+          "id": "citation-and-source",
+          "title": "19. HOW TO CITE",
+          "start": 1391,
+          "end": 1457
+        }
+      ],
+      "required_sections": [
+        "syntax",
+        "description",
+        "options"
+      ]
+    },
+    {
+      "command": "boottest",
+      "content_file": "command_help_guides/boottest.txt",
+      "content_sha256": "c21eb0117ea87843357ccd8b2185c5c8fc7ba9b5129d07db126d658447aea860",
+      "sections": [
+        {
+          "id": "syntax",
+          "title": "Syntax",
+          "start": 1,
+          "end": 85
+        },
+        {
+          "id": "updates",
+          "title": "Updates",
+          "start": 86,
+          "end": 118
+        },
+        {
+          "id": "description",
+          "title": "Description",
+          "start": 119,
+          "end": 218
+        },
+        {
+          "id": "estimation-tables",
+          "title": "Including results in estimation tables",
+          "start": 219,
+          "end": 225
+        },
+        {
+          "id": "options",
+          "title": "Options",
+          "start": 226,
+          "end": 330
+        },
+        {
+          "id": "julia",
+          "title": "Using Julia",
+          "start": 331,
+          "end": 344
+        },
+        {
+          "id": "stored-results",
+          "title": "Stored results",
+          "start": 345,
+          "end": 383
+        },
+        {
+          "id": "author",
+          "title": "Author",
+          "start": 384,
+          "end": 394
+        },
+        {
+          "id": "errata",
+          "title": "Errata",
+          "start": 395,
+          "end": 405
+        },
+        {
+          "id": "donate",
+          "title": "Donate?",
+          "start": 406,
+          "end": 410
+        },
+        {
+          "id": "examples",
+          "title": "Examples",
+          "start": 411,
+          "end": 490
+        },
+        {
+          "id": "references",
+          "title": "References",
+          "start": 491,
+          "end": 516
+        }
+      ],
+      "required_sections": [
+        "syntax",
+        "updates",
+        "description",
+        "estimation-tables",
+        "options",
+        "stored-results",
+        "errata"
+      ]
+    },
+    {
+      "command": "coefplot",
+      "content_file": "command_help_guides/coefplot.txt",
+      "content_sha256": "a680ae5563c0df924184d7864c641b9180747526efbc44cb4e1764c86930a8e2",
+      "sections": [
+        {
+          "id": "syntax",
+          "title": "Syntax",
+          "start": 1,
+          "end": 150
+        },
+        {
+          "id": "description",
+          "title": "Description",
+          "start": 151,
+          "end": 156
+        },
+        {
+          "id": "options",
+          "title": "Options",
+          "start": 157,
+          "end": 564
+        },
+        {
+          "id": "examples",
+          "title": "Examples",
+          "start": 565,
+          "end": 583
+        },
+        {
+          "id": "remarks",
+          "title": "Remarks",
+          "start": 584,
+          "end": 593
+        },
+        {
+          "id": "wildcards",
+          "title": "Using wildcards in model names",
+          "start": 594,
+          "end": 633
+        },
+        {
+          "id": "option-placement",
+          "title": "Placement of options",
+          "start": 634,
+          "end": 684
+        },
+        {
+          "id": "matrices",
+          "title": "Plotting results from matrices",
+          "start": 685,
+          "end": 721
+        },
+        {
+          "id": "internal-variables",
+          "title": "Accessing internal temporary variables",
+          "start": 722,
+          "end": 743
+        },
+        {
+          "id": "saved-results",
+          "title": "Saved results",
+          "start": 744,
+          "end": 761
+        },
+        {
+          "id": "author",
+          "title": "Author",
+          "start": 762,
+          "end": 772
+        }
+      ],
+      "required_sections": [
+        "syntax",
+        "description",
+        "options",
+        "option-placement",
+        "internal-variables",
+        "saved-results"
+      ]
+    },
+    {
+      "command": "collect_style",
+      "content_file": "command_help_guides/collect_style.txt",
+      "content_sha256": "80941de4a1be32f4a58c0edc2f24b27b1453429c4563e9f8a31974c36093ccb6",
+      "sections": [
+        {
+          "id": "collect_style__cons",
+          "title": "collect_style__cons",
+          "start": 1,
+          "end": 55
+        },
+        {
+          "id": "collect_style_autolevels",
+          "title": "collect_style_autolevels",
+          "start": 56,
+          "end": 120
+        },
+        {
+          "id": "collect_style_cell",
+          "title": "collect_style_cell",
+          "start": 121,
+          "end": 437
+        },
+        {
+          "id": "collect_style_clear",
+          "title": "collect_style_clear",
+          "start": 438,
+          "end": 485
+        },
+        {
+          "id": "collect_style_column",
+          "title": "collect_style_column",
+          "start": 486,
+          "end": 611
+        },
+        {
+          "id": "collect_style_header",
+          "title": "collect_style_header",
+          "start": 612,
+          "end": 722
+        },
+        {
+          "id": "collect_style_html",
+          "title": "collect_style_html",
+          "start": 723,
+          "end": 812
+        },
+        {
+          "id": "collect_style_notes",
+          "title": "collect_style_notes",
+          "start": 813,
+          "end": 967
+        },
+        {
+          "id": "collect_style_putdocx",
+          "title": "collect_style_putdocx",
+          "start": 968,
+          "end": 1089
+        },
+        {
+          "id": "collect_style_putpdf",
+          "title": "collect_style_putpdf",
+          "start": 1090,
+          "end": 1199
+        },
+        {
+          "id": "collect_style_row",
+          "title": "collect_style_row",
+          "start": 1200,
+          "end": 1400
+        },
+        {
+          "id": "collect_style_save",
+          "title": "collect_style_save",
+          "start": 1401,
+          "end": 1466
+        },
+        {
+          "id": "collect_style_showbase",
+          "title": "collect_style_showbase",
+          "start": 1467,
+          "end": 1526
+        },
+        {
+          "id": "collect_style_showempty",
+          "title": "collect_style_showempty",
+          "start": 1527,
+          "end": 1586
+        },
+        {
+          "id": "collect_style_showomit",
+          "title": "collect_style_showomit",
+          "start": 1587,
+          "end": 1643
+        },
+        {
+          "id": "collect_style_table",
+          "title": "collect_style_table",
+          "start": 1644,
+          "end": 1735
+        },
+        {
+          "id": "collect_style_tex",
+          "title": "collect_style_tex",
+          "start": 1736,
+          "end": 1831
+        },
+        {
+          "id": "collect_style_title",
+          "title": "collect_style_title",
+          "start": 1832,
+          "end": 1985
+        },
+        {
+          "id": "collect_style_use",
+          "title": "collect_style_use",
+          "start": 1986,
+          "end": 2081
+        }
+      ],
+      "required_sections": []
+    },
+    {
+      "command": "did_imputation",
+      "content_file": "command_help_guides/did_imputation.txt",
+      "content_sha256": "7d95341a4c7eaae1ed05edacb99d8f3823deb2e61af0372e639ae7f67ed0c060",
+      "sections": [
+        {
+          "id": "syntax",
+          "title": "Syntax",
+          "start": 1,
+          "end": 21
+        },
+        {
+          "id": "description",
+          "title": "Description",
+          "start": 22,
+          "end": 41
+        },
+        {
+          "id": "imputation-limits",
+          "title": "What if imputation is not possible",
+          "start": 42,
+          "end": 58
+        },
+        {
+          "id": "options",
+          "title": "Options",
+          "start": 59,
+          "end": 174
+        },
+        {
+          "id": "weights",
+          "title": "Estimation weights",
+          "start": 175,
+          "end": 189
+        },
+        {
+          "id": "stored-results",
+          "title": "Stored results",
+          "start": 190,
+          "end": 225
+        },
+        {
+          "id": "examples",
+          "title": "Usage Examples",
+          "start": 226,
+          "end": 300
+        },
+        {
+          "id": "missing-features",
+          "title": "Missing Features",
+          "start": 301,
+          "end": 317
+        },
+        {
+          "id": "bug-reporting-and-source",
+          "title": "Bug reporting",
+          "start": 318,
+          "end": 341
+        }
+      ],
+      "required_sections": [
+        "syntax",
+        "description",
+        "imputation-limits",
+        "options",
+        "weights",
+        "stored-results",
+        "missing-features"
+      ]
+    },
+    {
+      "command": "did_multiplegt_dyn",
+      "content_file": "command_help_guides/did_multiplegt_dyn.txt",
+      "content_sha256": "47113ec7c6ba8d4326eea37a2d0cab5ce8547fb8d13a77d10ea70d91b9c8d739",
+      "sections": [
+        {
+          "id": "syntax",
+          "title": "Syntax",
+          "start": 1,
+          "end": 11
+        },
+        {
+          "id": "description",
+          "title": "Description",
+          "start": 12,
+          "end": 31
+        },
+        {
+          "id": "further-detail",
+          "title": "Further detail",
+          "start": 32,
+          "end": 61
+        },
+        {
+          "id": "main-options",
+          "title": "Main Options",
+          "start": 62,
+          "end": 102
+        },
+        {
+          "id": "design-options",
+          "title": "Options to understand and leverage your design",
+          "start": 103,
+          "end": 127
+        },
+        {
+          "id": "parallel-trends-options",
+          "title": "Options to relax the parallel-trends assumption",
+          "start": 128,
+          "end": 151
+        },
+        {
+          "id": "inference-options",
+          "title": "Options for standard errors and confidence intervals",
+          "start": 152,
+          "end": 168
+        },
+        {
+          "id": "heterogeneity-options",
+          "title": "Options to investigate heterogeneous effects",
+          "start": 169,
+          "end": 185
+        },
+        {
+          "id": "other-options",
+          "title": "Other options",
+          "start": 186,
+          "end": 213
+        },
+        {
+          "id": "example",
+          "title": "Example: estimating the effect of banking deregulations on loans volume, using the data of Favara and Imbs (2015)",
+          "start": 214,
+          "end": 237
+        },
+        {
+          "id": "faq",
+          "title": "FAQ",
+          "start": 238,
+          "end": 339
+        },
+        {
+          "id": "references-and-source",
+          "title": "References",
+          "start": 340,
+          "end": 372
+        },
+        {
+          "id": "saved-results",
+          "title": "Saved results",
+          "start": 373,
+          "end": 421
+        }
+      ],
+      "required_sections": [
+        "syntax",
+        "description",
+        "further-detail",
+        "main-options",
+        "design-options",
+        "parallel-trends-options",
+        "inference-options",
+        "heterogeneity-options",
+        "other-options",
+        "faq",
+        "saved-results"
+      ]
+    },
+    {
+      "command": "dtable",
+      "content_file": "command_help_guides/dtable.txt",
+      "content_sha256": "8486e921c75170456adb3afcdc1867dd089ee995a281afb46a0789ec2c454baa",
+      "sections": [
+        {
+          "id": "syntax",
+          "title": "Syntax",
+          "start": 1,
+          "end": 276
+        },
+        {
+          "id": "description",
+          "title": "Description",
+          "start": 277,
+          "end": 293
+        },
+        {
+          "id": "options",
+          "title": "Options",
+          "start": 294,
+          "end": 758
+        },
+        {
+          "id": "examples",
+          "title": "Examples: table of descriptive statistics",
+          "start": 759,
+          "end": 791
+        },
+        {
+          "id": "appendix",
+          "title": "Appendix",
+          "start": 792,
+          "end": 915
+        }
+      ],
+      "required_sections": [
+        "syntax",
+        "description",
+        "options"
+      ]
+    },
+    {
+      "command": "egen",
+      "content_file": "command_help_guides/egen.txt",
+      "content_sha256": "ada35207d289ef8345cc5eb497f758d9b70ea347ff8d55a96695fb38354af5a7",
+      "sections": [
+        {
+          "id": "syntax",
+          "title": "Syntax",
+          "start": 1,
+          "end": 185
+        },
+        {
+          "id": "description",
+          "title": "Description",
+          "start": 186,
+          "end": 199
+        },
+        {
+          "id": "examples",
+          "title": "Examples",
+          "start": 200,
+          "end": 351
+        }
+      ],
+      "required_sections": [
+        "syntax",
+        "description"
+      ]
+    },
+    {
+      "command": "estadd",
+      "content_file": "command_help_guides/estadd.txt",
+      "content_sha256": "d5ad7c9851616127ee6118d2e22e2b8bccea67cf387289825635a04dcbbd0be8",
+      "sections": [
+        {
+          "id": "syntax",
+          "title": "Syntax",
+          "start": 1,
+          "end": 65
+        },
+        {
+          "id": "description",
+          "title": "Description",
+          "start": 66,
+          "end": 76
+        },
+        {
+          "id": "elementary",
+          "title": "Elementary",
+          "start": 77,
+          "end": 117
+        },
+        {
+          "id": "coefficient-statistics",
+          "title": "Statistics for each coefficient",
+          "start": 118,
+          "end": 196
+        },
+        {
+          "id": "summary-statistics",
+          "title": "Summary statistics",
+          "start": 197,
+          "end": 226
+        },
+        {
+          "id": "other",
+          "title": "Other",
+          "start": 227,
+          "end": 235
+        },
+        {
+          "id": "spost9",
+          "title": "SPost9",
+          "start": 236,
+          "end": 526
+        },
+        {
+          "id": "options",
+          "title": "Options",
+          "start": 527,
+          "end": 537
+        },
+        {
+          "id": "examples",
+          "title": "Examples",
+          "start": 538,
+          "end": 615
+        },
+        {
+          "id": "own-subcommands",
+          "title": "Writing one's own subcommands",
+          "start": 616,
+          "end": 623
+        },
+        {
+          "id": "author-and-source",
+          "title": "Author",
+          "start": 624,
+          "end": 633
+        }
+      ],
+      "required_sections": [
+        "syntax",
+        "description",
+        "options"
+      ]
+    },
+    {
+      "command": "estout",
+      "content_file": "command_help_guides/estout.txt",
+      "content_sha256": "8bd75fe98e9f8d52c76e7b76827c8fba4410a452d9ab0a167ddf7d0ec23b6aed",
+      "sections": [
+        {
+          "id": "syntax",
+          "title": "Syntax",
+          "start": 1,
+          "end": 219
+        },
+        {
+          "id": "description",
+          "title": "Description",
+          "start": 220,
+          "end": 240
+        },
+        {
+          "id": "options",
+          "title": "Options",
+          "start": 241,
+          "end": 770
+        },
+        {
+          "id": "examples",
+          "title": "Examples",
+          "start": 771,
+          "end": 1126
+        },
+        {
+          "id": "remarks",
+          "title": "Remarks",
+          "start": 1127,
+          "end": 1135
+        },
+        {
+          "id": "numerical-formats",
+          "title": "Numerical formats",
+          "start": 1136,
+          "end": 1155
+        },
+        {
+          "id": "special-characters",
+          "title": "Special characters",
+          "start": 1156,
+          "end": 1174
+        },
+        {
+          "id": "at-variables",
+          "title": "Using @-variables",
+          "start": 1175,
+          "end": 1210
+        },
+        {
+          "id": "defaults-files",
+          "title": "Defaults files",
+          "start": 1211,
+          "end": 1305
+        },
+        {
+          "id": "saved-results",
+          "title": "Saved results",
+          "start": 1306,
+          "end": 1323
+        },
+        {
+          "id": "references-and-source",
+          "title": "References",
+          "start": 1324,
+          "end": 1353
+        }
+      ],
+      "required_sections": [
+        "syntax",
+        "description",
+        "options",
+        "numerical-formats",
+        "special-characters",
+        "saved-results"
+      ]
+    },
+    {
+      "command": "estpost",
+      "content_file": "command_help_guides/estpost.txt",
+      "content_sha256": "e5b044ae6fc1689841c76e0dbc5acaa5600d42f3818b759d23ee55930898d39f",
+      "sections": [
+        {
+          "id": "syntax-and-description",
+          "title": "Syntax",
+          "start": 1,
+          "end": 39
+        },
+        {
+          "id": "summarize",
+          "title": "summarize",
+          "start": 40,
+          "end": 116
+        },
+        {
+          "id": "tabstat",
+          "title": "tabstat",
+          "start": 117,
+          "end": 236
+        },
+        {
+          "id": "gtabstat",
+          "title": "gtabstat",
+          "start": 237,
+          "end": 353
+        },
+        {
+          "id": "ttest",
+          "title": "ttest",
+          "start": 354,
+          "end": 431
+        },
+        {
+          "id": "prtest",
+          "title": "prtest",
+          "start": 432,
+          "end": 495
+        },
+        {
+          "id": "tabulate",
+          "title": "tabulate",
+          "start": 496,
+          "end": 624
+        },
+        {
+          "id": "svy-tabulate",
+          "title": "svy: tabulate",
+          "start": 625,
+          "end": 788
+        },
+        {
+          "id": "correlate",
+          "title": "correlate",
+          "start": 789,
+          "end": 919
+        },
+        {
+          "id": "ci",
+          "title": "ci",
+          "start": 920,
+          "end": 1001
+        },
+        {
+          "id": "stci",
+          "title": "stci",
+          "start": 1002,
+          "end": 1075
+        },
+        {
+          "id": "margins",
+          "title": "margins",
+          "start": 1076,
+          "end": 1115
+        },
+        {
+          "id": "author-and-source",
+          "title": "Author",
+          "start": 1116,
+          "end": 1127
+        }
+      ],
+      "required_sections": [
+        "syntax-and-description"
+      ]
+    },
+    {
+      "command": "esttab",
+      "content_file": "command_help_guides/esttab.txt",
+      "content_sha256": "ab626f0d0ed60f2010a3325a26369711d27d3dc4c76df318b0625693d96e009a",
+      "sections": [
+        {
+          "id": "syntax",
+          "title": "Syntax",
+          "start": 1,
+          "end": 110
+        },
+        {
+          "id": "description",
+          "title": "Description",
+          "start": 111,
+          "end": 125
+        },
+        {
+          "id": "options",
+          "title": "Options",
+          "start": 126,
+          "end": 390
+        },
+        {
+          "id": "examples",
+          "title": "Examples",
+          "start": 391,
+          "end": 525
+        },
+        {
+          "id": "author-and-source",
+          "title": "Author",
+          "start": 526,
+          "end": 535
+        }
+      ],
+      "required_sections": [
+        "syntax",
+        "description",
+        "options"
+      ]
+    },
+    {
+      "command": "etable",
+      "content_file": "command_help_guides/etable.txt",
+      "content_sha256": "331d87b427d163b9de111e097f471c9b54531628fdfe5e5b55480325585a76b2",
+      "sections": [
+        {
+          "id": "syntax",
+          "title": "Syntax",
+          "start": 1,
+          "end": 263
+        },
+        {
+          "id": "description",
+          "title": "Description",
+          "start": 264,
+          "end": 277
+        },
+        {
+          "id": "options",
+          "title": "Options",
+          "start": 278,
+          "end": 618
+        },
+        {
+          "id": "examples",
+          "title": "Examples: table of regression coefficients and standard errors",
+          "start": 619,
+          "end": 670
+        },
+        {
+          "id": "appendix",
+          "title": "Appendix",
+          "start": 671,
+          "end": 794
+        }
+      ],
+      "required_sections": [
+        "syntax",
+        "description",
+        "options"
+      ]
+    },
+    {
+      "command": "eventdd",
+      "content_file": "command_help_guides/eventdd.txt",
+      "content_sha256": "3ed6b085158d6c68595b6eb62a6e93430a058a15d0238fefb96e9ab7f997f626",
+      "sections": [
+        {
+          "id": "syntax",
+          "title": "Syntax",
+          "start": 1,
+          "end": 46
+        },
+        {
+          "id": "description",
+          "title": "Description",
+          "start": 47,
+          "end": 64
+        },
+        {
+          "id": "options",
+          "title": "Options",
+          "start": 65,
+          "end": 136
+        },
+        {
+          "id": "single-event-examples",
+          "title": "Examples: single-event study",
+          "start": 137,
+          "end": 164
+        },
+        {
+          "id": "multiple-event-examples",
+          "title": "Examples: multiple event-studies",
+          "start": 165,
+          "end": 187
+        },
+        {
+          "id": "stored-results",
+          "title": "Stored results",
+          "start": 188,
+          "end": 225
+        },
+        {
+          "id": "postestimation",
+          "title": "Postestimation commands",
+          "start": 226,
+          "end": 244
+        },
+        {
+          "id": "postestimation-examples",
+          "title": "Examples: post-estimation commands",
+          "start": 245,
+          "end": 273
+        },
+        {
+          "id": "references-and-source",
+          "title": "References",
+          "start": 274,
+          "end": 309
+        }
+      ],
+      "required_sections": [
+        "syntax",
+        "description",
+        "options",
+        "stored-results",
+        "postestimation"
+      ]
+    },
+    {
+      "command": "graph_bar",
+      "content_file": "command_help_guides/graph_bar.txt",
+      "content_sha256": "36ca805b30fdbd3fa16ce6d17286c85f2a0c25b16660c5f85f6d7ffb577715c9",
+      "sections": [
+        {
+          "id": "syntax",
+          "title": "Syntax",
+          "start": 1,
+          "end": 133
+        },
+        {
+          "id": "description",
+          "title": "Description",
+          "start": 134,
+          "end": 181
+        },
+        {
+          "id": "group-options",
+          "title": "group_options",
+          "start": 182,
+          "end": 217
+        },
+        {
+          "id": "yvar-options",
+          "title": "yvar_options",
+          "start": 218,
+          "end": 287
+        },
+        {
+          "id": "bar-options",
+          "title": "lookofbar_options",
+          "start": 288,
+          "end": 320
+        },
+        {
+          "id": "legend-options",
+          "title": "legending_options",
+          "start": 321,
+          "end": 334
+        },
+        {
+          "id": "axis-options",
+          "title": "axis_options",
+          "start": 335,
+          "end": 356
+        },
+        {
+          "id": "title-options",
+          "title": "title_and_other options",
+          "start": 357,
+          "end": 374
+        },
+        {
+          "id": "suboptions",
+          "title": "Suboptions for use with over() and yvaroptions()",
+          "start": 375,
+          "end": 447
+        },
+        {
+          "id": "remarks",
+          "title": "Remarks",
+          "start": 448,
+          "end": 472
+        },
+        {
+          "id": "introduction",
+          "title": "Introduction",
+          "start": 473,
+          "end": 524
+        },
+        {
+          "id": "syntax-examples",
+          "title": "Examples of syntax",
+          "start": 525,
+          "end": 594
+        },
+        {
+          "id": "treatment-of-bars",
+          "title": "Treatment of bars",
+          "start": 595,
+          "end": 650
+        },
+        {
+          "id": "treatment-of-data",
+          "title": "Treatment of data",
+          "start": 651,
+          "end": 724
+        },
+        {
+          "id": "frequencies",
+          "title": "Obtaining frequencies",
+          "start": 725,
+          "end": 742
+        },
+        {
+          "id": "multiple-bars",
+          "title": "Multiple bars (overlapping the bars)",
+          "start": 743,
+          "end": 797
+        },
+        {
+          "id": "multiple-over",
+          "title": "Multiple over()s (repeating the bars)",
+          "start": 798,
+          "end": 891
+        },
+        {
+          "id": "many-categories",
+          "title": "Charts with many categories",
+          "start": 892,
+          "end": 943
+        },
+        {
+          "id": "bar-order",
+          "title": "How bars are ordered",
+          "start": 944,
+          "end": 970
+        },
+        {
+          "id": "reordering",
+          "title": "Reordering the bars",
+          "start": 971,
+          "end": 1111
+        },
+        {
+          "id": "by",
+          "title": "Use with by()",
+          "start": 1112,
+          "end": 1125
+        },
+        {
+          "id": "video-and-source",
+          "title": "Video example",
+          "start": 1126,
+          "end": 1142
+        }
+      ],
+      "required_sections": [
+        "syntax",
+        "description",
+        "group-options",
+        "yvar-options",
+        "bar-options",
+        "legend-options",
+        "axis-options",
+        "title-options",
+        "suboptions",
+        "treatment-of-bars",
+        "treatment-of-data",
+        "bar-order"
+      ]
+    },
+    {
+      "command": "gstats",
+      "content_file": "command_help_guides/gstats.txt",
+      "content_sha256": "af761e7a8159faf956ecf6b386017e8c7424270416f867d0f1622393726c6ba2",
+      "sections": [
+        {
+          "id": "gstats",
+          "title": "gstats --  Various statistical fucntions and transformations.",
+          "start": 1,
+          "end": 47
+        },
+        {
+          "id": "hdfe",
+          "title": "gstats hdfe --  Absorb HDFE (residualize variables)",
+          "start": 48,
+          "end": 208
+        },
+        {
+          "id": "winsor",
+          "title": "gstats winsor --  Winsorize data using C for speed",
+          "start": 209,
+          "end": 328
+        },
+        {
+          "id": "summarize-tabstat",
+          "title": "gstats summarize --  Summary statistics by group using C for speed",
+          "start": 329,
+          "end": 592
+        },
+        {
+          "id": "transform",
+          "title": "gstats transform --  Apply statistical functions by group using C for speed",
+          "start": 593,
+          "end": 778
+        }
+      ],
+      "required_sections": [
+        "gstats"
+      ]
+    },
+    {
+      "command": "ivreg2",
+      "content_file": "command_help_guides/ivreg2.txt",
+      "content_sha256": "50b65f139c60c8cdaca78fd9c46901dda22dcbc1acda008c38d90385aa4361d9",
+      "sections": [
+        {
+          "id": "syntax",
+          "title": "Extended instrumental variables/2SLS, GMM and AC/HAC, LIML and k-class regression",
+          "start": 1,
+          "end": 69
+        },
+        {
+          "id": "description",
+          "title": "Description",
+          "start": 70,
+          "end": 378
+        },
+        {
+          "id": "options",
+          "title": "Options summary",
+          "start": 379,
+          "end": 477
+        },
+        {
+          "id": "earlier-versions",
+          "title": "Running ivreg2 under earlier versions of Stata",
+          "start": 478,
+          "end": 487
+        },
+        {
+          "id": "saved-results",
+          "title": "Remarks and saved results",
+          "start": 488,
+          "end": 601
+        },
+        {
+          "id": "examples",
+          "title": "Examples",
+          "start": 602,
+          "end": 932
+        },
+        {
+          "id": "references-and-source",
+          "title": "References",
+          "start": 933,
+          "end": 1042
+        }
+      ],
+      "required_sections": [
+        "syntax",
+        "description",
+        "options",
+        "earlier-versions",
+        "saved-results"
+      ]
+    },
+    {
+      "command": "margins",
+      "content_file": "command_help_guides/margins.txt",
+      "content_sha256": "efe5c329456a535a89c47f41792783add4d90027d9d6da67e3b613ac7b10d830",
+      "sections": [
+        {
+          "id": "syntax",
+          "title": "Syntax",
+          "start": 1,
+          "end": 96
+        },
+        {
+          "id": "description",
+          "title": "Description",
+          "start": 97,
+          "end": 117
+        },
+        {
+          "id": "options",
+          "title": "Options",
+          "start": 118,
+          "end": 345
+        },
+        {
+          "id": "examples",
+          "title": "Examples",
+          "start": 346,
+          "end": 483
+        },
+        {
+          "id": "at-syntax",
+          "title": "Addendum: Syntax of at()",
+          "start": 484,
+          "end": 556
+        },
+        {
+          "id": "stored-results",
+          "title": "Stored results",
+          "start": 557,
+          "end": 670
+        }
+      ],
+      "required_sections": [
+        "syntax",
+        "description",
+        "options",
+        "at-syntax",
+        "stored-results"
+      ]
+    },
+    {
+      "command": "marginsplot",
+      "content_file": "command_help_guides/marginsplot.txt",
+      "content_sha256": "06458bb76f524ca950933432ba285729a2e53eecdb6670b936c3ce16c1f7903b",
+      "sections": [
+        {
+          "id": "syntax",
+          "title": "Syntax",
+          "start": 1,
+          "end": 98
+        },
+        {
+          "id": "description",
+          "title": "Description",
+          "start": 99,
+          "end": 112
+        },
+        {
+          "id": "options",
+          "title": "Options",
+          "start": 113,
+          "end": 260
+        },
+        {
+          "id": "examples",
+          "title": "Examples",
+          "start": 261,
+          "end": 322
+        },
+        {
+          "id": "dimlist",
+          "title": "Addendum: Advanced uses of dimlist",
+          "start": 323,
+          "end": 350
+        }
+      ],
+      "required_sections": [
+        "syntax",
+        "description",
+        "options",
+        "dimlist"
+      ]
+    },
+    {
       "command": "outreg2",
       "content_file": "command_help_guides/outreg2.txt",
       "content_sha256": "0cbaea0a0fe28a0a5eef1d508f675ec576a2d3cf446fb63df3e4bb108a13d90e",
@@ -143,127 +1552,561 @@
           "start": 969,
           "end": 1015
         }
+      ],
+      "required_sections": [
+        "reference",
+        "example-0",
+        "faq-and-source"
       ]
     },
     {
-      "command": "collect_style",
-      "content_file": "command_help_guides/collect_style.txt",
-      "content_sha256": "80941de4a1be32f4a58c0edc2f24b27b1453429c4563e9f8a31974c36093ccb6",
+      "command": "psmatch2",
+      "content_file": "command_help_guides/psmatch2.txt",
+      "content_sha256": "92688396d47bb07853dead280b04543cf9e51517ee8b77bd4014fea318b94cdf",
       "sections": [
         {
-          "id": "collect_style__cons",
-          "title": "collect_style__cons",
+          "id": "description",
+          "title": "Mahalanobis and Propensity score Matching",
           "start": 1,
-          "end": 55
+          "end": 95
         },
         {
-          "id": "collect_style_autolevels",
-          "title": "collect_style_autolevels",
-          "start": 56,
-          "end": 120
+          "id": "within-strata",
+          "title": "Matching within strata",
+          "start": 96,
+          "end": 108
         },
         {
-          "id": "collect_style_cell",
-          "title": "collect_style_cell",
-          "start": 121,
+          "id": "syntax",
+          "title": "Detailed Syntax",
+          "start": 109,
+          "end": 166
+        },
+        {
+          "id": "options",
+          "title": "Options",
+          "start": 167,
+          "end": 201
+        },
+        {
+          "id": "propensity-score-options",
+          "title": "Options: Estimation of the propensity score",
+          "start": 202,
+          "end": 218
+        },
+        {
+          "id": "support-options",
+          "title": "Options: Imposition of common support",
+          "start": 219,
+          "end": 224
+        },
+        {
+          "id": "matching-options",
+          "title": "Options: Choice of matching estimator",
+          "start": 225,
+          "end": 265
+        },
+        {
+          "id": "saved-results",
+          "title": "Saved results",
+          "start": 266,
+          "end": 300
+        },
+        {
+          "id": "examples",
+          "title": "Examples",
+          "start": 301,
+          "end": 307
+        },
+        {
+          "id": "references-and-source",
+          "title": "Also see",
+          "start": 308,
+          "end": 367
+        }
+      ],
+      "required_sections": [
+        "description",
+        "syntax",
+        "options",
+        "propensity-score-options",
+        "support-options",
+        "matching-options",
+        "saved-results"
+      ]
+    },
+    {
+      "command": "putexcel",
+      "content_file": "command_help_guides/putexcel.txt",
+      "content_sha256": "79a96353c4e9758bcb969c61245230885f65283879d56cf06184ab8d2e908709",
+      "sections": [
+        {
+          "id": "syntax",
+          "title": "Syntax",
+          "start": 1,
+          "end": 220
+        },
+        {
+          "id": "description",
+          "title": "Description",
+          "start": 221,
+          "end": 240
+        },
+        {
+          "id": "options",
+          "title": "Options",
+          "start": 241,
+          "end": 451
+        },
+        {
+          "id": "examples",
+          "title": "Examples",
+          "start": 452,
+          "end": 484
+        },
+        {
+          "id": "technical-note",
+          "title": "Technical note: Excel data size limits and dates and times",
+          "start": 485,
+          "end": 489
+        },
+        {
+          "id": "appendix",
+          "title": "Appendix",
+          "start": 490,
+          "end": 633
+        },
+        {
+          "id": "stored-results",
+          "title": "Stored results",
+          "start": 634,
+          "end": 640
+        }
+      ],
+      "required_sections": [
+        "syntax",
+        "description",
+        "options",
+        "technical-note",
+        "stored-results"
+      ]
+    },
+    {
+      "command": "rangestat",
+      "content_file": "command_help_guides/rangestat.txt",
+      "content_sha256": "29dcbe96f6e6bc6a807b8ad6e60e269b63bf68c3b70ac8fc70afe99274b211f5",
+      "sections": [
+        {
+          "id": "syntax",
+          "title": "Syntax",
+          "start": 1,
+          "end": 63
+        },
+        {
+          "id": "description",
+          "title": "Description",
+          "start": 64,
+          "end": 87
+        },
+        {
+          "id": "options",
+          "title": "Options",
+          "start": 88,
+          "end": 112
+        },
+        {
+          "id": "interval",
+          "title": "Setting the interval",
+          "start": 113,
+          "end": 230
+        },
+        {
+          "id": "sample",
+          "title": "Controlling the sample",
+          "start": 231,
+          "end": 322
+        },
+        {
+          "id": "checking-results",
+          "title": "Validating your results",
+          "start": 323,
+          "end": 376
+        },
+        {
+          "id": "builtin-examples",
+          "title": "Additional examples using built-in functions",
+          "start": 377,
+          "end": 663
+        },
+        {
+          "id": "mata-examples",
+          "title": "Examples with a user-supplied Mata function",
+          "start": 664,
+          "end": 738
+        },
+        {
+          "id": "tsegen",
+          "title": "Comparison with tsegen (SSC)",
+          "start": 739,
+          "end": 770
+        },
+        {
+          "id": "stored-results",
+          "title": "Stored results",
+          "start": 771,
+          "end": 778
+        },
+        {
+          "id": "references-and-source",
+          "title": "References",
+          "start": 779,
+          "end": 820
+        }
+      ],
+      "required_sections": [
+        "syntax",
+        "description",
+        "options",
+        "interval",
+        "sample",
+        "checking-results",
+        "stored-results"
+      ]
+    },
+    {
+      "command": "reghdfe",
+      "content_file": "command_help_guides/reghdfe.txt",
+      "content_sha256": "ef491432c8d84b24bf2aa4d98500aba76e022368e07a0ded4a72b68047280c83",
+      "sections": [
+        {
+          "id": "syntax",
+          "title": "Syntax",
+          "start": 1,
+          "end": 87
+        },
+        {
+          "id": "description",
+          "title": "Description",
+          "start": 88,
+          "end": 107
+        },
+        {
+          "id": "individual-fixed-effects",
+          "title": "Description of individual fixed effects in group setting",
+          "start": 108,
+          "end": 134
+        },
+        {
+          "id": "absorb-syntax",
+          "title": "Absorb() syntax",
+          "start": 135,
+          "end": 154
+        },
+        {
+          "id": "options",
+          "title": "Options",
+          "start": 155,
+          "end": 391
+        },
+        {
+          "id": "postestimation",
+          "title": "Postestimation Syntax",
+          "start": 392,
+          "end": 428
+        },
+        {
+          "id": "missing-features",
+          "title": "Missing Features",
+          "start": 429,
           "end": 437
         },
         {
-          "id": "collect_style_clear",
-          "title": "collect_style_clear",
+          "id": "examples",
+          "title": "Examples",
           "start": 438,
-          "end": 485
+          "end": 495
         },
         {
-          "id": "collect_style_column",
-          "title": "collect_style_column",
-          "start": 486,
-          "end": 611
+          "id": "stored-results",
+          "title": "Stored results",
+          "start": 496,
+          "end": 565
         },
         {
-          "id": "collect_style_header",
-          "title": "collect_style_header",
-          "start": 612,
-          "end": 722
-        },
-        {
-          "id": "collect_style_html",
-          "title": "collect_style_html",
-          "start": 723,
-          "end": 812
-        },
-        {
-          "id": "collect_style_notes",
-          "title": "collect_style_notes",
-          "start": 813,
-          "end": 967
-        },
-        {
-          "id": "collect_style_putdocx",
-          "title": "collect_style_putdocx",
-          "start": 968,
-          "end": 1089
-        },
-        {
-          "id": "collect_style_putpdf",
-          "title": "collect_style_putpdf",
-          "start": 1090,
-          "end": 1199
-        },
-        {
-          "id": "collect_style_row",
-          "title": "collect_style_row",
-          "start": 1200,
-          "end": 1400
-        },
-        {
-          "id": "collect_style_save",
-          "title": "collect_style_save",
-          "start": 1401,
-          "end": 1466
-        },
-        {
-          "id": "collect_style_showbase",
-          "title": "collect_style_showbase",
-          "start": 1467,
-          "end": 1526
-        },
-        {
-          "id": "collect_style_showempty",
-          "title": "collect_style_showempty",
-          "start": 1527,
-          "end": 1586
-        },
-        {
-          "id": "collect_style_showomit",
-          "title": "collect_style_showomit",
-          "start": 1587,
-          "end": 1643
-        },
-        {
-          "id": "collect_style_table",
-          "title": "collect_style_table",
-          "start": 1644,
-          "end": 1735
-        },
-        {
-          "id": "collect_style_tex",
-          "title": "collect_style_tex",
-          "start": 1736,
-          "end": 1831
-        },
-        {
-          "id": "collect_style_title",
-          "title": "collect_style_title",
-          "start": 1832,
-          "end": 1985
-        },
-        {
-          "id": "collect_style_use",
-          "title": "collect_style_use",
-          "start": 1986,
-          "end": 2081
+          "id": "authors-and-source",
+          "title": "Authors",
+          "start": 566,
+          "end": 623
         }
+      ],
+      "required_sections": [
+        "syntax",
+        "description",
+        "individual-fixed-effects",
+        "absorb-syntax",
+        "options",
+        "postestimation",
+        "missing-features",
+        "stored-results"
+      ]
+    },
+    {
+      "command": "table",
+      "content_file": "command_help_guides/table.txt",
+      "content_sha256": "5975ce82bce0904f84578c92965a0df71933d439572951116e2d0d45387e6028",
+      "sections": [
+        {
+          "id": "syntax",
+          "title": "Syntax",
+          "start": 1,
+          "end": 99
+        },
+        {
+          "id": "description",
+          "title": "Description",
+          "start": 100,
+          "end": 116
+        },
+        {
+          "id": "options",
+          "title": "Options",
+          "start": 117,
+          "end": 365
+        },
+        {
+          "id": "examples",
+          "title": "Examples",
+          "start": 366,
+          "end": 392
+        },
+        {
+          "id": "stored-results",
+          "title": "Stored results",
+          "start": 393,
+          "end": 398
+        }
+      ],
+      "required_sections": [
+        "syntax",
+        "description",
+        "options",
+        "stored-results"
+      ]
+    },
+    {
+      "command": "xtabond2",
+      "content_file": "command_help_guides/xtabond2.txt",
+      "content_sha256": "b41921d1678ae1622d0eaafa9dfcfadcc78a492e19d3f70fe16bade11de6c737",
+      "sections": [
+        {
+          "id": "syntax",
+          "title": "\"Difference\" and \"system\" GMM dynamic panel estimator",
+          "start": 1,
+          "end": 46
+        },
+        {
+          "id": "description",
+          "title": "Description",
+          "start": 47,
+          "end": 122
+        },
+        {
+          "id": "citation",
+          "title": "Citation",
+          "start": 123,
+          "end": 127
+        },
+        {
+          "id": "options",
+          "title": "Options",
+          "start": 128,
+          "end": 289
+        },
+        {
+          "id": "predict-options",
+          "title": "Options for predict",
+          "start": 290,
+          "end": 299
+        },
+        {
+          "id": "return-values",
+          "title": "Return values",
+          "start": 300,
+          "end": 380
+        },
+        {
+          "id": "examples",
+          "title": "Examples",
+          "start": 381,
+          "end": 409
+        },
+        {
+          "id": "references-and-source",
+          "title": "References",
+          "start": 410,
+          "end": 439
+        }
+      ],
+      "required_sections": [
+        "syntax",
+        "description",
+        "options",
+        "predict-options",
+        "return-values"
+      ]
+    },
+    {
+      "command": "xtivreg",
+      "content_file": "command_help_guides/xtivreg.txt",
+      "content_sha256": "3312c04b5024593fdd1d1af9dfe2cb3c38766e92e5117cb3dc0130ce7358844d",
+      "sections": [
+        {
+          "id": "syntax",
+          "title": "Syntax",
+          "start": 1,
+          "end": 122
+        },
+        {
+          "id": "description",
+          "title": "Description",
+          "start": 123,
+          "end": 143
+        },
+        {
+          "id": "re-options",
+          "title": "Options for RE model",
+          "start": 144,
+          "end": 187
+        },
+        {
+          "id": "be-options",
+          "title": "Options for BE model",
+          "start": 188,
+          "end": 224
+        },
+        {
+          "id": "fe-options",
+          "title": "Options for FE model",
+          "start": 225,
+          "end": 261
+        },
+        {
+          "id": "fd-options",
+          "title": "Options for FD model",
+          "start": 262,
+          "end": 299
+        },
+        {
+          "id": "examples",
+          "title": "Examples",
+          "start": 300,
+          "end": 320
+        },
+        {
+          "id": "stored-results",
+          "title": "Stored results",
+          "start": 321,
+          "end": 573
+        },
+        {
+          "id": "references",
+          "title": "References",
+          "start": 574,
+          "end": 580
+        }
+      ],
+      "required_sections": [
+        "syntax",
+        "description",
+        "re-options",
+        "be-options",
+        "fe-options",
+        "fd-options",
+        "stored-results"
+      ]
+    },
+    {
+      "command": "xtreg",
+      "content_file": "command_help_guides/xtreg.txt",
+      "content_sha256": "2b2f774c13fed6fb88e4ffb85e78da1d8ef040e3ff4cc66c17d00684052749a7",
+      "sections": [
+        {
+          "id": "syntax",
+          "title": "Syntax",
+          "start": 1,
+          "end": 215
+        },
+        {
+          "id": "description",
+          "title": "Description",
+          "start": 216,
+          "end": 233
+        },
+        {
+          "id": "re-options",
+          "title": "Options for RE model",
+          "start": 234,
+          "end": 273
+        },
+        {
+          "id": "cre-options",
+          "title": "Options for CRE model",
+          "start": 274,
+          "end": 312
+        },
+        {
+          "id": "be-options",
+          "title": "Options for BE model",
+          "start": 313,
+          "end": 349
+        },
+        {
+          "id": "fe-options",
+          "title": "Options for FE model",
+          "start": 350,
+          "end": 427
+        },
+        {
+          "id": "mle-options",
+          "title": "Options for MLE model",
+          "start": 428,
+          "end": 464
+        },
+        {
+          "id": "pa-options",
+          "title": "Options for PA model",
+          "start": 465,
+          "end": 537
+        },
+        {
+          "id": "examples",
+          "title": "Examples",
+          "start": 538,
+          "end": 580
+        },
+        {
+          "id": "stored-results",
+          "title": "Stored results",
+          "start": 581,
+          "end": 969
+        },
+        {
+          "id": "references",
+          "title": "References",
+          "start": 970,
+          "end": 974
+        }
+      ],
+      "required_sections": [
+        "syntax",
+        "description",
+        "re-options",
+        "cre-options",
+        "be-options",
+        "fe-options",
+        "mle-options",
+        "pa-options",
+        "stored-results"
       ]
     }
   ]

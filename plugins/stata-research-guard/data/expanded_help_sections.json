@@ -1,0 +1,2502 @@
+{
+  "guides": [
+    {
+      "command": "areg",
+      "content_file": "expanded_command_guides/areg.txt",
+      "content_sha256": "c5fe69d39a6c7ea07f6ef8af73b15f617c4ef2aa6a3420c60253d1fb3a7fe319",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 159
+        },
+        {
+          "id": "remarks",
+          "title": "Remarks and examples, including absorption, VCE, intercept, and prediction technical notes",
+          "start": 160,
+          "end": 305
+        },
+        {
+          "id": "stored_results",
+          "title": "Stored results",
+          "start": 306,
+          "end": 369
+        },
+        {
+          "id": "methods",
+          "title": "Methods and formulas",
+          "start": 370,
+          "end": 442
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 443,
+          "end": 473
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "remarks",
+        "stored_results"
+      ]
+    },
+    {
+      "command": "codebook",
+      "content_file": "expanded_command_guides/codebook.txt",
+      "content_sha256": "ffcfe0f7abc8b173b1ef7da02caf50fc56b695d8741d2d6498d557c9f3f18533",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 99
+        },
+        {
+          "id": "default_output",
+          "title": "Default output, example 1, and continuous versus categorical classification",
+          "start": 100,
+          "end": 161
+        },
+        {
+          "id": "continuous_variables",
+          "title": "Example 2",
+          "start": 162,
+          "end": 231
+        },
+        {
+          "id": "label_languages",
+          "title": "Example 3",
+          "start": 232,
+          "end": 274
+        },
+        {
+          "id": "compact",
+          "title": "Example 4",
+          "start": 275,
+          "end": 316
+        },
+        {
+          "id": "problems",
+          "title": "Example 5 and detecting and interpreting potential data problems",
+          "start": 317,
+          "end": 439
+        },
+        {
+          "id": "stored_results",
+          "title": "Stored results",
+          "start": 440,
+          "end": 454
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 455,
+          "end": 471
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "default_output",
+        "problems",
+        "stored_results"
+      ]
+    },
+    {
+      "command": "collect_style",
+      "content_file": "expanded_command_guides/collect_style.txt",
+      "content_sha256": "cfe2573557fc4a2f6315c297d1e1fb267d909d9ad11d73b1aa3857156d671400",
+      "sections": [
+        {
+          "id": "autolevels",
+          "title": "collect style autolevels",
+          "start": 1,
+          "end": 117
+        },
+        {
+          "id": "cell",
+          "title": "collect style cell",
+          "start": 118,
+          "end": 409
+        },
+        {
+          "id": "clear",
+          "title": "collect style clear",
+          "start": 410,
+          "end": 448
+        },
+        {
+          "id": "column",
+          "title": "collect style column",
+          "start": 449,
+          "end": 683
+        },
+        {
+          "id": "cons",
+          "title": "collect style cons",
+          "start": 684,
+          "end": 767
+        },
+        {
+          "id": "header",
+          "title": "collect style header",
+          "start": 768,
+          "end": 945
+        },
+        {
+          "id": "html",
+          "title": "collect style html",
+          "start": 946,
+          "end": 1027
+        },
+        {
+          "id": "notes",
+          "title": "collect style notes",
+          "start": 1028,
+          "end": 1220
+        },
+        {
+          "id": "putdocx",
+          "title": "collect style putdocx",
+          "start": 1221,
+          "end": 1351
+        },
+        {
+          "id": "putpdf",
+          "title": "collect style putpdf",
+          "start": 1352,
+          "end": 1478
+        },
+        {
+          "id": "row",
+          "title": "collect style row",
+          "start": 1479,
+          "end": 1847
+        },
+        {
+          "id": "save",
+          "title": "collect style save",
+          "start": 1848,
+          "end": 1913
+        },
+        {
+          "id": "showbase",
+          "title": "collect style showbase",
+          "start": 1914,
+          "end": 2066
+        },
+        {
+          "id": "showempty",
+          "title": "collect style showempty",
+          "start": 2067,
+          "end": 2200
+        },
+        {
+          "id": "showomit",
+          "title": "collect style showomit",
+          "start": 2201,
+          "end": 2258
+        },
+        {
+          "id": "table",
+          "title": "collect style table",
+          "start": 2259,
+          "end": 2424
+        },
+        {
+          "id": "tex",
+          "title": "collect style tex",
+          "start": 2425,
+          "end": 2503
+        },
+        {
+          "id": "title",
+          "title": "collect style title",
+          "start": 2504,
+          "end": 2692
+        },
+        {
+          "id": "use",
+          "title": "collect style use",
+          "start": 2693,
+          "end": 2855
+        }
+      ],
+      "required_sections": []
+    },
+    {
+      "command": "dtable",
+      "content_file": "expanded_command_guides/dtable.txt",
+      "content_sha256": "b5073781b61515cd64f941590551a3e62bf6b778b41a1f0d1fe3424f3a1b6c23",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 692
+        },
+        {
+          "id": "introduction",
+          "title": "Remarks contents and Introduction: the DTable collection",
+          "start": 693,
+          "end": 718
+        },
+        {
+          "id": "first_example",
+          "title": "A first example",
+          "start": 719,
+          "end": 799
+        },
+        {
+          "id": "groups",
+          "title": "Describe variables across groups",
+          "start": 800,
+          "end": 865
+        },
+        {
+          "id": "survey",
+          "title": "Survey data",
+          "start": 866,
+          "end": 940
+        },
+        {
+          "id": "reuse_styles",
+          "title": "Save your style choices for next time",
+          "start": 941,
+          "end": 1017
+        },
+        {
+          "id": "composite_results",
+          "title": "Composite results",
+          "start": 1018,
+          "end": 1086
+        },
+        {
+          "id": "default_style",
+          "title": "The default style",
+          "start": 1087,
+          "end": 1198
+        },
+        {
+          "id": "methods",
+          "title": "Methods and formulas",
+          "start": 1199,
+          "end": 1264
+        },
+        {
+          "id": "appendix",
+          "title": "Appendix",
+          "start": 1265,
+          "end": 1344
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 1345,
+          "end": 1361
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "introduction",
+        "first_example",
+        "default_style"
+      ]
+    },
+    {
+      "command": "egen",
+      "content_file": "expanded_command_guides/egen.txt",
+      "content_sha256": "8c892fa38f49054a5896bd3f5e51d3430eac52027b0a5388dc04fd5a7b57dc96",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 240
+        },
+        {
+          "id": "summary_statistics",
+          "title": "Remarks contents, Summary statistics, and Definitions of egen summary functions",
+          "start": 241,
+          "end": 335
+        },
+        {
+          "id": "missing_values",
+          "title": "Missing values",
+          "start": 336,
+          "end": 438
+        },
+        {
+          "id": "patterns",
+          "title": "Generating patterns",
+          "start": 439,
+          "end": 574
+        },
+        {
+          "id": "variable_differences",
+          "title": "Marking differences among variables",
+          "start": 575,
+          "end": 602
+        },
+        {
+          "id": "ranks",
+          "title": "Ranks",
+          "start": 603,
+          "end": 643
+        },
+        {
+          "id": "standardized_variables",
+          "title": "Standardized variables",
+          "start": 644,
+          "end": 688
+        },
+        {
+          "id": "row_functions",
+          "title": "Row functions",
+          "start": 689,
+          "end": 785
+        },
+        {
+          "id": "categorical_variables",
+          "title": "Categorical and integer variables",
+          "start": 786,
+          "end": 894
+        },
+        {
+          "id": "string_variables",
+          "title": "String variables",
+          "start": 895,
+          "end": 981
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 982,
+          "end": 1027
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "summary_statistics",
+        "missing_values"
+      ]
+    },
+    {
+      "command": "etable",
+      "content_file": "expanded_command_guides/etable.txt",
+      "content_sha256": "fab0953effcae9313bc278786cd2df7b4ea24d3d5749be18475768441f560a86",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 580
+        },
+        {
+          "id": "introduction",
+          "title": "Remarks contents and Introduction: the ETable collection",
+          "start": 581,
+          "end": 601
+        },
+        {
+          "id": "first_example",
+          "title": "A first example",
+          "start": 602,
+          "end": 690
+        },
+        {
+          "id": "comparing_models",
+          "title": "Table comparing regression results",
+          "start": 691,
+          "end": 783
+        },
+        {
+          "id": "multiple_equations",
+          "title": "Multiple-equation models",
+          "start": 784,
+          "end": 851
+        },
+        {
+          "id": "appendix",
+          "title": "Appendix",
+          "start": 852,
+          "end": 931
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 932,
+          "end": 946
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "introduction",
+        "first_example"
+      ]
+    },
+    {
+      "command": "export_delimited",
+      "content_file": "expanded_command_guides/export_delimited.txt",
+      "content_sha256": "2d303efcab6d4862bdd7e0c234f42bdb4f94c65c279602a467bb7807a093a7c3",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 210
+        },
+        {
+          "id": "introduction",
+          "title": "Remarks and examples: introduction",
+          "start": 211,
+          "end": 234
+        },
+        {
+          "id": "importing",
+          "title": "Importing a text file",
+          "start": 235,
+          "end": 454
+        },
+        {
+          "id": "exporting",
+          "title": "Exporting to a text file",
+          "start": 455,
+          "end": 492
+        },
+        {
+          "id": "video",
+          "title": "Video example",
+          "start": 493,
+          "end": 496
+        },
+        {
+          "id": "stored_results",
+          "title": "Stored results",
+          "start": 497,
+          "end": 507
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 508,
+          "end": 510
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "introduction",
+        "stored_results"
+      ]
+    },
+    {
+      "command": "graph_bar",
+      "content_file": "expanded_command_guides/graph_bar.txt",
+      "content_sha256": "83a2f97ce21036c5543f57c2efaf17afba55786922b13548169ad21c00743279",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 481
+        },
+        {
+          "id": "remarks_contents",
+          "title": "Remarks and examples: remarks contents",
+          "start": 482,
+          "end": 504
+        },
+        {
+          "id": "introduction_examples",
+          "title": "Introduction",
+          "start": 505,
+          "end": 638
+        },
+        {
+          "id": "syntax_examples",
+          "title": "Examples of syntax",
+          "start": 639,
+          "end": 699
+        },
+        {
+          "id": "bar_and_data_semantics",
+          "title": "Treatment of bars; Treatment of data",
+          "start": 700,
+          "end": 892
+        },
+        {
+          "id": "frequencies",
+          "title": "Obtaining frequencies",
+          "start": 893,
+          "end": 956
+        },
+        {
+          "id": "overlapping_bars",
+          "title": "Multiple bars (overlapping the bars)",
+          "start": 957,
+          "end": 1071
+        },
+        {
+          "id": "legend",
+          "title": "Controlling the text of the legend",
+          "start": 1072,
+          "end": 1081
+        },
+        {
+          "id": "multiple_over",
+          "title": "Multiple over( )s (repeating the bars)",
+          "start": 1082,
+          "end": 1135
+        },
+        {
+          "id": "nested_over",
+          "title": "Nested over( )s",
+          "start": 1136,
+          "end": 1233
+        },
+        {
+          "id": "many_categories",
+          "title": "Charts with many categories",
+          "start": 1234,
+          "end": 1332
+        },
+        {
+          "id": "default_order",
+          "title": "How bars are ordered",
+          "start": 1333,
+          "end": 1359
+        },
+        {
+          "id": "reordering",
+          "title": "Reordering bars: prespecified, height, and derived order, with example",
+          "start": 1360,
+          "end": 1517
+        },
+        {
+          "id": "by_groups",
+          "title": "Use with by( )",
+          "start": 1518,
+          "end": 1553
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 1554,
+          "end": 1583
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "remarks_contents",
+        "bar_and_data_semantics",
+        "default_order"
+      ]
+    },
+    {
+      "command": "histogram",
+      "content_file": "expanded_command_guides/histogram.txt",
+      "content_sha256": "552ba76508f81beee365ad0bab0275c679a0eb7f8d1055aa02ad7dd02b6b9d10",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 188
+        },
+        {
+          "id": "remarks_contents",
+          "title": "Remarks and examples: remarks contents",
+          "start": 189,
+          "end": 197
+        },
+        {
+          "id": "continuous",
+          "title": "Histograms of continuous variables",
+          "start": 198,
+          "end": 341
+        },
+        {
+          "id": "density_overlays",
+          "title": "Overlaying normal and kernel density estimates",
+          "start": 342,
+          "end": 396
+        },
+        {
+          "id": "discrete",
+          "title": "Histograms of discrete variables",
+          "start": 397,
+          "end": 471
+        },
+        {
+          "id": "by_groups",
+          "title": "Use with by()",
+          "start": 472,
+          "end": 576
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 577,
+          "end": 594
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "remarks_contents"
+      ]
+    },
+    {
+      "command": "import_delimited",
+      "content_file": "expanded_command_guides/import_delimited.txt",
+      "content_sha256": "2d303efcab6d4862bdd7e0c234f42bdb4f94c65c279602a467bb7807a093a7c3",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 210
+        },
+        {
+          "id": "introduction",
+          "title": "Remarks and examples: introduction",
+          "start": 211,
+          "end": 234
+        },
+        {
+          "id": "importing",
+          "title": "Importing a text file",
+          "start": 235,
+          "end": 454
+        },
+        {
+          "id": "exporting",
+          "title": "Exporting to a text file",
+          "start": 455,
+          "end": 492
+        },
+        {
+          "id": "video",
+          "title": "Video example",
+          "start": 493,
+          "end": 496
+        },
+        {
+          "id": "stored_results",
+          "title": "Stored results",
+          "start": 497,
+          "end": 507
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 508,
+          "end": 510
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "introduction",
+        "stored_results"
+      ]
+    },
+    {
+      "command": "ivregress",
+      "content_file": "expanded_command_guides/ivregress.txt",
+      "content_sha256": "e4e7800ddd832249b226254eda38fbc35ca52cb4cd6c47cfa8d086c013d27eec",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 191
+        },
+        {
+          "id": "model_semantics",
+          "title": "Remarks introduction and instrumental-variables model specification",
+          "start": 192,
+          "end": 224
+        },
+        {
+          "id": "twosls_liml",
+          "title": "2SLS and LIML estimators",
+          "start": 225,
+          "end": 322
+        },
+        {
+          "id": "gmm",
+          "title": "GMM estimator",
+          "start": 323,
+          "end": 482
+        },
+        {
+          "id": "video",
+          "title": "Video example",
+          "start": 483,
+          "end": 485
+        },
+        {
+          "id": "stored_results",
+          "title": "Stored results",
+          "start": 486,
+          "end": 553
+        },
+        {
+          "id": "methods",
+          "title": "Methods and formulas",
+          "start": 554,
+          "end": 731
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 732,
+          "end": 833
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "model_semantics",
+        "twosls_liml",
+        "stored_results"
+      ]
+    },
+    {
+      "command": "list",
+      "content_file": "expanded_command_guides/list.txt",
+      "content_sha256": "c4ed13e9c605d9a3b2e3784c969c42f7a5481fb47e3b6777eea2ee110a308e14",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 252
+        },
+        {
+          "id": "display_semantics",
+          "title": "Remarks introduction, Example 1, and display, string, label, and ordering technical notes",
+          "start": 253,
+          "end": 348
+        },
+        {
+          "id": "example_2",
+          "title": "Example 2",
+          "start": 349,
+          "end": 386
+        },
+        {
+          "id": "example_3",
+          "title": "Example 3",
+          "start": 387,
+          "end": 457
+        },
+        {
+          "id": "example_4",
+          "title": "Example 4",
+          "start": 458,
+          "end": 541
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 542,
+          "end": 551
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "display_semantics"
+      ]
+    },
+    {
+      "command": "logistic",
+      "content_file": "expanded_command_guides/logistic.txt",
+      "content_sha256": "9c6f4e05b748eabb8daa46e0827899a8ca4bc847c521e0d1444b87e4bb56bbfa",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 105
+        },
+        {
+          "id": "logistic_logit",
+          "title": "logistic and logit, including examples 1 and 2",
+          "start": 106,
+          "end": 255
+        },
+        {
+          "id": "robust_variance",
+          "title": "Robust estimate of variance",
+          "start": 256,
+          "end": 356
+        },
+        {
+          "id": "video",
+          "title": "Video examples",
+          "start": 357,
+          "end": 361
+        },
+        {
+          "id": "stored_results",
+          "title": "Stored results",
+          "start": 362,
+          "end": 427
+        },
+        {
+          "id": "methods",
+          "title": "Methods and formulas",
+          "start": 428,
+          "end": 447
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 448,
+          "end": 507
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "logistic_logit",
+        "stored_results"
+      ]
+    },
+    {
+      "command": "logit",
+      "content_file": "expanded_command_guides/logit.txt",
+      "content_sha256": "06300c2fca26cb56c21e2dec8d4a3433c7945e04a3a4245797ae890cad7540d2",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 112
+        },
+        {
+          "id": "basic_usage",
+          "title": "Remarks and examples: basic usage",
+          "start": 113,
+          "end": 206
+        },
+        {
+          "id": "identification",
+          "title": "Model identification",
+          "start": 207,
+          "end": 473
+        },
+        {
+          "id": "stored_results",
+          "title": "Stored results",
+          "start": 474,
+          "end": 540
+        },
+        {
+          "id": "methods",
+          "title": "Methods and formulas",
+          "start": 541,
+          "end": 570
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 571,
+          "end": 638
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "basic_usage",
+        "identification",
+        "stored_results"
+      ]
+    },
+    {
+      "command": "margins",
+      "content_file": "expanded_command_guides/margins.txt",
+      "content_sha256": "dd3d893192eb49f1fa3690dfe5755f7976ef9c4b331d711cf0cf9aa175352192",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 413
+        },
+        {
+          "id": "introduction",
+          "title": "Remarks contents, Introduction, and Obtaining margins of responses: common semantics",
+          "start": 414,
+          "end": 510
+        },
+        {
+          "id": "response_examples",
+          "title": "Obtaining margins of responses: complete examples 1-15",
+          "start": 511,
+          "end": 1133
+        },
+        {
+          "id": "derivative_semantics",
+          "title": "Derivative response semantics, at(), elasticities, and derivatives versus discrete differences",
+          "start": 1134,
+          "end": 1269
+        },
+        {
+          "id": "derivative_examples",
+          "title": "Obtaining margins of derivatives: complete examples 16-18",
+          "start": 1270,
+          "end": 1363
+        },
+        {
+          "id": "survey_samples",
+          "title": "Obtaining margins with survey data and representative samples",
+          "start": 1364,
+          "end": 1471
+        },
+        {
+          "id": "standardizing",
+          "title": "Standardizing margins",
+          "start": 1472,
+          "end": 1490
+        },
+        {
+          "id": "balanced_data",
+          "title": "Obtaining margins as though the data were balanced",
+          "start": 1491,
+          "end": 1750
+        },
+        {
+          "id": "nested_designs",
+          "title": "Obtaining margins with nested designs",
+          "start": 1751,
+          "end": 1877
+        },
+        {
+          "id": "specification_estimability_and_at",
+          "title": "Special topics: model specification, estimability, tests, estimates use, at() syntax, and supported estimators",
+          "start": 1878,
+          "end": 2191
+        },
+        {
+          "id": "video",
+          "title": "Video examples",
+          "start": 2192,
+          "end": 2197
+        },
+        {
+          "id": "glossary",
+          "title": "Glossary",
+          "start": 2198,
+          "end": 2296
+        },
+        {
+          "id": "stored_results",
+          "title": "Stored results",
+          "start": 2297,
+          "end": 2403
+        },
+        {
+          "id": "methods",
+          "title": "Methods and formulas",
+          "start": 2404,
+          "end": 2698
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 2699,
+          "end": 2774
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "introduction",
+        "derivative_semantics",
+        "standardizing",
+        "specification_estimability_and_at",
+        "glossary",
+        "stored_results"
+      ]
+    },
+    {
+      "command": "marginsplot",
+      "content_file": "expanded_command_guides/marginsplot.txt",
+      "content_sha256": "d43623c147ea55a3b51acd3826e7d9165fda2e3ed912fd803117b19d86d839c3",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 262
+        },
+        {
+          "id": "introduction_and_dataset",
+          "title": "Remarks contents, Introduction, and Dataset",
+          "start": 263,
+          "end": 318
+        },
+        {
+          "id": "profile_plots",
+          "title": "Profile plots",
+          "start": 319,
+          "end": 411
+        },
+        {
+          "id": "interaction_plots",
+          "title": "Interaction plots",
+          "start": 412,
+          "end": 460
+        },
+        {
+          "id": "contrasts",
+          "title": "Contrasts of margins—effects (discrete marginal effects)",
+          "start": 461,
+          "end": 549
+        },
+        {
+          "id": "threeway_interactions",
+          "title": "Three-way interactions",
+          "start": 550,
+          "end": 725
+        },
+        {
+          "id": "continuous_covariates",
+          "title": "Continuous covariates",
+          "start": 726,
+          "end": 963
+        },
+        {
+          "id": "every_continuous_value",
+          "title": "Plots at every value of a continuous covariate",
+          "start": 964,
+          "end": 984
+        },
+        {
+          "id": "at_group_contrasts",
+          "title": "Contrasts of at() groups—discrete effects",
+          "start": 985,
+          "end": 1123
+        },
+        {
+          "id": "graph_dimensions",
+          "title": "Controlling the graph’s dimensions",
+          "start": 1124,
+          "end": 1409
+        },
+        {
+          "id": "pairwise",
+          "title": "Pairwise comparisons; Horizontal is sometimes better",
+          "start": 1410,
+          "end": 1499
+        },
+        {
+          "id": "marginal_effects",
+          "title": "Marginal effects",
+          "start": 1500,
+          "end": 1579
+        },
+        {
+          "id": "subsetting_results",
+          "title": "Plotting a subset of the results from margins",
+          "start": 1580,
+          "end": 1595
+        },
+        {
+          "id": "advanced_usage",
+          "title": "Advanced usage: multiple terms, multiple at() options, and adding scatterplots",
+          "start": 1596,
+          "end": 1882
+        },
+        {
+          "id": "video",
+          "title": "Video examples",
+          "start": 1883,
+          "end": 1889
+        },
+        {
+          "id": "dimlist_syntax",
+          "title": "Addendum: Advanced uses of dimlist",
+          "start": 1890,
+          "end": 1919
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 1920,
+          "end": 1952
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "introduction_and_dataset",
+        "profile_plots",
+        "subsetting_results",
+        "dimlist_syntax"
+      ]
+    },
+    {
+      "command": "merge",
+      "content_file": "expanded_command_guides/merge.txt",
+      "content_sha256": "3b943254a6843544dcfd04c331137c3c7e82c4bbb2bc89e750dd0d0a040d425c",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 184
+        },
+        {
+          "id": "merge_semantics",
+          "title": "Remarks contents and merge semantics: keys, multiplicity, overlap, sorting, m:m troubleshooting, and aliases",
+          "start": 185,
+          "end": 568
+        },
+        {
+          "id": "examples",
+          "title": "Examples",
+          "start": 569,
+          "end": 1067
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 1068,
+          "end": 1094
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "merge_semantics"
+      ]
+    },
+    {
+      "command": "nbreg",
+      "content_file": "expanded_command_guides/nbreg.txt",
+      "content_sha256": "4b5c581a2f90bc4f0e4205438e6d0591dbd53ad87ad087f5a1d75d2d28d95e2b",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 197
+        },
+        {
+          "id": "model_semantics",
+          "title": "Remarks contents and Introduction to negative binomial regression",
+          "start": 198,
+          "end": 253
+        },
+        {
+          "id": "nbreg_examples",
+          "title": "nbreg",
+          "start": 254,
+          "end": 362
+        },
+        {
+          "id": "gnbreg_examples",
+          "title": "gnbreg",
+          "start": 363,
+          "end": 424
+        },
+        {
+          "id": "stored_results",
+          "title": "Stored results",
+          "start": 425,
+          "end": 550
+        },
+        {
+          "id": "methods",
+          "title": "Methods and formulas",
+          "start": 551,
+          "end": 616
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 617,
+          "end": 661
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "model_semantics",
+        "nbreg_examples",
+        "stored_results"
+      ]
+    },
+    {
+      "command": "poisson",
+      "content_file": "expanded_command_guides/poisson.txt",
+      "content_sha256": "28726b225d5520f8ed4cbad0c511a7e2a09dd0575a43ea4e090755f8c736ce06",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 108
+        },
+        {
+          "id": "model_semantics",
+          "title": "Remarks introduction: incidence rate, exposure, and incidence-rate ratios",
+          "start": 109,
+          "end": 159
+        },
+        {
+          "id": "example_1_and_exposure_note",
+          "title": "Example 1 and exposure and offset technical note",
+          "start": 160,
+          "end": 248
+        },
+        {
+          "id": "example_2",
+          "title": "Example 2",
+          "start": 249,
+          "end": 311
+        },
+        {
+          "id": "stored_results",
+          "title": "Stored results",
+          "start": 312,
+          "end": 372
+        },
+        {
+          "id": "methods",
+          "title": "Methods and formulas",
+          "start": 373,
+          "end": 405
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 406,
+          "end": 476
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "model_semantics",
+        "example_1_and_exposure_note",
+        "stored_results"
+      ]
+    },
+    {
+      "command": "predict",
+      "content_file": "expanded_command_guides/predict.txt",
+      "content_sha256": "586e70d9da252ab92f76408e0f595359a5371950e958055a051f90a358f16a4b",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 140
+        },
+        {
+          "id": "prediction_semantics",
+          "title": "Remarks contents and common prediction semantics",
+          "start": 141,
+          "end": 163
+        },
+        {
+          "id": "estimation_sample",
+          "title": "Estimation-sample predictions",
+          "start": 164,
+          "end": 198
+        },
+        {
+          "id": "out_of_sample",
+          "title": "Out-of-sample predictions",
+          "start": 199,
+          "end": 267
+        },
+        {
+          "id": "residuals",
+          "title": "Residuals",
+          "start": 268,
+          "end": 295
+        },
+        {
+          "id": "single_equation",
+          "title": "Single-equation (SE) models",
+          "start": 296,
+          "end": 384
+        },
+        {
+          "id": "single_equation_scores",
+          "title": "SE model scores",
+          "start": 385,
+          "end": 409
+        },
+        {
+          "id": "multiple_equations",
+          "title": "Multiple-equation (ME) models",
+          "start": 410,
+          "end": 461
+        },
+        {
+          "id": "multiple_equation_scores",
+          "title": "ME model scores",
+          "start": 462,
+          "end": 494
+        },
+        {
+          "id": "methods",
+          "title": "Methods and formulas",
+          "start": 495,
+          "end": 511
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 512,
+          "end": 524
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "prediction_semantics",
+        "estimation_sample",
+        "out_of_sample"
+      ]
+    },
+    {
+      "command": "probit",
+      "content_file": "expanded_command_guides/probit.txt",
+      "content_sha256": "01739a54e201dcfe0ea99d99cf9f6d22b626ee945207e77b979ed63e026a0352",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 110
+        },
+        {
+          "id": "basic_usage",
+          "title": "Remarks introduction and Example 1",
+          "start": 111,
+          "end": 201
+        },
+        {
+          "id": "robust_variance",
+          "title": "Robust standard errors",
+          "start": 202,
+          "end": 341
+        },
+        {
+          "id": "identification",
+          "title": "Model identification",
+          "start": 342,
+          "end": 445
+        },
+        {
+          "id": "video",
+          "title": "Video examples",
+          "start": 446,
+          "end": 451
+        },
+        {
+          "id": "stored_results",
+          "title": "Stored results",
+          "start": 452,
+          "end": 518
+        },
+        {
+          "id": "methods",
+          "title": "Methods and formulas",
+          "start": 519,
+          "end": 551
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 552,
+          "end": 606
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "basic_usage",
+        "identification",
+        "stored_results"
+      ]
+    },
+    {
+      "command": "putexcel",
+      "content_file": "expanded_command_guides/putexcel.txt",
+      "content_sha256": "a8e3c542c87745ed9d6d2fce860b582f63dfb79a1a7087ef96219e1d05d2d337",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 424
+        },
+        {
+          "id": "introduction_and_workbook",
+          "title": "Remarks contents, Introduction, and Example 1: Setting the workbook and sheet",
+          "start": 425,
+          "end": 458
+        },
+        {
+          "id": "expressions_formatting",
+          "title": "Writing expressions and formatting cells",
+          "start": 459,
+          "end": 553
+        },
+        {
+          "id": "summary_statistics",
+          "title": "Exporting summary statistics to Excel",
+          "start": 554,
+          "end": 637
+        },
+        {
+          "id": "estimation_results",
+          "title": "Exporting estimation results",
+          "start": 638,
+          "end": 696
+        },
+        {
+          "id": "collection_table",
+          "title": "Exporting a table from a collection",
+          "start": 697,
+          "end": 859
+        },
+        {
+          "id": "graphs_images",
+          "title": "Exporting graphs and other images",
+          "start": 860,
+          "end": 913
+        },
+        {
+          "id": "appendix",
+          "title": "Appendix",
+          "start": 914,
+          "end": 1072
+        },
+        {
+          "id": "stored_results",
+          "title": "Stored results",
+          "start": 1073,
+          "end": 1080
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 1081,
+          "end": 1107
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "introduction_and_workbook",
+        "expressions_formatting",
+        "stored_results"
+      ]
+    },
+    {
+      "command": "regress",
+      "content_file": "expanded_command_guides/regress.txt",
+      "content_sha256": "0cccef0cfb579d57dc2991c1d3118654e0412c408560835e9cb5900ca0bb80e0",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 177
+        },
+        {
+          "id": "introduction",
+          "title": "Remarks contents and regression introduction",
+          "start": 178,
+          "end": 206
+        },
+        {
+          "id": "ols",
+          "title": "Ordinary least squares",
+          "start": 207,
+          "end": 306
+        },
+        {
+          "id": "constant_semantics",
+          "title": "Treatment of the constant",
+          "start": 307,
+          "end": 445
+        },
+        {
+          "id": "robust_variance",
+          "title": "Robust standard errors",
+          "start": 446,
+          "end": 762
+        },
+        {
+          "id": "weights",
+          "title": "Weighted regression",
+          "start": 763,
+          "end": 909
+        },
+        {
+          "id": "video",
+          "title": "Video examples",
+          "start": 910,
+          "end": 915
+        },
+        {
+          "id": "stored_results",
+          "title": "Stored results",
+          "start": 916,
+          "end": 968
+        },
+        {
+          "id": "methods",
+          "title": "Methods and formulas",
+          "start": 969,
+          "end": 1216
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 1217,
+          "end": 1361
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "introduction",
+        "constant_semantics",
+        "robust_variance",
+        "weights",
+        "stored_results"
+      ]
+    },
+    {
+      "command": "reshape",
+      "content_file": "expanded_command_guides/reshape.txt",
+      "content_sha256": "134f57e93b0f015b59569c2f0c3d54e83de73ed6b3f508cc89b4a1b0bf9eb70f",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 142
+        },
+        {
+          "id": "basic_syntax",
+          "title": "Remarks contents and Description of basic syntax",
+          "start": 143,
+          "end": 184
+        },
+        {
+          "id": "wide_long_forms",
+          "title": "Wide and long data forms",
+          "start": 185,
+          "end": 268
+        },
+        {
+          "id": "mistakes",
+          "title": "Avoiding and correcting mistakes",
+          "start": 269,
+          "end": 459
+        },
+        {
+          "id": "without_arguments",
+          "title": "reshape long and reshape wide without arguments",
+          "start": 460,
+          "end": 480
+        },
+        {
+          "id": "missing_variables",
+          "title": "Missing variables",
+          "start": 481,
+          "end": 532
+        },
+        {
+          "id": "advanced_i_j_xij",
+          "title": "Advanced issues with basic syntax: i(), j(), and xij",
+          "start": 533,
+          "end": 620
+        },
+        {
+          "id": "string_j",
+          "title": "Advanced issues with basic syntax: String identifiers for j()",
+          "start": 621,
+          "end": 724
+        },
+        {
+          "id": "second_level_nesting",
+          "title": "Advanced issues with basic syntax: Second-level nesting",
+          "start": 725,
+          "end": 776
+        },
+        {
+          "id": "advanced_syntax",
+          "title": "Description of advanced syntax",
+          "start": 777,
+          "end": 825
+        },
+        {
+          "id": "memory_speed",
+          "title": "Why favor memory over speed?",
+          "start": 826,
+          "end": 852
+        },
+        {
+          "id": "video",
+          "title": "Video examples",
+          "start": 853,
+          "end": 857
+        },
+        {
+          "id": "stored_results",
+          "title": "Stored results",
+          "start": 858,
+          "end": 873
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 874,
+          "end": 897
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "basic_syntax",
+        "mistakes",
+        "without_arguments",
+        "missing_variables",
+        "stored_results"
+      ]
+    },
+    {
+      "command": "stcox",
+      "content_file": "expanded_command_guides/stcox.txt",
+      "content_sha256": "08ad7107d5a7a83c6a43ce61d11ff9ab4ddb13e77ca6fc7226057c769860ae8b",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 154
+        },
+        {
+          "id": "model_semantics",
+          "title": "Remarks contents and Cox model, stratification, variance, frailty, and stset semantics",
+          "start": 155,
+          "end": 205
+        },
+        {
+          "id": "uncensored",
+          "title": "Cox regression with uncensored data",
+          "start": 206,
+          "end": 297
+        },
+        {
+          "id": "censored",
+          "title": "Cox regression with censored data",
+          "start": 298,
+          "end": 376
+        },
+        {
+          "id": "tied_failures",
+          "title": "Treatment of tied failure times",
+          "start": 377,
+          "end": 430
+        },
+        {
+          "id": "timevarying_records",
+          "title": "Cox regression with time-varying covariates in multiple-record data",
+          "start": 431,
+          "end": 478
+        },
+        {
+          "id": "tvc",
+          "title": "Cox regression with time-varying covariates using option tvc()",
+          "start": 479,
+          "end": 706
+        },
+        {
+          "id": "robust_variance",
+          "title": "Robust estimate of variance",
+          "start": 707,
+          "end": 811
+        },
+        {
+          "id": "multiple_failures",
+          "title": "Cox regression with multiple-failure data",
+          "start": 812,
+          "end": 931
+        },
+        {
+          "id": "stratified",
+          "title": "Stratified estimation",
+          "start": 932,
+          "end": 973
+        },
+        {
+          "id": "poisson_equivalence",
+          "title": "Cox regression as Poisson regression",
+          "start": 974,
+          "end": 1195
+        },
+        {
+          "id": "shared_frailty",
+          "title": "Cox regression with shared frailty",
+          "start": 1196,
+          "end": 1335
+        },
+        {
+          "id": "stored_results",
+          "title": "Stored results",
+          "start": 1336,
+          "end": 1403
+        },
+        {
+          "id": "methods",
+          "title": "Methods and formulas",
+          "start": 1404,
+          "end": 1524
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 1525,
+          "end": 1633
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "model_semantics",
+        "tied_failures",
+        "stored_results"
+      ]
+    },
+    {
+      "command": "stset",
+      "content_file": "expanded_command_guides/stset.txt",
+      "content_sha256": "68fddde72f95c4d3be262b4bedd225feb22e9ecb6043e6aa001affb95978dc37",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 273
+        },
+        {
+          "id": "survival_data_and_key_concepts",
+          "title": "Remarks contents, What are survival-time data?, Key concepts, and Survival-time datasets",
+          "start": 274,
+          "end": 558
+        },
+        {
+          "id": "using_stset",
+          "title": "Using stset",
+          "start": 559,
+          "end": 1056
+        },
+        {
+          "id": "analysis_time",
+          "title": "Two concepts of time; The substantive meaning of analysis time",
+          "start": 1057,
+          "end": 1239
+        },
+        {
+          "id": "failure_entry_exit_and_gaps",
+          "title": "Setting failure events and multiple failures; First entry times; Final exit times; Gaps",
+          "start": 1240,
+          "end": 1517
+        },
+        {
+          "id": "sample_qualifier",
+          "title": "if( ) versus if exp",
+          "start": 1518,
+          "end": 1561
+        },
+        {
+          "id": "past_future",
+          "title": "Past and future records",
+          "start": 1562,
+          "end": 1625
+        },
+        {
+          "id": "reset_and_retention",
+          "title": "Using streset; Performance and multiple-record-per-subject datasets, including retention cautions",
+          "start": 1626,
+          "end": 1684
+        },
+        {
+          "id": "event_sequence_weights_and_warnings",
+          "title": "Sequencing of events within t; Weights; Data warnings and errors flagged by stset",
+          "start": 1685,
+          "end": 1833
+        },
+        {
+          "id": "survival_workflow",
+          "title": "Using survival-time data in Stata",
+          "start": 1834,
+          "end": 2099
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 2100,
+          "end": 2114
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "survival_data_and_key_concepts",
+        "analysis_time",
+        "failure_entry_exit_and_gaps",
+        "sample_qualifier",
+        "reset_and_retention",
+        "event_sequence_weights_and_warnings"
+      ]
+    },
+    {
+      "command": "summarize",
+      "content_file": "expanded_command_guides/summarize.txt",
+      "content_sha256": "913b2d51bc454711eaf1d4d9533dbe1abd188968418a1fe3f8ecf47840e793d4",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 68
+        },
+        {
+          "id": "summary_semantics",
+          "title": "Remarks introduction: default and detail statistics",
+          "start": 69,
+          "end": 76
+        },
+        {
+          "id": "separator",
+          "title": "Example 1: summarize with the separator() option",
+          "start": 77,
+          "end": 131
+        },
+        {
+          "id": "detail",
+          "title": "Example 2: summarize with the detail option",
+          "start": 132,
+          "end": 174
+        },
+        {
+          "id": "by_prefix_and_formats",
+          "title": "Example 3: by prefix, followed by display-format and weighting technical note",
+          "start": 175,
+          "end": 253
+        },
+        {
+          "id": "factor_variables",
+          "title": "Example 4: summarize with factor variables",
+          "start": 254,
+          "end": 273
+        },
+        {
+          "id": "weights_and_meanonly",
+          "title": "Examples 5-6: weights and detail, followed by meanonly technical note",
+          "start": 274,
+          "end": 333
+        },
+        {
+          "id": "video",
+          "title": "Video example",
+          "start": 334,
+          "end": 337
+        },
+        {
+          "id": "stored_results",
+          "title": "Stored results",
+          "start": 338,
+          "end": 353
+        },
+        {
+          "id": "methods",
+          "title": "Methods and formulas",
+          "start": 354,
+          "end": 410
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 411,
+          "end": 457
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "summary_semantics",
+        "weights_and_meanonly",
+        "stored_results"
+      ]
+    },
+    {
+      "command": "table",
+      "content_file": "expanded_command_guides/table.txt",
+      "content_sha256": "a86a4405ad3e33d239a76e26a42d0bda7edc92ad31177aa2a9d5f86de2d8727e",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 347
+        },
+        {
+          "id": "introduction",
+          "title": "Remarks contents and Introduction",
+          "start": 348,
+          "end": 387
+        },
+        {
+          "id": "layout",
+          "title": "Specifying the table layout",
+          "start": 388,
+          "end": 490
+        },
+        {
+          "id": "advanced_customization",
+          "title": "Advanced table customization",
+          "start": 491,
+          "end": 505
+        },
+        {
+          "id": "stored_results",
+          "title": "Stored results",
+          "start": 506,
+          "end": 512
+        },
+        {
+          "id": "methods",
+          "title": "Methods and formulas",
+          "start": 513,
+          "end": 723
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 724,
+          "end": 735
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "introduction",
+        "layout",
+        "stored_results"
+      ]
+    },
+    {
+      "command": "tabulate",
+      "content_file": "expanded_command_guides/tabulate.txt",
+      "content_sha256": "e1e8f2703b2d24fb93224ed67de11ffd137e6056c2df54a365fe197d62221747",
+      "sections": [
+        {
+          "id": "oneway",
+          "title": "tabulate oneway",
+          "start": 1,
+          "end": 395
+        },
+        {
+          "id": "twoway",
+          "title": "tabulate twoway",
+          "start": 396,
+          "end": 1190
+        }
+      ],
+      "required_sections": []
+    },
+    {
+      "command": "test",
+      "content_file": "expanded_command_guides/test.txt",
+      "content_sha256": "f34dab06775cad9e114dc85c6767003fa5f51909bc64460a28ade32223ddade1",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 245
+        },
+        {
+          "id": "introductory_examples",
+          "title": "Introductory examples 1-10 and technical notes on hypothesis syntax, factor variables, and tests",
+          "start": 246,
+          "end": 681
+        },
+        {
+          "id": "multiple_equations",
+          "title": "Special syntaxes after multiple-equation estimation",
+          "start": 682,
+          "end": 842
+        },
+        {
+          "id": "constrained_coefficients",
+          "title": "Constrained coefficients",
+          "start": 843,
+          "end": 879
+        },
+        {
+          "id": "multiple_testing",
+          "title": "Multiple testing",
+          "start": 880,
+          "end": 918
+        },
+        {
+          "id": "stored_results",
+          "title": "Stored results",
+          "start": 919,
+          "end": 934
+        },
+        {
+          "id": "methods",
+          "title": "Methods and formulas",
+          "start": 935,
+          "end": 978
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 979,
+          "end": 1018
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "introductory_examples",
+        "constrained_coefficients",
+        "stored_results"
+      ]
+    },
+    {
+      "command": "testparm",
+      "content_file": "expanded_command_guides/testparm.txt",
+      "content_sha256": "f34dab06775cad9e114dc85c6767003fa5f51909bc64460a28ade32223ddade1",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 245
+        },
+        {
+          "id": "introductory_examples",
+          "title": "Introductory examples 1-10 and technical notes on hypothesis syntax, factor variables, and tests",
+          "start": 246,
+          "end": 681
+        },
+        {
+          "id": "multiple_equations",
+          "title": "Special syntaxes after multiple-equation estimation",
+          "start": 682,
+          "end": 842
+        },
+        {
+          "id": "constrained_coefficients",
+          "title": "Constrained coefficients",
+          "start": 843,
+          "end": 879
+        },
+        {
+          "id": "multiple_testing",
+          "title": "Multiple testing",
+          "start": 880,
+          "end": 918
+        },
+        {
+          "id": "stored_results",
+          "title": "Stored results",
+          "start": 919,
+          "end": 934
+        },
+        {
+          "id": "methods",
+          "title": "Methods and formulas",
+          "start": 935,
+          "end": 978
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 979,
+          "end": 1018
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "introductory_examples",
+        "constrained_coefficients",
+        "stored_results"
+      ]
+    },
+    {
+      "command": "tsset",
+      "content_file": "expanded_command_guides/tsset.txt",
+      "content_sha256": "be400e785ce32e6d9572d84ceedee4783dc3111b19f3d6d7da883e097ddd2bc4",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 161
+        },
+        {
+          "id": "overview",
+          "title": "Remarks contents and Overview: time-series operators and dataset declaration",
+          "start": 162,
+          "end": 281
+        },
+        {
+          "id": "numeric_time",
+          "title": "Example 1: Numeric time variable",
+          "start": 282,
+          "end": 306
+        },
+        {
+          "id": "starting_date",
+          "title": "Example 2: Adjusting the starting date",
+          "start": 307,
+          "end": 387
+        },
+        {
+          "id": "missing_time_variable",
+          "title": "Example 3: Time-series data but no time variable",
+          "start": 388,
+          "end": 427
+        },
+        {
+          "id": "string_time",
+          "title": "Example 4: Time variable as a string",
+          "start": 428,
+          "end": 499
+        },
+        {
+          "id": "gaps",
+          "title": "Example 5: Time-series data with gaps",
+          "start": 500,
+          "end": 539
+        },
+        {
+          "id": "clock_time",
+          "title": "Example 6: Clock times",
+          "start": 540,
+          "end": 622
+        },
+        {
+          "id": "clock_precision",
+          "title": "Example 7: Clock times must be double",
+          "start": 623,
+          "end": 738
+        },
+        {
+          "id": "panel_data",
+          "title": "Panel data",
+          "start": 739,
+          "end": 787
+        },
+        {
+          "id": "video",
+          "title": "Video example",
+          "start": 788,
+          "end": 790
+        },
+        {
+          "id": "stored_results",
+          "title": "Stored results",
+          "start": 791,
+          "end": 815
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 816,
+          "end": 823
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "overview",
+        "numeric_time",
+        "gaps",
+        "clock_precision",
+        "stored_results"
+      ]
+    },
+    {
+      "command": "ttest",
+      "content_file": "expanded_command_guides/ttest.txt",
+      "content_sha256": "b807c7e2e93f8b6465524d8e1576e6de6e511f0316c9ba188b4bc888a73f1012",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 100
+        },
+        {
+          "id": "remarks_contents",
+          "title": "Remarks and examples: remarks contents",
+          "start": 101,
+          "end": 110
+        },
+        {
+          "id": "one_sample",
+          "title": "One-sample t test",
+          "start": 111,
+          "end": 136
+        },
+        {
+          "id": "two_sample",
+          "title": "Two-sample t test",
+          "start": 137,
+          "end": 258
+        },
+        {
+          "id": "paired",
+          "title": "Paired t test",
+          "start": 259,
+          "end": 286
+        },
+        {
+          "id": "anova_comparison",
+          "title": "Two-sample t test compared with one-way ANOVA",
+          "start": 287,
+          "end": 341
+        },
+        {
+          "id": "immediate_form",
+          "title": "Immediate form",
+          "start": 342,
+          "end": 384
+        },
+        {
+          "id": "video",
+          "title": "Video examples",
+          "start": 385,
+          "end": 392
+        },
+        {
+          "id": "stored_results",
+          "title": "Stored results",
+          "start": 393,
+          "end": 403
+        },
+        {
+          "id": "methods",
+          "title": "Methods and formulas",
+          "start": 404,
+          "end": 496
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 497,
+          "end": 535
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "remarks_contents",
+        "stored_results"
+      ]
+    },
+    {
+      "command": "xtivreg",
+      "content_file": "expanded_command_guides/xtivreg.txt",
+      "content_sha256": "935fbfa17fedc6a64f20dc513e20ff839ea81ce6018b8ffd6fdb7e1d32852fc5",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 278
+        },
+        {
+          "id": "estimator_semantics_and_examples",
+          "title": "Remarks and examples: model assumptions and FE, RE, and FD estimators",
+          "start": 279,
+          "end": 606
+        },
+        {
+          "id": "stored_results",
+          "title": "Stored results",
+          "start": 607,
+          "end": 844
+        },
+        {
+          "id": "methods",
+          "title": "Methods and formulas",
+          "start": 845,
+          "end": 1059
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 1060,
+          "end": 1105
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "estimator_semantics_and_examples",
+        "stored_results"
+      ]
+    },
+    {
+      "command": "xtreg",
+      "content_file": "expanded_command_guides/xtreg.txt",
+      "content_sha256": "3d9bead581f197ea924412ccc09c085ca097bd75ea7d163e1ff738452c5bb921",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 504
+        },
+        {
+          "id": "model_and_fit_semantics",
+          "title": "Remarks introduction: panel model assumptions; Assessing goodness of fit",
+          "start": 505,
+          "end": 672
+        },
+        {
+          "id": "between_effects",
+          "title": "xtreg and associated commands",
+          "start": 673,
+          "end": 743
+        },
+        {
+          "id": "fixed_effects",
+          "title": "Example 2: Fixed-effects model",
+          "start": 744,
+          "end": 832
+        },
+        {
+          "id": "robust_fixed_effects",
+          "title": "Example 3: Fixed-effects models with robust standard errors",
+          "start": 833,
+          "end": 893
+        },
+        {
+          "id": "random_effects",
+          "title": "Example 4: Random-effects model",
+          "start": 894,
+          "end": 953
+        },
+        {
+          "id": "random_effects_mle",
+          "title": "Example 5: Random-effects model fit using MLE",
+          "start": 954,
+          "end": 1017
+        },
+        {
+          "id": "population_averaged",
+          "title": "Example 6: Population-averaged model",
+          "start": 1018,
+          "end": 1087
+        },
+        {
+          "id": "correlated_random_effects",
+          "title": "Example 7: Correlated random-effects models (StataNow)",
+          "start": 1088,
+          "end": 1176
+        },
+        {
+          "id": "high_dimensional_absorption",
+          "title": "Example 8: Controlling for high-dimensional categorical variables (StataNow)",
+          "start": 1177,
+          "end": 1309
+        },
+        {
+          "id": "stored_results",
+          "title": "Stored results",
+          "start": 1310,
+          "end": 1678
+        },
+        {
+          "id": "methods",
+          "title": "Methods and formulas",
+          "start": 1679,
+          "end": 2019
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 2020,
+          "end": 2131
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "model_and_fit_semantics",
+        "between_effects",
+        "stored_results"
+      ]
+    },
+    {
+      "command": "xtset",
+      "content_file": "expanded_command_guides/xtset.txt",
+      "content_sha256": "463ee1cfa26db47dacc13dac9d24e0278eebf42f476eecbc8bdd5e183d28afac",
+      "sections": [
+        {
+          "id": "reference",
+          "title": "Command reference: description, syntax, and all options",
+          "start": 1,
+          "end": 158
+        },
+        {
+          "id": "panel_semantics",
+          "title": "Remarks introduction: panel and time declarations, numeric types, and relation to tsset",
+          "start": 159,
+          "end": 197
+        },
+        {
+          "id": "panel_without_time",
+          "title": "Example 1: Panel data without a time variable",
+          "start": 198,
+          "end": 304
+        },
+        {
+          "id": "panel_with_time",
+          "title": "Example 2: Panel data with a time variable, including balanced-panel technical note",
+          "start": 305,
+          "end": 379
+        },
+        {
+          "id": "time_formats",
+          "title": "Example 3: Applying time-series formats to the time variable",
+          "start": 380,
+          "end": 437
+        },
+        {
+          "id": "clock_time",
+          "title": "Example 4: Clock times",
+          "start": 438,
+          "end": 521
+        },
+        {
+          "id": "clock_precision",
+          "title": "Example 5: Clock times must be double",
+          "start": 522,
+          "end": 636
+        },
+        {
+          "id": "stored_results",
+          "title": "Stored results",
+          "start": 637,
+          "end": 661
+        },
+        {
+          "id": "references",
+          "title": "References and closing material",
+          "start": 662,
+          "end": 672
+        }
+      ],
+      "required_sections": [
+        "reference",
+        "panel_semantics",
+        "panel_with_time",
+        "clock_precision",
+        "stored_results"
+      ]
+    }
+  ]
+}

@@ -6,7 +6,7 @@ Guard supplies source material for the model's decision. A catalog, path, hash, 
 
 Skip Guard for read-only explanation/review, comments or formatting, literal path/label changes with an unchanged interface, verbatim relocation, and unchanged-file execution with no semantic issue. Otherwise request evidence for the material command interfaces, not every token in the file.
 
-Use Phase 1 (`request` only) when the command is unresolved. When it is clear, go directly to Phase 2 (`request` and exact `selected_commands`). Full bundled official/maintainer help is the default. Exact outside-dictionary topics use installed help; no paper example is required to use a documented command.
+Use Phase 1 (`request` only) when the command is unresolved. When it is clear, go directly to Phase 2 (`request` and exact `selected_commands`). Complete bundled official/maintainer help is the default up to 24,000 Unicode characters; larger help first returns a section catalog. Exact outside-dictionary topics use installed help; no paper example is required to use a documented command.
 
 Reuse visible evidence while command, version, material options, returned interface, and downstream use remain unchanged. Expand only for a remaining question or useful worked context. A command may share a differently named official help topic: `postfile`, `postclose`, and `postutil` are documented under `post`. Guard resolves known aliases while preserving the requested command label. If an exact topic is absent, follow an identified official help cross-reference before concluding its grammar is unavailable; do not guess syntax or substitute a different analysis command. Stop only the branch whose needed grammar remains unavailable.
 
@@ -16,28 +16,25 @@ By default every response includes `main_rules.content`, its source path, and SH
 
 Omit the hash in a fresh task, after compaction/context loss, or whenever the body is unavailable. Do not copy a hash from memory, a handoff, another agent, or a source listing and call that reading. The server is stateless about what a model has read and does not suppress rules on its own.
 
-## Optional original help sections
+## Large-source section selection
 
-Keep ordinary complete-help requests for small documents or broad questions. Two large sources also have exact navigation:
+A source over **24,000 Unicode characters** first returns `content: null`, `delivery: "catalog_only"`, and `section_catalog`. This applies to every bundled help, live installed help, and expanded manual. The threshold is a reading-volume choice, not a token estimate or a maximum section size. Smaller sources remain complete by default. Multiple small sources can still add up; request only the material commands needed now.
 
-- `outreg2`: `reference` contains the complete description, syntax, and all options; `example-0` through `example-20` preserve whole maintainer examples; `faq-and-source` preserves the closing FAQ and source information.
-- `collect_style`: each section is one complete official help topic, such as `collect_style_cell` or `collect_style_row`.
+Read the catalog's original headings, source spans, sizes, and required flags. Choose sections for the current question **and its dependencies**: command syntax, qualifiers/weights, option interactions, warnings/version restrictions, returned-result lifetime, and downstream use. A relevant example alone is not sufficient. The response automatically includes the map's required foundation sections in source order, without duplicates. These are conservative source selections, not a guarantee that all task-specific dependencies were chosen. Follow referenced topics when material, and expand to complete help when dependencies remain uncertain.
 
-Phase 2 with `help_view: "catalog"` returns exact section IDs, headings, and source spans for these commands. Its `content: null` and `delivery: "catalog_only"` mean no help body was delivered. Other commands return complete help rather than an empty catalog.
-
-Request known IDs directly in Phase 2, for example:
+Phase 2 selections use `help_sections`; Phase 3 manual selections use `expanded_sections` alongside `expanded_commands`. IDs come from that source's catalog. `help_view: "catalog"` explicitly asks for navigation even for a small source; `help_view: "full"` explicitly requests the complete source in either phase. Do not combine `help_view` and a section selection. No catalog round trip is required when the current exact IDs are already known.
 
 ```json
 {
-  "request": "Read outreg2 syntax, options, stored estimates, and Excel use",
+  "request": "Read stored-estimate and Excel handling with its syntax and options",
   "selected_commands": ["outreg2"],
-  "help_sections": {"outreg2": ["reference", "example-3", "example-12"]}
+  "help_sections": {"outreg2": ["example-3", "example-12"]}
 }
 ```
 
-Selected sections retain original wording, source order, and spans; the source hash identifies the complete underlying help, not a shortened replacement guide. Read the syntax/options reference as well as any relevant example. A section selection is limited evidence: follow material cross-references and option interactions with more sections or complete help. Do not assume omitted sections are irrelevant merely because they were not returned. Omit `help_view` and `help_sections` to retrieve complete help. A stale source map falls back to full current help.
+For example, `outreg2` retains complete maintainer examples and automatically accompanies them with its `reference` section. `collect_style` retains whole official help topics. Other maps follow complete source headings, manual entries, or self-contained subcommands. Source text is not rewritten, summarized, or split by fixed length, page, or token window. A large options block stays large rather than losing essential qualifications.
 
-This is source-native navigation, not fixed-length slicing, automatic snippets, or an SA-written substitute. There is no requirement to fetch a catalog first when the exact IDs are known.
+If no current reviewed map exists (including new live help), navigation exposes the entire intact document as `whole-source`. An outdated map also returns this catalog rather than applying stale offsets or silently injecting a large body. Choose `whole-source` or explicit full help; no automatic heuristic cutting substitutes for a reviewed boundary. Catalog metadata is not evidence that any help body was read.
 
 ## Longer documentation and papers
 

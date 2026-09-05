@@ -40,7 +40,7 @@
 
 명령을 정하지 못한 경우만 `request`로 Phase 1 사전을 읽습니다. Help로 해결되지 않는 질문에는 Phase 3의 `expanded_commands`로 긴 문서를, `selected_block_ids`로 논문 블록을 선택합니다. 두 선택은 독립적이며 모든 자료를 확장할 필요는 없습니다.
 
-전체 원문 help가 기본입니다. 큰 문서 중 `outreg2`와 `collect_style`는 원문 구획을 그대로 선택할 수도 있습니다. `help_view: "catalog"`로 목록을 확인하거나 이미 아는 ID를 바로 요청합니다.
+원문 24,000자(Unicode 문자)를 초과하는 모든 도움말은 먼저 구획 목록을 제공합니다. 일반 도움말·설치된 live help·확장 매뉴얼에 같은 기준을 적용합니다. 작은 도움말은 전체 본문이 기본입니다. 이 값은 토큰 수나 본문 절단 길이가 아니라 먼저 선택할지 정하는 기준입니다. 모델이 원문 제목과 연구 문맥을 보고 필요한 구획을 선택하며 서버가 관련성을 판단하지 않습니다.
 
 ```json
 {
@@ -50,7 +50,9 @@
 }
 ```
 
-`reference`는 description·syntax·모든 options를 포함합니다. 예시는 maintainer가 나눈 단위 전체이며, `collect_style`는 각 공식 help topic 전체입니다. 고정 줄 수나 자동 요약으로 문법을 잘라내지 않습니다. 선택하지 않은 문맥이 필요하면 추가 구획이나 전체 help를 읽습니다. Catalog는 본문을 읽었다는 증거가 아니며, source map이 오래되면 전체 help로 돌아갑니다.
+`reference`는 description·syntax·모든 options를 포함하며 outreg2 예시 선택에 자동 동반됩니다. 문서별로 확인한 필수 문법·옵션·주의·반환값 구획을 함께 전달하고, 본문은 원문의 완결된 경계로만 나눕니다. 큰 필수 구획도 크기 때문에 잘라내지 않습니다. 선택 범위 밖의 중요한 교차참조는 추가로 읽어야 합니다.
+
+Phase 2는 `help_sections`, Phase 3 확장 매뉴얼은 `expanded_sections`로 선택합니다. `help_view: "full"`이면 전체 원문을 명시적으로 요청하고, `catalog`이면 목록을 요청합니다. 현재 검토된 경계가 없는 live help나 source map이 오래된 문서는 원문 전체를 `whole-source` 하나의 선택 단위로 남깁니다. 자동 추정으로 자르거나 조용히 큰 본문으로 돌아가지 않습니다. Catalog는 본문을 읽었다는 증거가 아닙니다.
 
 공통 규칙은 기본 응답에 본문을 포함합니다. 이미 읽은 동일 본문이 현재 문맥에 남아 있을 때만 `known_rules_sha256`를 보내 중복을 생략할 수 있습니다. 새 작업이나 압축 후 본문이 없으면 hash를 보내지 않습니다. 서버가 읽기 상태를 추측하거나 다른 작업의 hash만 보고 규칙을 읽었다고 처리하지 않습니다.
 
@@ -72,7 +74,7 @@ Node.js와 Stata 18 환경을 기본으로 사용합니다. `CODEX_MCP_NODE_PATH
 변경이 모인 뒤 해당 transport와 bundle을 확인합니다. 예를 들어 서버·live help 변경은 다음 명령으로 검사합니다.
 
 ```powershell
-node --test tests/server.test.cjs tests/live-help.test.cjs tests/plugin_bundle_manifest.test.cjs
+node --test tests/server.test.cjs tests/live-help.test.cjs tests/help-sections.test.cjs tests/plugin_bundle_manifest.test.cjs
 node scripts/verify_plugin_bundle.cjs
 ```
 
