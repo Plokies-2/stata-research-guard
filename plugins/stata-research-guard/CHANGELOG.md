@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-09-06 — research purpose before editing tactics
+
+- Clarify the existing purpose rule: understand the research role of a block before choosing a rewrite, and prefer arrangements a researcher can interpret directly.
+- Start native-interface lookup from the needed research information and assess peer advice against that purpose. No extra comments, block reports, planning artifacts, or review stages are required.
+
 ## 2026-09-05 — backward reading and native-interface questions
 
 - Trace affected output meaning and structure backward to estimates, effective samples, observation units and inputs, alongside forward code reading. Never target desired numerical findings.

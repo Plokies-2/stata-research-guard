@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.3.0+codex.20260905095315"
+    "version": "0.3.0+codex.20260905161609"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
       "bytes": 1360,
-      "sha256": "ddabc9ef7237eb3bc24d720f605413ab6e9dbd8a092011f3d82497de5d48a5ca"
+      "sha256": "41b5b0b204aec7b70d2feedd87f052ba9356ea0ae2da52b25c3e9276c35bda10"
     },
     {
       "path": ".mcp.json",
@@ -22,8 +22,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 22562,
-      "sha256": "61fd4b78f4baa8a2fe486860ec02ab90ab4e9d43c4572f7d92d71eeeadc98470"
+      "bytes": 22986,
+      "sha256": "6256a2503642de6ba23963872cef5ade7da0993643404e8d5a89abee5d8ead85"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -1582,8 +1582,8 @@
     },
     {
       "path": "skills/stata-peer-audit/SKILL.md",
-      "bytes": 6574,
-      "sha256": "1df1de7d766dd781a9867d105c5e8189c060147f83be2cdc4c2854e3c5618655"
+      "bytes": 6889,
+      "sha256": "223805500b4b7b19f87f7fc8af415029ecb5e509a26ee7a536cb91915813f9c0"
     },
     {
       "path": "skills/stata-replication-workflow/agents/openai.yaml",
@@ -1597,13 +1597,13 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/command-evidence.md",
-      "bytes": 10684,
-      "sha256": "fd9a6940b1f1b26d48bc48c36253c84ee55cbea5d5dbcee65dead442ef3f7a45"
+      "bytes": 11049,
+      "sha256": "7e4f5e284ef6f88b5d222388e57b509e64e4d7963358d874b21b71c8371b61ed"
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rules.md",
-      "bytes": 9580,
-      "sha256": "8c076cafadb3128887d1941d261986dd100a3236935fcefda80ace305e879cbb"
+      "bytes": 9909,
+      "sha256": "bab1737f85764dbad71a8eed29b6acd66a5b80384bc5ff39664b823d34f9c5b8"
     },
     {
       "path": "skills/stata-replication-workflow/references/paper-workflow-reading.md",
@@ -1674,7 +1674,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.3.0+codex.20260905095315"
+      "value": "0.3.0+codex.20260905161609"
     },
     {
       "id": "readme.heading",
