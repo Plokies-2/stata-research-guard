@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-05 — critical whole-workflow reading
+
+- Require actual connected paper-code reading for substantial workflow authoring/restructuring independently of optional command-local examples. Integrate the comparison into existing peer advice.
+- Keep source choice open: bundled papers and journal prestige are not best-code authority. Prefer documented command automation and justify only the remaining manual work.
+- Add one reading reference with original-source navigation; reuse existing full-file snapshots without a new corpus, MCP schema, selector, validator, or review chain.
+- Research examples were read critically as source evidence; no paper or user analysis was rerun, and no research-code validation tests were added.
+
 ## 2026-09-05 — large-source navigation
 
 - Help above 24,000 Unicode characters now returns source navigation before its body, across bundled help, live help, and expanded manuals. Full-source retrieval remains explicit.

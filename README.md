@@ -8,6 +8,8 @@
 
 기본 구조는 필요한 단계만 둡니다.
 
+중대규모 작성·구조 변경에서는 명령 도움말과 별개로 실제 논문의 자료→표본→추정→표·그림 흐름을 읽습니다. [논문 workflow 읽기](plugins/stata-research-guard/skills/stata-replication-workflow/references/paper-workflow-reading.md)에 따라 모델이 관련 코드셋을 고르고 현재 구현과 비교합니다. 기존 수록본이나 유명 저널을 정답으로 취급하지 않으며 더 적합한 코드가 있으면 바꿉니다. 명령의 자동화 기능을 먼저 활용하고, 지원하지 않는 요구만 수동으로 구현합니다. 비교는 기존 동료 검토에 통합하며 Python 검증기·점수·추가 감사 단계를 만들지 않습니다.
+
 - `cleaning_data.do`: 자료 불러오기, 병합, 변수·표본 구성과 통합 분석 패널 저장
 - `summary.do`: 기초통계, 결측·표본 설명, 기초 표와 그림
 - `regression.do`: 본 회귀, 추정치 저장, 회귀 표와 그림
@@ -58,7 +60,7 @@ Phase 2는 `help_sections`, Phase 3 확장 매뉴얼은 `expanded_sections`로 �
 
 Live help는 성공한 설치 시점의 snapshot을 재사용합니다. 패키지 설치·변경 뒤에는 `refresh_live_help: true`로 다시 읽습니다. 실패와 partial 응답은 캐시하지 않고, 누락·순환 INCLUDE를 명시합니다. 조회 작업은 대기를 포함해 55초로 제한하고 다른 bundled 요청을 막지 않습니다.
 
-선택한 논문 블록은 앞·target·뒤 원문과 연결된 raw log를 유지합니다. 논문의 다른 estimator·표본·중첩 loop는 현재 프로젝트의 지시가 아닙니다. 논문 예시나 log가 없어도 도움말로 해결되면 진행합니다.
+선택한 논문 블록은 앞·target·뒤 원문과 연결된 raw log를 유지합니다. 논문의 다른 estimator·표본·중첩 loop는 현재 프로젝트의 지시가 아닙니다. 명령 문법만 확인하는 작업은 예시나 log 없이 도움말로 진행할 수 있습니다. 중대규모 변경의 전체 workflow 읽기는 이 예외와 별개이며, 원문을 읽지 못했다면 완료한 것으로 보고하지 않습니다.
 
 ## 설치와 개발
 
@@ -66,10 +68,10 @@ Node.js와 Stata 18 환경을 기본으로 사용합니다. `CODEX_MCP_NODE_PATH
 
 플러그인 갱신 뒤에는 Codex를 새로고침하고 새 작업에서 실제 도구 호출을 확인합니다. CLI 설치 성공이나 파일 readback만으로 실행 중인 앱이 새 MCP를 로드했다고 판단하지 않습니다. 새 작업에서도 초기 연결이 실패하면 앱 로그의 시작 오류를 확인하고, 재시작 후 다시 호출합니다. 연구 코드 작성·실행 확인은 이 연결 확인과 구분합니다.
 
-- [연구 workflow](skills/stata-replication-workflow/SKILL.md)
-- [공통 작성 원칙](skills/stata-replication-workflow/references/general-rules.md)
-- [조회·재사용·선택 구획 사용법](skills/stata-replication-workflow/references/command-evidence.md)
-- [독립 검토](skills/stata-peer-audit/SKILL.md)
+- [연구 workflow](plugins/stata-research-guard/skills/stata-replication-workflow/SKILL.md)
+- [공통 작성 원칙](plugins/stata-research-guard/skills/stata-replication-workflow/references/general-rules.md)
+- [조회·재사용·선택 구획 사용법](plugins/stata-research-guard/skills/stata-replication-workflow/references/command-evidence.md)
+- [독립 검토](plugins/stata-research-guard/skills/stata-peer-audit/SKILL.md)
 
 변경이 모인 뒤 해당 transport와 bundle을 확인합니다. 예를 들어 서버·live help 변경은 다음 명령으로 검사합니다.
 
@@ -80,4 +82,4 @@ node scripts/verify_plugin_bundle.cjs
 
 이 검사는 호출·원문 전달·설치 구성을 확인합니다. 코드의 가독성이나 연구 타당성은 실제 코드·로그·표·그림을 읽어 판단하며 자동 점수나 합격 판정으로 바꾸지 않습니다.
 
-배포 버전: `0.3.0+codex.20260905073717`. 서버·live help·구획 전달·bundle 기능 검사 41개 통과. Bundle은 326개 파일입니다. 이 검사는 연구 코드나 구획 선택의 의미적 타당성을 인증하지 않습니다.
+배포 버전: `0.3.0+codex.20260905075442`. Bundle은 327개 파일입니다. 기존 호출·원문 전달·bundle 검사 41개를 정본에서 확인했습니다. 이번 지침을 적용한 연구 코드 생성·실행 및 앱 재시작 테스트는 하지 않았습니다. 이 검사는 연구 타당성을 인증하지 않습니다.

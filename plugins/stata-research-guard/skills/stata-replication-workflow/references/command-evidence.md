@@ -40,7 +40,7 @@ If no current reviewed map exists (including new live help), navigation exposes 
 
 Phase 3 uses `expanded: true`, the same `selected_commands` boundary, and nonempty `expanded_commands`, `selected_block_ids`, or both. Request only useful longer documents and exact paper blocks; paper-only and documentation-only calls do not repeat Phase 2 help.
 
-A Phase 2 paper profile only helps choose a block. A selected block retains its complete stored upstream/target/downstream code and source provenance, with optional raw log excerpts and artifact metadata. Read it as usage context; surrounding estimators, samples, FE, VCE, paths, nested loops, and helpers are not instructions for the current project. No example or log is required when help suffices. Never rerun papers to fill missing context or turn examples into templates, scores, result-fact layers, or validators.
+A Phase 2 paper profile only helps choose a block. A selected block retains its complete stored upstream/target/downstream code and source provenance, with optional raw log excerpts and artifact metadata. Read it as usage context; surrounding estimators, samples, FE, VCE, paths, nested loops, and helpers are not instructions for the current project. No command-local example or log is required when help suffices. This exemption does not waive [whole-workflow reading](paper-workflow-reading.md) for substantial authoring or restructuring. That reading follows original files and their dependencies directly and is not restricted to Phase 3 or this command catalog. Never rerun papers to fill missing context or turn examples into templates, scores, result-fact layers, or validators.
 
 ## Exact names and live help
 

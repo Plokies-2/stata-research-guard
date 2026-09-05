@@ -1,6 +1,6 @@
 {
   "name": "stata-research-guard",
-  "version": "0.3.0+codex.20260905073717",
+  "version": "0.3.0+codex.20260905075442",
   "description": "Researcher-readable Stata with original command evidence and concrete independent review.",
   "author": {
     "name": "song7"
@@ -17,7 +17,7 @@
       "Skills"
     ],
     "defaultPrompt": [
-      "Use $stata-replication-workflow to inspect the actual project, obtain the needed original command evidence, and write direct researcher-readable Stata. For refactoring, get concrete fresh peer advice and carry it through implementation, execution, and review. Keep broad research stages together and preserve the user's research and output contracts."
+      "Use $stata-replication-workflow to inspect the actual project and write direct researcher-readable Stata. For substantial workflow work, critically read a relevant paper's connected data-to-output code independently of command-help needs. Choose sources yourself, prefer documented command automation, preserve research contracts, and integrate the comparison into existing peer advice and execution review."
     ]
   },
   "mcpServers": "./.mcp.json"
