@@ -9,9 +9,9 @@ Act as a fresh-context, read-only peer researcher. The purpose is to make overlo
 
 ## Before a refactor
 
-Trace data and sample construction, estimation, stored estimates, and their table/figure consumers. Identify consequential problems beyond the master file. Existing helpers deserve the same scrutiny as new ones; their presence alone does not establish a required interface. For each finding, locate the source block and explain the direct replacement or reorganization:
+Trace data and sample construction, estimation, stored estimates, and their table/figure consumers. For workflow restructuring, also start from the affected output's meaning and trace backward to its estimate, effective sample, and inputs; reconcile both readings as described in the general rules. Identify consequential problems beyond the master file. Existing helpers deserve the same scrutiny as new ones; their presence alone does not establish a required interface. For each finding, locate the source block and explain the direct replacement or reorganization:
 
-- What documented native command/option can replace manual reconstruction?
+- Which documented option or returned-result interface can replace this manual operation, and does it supply what the downstream consumer actually needs? Point to the relevant help section when proposing a replacement; name the concrete gap if manual work remains necessary.
 - Which estimator and sample/specification terms must stay visible where the analysis runs?
 - Which real repetition axes can use a shallow loop, and how will they map to `.ster` files and ordered exports?
 - Which helpers, one-use macros, modes, branches, or fragmented files obscure this flow and can be removed or combined?

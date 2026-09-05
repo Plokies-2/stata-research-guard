@@ -10,6 +10,10 @@ Use Phase 1 (`request` only) when the command is unresolved. When it is clear, g
 
 Reuse visible evidence while command, version, material options, returned interface, and downstream use remain unchanged. Expand only for a remaining question or useful worked context. A command may share a differently named official help topic: `postfile`, `postclose`, and `postutil` are documented under `post`. Guard resolves known aliases while preserving the requested command label. If an exact topic is absent, follow an identified official help cross-reference before concluding its grammar is unavailable; do not guess syntax or substitute a different analysis command. Stop only the branch whose needed grammar remains unavailable.
 
+## Find the interface that replaces manual work
+
+Frame the unresolved implementation question in terms of the operation and its consumer, not just a command name. Locate the relevant original help heading or example and read the dependencies needed to use that interface. For output statistics, inspect exporter statistics/append options and the results they consume; for plots, inspect supported stored-estimate or coefficient-selection interfaces; for intermediate calculations, inspect native bulk/postestimation facilities and returned-result lifetime. These are navigation cues, not a command-to-task answer table. Do not inventory unrelated commands or require a separate written justification for each call. Stop expanding when the documented approach meets the current research and output requirements; retain only the manual part that remains necessary.
+
 ## Complete rules without repetition
 
 By default every response includes `main_rules.content`, its source path, and SHA-256. After reading that complete body, a caller may send `known_rules_sha256` in any phase **only while the complete rules remain visible in its own context**. A matching hash returns `main_rules.unchanged: true` and omits the duplicate body; a mismatch returns current complete rules.

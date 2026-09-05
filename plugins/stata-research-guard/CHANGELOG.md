@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-05 — backward reading and native-interface questions
+
+- Trace affected output meaning and structure backward to estimates, effective samples, observation units and inputs, alongside forward code reading. Never target desired numerical findings.
+- Connect proposed manual operations to relevant documented options and returned interfaces, including their downstream consumers. Reuse current evidence and stop when the concrete question is resolved.
+- Integrate both practices into existing workflow and peer instructions. No new checklist, mock output, scanner, validator, source corpus, or implementation test.
+
 ## 2026-09-05 — selected randomization-workflow source
 
 - Added three unmodified code files and the original README from Alesina et al., Revealing Stereotypes (AER 2024), ICPSR E197984 V1, with attribution and source navigation. No datasets were collected.

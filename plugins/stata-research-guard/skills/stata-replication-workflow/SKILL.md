@@ -13,6 +13,8 @@ Read [general-rules.md](references/general-rules.md) once for the relevant task,
 
 Inspect the requested files and their direct inputs, callers, and outputs. Preserve the user's scope, research specification, baseline data, and output contracts. A refactor must improve the actual analysis, not just its master file or comments.
 
+For workflow design or restructuring, also trace the affected output backward to the statistic or estimate, effective sample, observation unit, and source data that must supply it, following the general rules. Then reconcile that path with the forward code. This can reveal redundant calculations, missing handoffs, or necessary exceptions without a new checklist, mockup, or dependency-scanning system.
+
 Prefer a short master and four coherent stages when needed: integrated preparation and analysis panel; summary statistics and descriptive figures; regression with its estimates, tables, and figures; requested robustness. Smaller work can stay in one file. Keep import, merge, variable construction, and sample preparation together; do not create a file per command, outcome, table, graph, or helper. [workflow-taxonomy.md](references/workflow-taxonomy.md) explains the few reasons to split further. Preserve adequate existing names; use role names for new or approved renamed modules.
 
 ## Read actual paper workflows for substantial work
@@ -33,7 +35,7 @@ Read-only explanation, comments, formatting, literal path or label changes with 
 
 1. Confirm current-task Guard and mcpStata are callable before material Stata work. Use Guard for grammar and optional usage context, and mcpStata for execution, data, logs, returned state, and artifacts.
 2. When a material command is clear, request its exact help directly. Use discovery only for an unresolved command; do not inventory every token in a block. Expand command documentation or command-local examples for a remaining question. The substantial-work paper reading above is independent of this command lookup and must not be skipped because help suffices.
-3. Write direct code using documented native capabilities first. Keep estimator, consequential sample and specification, storage, and exporter visible. A reference paper or existing bad implementation does not authorize a new mode, dispatcher, helper, or manual substitute.
+3. Turn a proposed manual operation into a concrete help question: which supported option or returned interface can supply the required result to its consumer? Follow `command-evidence.md` for targeted reading, then write direct code. Keep estimator, consequential sample and specification, storage, and exporter visible. A reference paper or existing bad implementation does not authorize a new mode, dispatcher, helper, or manual substitute.
 4. Run the requested work and inspect relevant data counts, logs, estimates, tables, and figures. If a selected package is actually missing, install it separately from analysis code using official or maintainer guidance within the user's authority, refresh the runtime as needed, and return to the original command.
 
 ## Peer handoff
