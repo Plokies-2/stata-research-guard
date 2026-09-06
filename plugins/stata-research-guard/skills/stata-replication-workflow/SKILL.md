@@ -28,7 +28,7 @@ Choose and critically read the connected originals yourself using that reference
 1. Confirm current-task Guard and mcpStata are callable before material Stata work. Use Guard for grammar and optional usage context, and mcpStata for execution, data, logs, returned state, and artifacts.
 2. Read [command-evidence.md](references/command-evidence.md) when command evidence is needed; it owns lookup, exemptions, and reuse. When a material command is clear, request its exact help directly. Use discovery only for an unresolved command, and expand documentation or command-local examples for a remaining question.
 3. Use the block's purpose and actual consumer to frame the help question, following the native-interface guidance and discovery examples in that reference. Apply the general rules when choosing the implementation.
-4. Run the requested work and inspect relevant data counts, logs, estimates, tables, and figures. If a selected package is actually missing, install it separately from analysis code using official or maintainer guidance within the user's authority, refresh the runtime as needed, and return to the original command.
+4. Run the requested work and inspect relevant data counts, logs, estimates, tables, and figures. Use `outreg2` first when it preserves the results, following the general rules. If a chosen package is missing, follow the general rules' standing authorization for on-demand installation into the main Stata environment, refresh the runtime as needed, and return to the analysis.
 
 ## Independent advice when requested or useful
 
