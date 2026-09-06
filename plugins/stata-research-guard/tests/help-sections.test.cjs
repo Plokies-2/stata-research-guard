@@ -23,11 +23,13 @@ test("volume threshold counts Unicode characters and never cuts unknown sources"
 test("selection includes intact required sections in source order without duplicate copies", () => {
   const content = "Syntax\noptions\nExample\nbody\nResults\nvalues\n";
   const navigation = { content_sha256: hash(content), required_sections: ["syntax", "results"], sections: [
-    { id: "syntax", start: 1, end: 2 }, { id: "example", start: 3, end: 4 }, { id: "results", start: 5, end: 6 },
+    { id: "syntax", start: 1, end: 2 }, { id: "example", start: 3, end: 4, read_when: "Read for the worked example." }, { id: "results", start: 5, end: 6 },
   ] };
   const selected = deliverHelp({ content }, navigation, ["example", "syntax"]);
   assert.deepEqual(selected.selected_sections.map((s) => s.id), ["syntax", "example", "results"]);
   assert.equal(selected.content, "Syntax\noptions\n\nExample\nbody\n\nResults\nvalues\n");
+  assert.equal(selected.selected_sections[1].read_when, "Read for the worked example.");
+  assert.equal(deliverHelp({ content }, navigation, null, "catalog").section_catalog[1].read_when, "Read for the worked example.");
   assert.throws(() => deliverHelp({ content }, navigation, ["missing"]), /invalid exact/);
 });
 

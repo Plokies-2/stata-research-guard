@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-06 — command-by-command source navigation maintenance
+
+- Reviewed navigation needs across all 115 registered commands, reusing shared sources and the four-command pilot. Retained whole short help and ambiguous large units instead of forcing new sections.
+- Updated 14 help maps and 20 expanded maps across 32 commands with original subheadings, shared foundation choices and concise conditional reading cues. Original help/manual text is unchanged.
+- Preserve default behavior, linked example setup, version limits and returned-state cautions in the reading guidance. Cues are not an automatic task selector or a completeness certificate.
+- Updated documentation to use current catalog IDs and confirmed cue transport, exact source spans, stale-map fallback and explicit full-source retrieval. No research workflow was rewritten or executed.
+
 ## 2026-09-06 — reduce repeated policy and restore source context
 
 - Keep workflow triggers, research principles and lookup details in their respective references; shorten entry prompts and align peer review with explicit requests and material usefulness.

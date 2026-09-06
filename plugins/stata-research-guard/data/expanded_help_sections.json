@@ -15,13 +15,15 @@
           "id": "remarks",
           "title": "Remarks and examples, including absorption, VCE, intercept, and prediction technical notes",
           "start": 160,
-          "end": 305
+          "end": 305,
+          "read_when": "Read as a whole for absorption assumptions, the intercept, VCE differences, and prediction/sample caveats."
         },
         {
           "id": "stored_results",
           "title": "Stored results",
           "start": 306,
-          "end": 369
+          "end": 369,
+          "read_when": "Read when consuming saved coefficients, VCE, sample markers, fit statistics, prediction metadata, or r(table); preserve its lifetime notes."
         },
         {
           "id": "methods",
@@ -38,8 +40,7 @@
       ],
       "required_sections": [
         "reference",
-        "remarks",
-        "stored_results"
+        "remarks"
       ]
     },
     {
@@ -63,7 +64,8 @@
           "id": "continuous_variables",
           "title": "Example 2",
           "start": 162,
-          "end": 231
+          "end": 231,
+          "read_when": "Read Example 2 for mv missing-value patterns, arrow interpretation, and measurement units; it is not limited to continuous-variable summaries."
         },
         {
           "id": "label_languages",
@@ -457,13 +459,15 @@
           "id": "importing",
           "title": "Importing a text file",
           "start": 235,
-          "end": 454
+          "end": 454,
+          "read_when": "Read for importing, row and column selection, delimiters, and numeric or string types; later examples reuse the earlier file setup."
         },
         {
           "id": "exporting",
           "title": "Exporting to a text file",
           "start": 455,
-          "end": 492
+          "end": 492,
+          "read_when": "Read for export defaults and subsets; to follow the worked example, also read Importing a text file for the data created in example 4."
         },
         {
           "id": "video",
@@ -667,13 +671,15 @@
           "id": "importing",
           "title": "Importing a text file",
           "start": 235,
-          "end": 454
+          "end": 454,
+          "read_when": "Read for importing, row and column selection, delimiters, and numeric or string types; later examples reuse the earlier file setup."
         },
         {
           "id": "exporting",
           "title": "Exporting to a text file",
           "start": 455,
-          "end": 492
+          "end": 492,
+          "read_when": "Read for export defaults and subsets; to follow the worked example, also read Importing a text file for the data created in example 4."
         },
         {
           "id": "video",
@@ -721,13 +727,15 @@
           "id": "twosls_liml",
           "title": "2SLS and LIML estimators",
           "start": 225,
-          "end": 322
+          "end": 322,
+          "read_when": "Read for 2SLS or LIML examples and their instrument-specification notes; retain dataset setup."
         },
         {
           "id": "gmm",
           "title": "GMM estimator",
           "start": 323,
-          "end": 482
+          "end": 482,
+          "read_when": "Read for GMM, weighting matrices, and matching VCE choices; earlier setup may be needed."
         },
         {
           "id": "video",
@@ -739,7 +747,8 @@
           "id": "stored_results",
           "title": "Stored results",
           "start": 486,
-          "end": 553
+          "end": 553,
+          "read_when": "Read when consuming saved coefficients, VCE, sample markers, fit statistics, prediction metadata, or r(table); preserve its lifetime notes."
         },
         {
           "id": "methods",
@@ -756,9 +765,7 @@
       ],
       "required_sections": [
         "reference",
-        "model_semantics",
-        "twosls_liml",
-        "stored_results"
+        "model_semantics"
       ]
     },
     {
@@ -841,7 +848,8 @@
           "id": "stored_results",
           "title": "Stored results",
           "start": 362,
-          "end": 427
+          "end": 427,
+          "read_when": "Read when consuming saved coefficients, VCE, sample markers, fit statistics, prediction metadata, or r(table); preserve its lifetime notes."
         },
         {
           "id": "methods",
@@ -858,8 +866,7 @@
       ],
       "required_sections": [
         "reference",
-        "logistic_logit",
-        "stored_results"
+        "logistic_logit"
       ]
     },
     {
@@ -889,7 +896,8 @@
           "id": "stored_results",
           "title": "Stored results",
           "start": 474,
-          "end": 540
+          "end": 540,
+          "read_when": "Read when consuming saved coefficients, VCE, sample markers, fit statistics, prediction metadata, or r(table); preserve its lifetime notes."
         },
         {
           "id": "methods",
@@ -907,8 +915,7 @@
       "required_sections": [
         "reference",
         "basic_usage",
-        "identification",
-        "stored_results"
+        "identification"
       ]
     },
     {
@@ -932,49 +939,92 @@
           "id": "response_examples",
           "title": "Obtaining margins of responses: complete examples 1-15",
           "start": 511,
-          "end": 1133
+          "end": 1133,
+          "read_when": "response 예시가 필요할 때; 공유 모형·자료 setup을 포함한 큰 묶음으로 읽는다."
         },
         {
           "id": "derivative_semantics",
           "title": "Derivative response semantics, at(), elasticities, and derivatives versus discrete differences",
           "start": 1134,
-          "end": 1269
+          "end": 1269,
+          "read_when": "dydx/elasticity/discrete change 또는 response와 derivative의 차이를 다룰 때."
         },
         {
           "id": "derivative_examples",
           "title": "Obtaining margins of derivatives: complete examples 16-18",
           "start": 1270,
-          "end": 1363
+          "end": 1363,
+          "read_when": "derivative 예시가 필요할 때; derivative_semantics와 선행 모형/setup도 함께 읽는다."
         },
         {
           "id": "survey_samples",
           "title": "Obtaining margins with survey data and representative samples",
           "start": 1364,
-          "end": 1471
+          "end": 1471,
+          "read_when": "survey 또는 공변량 표집을 반영하는 VCE를 다룰 때."
         },
         {
           "id": "standardizing",
           "title": "Standardizing margins",
           "start": 1472,
-          "end": 1490
+          "end": 1490,
+          "read_when": "추정 자료와 다른 기준 모집단에서 평균낼 때; 적합 모형·noesample·weights 문맥도 읽는다."
         },
         {
           "id": "balanced_data",
           "title": "Obtaining margins as though the data were balanced",
           "start": 1491,
-          "end": 1750
+          "end": 1750,
+          "read_when": "asbalanced·empty cells를 다룰 때; estimability와 자체 자료/회귀 setup을 함께 읽는다."
         },
         {
           "id": "nested_designs",
           "title": "Obtaining margins with nested designs",
           "start": 1751,
-          "end": 1877
+          "end": 1877,
+          "read_when": "within과 nested design을 다룰 때; 선행 모형과 balanced-data 문맥도 확인한다."
         },
         {
-          "id": "specification_estimability_and_at",
-          "title": "Special topics: model specification, estimability, tests, estimates use, at() syntax, and supported estimators",
+          "id": "model-specification",
+          "title": "Requirements for model specification",
           "start": 1878,
-          "end": 2191
+          "end": 1969,
+          "read_when": "모델 명세의 공통 주의; 수동 변환변수와 at()의 의존성을 포함한다."
+        },
+        {
+          "id": "estimability",
+          "title": "Estimability of margins",
+          "start": 1970,
+          "end": 2010,
+          "read_when": "nonestimable margin·empty cells·asbalanced의 의미를 판단할 때."
+        },
+        {
+          "id": "tests",
+          "title": "Manipulability of tests",
+          "start": 2011,
+          "end": 2047,
+          "read_when": "Wald test와 변환된 response의 검정 해석을 다룰 때."
+        },
+        {
+          "id": "estimates-use",
+          "title": "Using margins after the estimates use command",
+          "start": 2048,
+          "end": 2104,
+          "read_when": "저장 추정치를 불러오거나 자료·e(sample) 재구성·noesample/force/VCE의 관계를 다룰 때."
+        },
+        {
+          "id": "at-syntax",
+          "title": "Syntax of at()",
+          "start": 2105,
+          "end": 2180,
+          "read_when": "at() 설정·modifier·우선순위·조합을 다룰 때; model-specification도 함께 읽는다."
+        },
+        {
+          "id": "supported-estimators",
+          "title": "Estimation commands that may be used with margins",
+          "start": 2181,
+          "end": 2191,
+          "read_when": "margins를 지원하는 estimator 범위와 제한을 파악할 때."
         },
         {
           "id": "video",
@@ -986,19 +1036,22 @@
           "id": "glossary",
           "title": "Glossary",
           "start": 2198,
-          "end": 2296
+          "end": 2296,
+          "read_when": "용어가 불명확하거나 response·derivative·standardization을 구별할 때."
         },
         {
           "id": "stored_results",
           "title": "Stored results",
           "start": 2297,
-          "end": 2403
+          "end": 2403,
+          "read_when": "post 또는 후속 표·그림·계산에서 결과 상태를 사용할 때."
         },
         {
           "id": "methods",
           "title": "Methods and formulas",
           "start": 2404,
-          "end": 2698
+          "end": 2698,
+          "read_when": "SE·estimability 등 통계적 원리와 수학적 근거가 필요할 때."
         },
         {
           "id": "references",
@@ -1010,11 +1063,8 @@
       "required_sections": [
         "reference",
         "introduction",
-        "derivative_semantics",
-        "standardizing",
-        "specification_estimability_and_at",
-        "glossary",
-        "stored_results"
+        "model-specification",
+        "supported-estimators"
       ]
     },
     {
@@ -1151,10 +1201,18 @@
           "end": 568
         },
         {
-          "id": "examples",
-          "title": "Examples",
+          "read_when": "Read for one-to-one matches, assert failure leaving merged data in memory, and keep; the examples share the first setup.",
           "start": 569,
-          "end": 1067
+          "end": 698,
+          "id": "examples-one-to-one",
+          "title": "Examples 1-3: A 1:1 merge / Requiring matches / Keeping just the matches"
+        },
+        {
+          "read_when": "Read for multiplicity, default overlap behavior, update and replace, match codes, and reversed file roles; retain the shared overlap datasets.",
+          "start": 699,
+          "end": 1067,
+          "id": "examples-many-to-one-overlap",
+          "title": "Examples 4-9: Many-to-one matches / Overlapping variables / Updating missing data / Updating all common observations / More on the keep() option / A one-to-many merge"
         },
         {
           "id": "references",
@@ -1201,7 +1259,8 @@
           "id": "stored_results",
           "title": "Stored results",
           "start": 425,
-          "end": 550
+          "end": 550,
+          "read_when": "Read when consuming saved coefficients, VCE, sample markers, fit statistics, prediction metadata, or r(table); preserve its lifetime notes."
         },
         {
           "id": "methods",
@@ -1219,8 +1278,7 @@
       "required_sections": [
         "reference",
         "model_semantics",
-        "nbreg_examples",
-        "stored_results"
+        "nbreg_examples"
       ]
     },
     {
@@ -1256,7 +1314,8 @@
           "id": "stored_results",
           "title": "Stored results",
           "start": 312,
-          "end": 372
+          "end": 372,
+          "read_when": "Read when consuming saved coefficients, VCE, sample markers, fit statistics, prediction metadata, or r(table); preserve its lifetime notes."
         },
         {
           "id": "methods",
@@ -1274,8 +1333,7 @@
       "required_sections": [
         "reference",
         "model_semantics",
-        "example_1_and_exposure_note",
-        "stored_results"
+        "example_1_and_exposure_note"
       ]
     },
     {
@@ -1396,7 +1454,8 @@
           "id": "stored_results",
           "title": "Stored results",
           "start": 452,
-          "end": 518
+          "end": 518,
+          "read_when": "Read when consuming saved coefficients, VCE, sample markers, fit statistics, prediction metadata, or r(table); preserve its lifetime notes."
         },
         {
           "id": "methods",
@@ -1414,8 +1473,7 @@
       "required_sections": [
         "reference",
         "basic_usage",
-        "identification",
-        "stored_results"
+        "identification"
       ]
     },
     {
@@ -1518,19 +1576,22 @@
           "id": "constant_semantics",
           "title": "Treatment of the constant",
           "start": 307,
-          "end": 445
+          "end": 445,
+          "read_when": "Retains default/intercept, ANOVA and omitted-row distinctions with the related examples and technical notes."
         },
         {
           "id": "robust_variance",
           "title": "Robust standard errors",
           "start": 446,
-          "end": 762
+          "end": 762,
+          "read_when": "Read for robust/HC2/HC3/cluster inference and interpretation of model tests; retain the shared auto-data setup from ols."
         },
         {
           "id": "weights",
           "title": "Weighted regression",
           "start": 763,
-          "end": 909
+          "end": 909,
+          "read_when": "Read when specifying weights, especially means versus replicated observations and subsequent tests."
         },
         {
           "id": "video",
@@ -1542,7 +1603,8 @@
           "id": "stored_results",
           "title": "Stored results",
           "start": 916,
-          "end": 968
+          "end": 968,
+          "read_when": "Read when consuming saved coefficients, VCE, sample markers, fit statistics, prediction metadata, or r(table); preserve its lifetime notes."
         },
         {
           "id": "methods",
@@ -1560,10 +1622,7 @@
       "required_sections": [
         "reference",
         "introduction",
-        "constant_semantics",
-        "robust_variance",
-        "weights",
-        "stored_results"
+        "constant_semantics"
       ]
     },
     {
@@ -1746,7 +1805,8 @@
           "id": "stored_results",
           "title": "Stored results",
           "start": 1336,
-          "end": 1403
+          "end": 1403,
+          "read_when": "Read when consuming saved coefficients, VCE, sample markers, fit statistics, prediction metadata, or r(table); preserve its lifetime notes."
         },
         {
           "id": "methods",
@@ -1764,8 +1824,7 @@
       "required_sections": [
         "reference",
         "model_semantics",
-        "tied_failures",
-        "stored_results"
+        "tied_failures"
       ]
     },
     {
@@ -1789,49 +1848,71 @@
           "id": "using_stset",
           "title": "Using stset",
           "start": 559,
-          "end": 1056
+          "end": 1056,
+          "read_when": "Read for the data layout being declared; retain the complete example setup."
         },
         {
           "id": "analysis_time",
           "title": "Two concepts of time; The substantive meaning of analysis time",
           "start": 1057,
-          "end": 1239
+          "end": 1239,
+          "read_when": "Read for calendar/age time, origin/scale, and the substantive choice of analysis time."
         },
         {
           "id": "failure_entry_exit_and_gaps",
           "title": "Setting failure events and multiple failures; First entry times; Final exit times; Gaps",
           "start": 1240,
-          "end": 1517
+          "end": 1517,
+          "read_when": "Read for failure coding, repeated failures, delayed entry, exits, or gaps; retain cross-referenced example context."
         },
         {
           "id": "sample_qualifier",
           "title": "if( ) versus if exp",
           "start": 1518,
-          "end": 1561
+          "end": 1561,
+          "read_when": "Read before restricting records: if() and the if qualifier act at different stages."
         },
         {
           "id": "past_future",
           "title": "Past and future records",
           "start": 1562,
-          "end": 1625
+          "end": 1625,
+          "read_when": "Read when temporarily including records outside the current risk interval."
         },
         {
           "id": "reset_and_retention",
           "title": "Using streset; Performance and multiple-record-per-subject datasets, including retention cautions",
           "start": 1626,
-          "end": 1684
+          "end": 1684,
+          "read_when": "Read when using streset or dropping records; previous settings and currently excluded records may matter."
         },
         {
-          "id": "event_sequence_weights_and_warnings",
-          "title": "Sequencing of events within t; Weights; Data warnings and errors flagged by stset",
+          "id": "event_sequence",
+          "title": "Sequencing of events within t",
           "start": 1685,
-          "end": 1833
+          "end": 1719,
+          "read_when": "Common reading for the ordering of failures, censoring, and entries and its consequences for the risk set and excluded records."
+        },
+        {
+          "id": "weights",
+          "title": "Weights",
+          "start": 1720,
+          "end": 1790,
+          "read_when": "Read whenever weights are declared or already active, including weights inherited through streset; retain within-ID constancy and effects on counts and variances."
+        },
+        {
+          "id": "data_warnings",
+          "title": "Data warnings and errors flagged by stset",
+          "start": 1791,
+          "end": 1833,
+          "read_when": "Read the marking/exclusion behavior and inspect the resulting analysis sample."
         },
         {
           "id": "survival_workflow",
           "title": "Using survival-time data in Stata",
           "start": 1834,
-          "end": 2099
+          "end": 2099,
+          "read_when": "Read when interpreting the generated survival variables and later st commands."
         },
         {
           "id": "references",
@@ -1843,11 +1924,8 @@
       "required_sections": [
         "reference",
         "survival_data_and_key_concepts",
-        "analysis_time",
-        "failure_entry_exit_and_gaps",
-        "sample_qualifier",
-        "reset_and_retention",
-        "event_sequence_weights_and_warnings"
+        "event_sequence",
+        "data_warnings"
       ]
     },
     {
@@ -2019,31 +2097,36 @@
           "id": "introductory_examples",
           "title": "Introductory examples 1-10 and technical notes on hypothesis syntax, factor variables, and tests",
           "start": 246,
-          "end": 681
+          "end": 681,
+          "read_when": "Keep this linked example block for coefficient/interaction notation, accumulated constraints, and singular tests; later examples reuse estimates."
         },
         {
           "id": "multiple_equations",
           "title": "Special syntaxes after multiple-equation estimation",
           "start": 682,
-          "end": 842
+          "end": 842,
+          "read_when": "Read for equation-specific or cross-equation tests and shared model setup."
         },
         {
           "id": "constrained_coefficients",
           "title": "Constrained coefficients",
           "start": 843,
-          "end": 879
+          "end": 879,
+          "read_when": "Read when requesting coef; also read multiple_equations for its sureg example setup."
         },
         {
           "id": "multiple_testing",
           "title": "Multiple testing",
           "start": 880,
-          "end": 918
+          "end": 918,
+          "read_when": "Read when using mtest or interpreting individual versus joint tests; preserve the preceding model/constraint context."
         },
         {
           "id": "stored_results",
           "title": "Stored results",
           "start": 919,
-          "end": 934
+          "end": 934,
+          "read_when": "Read when consuming r(p), degrees of freedom, dropped constraints, or r(mtest)."
         },
         {
           "id": "methods",
@@ -2060,9 +2143,7 @@
       ],
       "required_sections": [
         "reference",
-        "introductory_examples",
-        "constrained_coefficients",
-        "stored_results"
+        "introductory_examples"
       ]
     },
     {
@@ -2080,31 +2161,36 @@
           "id": "introductory_examples",
           "title": "Introductory examples 1-10 and technical notes on hypothesis syntax, factor variables, and tests",
           "start": 246,
-          "end": 681
+          "end": 681,
+          "read_when": "Keep this linked example block for coefficient/interaction notation, accumulated constraints, and singular tests; later examples reuse estimates."
         },
         {
           "id": "multiple_equations",
           "title": "Special syntaxes after multiple-equation estimation",
           "start": 682,
-          "end": 842
+          "end": 842,
+          "read_when": "Read for equation-specific or cross-equation tests and shared model setup."
         },
         {
           "id": "constrained_coefficients",
           "title": "Constrained coefficients",
           "start": 843,
-          "end": 879
+          "end": 879,
+          "read_when": "Read when requesting coef; also read multiple_equations for its sureg example setup."
         },
         {
           "id": "multiple_testing",
           "title": "Multiple testing",
           "start": 880,
-          "end": 918
+          "end": 918,
+          "read_when": "Read when using mtest or interpreting individual versus joint tests; preserve the preceding model/constraint context."
         },
         {
           "id": "stored_results",
           "title": "Stored results",
           "start": 919,
-          "end": 934
+          "end": 934,
+          "read_when": "Read when consuming r(p), degrees of freedom, dropped constraints, or r(mtest)."
         },
         {
           "id": "methods",
@@ -2121,9 +2207,7 @@
       ],
       "required_sections": [
         "reference",
-        "introductory_examples",
-        "constrained_coefficients",
-        "stored_results"
+        "introductory_examples"
       ]
     },
     {
@@ -2228,67 +2312,78 @@
           "id": "reference",
           "title": "Command reference: description, syntax, and all options",
           "start": 1,
-          "end": 100
+          "end": 100,
+          "read_when": "Read the paired/unpaired forms, by() group order, and unequal/welch defaults before choosing the form that matches the data."
         },
         {
           "id": "remarks_contents",
           "title": "Remarks and examples: remarks contents",
           "start": 101,
-          "end": 110
+          "end": 110,
+          "read_when": "Navigate the original examples for the requested test form."
         },
         {
           "id": "one_sample",
           "title": "One-sample t test",
           "start": 111,
-          "end": 136
+          "end": 136,
+          "read_when": "One sample compared with a specified mean; includes its own data setup."
         },
         {
           "id": "two_sample",
           "title": "Two-sample t test",
           "start": 137,
-          "end": 258
+          "end": 258,
+          "read_when": "Independent groups or separate variables; keep the unequal-variance and Welch discussion with these examples."
         },
         {
           "id": "paired",
           "title": "Paired t test",
           "start": 259,
-          "end": 286
+          "end": 286,
+          "read_when": "Matched measurements on the same units; read the paired-data setup and difference interpretation together."
         },
         {
           "id": "anova_comparison",
           "title": "Two-sample t test compared with one-way ANOVA",
           "start": 287,
-          "end": 341
+          "end": 341,
+          "read_when": "When comparing a two-group t test with one-way ANOVA; read the preceding two-sample example if following its data."
         },
         {
           "id": "immediate_form",
           "title": "Immediate form",
           "start": 342,
-          "end": 384
+          "end": 384,
+          "read_when": "Summary inputs via ttesti, including why there is no paired immediate form."
         },
         {
           "id": "video",
           "title": "Video examples",
           "start": 385,
-          "end": 392
+          "end": 392,
+          "read_when": "Optional video links for the relevant test form."
         },
         {
           "id": "stored_results",
           "title": "Stored results",
           "start": 393,
-          "end": 403
+          "end": 403,
+          "read_when": "When consuming results, use the ordinary help for exact spellings such as r(N_1); this PDF text displays some subscripts as spaces."
         },
         {
           "id": "methods",
           "title": "Methods and formulas",
           "start": 404,
-          "end": 496
+          "end": 496,
+          "read_when": "When the calculation, degrees of freedom, or assumptions need mathematical explanation."
         },
         {
           "id": "references",
           "title": "References and closing material",
           "start": 497,
-          "end": 535
+          "end": 535,
+          "read_when": "Source references and related original help."
         }
       ],
       "required_sections": [
@@ -2304,21 +2399,79 @@
       "sections": [
         {
           "id": "reference",
-          "title": "Command reference: description, syntax, and all options",
+          "title": "Description, quick start, syntax, and restrictions",
           "start": 1,
-          "end": 278
+          "end": 134,
+          "read_when": "Includes panel/time declaration and factor-variable restrictions; FD differs from the other estimators."
         },
         {
-          "id": "estimator_semantics_and_examples",
-          "title": "Remarks and examples: model assumptions and FE, RE, and FD estimators",
+          "id": "options-re",
+          "title": "Options for RE model",
+          "start": 135,
+          "end": 175,
+          "read_when": "Read for RE estimation, including VCE defaults and small-sample reporting."
+        },
+        {
+          "id": "options-be",
+          "title": "Options for BE model",
+          "start": 176,
+          "end": 209,
+          "read_when": "Read for BE estimation, including VCE defaults and small-sample reporting."
+        },
+        {
+          "id": "options-fe",
+          "title": "Options for FE model",
+          "start": 210,
+          "end": 243,
+          "read_when": "Read for FE estimation, including VCE defaults and small-sample reporting."
+        },
+        {
+          "id": "options-fd",
+          "title": "Options for FD model",
+          "start": 244,
+          "end": 278,
+          "read_when": "Read for FD estimation, including VCE defaults and small-sample reporting."
+        },
+        {
+          "id": "model-semantics",
+          "title": "Remarks and examples: model and estimator assumptions",
           "start": 279,
-          "end": 606
+          "end": 318
         },
         {
-          "id": "stored_results",
-          "title": "Stored results",
+          "id": "estimator-examples",
+          "title": "Examples: panel instrumental-variable estimators",
+          "start": 319,
+          "end": 606,
+          "read_when": "Keep the model examples together because later estimates reuse the wage-data setup."
+        },
+        {
+          "id": "stored-results-re",
+          "title": "Stored results: RE",
           "start": 607,
-          "end": 844
+          "end": 669,
+          "read_when": "Read when consuming RE saved results and volatile r(table)."
+        },
+        {
+          "id": "stored-results-be",
+          "title": "Stored results: BE",
+          "start": 670,
+          "end": 725,
+          "read_when": "Read when consuming BE saved results and volatile r(table)."
+        },
+        {
+          "id": "stored-results-fe",
+          "title": "Stored results: FE",
+          "start": 726,
+          "end": 787,
+          "read_when": "Read when consuming FE saved results and volatile r(table)."
+        },
+        {
+          "id": "stored-results-fd",
+          "title": "Stored results: FD",
+          "start": 788,
+          "end": 844,
+          "read_when": "Read when consuming FD saved results and volatile r(table)."
         },
         {
           "id": "methods",
@@ -2335,8 +2488,7 @@
       ],
       "required_sections": [
         "reference",
-        "estimator_semantics_and_examples",
-        "stored_results"
+        "model-semantics"
       ]
     },
     {
@@ -2346,9 +2498,52 @@
       "sections": [
         {
           "id": "reference",
-          "title": "Command reference: description, syntax, and all options",
+          "title": "Description, quick start, syntax, restrictions, and options overview",
           "start": 1,
-          "end": 504
+          "end": 219,
+          "read_when": "Includes syntax, weights/panel declarations, prefix restrictions, and explicit StataNow feature markers."
+        },
+        {
+          "id": "options-re",
+          "title": "Options for RE model",
+          "start": 220,
+          "end": 256,
+          "read_when": "Read for RE estimation, including its VCE and option restrictions."
+        },
+        {
+          "id": "options-cre",
+          "title": "Options for CRE model",
+          "start": 257,
+          "end": 290,
+          "read_when": "Read for CRE estimation, including its VCE and option restrictions."
+        },
+        {
+          "id": "options-be",
+          "title": "Options for BE model",
+          "start": 291,
+          "end": 326,
+          "read_when": "Read for BE estimation, including its VCE and option restrictions."
+        },
+        {
+          "id": "options-fe",
+          "title": "Options for FE model",
+          "start": 327,
+          "end": 402,
+          "read_when": "Read for FE estimation, including its VCE and option restrictions."
+        },
+        {
+          "id": "options-mle",
+          "title": "Options for MLE model",
+          "start": 403,
+          "end": 434,
+          "read_when": "Read for MLE estimation, including its VCE and option restrictions."
+        },
+        {
+          "id": "options-pa",
+          "title": "Options for PA model",
+          "start": 435,
+          "end": 504,
+          "read_when": "Read for PA estimation, including its VCE and option restrictions."
         },
         {
           "id": "model_and_fit_semantics",
@@ -2360,55 +2555,99 @@
           "id": "between_effects",
           "title": "xtreg and associated commands",
           "start": 673,
-          "end": 743
+          "end": 743,
+          "read_when": "Read for BE and when following the later nlswork examples: this section contains their shared data and model setup."
         },
         {
           "id": "fixed_effects",
           "title": "Example 2: Fixed-effects model",
           "start": 744,
-          "end": 832
+          "end": 832,
+          "read_when": "Read for FE and its coefficient/sample interpretation; use between_effects for the shared example setup."
         },
         {
           "id": "robust_fixed_effects",
           "title": "Example 3: Fixed-effects models with robust standard errors",
           "start": 833,
-          "end": 893
+          "end": 893,
+          "read_when": "Read for robust FE inference with fixed_effects and the shared nlswork setup."
         },
         {
           "id": "random_effects",
           "title": "Example 4: Random-effects model",
           "start": 894,
-          "end": 953
+          "end": 953,
+          "read_when": "Read for RE with the shared nlswork setup in between_effects."
         },
         {
           "id": "random_effects_mle",
           "title": "Example 5: Random-effects model fit using MLE",
           "start": 954,
-          "end": 1017
+          "end": 1017,
+          "read_when": "Read for MLE, including comparison with earlier RE estimates and their setup."
         },
         {
           "id": "population_averaged",
           "title": "Example 6: Population-averaged model",
           "start": 1018,
-          "end": 1087
+          "end": 1087,
+          "read_when": "Read for PA and comparisons to earlier estimators, retaining their setup."
         },
         {
           "id": "correlated_random_effects",
           "title": "Example 7: Correlated random-effects models (StataNow)",
           "start": 1088,
-          "end": 1176
+          "end": 1176,
+          "read_when": "Read for CRE and Mundlak interpretation; check the explicit StataNow scope."
         },
         {
           "id": "high_dimensional_absorption",
           "title": "Example 8: Controlling for high-dimensional categorical variables (StataNow)",
           "start": 1177,
-          "end": 1309
+          "end": 1309,
+          "read_when": "Read for absorbing additional categorical factors; check StataNow and option restrictions."
         },
         {
-          "id": "stored_results",
-          "title": "Stored results",
+          "id": "stored-results-re",
+          "title": "Stored results: RE",
           "start": 1310,
-          "end": 1678
+          "end": 1370,
+          "read_when": "Read when consuming RE saved results and r(table); retain result-lifetime notes."
+        },
+        {
+          "id": "stored-results-cre",
+          "title": "Stored results: CRE",
+          "start": 1371,
+          "end": 1432,
+          "read_when": "Read when consuming CRE saved results and r(table); retain result-lifetime notes."
+        },
+        {
+          "id": "stored-results-be",
+          "title": "Stored results: BE",
+          "start": 1433,
+          "end": 1486,
+          "read_when": "Read when consuming BE saved results and r(table); retain result-lifetime notes."
+        },
+        {
+          "id": "stored-results-fe",
+          "title": "Stored results: FE",
+          "start": 1487,
+          "end": 1561,
+          "read_when": "Read when consuming FE saved results and r(table); retain result-lifetime notes."
+        },
+        {
+          "id": "stored-results-mle",
+          "title": "Stored results: MLE",
+          "start": 1562,
+          "end": 1615,
+          "read_when": "Read when consuming MLE saved results and r(table); retain result-lifetime notes."
+        },
+        {
+          "id": "stored-results-pa",
+          "title": "Stored results: PA",
+          "start": 1616,
+          "end": 1678,
+          "read_when": "Read when consuming PA saved results and r(table); retain result-lifetime notes."
         },
         {
           "id": "methods",
@@ -2425,9 +2664,7 @@
       ],
       "required_sections": [
         "reference",
-        "model_and_fit_semantics",
-        "between_effects",
-        "stored_results"
+        "model_and_fit_semantics"
       ]
     },
     {

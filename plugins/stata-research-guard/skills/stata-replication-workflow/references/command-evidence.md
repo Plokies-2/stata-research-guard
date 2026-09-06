@@ -34,19 +34,19 @@ Omit the hash in a fresh task, after compaction/context loss, or whenever the bo
 
 A source over **24,000 Unicode characters** first returns `content: null`, `delivery: "catalog_only"`, and `section_catalog`. This applies to every bundled help, live installed help, and expanded manual. The threshold is a reading-volume choice, not a token estimate or a maximum section size. Smaller sources remain complete by default. Multiple small sources can still add up; request only the material commands needed now.
 
-Read the catalog's original headings, source spans, sizes, and required flags. Choose sections for the current question **and its dependencies**: command syntax, qualifiers/weights, option interactions, warnings/version restrictions, returned-result lifetime, and downstream use. A relevant example alone is not sufficient. The response automatically includes the map's required foundation sections in source order, without duplicates. These are conservative source selections, not a guarantee that all task-specific dependencies were chosen. Follow referenced topics when material, and expand to complete help when dependencies remain uncertain.
+Read the catalog's original headings, source spans, sizes, required flags and any `read_when` cues. Select sections for the current question and material default behavior, model/sample definition, option interactions, warnings/version restrictions, returned-result lifetime and downstream use. An option need not be explicitly named to make its default behavior relevant. `required_sections` supplies the common foundation; it does not decide which task-dependent sections are necessary. A relevant example alone is not sufficient. Follow material cross-references and expand to complete help when dependencies remain uncertain.
 
 Phase 2 selections use `help_sections`; Phase 3 manual selections use `expanded_sections` alongside `expanded_commands`. IDs come from that source's catalog. `help_view: "catalog"` explicitly asks for navigation even for a small source; `help_view: "full"` explicitly requests the complete source in either phase. Do not combine `help_view` and a section selection. No catalog round trip is required when the current exact IDs are already known.
 
 ```json
 {
-  "request": "Read stored-estimate and Excel handling with its syntax and options",
+  "request": "Find the current source sections for stored-estimate and Excel handling",
   "selected_commands": ["outreg2"],
-  "help_sections": {"outreg2": ["example-3", "example-12"]}
+  "help_view": "catalog"
 }
 ```
 
-For example, `outreg2` retains complete maintainer examples and automatically accompanies them with its `reference` section. `collect_style` retains whole official help topics. Other maps follow complete source headings, manual entries, or self-contained subcommands. Source text is not rewritten, summarized, or split by fixed length, page, or token window. A large options block stays large rather than losing essential qualifications.
+Use the current catalog's IDs for a section request, reusing IDs already visible for the current map instead of fetching the catalog again. Some large options blocks use the author's own subheadings; linked examples and ambiguous passages remain larger units. `collect_style` retains whole official help topics. Source text is not rewritten, summarized, or split by fixed length, page, or token window. A reading cue is not a replacement for the original syntax or a rule choosing the analysis method.
 
 If no current reviewed map exists (including new live help), navigation exposes the entire intact document as `whole-source`. An outdated map also returns this catalog rather than applying stale offsets or silently injecting a large body. Choose `whole-source` or explicit full help; no automatic heuristic cutting substitutes for a reviewed boundary. Catalog metadata is not evidence that any help body was read.
 

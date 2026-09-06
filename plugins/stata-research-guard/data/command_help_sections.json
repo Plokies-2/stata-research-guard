@@ -153,7 +153,8 @@
           "id": "updates",
           "title": "Updates",
           "start": 86,
-          "end": 118
+          "end": 118,
+          "read_when": "Read with version-sensitive defaults and supported estimators; the later options text retains an older ptolerance default."
         },
         {
           "id": "description",
@@ -165,13 +166,15 @@
           "id": "estimation-tables",
           "title": "Including results in estimation tables",
           "start": 219,
-          "end": 225
+          "end": 225,
+          "read_when": "Read when transferring bootstrap results into an estimation table."
         },
         {
           "id": "options",
           "title": "Options",
           "start": 226,
-          "end": 330
+          "end": 330,
+          "read_when": "Common reading for bootstrap defaults as well as explicitly chosen options; keep bootstrap type, weights, clustering, finite-sample corrections, and confidence-set behavior together."
         },
         {
           "id": "julia",
@@ -183,7 +186,8 @@
           "id": "stored-results",
           "title": "Stored results",
           "start": 345,
-          "end": 383
+          "end": 383,
+          "read_when": "Read when consuming r() values, confidence sets, or multiple-hypothesis results."
         },
         {
           "id": "author",
@@ -195,7 +199,8 @@
           "id": "errata",
           "title": "Errata",
           "start": 395,
-          "end": 405
+          "end": 405,
+          "read_when": "Read when consulting the 2019 paper formulas."
         },
         {
           "id": "donate",
@@ -207,7 +212,8 @@
           "id": "examples",
           "title": "Examples",
           "start": 411,
-          "end": 490
+          "end": 490,
+          "read_when": "Read when adapting an example; retain its preceding model and data setup."
         },
         {
           "id": "references",
@@ -220,10 +226,7 @@
         "syntax",
         "updates",
         "description",
-        "estimation-tables",
-        "options",
-        "stored-results",
-        "errata"
+        "options"
       ]
     },
     {
@@ -244,10 +247,32 @@
           "end": 156
         },
         {
-          "id": "options",
-          "title": "Options",
+          "id": "options-model",
+          "title": "Options: Model options",
           "start": 157,
-          "end": 564
+          "end": 318,
+          "read_when": "계수·equation 선택, 기본 e(b)/e(V), CI·자유도, 변환·at() 위치를 지정하거나 해석할 때."
+        },
+        {
+          "id": "options-plot",
+          "title": "Plot options",
+          "start": 319,
+          "end": 396,
+          "read_when": "기본 offset·marker·CI 표시나 plot별 표현을 다룰 때; if()/weight()/mlabel()은 internal-variables도 읽는다."
+        },
+        {
+          "id": "options-subgraph",
+          "title": "Subgraph options",
+          "start": 397,
+          "end": 404,
+          "read_when": "subgraph별 제목과 결합을 지정할 때; Global options의 byopts()도 확인한다."
+        },
+        {
+          "id": "options-global",
+          "title": "Global options",
+          "start": 405,
+          "end": 564,
+          "read_when": "기본 방향·계수 순서·위치, 전체 label·grid·변수 생성·addplot을 다룰 때; at() 제약은 Model options와 함께 읽는다."
         },
         {
           "id": "examples",
@@ -277,19 +302,22 @@
           "id": "matrices",
           "title": "Plotting results from matrices",
           "start": 685,
-          "end": 721
+          "end": 721,
+          "read_when": "Stata matrix에서 결과를 읽을 때; Model options의 CI/at()/이름 규칙도 함께 읽는다."
         },
         {
           "id": "internal-variables",
           "title": "Accessing internal temporary variables",
           "start": 722,
-          "end": 743
+          "end": 743,
+          "read_when": "if()/weight()/transform()/marker label/addplot에서 내부 변수나 추가 결과를 사용할 때."
         },
         {
           "id": "saved-results",
           "title": "Saved results",
           "start": 744,
-          "end": 761
+          "end": 761,
+          "read_when": "r() 반환값이나 graph 명령·label 상태를 후속 작업에서 사용할 때."
         },
         {
           "id": "author",
@@ -301,10 +329,8 @@
       "required_sections": [
         "syntax",
         "description",
-        "options",
-        "option-placement",
-        "internal-variables",
-        "saved-results"
+        "options-model",
+        "option-placement"
       ]
     },
     {
@@ -453,34 +479,60 @@
           "end": 58
         },
         {
-          "id": "options",
-          "title": "Options",
+          "id": "options-model",
+          "title": "Options: Model of Y(0)",
           "start": 59,
-          "end": 174
+          "end": 79,
+          "read_when": "Common reading for the default fixed effects and controls; retain imputation limitations even without custom options."
+        },
+        {
+          "id": "options-estimands",
+          "title": "Estimands and Pre-trends",
+          "start": 80,
+          "end": 126,
+          "read_when": "Common reading for default ATT, effective-sample suppression, and estimand/sample choices as well as explicitly chosen horizons or pretrends."
+        },
+        {
+          "id": "options-se",
+          "title": "Standard errors",
+          "start": 127,
+          "end": 147,
+          "read_when": "Common reading for default clustering and cohort-size considerations, even without explicit inference options."
+        },
+        {
+          "id": "options-miscellaneous",
+          "title": "Miscellaneous",
+          "start": 148,
+          "end": 174,
+          "read_when": "Read for time spacing, including delta inherited from tsset/xtset even when delta() is omitted; also read for saved estimates/weights/residuals, convergence, or weight reuse."
         },
         {
           "id": "weights",
           "title": "Estimation weights",
           "start": 175,
-          "end": 189
+          "end": 189,
+          "read_when": "Read with options-estimands and missing-features when using estimation weights or wtr; distinguish first-step weighting from the target estimand and retain the source weight-type caveats."
         },
         {
           "id": "stored-results",
           "title": "Stored results",
           "start": 190,
-          "end": 225
+          "end": 225,
+          "read_when": "Read when using coefficient names, estimation samples, drop/trim information, or downstream tests and plots."
         },
         {
           "id": "examples",
           "title": "Usage Examples",
           "start": 226,
-          "end": 300
+          "end": 300,
+          "read_when": "Read when adapting a design; retain conventional-panel, repeated-cross-section, and triple-difference context as relevant."
         },
         {
           "id": "missing-features",
           "title": "Missing Features",
           "start": 301,
-          "end": 317
+          "end": 317,
+          "read_when": "Read for complicated controls, weight reuse, unsupported treatment designs, and current limitations."
         },
         {
           "id": "bug-reporting-and-source",
@@ -493,10 +545,9 @@
         "syntax",
         "description",
         "imputation-limits",
-        "options",
-        "weights",
-        "stored-results",
-        "missing-features"
+        "options-model",
+        "options-estimands",
+        "options-se"
       ]
     },
     {
@@ -526,49 +577,57 @@
           "id": "main-options",
           "title": "Main Options",
           "start": 62,
-          "end": 102
+          "end": 102,
+          "read_when": "Read for effects/placebos, normalization, continuous baseline treatment, reset, and switcher-sample choices."
         },
         {
           "id": "design-options",
           "title": "Options to understand and leverage your design",
           "start": 103,
-          "end": 127
+          "end": 127,
+          "read_when": "Read for treatment paths, switcher direction, first-switch dates, or cumulative exposure."
         },
         {
           "id": "parallel-trends-options",
           "title": "Options to relax the parallel-trends assumption",
           "start": 128,
-          "end": 151
+          "end": 151,
+          "read_when": "Read when considering controls or linear/nonparametric trends."
         },
         {
           "id": "inference-options",
           "title": "Options for standard errors and confidence intervals",
           "start": 152,
-          "end": 168
+          "end": 168,
+          "read_when": "Common reading for default group clustering and confidence intervals as well as explicitly chosen inference options."
         },
         {
           "id": "heterogeneity-options",
           "title": "Options to investigate heterogeneous effects",
           "start": 169,
-          "end": 185
+          "end": 185,
+          "read_when": "Read for subgroup effects, predict_het, or effect-equality tests."
         },
         {
           "id": "other-options",
           "title": "Other options",
           "start": 186,
-          "end": 213
+          "end": 213,
+          "read_when": "Common reading: implicit aggregation weights, default sample exclusions and missing-treatment handling matter even without explicit options; also covers saved data and graphs."
         },
         {
           "id": "example",
           "title": "Example: estimating the effect of banking deregulations on loans volume, using the data of Favara and Imbs (2015)",
           "start": 214,
-          "end": 237
+          "end": 237,
+          "read_when": "Read with the complete banking-data setup."
         },
         {
           "id": "faq",
           "title": "FAQ",
           "start": 238,
-          "end": 339
+          "end": 339,
+          "read_when": "Read for unbalanced panels, missing periods, unequal measurement frequency, feasible horizons, multiple treatments, or related design questions, even when no matching option is typed."
         },
         {
           "id": "references-and-source",
@@ -580,7 +639,8 @@
           "id": "saved-results",
           "title": "Saved results",
           "start": 373,
-          "end": 421
+          "end": 421,
+          "read_when": "Read when consuming estimated effects, placebo statistics, samples, or returned matrices."
         }
       ],
       "required_sections": [
@@ -588,13 +648,8 @@
         "description",
         "further-detail",
         "main-options",
-        "design-options",
-        "parallel-trends-options",
         "inference-options",
-        "heterogeneity-options",
-        "other-options",
-        "faq",
-        "saved-results"
+        "other-options"
       ]
     },
     {
@@ -764,16 +819,74 @@
           "end": 240
         },
         {
-          "id": "options",
-          "title": "Options",
+          "id": "options-parameter-statistics",
+          "title": "Options contents; Parameter statistics",
           "start": 241,
-          "end": 770
+          "end": 436,
+          "read_when": "기본 cells(b), 표시 통계·omitted/base·equation 매칭·변환·margins 결과를 사용할 때."
+        },
+        {
+          "id": "options-summary-statistics",
+          "title": "Summary statistics",
+          "start": 437,
+          "end": 506,
+          "read_when": "모델별 하단 통계·N·검정·stats() 배치와 기본 format을 읽을 때; 원래 e() 상태와 함께 확인한다."
+        },
+        {
+          "id": "options-significance",
+          "title": "Significance stars",
+          "start": 507,
+          "end": 519,
+          "read_when": "별표의 기본 의미·threshold·선택을 다룰 때; Parameter statistics의 pvalue()/star 설명과 함께 읽는다."
+        },
+        {
+          "id": "options-layout",
+          "title": "Layout",
+          "start": 520,
+          "end": 561,
+          "read_when": "기본 equation 배치 또는 unstack·구분자·행 너비·cell 결합·문자 치환을 다룰 때."
+        },
+        {
+          "id": "options-labeling",
+          "title": "Labeling",
+          "start": 562,
+          "end": 679,
+          "read_when": "기본 모델·equation·열 label이나 제목·주석·범례·group header를 다룰 때; label_subopts와 필요한 @-variables도 읽는다."
+        },
+        {
+          "id": "options-output",
+          "title": "Output",
+          "start": 680,
+          "end": 693,
+          "read_when": "파일 쓰기·replace/append·화면/log 표시·외부 본문 삽입을 다룰 때."
+        },
+        {
+          "id": "options-defaults",
+          "title": "Defaults",
+          "start": 694,
+          "end": 722,
+          "read_when": "기본 화면·파일 style과 명시 옵션의 우선순위를 파악할 때; 사용자 style은 defaults-files도 읽는다."
+        },
+        {
+          "id": "options-label-subopts",
+          "title": "label_subopts",
+          "start": 723,
+          "end": 758,
+          "read_when": "labels·mgroups·mlabels·collabels·eqlabels·varlabels의 하위 옵션을 사용할 때."
+        },
+        {
+          "id": "options-matrix-subopts",
+          "title": "matrix_subopts",
+          "start": 759,
+          "end": 770,
+          "read_when": "matrix()/e()/r() 행렬을 출력할 때; 일반 cells()와의 차이는 Description과 Examples도 읽는다."
         },
         {
           "id": "examples",
           "title": "Examples",
           "start": 771,
-          "end": 1126
+          "end": 1126,
+          "read_when": "실행 예시가 필요할 때; 저자의 Introduction부터 읽어 공유 자료·저장 모델을 유지한다."
         },
         {
           "id": "remarks",
@@ -797,13 +910,15 @@
           "id": "at-variables",
           "title": "Using @-variables",
           "start": 1175,
-          "end": 1210
+          "end": 1210,
+          "read_when": "header/footer·label의 @ 변수를 사용할 때; Labeling과 label_subopts도 읽는다."
         },
         {
           "id": "defaults-files",
           "title": "Defaults files",
           "start": 1211,
-          "end": 1305
+          "end": 1305,
+          "read_when": "사용자 style 파일을 작성·사용·해석할 때; Defaults의 우선순위도 읽는다."
         },
         {
           "id": "saved-results",
@@ -821,7 +936,9 @@
       "required_sections": [
         "syntax",
         "description",
-        "options",
+        "options-parameter-statistics",
+        "options-output",
+        "options-defaults",
         "numerical-formats",
         "special-characters",
         "saved-results"
@@ -1020,7 +1137,8 @@
           "id": "options",
           "title": "Options",
           "start": 65,
-          "end": 136
+          "end": 136,
+          "read_when": "Read as a whole for timevar, lead/lag limits, estimation versus plotting samples, estimator/FE/VCE choices, and keepdummies."
         },
         {
           "id": "single-event-examples",
@@ -1038,19 +1156,22 @@
           "id": "stored-results",
           "title": "Stored results",
           "start": 188,
-          "end": 225
+          "end": 225,
+          "read_when": "Read when exporting coefficients/intervals, especially with over() and its group-specific returns."
         },
         {
           "id": "postestimation",
           "title": "Postestimation commands",
           "start": 226,
-          "end": 244
+          "end": 244,
+          "read_when": "Read for joint tests; wild-bootstrap tests also require the keepdummies option and postestimation examples."
         },
         {
           "id": "postestimation-examples",
           "title": "Examples: post-estimation commands",
           "start": 245,
-          "end": 273
+          "end": 273,
+          "read_when": "Read with postestimation and options; preserve the data-saving setup before keepdummies."
         },
         {
           "id": "references-and-source",
@@ -1062,9 +1183,7 @@
       "required_sections": [
         "syntax",
         "description",
-        "options",
-        "stored-results",
-        "postestimation"
+        "options"
       ]
     },
     {
@@ -1275,31 +1394,140 @@
           "id": "description",
           "title": "Description",
           "start": 70,
-          "end": 378
+          "end": 84
+        },
+        {
+          "id": "vce",
+          "title": "Robust, cluster and 2-level cluster, AC, HAC, and cluster+HAC SEs and statistics",
+          "start": 85,
+          "end": 134,
+          "read_when": "Read for robust, clustering, AC/HAC, or panel inference; retain asymptotic requirements and small-sample discussion."
+        },
+        {
+          "id": "gmm",
+          "title": "GMM estimation",
+          "start": 135,
+          "end": 152,
+          "read_when": "Read with the chosen VCE and estimator-vce-summary when using GMM or a supplied weighting/moment matrix."
+        },
+        {
+          "id": "liml-cue",
+          "title": "LIML, k-class and GMM-CUE estimation",
+          "start": 153,
+          "end": 167,
+          "read_when": "Read for LIML, Fuller, k-class, or CUE and their VCE choices."
+        },
+        {
+          "id": "estimator-vce-summary",
+          "title": "Summary of robust, HAC, AC, GMM, LIML and CUE options",
+          "start": 168,
+          "end": 202,
+          "read_when": "Common reading for estimator/VCE defaults, including when neither an estimator option nor a VCE option is typed."
+        },
+        {
+          "id": "overidentification",
+          "title": "Testing overidentifying restrictions",
+          "start": 203,
+          "end": 215,
+          "read_when": "Read when interpreting Sargan/Hansen tests; identification and VCE sections may also be needed."
+        },
+        {
+          "id": "endogeneity",
+          "title": "Testing subsets of regressors and instruments for endogeneity",
+          "start": 216,
+          "end": 234,
+          "read_when": "Read for orthog/endog tests and the validity assumptions on retained instruments."
+        },
+        {
+          "id": "identification",
+          "title": "Tests of under- and weak identification",
+          "start": 235,
+          "end": 265,
+          "read_when": "Read when assessing identification or interpreting reported weak-instrument diagnostics."
+        },
+        {
+          "id": "instrument-redundancy",
+          "title": "Testing instrument redundancy",
+          "start": 266,
+          "end": 277,
+          "read_when": "Read for redundant() tests and their maintained instrument assumptions."
+        },
+        {
+          "id": "first-stage",
+          "title": "First-stage regressions, identification, and weak-id-robust inference",
+          "start": 278,
+          "end": 311,
+          "read_when": "Read when requesting, storing, or interpreting first-stage and weak-IV-robust statistics; also read identification."
+        },
+        {
+          "id": "reduced-form",
+          "title": "Reduced form estimates",
+          "start": 312,
+          "end": 317,
+          "read_when": "Read when saving or reporting the reduced form."
+        },
+        {
+          "id": "partialling",
+          "title": "Partialling-out exogenous regressors",
+          "start": 318,
+          "end": 330,
+          "read_when": "Read when using partial(), including its predict restriction, rank issues, and small-sample adjustments."
+        },
+        {
+          "id": "ols-hols",
+          "title": "OLS and Heteroskedastic OLS (HOLS) estimation",
+          "start": 331,
+          "end": 343,
+          "read_when": "Read when there are no endogenous regressors or when considering HOLS."
+        },
+        {
+          "id": "collinearities",
+          "title": "Collinearities",
+          "start": 344,
+          "end": 356,
+          "read_when": "Read for omitted/base rows, factor-variable output, duplicate variables, or reclassification of endogenous regressors."
+        },
+        {
+          "id": "speed",
+          "title": "Speed options: nocollin and noid",
+          "start": 357,
+          "end": 361,
+          "read_when": "Read before suppressing identification or collinearity calculations."
+        },
+        {
+          "id": "small-sample",
+          "title": "Small sample corrections",
+          "start": 362,
+          "end": 378,
+          "read_when": "Read for small, clustered finite-sample corrections, or partialling."
         },
         {
           "id": "options",
           "title": "Options summary",
           "start": 379,
-          "end": 477
+          "end": 477,
+          "read_when": "Read the detailed option summary for the options used; consult the corresponding substantive section."
         },
         {
           "id": "earlier-versions",
           "title": "Running ivreg2 under earlier versions of Stata",
           "start": 478,
-          "end": 487
+          "end": 487,
+          "read_when": "Read when invoking legacy Stata/version-controlled ivreg2."
         },
         {
           "id": "saved-results",
           "title": "Remarks and saved results",
           "start": 488,
-          "end": 601
+          "end": 601,
+          "read_when": "Read when using e() values, first-stage estimates, coefficient names, or centered/uncentered fit statistics."
         },
         {
           "id": "examples",
           "title": "Examples",
           "start": 602,
-          "end": 932
+          "end": 932,
+          "read_when": "Keep the full examples block when adapting its linked calculations; later examples reuse data, matrices, and estimates."
         },
         {
           "id": "references-and-source",
@@ -1311,9 +1539,7 @@
       "required_sections": [
         "syntax",
         "description",
-        "options",
-        "earlier-versions",
-        "saved-results"
+        "estimator-vce-summary"
       ]
     },
     {
@@ -1415,10 +1641,100 @@
       "content_sha256": "0cbaea0a0fe28a0a5eef1d508f675ec576a2d3cf446fb63df3e4bb108a13d90e",
       "sections": [
         {
-          "id": "reference",
-          "title": "Description, syntax, and all options",
+          "id": "reference-basics",
+          "title": "Titles & related stuffs / Examples / Description / Syntax",
           "start": 1,
-          "end": 327
+          "end": 70
+        },
+        {
+          "id": "options-main",
+          "title": "Options / Main",
+          "start": 71,
+          "end": 99
+        },
+        {
+          "id": "options-output-files",
+          "title": "Output Files",
+          "start": 100,
+          "end": 126,
+          "read_when": "Excel·Word·DTA·text 등 실제 파일 형식을 선택할 때."
+        },
+        {
+          "id": "options-variable-statistics",
+          "title": "Statistics for each variable (main table) / Short-cut for auxillary statistics",
+          "start": 127,
+          "end": 166,
+          "read_when": "표 본문의 기본 통계·보조통계·변환과 표본 범위를 사용하거나 해석할 때."
+        },
+        {
+          "id": "options-significance",
+          "title": "Significance",
+          "start": 167,
+          "end": 184,
+          "read_when": "명시 여부와 관계없이 표의 기본 별표·유의수준·기호를 해석하거나 지정할 때."
+        },
+        {
+          "id": "options-decimals-formats",
+          "title": "Decimals and Formats / fixed decimals & formats",
+          "start": 185,
+          "end": 218,
+          "read_when": "명시 여부와 관계없이 기본 자릿수·자동/고정 수치 format을 해석하거나 지정할 때."
+        },
+        {
+          "id": "options-titles-notes",
+          "title": "Titles and notes",
+          "start": 219,
+          "end": 233,
+          "read_when": "제목·열 제목·주석과 append 순서의 관계를 다룰 때."
+        },
+        {
+          "id": "options-parentheses-brackets",
+          "title": "Parenthesis and brackets",
+          "start": 234,
+          "end": 245,
+          "read_when": "통계의 괄호 위치와 형태를 다룰 때."
+        },
+        {
+          "id": "options-regression-statistics",
+          "title": "Statistics for each regression (at bottom)",
+          "start": 246,
+          "end": 267,
+          "read_when": "e()/addstat()/addtext()와 모델별 하단 통계를 다룰 때; Example 9의 반환 상태도 읽는다."
+        },
+        {
+          "id": "options-equations-variables",
+          "title": "Equations and Variables",
+          "start": 268,
+          "end": 290,
+          "read_when": "변수·equation·통계 열의 선택과 순서를 다룰 때."
+        },
+        {
+          "id": "options-marginal-effects",
+          "title": "Marginal effects",
+          "start": 291,
+          "end": 299,
+          "read_when": "계수 대신 marginal effect를 출력할 때; estimator와 marginal-effect 명령 원문도 확인한다."
+        },
+        {
+          "id": "options-summary-statistics",
+          "title": "Summary Statistics",
+          "start": 300,
+          "end": 311,
+          "read_when": "요약표의 표본·결측·N을 다룰 때; Example 7의 앞선 e(b)/e(sample) 문맥도 읽는다."
+        },
+        {
+          "id": "options-tabulations",
+          "title": "Tabulations",
+          "start": 312,
+          "end": 317,
+          "read_when": "교차표 기능을 사용할 때."
+        },
+        {
+          "id": "options-drives",
+          "title": "Laptop/External/Network Drives",
+          "start": 318,
+          "end": 327,
+          "read_when": "외부·네트워크 drive의 저장 지연이나 r(603)을 다룰 때."
         },
         {
           "id": "example-0",
@@ -1442,7 +1758,8 @@
           "id": "example-3",
           "title": "Example 3. Stored estimates",
           "start": 395,
-          "end": 425
+          "end": 425,
+          "read_when": "저장 모델을 선택할 때; .ster 재사용과 모델별 addstat 평가까지 이 예제로 단정하지 않는다."
         },
         {
           "id": "example-4",
@@ -1466,7 +1783,8 @@
           "id": "example-7",
           "title": "Example 7. Summary tables",
           "start": 482,
-          "end": 501
+          "end": 501,
+          "read_when": "요약표를 만들거나 해석할 때; Summary Statistics 옵션과 함께 읽는다."
         },
         {
           "id": "example-8",
@@ -1478,7 +1796,8 @@
           "id": "example-9",
           "title": "Example 9. Adding r( ) e( ) scalars",
           "start": 541,
-          "end": 580
+          "end": 580,
+          "read_when": "r()/e() 통계를 추가할 때; Example 0의 자료 setup과 원래 반환 상태를 함께 읽는다."
         },
         {
           "id": "example-10",
@@ -1496,7 +1815,8 @@
           "id": "example-12",
           "title": "Example 12. Word or Excel files",
           "start": 645,
-          "end": 669
+          "end": 669,
+          "read_when": "Excel·Word 출력 예시가 필요할 때; Example 0의 자료 setup도 함께 읽는다."
         },
         {
           "id": "example-13",
@@ -1520,7 +1840,8 @@
           "id": "example-16",
           "title": "Example 16. Group summary table",
           "start": 762,
-          "end": 782
+          "end": 782,
+          "read_when": "그룹별 요약표가 필요할 때; Example 7의 앞선 추정 상태 주의도 읽는다."
         },
         {
           "id": "example-17",
@@ -1547,16 +1868,24 @@
           "end": 968
         },
         {
-          "id": "faq-and-source",
+          "id": "faq",
           "title": "Frequently asked questions",
           "start": 969,
-          "end": 1015
+          "end": 988,
+          "read_when": "업데이트·IV 첫 단계·저장 오류 등 해당 FAQ 문제가 있을 때."
+        },
+        {
+          "id": "terms-and-source",
+          "title": "Terms of use / Author / Acknowledgements / Also see",
+          "start": 989,
+          "end": 1015,
+          "read_when": "사용 조건·저자·관련 문서를 확인할 때."
         }
       ],
       "required_sections": [
-        "reference",
-        "example-0",
-        "faq-and-source"
+        "reference-basics",
+        "options-main",
+        "example-0"
       ]
     },
     {
@@ -1568,13 +1897,15 @@
           "id": "description",
           "title": "Mahalanobis and Propensity score Matching",
           "start": 1,
-          "end": 95
+          "end": 95,
+          "read_when": "Retains default SE limitations, ties, returned results, and weighting context together."
         },
         {
           "id": "within-strata",
           "title": "Matching within strata",
           "start": 96,
-          "end": 108
+          "end": 108,
+          "read_when": "Read for matching within exact cells; retain the complete averaging example."
         },
         {
           "id": "syntax",
@@ -1586,31 +1917,36 @@
           "id": "options",
           "title": "Options",
           "start": 167,
-          "end": 201
+          "end": 201,
+          "read_when": "Read for outcome-specific missingness, reported estimands, and analytical SE/correction choices."
         },
         {
           "id": "propensity-score-options",
           "title": "Options: Estimation of the propensity score",
           "start": 202,
-          "end": 218
+          "end": 218,
+          "read_when": "Read even without an explicit score option: this section identifies default probit and alternatives for supplied scores, logit, odds, and index."
         },
         {
           "id": "support-options",
           "title": "Options: Imposition of common support",
           "start": 219,
-          "end": 224
+          "end": 224,
+          "read_when": "Read for common support or trimming; also read options when requesting analytical SEs."
         },
         {
           "id": "matching-options",
           "title": "Options: Choice of matching estimator",
           "start": 225,
-          "end": 265
+          "end": 265,
+          "read_when": "Read even without an explicit matching option: default single nearest-neighbor matching has no caliper; retain replacement, ties, and alternative methods."
         },
         {
           "id": "saved-results",
           "title": "Saved results",
           "start": 266,
-          "end": 300
+          "end": 300,
+          "read_when": "Read when consuming r(), debug corrections, or outcome-specific results."
         },
         {
           "id": "examples",
@@ -1630,9 +1966,7 @@
         "syntax",
         "options",
         "propensity-score-options",
-        "support-options",
-        "matching-options",
-        "saved-results"
+        "matching-options"
       ]
     },
     {
@@ -1733,10 +2067,46 @@
           "end": 376
         },
         {
-          "id": "builtin-examples",
-          "title": "Additional examples using built-in functions",
+          "read_when": "Read for the default mean, within-group comparisons, and excluding the current observation.",
           "start": 377,
-          "end": 663
+          "end": 418,
+          "id": "builtin-similar-age",
+          "title": "Additional examples using built-in functions / Mean wage of people of similar age"
+        },
+        {
+          "read_when": "Read for leave-one-out medians with a degenerate interval.",
+          "start": 419,
+          "end": 459,
+          "id": "builtin-other-firms",
+          "title": "Median investment of other firms in a given year"
+        },
+        {
+          "read_when": "Read for observation lookup, unique household keys, and missing interval bounds.",
+          "start": 460,
+          "end": 501,
+          "id": "builtin-household-lookup",
+          "title": "Looking up the education of a child's mother within a household"
+        },
+        {
+          "read_when": "Read for consecutive panel windows, missing years, and counting usable observations.",
+          "start": 502,
+          "end": 537,
+          "id": "builtin-panel-runs",
+          "title": "Finding panels with runs of observations"
+        },
+        {
+          "read_when": "Read for reg, coefficient and standard-error variables, short windows, and collinearity behavior.",
+          "start": 538,
+          "end": 601,
+          "id": "builtin-rolling-regression",
+          "title": "Running a regression over a rolling window of time"
+        },
+        {
+          "read_when": "Read for cov, daily-to-monthly grouping, repeated intervals, and the complete example setup.",
+          "start": 602,
+          "end": 663,
+          "id": "builtin-monthly-covariances",
+          "title": "Calculating monthly covariances on daily data"
         },
         {
           "id": "mata-examples",
@@ -1794,60 +2164,132 @@
           "id": "individual-fixed-effects",
           "title": "Description of individual fixed effects in group setting",
           "start": 108,
-          "end": 134
+          "end": 134,
+          "read_when": "group-level outcome과 individual FE를 다룰 때; Group FEs·Optimization도 읽는다."
         },
         {
           "id": "absorb-syntax",
           "title": "Absorb() syntax",
           "start": 135,
-          "end": 154
+          "end": 154,
+          "read_when": "흡수항·상호작용·기울기 FE·FE 저장과 singleton 주의를 파악할 때."
         },
         {
-          "id": "options",
-          "title": "Options",
+          "id": "options-standard-fe",
+          "title": "Options: Standard FEs",
           "start": 155,
-          "end": 391
+          "end": 167,
+          "read_when": "absorb()와 FE 저장을 다룰 때; Absorb() syntax를 함께 읽는다."
+        },
+        {
+          "id": "options-group-fe",
+          "title": "Group FEs",
+          "start": 168,
+          "end": 197,
+          "read_when": "group()/individual()/aggregation()을 다룰 때; individual-fixed-effects와 Optimization도 읽는다."
+        },
+        {
+          "id": "options-model",
+          "title": "Model",
+          "start": 198,
+          "end": 245,
+          "read_when": "기본 VCE·cluster·잔차 저장 또는 후속 예측을 다룰 때; 추론에는 DoF도 읽는다."
+        },
+        {
+          "id": "options-iv",
+          "title": "IV/2SLS/GMM",
+          "start": 246,
+          "end": 250,
+          "read_when": "IV/2SLS/GMM 지원 범위와 해당 명령을 찾을 때."
+        },
+        {
+          "id": "options-dof",
+          "title": "Degrees-of-Freedom Adjustments",
+          "start": 251,
+          "end": 290,
+          "read_when": "흡수 자유도와 추론을 해석하거나 DoF 설정을 바꿀 때; VCE 설명과 함께 읽는다."
+        },
+        {
+          "id": "options-optimization",
+          "title": "Optimization",
+          "start": 291,
+          "end": 338,
+          "read_when": "individual FE·기울기 FE 수렴·solver·tolerance 또는 nosample과 후속 e(sample)을 다룰 때."
+        },
+        {
+          "id": "options-parallel",
+          "title": "Parallel execution",
+          "start": 339,
+          "end": 346,
+          "read_when": "parallel()을 고려하거나 사용할 때."
+        },
+        {
+          "id": "options-memory",
+          "title": "Memory Usage",
+          "start": 347,
+          "end": 353,
+          "read_when": "poolsize()/compact와 메모리를 다룰 때."
+        },
+        {
+          "id": "options-reporting",
+          "title": "Reporting",
+          "start": 354,
+          "end": 370,
+          "read_when": "화면 표시·omitted/base·상수항 표시를 다룰 때."
+        },
+        {
+          "id": "options-diagnostic",
+          "title": "Diagnostic",
+          "start": 371,
+          "end": 391,
+          "read_when": "진단 출력·시간 측정·version()을 다룰 때."
         },
         {
           "id": "postestimation",
           "title": "Postestimation Syntax",
           "start": 392,
-          "end": 428
+          "end": 428,
+          "read_when": "후속 요약·예측·검정을 다룰 때; FE/잔차 저장·Missing Features도 함께 확인한다."
         },
         {
           "id": "missing-features",
           "title": "Missing Features",
           "start": 429,
-          "end": 437
+          "end": 437,
+          "read_when": "후속 명령이나 기능의 지원 여부를 판단할 때."
         },
         {
-          "id": "examples",
-          "title": "Examples",
+          "id": "examples-standard",
+          "title": "Examples; Advanced examples",
           "start": 438,
-          "end": 495
+          "end": 471,
+          "read_when": "일반 FE·cluster·DK·FE 저장 예시가 필요할 때; 앞선 자료 setup을 유지해 읽는다."
+        },
+        {
+          "id": "examples-group",
+          "title": "Group Examples",
+          "start": 472,
+          "end": 495,
+          "read_when": "group/individual FE의 완결 예시가 필요할 때."
         },
         {
           "id": "stored-results",
           "title": "Stored results",
           "start": 496,
-          "end": 565
+          "end": 565,
+          "read_when": "e()/r() 반환값·e(sample)을 후속 작업에서 사용할 때; .ster 파일 저장은 estimates 원문을 읽는다."
         },
         {
           "id": "authors-and-source",
-          "title": "Authors",
+          "title": "Authors; Support and updates; References",
           "start": 566,
-          "end": 623
+          "end": 623,
+          "read_when": "의존성·출처·업데이트·인용을 확인할 때."
         }
       ],
       "required_sections": [
         "syntax",
-        "description",
-        "individual-fixed-effects",
-        "absorb-syntax",
-        "options",
-        "postestimation",
-        "missing-features",
-        "stored-results"
+        "description"
       ]
     },
     {
@@ -1920,25 +2362,29 @@
           "id": "options",
           "title": "Options",
           "start": 128,
-          "end": 289
+          "end": 289,
+          "read_when": "Common reading even when options are omitted: one-step/system defaults, instruments, equation transforms, clustering, and diagnostics are interdependent."
         },
         {
           "id": "predict-options",
           "title": "Options for predict",
           "start": 290,
-          "end": 299
+          "end": 299,
+          "read_when": "Read when generating predictions or residuals, including difference rather than levels."
         },
         {
           "id": "return-values",
           "title": "Return values",
           "start": 300,
-          "end": 380
+          "end": 380,
+          "read_when": "Read when consuming sample markers, diagnostics, instrument counts, or returned matrices."
         },
         {
           "id": "examples",
           "title": "Examples",
           "start": 381,
-          "end": 409
+          "end": 409,
+          "read_when": "Keep linked example pairs together with the abdata setup."
         },
         {
           "id": "references-and-source",
@@ -1950,9 +2396,7 @@
       "required_sections": [
         "syntax",
         "description",
-        "options",
-        "predict-options",
-        "return-values"
+        "options"
       ]
     },
     {
@@ -1976,37 +2420,64 @@
           "id": "re-options",
           "title": "Options for RE model",
           "start": 144,
-          "end": 187
+          "end": 187,
+          "read_when": "Read for the RE estimator, including its defaults, VCE, and restrictions."
         },
         {
           "id": "be-options",
           "title": "Options for BE model",
           "start": 188,
-          "end": 224
+          "end": 224,
+          "read_when": "Read for the BE estimator, including its defaults, VCE, and restrictions."
         },
         {
           "id": "fe-options",
           "title": "Options for FE model",
           "start": 225,
-          "end": 261
+          "end": 261,
+          "read_when": "Read for the FE estimator, including its defaults, VCE, and restrictions."
         },
         {
           "id": "fd-options",
           "title": "Options for FD model",
           "start": 262,
-          "end": 299
+          "end": 299,
+          "read_when": "Read for the FD estimator, including its defaults, VCE, and restrictions."
         },
         {
           "id": "examples",
           "title": "Examples",
           "start": 300,
-          "end": 320
+          "end": 320,
+          "read_when": "Read the whole example block to retain shared data and variable setup."
         },
         {
-          "id": "stored-results",
-          "title": "Stored results",
+          "id": "stored-results-re",
+          "title": "Stored results: RE",
           "start": 321,
-          "end": 573
+          "end": 388,
+          "read_when": "Read when consuming RE results, including e(sample), prediction metadata, and volatile r(table)."
+        },
+        {
+          "id": "stored-results-be",
+          "title": "Stored results: BE",
+          "start": 389,
+          "end": 448,
+          "read_when": "Read when consuming BE results, including e(sample), prediction metadata, and volatile r(table)."
+        },
+        {
+          "id": "stored-results-fe",
+          "title": "Stored results: FE",
+          "start": 449,
+          "end": 513,
+          "read_when": "Read when consuming FE results, including e(sample), prediction metadata, and volatile r(table)."
+        },
+        {
+          "id": "stored-results-fd",
+          "title": "Stored results: FD",
+          "start": 514,
+          "end": 573,
+          "read_when": "Read when consuming FD results, including e(sample), prediction metadata, and volatile r(table)."
         },
         {
           "id": "references",
@@ -2017,12 +2488,7 @@
       ],
       "required_sections": [
         "syntax",
-        "description",
-        "re-options",
-        "be-options",
-        "fe-options",
-        "fd-options",
-        "stored-results"
+        "description"
       ]
     },
     {
@@ -2046,49 +2512,92 @@
           "id": "re-options",
           "title": "Options for RE model",
           "start": 234,
-          "end": 273
+          "end": 273,
+          "read_when": "Read for the RE estimator, including its defaults, VCE, and restrictions."
         },
         {
           "id": "cre-options",
           "title": "Options for CRE model",
           "start": 274,
-          "end": 312
+          "end": 312,
+          "read_when": "Read for CRE; this source explicitly marks it as StataNow. Check the runtime scope."
         },
         {
           "id": "be-options",
           "title": "Options for BE model",
           "start": 313,
-          "end": 349
+          "end": 349,
+          "read_when": "Read for the BE estimator, including its defaults, VCE, and restrictions."
         },
         {
           "id": "fe-options",
           "title": "Options for FE model",
           "start": 350,
-          "end": 427
+          "end": 427,
+          "read_when": "Read for the FE estimator, including its defaults, VCE, and restrictions."
         },
         {
           "id": "mle-options",
           "title": "Options for MLE model",
           "start": 428,
-          "end": 464
+          "end": 464,
+          "read_when": "Read for the MLE estimator, including its defaults, VCE, and restrictions."
         },
         {
           "id": "pa-options",
           "title": "Options for PA model",
           "start": 465,
-          "end": 537
+          "end": 537,
+          "read_when": "Read for the PA estimator, including its defaults, VCE, and restrictions."
         },
         {
           "id": "examples",
           "title": "Examples",
           "start": 538,
-          "end": 580
+          "end": 580,
+          "read_when": "Read the whole example block to retain shared data and variable setup."
         },
         {
-          "id": "stored-results",
-          "title": "Stored results",
+          "id": "stored-results-re",
+          "title": "Stored results: RE",
           "start": 581,
-          "end": 969
+          "end": 646,
+          "read_when": "Read when consuming RE results, including e(sample), prediction metadata, and volatile r(table)."
+        },
+        {
+          "id": "stored-results-cre",
+          "title": "Stored results: CRE",
+          "start": 647,
+          "end": 711,
+          "read_when": "Read when consuming CRE results, including e(sample), prediction metadata, and volatile r(table)."
+        },
+        {
+          "id": "stored-results-be",
+          "title": "Stored results: BE",
+          "start": 712,
+          "end": 768,
+          "read_when": "Read when consuming BE results, including e(sample), prediction metadata, and volatile r(table)."
+        },
+        {
+          "id": "stored-results-fe",
+          "title": "Stored results: FE",
+          "start": 769,
+          "end": 846,
+          "read_when": "Read when consuming FE results, including e(sample), prediction metadata, and volatile r(table)."
+        },
+        {
+          "id": "stored-results-mle",
+          "title": "Stored results: MLE",
+          "start": 847,
+          "end": 903,
+          "read_when": "Read when consuming MLE results, including e(sample), prediction metadata, and volatile r(table)."
+        },
+        {
+          "id": "stored-results-pa",
+          "title": "Stored results: PA",
+          "start": 904,
+          "end": 969,
+          "read_when": "Read when consuming PA results, including e(sample), prediction metadata, and volatile r(table)."
         },
         {
           "id": "references",
@@ -2099,14 +2608,7 @@
       ],
       "required_sections": [
         "syntax",
-        "description",
-        "re-options",
-        "cre-options",
-        "be-options",
-        "fe-options",
-        "mle-options",
-        "pa-options",
-        "stored-results"
+        "description"
       ]
     }
   ]

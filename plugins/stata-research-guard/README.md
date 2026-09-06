@@ -50,13 +50,13 @@ Workflow를 설계하거나 재구성할 때는 필요한 표·그림·데이터
 
 ```json
 {
-  "request":"Read syntax, stored-estimate handling, and Excel output",
+  "request":"Find current source sections for stored-estimate and Excel output",
   "selected_commands":["outreg2"],
-  "help_sections":{"outreg2":["reference","example-3","example-12"]}
+  "help_view":"catalog"
 }
 ```
 
-`reference`는 description·syntax·모든 options를 포함하며 outreg2 예시 선택에 자동 동반됩니다. 문서별로 확인한 필수 문법·옵션·주의·반환값 구획을 함께 전달하고, 본문은 원문의 완결된 경계로만 나눕니다. 큰 필수 구획도 크기 때문에 잘라내지 않습니다. 선택 범위 밖의 중요한 교차참조는 추가로 읽어야 합니다.
+현재 catalog의 제목과 제공된 `read_when` 안내를 보고 필요한 ID를 선택합니다. 명시한 옵션뿐 아니라 기본 동작·모형·표본·반환값·후속 사용에 필요한 구획도 모델이 판단해야 합니다. `required_sections`는 공통 기초를 함께 붙일 뿐 조건부 필요를 대신 결정하지 않습니다. 이미 현재 ID를 읽었다면 catalog를 다시 요청할 필요가 없으며, 짧은 도움말은 전체 본문을 유지합니다.
 
 Phase 2는 `help_sections`, Phase 3 확장 매뉴얼은 `expanded_sections`로 선택합니다. `help_view: "full"`이면 전체 원문을 명시적으로 요청하고, `catalog`이면 목록을 요청합니다. 현재 검토된 경계가 없는 live help나 source map이 오래된 문서는 원문 전체를 `whole-source` 하나의 선택 단위로 남깁니다. 자동 추정으로 자르거나 조용히 큰 본문으로 돌아가지 않습니다. Catalog는 본문을 읽었다는 증거가 아닙니다.
 

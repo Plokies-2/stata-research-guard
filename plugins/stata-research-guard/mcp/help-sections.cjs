@@ -16,7 +16,7 @@ function deliverHelp(entry, navigation, requested, view) {
   const lines = content.match(/[^\n]*\n|[^\n]+$/g) || [];
   const currentMap = navigation?.content_sha256 === sourceHash;
   const sections = currentMap ? navigation.sections : [{
-    id: "whole-source", title: "Complete source — no verified internal boundaries", start: 1, end: lines.length,
+    id: "whole-source", title: "Complete source — no reviewed internal boundaries", start: 1, end: lines.length,
   }];
   const required = currentMap ? (navigation.required_sections || []) : [];
   const catalog = sections.map((section) => ({ ...section,
@@ -31,7 +31,7 @@ function deliverHelp(entry, navigation, requested, view) {
   };
   if (!requested || (navigation && !currentMap && !requested.every((id) => id === "whole-source"))) {
     return { ...entry, ...metadata, content: null, delivery: "catalog_only", section_catalog: catalog,
-      scope_note: "No help body was delivered. Select source sections after considering the task, syntax, options, returned results, warnings, and cross-references. Required foundation sections accompany every selection. Use help_view full when the whole source is needed.",
+      scope_note: "No help body was delivered. Use headings and any read_when cues to select the material sections, including relevant defaults, sample, returned state, and cross-references. Common foundation sections accompany selections; the server does not choose task-dependent requirements. Use help_view full when needed.",
     };
   }
   if (requested.some((id) => !sections.some((section) => section.id === id))) {
@@ -42,7 +42,7 @@ function deliverHelp(entry, navigation, requested, view) {
   return { ...entry, ...metadata, delivery: "selected_source_sections",
     requested_sections: requested, selected_sections: selected,
     content: selected.map((section) => lines.slice(section.start - 1, section.end).join("")).join("\n"),
-    scope_note: "Original complete sections plus required foundation sections. This is not a completeness judgment: follow remaining material cross-references or request full help. Large sections are not truncated to fit the threshold.",
+    scope_note: "Original sections plus common foundation sections. read_when is reading guidance, not automatic selection or a completeness judgment. Follow remaining material cross-references or request full help. Large sections are not truncated to fit the threshold.",
   };
 }
 

@@ -634,10 +634,10 @@ test("help section navigation preserves exact selected source ranges and explici
   const full = await buildCommandEvidence({ request: "Full source", selected_commands: ["outreg2"], help_view: "full" });
   const raw = fs.readFileSync(path.join(ROOT, "data/command_help_guides/outreg2.txt"), "utf8");
   assert.equal(full.command_evidence[0].command_help.content, raw);
-  const result = await buildCommandEvidence({ request: "Selected original sections", selected_commands: ["outreg2"], help_sections: { outreg2: ["example-12", "reference", "example-3"] } });
+  const result = await buildCommandEvidence({ request: "Selected original sections", selected_commands: ["outreg2"], help_sections: { outreg2: ["example-12", "reference-basics", "example-3"] } });
   const help = result.command_evidence[0].command_help;
   const lines = raw.match(/[^\n]*\n|[^\n]+$/g);
-  assert.deepEqual(help.selected_sections.map((row) => row.id), ["reference", "example-0", "example-3", "example-12", "faq-and-source"]);
+  assert.deepEqual(help.selected_sections.map((row) => row.id), ["reference-basics", "options-main", "example-0", "example-3", "example-12"]);
   assert.equal(help.content, help.selected_sections.map((row) => lines.slice(row.start - 1, row.end).join("")).join("\n"));
   await assert.rejects(() => buildCommandEvidence({ request: "Unknown ID", selected_commands: ["outreg2"], help_sections: { outreg2: ["invented"] } }), /invalid exact help section/);
   await assert.rejects(() => buildCommandEvidence({ request: "Wrong command", selected_commands: ["regress"], help_sections: { outreg2: ["reference"] } }), /unavailable for selected command/);
