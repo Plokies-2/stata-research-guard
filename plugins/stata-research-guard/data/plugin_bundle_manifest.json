@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.3.0+codex.20260906133653"
+    "version": "0.3.0+codex.20260906161736"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
       "bytes": 987,
-      "sha256": "c80d16128750630644310469aba8dacf299395cb00b1c3ffc58f8ac056f4106d"
+      "sha256": "a5cf887166885e9d51fd6be7190efec058d44142bb8414ca288d39e9c1853bf5"
     },
     {
       "path": ".mcp.json",
@@ -1552,8 +1552,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 10912,
-      "sha256": "056ff785a7a06a66a10d8c8322b455e0d067248d3dba35b1d065c94323bc9779"
+      "bytes": 11220,
+      "sha256": "1f12a9e37f8cb2cb9af5e74b668a378f699df600a97fd639352f1c8d3e80ec4a"
     },
     {
       "path": "scripts/build_clean_command_guide.py",
@@ -1602,8 +1602,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rules.md",
-      "bytes": 10826,
-      "sha256": "a0f3e806f8f3b24212a544104374c8e786b0e439c832bd39d19b22cc617435b2"
+      "bytes": 11119,
+      "sha256": "97b9ec57cc88196453718327c2d7da5c58dd2b0827a6aaa47294e50835b809c8"
     },
     {
       "path": "skills/stata-replication-workflow/references/paper-workflow-reading.md",
@@ -1674,7 +1674,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.3.0+codex.20260906133653"
+      "value": "0.3.0+codex.20260906161736"
     },
     {
       "id": "readme.heading",
