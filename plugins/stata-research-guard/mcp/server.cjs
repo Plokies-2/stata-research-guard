@@ -34,6 +34,11 @@ const LIVE_HELP_TOPIC_ALIASES = new Map([
   ["postfile", "post"],
   ["postclose", "post"],
   ["postutil", "post"],
+  // Identity entries also admit the known spaced command spelling.
+  ["estimates_save", "estimates_save"],
+  ["estimates_use", "estimates_save"],
+  ["estimates_store", "estimates_store"],
+  ["estimates_restore", "estimates_store"],
 ]);
 
 function readUtf8(file) {
@@ -135,14 +140,14 @@ function selectedHelpTopic(command) {
   }
   if (typeof command === "string" && STATA_COMMAND_WORDS.test(command)) {
     const resolved = command.replaceAll(" ", "_");
-    if (commandsByName.has(resolved)) {
+    if (commandsByName.has(resolved) || LIVE_HELP_TOPIC_ALIASES.has(resolved)) {
       return {
         requested: command,
         resolved,
         normalization: {
           requested: command,
           resolved,
-          reason: "registered_multiword_command",
+          reason: commandsByName.has(resolved) ? "registered_multiword_command" : "known_multiword_help_topic",
         },
       };
     }

@@ -410,6 +410,48 @@ test("registered multiword Stata spelling normalizes transparently", async () =>
   assert.equal(result.command_evidence[1].help_status, "available");
 });
 
+test("known spaced estimates commands retain identity and read the correct shared help", async () => {
+  const lookedUp = [];
+  const result = await buildCommandEvidence(
+    {
+      request: "Save and restore research estimates",
+      selected_commands: ["estimates save", "estimates use", "estimates store", "estimates restore"],
+    },
+    {
+      liveHelpLookup: (topic) => {
+        lookedUp.push(topic);
+        return {
+          status: "available",
+          help: { command: topic, source_kind: "live_installed_help", content: `source for ${topic}` },
+          limitations: [],
+        };
+      },
+    },
+  );
+  const commands = ["estimates_save", "estimates_use", "estimates_store", "estimates_restore"];
+  const topics = ["estimates_save", "estimates_save", "estimates_store", "estimates_store"];
+  assert.deepEqual(result.selected_commands, commands);
+  assert.deepEqual(lookedUp, topics);
+  assert.deepEqual(result.command_evidence.map((row) => row.command), commands);
+  assert.deepEqual(result.command_evidence.map((row) => row.help_topic), topics);
+  assert.deepEqual(result.command_evidence.map((row) => row.command_help.content),
+    topics.map((topic) => `source for ${topic}`));
+  assert.ok(result.topic_normalizations.every((row) => row.reason === "known_multiword_help_topic"));
+});
+
+test("known estimates spellings preserve duplicate and unsafe-topic handling", async () => {
+  await assert.rejects(
+    () => buildCommandEvidence({ request: "Duplicate spelling", selected_commands: ["estimates use", "estimates_use"] }),
+    /ABORT duplicate_selected_command/,
+  );
+  for (const command of ["estimates use; erase", "estimates unknown", "estimates ../save"]) {
+    await assert.rejects(
+      () => buildCommandEvidence({ request: "Invalid topic", selected_commands: [command] }),
+      /ABORT invalid_help_topic/,
+    );
+  }
+});
+
 test("Stata language tokens retain their labels while using official macro help", async () => {
   const lookedUp = [];
   const result = await buildCommandEvidence(

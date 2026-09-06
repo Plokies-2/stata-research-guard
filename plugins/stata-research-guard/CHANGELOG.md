@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.0 — 2026-09-07
+
+- Consolidate the researcher-facing workflow updates: outreg2 first when it preserves results, on-demand package setup in the main Stata environment, and compact figures read in their research context.
+- Refine existing guidance on result reuse, necessary intermediate data, and reconsidering command defaults, inference and formats when a concrete mismatch appears. No new checklist or semantic validator.
+- Accept known spaced estimates save/use/store/restore names and route them to the corresponding official help while retaining command identity.
+- Keep the MCP request schema and 115-command registry unchanged. Previously valid requests remain supported; the additional spellings are backward-compatible.
+
 ## 2026-09-06 — command-by-command source navigation maintenance
 
 - Reviewed navigation needs across all 115 registered commands, reusing shared sources and the four-command pilot. Retained whole short help and ambiguous large units instead of forcing new sections.
