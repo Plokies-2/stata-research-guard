@@ -5,7 +5,7 @@ description: Write, refactor, and run researcher-readable Stata workflows using 
 
 # Stata Research Workflow
 
-Help the researcher follow data and sample construction through the visible estimator, specification, stored estimates, and outputs. Guard supplies evidence; the model and researcher make the research choices.
+Prioritize code the researcher can comfortably read, inspect, and modify. Help them follow data and sample construction through the visible estimator, specification, stored estimates, and outputs; retain adequate code when a rewrite offers no concrete benefit. Guard supplies evidence; the model and researcher make the research choices.
 
 Read [general-rules.md](references/general-rules.md) once for the relevant task, from this file or a current complete Guard response. It contains the research judgment and house rules; reuse it while visible and unchanged.
 
@@ -27,7 +27,7 @@ Choose and critically read the connected originals yourself using that reference
 
 ## Command evidence and execution
 
-1. Confirm current-task Guard and mcpStata are callable before material Stata work. Use Guard for grammar and optional usage context, and mcpStata for execution, data, logs, returned state, and artifacts.
+1. Use Guard for grammar and optional usage context, following the lookup boundaries below. Prefer mcpStata for execution, data, logs, returned state, and artifacts when it is callable. If mcpStata is unavailable, continue through an available authorized Stata interface, such as the project's existing runner, a local Stata batch executable, or official Python integration. Choose from the actual environment, briefly state the execution route, and inspect its real logs and artifacts; mcpStata absence alone is not a reason to stop or require installation. Preserve the requested estimator and research specification, and honor explicit execution-tool restrictions. If an execution attempt may still be running, resolve its state before retrying through another route. If no Stata execution route is available, continue code authoring and source review where command evidence permits, clearly identify the unexecuted work, and report the missing execution prerequisite without claiming runtime success.
 2. Read [command-evidence.md](references/command-evidence.md) when command evidence is needed; it owns lookup, exemptions, and reuse. When a material command is clear, request its exact help directly. Use discovery only for an unresolved command, and expand documentation or command-local examples for a remaining question.
 3. Use the block's purpose and actual consumer to frame the help question, following the native-interface guidance and discovery examples in that reference. Apply the general rules when choosing the implementation.
 4. Run the requested work and inspect relevant data counts, logs, estimates, tables, and figures. Also inspect the affected generated files and paths for unnecessary persistent intermediates, duplicate exports, and unclear placement, following the general rules' file-lifecycle guidance. Use `outreg2` first when it preserves the results, following the general rules. If a chosen package is missing, follow the general rules' standing authorization for on-demand installation into the main Stata environment, refresh the runtime as needed, and return to the analysis.

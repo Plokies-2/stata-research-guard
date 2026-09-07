@@ -272,7 +272,7 @@ test("Phase 3 attaches the exact raw xtivreg log span without interpretation fie
     selected_block_ids: ["block-139-184-032"],
   });
   const card = result.paper_usage_cards[0];
-  assert.equal(card.paper_code.split(/\r?\n/).length, 15);
+  assert.equal(card.paper_code.split(/\r?\n/).length, 62); // Original source lines 5–66, including horizon setup and both branches.
   assert.equal(card.source_provenance.length, 1);
   assert.equal(card.paper_log_contexts.length, 1);
   assert.equal(card.paper_log_contexts[0].log_spans[0].start, 1);
@@ -293,6 +293,35 @@ test("Phase 3 attaches the exact raw xtivreg log span without interpretation fie
   ]) {
     assert.equal(keys.has(key), false);
   }
+});
+
+test("Phase 3 keeps an editorial adaptation separate from the original source", async () => {
+  const result = await buildCommandEvidence({
+    request: "Read an attributed editorial example",
+    selected_commands: ["ivregress"],
+    expanded: true,
+    selected_block_ids: ["manual-block-085"],
+  });
+  const card = result.paper_usage_cards[0];
+  const stored = PAPER_BLOCKS.find((row) => row.block_id === card.block_id);
+  assert.equal(card.paper_code, stored.block_code);
+  assert.deepEqual(card.editorial_adaptation, stored.editorial_adaptation);
+  assert.notEqual(card.paper_code, card.editorial_adaptation.code);
+  assert.equal(card.source_provenance[0].code_license, "CC-BY-4.0");
+  assert.ok(card.source_provenance[0].paper_authors.length > 0);
+});
+
+test("Phase 3 delivers the original code-specific license notice", async () => {
+  const result = await buildCommandEvidence({
+    request: "Read a paper example with its MIT notice",
+    selected_commands: ["graph"],
+    expanded: true,
+    selected_block_ids: ["manual-block-069"],
+  });
+  const provenance = result.paper_usage_cards[0].source_provenance[0];
+  assert.equal(provenance.code_license, "MIT");
+  assert.equal(provenance.license_notices[0].content,
+    fs.readFileSync(path.join(ROOT, "LICENSES", "MIT-185943.txt"), "utf8"));
 });
 
 test("Phase 3 manually narrows the one giant ivregress nuisance table to exact raw ranges", async () => {

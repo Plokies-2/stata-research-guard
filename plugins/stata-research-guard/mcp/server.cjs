@@ -83,6 +83,8 @@ const expandedSectionsByCommand = new Map(readJson(path.join(DATA_ROOT, "expande
 const paperProfiles = readJsonl(PAPER_PROFILES_PATH);
 const profilesById = new Map(paperProfiles.map((row) => [row.block_id, row]));
 const profilesByCommand = groupBy(paperProfiles, "focus_command");
+const paperLicensesByDoi = new Map(readJson(path.join(DATA_ROOT, "paper_source_licenses.json")).sources
+  .map((source) => [source.repository_doi.toLowerCase(), source]));
 let blocksById, occurrencesById, executionContextsByBlock;
 
 function loadPaperDetails() {
@@ -401,14 +403,32 @@ function projectedExecutionContext(context) {
   };
 }
 
+function withPaperLicense(provenance) {
+  const source = paperLicensesByDoi.get((provenance.repository_doi || "").toLowerCase());
+  if (!source) return provenance;
+  const noticeFiles = [...source.notice_files];
+  const thirdParty = source.third_party_notice;
+  const usesThirdParty = thirdParty && (provenance.original_path || "").includes(thirdParty.source_path_contains);
+  if (usesThirdParty) noticeFiles.push(thirdParty.notice_file);
+  return {
+    ...provenance,
+    paper_authors: source.paper_authors,
+    code_license: source.code_license,
+    license_url: source.license_url,
+    attribution_notice: "THIRD_PARTY_NOTICES.md",
+    license_notices: noticeFiles.map((relative) => ({ path: relative, content: readUtf8(path.join(PLUGIN_ROOT, relative)) })),
+    ...(usesThirdParty ? { third_party_notice: thirdParty.note } : {}),
+  };
+}
+
 function sourceProvenanceForBlock(block) {
   if (Array.isArray(block.source_provenance) && block.source_provenance.length > 0) {
-    return block.source_provenance;
+    return block.source_provenance.map(withPaperLicense);
   }
   return block.target_occurrence_ids.map((occurrenceId) => {
     const occurrence = occurrencesById.get(occurrenceId);
     const provenance = occurrence?.provenance || {};
-    return {
+    return withPaperLicense({
       occurrence_id: occurrenceId,
       title: provenance.title || null,
       article_doi: provenance.article_doi || null,
@@ -417,7 +437,7 @@ function sourceProvenanceForBlock(block) {
       repository_url: provenance.repository_url || null,
       version: provenance.version || null,
       original_path: provenance.original_path || provenance.project_path || block.source_path,
-    };
+    });
   });
 }
 
@@ -438,6 +458,7 @@ function paperCard(blockId) {
     paper_code_sha256: block.block_code_sha256,
     target_spans: block.target_spans,
     paper_log_contexts: (executionContextsByBlock.get(blockId) || []).map(projectedExecutionContext),
+    ...(block.editorial_adaptation ? { editorial_adaptation: block.editorial_adaptation } : {}),
   };
 }
 

@@ -1,0 +1,555 @@
+{
+  "sources": [
+    {
+      "project_id": "111707",
+      "title": "Reexamining the Contribution of Public Health Efforts to the Decline in Urban Mortality",
+      "paper_authors": [
+        "D. Mark Anderson",
+        "Kerwin Kofi Charles",
+        "Daniel I. Rees"
+      ],
+      "repository_doi": "10.3886/E111707V1",
+      "repository_url": "https://doi.org/10.3886/E111707V1",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://www.icpsr.umich.edu/sites/view/studies/111707",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "115162",
+      "title": "Gambling, Saving, and Lumpy Liquidity Needs",
+      "paper_authors": [
+        "Sylvan Herskowitz"
+      ],
+      "repository_doi": "10.3886/E115162V1",
+      "repository_url": "https://doi.org/10.3886/E115162V1",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://www.icpsr.umich.edu/sites/view/studies/115162",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "120068",
+      "title": "Democracy and Aid Donorship",
+      "paper_authors": [
+        "Angelika J. Budjan",
+        "Andreas Fuchs"
+      ],
+      "repository_doi": "10.3886/E120068V2",
+      "repository_url": "https://doi.org/10.3886/E120068V2",
+      "code_license": "BSD-3-Clause",
+      "license_url": "https://opensource.org/license/bsd-3-clause",
+      "notice_files": [
+        "LICENSES/BSD-120068.txt"
+      ],
+      "license_evidence_url": "https://www.icpsr.umich.edu/sites/view/studies/120068",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "124641",
+      "title": "Diagnosing the Learning Environment for Diverse Students in Introductory Economics: An Analysis of Relevance, Belonging, and Growth Mindsets",
+      "paper_authors": [
+        "Amanda Bayer",
+        "Syon P. Bhanot",
+        "Erin T. Bronchetti",
+        "Stephen A. O’Connell"
+      ],
+      "repository_doi": "10.3886/E124641V1",
+      "repository_url": "https://doi.org/10.3886/E124641V1",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://www.icpsr.umich.edu/sites/view/studies/124641",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "148522",
+      "title": "Enhancing the Efficacy of Teacher Incentives through Framing: A Field Experiment",
+      "paper_authors": [
+        "Roland G. Fryer Jr.",
+        "Steven D. Levitt",
+        "John List",
+        "Sally Sadoff"
+      ],
+      "repository_doi": "10.3886/E148522V1",
+      "repository_url": "https://doi.org/10.3886/E148522V1",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://www.icpsr.umich.edu/sites/view/studies/148522",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "154781",
+      "title": "Measuring Geopolitical Risk",
+      "paper_authors": [
+        "Dario Caldara",
+        "Matteo Iacoviello"
+      ],
+      "repository_doi": "10.3886/E154781V1",
+      "repository_url": "https://doi.org/10.3886/E154781V1",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://www.icpsr.umich.edu/sites/view/studies/154781",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "160101",
+      "title": "Age Discrimination across the Business Cycle",
+      "paper_authors": [
+        "Gordon B. Dahl",
+        "Matthew Knepper"
+      ],
+      "repository_doi": "10.3886/E160101V1",
+      "repository_url": "https://doi.org/10.3886/E160101V1",
+      "code_license": "CC-BY-NC-4.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://www.icpsr.umich.edu/sites/view/studies/160101",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "173341",
+      "title": "Vulnerability and Clientelism",
+      "paper_authors": [
+        "Gustavo J. Bobonis",
+        "Paul J. Gertler",
+        "Marco Gonzalez-Navarro",
+        "Simeon Nichter"
+      ],
+      "repository_doi": "10.3886/E173341V1",
+      "repository_url": "https://doi.org/10.3886/E173341V1",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://www.icpsr.umich.edu/sites/view/studies/173341",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "175582",
+      "title": "Social Media and Mental Health",
+      "paper_authors": [
+        "Luca Braghieri",
+        "Ro’ee Levy",
+        "Alexey Makarin"
+      ],
+      "repository_doi": "10.3886/E175582V1",
+      "repository_url": "https://doi.org/10.3886/E175582V1",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://www.icpsr.umich.edu/sites/view/studies/175582",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "185943",
+      "title": "An Introductory Guide to Event Study Models",
+      "paper_authors": [
+        "Douglas L. Miller"
+      ],
+      "repository_doi": "10.3886/E185943V1",
+      "repository_url": "https://doi.org/10.3886/E185943V1",
+      "code_license": "MIT",
+      "license_url": "https://opensource.org/license/mit",
+      "notice_files": [
+        "LICENSES/MIT-185943.txt"
+      ],
+      "license_evidence_url": "https://www.icpsr.umich.edu/sites/view/studies/185943",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "191751",
+      "title": "Managers' Productivity and Recruitment in the Public Sector",
+      "paper_authors": [
+        "Pablo Muñoz",
+        "Mounu Prem"
+      ],
+      "repository_doi": "10.3886/E191751V1",
+      "repository_url": "https://doi.org/10.3886/E191751V1",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://www.icpsr.umich.edu/sites/view/studies/191751",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "193441",
+      "title": "From Fog to Smog: The Value of Pollution Information",
+      "paper_authors": [
+        "Panle Jia Barwick",
+        "Shanjun Li",
+        "Liguo Lin",
+        "Eric Yongchen Zou"
+      ],
+      "repository_doi": "10.3886/E193441V1",
+      "repository_url": "https://doi.org/10.3886/E193441V1",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://www.icpsr.umich.edu/sites/view/studies/193441",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "194561",
+      "title": "Staggered Difference-in-Differences in Gravity Settings: Revisiting the Effects of Trade Agreements",
+      "paper_authors": [
+        "Arne J. Nagengast",
+        "Yoto V. Yotov"
+      ],
+      "repository_doi": "10.3886/E194561V1",
+      "repository_url": "https://doi.org/10.3886/E194561V1",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://www.icpsr.umich.edu/sites/view/studies/194561",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "195983",
+      "title": "Local Economic and Political Effects of Trade Deals: Evidence from NAFTA",
+      "paper_authors": [
+        "Jiwon Choi",
+        "Ilyana Kuziemko",
+        "Ebonya Washington",
+        "Gavin Wright"
+      ],
+      "repository_doi": "10.3886/E195983V1",
+      "repository_url": "https://doi.org/10.3886/E195983V1",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://www.icpsr.umich.edu/sites/view/studies/195983",
+      "checked_on": "2026-09-07",
+      "third_party_notice": {
+        "source_path_contains": "/IRS-migration-data-master/",
+        "code_license": "MIT",
+        "notice_file": "LICENSES/MIT-IRS-migration-data.txt",
+        "note": "Preserve the separate Matt Hauer MIT code notice for the IRS subtree. Its data license is separate and is not a grant for all NAFTA code."
+      }
+    },
+    {
+      "project_id": "196012",
+      "title": "Regulating Conglomerates: Evidence from an Energy Conservation Program in China",
+      "paper_authors": [
+        "Qiaoyi Chen",
+        "Zhao Chen",
+        "Zhikuo Liu",
+        "Juan Carlos Suárez Serrato",
+        "Daniel Yi Xu"
+      ],
+      "repository_doi": "10.3886/E196012V1",
+      "repository_url": "https://doi.org/10.3886/E196012V1",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://www.icpsr.umich.edu/sites/view/studies/196012",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "202444",
+      "title": "Polity Size and Local Government Performance: Evidence from India",
+      "paper_authors": [
+        "Veda Narasimhan",
+        "Jeffrey Weaver"
+      ],
+      "repository_doi": "10.3886/E202444V1",
+      "repository_url": "https://doi.org/10.3886/E202444V1",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://www.icpsr.umich.edu/sites/view/studies/202444",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "209030",
+      "title": "Product Differentiation and Oligopoly: A Network Approach",
+      "paper_authors": [
+        "Bruno Pellegrino"
+      ],
+      "repository_doi": "10.3886/E209030V1",
+      "repository_url": "https://doi.org/10.3886/E209030V1",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://www.icpsr.umich.edu/sites/view/studies/209030",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "209484",
+      "title": "Fiscal Procyclicality in Commodity Exporting Countries: How Much Does It Pour and Why?",
+      "paper_authors": [
+        "Francisco Arroyo Marioli",
+        "Carlos A. Vegh"
+      ],
+      "repository_doi": "10.3886/E209484V1",
+      "repository_url": "https://doi.org/10.3886/E209484V1",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://www.icpsr.umich.edu/sites/view/studies/209484",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "z10611203",
+      "title": "Structural Change, Elite Capitalism, and the Emergence of Labour Emancipation",
+      "paper_authors": [
+        "Quamrul H. Ashraf",
+        "Francesco Cinnirella",
+        "Oded Galor",
+        "Boris Gershman",
+        "Erik Hornung"
+      ],
+      "repository_doi": "10.5281/zenodo.10611203",
+      "repository_url": "https://zenodo.org/records/10611203",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://zenodo.org/records/10611203",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "z14968164",
+      "title": "The Economics and Econometrics of Gene-Environment Interplay",
+      "paper_authors": [
+        "Pietro Biroli",
+        "Titus Galama",
+        "Stephanie von Hinke",
+        "Hans van Kippersluis",
+        "Cornelius A. Rietveld",
+        "Kevin Thom"
+      ],
+      "repository_doi": "10.5281/zenodo.14968164",
+      "repository_url": "https://zenodo.org/records/14968164",
+      "code_license": "CC-BY-NC-4.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://zenodo.org/records/14968164",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "z15288849",
+      "title": "The Effect of Provider Diversity on Racial Health Disparities: Evidence from the Military",
+      "paper_authors": [
+        "Michael Frakes",
+        "Jonathan Gruber"
+      ],
+      "repository_doi": "10.5281/zenodo.15288849",
+      "repository_url": "https://zenodo.org/records/15288849",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://zenodo.org/records/15288849",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "z17712099",
+      "title": "Jackknife Standard Errors for Clustered Regression",
+      "paper_authors": [
+        "Bruce E. Hansen"
+      ],
+      "repository_doi": "10.5281/zenodo.17712099",
+      "repository_url": "https://zenodo.org/records/17712099",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://zenodo.org/records/17712099",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "z18399359",
+      "title": "College, Cognitive Ability, and Socioeconomic Disadvantage: Policy Lessons from the U.K. in 1960-2004",
+      "paper_authors": [
+        "Andrea Ichino",
+        "Aldo Rustichini",
+        "Giulio Zanella"
+      ],
+      "repository_doi": "10.5281/zenodo.18399359",
+      "repository_url": "https://zenodo.org/records/18399359",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://zenodo.org/records/18399359",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "z21562174",
+      "title": "Daddy's Girl: Daughters, Managerial Decisions, and Gender Inequality",
+      "paper_authors": [
+        "Maddalena Ronchi",
+        "Nina Smith"
+      ],
+      "repository_doi": "10.5281/zenodo.21562174",
+      "repository_url": "https://zenodo.org/records/21562174",
+      "code_license": "BSD-3-Clause",
+      "license_url": "https://opensource.org/license/bsd-3-clause",
+      "notice_files": [
+        "LICENSES/BSD-z21562174.txt"
+      ],
+      "license_evidence_url": "https://zenodo.org/records/21562174",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "z4602567",
+      "title": "Migration and Informal Insurance: Evidence from a Randomized Controlled Trial and a Structural Model",
+      "paper_authors": [
+        "Costas Meghir",
+        "A Mushfiq Mobarak",
+        "Corina Mommaerts",
+        "Melanie Morten"
+      ],
+      "repository_doi": "10.5281/zenodo.4602567",
+      "repository_url": "https://zenodo.org/records/4602567",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://zenodo.org/records/4602567",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "z4665536",
+      "title": "Long-Term Effects of Childhood Nutrition: Evidence from a School Lunch Reform",
+      "paper_authors": [
+        "Petter Lundborg",
+        "Dan-Olof Rooth",
+        "Jesper Alex-Petersen"
+      ],
+      "repository_doi": "10.5281/zenodo.4665536",
+      "repository_url": "https://zenodo.org/records/4665536",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://zenodo.org/records/4665536",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "z4733035",
+      "title": "International Spillovers and Local Credit Cycles",
+      "paper_authors": [
+        "Julian di Giovanni",
+        "Şebnem Kalemli-Özcan",
+        "Mehmet Fatih Ulu",
+        "Yusuf Soner Başkaya"
+      ],
+      "repository_doi": "10.5281/zenodo.4733035",
+      "repository_url": "https://zenodo.org/records/4733035",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://zenodo.org/records/4733035",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "z5338362",
+      "title": "The Real Effects of Monetary Expansions: Evidence from a Large-scale Historical Experiment",
+      "paper_authors": [
+        "Nuno Palma"
+      ],
+      "repository_doi": "10.5281/zenodo.5338362",
+      "repository_url": "https://zenodo.org/records/5338362",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://zenodo.org/records/5338362",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "z5652443",
+      "title": "Inference with Many Weak Instruments",
+      "paper_authors": [
+        "Anna Mikusheva",
+        "Liyang Sun"
+      ],
+      "repository_doi": "10.5281/zenodo.5652443",
+      "repository_url": "https://zenodo.org/records/5652443",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://zenodo.org/records/5652443",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "z5652808",
+      "title": "Interventions and Cognitive Spillovers",
+      "paper_authors": [
+        "Steffen Altmann",
+        "Andreas Grunewald",
+        "Jonas Radbruch"
+      ],
+      "repository_doi": "10.5281/zenodo.5652808",
+      "repository_url": "https://zenodo.org/records/5652808",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://zenodo.org/records/5652808",
+      "checked_on": "2026-09-07",
+      "scope_note": "The record license is CC BY 4.0; the README NC statement is explicitly for data, not the author code."
+    },
+    {
+      "project_id": "z6976241",
+      "title": "Robots, Trade, and Luddism: A Sufficient Statistic Approach to Optimal Technology Regulation",
+      "paper_authors": [
+        "Arnaud Costinot",
+        "Iván Werning"
+      ],
+      "repository_doi": "10.5281/zenodo.6976241",
+      "repository_url": "https://zenodo.org/records/6976241",
+      "code_license": "MIT",
+      "license_url": "https://opensource.org/license/mit",
+      "notice_files": [
+        "LICENSES/MIT-z6976241.txt"
+      ],
+      "license_evidence_url": "https://zenodo.org/records/6976241",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "z7901559",
+      "title": "How Responsive are Wages to Firm-Specific Changes in Labor Demand? Evidence from Idiosyncratic Export Demand Shocks",
+      "paper_authors": [
+        "Andrew Garin",
+        "Filipe Silvério"
+      ],
+      "repository_doi": "10.5281/zenodo.7901559",
+      "repository_url": "https://zenodo.org/records/7901559",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://zenodo.org/records/7901559",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "z8376886",
+      "title": "Outside Options in the Labor Market",
+      "paper_authors": [
+        "Sydnee Caldwell",
+        "Oren Danieli"
+      ],
+      "repository_doi": "10.5281/zenodo.8376886",
+      "repository_url": "https://zenodo.org/records/8376886",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://zenodo.org/records/8376886",
+      "checked_on": "2026-09-07"
+    },
+    {
+      "project_id": "197984",
+      "title": "Revealing Stereotypes: Evidence from Immigrants in Schools",
+      "paper_authors": [
+        "Alberto Alesina",
+        "Michela Carlana",
+        "Eliana La Ferrara",
+        "Paolo Pinotti"
+      ],
+      "repository_doi": "10.3886/E197984V1",
+      "repository_url": "https://doi.org/10.3886/E197984V1",
+      "code_license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "notice_files": [],
+      "license_evidence_url": "https://www.icpsr.umich.edu/sites/view/studies/197984",
+      "checked_on": "2026-09-07"
+    }
+  ]
+}

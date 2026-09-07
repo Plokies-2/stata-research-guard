@@ -1,6 +1,6 @@
 {
   "name": "stata-research-guard",
-  "version": "0.4.0+codex.20260906163125",
+  "version": "0.4.0+codex.20260907075827",
   "description": "Researcher-readable Stata with original command evidence and concrete independent review.",
   "author": {
     "name": "song7"

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.0+codex.20260907075827 — 2026-09-07
+
+- Document purposeful output files, reference-workbook layouts, visible control coefficients, shared figure loops and variable codebooks.
+- Prefer mcpStata while allowing available authorized Stata execution routes when it is absent; report unexecuted work explicitly.
+
+- Clarify readability-first guidance: retain adequate code and consider the names, state and handoffs a researcher must follow, rather than line count.
+- Repair 47 original excerpt boundaries and 60 profiles without rewriting the source papers. Keep research-specific and legacy uses explicitly limited.
+- Preserve five original problematic examples and provide separately labeled editorial adaptations with changes and assumptions. Add a conditional migration-moment illustration; original paper logs remain original-run evidence.
+- Record paper-code licenses and authors for 34 packages, preserve five original MIT/BSD notices, and deliver applicable license information with selected paper code. Keep the non-paper legacy formatter snapshot out of paper-source navigation without deleting it.
+- Check original/adapted source and license-notice transport, and observe the changed returned-result and failure-handling interfaces in a separate small Stata session. No original paper or DataWork workflow was rerun; public redistribution rights for Stata manuals/help are outside this paper-code check.
+
 ## 0.4.0 — 2026-09-07
 
 - Consolidate the researcher-facing workflow updates: outreg2 first when it preserves results, on-demand package setup in the main Stata environment, and compact figures read in their research context.
