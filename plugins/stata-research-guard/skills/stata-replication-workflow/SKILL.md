@@ -13,6 +13,8 @@ Read [general-rules.md](references/general-rules.md) once for the relevant task,
 
 Inspect the requested files and their direct inputs, callers, and outputs. Preserve the user's scope, research specification, baseline data, and output contracts. Understand the affected research blocks before choosing a rewrite, following the general rules.
 
+When code touches data variables, create or update the project Excel codebook alongside the code, following the general rules' five-column reference layout and variable-change documentation guidance. Include the affected codebook entries in your final code-and-output review.
+
 For workflow design or restructuring, reconcile the forward data flow with a backward reading from the affected output's meaning, sample, and source transformations. Use what this reveals to choose a useful correction or retain adequate code; a path listing or cosmetic master-file change is not the purpose of a research refactor.
 
 Apply the stage and naming guidance in the general rules. Consult [workflow-taxonomy.md](references/workflow-taxonomy.md) when deciding file boundaries, including whether an independent input, interface, or restart need justifies another file.
@@ -28,7 +30,7 @@ Choose and critically read the connected originals yourself using that reference
 1. Confirm current-task Guard and mcpStata are callable before material Stata work. Use Guard for grammar and optional usage context, and mcpStata for execution, data, logs, returned state, and artifacts.
 2. Read [command-evidence.md](references/command-evidence.md) when command evidence is needed; it owns lookup, exemptions, and reuse. When a material command is clear, request its exact help directly. Use discovery only for an unresolved command, and expand documentation or command-local examples for a remaining question.
 3. Use the block's purpose and actual consumer to frame the help question, following the native-interface guidance and discovery examples in that reference. Apply the general rules when choosing the implementation.
-4. Run the requested work and inspect relevant data counts, logs, estimates, tables, and figures. Use `outreg2` first when it preserves the results, following the general rules. If a chosen package is missing, follow the general rules' standing authorization for on-demand installation into the main Stata environment, refresh the runtime as needed, and return to the analysis.
+4. Run the requested work and inspect relevant data counts, logs, estimates, tables, and figures. Also inspect the affected generated files and paths for unnecessary persistent intermediates, duplicate exports, and unclear placement, following the general rules' file-lifecycle guidance. Use `outreg2` first when it preserves the results, following the general rules. If a chosen package is missing, follow the general rules' standing authorization for on-demand installation into the main Stata environment, refresh the runtime as needed, and return to the analysis.
 
 ## Independent advice when requested or useful
 

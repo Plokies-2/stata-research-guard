@@ -1582,8 +1582,8 @@
     },
     {
       "path": "skills/stata-peer-audit/SKILL.md",
-      "bytes": 3904,
-      "sha256": "e45df64c7fb2d867af4ecec44ba65c5ecde5dbacd0734f22f51c72bd43e14f59"
+      "bytes": 6122,
+      "sha256": "2e76ab5c13687a94595ce35bfbc717919ebf9dbafd44748de591d1b10b05c922"
     },
     {
       "path": "skills/stata-replication-workflow/agents/openai.yaml",
@@ -1602,8 +1602,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rules.md",
-      "bytes": 10819,
-      "sha256": "6de9178d973b0771a0db4c4b1c1b0c439394f1059b97496b40ace4a77a84027a"
+      "bytes": 16233,
+      "sha256": "57de1e2edad76e69236b59888370d39b78a0e7acc086a2c973120a89c993fa88"
     },
     {
       "path": "skills/stata-replication-workflow/references/paper-workflow-reading.md",
@@ -1622,8 +1622,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/SKILL.md",
-      "bytes": 5491,
-      "sha256": "b6eeb6d716d22b7316e8bbfd23d8d6aac51851495d1ae91b0a960e9801e4f809"
+      "bytes": 5958,
+      "sha256": "5effcb79a1a952595b6e12543372fdaba0950a52259bdbbe85796aef268f74dc"
     },
     {
       "path": "tests/fixtures/outreg2_excel_runtime.do",
