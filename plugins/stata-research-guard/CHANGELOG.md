@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-12 — consistent guidance and source delivery
+
+- Correct cgmreg profile text to distinguish available Caskey help from unverified original-paper version identity; align two profiles with the active Stata version and correct one internal merge-key explanation without rewriting original paper code.
+- Keep the existing request shapes, help sources, source-section boundaries, required reading and authoring rules. Explain exact lookup inputs and return argument errors without implying that the whole research task must stop.
+- Report the plugin manifest version during MCP initialization and preserve the child process exit code in the Windows launcher.
+- Reject unsupported nested SMCL tags instead of silently losing their text in the legacy converter. Resolve all expanded-guide sources before replacing existing generated files.
+- Retire the old Stata output-oracle fixture from the active test and distribution trees, preserving its historical source outside the plugin. Functional checks remain limited to plugin transport, source delivery and installation facts.
+
 ## 0.4.0+codex.20260907075827 — 2026-09-07
 
 - Document purposeful output files, reference-workbook layouts, visible control coefficients, shared figure loops and variable codebooks.

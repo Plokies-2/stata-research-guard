@@ -69,6 +69,7 @@ function groupBy(rows, key) {
   return result;
 }
 
+const pluginMetadata = readJson(path.join(PLUGIN_ROOT, ".codex-plugin", "plugin.json"));
 const registry = readJson(REGISTRY_PATH);
 const commandsByName = new Map(registry.commands.map((row) => [row.command, row]));
 
@@ -131,7 +132,7 @@ function compactCommandDictionary() {
 
 function exactHelpTopic(command) {
   if (typeof command !== "string" || !EXACT_HELP_TOPIC.test(command)) {
-    throw new Error(`ABORT invalid_help_topic: ${JSON.stringify(command)}`);
+    throw new Error(`invalid_argument: invalid_help_topic: ${JSON.stringify(command)}`);
   }
   return command;
 }
@@ -154,12 +155,12 @@ function selectedHelpTopic(command) {
       };
     }
   }
-  throw new Error(`ABORT invalid_help_topic: ${JSON.stringify(command)}`);
+  throw new Error(`invalid_argument: invalid_help_topic: ${JSON.stringify(command)}`);
 }
 
 function selectedCommandsFrom(args) {
   if (!Array.isArray(args.selected_commands) || args.selected_commands.length === 0) {
-    throw new Error("ABORT empty_command_selection: selected_commands must be a non-empty array of exact command topics");
+    throw new Error("invalid_argument: empty_command_selection: selected_commands must be a non-empty array of exact command topics");
   }
   const seen = new Set();
   const selectedCommands = [];
@@ -167,7 +168,7 @@ function selectedCommandsFrom(args) {
   for (const command of args.selected_commands) {
     const topic = selectedHelpTopic(command);
     if (seen.has(topic.resolved)) {
-      throw new Error(`ABORT duplicate_selected_command: ${JSON.stringify(topic.resolved)}`);
+      throw new Error(`invalid_argument: duplicate_selected_command: ${JSON.stringify(topic.resolved)}`);
     }
     seen.add(topic.resolved);
     selectedCommands.push(topic.resolved);
@@ -178,15 +179,15 @@ function selectedCommandsFrom(args) {
 
 function selectedBlockIdsFrom(args) {
   if (!Array.isArray(args.selected_block_ids) || args.selected_block_ids.length === 0) {
-    throw new Error("ABORT empty_paper_block_selection: selected_block_ids must be a non-empty array of exact catalog IDs");
+    throw new Error("invalid_argument: empty_paper_block_selection: selected_block_ids must be a non-empty array of exact catalog IDs");
   }
   const seen = new Set();
   for (const blockId of args.selected_block_ids) {
     if (typeof blockId !== "string" || !profilesById.has(blockId)) {
-      throw new Error(`ABORT paper_block_not_in_catalog: ${JSON.stringify(blockId)}`);
+      throw new Error(`invalid_argument: paper_block_not_in_catalog: ${JSON.stringify(blockId)}`);
     }
     if (seen.has(blockId)) {
-      throw new Error(`ABORT duplicate_paper_block_id: ${JSON.stringify(blockId)}`);
+      throw new Error(`invalid_argument: duplicate_paper_block_id: ${JSON.stringify(blockId)}`);
     }
     seen.add(blockId);
   }
@@ -202,7 +203,7 @@ function optionalSelectedBlockIdsFrom(args) {
 function optionalExpandedCommandsFrom(args, selectedCommands) {
   if (!Object.prototype.hasOwnProperty.call(args, "expanded_commands")) return [];
   if (!Array.isArray(args.expanded_commands)) {
-    throw new Error("ABORT invalid_expanded_command_selection: expanded_commands must be an array of exact selected command keys");
+    throw new Error("invalid_argument: invalid_expanded_command_selection: expanded_commands must be an array of exact selected command keys");
   }
   if (args.expanded_commands.length === 0) return [];
   const seen = new Set();
@@ -210,13 +211,13 @@ function optionalExpandedCommandsFrom(args, selectedCommands) {
   for (const command of args.expanded_commands) {
     const topic = selectedHelpTopic(command);
     if (!commandsByName.has(topic.resolved)) {
-      throw new Error(`ABORT expanded_command_not_registered: ${JSON.stringify(topic.resolved)}`);
+      throw new Error(`invalid_argument: expanded_command_not_registered: ${JSON.stringify(topic.resolved)}`);
     }
     if (seen.has(topic.resolved)) {
-      throw new Error(`ABORT duplicate_expanded_command: ${JSON.stringify(topic.resolved)}`);
+      throw new Error(`invalid_argument: duplicate_expanded_command: ${JSON.stringify(topic.resolved)}`);
     }
     if (!selectedCommands.includes(topic.resolved)) {
-      throw new Error(`ABORT expanded_command_not_selected: ${JSON.stringify(topic.resolved)}`);
+      throw new Error(`invalid_argument: expanded_command_not_selected: ${JSON.stringify(topic.resolved)}`);
     }
     seen.add(topic.resolved);
     expandedCommands.push(topic.resolved);
@@ -236,7 +237,7 @@ function validateArguments(args) {
   const hasBlocks = Object.prototype.hasOwnProperty.call(args, "selected_block_ids");
   const hasExpanded = Object.prototype.hasOwnProperty.call(args, "expanded");
   if (hasExpanded && args.expanded !== true) {
-    throw new Error("ABORT invalid_phase_arguments: expanded must be true when supplied");
+    throw new Error("invalid_argument: invalid_phase_arguments: expanded must be true when supplied");
   }
   const phase = hasExpanded ? "expanded_context" : hasCommands ? "selected_command_evidence" : "discovery";
   const allowed = phase === "discovery"
@@ -246,13 +247,13 @@ function validateArguments(args) {
       : new Set(["request", "selected_commands", "expanded", "expanded_commands", "selected_block_ids", "known_rules_sha256", "help_view", "expanded_sections"]);
   const unexpected = Object.keys(args).filter((key) => !allowed.has(key));
   if (unexpected.length > 0) {
-    throw new Error(`ABORT invalid_phase_arguments: ${phase} does not allow ${unexpected.join(", ")}`);
+    throw new Error(`invalid_argument: invalid_phase_arguments: ${phase} does not allow ${unexpected.join(", ")}`);
   }
   if (phase === "expanded_context" && !hasCommands) {
-    throw new Error("ABORT invalid_phase_arguments: expanded_context requires selected_commands");
+    throw new Error("invalid_argument: invalid_phase_arguments: expanded_context requires selected_commands");
   }
   if (hasBlocks && phase !== "expanded_context") {
-    throw new Error("ABORT invalid_phase_arguments: selected_block_ids requires expanded: true");
+    throw new Error("invalid_argument: invalid_phase_arguments: selected_block_ids requires expanded: true");
   }
 
   const selected = phase === "discovery"
@@ -281,7 +282,7 @@ function validateArguments(args) {
     }
   }
   if (phase === "expanded_context" && expandedCommands.length === 0 && selectedBlockIds.length === 0) {
-    throw new Error("ABORT empty_expanded_context: supply expanded_commands, selected_block_ids, or both");
+    throw new Error("invalid_argument: empty_expanded_context: supply expanded_commands, selected_block_ids, or both");
   }
 
   return {
@@ -445,7 +446,7 @@ function paperCard(blockId) {
   loadPaperDetails();
   const block = blocksById.get(blockId);
   if (!block) {
-    throw new Error(`ABORT paper_block_not_in_catalog: ${JSON.stringify(blockId)}`);
+    throw new Error(`invalid_argument: paper_block_not_in_catalog: ${JSON.stringify(blockId)}`);
   }
   return {
     block_id: block.block_id,
@@ -495,7 +496,7 @@ async function buildCommandEvidence(args, options = {}) {
     const profile = profilesById.get(blockId);
     if (!selectedCommands.includes(profile.focus_command)) {
       throw new Error(
-        `ABORT paper_block_not_selected_command: ${blockId} belongs to ${profile.focus_command}`,
+        `invalid_argument: paper_block_not_selected_command: ${blockId} belongs to ${profile.focus_command}`,
       );
     }
   }
@@ -527,8 +528,8 @@ const TOOL_DEFINITIONS = [
           additionalProperties: false,
           required: ["request"],
           properties: {
-            request: { type: "string", minLength: 1 },
-            known_rules_sha256: { type: "string", pattern: "^[a-f0-9]{64}$" },
+            request: { type: "string", minLength: 1, description: "Describe the current question. Retrieval follows the exact selections below; this text does not rank commands." },
+            known_rules_sha256: { type: "string", pattern: "^[a-f0-9]{64}$", description: "Hash of complete rules still visible in this caller context. Omit after context loss." },
           },
         },
         {
@@ -537,12 +538,12 @@ const TOOL_DEFINITIONS = [
           additionalProperties: false,
           required: ["request", "selected_commands"],
           properties: {
-            request: { type: "string", minLength: 1 },
-            selected_commands: { type: "array", minItems: 1, items: { type: "string", minLength: 1 } },
-            known_rules_sha256: { type: "string", pattern: "^[a-f0-9]{64}$" },
-            help_view: { type: "string", enum: ["catalog", "full"] },
-            help_sections: { type: "object", minProperties: 1, additionalProperties: { type: "array", minItems: 1, uniqueItems: true, items: { type: "string", minLength: 1 } } },
-            refresh_live_help: { type: "boolean" },
+            request: { type: "string", minLength: 1, description: "Describe the current question. Retrieval follows the exact selections below; this text does not rank commands." },
+            selected_commands: { type: "array", description: "Exact Stata commands selected by the model. Known commands can be requested without discovery.", minItems: 1, items: { type: "string", minLength: 1 } },
+            known_rules_sha256: { type: "string", pattern: "^[a-f0-9]{64}$", description: "Hash of complete rules still visible in this caller context. Omit after context loss." },
+            help_view: { type: "string", enum: ["catalog", "full"], description: "Request source navigation or the complete source. Do not combine with section selections." },
+            help_sections: { type: "object", description: "Map each selected command to exact IDs from its current help catalog; common foundation sections also accompany the selection.", minProperties: 1, additionalProperties: { type: "array", minItems: 1, uniqueItems: true, items: { type: "string", minLength: 1 } } },
+            refresh_live_help: { type: "boolean", description: "Refresh a successful outside-dictionary installed-help snapshot. Registered commands keep their bundled source." },
           },
         },
         {
@@ -555,14 +556,14 @@ const TOOL_DEFINITIONS = [
             { required: ["selected_block_ids"] },
           ],
           properties: {
-            request: { type: "string", minLength: 1 },
-            selected_commands: { type: "array", minItems: 1, items: { type: "string", minLength: 1 } },
-            expanded: { const: true },
-            known_rules_sha256: { type: "string", pattern: "^[a-f0-9]{64}$" },
-            help_view: { type: "string", enum: ["catalog", "full"] },
-            expanded_sections: { type: "object", minProperties: 1, additionalProperties: { type: "array", minItems: 1, uniqueItems: true, items: { type: "string", minLength: 1 } } },
-            expanded_commands: { type: "array", items: { type: "string", minLength: 1 } },
-            selected_block_ids: { type: "array", items: { type: "string", minLength: 1 } },
+            request: { type: "string", minLength: 1, description: "Describe the current question. Retrieval follows the exact selections below; this text does not rank commands." },
+            selected_commands: { type: "array", description: "Exact Stata commands selected by the model. Known commands can be requested without discovery.", minItems: 1, items: { type: "string", minLength: 1 } },
+            expanded: { const: true, description: "Request selected longer documents, exact paper blocks, or both; a preceding phase call is not required." },
+            known_rules_sha256: { type: "string", pattern: "^[a-f0-9]{64}$", description: "Hash of complete rules still visible in this caller context. Omit after context loss." },
+            help_view: { type: "string", enum: ["catalog", "full"], description: "Request source navigation or the complete source. Do not combine with section selections." },
+            expanded_sections: { type: "object", description: "Map each expanded command to exact IDs from its current expanded-document catalog.", minProperties: 1, additionalProperties: { type: "array", minItems: 1, uniqueItems: true, items: { type: "string", minLength: 1 } } },
+            expanded_commands: { type: "array", description: "Subset of selected_commands whose longer documents are needed.", items: { type: "string", minLength: 1 } },
+            selected_block_ids: { type: "array", description: "Exact paper block IDs from the selected commands' catalogs. Omit for documentation-only requests.", items: { type: "string", minLength: 1 } },
           },
         },
       ],
@@ -588,7 +589,7 @@ async function dispatch(message) {
       result: {
         protocolVersion: "2024-11-05",
         capabilities: { tools: {} },
-        serverInfo: { name: "stataResearchGuard", version: "0.3.0" },
+        serverInfo: { name: "stataResearchGuard", version: pluginMetadata.version },
       },
     };
   }

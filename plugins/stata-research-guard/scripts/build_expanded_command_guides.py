@@ -132,9 +132,7 @@ def build(manual_text_dir: Path, stata_docs_dir: Path) -> dict:
     help_by_command = {row["command"]: row for row in help_guides}
 
     manual_pages: dict[str, list[str]] = {}
-    OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
-    for stale_output in OUTPUT_ROOT.glob("*.txt"):
-        stale_output.unlink()
+    pending_outputs: dict[Path, str] = {}
     guides = []
 
     for command_row in registry:
@@ -161,7 +159,7 @@ def build(manual_text_dir: Path, stata_docs_dir: Path) -> dict:
                 )
             content = "\n".join(parts).rstrip() + "\n"
             output = OUTPUT_ROOT / f"{command}.txt"
-            output.write_text(content, encoding="utf-8", newline="\n")
+            pending_outputs[output] = content
             pdf_path = stata_docs_dir / f"{code}.pdf"
             guides.append(
                 {
@@ -180,7 +178,7 @@ def build(manual_text_dir: Path, stata_docs_dir: Path) -> dict:
                     "source_sha256": sha256(pdf_path),
                     "components": components,
                     "content_file": plugin_relative(output),
-                    "content_sha256": sha256(output),
+                    "content_sha256": hashlib.sha256(content.encode("utf-8")).hexdigest(),
                     "content_format": "layout-preserving plain text",
                     "transformation": (
                         "Poppler -layout text, split on PDF page boundaries; selected whole contiguous "
@@ -197,7 +195,7 @@ def build(manual_text_dir: Path, stata_docs_dir: Path) -> dict:
             source = DATA_ROOT / expanded_source["content_file"]
             output = OUTPUT_ROOT / "jregress.txt"
             content = source.read_text(encoding="utf-8")
-            output.write_text(content, encoding="utf-8", newline="\n")
+            pending_outputs[output] = content
             guides.append(
                 {
                     "record_type": "expanded_command_guide",
@@ -211,7 +209,7 @@ def build(manual_text_dir: Path, stata_docs_dir: Path) -> dict:
                     "source_sha256": expanded_source.get("source_sha256"),
                     "components": [],
                     "content_file": plugin_relative(output),
-                    "content_sha256": sha256(output),
+                    "content_sha256": hashlib.sha256(content.encode("utf-8")).hexdigest(),
                     "content_format": "markdown text extracted from author PDF",
                     "transformation": expanded_source.get("transformation"),
                     "limitations": [
@@ -268,7 +266,15 @@ def build(manual_text_dir: Path, stata_docs_dir: Path) -> dict:
         "target_runtime": "Stata 18",
         "guides": guides,
     }
-    OUTPUT_INDEX.write_text(json.dumps(index, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+    # Resolve all sources before replacing any existing generated documentation.
+    index_text = json.dumps(index, ensure_ascii=False, indent=2) + "\n"
+    OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
+    for output, content in pending_outputs.items():
+        output.write_text(content, encoding="utf-8", newline="\n")
+    OUTPUT_INDEX.write_text(index_text, encoding="utf-8", newline="\n")
+    for stale_output in OUTPUT_ROOT.glob("*.txt"):
+        if stale_output not in pending_outputs:
+            stale_output.unlink()
     return index
 
 

@@ -404,7 +404,7 @@ test("out-of-dictionary exact topics use live help without restoring an mcpStata
 
   await assert.rejects(
     () => buildCommandEvidence({ request: "Unsafe topic", selected_commands: ["anova;erase"] }),
-    /ABORT invalid_help_topic/,
+    /invalid_argument: invalid_help_topic/,
   );
 
   for (const command of ["jregress", "jwdidstacked"]) {
@@ -471,12 +471,12 @@ test("known spaced estimates commands retain identity and read the correct share
 test("known estimates spellings preserve duplicate and unsafe-topic handling", async () => {
   await assert.rejects(
     () => buildCommandEvidence({ request: "Duplicate spelling", selected_commands: ["estimates use", "estimates_use"] }),
-    /ABORT duplicate_selected_command/,
+    /invalid_argument: duplicate_selected_command/,
   );
   for (const command of ["estimates use; erase", "estimates unknown", "estimates ../save"]) {
     await assert.rejects(
       () => buildCommandEvidence({ request: "Invalid topic", selected_commands: [command] }),
-      /ABORT invalid_help_topic/,
+      /invalid_argument: invalid_help_topic/,
     );
   }
 });
@@ -616,11 +616,11 @@ test("phase arguments and exact IDs fail closed", async () => {
   await assert.rejects(
     () => buildCommandEvidence({ request: "Scan", selected_commands: ["xtreg"],
     help_view: "full", project_path: "." }),
-    /ABORT invalid_phase_arguments/,
+    /invalid_argument: invalid_phase_arguments/,
   );
   await assert.rejects(
     () => buildCommandEvidence({ request: "Duplicate", selected_commands: ["xtreg", "xtreg"] }),
-    /ABORT duplicate_selected_command/,
+    /invalid_argument: duplicate_selected_command/,
   );
   await assert.rejects(
     () => buildCommandEvidence({
@@ -630,7 +630,7 @@ test("phase arguments and exact IDs fail closed", async () => {
       expanded: true,
       selected_block_ids: ["block-139-184-032"],
     }),
-    /ABORT paper_block_not_selected_command/,
+    /invalid_argument: paper_block_not_selected_command/,
   );
   await assert.rejects(
     () => buildCommandEvidence({
@@ -639,7 +639,7 @@ test("phase arguments and exact IDs fail closed", async () => {
     help_view: "full",
       selected_block_ids: ["block-139-184-033"],
     }),
-    /ABORT invalid_phase_arguments/,
+    /invalid_argument: invalid_phase_arguments/,
   );
   await assert.rejects(
     () => buildCommandEvidence({
@@ -648,7 +648,7 @@ test("phase arguments and exact IDs fail closed", async () => {
     help_view: "full",
       expanded: true,
     }),
-    /ABORT empty_expanded_context/,
+    /invalid_argument: empty_expanded_context/,
   );
   await assert.rejects(
     () => buildCommandEvidence({
@@ -658,7 +658,7 @@ test("phase arguments and exact IDs fail closed", async () => {
       expanded: true,
       expanded_commands: ["regress"],
     }),
-    /ABORT expanded_command_not_selected/,
+    /invalid_argument: expanded_command_not_selected/,
   );
   await assert.rejects(
     () => buildCommandEvidence({
@@ -667,7 +667,7 @@ test("phase arguments and exact IDs fail closed", async () => {
       expanded: true,
       expanded_commands: ["anova"],
     }),
-    /ABORT expanded_command_not_registered/,
+    /invalid_argument: expanded_command_not_registered/,
   );
 });
 

@@ -124,8 +124,7 @@ def render_token(token: str, unknown_tags: set[str]) -> str:
     if tag == "browse":
         return visible_browse_link(payload)
 
-    unknown_tags.add(tag)
-    return ""
+    raise ValueError(f"unsupported SMCL tag: {tag}")
 
 
 def render_inline(text: str, unknown_tags: set[str] | None = None) -> str:

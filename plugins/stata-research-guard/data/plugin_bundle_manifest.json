@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.4.0+codex.20260907075827"
+    "version": "0.4.0+codex.20260912050857"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
-      "bytes": 963,
-      "sha256": "d42efdc83787c9e1d45afb37c2c327c15f8d03be160c428eef01ee82bb9d4381"
+      "bytes": 987,
+      "sha256": "6464df2598e76f497b2324d1e3e458db16f6bb00f47f4f572a60c470782e2a18"
     },
     {
       "path": ".mcp.json",
@@ -22,8 +22,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 26796,
-      "sha256": "bfdc02dcc630e18da7f07dffe9e508fa1872f00738fda836b9e091e23a527bf4"
+      "bytes": 27879,
+      "sha256": "e6b007d5317956ae6e8feb6e4c14f20eb4d1dc878869ea2181ef44773f7f6f92"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -1237,13 +1237,13 @@
     },
     {
       "path": "data/high_quality_paper_blocks.jsonl",
-      "bytes": 386428,
-      "sha256": "14786898d71eda3eb1669d31de4f47345f888a8d0656e5efb0d2773d26f133a6"
+      "bytes": 386507,
+      "sha256": "5eb05232ce586721e849ec455fe0098f1a8d0912326cee58c5e9c8e69ae3d13e"
     },
     {
       "path": "data/paper_example_profiles.jsonl",
-      "bytes": 206293,
-      "sha256": "9d40b2e39adf8508a316f729b592394171e6a1c3ea7e2c2453a464c41571e56a"
+      "bytes": 206646,
+      "sha256": "360f8546f6cff88bad580768b4b414dda99c21c4744dad697d27694f9e42b0d8"
     },
     {
       "path": "data/paper_execution_contexts.jsonl",
@@ -1582,18 +1582,18 @@
     },
     {
       "path": "mcp/server.cjs",
-      "bytes": 26846,
-      "sha256": "2bfc9d1ff23b2aae7dfab1178b8d637eeaab988fff1305225eafbc0588130293"
+      "bytes": 28970,
+      "sha256": "f95065e45fdcf1671fb252d02e304b661273e143304f87d8a05d680a8ef7f669"
     },
     {
       "path": "README.md",
-      "bytes": 12358,
-      "sha256": "6578e4ba86a71df93604b5ddb79bb5771187471d3d796dd3a3e4dd0428a17397"
+      "bytes": 12545,
+      "sha256": "7b30f5a1e7165d8dfebe5bcad466d38b0122fdef0ac5842dca5e0fbf0524738b"
     },
     {
       "path": "scripts/build_clean_command_guide.py",
-      "bytes": 7179,
-      "sha256": "f339d7b86b091e1c8302de7bcaa462d1b57b6917995a4a95725c68a791fbe15b"
+      "bytes": 7192,
+      "sha256": "a29a5b64510318c8477e46b3f4176b8f2bdf123ed4c09d5ec003e232fa200cef"
     },
     {
       "path": "scripts/build_command_help_guides.cjs",
@@ -1602,13 +1602,13 @@
     },
     {
       "path": "scripts/build_expanded_command_guides.py",
-      "bytes": 11859,
-      "sha256": "f02f5801fff7c30761bc9197c980155ef779c80695a5915a41e8e93c5cd98bd2"
+      "bytes": 12205,
+      "sha256": "ff6edf3868e98aeb0f2fadc5fb496a295d7a552e722c50becc084c195bddd1f2"
     },
     {
       "path": "scripts/run_mcp.cmd",
-      "bytes": 542,
-      "sha256": "b75ae0877b67dc6068100150b11c659b7e20a91a701ddbb1bb830c527a905ae6"
+      "bytes": 556,
+      "sha256": "121ecea685316d662b191fcc2bfa0fff3371606c25dc63b55a02d17a10366964"
     },
     {
       "path": "scripts/verify_plugin_bundle.cjs",
@@ -1661,11 +1661,6 @@
       "sha256": "569a633dd044bb16818d382148c5e8690b26332643cd3afabed9d1ff70d83103"
     },
     {
-      "path": "tests/fixtures/outreg2_excel_runtime.do",
-      "bytes": 8769,
-      "sha256": "94562dfb6c9da92c81c2a7fd4d8646cf590aeeb05adb6011e926498241b6e409"
-    },
-    {
       "path": "tests/formatter_guard.test.cjs",
       "bytes": 1118,
       "sha256": "460de0adb08c8f70ba5041d034483d50db43f20f72ae9642fd58a7ecf3253b8e"
@@ -1681,19 +1676,14 @@
       "sha256": "81053c44a9b31780ebaa9186afcb90c869715fe01984e794452604b68994de19"
     },
     {
-      "path": "tests/outreg2_excel_runtime.test.cjs",
-      "bytes": 2533,
-      "sha256": "84dfb4c5faa73e0c202d93beab4aa9ede5dd751cb0c172fcbf47b0912c46b560"
-    },
-    {
       "path": "tests/plugin_bundle_manifest.test.cjs",
       "bytes": 5411,
       "sha256": "631b10078a3ed4c13baddd9a0b233dff0f8429152f9a200c81af253214cc36fc"
     },
     {
       "path": "tests/server.test.cjs",
-      "bytes": 31541,
-      "sha256": "589dc92f5a291fd191d36f0a6f81a7153eb20524bff2d418d8e596bc684102f0"
+      "bytes": 31661,
+      "sha256": "52b2d5e491ec3d0a0b58c6f4387a202067e4d70e80564f26b02b12fc9df79c5b"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
@@ -1714,7 +1704,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.4.0+codex.20260907075827"
+      "value": "0.4.0+codex.20260912050857"
     },
     {
       "id": "readme.heading",
