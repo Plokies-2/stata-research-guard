@@ -11,7 +11,7 @@ Read [general-rules.md](references/general-rules.md) once for the relevant task,
 
 ## Work from the actual project
 
-Inspect the requested files and their direct inputs, callers, and outputs. Preserve the user's scope, research specification, baseline data, and output contracts. Understand the affected research blocks before choosing a rewrite, following the general rules.
+Inspect the requested files and their direct inputs, callers, and outputs. Preserve the user's scope, research specification, baseline data, and output contracts. Keep one maintained `.do` per research work unit: locate its existing file and edit, extend, rerun, or refactor that same file. A changed option, specification, output, or follow-up request is not a new work unit. Follow the general rules for the narrow reasons to create another file; do not create a replacement workflow by default.
 
 When code touches data variables, create or update the project Excel codebook alongside the code, following the general rules' five-column reference layout and variable-change documentation guidance. Include the affected codebook entries in your final code-and-output review.
 

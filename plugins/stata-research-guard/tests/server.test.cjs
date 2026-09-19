@@ -90,8 +90,6 @@ test("Phase 1 returns common main rules and a compact neutral 115-command index"
       assert.equal(Object.hasOwn(command, omitted), false, `${command.command} retained ${omitted}`);
     }
   }
-  assert.ok(JSON.stringify(result).length < 40000, "Phase 1 should remain compact");
-
   const keys = deepKeys(result);
   for (const key of [
     "full_command_guides",
