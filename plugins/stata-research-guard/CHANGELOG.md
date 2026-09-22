@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-22 — reduce repeated evidence delivery
+
+- Add optional `include_paper_catalog: false` for Phase 2 help-only requests and `deduplicate_help: true` for Phase 2/3 requests sharing identical delivered help. Same-response JSON Pointers retain access to the complete body; command/source metadata, original documents and default responses are unchanged.
+- Explain these options and existing visible-context rule-hash reuse in the workflow instructions. With rules already visible, measured JSON response lengths fall from 11,245 to 7,886 characters for outreg2 and from 15,025 to 7,957 for encode/decode together. These are character counts, not token estimates.
+- Remove the unused exact-topic helper and replace the test-only recursive copy helper with `fs.cpSync`. Add transport checks for exact response reconstruction, explicit catalog omission, distinct help bodies and unavailable help, and option validation.
+
 ## 2026-09-22 — remove orphaned bundle files
 
 - Remove the obsolete outreg2 runtime record, formatter-only test, unused style snapshot, and unreferenced archived source from the distributed plugin. The supported workflow, help, research rules, and runtime behavior are unchanged.

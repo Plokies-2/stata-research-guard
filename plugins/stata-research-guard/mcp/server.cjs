@@ -130,13 +130,6 @@ function compactCommandDictionary() {
   }));
 }
 
-function exactHelpTopic(command) {
-  if (typeof command !== "string" || !EXACT_HELP_TOPIC.test(command)) {
-    throw new Error(`invalid_argument: invalid_help_topic: ${JSON.stringify(command)}`);
-  }
-  return command;
-}
-
 function selectedHelpTopic(command) {
   if (typeof command === "string" && EXACT_HELP_TOPIC.test(command)) {
     return { requested: command, resolved: command, normalization: null };
@@ -243,8 +236,8 @@ function validateArguments(args) {
   const allowed = phase === "discovery"
     ? new Set(["request", "known_rules_sha256"])
     : phase === "selected_command_evidence"
-      ? new Set(["request", "selected_commands", "known_rules_sha256", "help_view", "help_sections", "refresh_live_help"])
-      : new Set(["request", "selected_commands", "expanded", "expanded_commands", "selected_block_ids", "known_rules_sha256", "help_view", "expanded_sections"]);
+      ? new Set(["request", "selected_commands", "known_rules_sha256", "help_view", "help_sections", "refresh_live_help", "include_paper_catalog", "deduplicate_help"])
+      : new Set(["request", "selected_commands", "expanded", "expanded_commands", "selected_block_ids", "known_rules_sha256", "help_view", "expanded_sections", "deduplicate_help"]);
   const unexpected = Object.keys(args).filter((key) => !allowed.has(key));
   if (unexpected.length > 0) {
     throw new Error(`invalid_argument: invalid_phase_arguments: ${phase} does not allow ${unexpected.join(", ")}`);
@@ -265,6 +258,9 @@ function validateArguments(args) {
   }
   if (args.help_view !== undefined && !["catalog", "full"].includes(args.help_view)) throw new Error("help_view must be catalog or full");
   if (args.refresh_live_help !== undefined && typeof args.refresh_live_help !== "boolean") throw new Error("refresh_live_help must be boolean");
+  for (const option of ["include_paper_catalog", "deduplicate_help"]) {
+    if (args[option] !== undefined && typeof args[option] !== "boolean") throw new Error(`${option} must be boolean`);
+  }
   const selectedBlockIds = phase === "expanded_context" ? optionalSelectedBlockIdsFrom(args) : null;
   const expandedCommands = phase === "expanded_context" ? optionalExpandedCommandsFrom(args, selectedCommands) : null;
   const sectionRequest = args.help_sections !== undefined ? args.help_sections : args.expanded_sections;
@@ -319,7 +315,7 @@ async function dynamicCommandEvidence(command, liveHelpLookup, args) {
       source_relation_to_help: null,
       limitations: ["Out-of-dictionary exact help topics do not have bundled expanded documentation."],
     },
-    paper_example_catalog: [],
+    ...(args.include_paper_catalog === false ? { paper_example_catalog_omitted: true } : { paper_example_catalog: [] }),
   };
 }
 
@@ -332,7 +328,9 @@ async function commandEvidence(command, liveHelpLookup, args) {
     help_status: entry.help_status,
     command_help: commandHelp(command, args),
     expanded_documentation: expandedDocumentationSummary(command),
-    paper_example_catalog: profilesByCommand.get(command) || [],
+    ...(args.include_paper_catalog === false
+      ? { paper_example_catalog_omitted: true }
+      : { paper_example_catalog: profilesByCommand.get(command) || [] }),
   };
 }
 
@@ -463,6 +461,23 @@ function paperCard(blockId) {
   };
 }
 
+// References only earlier bodies in this response, never a prior call or cache.
+// Compare the delivered text, not source hashes: different selected sections
+// can belong to the same source without containing the same text.
+function deduplicateHelp(result, rowsKey, helpKey) {
+  const seen = new Map();
+  for (const [index, row] of result[rowsKey].entries()) {
+    const help = row[helpKey];
+    if (typeof help?.content !== "string" || !help.content) continue;
+    const reference = seen.get(help.content);
+    if (reference) {
+      row[helpKey] = { ...help, content: null, content_ref: reference };
+    } else {
+      seen.set(help.content, `#/${rowsKey}/${index}/${helpKey}/content`);
+    }
+  }
+}
+
 async function buildCommandEvidence(args, options = {}) {
   const {
     phase,
@@ -488,6 +503,7 @@ async function buildCommandEvidence(args, options = {}) {
       selected_commands: selectedCommands,
       command_evidence: await Promise.all(selectedCommands.map((command) => commandEvidence(command, liveHelpLookup, args))),
     };
+    if (args.deduplicate_help === true) deduplicateHelp(result, "command_evidence", "command_help");
     if (topicNormalizations.length > 0) result.topic_normalizations = topicNormalizations;
     return result;
   }
@@ -512,6 +528,7 @@ async function buildCommandEvidence(args, options = {}) {
     })),
     paper_usage_cards: selectedBlockIds.map(paperCard),
   };
+  if (args.deduplicate_help === true) deduplicateHelp(result, "expanded_command_evidence", "expanded_documentation");
   if (topicNormalizations.length > 0) result.topic_normalizations = topicNormalizations;
   return result;
 }
@@ -544,6 +561,8 @@ const TOOL_DEFINITIONS = [
             help_view: { type: "string", enum: ["catalog", "full"], description: "Request source navigation or the complete source. Do not combine with section selections." },
             help_sections: { type: "object", description: "Map each selected command to exact IDs from its current help catalog; common foundation sections also accompany the selection.", minProperties: 1, additionalProperties: { type: "array", minItems: 1, uniqueItems: true, items: { type: "string", minLength: 1 } } },
             refresh_live_help: { type: "boolean", description: "Refresh a successful outside-dictionary installed-help snapshot. Registered commands keep their bundled source." },
+            include_paper_catalog: { type: "boolean", description: "Default true. Set false for help-only calls or when the paper catalog is already visible; omitted catalogs are explicitly marked." },
+            deduplicate_help: { type: "boolean", description: "Default false. True replaces identical help bodies with content_ref JSON Pointers to the first body in this response; all command/source metadata remains." },
           },
         },
         {
@@ -564,6 +583,7 @@ const TOOL_DEFINITIONS = [
             expanded_sections: { type: "object", description: "Map each expanded command to exact IDs from its current expanded-document catalog.", minProperties: 1, additionalProperties: { type: "array", minItems: 1, uniqueItems: true, items: { type: "string", minLength: 1 } } },
             expanded_commands: { type: "array", description: "Subset of selected_commands whose longer documents are needed.", items: { type: "string", minLength: 1 } },
             selected_block_ids: { type: "array", description: "Exact paper block IDs from the selected commands' catalogs. Omit for documentation-only requests.", items: { type: "string", minLength: 1 } },
+            deduplicate_help: { type: "boolean", description: "Default false. True replaces identical expanded help bodies with content_ref JSON Pointers to the first body in this response; all command/source metadata remains." },
           },
         },
       ],

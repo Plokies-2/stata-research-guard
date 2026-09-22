@@ -45,6 +45,62 @@ const COMMAND_HELP_INDEX = readJson("command_help_guides.json");
 const EXPANDED_GUIDE_INDEX = readJson("expanded_command_guides.json");
 const COMMAND_SOURCE_CATALOG = readJson("command_source_catalog.json");
 
+test("help-only calls explicitly omit paper catalogs without changing help or rules", async () => {
+  const args = { request: "Read outreg2 syntax", selected_commands: ["outreg2"] };
+  const full = await buildCommandEvidence(args);
+  const compact = await buildCommandEvidence({ ...args, include_paper_catalog: false });
+  const expected = structuredClone(full);
+  delete expected.command_evidence[0].paper_example_catalog;
+  expected.command_evidence[0].paper_example_catalog_omitted = true;
+  assert.deepEqual(compact, expected);
+  assert.deepEqual(await buildCommandEvidence({ ...args, include_paper_catalog: true }), full);
+  assert.deepEqual(await buildCommandEvidence(args), full);
+});
+
+test("duplicate help references restore the exact default response in both help phases", async () => {
+  for (const expanded of [false, true]) {
+    const args = { request: "Read shared encode help", selected_commands: ["encode", "decode"],
+      ...(expanded ? { expanded: true, expanded_commands: ["encode", "decode"] } : {}) };
+    const full = await buildCommandEvidence(args);
+    const compact = await buildCommandEvidence({ ...args, deduplicate_help: true });
+    const rowsKey = expanded ? "expanded_command_evidence" : "command_evidence";
+    const helpKey = expanded ? "expanded_documentation" : "command_help";
+    const first = compact[rowsKey][0][helpKey];
+    const second = compact[rowsKey][1][helpKey];
+    assert.equal(typeof first.content, "string");
+    assert.equal(second.content, null);
+    assert.equal(second.content_ref, `#/${rowsKey}/0/${helpKey}/content`);
+    second.content = first.content;
+    delete second.content_ref;
+    assert.deepEqual(compact, full);
+    assert.deepEqual(await buildCommandEvidence({ ...args, deduplicate_help: false }), full);
+  }
+});
+
+test("help deduplication preserves distinct delivered bodies and unavailable live help", async () => {
+  let call = 0;
+  const result = await buildCommandEvidence({ request: "Read exact topics", selected_commands: ["alpha", "beta", "gamma"],
+    include_paper_catalog: false, deduplicate_help: true }, {
+    liveHelpLookup: async () => ++call < 3
+      ? { status: "available", limitations: [], help: { content: `Different section ${call}`, content_sha256: "same-source-hash" } }
+      : { status: "unavailable", limitations: ["Missing help"], help: null },
+  });
+  assert.equal(result.command_evidence[0].command_help.content, "Different section 1");
+  assert.equal(result.command_evidence[1].command_help.content, "Different section 2");
+  assert.equal(result.command_evidence[2].command_help, null);
+  assert.deepEqual(result.command_evidence[2].limitations, ["Missing help"]);
+  assert.ok(result.command_evidence.every(row => row.paper_example_catalog_omitted === true));
+});
+
+test("compact help controls reject invalid types and unsupported phases", async () => {
+  const args = { request: "Read count", selected_commands: ["count"] };
+  for (const option of ["include_paper_catalog", "deduplicate_help"]) {
+    await assert.rejects(buildCommandEvidence({ ...args, [option]: "false" }), /must be boolean/);
+    await assert.rejects(buildCommandEvidence({ request: "Discover", [option]: true }), /does not allow/);
+  }
+  await assert.rejects(buildCommandEvidence({ ...args, expanded: true, expanded_commands: ["count"], include_paper_catalog: false }), /does not allow/);
+});
+
 test("MCP exposes one simple exact-key three-phase lookup tool", async () => {
   assert.equal(TOOL_DEFINITIONS.length, 1);
   assert.equal(TOOL_DEFINITIONS[0].name, "get_stata_command_evidence");

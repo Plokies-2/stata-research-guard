@@ -45,10 +45,12 @@ Workflow를 설계하거나 재구성할 때는 필요한 표·그림·데이터
 도구는 `get_stata_command_evidence` 하나입니다. 명령이 명확하면 Phase 2로 바로 갑니다.
 
 ```json
-{"request":"Read the relevant regression syntax","selected_commands":["regress"]}
+{"request":"Read the relevant regression syntax","selected_commands":["regress"],"include_paper_catalog":false}
 ```
 
 명령을 정하지 못한 경우만 `request`로 Phase 1 사전을 읽습니다. Help로 해결되지 않는 질문에는 Phase 3의 `expanded_commands`로 긴 문서를, `selected_block_ids`로 논문 블록을 선택합니다. 두 선택은 독립적이며 모든 자료를 확장할 필요는 없습니다.
+
+도움말만 필요하거나 논문 목록을 이미 읽었다면 Phase 2에서 `include_paper_catalog: false`로 목록의 반복 전달을 생략합니다. 여러 명령의 도움말을 함께 읽을 때는 Phase 2·3에서 `deduplicate_help: true`를 사용하면 동일한 본문을 한 번만 전달하고, 나머지 항목의 `content_ref`가 같은 응답 안의 본문을 가리킵니다. 명령별 출처·제약·구획 정보는 유지하며, 옵션을 생략한 기존 호출의 응답은 바뀌지 않습니다. 공통 규칙은 아래의 `known_rules_sha256` 재사용 조건을 따릅니다.
 
 원문 24,000자(Unicode 문자)를 초과하는 모든 도움말은 먼저 구획 목록을 제공합니다. 일반 도움말·설치된 live help·확장 매뉴얼에 같은 기준을 적용합니다. 작은 도움말은 전체 본문이 기본입니다. 이 값은 토큰 수나 본문 절단 길이가 아니라 먼저 선택할지 정하는 기준입니다. 모델이 원문 제목과 연구 문맥을 보고 필요한 구획을 선택하며 서버가 관련성을 판단하지 않습니다.
 

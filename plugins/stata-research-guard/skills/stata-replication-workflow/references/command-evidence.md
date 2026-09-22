@@ -30,6 +30,18 @@ By default every response includes `main_rules.content`, its source path, and SH
 
 Omit the hash in a fresh task, after compaction/context loss, or whenever the body is unavailable. Do not copy a hash from memory, a handoff, another agent, or a source listing and call that reading. The server is stateless about what a model has read and does not suppress rules on its own.
 
+## Avoid repeated catalogs and help bodies
+
+For Phase 2 help-only requests, set `include_paper_catalog: false`. Use it also when a current paper catalog is already visible and you only need another help section. The response marks `paper_example_catalog_omitted: true`; this does not mean that no examples exist. Omit the option or set it to `true` when you need to choose paper examples. This option does not waive connected-paper reading for substantial workflow work.
+
+For multi-command help requests in Phase 2 or 3, use `deduplicate_help: true`. Identical delivered bodies appear once; later entries keep their command, source, limitations and section metadata and replace only `content` with `null` plus a `content_ref` JSON Pointer, such as `#/command_evidence/0/command_help/content`. Read that body in the same response. References never depend on earlier calls, hashes remembered by the server, or unavailable context. Different sections from one source are not merged. Without either option, the existing response is unchanged.
+
+```json
+{"request":"Read encode and decode syntax","selected_commands":["encode","decode"],"include_paper_catalog":false,"deduplicate_help":true}
+```
+
+Also send `known_rules_sha256` when the complete rules remain visible, using the actual hash from the current rules response. These controls reduce repeated transport without shortening rules, original help, paper code or logs.
+
 ## Large-source section selection
 
 A source over **24,000 Unicode characters** first returns `content: null`, `delivery: "catalog_only"`, and `section_catalog`. This applies to every bundled help, live installed help, and expanded manual. The threshold is a reading-volume choice, not a token estimate or a maximum section size. Smaller sources remain complete by default. Multiple small sources can still add up; request only the material commands needed now.

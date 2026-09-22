@@ -8,6 +8,7 @@ description: Write, refactor, and run researcher-readable Stata workflows using 
 Prioritize code the researcher can comfortably read, inspect, and modify. Help them follow data and sample construction through the visible estimator, specification, stored estimates, and outputs; retain adequate code when a rewrite offers no concrete benefit. Guard supplies evidence; the model and researcher make the research choices.
 
 Read [general-rules.md](references/general-rules.md) once for the relevant task, from this file or a current complete Guard response. It contains the research judgment and house rules; reuse it while visible and unchanged.
+For subsequent Guard calls, send its actual `known_rules_sha256` while the complete rules remain visible. For Phase 2 help-only calls omit paper catalogs with `include_paper_catalog: false`; for multi-command help use `deduplicate_help: true` and read any `content_ref` body in that same response. See [command-evidence.md](references/command-evidence.md) for the exact reuse boundaries.
 
 ## Work from the actual project
 

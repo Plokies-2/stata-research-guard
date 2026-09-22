@@ -10,16 +10,6 @@ const test = require("node:test");
 const PLUGIN_ROOT = path.resolve(__dirname, "..");
 const VERIFY = path.join(PLUGIN_ROOT, "scripts", "verify_plugin_bundle.cjs");
 
-function copyTree(source, target) {
-  fs.mkdirSync(target, { recursive: true });
-  for (const entry of fs.readdirSync(source, { withFileTypes: true })) {
-    const from = path.join(source, entry.name);
-    const to = path.join(target, entry.name);
-    if (entry.isDirectory()) copyTree(from, to);
-    else if (entry.isFile()) fs.copyFileSync(from, to);
-  }
-}
-
 function minimalBundle() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-guard-minimal-"));
   fs.mkdirSync(path.join(root, ".codex-plugin"), { recursive: true });
@@ -36,7 +26,7 @@ function minimalBundle() {
 
 function fullBundle() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "stata-guard-full-"));
-  copyTree(PLUGIN_ROOT, root);
+  fs.cpSync(PLUGIN_ROOT, root, { recursive: true });
   return root;
 }
 

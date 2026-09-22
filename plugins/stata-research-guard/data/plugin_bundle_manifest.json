@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.4.0+codex.20260922055159"
+    "version": "0.4.0+codex.20260922060243"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
       "bytes": 987,
-      "sha256": "b263d79d017f9e22016c5026d9940985157614d9d7af90b45ebcb2e5f5a56684"
+      "sha256": "6742297e28368be27dd92bf8034bed501558853fb92dcd16b959929a336d7524"
     },
     {
       "path": ".mcp.json",
@@ -17,8 +17,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 28162,
-      "sha256": "1adf740a3edf50590fe9b5a19598a82cc0533dcb76035d72f3f3eeaa035a6575"
+      "bytes": 29087,
+      "sha256": "1c27fe40e902ee3020bc56cbd1a211469d9a4c04be3511cfd57de2b75fc9e9c5"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -1567,13 +1567,13 @@
     },
     {
       "path": "mcp/server.cjs",
-      "bytes": 28970,
-      "sha256": "f95065e45fdcf1671fb252d02e304b661273e143304f87d8a05d680a8ef7f669"
+      "bytes": 30779,
+      "sha256": "d45eef9ed9f541f5c428821bf01d5f4addd0a2c849c198f84a4b120dbdb75955"
     },
     {
       "path": "README.md",
-      "bytes": 13044,
-      "sha256": "8d12ad773574939e63d249159f30bfc9489dfd206d0902465fcd92e206ce8b95"
+      "bytes": 13682,
+      "sha256": "e0522fdd57fd9c4e0df5a520b2e6401e134dd411f77582cd568876470caea8e3"
     },
     {
       "path": "scripts/build_clean_command_guide.py",
@@ -1617,8 +1617,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/command-evidence.md",
-      "bytes": 11672,
-      "sha256": "9a08896a90f277ed9f5eab44e8f95b9b82e0abd0ca61e9970b5e989fa331ae2b"
+      "bytes": 13092,
+      "sha256": "64b1e3f460b7eb6df7b5b1085954d20f8aff9f183cb1b0672e2afcc20f0c3c3e"
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rules.md",
@@ -1642,8 +1642,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/SKILL.md",
-      "bytes": 7125,
-      "sha256": "eb495f38cab02b0afb8a7041f63603c95ab473acf5fc2adaa50eb36d93178f3d"
+      "bytes": 7513,
+      "sha256": "dc0247ec48e6fdfc458d7119e66e9e94ceceaca3c093974250b4b052a1310351"
     },
     {
       "path": "tests/help-sections.test.cjs",
@@ -1657,13 +1657,13 @@
     },
     {
       "path": "tests/plugin_bundle_manifest.test.cjs",
-      "bytes": 5411,
-      "sha256": "631b10078a3ed4c13baddd9a0b233dff0f8429152f9a200c81af253214cc36fc"
+      "bytes": 5073,
+      "sha256": "559c89dc8d78760869c0ca458a751f11cc3cff57a8a3488b1097699669f3d1f0"
     },
     {
       "path": "tests/server.test.cjs",
-      "bytes": 31575,
-      "sha256": "abf1ca97182495b16c39dc0e66c013ab8b851206cd058ddf1b13366d6e414315"
+      "bytes": 34940,
+      "sha256": "1b332ed4cc470132f7796e4cf1f0a2e6d150bb719b18aa2b2d970c8ada54f447"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
@@ -1684,7 +1684,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.4.0+codex.20260922055159"
+      "value": "0.4.0+codex.20260922060243"
     },
     {
       "id": "readme.heading",
