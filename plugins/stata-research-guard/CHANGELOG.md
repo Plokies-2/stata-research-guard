@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-09-22 — remove orphaned bundle files
+
+- Remove the obsolete outreg2 runtime record, formatter-only test, unused style snapshot, and unreferenced archived source from the distributed plugin. The supported workflow, help, research rules, and runtime behavior are unchanged.
+
 ## 2026-09-12 — consistent guidance and source delivery
 
 - Correct cgmreg profile text to distinguish available Caskey help from unverified original-paper version identity; align two profiles with the active Stata version and correct one internal merge-key explanation without rewriting original paper code.

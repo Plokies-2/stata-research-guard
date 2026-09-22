@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.4.0+codex.20260919203218"
+    "version": "0.4.0+codex.20260922055159"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
-      "bytes": 963,
-      "sha256": "6d44d6c3704d6db1d4267ae48c5d267d00b8c5b50dfa71688ec50b330157f9ab"
+      "bytes": 987,
+      "sha256": "b263d79d017f9e22016c5026d9940985157614d9d7af90b45ebcb2e5f5a56684"
     },
     {
       "path": ".mcp.json",
@@ -16,14 +16,9 @@
       "sha256": "8aaab65356e6af9c36fd2c17a4d4af61c663dcdb75fce45dfec74844d5b568e6"
     },
     {
-      "path": "annotations/source_snapshots/default_style_outreg2_xlsx.do",
-      "bytes": 4094,
-      "sha256": "e98c97dfd21e7e4cffd8a0b0520de256afd36dceae8437cbf8a774a2f2b1a473"
-    },
-    {
       "path": "CHANGELOG.md",
-      "bytes": 27879,
-      "sha256": "e6b007d5317956ae6e8feb6e4c14f20eb4d1dc878869ea2181ef44773f7f6f92"
+      "bytes": 28162,
+      "sha256": "1adf740a3edf50590fe9b5a19598a82cc0533dcb76035d72f3f3eeaa035a6575"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -1261,11 +1256,6 @@
       "sha256": "79370d763e13cf9c05ed474b8fb47f01088b8b771156d6d98d66b178850a305c"
     },
     {
-      "path": "data/runtime/outreg2_excel_runtime_20260824.json",
-      "bytes": 6315,
-      "sha256": "543cb975e0a0a152d5fa45ba4b37b73d7473e8adf44de59f196faeffc9bebe6e"
-    },
-    {
       "path": "data/source_archive/documents/197984-V1-Read_me.pdf",
       "bytes": 196300,
       "sha256": "b0bcd7c2f31d2f63dc94f49348a22e05b55e68a1ec289d71a4644b63a3c94e1f"
@@ -1491,11 +1481,6 @@
       "sha256": "e5f1f3b28892a5516fc8671b1d0f251195fcc1aa4f7821a6753454cff9f3a0da"
     },
     {
-      "path": "data/source_archive/files/e98c97dfd21e7e4cffd8a0b0520de256afd36dceae8437cbf8a774a2f2b1a473.source",
-      "bytes": 4094,
-      "sha256": "e98c97dfd21e7e4cffd8a0b0520de256afd36dceae8437cbf8a774a2f2b1a473"
-    },
-    {
       "path": "data/source_archive/files/ea2ba20fb471cf19b5b433cf959a9002686b0621b3f30fb99fec3b98e813b90f.source",
       "bytes": 12624,
       "sha256": "ea2ba20fb471cf19b5b433cf959a9002686b0621b3f30fb99fec3b98e813b90f"
@@ -1661,11 +1646,6 @@
       "sha256": "eb495f38cab02b0afb8a7041f63603c95ab473acf5fc2adaa50eb36d93178f3d"
     },
     {
-      "path": "tests/formatter_guard.test.cjs",
-      "bytes": 1118,
-      "sha256": "460de0adb08c8f70ba5041d034483d50db43f20f72ae9642fd58a7ecf3253b8e"
-    },
-    {
       "path": "tests/help-sections.test.cjs",
       "bytes": 5062,
       "sha256": "7ab422965fe8430daa49d648845ec8d68b711f13540b0792dec524c9eb6c6ce8"
@@ -1704,7 +1684,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.4.0+codex.20260919203218"
+      "value": "0.4.0+codex.20260922055159"
     },
     {
       "id": "readme.heading",
