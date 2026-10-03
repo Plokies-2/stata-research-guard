@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.0+codex.2026100301 — 2026-10-03
+
+- Add opt-in Phase 2 installed help for registered commands, caller-selected execution ADO hashes and exact raw spans, and selected input-name/estimator authoring notes. The opt-in evidence fields preserve existing default command-evidence responses and original help.
+- Distinguish installed documentation, caller-selected execution source and bundled expansions. Byte equality is metadata; no option-support verdict, automatic rename, rank gate, donor reconstruction or resume engine is added.
+- Add an opt-in output-recovery note for reading post-estimation path failures, loop-iterator lifetime and appropriate saved-result reuse. Confirm only its exact MCP delivery; do not classify failures or retry estimation automatically.
+- Explain current data operations and research reasons in comments; exclude meeting/agreement dates, revision diaries and private advice/approval records. Preserve substantive dates, citations and original paper excerpts.
+
 ## 2026-09-22 — reduce repeated evidence delivery
 
 - Add optional `include_paper_catalog: false` for Phase 2 help-only requests and `deduplicate_help: true` for Phase 2/3 requests sharing identical delivered help. Same-response JSON Pointers retain access to the complete body; command/source metadata, original documents and default responses are unchanged.

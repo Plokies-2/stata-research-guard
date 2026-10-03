@@ -76,6 +76,7 @@ const commandsByName = new Map(registry.commands.map((row) => [row.command, row]
 const helpGuideIndex = readJson(COMMAND_HELP_GUIDES_PATH);
 const helpGuidesByCommand = new Map(helpGuideIndex.guides.map((row) => [row.command, row]));
 const helpSectionsByCommand = new Map(readJson(path.join(DATA_ROOT, "command_help_sections.json")).guides.map((row) => [row.command, row]));
+const workflowNotes = readJson(path.join(DATA_ROOT, "command_workflow_notes.json"));
 
 const expandedGuideIndex = readJson(EXPANDED_COMMAND_GUIDES_PATH);
 const expandedGuidesByCommand = new Map(expandedGuideIndex.guides.map((row) => [row.command, row]));
@@ -236,7 +237,7 @@ function validateArguments(args) {
   const allowed = phase === "discovery"
     ? new Set(["request", "known_rules_sha256"])
     : phase === "selected_command_evidence"
-      ? new Set(["request", "selected_commands", "known_rules_sha256", "help_view", "help_sections", "refresh_live_help", "include_paper_catalog", "deduplicate_help"])
+      ? new Set(["request", "selected_commands", "known_rules_sha256", "help_view", "help_sections", "refresh_live_help", "include_paper_catalog", "deduplicate_help", "help_source", "execution_sources", "workflow_notes"])
       : new Set(["request", "selected_commands", "expanded", "expanded_commands", "selected_block_ids", "known_rules_sha256", "help_view", "expanded_sections", "deduplicate_help"]);
   const unexpected = Object.keys(args).filter((key) => !allowed.has(key));
   if (unexpected.length > 0) {
@@ -257,9 +258,43 @@ function validateArguments(args) {
     throw new Error("known_rules_sha256 must be the SHA-256 of complete rules still visible in this context");
   }
   if (args.help_view !== undefined && !["catalog", "full"].includes(args.help_view)) throw new Error("help_view must be catalog or full");
+  if (args.help_source !== undefined && !["bundled", "installed"].includes(args.help_source)) throw new Error("help_source must be bundled or installed");
   if (args.refresh_live_help !== undefined && typeof args.refresh_live_help !== "boolean") throw new Error("refresh_live_help must be boolean");
   for (const option of ["include_paper_catalog", "deduplicate_help"]) {
     if (args[option] !== undefined && typeof args[option] !== "boolean") throw new Error(`${option} must be boolean`);
+  }
+  for (const key of ["execution_sources", "workflow_notes"]) {
+    if (args[key] === undefined) continue;
+    const selections = args[key];
+    if (!selections || typeof selections !== "object" || Array.isArray(selections) || !Object.keys(selections).length) {
+      throw new Error(`${key} must map selected commands to nonempty selections`);
+    }
+    for (const [command, selection] of Object.entries(selections)) {
+      if (!selectedCommands.includes(command)) throw new Error(`${key} unavailable for selected command: ${command}`);
+      if (key === "workflow_notes") {
+        if (!Array.isArray(selection) || !selection.length || new Set(selection).size !== selection.length
+            || !Object.hasOwn(workflowNotes, command)
+            || selection.some((id) => typeof id !== "string" || !Object.hasOwn(workflowNotes[command], id))) {
+          throw new Error(`invalid exact workflow note selection: ${command}`);
+        }
+        continue;
+      }
+      if (!selection || typeof selection !== "object" || Array.isArray(selection)
+          || Object.keys(selection).some((field) => !["path", "line_spans", "expected_sha256"].includes(field))
+          || typeof selection.path !== "string" || !path.isAbsolute(selection.path)
+          || path.basename(selection.path).toLowerCase() !== `${command}.ado`.toLowerCase()) {
+        throw new Error(`execution_sources requires an absolute ${command}.ado path`);
+      }
+      if (selection.expected_sha256 !== undefined && (typeof selection.expected_sha256 !== "string" || !/^[a-f0-9]{64}$/.test(selection.expected_sha256))) {
+        throw new Error("expected_sha256 must be a lowercase SHA-256");
+      }
+      if (selection.line_spans !== undefined && (!Array.isArray(selection.line_spans) || !selection.line_spans.length
+          || selection.line_spans.some((span) => !span || typeof span !== "object" || Array.isArray(span)
+            || Object.keys(span).some((field) => !["start", "end"].includes(field))
+            || !Number.isInteger(span.start) || !Number.isInteger(span.end) || span.start < 1 || span.end < span.start))) {
+        throw new Error("line_spans must contain exact positive start/end line ranges");
+      }
+    }
   }
   const selectedBlockIds = phase === "expanded_context" ? optionalSelectedBlockIdsFrom(args) : null;
   const expandedCommands = phase === "expanded_context" ? optionalExpandedCommandsFrom(args, selectedCommands) : null;
@@ -332,6 +367,66 @@ async function commandEvidence(command, liveHelpLookup, args) {
       ? { paper_example_catalog_omitted: true }
       : { paper_example_catalog: profilesByCommand.get(command) || [] }),
   };
+}
+
+async function installedCommandEvidence(command, liveHelpLookup, args) {
+  if (!commandsByName.has(command)) return dynamicCommandEvidence(command, liveHelpLookup, args);
+  const topic = helpGuidesByCommand.get(command).help_topics[0] || LIVE_HELP_TOPIC_ALIASES.get(command) || command;
+  const live = await liveHelpLookup(topic, { refresh: args.refresh_live_help === true });
+  // The exact-topic helper also serves outside-dictionary calls. Its catalog
+  // limitation does not apply to a registered command's own bundled references.
+  const limitations = live.limitations.filter((line) => line !== "No bundled PDF expansion or paper example catalog is attached for an out-of-dictionary topic.");
+  const help = live.help ? deliverHelp({ ...live.help, limitations }, null, args.help_sections?.[command], args.help_view) : null;
+  if (help?.source_path) {
+    try {
+      help.source_version_markers = readUtf8(help.source_path).split(/\r?\n/)
+        .filter((line) => /^\s*(?:\{\*\s*)?\*!\s/.test(line));
+    } catch (error) {
+      limitations.push(`Installed help version markers could not be read: ${error.message}`);
+    }
+  }
+  const expansion = expandedDocumentationSummary(command);
+  if (expansion.status === "same_source_as_help") expansion.status = "same_source_as_bundled_help";
+  return {
+    command,
+    help_topic: topic,
+    help_status: live.status,
+    command_help: help,
+    limitations,
+    expanded_documentation: {
+      ...expansion,
+      source_relation_to_help: "Bundled documentation; its version may differ from the selected installed help and execution source.",
+    },
+    ...(args.include_paper_catalog === false
+      ? { paper_example_catalog_omitted: true }
+      : { paper_example_catalog: profilesByCommand.get(command) || [] }),
+  };
+}
+
+function executionSource(selection) {
+  try {
+    const bytes = fs.readFileSync(selection.path);
+    const content = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(bytes);
+    const lines = content.match(/[^\n]*\n|[^\n]+$/g) || [];
+    const result = {
+      source_path: selection.path,
+      source_sha256: crypto.createHash("sha256").update(bytes).digest("hex"),
+      source_kind: "caller_selected_ado_source",
+      line_count: lines.length,
+      scope_note: "Caller-selected file, not proof of the file loaded by estimation. Read exact source with maintainer help; source hashes do not judge option semantics or results.",
+    };
+    if (selection.expected_sha256 !== undefined) {
+      result.expected_sha256 = selection.expected_sha256;
+      result.matches_expected_sha256 = result.source_sha256 === selection.expected_sha256;
+    }
+    if (selection.line_spans) {
+      if (selection.line_spans.some((span) => span.end > lines.length)) throw new Error("Selected line span exceeds the ADO source");
+      result.excerpts = selection.line_spans.map((span) => ({ ...span, content: lines.slice(span.start - 1, span.end).join("") }));
+    }
+    return result;
+  } catch (error) {
+    return { source_path: selection.path, unavailable: true, limitations: [error.message] };
+  }
 }
 
 function expandedDocumentationSummary(command) {
@@ -501,8 +596,17 @@ async function buildCommandEvidence(args, options = {}) {
       phase: "selected_command_evidence",
       main_rules: mainRules(args.known_rules_sha256),
       selected_commands: selectedCommands,
-      command_evidence: await Promise.all(selectedCommands.map((command) => commandEvidence(command, liveHelpLookup, args))),
+      command_evidence: await Promise.all(selectedCommands.map((command) => args.help_source === "installed"
+        ? installedCommandEvidence(command, liveHelpLookup, args)
+        : commandEvidence(command, liveHelpLookup, args))),
     };
+    for (const evidence of result.command_evidence) {
+      const command = evidence.command;
+      if (args.execution_sources?.[command]) evidence.execution_source = executionSource(args.execution_sources[command]);
+      if (args.workflow_notes?.[command]) evidence.workflow_notes = args.workflow_notes[command].map((id) => ({
+        id, record_type: "authoring_guidance", source_path: "data/command_workflow_notes.json", ...workflowNotes[command][id],
+      }));
+    }
     if (args.deduplicate_help === true) deduplicateHelp(result, "command_evidence", "command_help");
     if (topicNormalizations.length > 0) result.topic_normalizations = topicNormalizations;
     return result;
@@ -536,7 +640,7 @@ async function buildCommandEvidence(args, options = {}) {
 const TOOL_DEFINITIONS = [
   {
     name: "get_stata_command_evidence",
-    description: "Stata command evidence, not command selection or research judgment. Call Phase 2 directly for known commands; discovery is optional. Help over 24000 Unicode characters returns a section catalog first, including live help and expanded manuals. Select exact help_sections in Phase 2 or expanded_sections in Phase 3; foundation sections accompany selections. help_view full explicitly retrieves the complete source, and catalog requests navigation. Small help remains complete by default. Paper blocks are unchanged. Rules are included unless known_rules_sha256 matches complete rules still visible to the caller; omit it in fresh or compacted contexts. refresh_live_help refreshes outside-dictionary live topics only; registered commands use bundled documentation.",
+    description: "Stata command evidence, not command selection or research judgment. Call Phase 2 directly for known commands; discovery is optional. Help over 24000 Unicode characters returns a section catalog first, including live help and expanded manuals. Select exact help_sections in Phase 2 or expanded_sections in Phase 3; foundation sections accompany selections. help_view full explicitly retrieves the complete source, and catalog requests navigation. Small help remains complete by default. Paper blocks are unchanged. Rules are included unless known_rules_sha256 matches complete rules still visible to the caller; omit it in fresh or compacted contexts. Registered commands use bundled documentation unless help_source installed is explicit. refresh_live_help refreshes only selected live snapshots. Optional execution_sources return caller-selected ADO metadata/excerpts; workflow_notes return selected authoring guidance, never semantic verdicts.",
     inputSchema: {
       oneOf: [
         {
@@ -560,7 +664,20 @@ const TOOL_DEFINITIONS = [
             known_rules_sha256: { type: "string", pattern: "^[a-f0-9]{64}$", description: "Hash of complete rules still visible in this caller context. Omit after context loss." },
             help_view: { type: "string", enum: ["catalog", "full"], description: "Request source navigation or the complete source. Do not combine with section selections." },
             help_sections: { type: "object", description: "Map each selected command to exact IDs from its current help catalog; common foundation sections also accompany the selection.", minProperties: 1, additionalProperties: { type: "array", minItems: 1, uniqueItems: true, items: { type: "string", minLength: 1 } } },
-            refresh_live_help: { type: "boolean", description: "Refresh a successful outside-dictionary installed-help snapshot. Registered commands keep their bundled source." },
+            refresh_live_help: { type: "boolean", description: "Refresh a selected live snapshot. Without help_source installed, registered commands keep their bundled source." },
+            help_source: { type: "string", enum: ["bundled", "installed"], description: "Default bundled for registered commands. Installed explicitly requests the active installation's help; it may differ from the execution ADO." },
+            execution_sources: {
+              type: "object", minProperties: 1, description: "Map selected commands to caller-confirmed execution ADO files. Omit line_spans for metadata only; exact spans are chosen by the model, not cut automatically.",
+              additionalProperties: {
+                type: "object", additionalProperties: false, required: ["path"],
+                properties: {
+                  path: { type: "string", minLength: 1, description: "Absolute path whose filename is the selected command plus .ado." },
+                  expected_sha256: { type: "string", pattern: "^[a-f0-9]{64}$", description: "Optional execution-record file hash. Equality is a byte-identity fact, not a research or syntax verdict." },
+                  line_spans: { type: "array", minItems: 1, items: { type: "object", additionalProperties: false, required: ["start", "end"], properties: { start: { type: "integer", minimum: 1 }, end: { type: "integer", minimum: 1 } } } },
+                },
+              },
+            },
+            workflow_notes: { type: "object", minProperties: 1, description: "Exact note IDs: import_delimited input-variable-names; did_multiplegt_dyn control-learning-sample, comparison-sample, effect-interpretation, output-recovery. Omitted by default.", additionalProperties: { type: "array", minItems: 1, uniqueItems: true, items: { type: "string", minLength: 1 } } },
             include_paper_catalog: { type: "boolean", description: "Default true. Set false for help-only calls or when the paper catalog is already visible; omitted catalogs are explicitly marked." },
             deduplicate_help: { type: "boolean", description: "Default false. True replaces identical help bodies with content_ref JSON Pointers to the first body in this response; all command/source metadata remains." },
           },

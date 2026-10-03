@@ -76,6 +76,49 @@ Registered multiword spelling such as `export excel` normalizes to `export_excel
 
 Known `estimates save/use/store/restore` spellings also accept spaces. Save/use read the official `estimates_save` topic; store/restore read `estimates_store`. The response retains the selected command label and identifies its help topic.
 
-Outside-dictionary live help is a snapshot of the selected Stata installation. After package installation or an ado-path change, Phase 2 `refresh_live_help: true` bypasses that successful live snapshot. It does not refresh registered commands: those still return their bundled source and version. Check that version against the installed package when relevant; do not report bundled help as newly read from the installation. Failures and partial live deliveries are not cached. Missing/cyclic INCLUDE fragments are reported as `partial`; resolve a material missing part rather than silently treating the document as complete. Live lookup runs with a bounded timeout without blocking unrelated bundled requests.
+Outside-dictionary live help is a snapshot of the selected Stata installation. After package installation or an ado-path change, Phase 2 `refresh_live_help: true` bypasses that successful live snapshot. Without an explicit source selection it does not refresh registered commands: those still return their bundled source and version. Check that version against the installed package when relevant; do not report bundled help as newly read from the installation. Failures and partial live deliveries are not cached. Missing/cyclic INCLUDE fragments are reported as `partial`; resolve a material missing part rather than silently treating the document as complete. Live lookup runs with a bounded timeout without blocking unrelated bundled requests.
 
 StataCorp documentation governs official syntax and maintainer documentation governs user-written syntax. Match version-specific features to the active environment. Do not substitute paper code, implementation source, or a manual algorithm for unavailable grammar authority.
+
+## Selected installation and execution evidence
+
+Phase 2 `help_source: "installed"` explicitly reads installed help for registered commands as well. It uses the registered help topic, retains the selected command label, and reports unavailable help without silently substituting the bundle. Raw `*!` version markers, when readable, accompany the installed source. Longer sources keep the same catalog-first rule; installed sources without a reviewed map expose `whole-source`, so do not reuse bundled section IDs. `refresh_live_help: true` refreshes this selected live snapshot. Bundled expansions and paper examples retain their own versions.
+
+Installed help can itself differ from the execution ADO. For the exact command, use the file path identified by the execution record or actual environment and read its source yourself. Phase 2 `execution_sources` optionally attaches that caller-selected file's path, SHA-256 and exact `line_spans`; omit spans for metadata only. The absolute filename must be the normalized selected command plus `.ado`. Pick meaningful header/target/context spans from the actual source, not fixed windows. An optional `expected_sha256` returns byte equality with that execution-record hash even when it differs; this does not prove the file is loaded or that an option/result is valid. No package update, source scan, option classifier or automatic fallback occurs.
+
+```json
+{
+  "request": "Read the selected installed help and execution-record source identity",
+  "selected_commands": ["did_multiplegt_dyn"],
+  "help_source": "installed",
+  "help_view": "catalog",
+  "include_paper_catalog": false,
+  "execution_sources": {
+    "did_multiplegt_dyn": {"path": "C:/analysis/ado/did_multiplegt_dyn.ado"}
+  }
+}
+```
+
+The path above is an example: supply the actual known file. Compare the requested option's maintainer documentation with the raw execution source and available logs. Preserve unrelated supported work; resolve a material mismatch before using the affected option. Do not treat a date mismatch alone as proof that previous results are wrong.
+
+## Optional input and estimator notes
+
+Phase 2 `workflow_notes` returns only explicitly selected prospective authoring guidance from `data/command_workflow_notes.json`. It leaves general rules, original help and default responses unchanged. Available exact IDs are:
+
+- `import_delimited`: `input-variable-names` — read the selected input header and actual imported names before a long run; choose collision-free meaningful aliases and document original header → imported name → analysis alias while preserving values.
+- `did_multiplegt_dyn`: `control-learning-sample` — read the pre-first-change learning samples separately by baseline treatment, omitted terms and actual support; distinguish rank issues and unsupported comparisons without automatically changing the specification.
+- `did_multiplegt_dyn`: `comparison-sample` — distinguish group tags, group×time `_effect` and the donor/weight detail they do not supply before reducing exported data.
+- `did_multiplegt_dyn`: `effect-interpretation` — read event time, switcher-out sign conventions and the individual versus joint hypothesis from native evidence.
+- `did_multiplegt_dyn`: `output-recovery` — read the failing command and expanded path separately from completed estimation; check loop-iterator lifetime and reuse appropriate stored native results for output recovery. Restoring `.ster` does not restore `e(sample)`.
+
+```json
+{
+  "request": "Read controls and sample-output evidence",
+  "selected_commands": ["did_multiplegt_dyn"],
+  "help_sections": {"did_multiplegt_dyn": ["parallel-trends-options", "saved-results"]},
+  "include_paper_catalog": false,
+  "workflow_notes": {"did_multiplegt_dyn": ["control-learning-sample", "comparison-sample"]}
+}
+```
+
+These notes do not replace material help sections or inspect user data. Check imported names with Stata, update the existing codebook, and read the estimator's actual sample and results when execution is requested. No automatic alias generator, schema inventory, rank checker, donor reconstruction or expected-output oracle is introduced.

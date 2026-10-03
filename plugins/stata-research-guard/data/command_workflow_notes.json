@@ -1,0 +1,49 @@
+{
+  "import_delimited": {
+    "input-variable-names": {
+      "title": "Read imported names before a long estimation run",
+      "content": "Stata variable names allow 1–32 characters. Read the selected input header and the actual names after import before writing keep, merge, controls or export calls. Do not assume that truncating each original name to 32 characters identifies its imported variable: long names with the same prefix and existing short names can collide. Choose short meaningful aliases after inspecting the actual imported names. Preserve values, coding and source inputs; record original header → actual imported name → analysis alias in the existing codebook notes. This is a targeted schema read and researcher documentation, not an automatic rename or a project-wide inventory.",
+      "references": [
+        "https://www.stata.com/manuals/u11.pdf#page=16",
+        "data/command_help_guides/import_delimited.txt",
+        "skills/stata-replication-workflow/references/general-rules.md"
+      ]
+    }
+  },
+  "did_multiplegt_dyn": {
+    "control-learning-sample": {
+      "title": "Inspect the estimator's control-learning sample",
+      "content": "Read parallel-trends-options and the relevant FAQ before extending controls(). The nuisance regressions use first-differenced outcomes and controls with time effects, separately by period-one treatment, among observations before the first treatment change. Overall panel size or full-sample VIF does not describe that learning sample. Read actual observations, omitted terms and available calendar/type support; distinguish collinearity, missing comparison support and numerical rank disagreement. Preserve the requested specification and failure evidence. Do not automatically drop columns, fill unsupported effects with zero or change horizons/cohorts to make the original specification appear to run. Rank and runtime completion do not establish parallel trends; the model and researcher decide consequential changes.",
+      "references": [
+        "data/command_help_guides/did_multiplegt_dyn.txt#parallel-trends-options",
+        "data/command_help_guides/did_multiplegt_dyn.txt#faq"
+      ]
+    },
+    "comparison-sample": {
+      "title": "Preserve the observation unit needed by the consumer",
+      "content": "Read other-options and saved-results when consuming save_sample or N. _did_sample is a group tag, while _effect describes switcher group×time cells. A one-row-per-group export loses the event-time information; preserve the required native variables before reducing the data. Neither these tags nor native N supply a complete cohort×horizon switcher–donor link table or actual comparison weights. If those are requested, follow the selected execution ADO's donor selection and weighting code and state what native output does not expose. Do not interpret N as a unique donor count, infer weights from tags or reconstruct DID inside Guard.",
+      "references": [
+        "data/command_help_guides/did_multiplegt_dyn.txt#other-options",
+        "data/command_help_guides/did_multiplegt_dyn.txt#saved-results"
+      ]
+    },
+    "output-recovery": {
+      "title": "Reuse completed results after an output-stage failure",
+      "content": "Read the failing command and nearby log before rerunning a long estimation block. A nonzero do-file return code may come from later file loading or export after estimation and native storage completed. Inspect the expanded output path: a foreach iterator is undefined after the loop ends, so keep any required worker identity distinct from that iterator or export within the relevant loop. Read saved results against the intended input, sample and specification; rc=0 or file existence alone does not establish that they are the right results. Repair the affected output block in the maintained do-file and reuse suitable native result DTA for exports or .ster for estimates, rather than repeating completed estimation. After estimates use, e(sample) is zero; use the saved sample evidence for consumers that need observations, without guessing or reconstructing it from coefficients. Preserve the original failure and comparison artifacts, and report which estimates completed and which outputs were recovered. These are researcher checks, not an automatic failure classifier, skip policy or resume engine.",
+      "references": [
+        "https://www.stata.com/manuals/pforeach.pdf#page=8",
+        "https://www.stata.com/manuals/restimatessave.pdf",
+        "skills/stata-replication-workflow/references/general-rules.md"
+      ]
+    },
+    "effect-interpretation": {
+      "title": "Keep event time, direction and hypothesis distinct",
+      "content": "Read further-detail, design-options and saved-results for effect interpretation. With monthly data, E1 ends at the first-change month F and E2 at F+1, relative to F−1; E2 is not the sum of two monthly outcomes. Switcher-out DIDs are sign-reversed when aggregated toward higher treatment exposure, so an aggregate negative effect does not mean both tightening and relaxation reduce the outcome. Distinguish each horizon's test from e(p_jointeffects), which jointly tests all requested effects against zero, and from an effect-equality test. Read the actual estimates and native inference; these definitions help interpretation without selecting the research conclusion.",
+      "references": [
+        "data/command_help_guides/did_multiplegt_dyn.txt#further-detail",
+        "data/command_help_guides/did_multiplegt_dyn.txt#saved-results",
+        "https://arxiv.org/html/2510.19426v1#S2.SS2"
+      ]
+    }
+  }
+}

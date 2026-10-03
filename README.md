@@ -68,7 +68,7 @@ Phase 2는 `help_sections`, Phase 3 확장 매뉴얼은 `expanded_sections`로 �
 
 공통 규칙은 기본 응답에 본문을 포함합니다. 이미 읽은 동일 본문이 현재 문맥에 남아 있을 때만 `known_rules_sha256`를 보내 중복을 생략할 수 있습니다. 새 작업이나 압축 후 본문이 없으면 hash를 보내지 않습니다. 서버가 읽기 상태를 추측하거나 다른 작업의 hash만 보고 규칙을 읽었다고 처리하지 않습니다.
 
-사전 밖 명령의 live help는 성공한 설치 시점의 snapshot을 재사용합니다. 이 live 조회는 `refresh_live_help: true`로 다시 읽을 수 있습니다. 등록된 명령은 이 옵션과 무관하게 bundled 문서를 반환하므로 문서에 표시된 버전을 확인해야 합니다. 실패와 partial 응답은 캐시하지 않고, 누락·순환 INCLUDE를 명시합니다. 조회 작업은 대기를 포함해 55초로 제한하고 다른 bundled 요청을 막지 않습니다.
+사전 밖 명령의 live help는 성공한 설치 시점의 snapshot을 재사용합니다. 이 live 조회는 `refresh_live_help: true`로 다시 읽을 수 있습니다. 등록된 명령은 기본적으로 bundled 문서를 반환합니다. 설치 도움말이 필요하면 Phase 2에서 `help_source: "installed"`를 명시하며, 응답의 Stata 버전과 설치 경로를 함께 확인합니다. 실패와 partial 응답은 캐시하지 않고, 누락·순환 INCLUDE를 명시합니다. 조회 작업은 대기를 포함해 55초로 제한하고 다른 bundled 요청을 막지 않습니다.
 
 선택한 논문 블록은 앞·target·뒤 원문과 연결된 raw log를 유지합니다. 논문의 다른 estimator·표본·중첩 loop는 현재 프로젝트의 지시가 아닙니다. 명령 문법만 확인하는 작업은 예시나 log 없이 도움말로 진행할 수 있습니다. 중대규모 변경의 전체 workflow 읽기는 이 예외와 별개이며, 원문을 읽지 못했다면 완료한 것으로 보고하지 않습니다.
 
@@ -92,10 +92,12 @@ Node.js와 Stata 18 환경을 기본으로 사용합니다. `CODEX_MCP_NODE_PATH
 변경이 모인 뒤 해당 transport와 bundle을 확인합니다. 예를 들어 서버·live help 변경은 다음 명령으로 검사합니다.
 
 ```powershell
-node --test tests/server.test.cjs tests/live-help.test.cjs tests/help-sections.test.cjs tests/plugin_bundle_manifest.test.cjs
+node --test tests/server.test.cjs tests/live-help.test.cjs tests/help-sections.test.cjs tests/optional-evidence.test.cjs tests/plugin_bundle_manifest.test.cjs
 node scripts/verify_plugin_bundle.cjs
 ```
 
 이 검사는 호출·원문 전달·설치 구성을 확인합니다. 일반 테스트 실행이 Stata를 직접 실행해 연구 표의 수치·행 구성을 정답과 비교하지 않도록 과거 runtime fixture는 활성 테스트와 배포 묶음에서 분리했습니다. 코드의 가독성이나 연구 타당성은 실제 코드·로그·표·그림을 읽어 판단하며 자동 점수나 합격 판정으로 바꾸지 않습니다.
 
-GitHub 릴리스: `0.4.0`. Codex 빌드: `0.4.0+codex.20260922060243`. Bundle 333개 파일, 원문 전달·구획·캐시·별칭·bundle 기능 검사 49개 통과. 연구 의미나 결과의 타당성을 인증하는 검사는 아닙니다.
+실행에 사용한 Stata의 버전·경로와 필요할 때만 선택한 원문 ADO 구간을 함께 제공하며, 파일 경로와 hash는 문법·실행·연구 결과를 판정하지 않습니다. 선택적인 `workflow_notes`는 import/output 관련 작업에 필요한 경우에만 붙습니다. 작성 원칙은 대화 이력을 주석으로 옮기지 않고 코드·자료 정의를 설명하는 데 초점을 둡니다.
+
+GitHub 릴리스: `0.4.0`. Codex 빌드: `0.4.0+codex.2026100301`. Bundle 335개 파일, 원문 전달·구획·선택적 설치 도움말·실행 근거·workflow note 기능 검사 61개 통과. 기존 응답은 필요하지 않은 선택 자료를 포함하지 않으며, 연구 의미나 결과의 타당성을 인증하는 검사는 아닙니다.

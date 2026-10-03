@@ -68,7 +68,9 @@ Phase 2는 `help_sections`, Phase 3 확장 매뉴얼은 `expanded_sections`로 �
 
 공통 규칙은 기본 응답에 본문을 포함합니다. 이미 읽은 동일 본문이 현재 문맥에 남아 있을 때만 `known_rules_sha256`를 보내 중복을 생략할 수 있습니다. 새 작업이나 압축 후 본문이 없으면 hash를 보내지 않습니다. 서버가 읽기 상태를 추측하거나 다른 작업의 hash만 보고 규칙을 읽었다고 처리하지 않습니다.
 
-사전 밖 명령의 live help는 성공한 설치 시점의 snapshot을 재사용합니다. 이 live 조회는 `refresh_live_help: true`로 다시 읽을 수 있습니다. 등록된 명령은 이 옵션과 무관하게 bundled 문서를 반환하므로 문서에 표시된 버전을 확인해야 합니다. 실패와 partial 응답은 캐시하지 않고, 누락·순환 INCLUDE를 명시합니다. 조회 작업은 대기를 포함해 55초로 제한하고 다른 bundled 요청을 막지 않습니다.
+사전 밖 명령의 live help는 성공한 설치 시점의 snapshot을 재사용합니다. 이 live 조회는 `refresh_live_help: true`로 다시 읽을 수 있습니다. 등록된 명령은 기본적으로 bundled 문서를 반환하며, Phase 2 `help_source: "installed"`를 명시한 경우만 설치 도움말을 읽습니다. 실패와 partial 응답은 캐시하지 않고, 누락·순환 INCLUDE를 명시합니다. 조회 작업은 대기를 포함해 55초로 제한하고 다른 bundled 요청을 막지 않습니다.
+
+`execution_sources`로 실행 기록에서 확인한 ADO의 경로·hash와 선택 원문 구간을 함께 읽을 수 있습니다. 설치 도움말과 ADO가 서로 다를 수 있으므로 모델이 사용 옵션의 근거를 대조합니다. 파일 hash 일치는 동일성 정보이며 실행 성공이나 문법·연구 결과의 타당성 판정이 아닙니다. `workflow_notes`는 요청한 경우에만 import 후 실제 변수명·32자 제한·원래 이름 매핑, 통제 학습표본, 비교 표본의 관측단위와 해석 안내를 제공합니다. 출력 단계 실패에는 반복문 매크로의 수명·확장된 경로와 완료된 추정을 구분해 읽고, 적절한 저장 결과로 출력만 복구하도록 안내합니다. 기존 호출·기본 응답은 유지하며 자동 rename·rank gate·DID 재구현은 추가하지 않습니다. 입력과 exact ID는 [command-evidence.md](skills/stata-replication-workflow/references/command-evidence.md)를 따릅니다.
 
 선택한 논문 블록은 앞·target·뒤 원문과 연결된 raw log를 유지합니다. 논문의 다른 estimator·표본·중첩 loop는 현재 프로젝트의 지시가 아닙니다. 명령 문법만 확인하는 작업은 예시나 log 없이 도움말로 진행할 수 있습니다. 중대규모 변경의 전체 workflow 읽기는 이 예외와 별개이며, 원문을 읽지 못했다면 완료한 것으로 보고하지 않습니다.
 
@@ -92,7 +94,7 @@ Node.js와 Stata 18 환경을 기본으로 사용합니다. `CODEX_MCP_NODE_PATH
 변경이 모인 뒤 해당 transport와 bundle을 확인합니다. 예를 들어 서버·live help 변경은 다음 명령으로 검사합니다.
 
 ```powershell
-node --test tests/server.test.cjs tests/live-help.test.cjs tests/help-sections.test.cjs tests/plugin_bundle_manifest.test.cjs
+node --test tests/server.test.cjs tests/live-help.test.cjs tests/help-sections.test.cjs tests/optional-evidence.test.cjs tests/plugin_bundle_manifest.test.cjs
 node scripts/verify_plugin_bundle.cjs
 ```
 
