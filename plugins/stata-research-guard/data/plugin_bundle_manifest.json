@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.4.0+codex.2026100301"
+    "version": "0.4.0+codex.2026100701"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
-      "bytes": 983,
-      "sha256": "bf36c94ad0a56bddb72e3e2932aaeb56fcb180dbbad19b81db4b184e621f7844"
+      "bytes": 959,
+      "sha256": "28335f7d4f39a5bb5957e8c91c9b067d104346a431b4974f42b794bdda3a3008"
     },
     {
       "path": ".mcp.json",
@@ -17,8 +17,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 30084,
-      "sha256": "0eef3d31d92008573761b646ec45dbc4cce233c8221ff11fe2a46ff584e268d5"
+      "bytes": 31271,
+      "sha256": "a166fbba42b0f2e5279499e2af77c40a919daf3f62e851708407aa7938a75040"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -1577,8 +1577,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 14733,
-      "sha256": "e17a8a14e5c4238558c93f617b721d50296e1d6c4a2ba458feeaefff16710349"
+      "bytes": 14851,
+      "sha256": "6f1c2ce2c695cd99a77a9eb384e7dd4911e28f82c1ece20d07c5e9ff9abf9979"
     },
     {
       "path": "scripts/build_clean_command_guide.py",
@@ -1627,8 +1627,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rules.md",
-      "bytes": 19398,
-      "sha256": "f94ea3072ae8d503e16a64eb85af129e0c986f53358474268c0c7a888120fe52"
+      "bytes": 23941,
+      "sha256": "41d94a170c9b499ff8a999d3c495966067d597c3017b1f6ce5149225d3ee28c5"
     },
     {
       "path": "skills/stata-replication-workflow/references/paper-workflow-reading.md",
@@ -1647,8 +1647,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/SKILL.md",
-      "bytes": 8474,
-      "sha256": "dc2ea07ea6e6c6a4407b1f7e070a77ad8fdc65f8c048692075b910f01acbb2f1"
+      "bytes": 9210,
+      "sha256": "39b1815f9288feb469ded4ada981daaa834206a5644555a149d13f55a9d1f4c5"
     },
     {
       "path": "tests/help-sections.test.cjs",
@@ -1694,7 +1694,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.4.0+codex.2026100301"
+      "value": "0.4.0+codex.2026100701"
     },
     {
       "id": "readme.heading",

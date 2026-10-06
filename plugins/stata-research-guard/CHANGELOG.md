@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0+codex.2026100701 — 2026-10-07
+
+- Strengthen direct authoring at the point of use: inline simple one-site path, variable-list, specification and option aliases, while retaining genuinely shared configuration and required command handles within the authorized edit scope.
+- Batch related requested comparisons, reuse preparation and stored estimates, assemble outputs when useful, and use bounded background waits and incremental or focused log reads rather than repetitive status reports and full-output rebuilds.
+- Read actual exported displays and effect-specific support before interpretation. Preserve requested research choices and distinguish runtime, identification and output failures; do not impose a particular statistical method or an automatic candidate-acceptance rule.
+- Clarify that prior success/nonidentification counts, return-code distributions and coefficient patterns must not become output oracles. Retain concrete data assertions, requested baseline comparisons and direct exported-cell readback.
+- Include the existing wide-plot guidance with user/template exceptions. MCP request shapes, original help, paper examples and runtime logic are unchanged.
+
 ## 0.4.0+codex.2026100301 — 2026-10-03
 
 - Add opt-in Phase 2 installed help for registered commands, caller-selected execution ADO hashes and exact raw spans, and selected input-name/estimator authoring notes. The opt-in evidence fields preserve existing default command-evidence responses and original help.
