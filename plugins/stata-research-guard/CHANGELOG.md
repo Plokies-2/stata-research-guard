@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0+codex.2026101101 — 2026-10-11
+
+- When a selected help-section ID is invalid, return the rejected ID and current valid IDs for that source without a help body or automatic replacement. This lets the caller correct a clear ID directly and retry without fetching the catalog.
+
 ## 0.4.0+codex.2026101001 — 2026-10-10
 
 - Let interface-preserving edits proceed with a local patch and focused inspection; load only evidence relevant to a material research or command-interface change. Clarify minimal Guard requests and visible evidence reuse, and update the codebook only when variables or their definitions, coding, units, or sources change. For quoting-heavy Stata, use the saved `.do` file and initialize the needed paths.

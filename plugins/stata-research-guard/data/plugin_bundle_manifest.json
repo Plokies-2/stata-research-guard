@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.4.0+codex.2026101001"
+    "version": "0.4.0+codex.2026101101"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
       "bytes": 959,
-      "sha256": "e9c17d8dd2670ce454e35f85df20ed897ddbc0e0e8ae1d9806e11757e05b1824"
+      "sha256": "2a74d6643178425c99f8a1c3b03935394b27edfc57ae5f72de97e3b927026936"
     },
     {
       "path": ".mcp.json",
@@ -17,8 +17,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 31720,
-      "sha256": "ed941c58a1e2d3e35db811f9e90a390a62a1e2921773e4b04750f2de4569d64a"
+      "bytes": 32005,
+      "sha256": "d1cd9e92232a8c88e5bef5fb7a277ff1d60d0aa09bc945e5349b4f9b2241ed25"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -1562,8 +1562,8 @@
     },
     {
       "path": "mcp/help-sections.cjs",
-      "bytes": 3045,
-      "sha256": "b31910faa6fcf5b8a2edaaebbe5eddc37e885c7518b9841581767567d2906d7e"
+      "bytes": 3330,
+      "sha256": "4f800fb993334cc3ba3e4795c52c0ce9d94bd165caea4135b3e84b692b44a80f"
     },
     {
       "path": "mcp/live-help.cjs",
@@ -1577,8 +1577,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 14817,
-      "sha256": "519ede8efc9388609ba336bf49982b344c4cdf6fbca23da6bd8a931cd5a748ef"
+      "bytes": 14641,
+      "sha256": "52e96d3ee48a981d8dc6a54ed5456427f5e811b793d6f8ad316db3fb5d5b2016"
     },
     {
       "path": "scripts/build_clean_command_guide.py",
@@ -1622,8 +1622,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/command-evidence.md",
-      "bytes": 18708,
-      "sha256": "1c796adefd277755c48bf74cf398dbbfa6559a153dd7de008c3c48f0febeb684"
+      "bytes": 18994,
+      "sha256": "9449a273637155108ab901a450c5f5615fbb6bf19811cadc255b3b132b952b3e"
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rules.md",
@@ -1652,8 +1652,8 @@
     },
     {
       "path": "tests/help-sections.test.cjs",
-      "bytes": 5062,
-      "sha256": "7ab422965fe8430daa49d648845ec8d68b711f13540b0792dec524c9eb6c6ce8"
+      "bytes": 6528,
+      "sha256": "fd76d7eb985cea980b64bddd5f01aefcadca5fdcc907649712882c9aa45abfe9"
     },
     {
       "path": "tests/live-help.test.cjs",
@@ -1694,7 +1694,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.4.0+codex.2026101001"
+      "value": "0.4.0+codex.2026101101"
     },
     {
       "id": "readme.heading",

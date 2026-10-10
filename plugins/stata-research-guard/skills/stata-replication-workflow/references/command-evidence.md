@@ -8,6 +8,8 @@ Decide what changes before calling Guard. Skip it for read-only explanation/revi
 
 Display-string or spacing values inside an already-understood option remain exempt when syntax and statistical meaning are unchanged. A new or unfamiliar option, changed quoting/parsing, or changed statistical content needs its relevant evidence; editing an option value alone is not the trigger.
 
+An invalid section selection returns the rejected IDs and current valid IDs for that source. Correct the selection directly when the needed ID is clear; retrieve the catalog only if titles or context are still needed. The error delivers no help body and does not select a replacement.
+
 Use Phase 1 (`request` only) when the command is unresolved. When it is clear, go directly to Phase 2 (`request` and exact `selected_commands`). Complete bundled official/maintainer help is the default up to 24,000 Unicode characters; larger help first returns a section catalog. Exact outside-dictionary topics use installed help; no paper example is required to use a documented command.
 
 Reuse visible evidence while command, version, material options, returned interface, and downstream use remain unchanged. Expand only for a remaining question or useful worked context. A command may share a differently named official help topic: `postfile`, `postclose`, and `postutil` are documented under `post`. Guard resolves known aliases while preserving the requested command label. If an exact topic is absent, follow an identified official help cross-reference before concluding its grammar is unavailable; do not guess syntax or substitute a different analysis command. Stop only the branch whose needed grammar remains unavailable.

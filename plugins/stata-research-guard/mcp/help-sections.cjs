@@ -34,8 +34,12 @@ function deliverHelp(entry, navigation, requested, view) {
       scope_note: "No help body was delivered. Use headings and any read_when cues to select the material sections, including relevant defaults, sample, returned state, and cross-references. Common foundation sections accompany selections; the server does not choose task-dependent requirements. Use help_view full when needed.",
     };
   }
-  if (requested.some((id) => !sections.some((section) => section.id === id))) {
-    throw new Error(`invalid exact help section selection: ${entry.command || "source"}`);
+  const invalidIds = requested.filter((id) => !sections.some((section) => section.id === id));
+  if (invalidIds.length) {
+    throw new Error(`invalid exact help section selection: ${entry.command || "source"}`
+      + `\nInvalid IDs: ${JSON.stringify(invalidIds)}`
+      + `\nValid IDs: ${JSON.stringify(sections.map((section) => section.id))}`
+      + "\nNo help body was delivered. Retry with exact IDs from this source; no replacement was selected.");
   }
   const selectedIds = new Set([...required, ...requested]);
   const selected = catalog.filter((section) => selectedIds.has(section.id));

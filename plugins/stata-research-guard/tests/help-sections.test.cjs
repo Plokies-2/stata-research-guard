@@ -5,7 +5,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
 const { deliverHelp, HELP_CHARACTER_THRESHOLD } = require("../mcp/help-sections.cjs");
-const { buildCommandEvidence } = require("../mcp/server.cjs");
+const { buildCommandEvidence, dispatch } = require("../mcp/server.cjs");
 const root = path.join(__dirname, "../data");
 const hash = (s) => crypto.createHash("sha256").update(s).digest("hex");
 
@@ -38,6 +38,28 @@ test("stale navigation returns a whole-source catalog rather than stale slices o
   const result = deliverHelp({ content }, { content_sha256: "stale", sections: [] }, ["old-id"]);
   assert.equal(result.content, null);
   assert.equal(result.section_catalog[0].id, "whole-source");
+});
+
+test("invalid section errors expose current IDs over MCP so callers can retry without a catalog call", async () => {
+  const args = { request: "Read the selected fixed-effect help", selected_commands: ["reghdfe"],
+    help_sections: { reghdfe: ["options-absorb"] }, include_paper_catalog: false };
+  const call = (arguments_) => dispatch({ jsonrpc: "2.0", id: 1, method: "tools/call",
+    params: { name: "get_stata_command_evidence", arguments: arguments_ } });
+  const failed = (await call(args)).result;
+  assert.equal(failed.isError, true);
+  const message = failed.content[0].text;
+  assert.match(message, /invalid exact help section selection: reghdfe/);
+  assert.deepEqual(JSON.parse(message.split("\nInvalid IDs: ")[1].split("\n")[0]), ["options-absorb"]);
+  const validIds = JSON.parse(message.split("\nValid IDs: ")[1].split("\n")[0]);
+  const map = JSON.parse(fs.readFileSync(path.join(root, "command_help_sections.json"), "utf8"))
+    .guides.find((guide) => guide.command === "reghdfe");
+  assert.deepEqual(validIds, map.sections.map((section) => section.id));
+  assert.ok(validIds.includes("absorb-syntax"));
+  const retried = (await call({ ...args, help_sections: { reghdfe: ["absorb-syntax"] } })).result;
+  assert.notEqual(retried.isError, true);
+  const help = JSON.parse(retried.content[0].text).command_evidence[0].command_help;
+  assert.deepEqual(help.requested_sections, ["absorb-syntax"]);
+  assert.ok(help.content.length > 0);
 });
 
 test("every bundled large help and manual has a current map preserving every source line", async () => {
