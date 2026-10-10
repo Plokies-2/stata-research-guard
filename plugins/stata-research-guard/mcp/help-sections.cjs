@@ -5,7 +5,7 @@ const crypto = require("node:crypto");
 // A reading-volume trigger, never a text-cutting or semantic-quality threshold.
 const HELP_CHARACTER_THRESHOLD = 24000;
 
-function deliverHelp(entry, navigation, requested, view) {
+function deliverHelp(entry, navigation, requested, view, knownFoundation) {
   const content = entry.content;
   if (typeof content !== "string") return entry;
   const characterCount = Array.from(content).length;
@@ -41,12 +41,23 @@ function deliverHelp(entry, navigation, requested, view) {
       + `\nValid IDs: ${JSON.stringify(sections.map((section) => section.id))}`
       + "\nNo help body was delivered. Retry with exact IDs from this source; no replacement was selected.");
   }
-  const selectedIds = new Set([...required, ...requested]);
+  const foundationHash = required.length ? crypto.createHash("sha256").update(JSON.stringify({
+    source_sha256: sourceHash,
+    sections: catalog.filter((section) => required.includes(section.id)),
+  })).digest("hex") : null;
+  const reuseFoundation = foundationHash !== null && knownFoundation === foundationHash;
+  const selectedIds = new Set([...(reuseFoundation ? [] : required), ...requested]);
   const selected = catalog.filter((section) => selectedIds.has(section.id));
   return { ...entry, ...metadata, delivery: "selected_source_sections",
     requested_sections: requested, selected_sections: selected,
+    ...(foundationHash ? { foundation_sha256: foundationHash } : {}),
+    ...(reuseFoundation ? { foundation_unchanged: true,
+      reused_foundation_sections: required.filter((id) => !requested.includes(id)) } : {}),
     content: selected.map((section) => lines.slice(section.start - 1, section.end).join("")).join("\n"),
-    scope_note: "Original sections plus common foundation sections. read_when is reading guidance, not automatic selection or a completeness judgment. Follow remaining material cross-references or request full help. Large sections are not truncated to fit the threshold.",
+    scope_note: (reuseFoundation
+      ? "Explicitly requested original sections; unchanged foundation text acknowledged as still visible by the caller is not repeated. Omit known_help_foundations after context loss to retrieve it again. "
+      : "Original sections plus common foundation sections. ")
+      + "read_when is reading guidance, not automatic selection or a completeness judgment. Follow remaining material cross-references or request full help. Large sections are not truncated to fit the threshold.",
   };
 }
 

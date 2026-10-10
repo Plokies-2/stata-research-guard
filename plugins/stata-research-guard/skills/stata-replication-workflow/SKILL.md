@@ -23,6 +23,8 @@ For a known command needing evidence, the minimum call is:
 
 There is no `phase` or `commands` argument. Reuse already-read help while its version, material options and use remain applicable. For a narrow unresolved question, use current catalog IDs with `help_sections`; ask for `help_view: "catalog"` only if those IDs are unavailable. Use full help when dependencies remain unclear. Read [command-evidence.md](references/command-evidence.md) only for the needed lookup feature. On later calls, send the actual `known_rules_sha256` only while the complete rules remain visible; use `deduplicate_help: true` for shared help bodies in multi-command calls.
 
+After reading a selected help response's complete foundation, `known_help_foundations` can acknowledge its `foundation_sha256` on later section requests while that text remains visible. Omit it after context loss. Large combined responses may return catalogs for automatic help deliveries; those bodies have not been read. Explicit sections and `help_view: "full"` remain intact. See the command-evidence reference when using these controls.
+
 ## Work from the actual project
 
 Inspect the requested files and their direct inputs, callers, and outputs. Preserve the user's scope, research specification, baseline data, and output contracts. Keep one maintained `.do` per research work unit: locate its existing file and edit, extend, rerun, or refactor that same file. A changed option, specification, output, or follow-up request is not a new work unit. Follow the general rules for the narrow reasons to create another file; do not create a replacement workflow by default.

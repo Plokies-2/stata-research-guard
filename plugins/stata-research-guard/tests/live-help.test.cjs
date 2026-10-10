@@ -47,6 +47,29 @@ test("help expansion preserves a source chain longer than eight includes", (t) =
   assert.deepEqual(result.unresolved, []);
 });
 
+test("help expansion searches supplied official roots recursively after source-local references", (t) => {
+  const directory = workspace(t);
+  const sourceDir = path.join(directory, "package", "r");
+  const updates = path.join(directory, "ado", "updates");
+  const base = path.join(directory, "ado", "base");
+  for (const folder of [sourceDir, path.join(updates, "s"), path.join(base, "s"), path.join(base, "n")]) {
+    fs.mkdirSync(folder, { recursive: true });
+  }
+  const root = path.join(sourceDir, "topic.sthlp");
+  fs.writeFileSync(root, "Before\nINCLUDE help shared\nINCLUDE help shared\nINCLUDE help local\nINCLUDE help absent\nAfter");
+  fs.writeFileSync(path.join(updates, "s", "shared.ihlp"), "Updated fragment\nINCLUDE help nested");
+  fs.writeFileSync(path.join(base, "s", "shared.ihlp"), "Older fragment");
+  fs.writeFileSync(path.join(base, "n", "nested.ihlp"), "Nested original fragment");
+  fs.writeFileSync(path.join(sourceDir, "local.ihlp"), "Package fragment");
+  fs.writeFileSync(path.join(updates, "local.ihlp"), "Official fragment");
+  const result = expandHelpIncludes(root, [updates, base]);
+  assert.equal(result.content, "Before\nUpdated fragment\nNested original fragment\nUpdated fragment\nNested original fragment\nPackage fragment\nINCLUDE help absent\nAfter");
+  assert.deepEqual(result.unresolved, ["unresolved INCLUDE help: absent"]);
+  assert.deepEqual(result.sourceFiles.map(([file]) => file), [
+    root, path.join(updates, "s", "shared.ihlp"), path.join(base, "n", "nested.ihlp"), path.join(sourceDir, "local.ihlp"),
+  ].map((file) => fs.realpathSync(file)));
+});
+
 test("failed and partial help retries recover; success is cached, refreshed, and concurrent calls are deduplicated", async (t) => {
   const directory = workspace(t);
   const executable = path.join(directory, "stata-test");
@@ -101,10 +124,13 @@ test("failed and partial help retries recover; success is cached, refreshed, and
   assert.equal(partial.status, "partial");
   assert.match(partial.help.content, /INCLUDE help missing_fragment/);
   assert.equal(launches, 5);
-  fs.writeFileSync(path.join(directory, "missing_fragment.ihlp"), "Recovered original fragment");
+  const officialFragment = path.join(directory, "ado", "base", "m", "missing_fragment.ihlp");
+  fs.mkdirSync(path.dirname(officialFragment), { recursive: true });
+  fs.writeFileSync(officialFragment, "Recovered original fragment");
   const recovered = await lookupLiveStataHelp("guardfixture");
   assert.equal(recovered.status, "available");
   assert.equal(recovered.help.content, "Changed original body\nRecovered original fragment");
+  assert.ok(recovered.help.source_files.some((file) => file.source_path === fs.realpathSync(officialFragment)));
   assert.equal(launches, 7);
   await Promise.all([lookupLiveStataHelp("guardotherone"), lookupLiveStataHelp("guardothertwo")]);
   assert.equal(maximumActive, 1);

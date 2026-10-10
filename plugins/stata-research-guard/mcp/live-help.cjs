@@ -132,21 +132,25 @@ async function locateInstalledHelp(stata, topic, workspace, deadline) {
   return sourceLines.join("\n").trim();
 }
 
-function includeCandidates(sourceFile, name, alias) {
+function includeCandidates(sourceFile, name, alias, searchRoots) {
   const sourceDir = path.dirname(sourceFile);
   const parentDir = path.dirname(sourceDir);
   const files = /\.(?:sthlp|hlp|ihlp)$/i.test(name)
     ? [name]
     : alias ? [`${name}.sthlp`, `${name}.hlp`] : [`${name}.ihlp`];
-  return files.flatMap((file) => [
+  const local = files.flatMap((file) => [
     path.join(sourceDir, file),
     path.join(sourceDir, file[0].toLowerCase(), file),
     path.join(parentDir, file),
     path.join(parentDir, file[0].toLowerCase(), file),
   ]);
+  return local.concat(searchRoots.flatMap((root) => files.flatMap((file) => [
+    path.join(root, file),
+    path.join(root, file[0].toLowerCase(), file),
+  ])));
 }
 
-function expandHelpIncludes(sourceFile, stack = new Set()) {
+function expandHelpIncludes(sourceFile, searchRoots = [], stack = new Set()) {
   const resolved = fs.realpathSync(sourceFile);
   stack.add(resolved);
   const output = [];
@@ -162,14 +166,14 @@ function expandHelpIncludes(sourceFile, stack = new Set()) {
         output.push(line);
         continue;
       }
-      const candidate = includeCandidates(resolved, name, !!alias).find((file) => fs.existsSync(file));
+      const candidate = includeCandidates(resolved, name, !!alias, searchRoots).find((file) => fs.existsSync(file));
       const target = candidate ? fs.realpathSync(candidate) : null;
       if (!target || stack.has(target)) {
         output.push(line);
         unresolved.push(`${target ? "cyclic" : "unresolved"} ${alias ? "help alias" : "INCLUDE help"}: ${name}`);
         continue;
       }
-      const expanded = expandHelpIncludes(target, stack);
+      const expanded = expandHelpIncludes(target, searchRoots, stack);
       output.push(expanded.content);
       unresolved.push(...expanded.unresolved);
       for (const entry of expanded.sourceFiles) sourceFiles.set(...entry);
@@ -185,7 +189,10 @@ async function renderInstalledHelp(stata, sourceFile, topic, workspace, deadline
   const renderedFile = path.join(workspace, `${topic}.txt`);
   const statusFile = path.join(workspace, "rendered.status");
   const doFile = path.join(workspace, "render.do");
-  const expanded = expandHelpIncludes(sourceFile);
+  const officialAdo = path.join(path.dirname(stata), "ado");
+  const expanded = expandHelpIncludes(sourceFile, [
+    path.join(officialAdo, "updates"), path.join(officialAdo, "base"),
+  ]);
   fs.writeFileSync(expandedFile, expanded.content, "utf8");
   fs.writeFileSync(doFile, [
     "version 18",

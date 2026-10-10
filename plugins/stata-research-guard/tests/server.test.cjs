@@ -59,7 +59,7 @@ test("help-only calls explicitly omit paper catalogs without changing help or ru
 
 test("duplicate help references restore the exact default response in both help phases", async () => {
   for (const expanded of [false, true]) {
-    const args = { request: "Read shared encode help", selected_commands: ["encode", "decode"],
+    const args = { request: "Read shared encode help", selected_commands: ["encode", "decode"], help_view: "full",
       ...(expanded ? { expanded: true, expanded_commands: ["encode", "decode"] } : {}) };
     const full = await buildCommandEvidence(args);
     const compact = await buildCommandEvidence({ ...args, deduplicate_help: true });
@@ -165,6 +165,7 @@ test("Phase 2 returns official help for the six core data-inspection commands", 
   const result = await buildCommandEvidence({
     request: "Inspect data structure, variables, values, levels, and sample size",
     selected_commands: commands,
+    help_view: "full",
   });
   assert.deepEqual(result.command_evidence.map((row) => row.command), commands);
   assert.deepEqual(result.command_evidence.map((row) => row.help_status), commands.map(() => "available"));
@@ -216,6 +217,7 @@ test("Phase 2 resolves multiple selected commands independently in request order
   const result = await buildCommandEvidence({
     request: "Use several commands",
     selected_commands: ["duplicates", "cgmreg", "xtivreg", "jwdidstacked"],
+    help_view: "full",
   });
   assert.deepEqual(
     result.command_evidence.map((row) => row.command),

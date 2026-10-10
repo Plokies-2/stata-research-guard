@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0+codex.2026101102 — 2026-10-11
+
+- Resolve INCLUDE fragments from the selected source's local help folders and recursively preserve each source fragment and status. Let callers acknowledge visible, unchanged foundation text to avoid repeating it. When deduplicated Phase 2/3 responses exceed 48,000 serialized Unicode characters, navigate only automatic full-help entries to intact catalogs; explicit sections, full help, rules and paper material stay complete.
+
 ## 0.4.0+codex.2026101101 — 2026-10-11
 
 - When a selected help-section ID is invalid, return the rejected ID and current valid IDs for that source without a help body or automatic replacement. This lets the caller correct a clear ID directly and retry without fetching the catalog.

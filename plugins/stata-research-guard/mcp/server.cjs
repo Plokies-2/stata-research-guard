@@ -25,6 +25,8 @@ const GENERAL_RULES_PATH = path.join(
 );
 const GENERAL_RULES_SOURCE_PATH = "skills/stata-replication-workflow/references/general-rules.md";
 const EXACT_HELP_TOPIC = /^[A-Za-z][A-Za-z0-9_]*$/;
+// Navigation threshold for the combined response, never a text truncation limit.
+const HELP_RESPONSE_CHARACTER_THRESHOLD = 48000;
 const STATA_COMMAND_WORDS = /^[A-Za-z][A-Za-z0-9_]*(?: [A-Za-z][A-Za-z0-9_]*)+$/;
 const LIVE_HELP_TOPIC_ALIASES = new Map([
   ["global", "macro"],
@@ -237,8 +239,8 @@ function validateArguments(args) {
   const allowed = phase === "discovery"
     ? new Set(["request", "known_rules_sha256"])
     : phase === "selected_command_evidence"
-      ? new Set(["request", "selected_commands", "known_rules_sha256", "help_view", "help_sections", "refresh_live_help", "include_paper_catalog", "deduplicate_help", "help_source", "execution_sources", "workflow_notes"])
-      : new Set(["request", "selected_commands", "expanded", "expanded_commands", "selected_block_ids", "known_rules_sha256", "help_view", "expanded_sections", "deduplicate_help"]);
+      ? new Set(["request", "selected_commands", "known_rules_sha256", "known_help_foundations", "help_view", "help_sections", "refresh_live_help", "include_paper_catalog", "deduplicate_help", "help_source", "execution_sources", "workflow_notes"])
+      : new Set(["request", "selected_commands", "expanded", "expanded_commands", "selected_block_ids", "known_rules_sha256", "known_help_foundations", "help_view", "expanded_sections", "deduplicate_help"]);
   const unexpected = Object.keys(args).filter((key) => !allowed.has(key));
   if (unexpected.length > 0) {
     throw new Error(`invalid_argument: invalid_phase_arguments: ${phase} does not allow ${unexpected.join(", ")}`);
@@ -298,6 +300,18 @@ function validateArguments(args) {
   }
   const selectedBlockIds = phase === "expanded_context" ? optionalSelectedBlockIdsFrom(args) : null;
   const expandedCommands = phase === "expanded_context" ? optionalExpandedCommandsFrom(args, selectedCommands) : null;
+  if (args.known_help_foundations !== undefined) {
+    const known = args.known_help_foundations;
+    if (!known || typeof known !== "object" || Array.isArray(known) || !Object.keys(known).length) {
+      throw new Error("known_help_foundations must map selected help commands to visible foundation SHA-256 values");
+    }
+    const availableCommands = phase === "expanded_context" ? expandedCommands : selectedCommands;
+    for (const [command, hash] of Object.entries(known)) {
+      if (!availableCommands.includes(command) || typeof hash !== "string" || !/^[a-f0-9]{64}$/.test(hash)) {
+        throw new Error(`invalid known_help_foundations entry: ${command}`);
+      }
+    }
+  }
   const sectionRequest = args.help_sections !== undefined ? args.help_sections : args.expanded_sections;
   if (sectionRequest !== undefined) {
     if (!sectionRequest || typeof sectionRequest !== "object" || Array.isArray(sectionRequest) || Object.keys(sectionRequest).length === 0) {
@@ -329,7 +343,7 @@ function commandHelp(command, args) {
   const entry = helpGuidesByCommand.get(command);
   if (!entry || !entry.content_file) return null;
   return deliverHelp({ ...entry, content: readUtf8(path.join(DATA_ROOT, entry.content_file)) },
-    helpSectionsByCommand.get(command), args.help_sections?.[command], args.help_view);
+    helpSectionsByCommand.get(command), args.help_sections?.[command], args.help_view, args.known_help_foundations?.[command]);
 }
 
 async function dynamicCommandEvidence(command, liveHelpLookup, args) {
@@ -340,7 +354,7 @@ async function dynamicCommandEvidence(command, liveHelpLookup, args) {
     help_topic: helpTopic,
     registry_status: "outside_dictionary",
     help_status: live.status,
-    command_help: live.help ? deliverHelp(live.help, null, args.help_sections?.[command], args.help_view) : null,
+    command_help: live.help ? deliverHelp(live.help, null, args.help_sections?.[command], args.help_view, args.known_help_foundations?.[command]) : null,
     limitations: live.limitations,
     expanded_documentation: {
       status: "unavailable",
@@ -376,7 +390,7 @@ async function installedCommandEvidence(command, liveHelpLookup, args) {
   // The exact-topic helper also serves outside-dictionary calls. Its catalog
   // limitation does not apply to a registered command's own bundled references.
   const limitations = live.limitations.filter((line) => line !== "No bundled PDF expansion or paper example catalog is attached for an out-of-dictionary topic.");
-  const help = live.help ? deliverHelp({ ...live.help, limitations }, null, args.help_sections?.[command], args.help_view) : null;
+  const help = live.help ? deliverHelp({ ...live.help, limitations }, null, args.help_sections?.[command], args.help_view, args.known_help_foundations?.[command]) : null;
   if (help?.source_path) {
     try {
       help.source_version_markers = readUtf8(help.source_path).split(/\r?\n/)
@@ -445,7 +459,7 @@ function expandedDocumentationSummary(command) {
 function expandedDocumentation(command, args) {
   const entry = expandedGuidesByCommand.get(command);
   const content = entry?.content_file ? readUtf8(path.join(DATA_ROOT, entry.content_file)) : null;
-  return deliverHelp({ ...entry, content }, expandedSectionsByCommand.get(command), args.expanded_sections?.[command], args.help_view);
+  return deliverHelp({ ...entry, content }, expandedSectionsByCommand.get(command), args.expanded_sections?.[command], args.help_view, args.known_help_foundations?.[command]);
 }
 
 function sha256Text(text) {
@@ -573,6 +587,35 @@ function deduplicateHelp(result, rowsKey, helpKey) {
   }
 }
 
+function finishHelpDelivery(result, rowsKey, helpKey, args, navigationByCommand) {
+  const rows = result[rowsKey];
+  const originals = rows.map((row) => row[helpKey]);
+  if (args.deduplicate_help === true) deduplicateHelp(result, rowsKey, helpKey);
+  if (args.help_view === "full" || args.help_view === "catalog") return;
+  const responseCharacters = Array.from(JSON.stringify(result)).length;
+  if (responseCharacters <= HELP_RESPONSE_CHARACTER_THRESHOLD) return;
+
+  const selections = args.help_sections || args.expanded_sections || {};
+  const deferred = rows.filter((row, index) => originals[index]?.delivery === "full_help"
+    && typeof originals[index].content === "string" && !selections[row.command]);
+  if (!deferred.length) return;
+  // Restore the original bodies before rebuilding same-response content_ref links.
+  rows.forEach((row, index) => { row[helpKey] = originals[index]; });
+  for (const row of deferred) {
+    const help = row[helpKey];
+    const navigation = help.source_kind === "live_installed_help" ? null : navigationByCommand.get(row.command);
+    row[helpKey] = deliverHelp(help, navigation, undefined, "catalog");
+  }
+  if (args.deduplicate_help === true) deduplicateHelp(result, rowsKey, helpKey);
+  result.response_navigation = {
+    reason: "combined_response_size",
+    threshold_characters: HELP_RESPONSE_CHARACTER_THRESHOLD,
+    response_characters_before: responseCharacters,
+    deferred_commands: deferred.map((row) => row.command),
+    note: "Only automatic full-help bodies were deferred to their intact source catalogs. Explicit sections, full-source requests, rules and paper material are not shortened. Select needed sections or help_view full; no help body was read for a deferred command. This is a navigation trigger, not a hard response-size cap.",
+  };
+}
+
 async function buildCommandEvidence(args, options = {}) {
   const {
     phase,
@@ -607,8 +650,8 @@ async function buildCommandEvidence(args, options = {}) {
         id, record_type: "authoring_guidance", source_path: "data/command_workflow_notes.json", ...workflowNotes[command][id],
       }));
     }
-    if (args.deduplicate_help === true) deduplicateHelp(result, "command_evidence", "command_help");
     if (topicNormalizations.length > 0) result.topic_normalizations = topicNormalizations;
+    finishHelpDelivery(result, "command_evidence", "command_help", args, helpSectionsByCommand);
     return result;
   }
 
@@ -632,15 +675,15 @@ async function buildCommandEvidence(args, options = {}) {
     })),
     paper_usage_cards: selectedBlockIds.map(paperCard),
   };
-  if (args.deduplicate_help === true) deduplicateHelp(result, "expanded_command_evidence", "expanded_documentation");
   if (topicNormalizations.length > 0) result.topic_normalizations = topicNormalizations;
+  finishHelpDelivery(result, "expanded_command_evidence", "expanded_documentation", args, expandedSectionsByCommand);
   return result;
 }
 
 const TOOL_DEFINITIONS = [
   {
     name: "get_stata_command_evidence",
-    description: "Stata command evidence, not command selection or research judgment. Call Phase 2 directly for known commands; discovery is optional. Help over 24000 Unicode characters returns a section catalog first, including live help and expanded manuals. Select exact help_sections in Phase 2 or expanded_sections in Phase 3; foundation sections accompany selections. help_view full explicitly retrieves the complete source, and catalog requests navigation. Small help remains complete by default. Paper blocks are unchanged. Rules are included unless known_rules_sha256 matches complete rules still visible to the caller; omit it in fresh or compacted contexts. Registered commands use bundled documentation unless help_source installed is explicit. refresh_live_help refreshes only selected live snapshots. Optional execution_sources return caller-selected ADO metadata/excerpts; workflow_notes return selected authoring guidance, never semantic verdicts.",
+    description: "Stata command evidence, not command selection or research judgment. Call Phase 2 directly for known commands; discovery is optional. Help over 24000 Unicode characters returns a section catalog first, including live help and expanded manuals. Combined responses over 48000 characters defer automatic full-help bodies to catalogs; explicit sections and help_view full remain intact. Select exact help_sections in Phase 2 or expanded_sections in Phase 3. Foundation sections accompany selections unless known_help_foundations maps the command to a foundation_sha256 from complete foundation text still visible to the caller; explicitly requested sections always return. help_view full retrieves the complete source, and catalog requests navigation. Paper blocks are unchanged. Rules are included unless known_rules_sha256 matches complete rules still visible to the caller. Omit both reuse acknowledgments in fresh or compacted contexts. Registered commands use bundled documentation unless help_source installed is explicit. refresh_live_help refreshes only selected live snapshots. Optional execution_sources return caller-selected ADO metadata/excerpts; workflow_notes return selected authoring guidance, never semantic verdicts.",
     inputSchema: {
       oneOf: [
         {
@@ -662,6 +705,7 @@ const TOOL_DEFINITIONS = [
             request: { type: "string", minLength: 1, description: "Describe the current question. Retrieval follows the exact selections below; this text does not rank commands." },
             selected_commands: { type: "array", description: "Exact Stata commands selected by the model. Known commands can be requested without discovery.", minItems: 1, items: { type: "string", minLength: 1 } },
             known_rules_sha256: { type: "string", pattern: "^[a-f0-9]{64}$", description: "Hash of complete rules still visible in this caller context. Omit after context loss." },
+            known_help_foundations: { type: "object", minProperties: 1, additionalProperties: { type: "string", pattern: "^[a-f0-9]{64}$" }, description: "Map exact selected commands to foundation_sha256 returned with complete foundation text still visible in this context. A matching hash skips only unrequested duplicate foundation sections. Explicit sections and full help always return. Omit after context loss; catalog/source hashes are not reading acknowledgments." },
             help_view: { type: "string", enum: ["catalog", "full"], description: "Request source navigation or the complete source. Do not combine with section selections." },
             help_sections: { type: "object", description: "Map each selected command to exact IDs from its current help catalog; common foundation sections also accompany the selection.", minProperties: 1, additionalProperties: { type: "array", minItems: 1, uniqueItems: true, items: { type: "string", minLength: 1 } } },
             refresh_live_help: { type: "boolean", description: "Refresh a selected live snapshot. Without help_source installed, registered commands keep their bundled source." },
@@ -696,6 +740,7 @@ const TOOL_DEFINITIONS = [
             selected_commands: { type: "array", description: "Exact Stata commands selected by the model. Known commands can be requested without discovery.", minItems: 1, items: { type: "string", minLength: 1 } },
             expanded: { const: true, description: "Request selected longer documents, exact paper blocks, or both; a preceding phase call is not required." },
             known_rules_sha256: { type: "string", pattern: "^[a-f0-9]{64}$", description: "Hash of complete rules still visible in this caller context. Omit after context loss." },
+            known_help_foundations: { type: "object", minProperties: 1, additionalProperties: { type: "string", pattern: "^[a-f0-9]{64}$" }, description: "Map expanded_commands to foundation_sha256 returned with complete expanded-document foundation text still visible in this context. Explicit sections and full help always return. Omit after context loss or when only a catalog was read." },
             help_view: { type: "string", enum: ["catalog", "full"], description: "Request source navigation or the complete source. Do not combine with section selections." },
             expanded_sections: { type: "object", description: "Map each expanded command to exact IDs from its current expanded-document catalog.", minProperties: 1, additionalProperties: { type: "array", minItems: 1, uniqueItems: true, items: { type: "string", minLength: 1 } } },
             expanded_commands: { type: "array", description: "Subset of selected_commands whose longer documents are needed.", items: { type: "string", minLength: 1 } },
