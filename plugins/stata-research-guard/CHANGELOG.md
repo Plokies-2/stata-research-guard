@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0+codex.2026101001 — 2026-10-10
+
+- Let interface-preserving edits proceed with a local patch and focused inspection; load only evidence relevant to a material research or command-interface change. Clarify minimal Guard requests and visible evidence reuse, and update the codebook only when variables or their definitions, coding, units, or sources change. For quoting-heavy Stata, use the saved `.do` file and initialize the needed paths.
+
 ## 0.4.0+codex.2026100701 — 2026-10-07
 
 - Strengthen direct authoring at the point of use: inline simple one-site path, variable-list, specification and option aliases, while retaining genuinely shared configuration and required command handles within the authorized edit scope.

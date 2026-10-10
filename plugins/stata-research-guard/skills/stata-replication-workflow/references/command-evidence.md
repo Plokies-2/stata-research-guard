@@ -4,11 +4,21 @@ Guard supplies source material for the model's decision. A catalog, path, hash, 
 
 ## Lookup and reuse
 
-Skip Guard for read-only explanation/review, comments or formatting, literal path/label changes with an unchanged interface, verbatim relocation, and unchanged-file execution with no semantic issue. Otherwise request evidence for the material command interfaces, not every token in the file.
+Decide what changes before calling Guard. Skip it for read-only explanation/review, comments or formatting, literal path/label changes with an unchanged interface, verbatim relocation, and unchanged-file execution with no semantic issue. Inspect the affected source, caller and output directly; do not reread long references just to claim an exemption. Moving code still requires preserving call order, macro scope and returned-result lifetime. Changing a label's statistical meaning, a coefficient selector, sample, VCE or an unfamiliar output option requires the relevant research or interface evidence. Otherwise request evidence for the material command interfaces, not every token in the file.
+
+Display-string or spacing values inside an already-understood option remain exempt when syntax and statistical meaning are unchanged. A new or unfamiliar option, changed quoting/parsing, or changed statistical content needs its relevant evidence; editing an option value alone is not the trigger.
 
 Use Phase 1 (`request` only) when the command is unresolved. When it is clear, go directly to Phase 2 (`request` and exact `selected_commands`). Complete bundled official/maintainer help is the default up to 24,000 Unicode characters; larger help first returns a section catalog. Exact outside-dictionary topics use installed help; no paper example is required to use a documented command.
 
 Reuse visible evidence while command, version, material options, returned interface, and downstream use remain unchanged. Expand only for a remaining question or useful worked context. A command may share a differently named official help topic: `postfile`, `postclose`, and `postutil` are documented under `post`. Guard resolves known aliases while preserving the requested command label. If an exact topic is absent, follow an identified official help cross-reference before concluding its grammar is unavailable; do not guess syntax or substitute a different analysis command. Stop only the branch whose needed grammar remains unavailable.
+
+The tool infers the phase from the supplied fields; do not send `phase` or `commands`. Start with this exact shape, adding section controls only when needed:
+
+```json
+{"request":"Read the changed output interface","selected_commands":["estout"],"include_paper_catalog":false}
+```
+
+For a narrow follow-up, reuse visible help or select known current section IDs directly. If IDs are missing, request the catalog once and choose from it; do not guess IDs or retrieve the full manual first. Required foundation sections still accompany a selection. If they are already sufficient to resolve the question, stop there rather than expanding again. Complete help remains appropriate when material dependencies are unclear.
 
 ## Find the interface that replaces manual work
 

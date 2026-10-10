@@ -7,8 +7,21 @@ description: Write, refactor, and run researcher-readable Stata workflows using 
 
 Prioritize code the researcher can comfortably read, inspect, and modify. Help them follow data and sample construction through the visible estimator, specification, stored estimates, and outputs; retain adequate code when a rewrite offers no concrete benefit. Guard supplies evidence; the model and researcher make the research choices.
 
-Read [general-rules.md](references/general-rules.md) once for the relevant task, from this file or a current complete Guard response. It contains the research judgment and house rules; reuse it while visible and unchanged.
-For subsequent Guard calls, send its actual `known_rules_sha256` while the complete rules remain visible. For Phase 2 help-only calls omit paper catalogs with `include_paper_catalog: false`; for multi-command help use `deduplicate_help: true` and read any `content_ref` body in that same response. See [command-evidence.md](references/command-evidence.md) for the exact reuse boundaries.
+## Start with what changes
+
+Read the requested block and its direct caller or output before choosing further reading. A Stata filename alone does not require a Guard call.
+
+- For comments, literal labels or spacing, unchanged path interfaces, verbatim relocation, or unchanged-file execution with no semantic issue, make the smallest patch and inspect the affected call or output. This includes display-string or spacing values inside an already-understood option when its syntax and statistical meaning stay unchanged. Preserve call order, macro scope, inputs and stored-result consumers when moving code. Do not load the full general rules, command evidence, paper workflows or peer-review procedure solely for this edit.
+- When research meaning or a command interface changes, identify the changed sample, specification, inference, statistic, option, returned result or consumer. Read [general-rules.md](references/general-rules.md) once, locally or in the first complete Guard response; reuse visible unchanged text. Resolve research choices from the user's requirements and project evidence. Read command help only for the affected interface or an unresolved semantic question; a label describing a different statistic is not a cosmetic edit.
+- If a small edit reveals a real dependency or semantic problem, expand only to that problem. Reuse suitable stored results for display changes; inspect the actual export rather than rerunning unrelated estimation. Substantial connected workflow changes still require the paper reading below.
+
+For a known command needing evidence, the minimum call is:
+
+```json
+{"request":"Read the changed estout output interface","selected_commands":["estout"],"include_paper_catalog":false}
+```
+
+There is no `phase` or `commands` argument. Reuse already-read help while its version, material options and use remain applicable. For a narrow unresolved question, use current catalog IDs with `help_sections`; ask for `help_view: "catalog"` only if those IDs are unavailable. Use full help when dependencies remain unclear. Read [command-evidence.md](references/command-evidence.md) only for the needed lookup feature. On later calls, send the actual `known_rules_sha256` only while the complete rules remain visible; use `deduplicate_help: true` for shared help bodies in multi-command calls.
 
 ## Work from the actual project
 
@@ -16,7 +29,7 @@ Inspect the requested files and their direct inputs, callers, and outputs. Prese
 
 Comments explain the current operation and research rationale. Follow the general rules' comment guidance: omit meeting/agreement dates, revision diaries, professor-advice attributions and other private work history; retain substantive data/event dates and needed source citations.
 
-When code touches data variables, create or update the project Excel codebook alongside the code, following the general rules' five-column reference layout and variable-change documentation guidance. Include the affected codebook entries in your final code-and-output review.
+When variables are added, removed or renamed, or their definition, coding, units or source mapping changes, update the affected project Excel codebook entries alongside the code, following the general rules' reference layout. Unchanged variable mentions or verbatim moves do not require codebook work. Include changed entries in the final code-and-output review.
 
 For workflow design or restructuring, reconcile the forward data flow with a backward reading from the affected output's meaning, sample, and source transformations. Use what this reveals to choose a useful correction or retain adequate code; a path listing or cosmetic master-file change is not the purpose of a research refactor.
 
@@ -37,6 +50,8 @@ Choose and critically read the connected originals yourself using that reference
 4. Run the requested work and inspect relevant data counts, logs, estimates, tables, and figures. Also inspect the affected generated files and paths for unnecessary persistent intermediates, duplicate exports, and unclear placement, following the general rules' file-lifecycle guidance. Use `outreg2` first when it preserves the results, following the general rules. If a chosen package is missing, follow the general rules' standing authorization for on-demand installation into the main Stata environment, refresh the runtime as needed, and return to the analysis.
 
 For long background runs, collect the existing task with bounded `stata_task_status(wait=True)` waits suited to its runtime instead of rapidly repeating nonblocking checks. Continue independent work between waits; resolve the actual task state before retrying or changing execution routes. When reading appended logs, reuse the returned `next_offset`; use keyword/context reads for a concrete warning or failure and avoid repeatedly loading the full log. Do not repeatedly narrate identical running counts. Report meaningful completion, failure, findings or required action, honoring any requested progress schedule. Apply the general rules' batch and output guidance without adding a monitor, scheduler or research-result classifier.
+
+For code with substantial quoting or backslashes, prefer the existing saved `.do` through the runtime's file interface over embedding the entire block in a tool string. If only a fragment must run, use a temporary driver in the project's work area. Initialize its needed paths in that execution or use the existing setup; do not assume globals survived another call. On failure, read the expanded path and log and resolve any running task before retrying. This does not require session resets or new permanent runners.
 
 ## Independent advice when requested or useful
 

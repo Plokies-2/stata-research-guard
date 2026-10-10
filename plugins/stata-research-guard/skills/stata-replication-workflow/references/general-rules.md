@@ -1,6 +1,6 @@
 # General Rules
 
-Read once for the relevant task, from this file or a current complete Guard response. Reuse while visible and unchanged; reread after context loss or a relevant rule change.
+For research authoring or a material interface change, read once from this file or a current complete Guard response. Reuse while visible and unchanged; reread after context loss or a relevant rule change. The workflow entrypoint handles interface-preserving edits without loading this full document. If a Guard call is needed, its complete-rules delivery and explicit visible-hash reuse contract still apply.
 
 ## Research purpose
 
