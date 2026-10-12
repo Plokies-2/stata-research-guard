@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.0+codex.2026101301 — 2026-10-13
+
+- Make `stata-replication-workflow` the single research-workflow entrypoint. Move execution, session-state and result-collection guidance into an on-demand reference; reuse the existing command-evidence and peer guidance instead of repeating detailed controls.
+- Keep the public workflow usable through an existing authorized runner, local Stata batch executable or official Python integration. mcpStata is optional and is neither bundled nor required. Preserve connected-paper reading, complete command evidence, research choices and output contracts; no runtime engine or semantic validator changes.
+
 ## 0.4.0+codex.2026101102 — 2026-10-11
 
 - Resolve INCLUDE fragments from the selected source's local help folders and recursively preserve each source fragment and status. Let callers acknowledge visible, unchanged foundation text to avoid repeating it. When deduplicated Phase 2/3 responses exceed 48,000 serialized Unicode characters, navigate only automatic full-help entries to intact catalogs; explicit sections, full help, rules and paper material stay complete.

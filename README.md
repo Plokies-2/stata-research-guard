@@ -2,7 +2,7 @@
 
 연구자가 자료와 표본에서 회귀 사양, 추정치 저장, 표·그림까지 직접 따라갈 수 있는 Stata 코드를 작성하도록 돕는 Codex 플러그인입니다. 명령 사전, 공식·maintainer 도움말, 실제 논문 코드와 독립 검토를 제공합니다. 연구 선택은 사용자와 모델이 합니다.
 
-**0.4.0**은 연구자가 읽기 쉬운 분석 흐름과 원문 근거를 제공하는 배포입니다. 이번 빌드는 INCLUDE 조각을 선택한 Stata 도움말 원문과 그 하위 폴더에서 재귀적으로 찾고 출처 조각과 상태를 보존합니다. 선택 구획 응답에서 이미 읽은 필수 기초 구획을 명시적으로 재사용할 수 있으며, 합산 응답이 클 때는 자동 제공 도움말만 온전한 목차로 안내합니다. 명시한 구획과 전체 도움말·규칙·논문 자료는 그대로 보존합니다.
+**0.4.0**은 연구자가 읽기 쉬운 분석 흐름과 원문 근거를 제공하는 배포입니다. 연구 워크플로우는 `stata-replication-workflow` 하나에서 시작하며, 실행·결과 확인 지침은 필요할 때만 읽습니다. 공개 배포는 별도 mcpStata 설치를 요구하지 않습니다. 기존 Stata 실행 환경을 사용하며, 원문 도움말·논문 자료와 현재 문맥에 남아 있는 근거의 재사용 원칙을 유지합니다.
 
 ## 연구 코드 작성 흐름
 
@@ -82,12 +82,13 @@ Phase 2는 `help_sections`, Phase 3 확장 매뉴얼은 `expanded_sections`로 �
 
 도표는 연구 맥락 안에서 읽습니다. 변수·사양·축·통계량·집단을 구분하는 짧은 표지만 남기고, 정의와 상세한 방법은 본문이나 README에 둡니다. 구체적인 오독을 막을 때만 짧은 주석을 쓰며 중복 제목과 과대한 글자를 피합니다.
 
-Node.js와 Stata 18 환경을 기본으로 사용합니다. `CODEX_MCP_NODE_PATH`로 Node 실행 파일을, `STATA_PATH`로 live help용 Stata 실행 파일을 지정할 수 있습니다. Stata 분석 실행과 산출물 관찰에는 별도 mcpStata를 우선 사용합니다. 없으면 현재 환경에서 허용된 기존 실행 스크립트, Stata 배치 실행 또는 공식 Python 연동 등으로 진행합니다. 실행 수단 자체가 없으면 가능한 코드 작성·검토를 진행하고 실제 실행하지 못한 범위를 명확히 보고합니다.
+Node.js와 Stata 18 환경을 기본으로 사용합니다. `CODEX_MCP_NODE_PATH`로 Node 실행 파일을, `STATA_PATH`로 live help용 Stata 실행 파일을 지정할 수 있습니다. 분석 실행에는 현재 환경에서 허용된 기존 실행 스크립트, Stata 배치 실행 또는 공식 Python 연동 등을 사용합니다. 플러그인은 실행 엔진을 포함하지 않으며 mcpStata가 없는 사용자도 같은 워크플로우로 진행합니다. mcpStata가 이미 연결된 환경에서는 선택적으로 활용할 수 있습니다. 실행 수단 자체가 없으면 가능한 코드 작성·검토를 진행하고 실제 실행하지 못한 범위를 명확히 보고합니다.
 
 플러그인 갱신 뒤에는 Codex를 새로고침하고 새 작업에서 실제 도구 호출을 확인합니다. CLI 설치 성공이나 파일 readback만으로 실행 중인 앱이 새 MCP를 로드했다고 판단하지 않습니다. 새 작업에서도 초기 연결이 실패하면 앱 로그의 시작 오류를 확인하고, 재시작 후 다시 호출합니다. 연구 코드 작성·실행 확인은 이 연결 확인과 구분합니다.
 
 - [연구 workflow](plugins/stata-research-guard/skills/stata-replication-workflow/SKILL.md)
 - [공통 작성 원칙](plugins/stata-research-guard/skills/stata-replication-workflow/references/general-rules.md)
+- [실행과 결과 확인](plugins/stata-research-guard/skills/stata-replication-workflow/references/execution-and-results.md)
 - [조회·재사용·선택 구획 사용법](plugins/stata-research-guard/skills/stata-replication-workflow/references/command-evidence.md)
 - [독립 검토](plugins/stata-research-guard/skills/stata-peer-audit/SKILL.md)
 
@@ -100,4 +101,4 @@ node scripts/verify_plugin_bundle.cjs
 
 이 검사는 호출·원문 전달·설치 구성을 확인합니다. 일반 테스트 실행이 Stata를 직접 실행해 연구 표의 수치·행 구성을 정답과 비교하지 않도록 과거 runtime fixture는 활성 테스트와 배포 묶음에서 분리했습니다. 코드의 가독성이나 연구 타당성은 실제 코드·로그·표·그림을 읽어 판단하며 자동 점수나 합격 판정으로 바꾸지 않습니다.
 
-GitHub 릴리스: 0.4.0. Codex 빌드: 0.4.0+codex.2026101102. Bundle 335개 파일, transport·원문 전달·선택 근거 기능 검사 67개 통과. 이 검사는 호출·전달·무결성을 확인하며 연구 의미나 결과의 타당성을 인증하지 않습니다.
+GitHub 릴리스: 0.4.0. Codex 빌드: 0.4.0+codex.2026101301. Bundle 336개 파일, transport·원문 전달·선택 근거 기능 검사 67개 통과. 이 검사는 호출·전달·무결성을 확인하며 연구 의미나 결과의 타당성을 인증하지 않습니다.
