@@ -6,7 +6,7 @@
 
 ## 연구 코드 작성 흐름
 
-`stata-replication-workflow`는 실제 파일과 호출 관계를 읽은 뒤 필요한 근거를 확인하고, 코드를 작성·실행해 결과를 읽도록 안내합니다. 독립된 동료 검토는 사용자 요청을 우선하고, 진단이나 남은 판단을 개선할 때 선택합니다. 리팩터링이라는 이유만으로 사전·사후 검토를 모두 요구하지 않습니다.
+`stata-replication-workflow`는 실제 파일과 호출 관계를 읽은 뒤 필요한 근거를 확인하고, 코드를 작성·실행해 결과를 읽도록 안내합니다. 새 분석 구역이나 자료·표본·추정·출력 연결을 실질적으로 재구성한 작업은 초안과 자체 확인 뒤 독립된 동료가 한 번 읽습니다. 작은 값·문구·서식 변경이나 동일 흐름의 기계적 추가에는 의무 검토를 붙이지 않습니다. 사용자 요청을 우선하며, 사전·사후 두 차례 검토를 고정하지 않습니다.
 
 기존 분석에는 작업 단위마다 유지하는 `.do` 하나를 두고 그 파일을 편집·확장·재실행·필요한 범위에서 리팩터링합니다. 아래 역할은 새 작업의 이름을 고를 때 도움이 될 뿐, 기존 분석을 쪼개거나 결과 갱신마다 새 파일을 만들라는 규칙이 아닙니다.
 
@@ -21,6 +21,8 @@
 
 반복은 estimator와 연구 사양이 보이는 얕은 loop로 정리합니다. 줄 수 감소나 DRY만으로 helper를 만들지 않으며, 기존 helper도 실제 외부 호출이나 사용자 요구가 필요한지 검토합니다. Native command와 exporter의 기능을 먼저 쓰고 지원되지 않는 후처리만 직접 작성합니다. Native command가 요구하는 좁은 callback을 피하려고 permutation 등의 알고리즘을 수동 재구현하지 않습니다.
 
+짧은 outcome·통제변수 목록과 일반 옵션은 분석 명령이나 바로 둘러싼 반복문에서 읽히게 합니다. 파일 위의 global·local을 찾아가야 하는 편의용 별칭은 줄이며, 두 번 참조했다는 이유만으로 유지하지 않습니다. 실제 공동 설정, 여러 단계가 공유하는 긴 목록, 필요한 반복 변수와 반환값은 목적에 맞게 보존합니다. 동료는 연구자가 변수나 표본을 바꿀 위치를 직접 찾아보고 불필요한 간접 참조와 최소 수정안을 설명합니다.
+
 Workflow를 설계하거나 재구성할 때는 필요한 표·그림·데이터에서 추정치, 실제 표본, 관측단위와 원자료를 거꾸로 따라 읽고 순방향 코드와 대조합니다. 원하는 계수나 유의성에 맞추는 것이 아니라, 산출물에 필요한 연산과 전달 관계를 파악하는 과정입니다. 표본·집계단위·계수 의미가 달라지는 지점, 중복 계산과 불필요한 후처리를 찾아 구체적인 수정으로 연결하고, 필요한 중간 단계를 유지할 이유도 설명합니다. 수동 처리를 제안하기 전에는 이를 대신할 구체적인 명령 옵션·반환값과 관련 도움말을 확인합니다. 별도 계획 양식이나 자동 검증기를 요구하지 않습니다.
 
 ## 제공하는 근거
@@ -30,8 +32,8 @@ Workflow를 설계하거나 재구성할 때는 필요한 표·그림·데이터
 | 자료 | 내용 |
 | --- | --- |
 | Command index | 115개 명령의 이름, family, 단계와 역할 |
-| Command help | Stata가 렌더링한 공식·maintainer 도움말: 113개 available, 2개 unavailable |
-| Live exact help | 사전 밖 exact topic을 선택된 Stata 설치에서 조회 |
+| Command help | Stata가 렌더링한 공식·maintainer 도움말: 기본 topic 5개를 포함해 118개 available, 2개 unavailable |
+| Live exact help | 저장된 도움말이 없는 exact topic 또는 명시한 installed 조회를 선택된 Stata 설치에서 수행 |
 | Expanded documentation | 69개 공식 Stata 18 PDF entry와 1개 저자 보충문서 |
 | Paper example | 166개 원문 코드 블록과 선택 명령의 사용 문맥 |
 | Raw log/artifact | 직접 연결된 12개 원문 실행 기록 또는 산출물 정보 |
@@ -39,6 +41,8 @@ Workflow를 설계하거나 재구성할 때는 필요한 표·그림·데이터
 명령별 블록과 별개로 [workflow 읽기 안내](plugins/stata-research-guard/skills/stata-replication-workflow/references/paper-workflow-reading.md)에서 원문 파일을 직접 따라갈 수 있습니다. 이번에 추가한 *Revealing Stereotypes*의 코드 3개와 README는 학교 단위 재배정부터 분포 그림까지 읽는 선택 자료이며, 전체 코드의 모범 인증이나 자동 선택 기준은 아닙니다.
 
 `jregress`와 `jwdidstacked`는 bundled help가 없습니다. `jregress`의 저자 PDF는 보충 설명이며 누락된 문법 근거를 대신하지 않습니다. `cgmreg`의 공개 help 출처 한계, StataNow 기능과 Stata 18의 차이도 해당 응답에 남깁니다.
+
+`estimates_save`, `post`, `macro`, `estimates`, `estimates_store`는 115개 명령 사전을 늘리지 않고 기존 guide에 연결한 기본 도움말입니다. `estimates use`, `postfile`, `local` 같은 기존 alias도 같은 원문을 사용합니다. 설치 버전의 원문이 필요하면 `help_source: "installed"`를 명시합니다.
 
 ## 필요한 만큼 읽기
 
@@ -68,7 +72,7 @@ Phase 2는 `help_sections`, Phase 3 확장 매뉴얼은 `expanded_sections`로 �
 
 공통 규칙은 기본 응답에 본문을 포함합니다. 이미 읽은 동일 본문이 현재 문맥에 남아 있을 때만 `known_rules_sha256`를 보내 중복을 생략할 수 있습니다. 새 작업이나 압축 후 본문이 없으면 hash를 보내지 않습니다. 서버가 읽기 상태를 추측하거나 다른 작업의 hash만 보고 규칙을 읽었다고 처리하지 않습니다.
 
-사전 밖 명령의 live help는 성공한 설치 시점의 snapshot을 재사용합니다. 이 live 조회는 `refresh_live_help: true`로 다시 읽을 수 있습니다. 등록된 명령은 기본적으로 bundled 문서를 반환하며, Phase 2 `help_source: "installed"`를 명시한 경우만 설치 도움말을 읽습니다. 실패와 partial 응답은 캐시하지 않고, 누락·순환 INCLUDE를 명시합니다. 조회 작업은 대기를 포함해 55초로 제한하고 다른 bundled 요청을 막지 않습니다.
+Live help는 성공한 설치 시점의 snapshot을 재사용합니다. 이 live 조회는 `refresh_live_help: true`로 다시 읽을 수 있습니다. 등록된 명령과 기본 topic 5개는 기본적으로 bundled 문서를 반환하며, Phase 2 `help_source: "installed"`를 명시한 경우만 설치 도움말을 읽습니다. 실패와 partial 응답은 캐시하지 않고, 누락·순환 INCLUDE를 명시합니다. 조회 작업은 대기를 포함해 55초로 제한하고 다른 bundled 요청을 막지 않습니다.
 
 `execution_sources`로 실행 기록에서 확인한 ADO의 경로·hash와 선택 원문 구간을 함께 읽을 수 있습니다. 설치 도움말과 ADO가 서로 다를 수 있으므로 모델이 사용 옵션의 근거를 대조합니다. 파일 hash 일치는 동일성 정보이며 실행 성공이나 문법·연구 결과의 타당성 판정이 아닙니다. `workflow_notes`는 요청한 경우에만 import 후 실제 변수명·32자 제한·원래 이름 매핑, 통제 학습표본, 비교 표본의 관측단위와 해석 안내를 제공합니다. 출력 단계 실패에는 반복문 매크로의 수명·확장된 경로와 완료된 추정을 구분해 읽고, 적절한 저장 결과로 출력만 복구하도록 안내합니다. 기존 호출·기본 응답은 유지하며 자동 rename·rank gate·DID 재구현은 추가하지 않습니다. 입력과 exact ID는 [command-evidence.md](plugins/stata-research-guard/skills/stata-replication-workflow/references/command-evidence.md)를 따릅니다.
 
@@ -101,4 +105,4 @@ node scripts/verify_plugin_bundle.cjs
 
 이 검사는 호출·원문 전달·설치 구성을 확인합니다. 일반 테스트 실행이 Stata를 직접 실행해 연구 표의 수치·행 구성을 정답과 비교하지 않도록 과거 runtime fixture는 활성 테스트와 배포 묶음에서 분리했습니다. 코드의 가독성이나 연구 타당성은 실제 코드·로그·표·그림을 읽어 판단하며 자동 점수나 합격 판정으로 바꾸지 않습니다.
 
-GitHub 릴리스: 0.4.0. Codex 빌드: 0.4.0+codex.2026101302. Bundle 341개 파일, transport·원문 전달·선택 근거 기능 검사 70개 통과. 이 검사는 호출·전달·무결성을 확인하며 연구 의미나 결과의 타당성을 인증하지 않습니다.
+GitHub 릴리스: 0.4.0. Codex 빌드: 0.4.0+codex.2026101303. Bundle 341개 파일, transport·원문 전달·선택 근거 기능 검사 70개 통과. 이 검사는 호출·전달·무결성을 확인하며 연구 의미나 결과의 타당성을 인증하지 않습니다.

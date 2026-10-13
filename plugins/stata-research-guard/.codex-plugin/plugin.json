@@ -1,6 +1,6 @@
 {
   "name": "stata-research-guard",
-  "version": "0.4.0+codex.2026101302",
+  "version": "0.4.0+codex.2026101303",
   "description": "Researcher-readable Stata with original command evidence and concrete independent review.",
   "author": {
     "name": "song7"
@@ -9,7 +9,7 @@
   "interface": {
     "displayName": "Stata Research Guard",
     "shortDescription": "Readable Stata, original help, concrete peer advice.",
-    "longDescription": "Write researcher-readable Stata from actual project evidence, original command help and relevant paper workflows. The workflow skill coordinates reading, execution and peer advice when requested or useful.",
+    "longDescription": "Write researcher-readable Stata from actual project evidence, original command help and relevant paper workflows. Keep analysis choices visible and obtain one independent reading for substantial analysis changes.",
     "developerName": "song7",
     "category": "Developer Tools",
     "capabilities": [
