@@ -1,0 +1,92 @@
+[P] postfile -- Post results in Stata dataset
+                (View complete PDF manual entry)
+
+
+Syntax
+
+    Declare variable names and filename of dataset where results will be saved
+
+        postfile postname newvarlist using filename [, every(#) replace]
+
+
+    Add new observation to declared dataset
+
+        post postname (exp) (exp) ... (exp)
+
+
+    Declare end to posting of observations
+
+        postclose postname
+
+
+    List all open postfiles
+
+        postutil dir
+
+
+    Close all open postfiles
+
+        postutil clear
+
+
+Description
+
+    These commands are utilities to assist Stata programmers in performing Monte Carlo-type experiments.  They post results to a file on disk.  To post results to a frame in memory, see [P] frame post.
+
+    postfile declares the variable names and the filename of a (new) Stata dataset where results will be saved.
+
+    post adds a new observation to the declared dataset.
+
+    postclose declares an end to the posting of observations.  After postclose, the new dataset contains the posted results and may be loaded using use; see [D] use.
+
+    postutil dir lists all open postfiles.  postutil clear closes all open postfiles.
+
+    All five commands manipulate the new dataset without disturbing the data in memory.
+
+    If filename is specified without an extension, .dta is assumed.
+
+
+Links to PDF documentation
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+    every(#) specifies that results be written to disk every #th call to post.  post temporarily holds results in memory and periodically opens the Stata dataset being built to append the saved results.  every() should typically not be specified,
+        because you are unlikely to choose a value for # that is as efficient as the number post chooses on its own, which is a function of the number of results being written and their storage type.
+
+    replace indicates that the file specified may already exist, and if it does, that postfile may erase the file and create a new one.
+
+
+Remarks
+
+    The typical use of the post commands is
+
+        tempname memhold
+        tempfile results
+        ...
+        postfile `memhold' ... using `results'
+        ...
+        while ... {
+                ...
+                post `memhold' ...
+                ...
+        }
+        postclose `memhold'
+        ...
+
+    Two names are specified with postfile: postname is a name assigned to internal memory buffers, and filename is the name of the file to be created.  Subsequent posts and the postclose are followed by postname so that Stata will know to what file they
+    refer.
+
+    In our sample, we obtain both names from Stata's temporary name facility (see [P] macro), although, in some programming situations, you may wish to substitute a hard-coded filename.  We recommend that postname always be obtained from tempname.  This
+    ensures that your program can be nested within any other program and ensures that the memory used by post is freed if anything goes wrong.  Using a temporary filename, too, ensures that the file will be erased if the user presses Break.  Sometimes,
+    however, you may wish to leave the file of incomplete results behind.  That is allowed, but remember that the file is not fully up to date if postclose has not been executed.  post buffers results in memory and only periodically updates the file.
+
+    Because postfile accepts a newvarlist, storage types may be interspersed, so you could have
+
+        postfile `memhold' a b str20 c double(d e f) using "`results'"
+
+    Note that newvarlist does not allow strL as the variable storage type.  A similar utility that allows strL as a variable storage type is [P] frame post.

@@ -133,6 +133,7 @@ test("failed and partial help retries recover; success is cached, refreshed, and
   assert.ok(recovered.help.source_files.some((file) => file.source_path === fs.realpathSync(officialFragment)));
   assert.equal(launches, 7);
   await Promise.all([lookupLiveStataHelp("guardotherone"), lookupLiveStataHelp("guardothertwo")]);
+  assert.equal((await lookupLiveStataHelp("_guardfixture")).status, "available");
   assert.equal(maximumActive, 1);
 });
 

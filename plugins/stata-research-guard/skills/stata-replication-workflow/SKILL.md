@@ -9,7 +9,7 @@ Prioritize code the researcher can comfortably read, inspect, and modify. Help t
 
 ## Start with what changes
 
-Read the requested block and its direct caller or output before choosing further reading. A Stata filename alone does not require a Guard call.
+Read the requested block and its direct caller or output before choosing further reading. A Stata filename alone does not require a Guard call. Once connectivity is established, do not turn an exempt follow-up into another connection-check or discovery call.
 
 - For comments, literal labels or spacing, unchanged path interfaces, verbatim relocation, or unchanged-file execution with no semantic issue, make the smallest patch and inspect the affected call or output. This includes display-string or spacing values inside an already-understood option when its syntax and statistical meaning stay unchanged. Preserve call order, macro scope, inputs and stored-result consumers when moving code. Do not load the full general rules, command evidence, paper workflows or peer-review procedure solely for this edit.
 - When research meaning or a command interface changes, identify the changed sample, specification, inference, statistic, option, returned result or consumer. Read [general-rules.md](references/general-rules.md) once, locally or in the first complete Guard response; reuse visible unchanged text. Resolve research choices from the user's requirements and project evidence. Read command help only for the affected interface or an unresolved semantic question; a label describing a different statistic is not a cosmetic edit.
@@ -21,7 +21,7 @@ For a known command needing evidence, the minimum call is:
 {"request":"Read the changed estout output interface","selected_commands":["estout"],"include_paper_catalog":false}
 ```
 
-There is no `phase` or `commands` argument. Request the material commands needed together; reuse visible unchanged help and current section IDs. Send `known_rules_sha256` only while the complete rules remain visible, and use `deduplicate_help: true` for identical help bodies in a combined request. Read the relevant part of [command-evidence.md](references/command-evidence.md) for section selection, foundation reuse, installed-version questions, execution sources, workflow notes, or paper blocks. A catalog is navigation, not a delivered help body; use complete help when material dependencies remain unclear.
+There is no `phase` or `commands` argument. A new follow-up alone does not invalidate visible unchanged evidence; request only the changed or unresolved interfaces. Use current section IDs directly, `known_rules_sha256` for complete rules still visible, `known_help_foundations` for complete foundations still visible, and `deduplicate_help: true` for identical bodies in a combined request. Read the relevant part of [command-evidence.md](references/command-evidence.md) for these controls, installed-version questions, execution sources, workflow notes, or paper blocks. A catalog or truncated response is not a delivered complete help body; use complete help when material dependencies remain unclear.
 
 ## Work from the actual project
 

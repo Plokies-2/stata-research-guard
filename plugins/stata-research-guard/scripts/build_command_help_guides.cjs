@@ -26,6 +26,8 @@ const REGISTRY_PATH = path.join(DATA_ROOT, "command_registry.json");
 const SOURCE_CATALOG_PATH = path.join(DATA_ROOT, "command_source_catalog.json");
 const OUTPUT_INDEX_PATH = path.join(DATA_ROOT, "command_help_guides.json");
 const OUTPUT_CONTENT_DIR = path.join(DATA_ROOT, "command_help_guides");
+// Exact supplemental topics share the guide index without extending discovery.
+const SUPPLEMENTAL_HELP_TOPICS = ["estimates_save", "post", "macro", "estimates", "estimates_store"];
 
 const OFFICIAL_TOPIC_OVERRIDES = new Map([
   ["decode", ["encode"]],
@@ -240,9 +242,10 @@ function prepare({ workDir, stataBase }) {
   const records = [];
   let componentIndex = 0;
 
-  for (const commandRow of registry.commands) {
+  for (const commandRow of [...registry.commands, ...SUPPLEMENTAL_HELP_TOPICS.map((command) => ({ command }))]) {
     const command = commandRow.command;
-    const guide = sourcesByCommand.get(command);
+    const guide = sourcesByCommand.get(command)
+      || (SUPPLEMENTAL_HELP_TOPICS.includes(command) ? { authority: "StataCorp official" } : null);
     const record = {
       command,
       authority: guide?.authority || null,

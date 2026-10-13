@@ -24,7 +24,7 @@ const GENERAL_RULES_PATH = path.join(
   "general-rules.md",
 );
 const GENERAL_RULES_SOURCE_PATH = "skills/stata-replication-workflow/references/general-rules.md";
-const EXACT_HELP_TOPIC = /^[A-Za-z][A-Za-z0-9_]*$/;
+const EXACT_HELP_TOPIC = /^[A-Za-z_][A-Za-z0-9_]*$/;
 // Navigation threshold for the combined response, never a text truncation limit.
 const HELP_RESPONSE_CHARACTER_THRESHOLD = 48000;
 const STATA_COMMAND_WORDS = /^[A-Za-z][A-Za-z0-9_]*(?: [A-Za-z][A-Za-z0-9_]*)+$/;
@@ -41,6 +41,8 @@ const LIVE_HELP_TOPIC_ALIASES = new Map([
   ["estimates_use", "estimates_save"],
   ["estimates_store", "estimates_store"],
   ["estimates_restore", "estimates_store"],
+  ["graph_export", "graph_export"],
+  ["matrix_rownames", "matrix_rownames"],
 ]);
 
 function readUtf8(file) {
@@ -151,7 +153,8 @@ function selectedHelpTopic(command) {
       };
     }
   }
-  throw new Error(`invalid_argument: invalid_help_topic: ${JSON.stringify(command)}`);
+  throw new Error(`invalid_argument: invalid_help_topic: ${JSON.stringify(command)}`
+    + "\nUse an exact help topic such as graph_export, matrix_rownames, or _ms_omit_info, without arguments or options. Known spaced command names are normalized explicitly; other names are not guessed.");
 }
 
 function selectedCommandsFrom(args) {
@@ -243,7 +246,10 @@ function validateArguments(args) {
       : new Set(["request", "selected_commands", "expanded", "expanded_commands", "selected_block_ids", "known_rules_sha256", "known_help_foundations", "help_view", "expanded_sections", "deduplicate_help"]);
   const unexpected = Object.keys(args).filter((key) => !allowed.has(key));
   if (unexpected.length > 0) {
-    throw new Error(`invalid_argument: invalid_phase_arguments: ${phase} does not allow ${unexpected.join(", ")}`);
+    throw new Error(`invalid_argument: invalid_phase_arguments: ${phase} does not allow ${unexpected.join(", ")}`
+      + (unexpected.some((key) => key === "phase" || key === "commands")
+        ? "\nUse request and selected_commands; the phase is inferred. For selected paper blocks or expanded documentation, also send expanded: true."
+        : ""));
   }
   if (phase === "expanded_context" && !hasCommands) {
     throw new Error("invalid_argument: invalid_phase_arguments: expanded_context requires selected_commands");
@@ -348,14 +354,19 @@ function commandHelp(command, args) {
 
 async function dynamicCommandEvidence(command, liveHelpLookup, args) {
   const helpTopic = LIVE_HELP_TOPIC_ALIASES.get(command) || command;
-  const live = await liveHelpLookup(helpTopic, { refresh: args.refresh_live_help === true });
+  const bundled = args.help_source !== "installed" && helpGuidesByCommand.get(helpTopic);
+  const source = bundled?.content_file
+    ? { status: bundled.help_status, limitations: bundled.limitations,
+      help: { ...bundled, command, content: readUtf8(path.join(DATA_ROOT, bundled.content_file)) } }
+    : await liveHelpLookup(helpTopic, { refresh: args.refresh_live_help === true });
   return {
     command,
     help_topic: helpTopic,
     registry_status: "outside_dictionary",
-    help_status: live.status,
-    command_help: live.help ? deliverHelp(live.help, null, args.help_sections?.[command], args.help_view, args.known_help_foundations?.[command]) : null,
-    limitations: live.limitations,
+    help_status: source.status,
+    command_help: source.help ? deliverHelp(source.help, bundled ? helpSectionsByCommand.get(helpTopic) : null,
+      args.help_sections?.[command], args.help_view, args.known_help_foundations?.[command]) : null,
+    limitations: source.limitations,
     expanded_documentation: {
       status: "unavailable",
       authority: null,
@@ -603,7 +614,8 @@ function finishHelpDelivery(result, rowsKey, helpKey, args, navigationByCommand)
   rows.forEach((row, index) => { row[helpKey] = originals[index]; });
   for (const row of deferred) {
     const help = row[helpKey];
-    const navigation = help.source_kind === "live_installed_help" ? null : navigationByCommand.get(row.command);
+    const navigation = help.source_kind === "live_installed_help" ? null
+      : navigationByCommand.get(row.command) || navigationByCommand.get(row.help_topic);
     row[helpKey] = deliverHelp(help, navigation, undefined, "catalog");
   }
   if (args.deduplicate_help === true) deduplicateHelp(result, rowsKey, helpKey);
@@ -683,7 +695,7 @@ async function buildCommandEvidence(args, options = {}) {
 const TOOL_DEFINITIONS = [
   {
     name: "get_stata_command_evidence",
-    description: "Stata command evidence, not command selection or research judgment. Call Phase 2 directly for known commands; discovery is optional. Help over 24000 Unicode characters returns a section catalog first, including live help and expanded manuals. Combined responses over 48000 characters defer automatic full-help bodies to catalogs; explicit sections and help_view full remain intact. Select exact help_sections in Phase 2 or expanded_sections in Phase 3. Foundation sections accompany selections unless known_help_foundations maps the command to a foundation_sha256 from complete foundation text still visible to the caller; explicitly requested sections always return. help_view full retrieves the complete source, and catalog requests navigation. Paper blocks are unchanged. Rules are included unless known_rules_sha256 matches complete rules still visible to the caller. Omit both reuse acknowledgments in fresh or compacted contexts. Registered commands use bundled documentation unless help_source installed is explicit. refresh_live_help refreshes only selected live snapshots. Optional execution_sources return caller-selected ADO metadata/excerpts; workflow_notes return selected authoring guidance, never semantic verdicts.",
+    description: "Stata command evidence, not command selection or research judgment. Call Phase 2 directly for known commands; discovery is optional. Help over 24000 Unicode characters returns a section catalog first, including live help and expanded manuals. Combined responses over 48000 characters defer automatic full-help bodies to catalogs; explicit sections and help_view full remain intact. Select exact help_sections in Phase 2 or expanded_sections in Phase 3. Foundation sections accompany selections unless known_help_foundations maps the command to a foundation_sha256 from complete foundation text still visible to the caller; explicitly requested sections always return. help_view full retrieves the complete source, and catalog requests navigation. Paper blocks are unchanged. Rules are included unless known_rules_sha256 matches complete rules still visible to the caller. Omit both reuse acknowledgments in fresh or compacted contexts. Registered commands and the five supplemental basic help topics use bundled documentation unless help_source installed is explicit. refresh_live_help refreshes only selected live snapshots. Optional execution_sources return caller-selected ADO metadata/excerpts; workflow_notes return selected authoring guidance, never semantic verdicts.",
     inputSchema: {
       oneOf: [
         {
@@ -708,8 +720,8 @@ const TOOL_DEFINITIONS = [
             known_help_foundations: { type: "object", minProperties: 1, additionalProperties: { type: "string", pattern: "^[a-f0-9]{64}$" }, description: "Map exact selected commands to foundation_sha256 returned with complete foundation text still visible in this context. A matching hash skips only unrequested duplicate foundation sections. Explicit sections and full help always return. Omit after context loss; catalog/source hashes are not reading acknowledgments." },
             help_view: { type: "string", enum: ["catalog", "full"], description: "Request source navigation or the complete source. Do not combine with section selections." },
             help_sections: { type: "object", description: "Map each selected command to exact IDs from its current help catalog; common foundation sections also accompany the selection.", minProperties: 1, additionalProperties: { type: "array", minItems: 1, uniqueItems: true, items: { type: "string", minLength: 1 } } },
-            refresh_live_help: { type: "boolean", description: "Refresh a selected live snapshot. Without help_source installed, registered commands keep their bundled source." },
-            help_source: { type: "string", enum: ["bundled", "installed"], description: "Default bundled for registered commands. Installed explicitly requests the active installation's help; it may differ from the execution ADO." },
+            refresh_live_help: { type: "boolean", description: "Refresh a selected live snapshot. Without help_source installed, registered commands and supplemental basic topics keep their bundled source." },
+            help_source: { type: "string", enum: ["bundled", "installed"], description: "Default bundled for registered commands and supplemental basic topics. Installed explicitly requests the active installation's help; it may differ from the execution ADO." },
             execution_sources: {
               type: "object", minProperties: 1, description: "Map selected commands to caller-confirmed execution ADO files. Omit line_spans for metadata only; exact spans are chosen by the model, not cut automatically.",
               additionalProperties: {

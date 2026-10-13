@@ -54,6 +54,8 @@ test("invalid section errors expose current IDs over MCP so callers can retry wi
   const map = JSON.parse(fs.readFileSync(path.join(root, "command_help_sections.json"), "utf8"))
     .guides.find((guide) => guide.command === "reghdfe");
   assert.deepEqual(validIds, map.sections.map((section) => section.id));
+  assert.deepEqual(JSON.parse(message.split("\nTitles in the same order: ")[1].split("\n")[0]),
+    map.sections.map((section) => section.title));
   assert.ok(validIds.includes("absorb-syntax"));
   const retried = (await call({ ...args, help_sections: { reghdfe: ["absorb-syntax"] } })).result;
   assert.notEqual(retried.isError, true);

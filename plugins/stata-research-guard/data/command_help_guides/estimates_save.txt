@@ -1,0 +1,156 @@
+[R] estimates save -- Save and use estimation results
+                      (View complete PDF manual entry)
+
+
+Syntax
+
+        estimates save filename [, append replace]
+
+        estimates use  filename [, number(#)]
+
+
+        estimates esample:  [varlist] [if] [in] [weight]
+                            [, replace stringvars(varlist) zeroweight]
+
+        estimates esample
+
+
+    collect is allowed with estimates esample (without a colon); see prefix.
+
+
+Menu
+
+    Statistics > Postestimation
+
+
+Description
+
+    estimates save filename saves the current (active) estimation results in filename.
+
+    estimates use filename loads the results saved in filename into the current (active) estimation results.
+
+    In both cases, if filename is specified without an extension, .ster is assumed.
+
+    estimates esample: (note the colon) resets e(sample).  After estimates use filename, e(sample) is set to contain 0, meaning that none of the observations currently in memory was used in obtaining the estimates.
+
+    estimates esample (without a colon) displays how e(sample) is currently set.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Options
+
+    append, used with estimates save, specifies that results be appended to an existing file.  If the file does not already exist, a new file is created.
+
+    replace, used with estimates save, specifies that filename can be replaced if it already exists.
+
+    number(#), used with estimates use, specifies that the #th set of estimation results from filename be loaded.  This assumes that multiple sets of estimation results have been saved in filename by estimates save, append.  The default is number(1).
+
+    replace, used with estimates esample:, specifies that e(sample) can be replaced even if it is already set.
+
+    stringvars(varlist), used with estimates esample:, specifies string variables.  Observations containing variables that contain "" will be omitted from e(sample).
+
+    zeroweight, used with estimates esample:, specifies that observations with zero weights are to be included in e(sample).
+
+
+Remarks
+
+    See [R] estimates for an overview of the estimates commands.
+
+    For a description of estimates save and estimates use, see Saving and using estimation results in [R] estimates.
+
+    The rest of this entry concerns e(sample).
+
+    Remarks are presented under the following headings:
+
+        Setting e(sample)
+        Resetting e(sample)
+        Determining who set e(sample)
+
+
+Setting e(sample)
+
+    After estimates use filename, the situation is nearly identical to what it was immediately after you fit the model.  The one difference is that e(sample) is set to 0.
+
+    e(sample) is Stata's function to mark which observations among those currently in memory were used in producing the estimates.  For instance, you might type
+
+        . regress mpg weight displ if foreign
+          (output omitted)
+
+        . summarize mpg if e(sample)
+          (output omitted)
+
+    and summarize would report the summary statistics for the observations regress in fact used, which would exclude not only observations for which foreign = 0 but also any observations for which mpg, weight, or displ was missing.
+
+    If you saved the above estimation results and then reloaded them, however, summarize mpg if e(sample) would produce
+
+        . summarize mpg if e(sample)
+
+            Variable |       Obs        Mean    Std. Dev.       Min        Max
+        -------------+--------------------------------------------------------
+                 mpg |         0
+
+    Stata thinks that none of these observations was used in producing the estimates currently loaded.
+
+    What else could Stata think?  When you estimates use filename, you do not have to have the original data in memory.  Even if you do have data in memory that look like the original data, they might not be.  Setting e(sample) to 0 is the safe thing to
+    do.  There are some postestimation statistics, for instance, that are appropriate only when calculated on the estimation sample.  Setting e(sample) to 0 ensures that if you ask for one of them, you will get back a null result.
+
+    We recommend that you leave e(sample) set to 0.  But what if you really need to calculate that postestimation statistic?  Well, you can get it, but you are going to be responsible for setting e(sample) correctly.  Here we just happen to know that
+    all the observations with foreign = 1 were used, so we can type
+
+        . estimates esample: if foreign
+
+    If all the observations had been used, we could simply type
+
+        . estimates esample:
+
+    The safe thing to do, however, is to look at the estimation command -- estimates describe will show it to you -- and then type
+
+        . estimates esample: mpg weight displ if foreign
+
+    We include all observations with foreign = 1, excluding any with missing values in the mpg, weight, or displ variable, that are to be treated as the estimation sample.
+
+
+Resetting e(sample)
+
+    estimates esample: will allow you to not only set but also reset e(sample).  If e(sample) has already been set (say that you just fit the model) and you try to set it, you will see
+
+        . estimates esample: mpg weight displ if foreign
+        no; e(sample) already set
+        r(322);
+
+    Here you can specify the replace option:
+
+        . estimates esample: mpg weight displ if foreign, replace
+
+    We do not recommend resetting e(sample), but the situation can arise where you need to.  Imagine that you estimates use filename, you set e(sample), and then you realize that you set it wrong.  Here you would want to reset it.
+
+
+Determining who set e(sample)
+
+    estimates esample without a colon will report whether and how e(sample) was set.  You might see
+
+        . estimates esample
+          e(sample) set by estimation command
+
+    or
+
+        . estimates esample
+          e(sample) set by user
+
+    or
+
+        . estimates esample
+          e(sample) not set (0 assumed)
+
+
+Stored results
+
+    estimates esample without the colon stores macro r(who), which will contain cmd, user, or zero'd.

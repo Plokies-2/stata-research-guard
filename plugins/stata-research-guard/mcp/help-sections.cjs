@@ -39,7 +39,8 @@ function deliverHelp(entry, navigation, requested, view, knownFoundation) {
     throw new Error(`invalid exact help section selection: ${entry.command || "source"}`
       + `\nInvalid IDs: ${JSON.stringify(invalidIds)}`
       + `\nValid IDs: ${JSON.stringify(sections.map((section) => section.id))}`
-      + "\nNo help body was delivered. Retry with exact IDs from this source; no replacement was selected.");
+      + `\nTitles in the same order: ${JSON.stringify(sections.map((section) => section.title))}`
+      + "\nNo help body was delivered. Retry with the exact IDs above in help_sections (Phase 2) or expanded_sections (Phase 3); another catalog call is unnecessary. No replacement was selected.");
   }
   const foundationHash = required.length ? crypto.createHash("sha256").update(JSON.stringify({
     source_sha256: sourceHash,

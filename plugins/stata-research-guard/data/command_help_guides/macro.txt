@@ -1,0 +1,668 @@
+[P] macro -- Macro definition and manipulation
+             (View complete PDF manual entry)
+
+
+Syntax
+
+        global   mname   [= exp | :macro_fcn | "[string]" | `"[string]"']
+
+        local    lclname [= exp | :macro_fcn | "[string]" | `"[string]"']
+
+        tempvar  lclname [lclname [...]]
+
+        tempname lclname [lclname [...]]
+
+        tempfile lclname [lclname [...]]
+
+        local { ++lclname | --lclname }
+
+        macro dir
+
+        macro drop { mname [mname [...]] | mname* | _all }
+
+        macro list [ mname [mname [...]] | _all]
+
+        macro shift [#]
+
+        [...] `expansion_optr' [...]
+
+
+    where expansion_optr is
+
+        lclname | ++lclname | lclname++ | --lclname | lclname-- | = exp | :macro_fcn | .class_directive | macval(lclname)
+
+
+    and where macro_fcn is any of the following:
+
+
+    Macro function for extracting program properties
+
+        properties command
+
+
+    Macro function for extracting program results class
+
+        results command
+
+
+    Macro functions for extracting data attributes
+
+        type varname
+
+        format varname
+
+        value label varname
+
+        variable label varname
+
+        data label
+
+        sortedby
+
+        label { valuelabelname | (varname) } { maxlength | # [#_2] } [, strict]
+
+        constraint { dir | # }
+
+        char { varname[] | varname[charname] }
+
+        char { _dta[] | _dta[charname] }
+
+
+    Macro functions for extracting attributes of alias variables
+
+        isalias varname
+
+        type varname
+
+        aliasframe varname
+
+        aliaslinkname varname
+
+        aliasvarname varname
+
+
+    Macro function for naming variables
+
+        permname suggestedname [, length(#)]
+
+
+    Macro functions for filenames and file paths
+
+        adosubdir ["]filename["]
+
+        dir ["]dirname["] {files|dirs|other} ["]pattern["] [, nofail respectcase]
+
+        sysdir [ STATA | BASE | SITE | PLUS | PERSONAL | dirname]
+
+
+    Macro function for accessing operating-system parameters
+
+        environment name
+
+
+    Macro functions for names of stored results
+
+        e(scalars | macros | matrices | functions)
+
+        r(scalars | macros | matrices | functions)
+
+        s(macros)
+
+        all {globals|scalars|matrices} ["pattern"]
+
+        all {numeric|string} scalars ["pattern"]
+
+
+    Macro function for formatting results
+
+        display display_directive
+
+
+    Macro functions for manipulating lists
+
+        list macrolist_directive
+
+
+    Macro functions related to matrices
+
+        rownames     matrixname [, quoted]
+
+        colnames     matrixname [, quoted]
+
+        rowfullnames matrixname [, quoted]
+
+        colfullnames matrixname [, quoted]
+
+        roweq        matrixname [, quoted]
+
+        coleq        matrixname [, quoted]
+
+        rownumb      matrixname string
+
+        colnumb      matrixname string
+
+        roweqnumb    matrixname string
+
+        coleqnumb    matrixname string
+
+        rownfreeparms    matrixname
+
+        colnfreeparms    matrixname
+
+        rownlfs    matrixname
+
+        colnlfs    matrixname
+
+        rowsof    matrixname
+
+        colsof    matrixname
+
+        rowvarlist    matrixname
+
+        colvarlist    matrixname
+
+        rowlfnames    matrixname [, quoted]
+
+        collfnames    matrixname [, quoted]
+
+
+    Macro function related to time-series operators
+
+        tsnorm string [, varname]
+
+
+    Macro function for copying a macro
+
+        copy { local | global } mname
+
+
+    Macro functions for parsing
+
+        word count string
+
+        word # of string
+
+        piece #_1 #_2 of [`]"string"['] [, nobreak]
+
+        strlen { local | global } mname
+
+        ustrlen { local | global } mname
+
+        udstrlen { local | global } mname
+
+        subinstr { local | global } mname [`]"from"['] [`]"to"['] [, all word count({ local | global } mname)]
+
+
+Description
+
+    global assigns strings to specified global macro names (mnames).  local assigns strings to local macro names (lclnames).  Both double quotes (" and ") and compound double quotes (`" and "') are allowed; see quotes.  If the string has embedded
+    quotes, compound double quotes are needed.
+
+    tempvar assigns names to the specified local macro names that may be used as temporary variable names in a dataset.  When the program or do-file concludes, any variables with these assigned names are dropped.
+
+    tempname assigns names to the specified local macro names that may be used as temporary local macro, scalar, matrix, or frame names.  When the program or do-file concludes, any local macros, scalars, matrices, or frames with these assigned names are
+    dropped.
+
+    tempfile assigns names to the specified local macro names that may be used as names for temporary files.  When the program or do-file concludes, any datasets created with these assigned names are erased.
+
+    macro manipulates global and local macros.
+
+    See [U] 18.3 Macros for information on macro substitution.
+
+
+Links to PDF documentation
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Remarks
+
+    Remarks are presented under the following headings:
+
+        Macro function for extracting program properties
+        Macro function for extracting program results class
+        Macro functions for extracting data attributes
+        Macro functions for extracting attributes of alias variables
+        Macro function for naming variables
+        Macro functions for filenames and file paths
+        Macro function for accessing operating-system parameters
+        Macro functions for names of stored results
+        Macro function for formatting results
+        Macro function for manipulating lists
+        Macro functions related to matrices
+        Macro function related to time-series operators
+        Macro function for copying a macro
+        Macro functions for parsing
+
+
+    Macro function for extracting program properties
+
+        properties command
+            returns the properties declared for command; see [P] program properties.
+
+
+    Macro function for extracting program results class
+
+        results command
+            returns the results class -- nclass, eclass, rclass, or sclass -- declared for command; see [P] program.
+
+
+    Macro functions for extracting data attributes
+
+        type varname
+            returns the storage type of varname, which might be int, long, float, double, str1, str2, etc.  If varname is an alias variable, type returns the storage type of the linked variable or unknown if the linked variable cannot be found.
+
+        format varname
+            returns the display format associated with varname; for instance, %9.0g or %12s.
+
+        value label varname
+            returns the name of the value label associated with varname, which might be "" (meaning no label), or, for example, make, meaning that the value label's name is make.
+
+        variable label varname
+            returns the variable label associated with varname, which might be "" (meaning no label), or, for example, Repair Record 1978.
+
+        data label
+            returns the dataset label associated with the dataset currently in memory, which might be "" (meaning no label), or, for example, 1978 automobile data. See [D] label.
+
+        sortedby
+            returns the names of the variables by which the data in memory are currently sorted, which might be "" (meaning not sorted), or, for example, foreign mpg, meaning that the data are in the order of variable foreign, and, within that, in the
+            order of mpg (the order that would be obtained from the Stata command sort foreign mpg).  See [D] sort.
+
+        label valuelabelname { maxlength | # [#_2] } [, strict]
+            returns the value label of # in valuelabelname.  For instance, label forlab 1 might return Foreign cars if forlab were the name of a value label and 1 mapped to "Foreign cars".  If 1 did not correspond to any mapping within the value label,
+            or if the value label forlab were not defined, 1 (the # itself) would be returned.
+
+            #_2 optionally specifies the maximum length of the label to be returned.  If label forlab 1 would return Foreign cars, then label forlab 1 6 would return Foreig.
+
+            maxlength specifies that, rather than looking up a number in a value label, label return the maximum length of the labelings.  For instance, if value label yesno mapped 0 to no and 1 to yes, then its maxlength would be 3 because yes is the
+            longest label and it has three characters.
+
+            strict specifies that nothing is to be returned if there is no value label for #.
+
+        label (varname) { maxlength | # [#_2] } [, strict]
+            works exactly as the above, except that rather than specifying the valuelabelname directly, you indirectly specify it.  The value label name associated with varname is used, if there is one.  If not, it is treated just as if valuelabelname
+            were undefined, and the number itself is returned.
+
+        constraint { # | dir }
+            gives information on constraints.
+
+            constraint # puts constraint # in mname or returns "" if constraint # is not defined. constraint # for # < 0 is an error.
+
+            constraint dir returns an unsorted numerical list of those constraints that are currently defined. For example,
+
+                . constraint 1 price = weight
+                
+                . constraint 2 mpg > 20
+                
+                . local myname : constraint 2
+                
+                . macro list _myname
+                _myname         mpg > 20
+
+                . local aname : constraint dir
+
+                . macro list _aname
+                _aname:  2 1
+
+        char { varname[] | varname[charname] }   or  
+        char { _dta[] | _dta[charname] }
+            returns information on the characteristics of a dataset; see [P] char.  For instance,
+
+                . sysuse auto
+
+                . char mpg[one] "this"
+                
+                . char mpg[two] "that"
+
+                . local x : char mpg[one]
+
+                . di "`x'"
+                this
+
+                . local x : char mpg[nosuch]
+
+                . di "`x'"
+
+                . local x : char mpg[]
+
+                . di "`x'"
+                two one
+
+
+    Macro functions for extracting attributes of alias variables
+
+    In the following setup, we link the default frame to a target frame and create alias variables using this linkage.  Specifically, we create a new frame named target, then populate it with the auto data and a new variable id that uniquely identifies
+    the observations.  In the current frame named default, we set the observations, create a variable named id that identifies observations in the target frame, then use frlink and id to create a link to frame target, naming the linking variable link.
+    Finally, we use fralias add and the linking variable link to create alias variables that are linked to frame target.  With option prefix(l_), the names of the new alias variables are l_make and l_headroom.
+
+                . frame create target
+
+                . frame target {
+                .         quietly sysuse auto
+                .         generate id = _n
+                . }
+
+                . set obs 74
+                Number of observations (_N) was 0, now 74.
+
+                . generate id = _n
+
+                . frlink 1:1 id, frame(target) generate(link)
+                (all observations in frame default matched)
+
+                . fralias add make headroom, from(link) prefix(l_)
+                (2 variables aliased from linked frame)
+
+        isalias varname
+            returns 1 when varname is an alias variable, 0 otherwise.
+
+                . local x : isalias l_make
+
+                . display "`x'"
+                1
+
+                . local x : isalias l_headroom
+
+                . display "`x'"
+                1
+
+                . local x : isalias link
+
+                . display "`x'"
+                0
+
+        type varname
+            returns the storage type of the variable that varname is linked to, when varname is an alias variable.  If the linked variable cannot be found, then type returns unknown.
+
+                . local x : type l_make
+
+                . display "`x'"
+                str18
+
+                . local x : type l_headroom
+
+                . display "`x'"
+                float
+
+                . * break the link
+                . rename link junk
+
+                . local x : type l_make
+
+                . display "`x'"
+                unknown
+
+                . * restore the link
+                . rename junk link
+
+        aliasframe varname
+            returns the name of the frame that varname is linked to.  If varname is not an alias variable, or the linking variable cannot be found, then aliasframe returns an empty string.
+
+                . local x : aliasframe l_make
+
+                . display "`x'"
+                target
+
+                . * break the link
+                . rename link junk
+
+                . local x : aliasframe l_make
+
+                . display "`x'"
+
+                . * restore the link
+                . rename junk link
+
+        aliaslinkname varname
+            returns the name of the linking variable that was used to create varname.  If varname is not an alias variable, then aliaslinkname returns an empty string.
+
+                . local x : aliaslinkname l_make
+
+                . display "`x'"
+                link
+
+        aliasvarname varname
+            returns the name of the variable that varname is linked to.  If varname is not an alias variable, then aliasvarname returns an empty string.
+
+                . local x : aliasvarname l_make
+
+                . display "`x'"
+                make
+
+                . local x : aliasvarname l_headroom
+
+                . display "`x'"
+                headroom
+
+
+    Macro function for naming variables
+
+        permname suggested_name [, length(#)]
+            returns a valid new variable name based on suggested_name in matname, where suggested_name must follow naming conventions but may be too long or correspond to an already existing variable.
+
+            length(#) specifies the maximum length of the returned variable name, which must be between 8 and 32.  length(32) is the default. For instance,
+
+                . local myname : permname foreign
+
+                . macro list _myname
+                _myname:      foreign1
+
+                . local aname : permname displacement, length(8)
+
+                . macro list _aname
+                _aname        displace
+
+
+    Macro functions for filenames and file paths
+
+        adosubdir ["]filename["]
+            puts in mname the subdirectory in which Stata would search for this file along the ado-path.  Typically, the directory name would be the first letter of filename.  However, certain files may result in a different directory name depending on
+            their extension.
+
+        dir ["]dirname["] { files | dirs | other } ["]pattern["] [, nofail respectcase]
+            puts in mname the specified files, directories, or entries that are neither files nor directories, from directory dirname and matching pattern pattern, where the pattern matching is defined by Stata's strmatch(s1,s2) function.  The quotes in
+            the command are optional but recommended, and they are nearly always required surrounding pattern.  The returned string will contain each of the names, separated one from the other by spaces and each enclosed in double quotes.  If mname is
+            subsequently used in a quoted context, it must be enclosed in compound double quotes: `"`mname'"'.
+
+            The nofail option specifies that if the directory contains too many filenames to fit into a macro, rather than issuing an error message, the filenames that fit into mname should be returned.  nofail should rarely, if ever, be specified.
+
+            In Windows only, the respectcase option specifies that dir respect the case of filenames when performing matches.  Unlike other operating systems, Windows has, by default, case-insensitive filenames.  respectcase is ignored in operating
+            systems other than Windows.
+
+            For example,
+
+            local list : dir . files "*" makes a list of all regular files in the current directory.  In list might be returned "subjects.dta" "step1.do" "step2.do" "reest.ado".
+
+            local list : dir . files "s*", respectcase in Windows makes a list of all regular files in the current directory that begin with a lowercase "s".  The case of characters in the filenames is preserved.  In Windows, without the respectcase
+            option, all filenames would be converted to lowercase before being compared with pattern and possibly returned.
+
+            local list : dir . dirs "*" makes a list of all subdirectories of the current directory.  In list might be returned "notes" "subpanel".
+
+            local list : dir . other "*" makes a list of all things that are neither regular files nor directories.  These files rarely occur and might be, for instance, Unix device drivers.
+
+            local list : dir "\mydir\data" files "*" makes a list of all regular files that are to be found in \mydir\data.  Returned might be "example.dta" "make.do" "analyze.do".
+
+            It is the names of the files that are returned, not their full path names.
+
+            local list : dir "subdir" files "*" makes a list of all regular files that are to be found in subdir of the current directory.
+
+        sysdir [ STATA | BASE | SITE | PLUS | PERSONAL]
+            returns the various Stata system directory paths; see [P] sysdir.  The path is returned with a trailing separator; for example, sysdir STATA might return D:\PROGRAMS\STATA\.
+
+        sysdir dirname
+            returns dirname.  This function is used to code local x : sysdir `dir', where `dir' might contain the name of a directory specified by a user or a keyword, such as STATA or BASE.  The appropriate directory name will be returned.  The path is
+            returned with a trailing separator.
+
+
+    Macro function for accessing operating-system parameters
+
+        environment name
+            returns the contents of the operating system's environment variable name, or "" if name is undefined.
+
+
+    Macro functions for names of stored results
+
+        e(scalars | macros | matrices | functions)
+            returns the names of all the stored results in e() of the specified type, with the names listed one after the other and separated by one space.  For instance, e(scalars) might return N ll_0 ll df_m chi2 r2_p, meaning that scalar stored
+            results e(N), e(ll_0), ... exist.
+
+        r(scalars | macros | matrices | functions)
+            returns the names of all the stored results in r() of specified type.
+
+        s(macros)
+            returns the names of all the stored results in s() of type macro, which is the only type that exists within s().
+
+        all { globals | scalars | matrices } ["pattern"]
+            puts in mname the specified globals, scalars, or matrices that match the pattern, where the pattern matching is defined by Stata's strmatch(s1,s2) function.
+
+        all { numeric | string } scalars ["pattern"]
+            puts in mname the specified numeric or string scalars that match the pattern, where the pattern matching is defined by Stata's strmatch(s1,s2) function.
+
+
+    Macro function for formatting results
+
+        display display_directive
+            returns the results from the display command.  The display function is the display command, except that the output is rerouted to a macro rather than the screen.
+
+            You can use all the features of display that make sense.  That is, you may not set styles with as style because macros do not have colors, you may not use _continue to suppress going to a new line on the real display (it is not being
+            displayed), you may not use _newline (for the same reason), and you may not use _request to obtain input from the console (because input and output have nothing to do with macro definition).  Everything else works.  See [P] display.
+
+            Example:  local x : display %9.4f sqrt(2)
+
+
+    Macro function for manipulating lists
+
+        list macrolist_directive
+            fills in mname with the macrolist_directive, which specifies one of many available commands or operators for working with macros that contain lists; see [P] macro lists.
+
+
+    Macro functions related to matrices
+
+    In understanding the functions below, remember that the fullname of a matrix row or column is defined as eqname:name.  For instance, fullname might be outcome:weight, and then the eqname is outcome and the name is weight.  Or the fullname might be
+    gnp:L.cpi, and then the eqname is gnp and the name is L.cpi.  Or the fullname might be mpg, in which case the eqname is "" and the name is mpg.  Or the fullname might be gnp:1.south#1.smsa, and then the eqname is gnp and the name is 1.south#1.smsa.
+    For more information, see [P] matrix define.
+
+        rownames     matrixname [, quoted]
+        rowfullnames matrixname [, quoted]
+        roweq        matrixname [, quoted]
+            return the names of the rows of matname; see matmacfunc.
+
+        colnames     matrixname [, quoted]
+        colfullnames matrixname [, quoted]
+        coleq        matrixname [, quoted]
+            return the names of the columns of matname; see matmacfunc.
+
+        rownumb      matrixname string
+            returns the row number of matname that matches string; see matmacfunc.
+
+        colnumb      matrixname string
+            returns the column number of matname that matches string; see matmacfunc.
+
+        roweqnumb    matrixname string
+            returns the row equation number of matname that matches string; see matmacfunc.
+
+        coleqnumb    matrixname string
+            returns the column equation number of matname that matches string; see matmacfunc.
+
+        colnfreeparms    matrixname
+            returns the number of free parameter columns of matname; see matmacfunc.
+
+        rownfreeparms    matrixname
+            returns the number of free parameter rows of matname; see matmacfunc.
+
+        colnlfs    matrixname
+            returns the number of linear forms among the columns of matname; see matmacfunc.
+
+        rownlfs    matrixname
+            returns the number of linear forms among the rows of matname; see matmacfunc.
+
+        colsof    matrixname
+            returns the number of columns of matname; see matmacfunc.
+
+        rowsof    matrixname
+            returns the number of rows of matname; see matmacfunc.
+
+        colvarlist    matrixname
+            returns the variable list corresponding to the columns of matname; see matmacfunc.
+
+        rowvarlist    matrixname
+            returns the variable list corresponding to the rows of matname; see matmacfunc.
+
+        collfnames    matrixname [, quoted]
+            returns the list of names corresponding to the linear forms in the columns of matname; see matmacfunc.
+
+        rowlfnames    matrixname [, quoted]
+            returns the list of names corresponding to the linear forms in the rows of matname; see matmacfunc.
+
+
+    Macro function related to time-series operators
+
+        tsnorm string
+            returns the canonical form of string when string is interpreted as a time-series operator.  For instance, if string is ldl, then L2D is returned, or if string is l.ldl, then L3D is returned.  If string is nothing, "" is returned.
+
+        tsnorm string, varname
+            returns the canonical form of string when string is interpreted as a time-series-operated variable.  For instance, if string is ldl.gnp, then L2D.gnp is returned, and if string is l.ldl.gnp, then L3D.gnp is returned.  If string is just a
+            variable name, the variable name is returned.
+
+
+    Macro function for copying a macro
+
+        copy { local | global } mname
+            returns a copy of the contents of mname, or an empty string if mname is undefined.
+
+
+    Macro functions for parsing
+
+        word count string
+            returns the number of words in string.  A token is a word (characters separated by spaces) or set of words enclosed in quotes.  Do not enclose string in double quotes because word count will return 1.
+
+        word # of string
+            returns the #th token of string.  Do not enclose string in double quotes.
+
+        piece #_1 #_2 of [`]"string"['] [, nobreak]
+            returns a piece of string.  This macro function provides a smart method of breaking a string into pieces of roughly the specified display columns.  #_1 specifies which piece to obtain.  #_2 specifies the maximum number of display columns of
+            each piece.  Each piece is built trying to fill to the maximum number of display columns without breaking in the middle of a word.  However, when a word takes more display columns than #_2, the word will be split unless nobreak is specified.
+            nobreak specifies that words not be broken, even if that would result in a string being displayed in more than #_2 columns.
+
+            Compound double quotes may be used around string and must be used when string itself might contain double quotes.
+
+        strlen { local | global } mname
+            returns the length of the contents of mname in bytes.  If mname is undefined, 0 is returned. For instance,
+
+                . constraint 1 price = weight
+
+                . local myname : constraint 1
+
+                . macro list _myname
+                _myname          price = weight
+
+                . local lmyname : strlen local myname
+
+                . macro list _lmyname
+                _lmyname:        14
+
+        ustrlen { local | global } mname
+            returns the length of the contents of mname in Unicode characters.  If mname is undefined, 0 is returned.
+
+        udstrlen { local | global } mname
+            returns the length of the contents of mname in display columns.  If mname is undefined, 0 is returned.
+
+        subinstr local mname "from" "to"
+            returns the contents of mname, with the first occurrence of "from" changed to "to".
+
+        subinstr local mname "from" "to", all
+            does the same thing but changes all occurrences of "from" to "to".
+
+        subinstr local mname "from" "to", word
+            returns the contents of mname, with the first occurrence of the word "from" changed to "to".  A word is defined as a space-separated token or a token at the beginning or end of the string.
+
+        subinstr local mname "from" "to", all word
+            does the same thing but changes all occurrences of the word "from" to "to".
+
+        subinstr global mname ...
+            is the same as the above but obtains the original string from the global macro $mname rather than from the local macro mname.
+
+        subinstr ... global mname ..., ...  count( { global | local } mname2)
+            in addition to the usual, places a count of the number of substitutions in the specified global or in local macro mname2.

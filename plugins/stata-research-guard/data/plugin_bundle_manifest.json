@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.4.0+codex.2026101301"
+    "version": "0.4.0+codex.2026101302"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
       "bytes": 959,
-      "sha256": "85f89f97e6143b311154dd04cf862ab268b3f65e98c7bff83d63c7413eea6a23"
+      "sha256": "79ee64141a60ab171591bc8cdd6a292f6d9d2a6bc6e3bd9e6c6727e793972ae4"
     },
     {
       "path": ".mcp.json",
@@ -169,6 +169,21 @@
       "path": "data/command_help_guides/estadd.txt",
       "bytes": 32301,
       "sha256": "d5ad7c9851616127ee6118d2e22e2b8bccea67cf387289825635a04dcbbd0be8"
+    },
+    {
+      "path": "data/command_help_guides/estimates.txt",
+      "bytes": 6355,
+      "sha256": "33c0f13bc155bdc0b2d89d649aa40f06dee2aa14cdd2a1bb3162cf9c6e6d36b7"
+    },
+    {
+      "path": "data/command_help_guides/estimates_save.txt",
+      "bytes": 6165,
+      "sha256": "d544c8e7843692958dc86db9c99c9a900ed37c677bbc649bcdd421757ee51c96"
+    },
+    {
+      "path": "data/command_help_guides/estimates_store.txt",
+      "bytes": 2925,
+      "sha256": "0ea301f1d614b7605aa873ac625275e31d759662eec154c79ef4f6806b166634"
     },
     {
       "path": "data/command_help_guides/estout.txt",
@@ -351,6 +366,11 @@
       "sha256": "81d04f722eac6abb19c8cb591990273fbe53fb878d00b42bfbd65b27475d2f96"
     },
     {
+      "path": "data/command_help_guides/macro.txt",
+      "bytes": 27108,
+      "sha256": "431f1618ca0282e2d82a694e5dd99764596ceb70167f41ad4a9b2fdc0a3c6c56"
+    },
+    {
       "path": "data/command_help_guides/margins.txt",
       "bytes": 41181,
       "sha256": "efe5c329456a535a89c47f41792783add4d90027d9d6da67e3b613ac7b10d830"
@@ -384,6 +404,11 @@
       "path": "data/command_help_guides/poisson.txt",
       "bytes": 8998,
       "sha256": "df69cd171eaa6a02c94ce3ee4fabbcc57a8acaca19a6ea64347eec49cd7d09b7"
+    },
+    {
+      "path": "data/command_help_guides/post.txt",
+      "bytes": 3717,
+      "sha256": "44accfb927bac9242d7c278b9957dce342ee70f8e2b061574c0caf02912ffda2"
     },
     {
       "path": "data/command_help_guides/ppmlhdfe.txt",
@@ -587,13 +612,13 @@
     },
     {
       "path": "data/command_help_guides.json",
-      "bytes": 144272,
-      "sha256": "4e186d3ec0e3cec01f945c4ff23ce8ad679dcf8390bb4a31a1d27a958335f819"
+      "bytes": 149095,
+      "sha256": "36ab118da4614dd5390614e5a56bb423542bb82b89367c76531dc081adf45ef6"
     },
     {
       "path": "data/command_help_sections.json",
-      "bytes": 76679,
-      "sha256": "ef82062a145d569bf7057feed605269637f8fcc61c532ba42f693e6bf549cf8c"
+      "bytes": 77558,
+      "sha256": "da601f62e31f8ed8b609e19c658b5deb66e2ca74e68f12deed4174230811d497"
     },
     {
       "path": "data/command_help_sources/acreg-ssc-acreg.sthlp",
@@ -1562,23 +1587,23 @@
     },
     {
       "path": "mcp/help-sections.cjs",
-      "bytes": 4151,
-      "sha256": "f64d5f089aaf2d0048df967475d45dfd3ad21409dcec33645a5b1242299e315e"
+      "bytes": 4337,
+      "sha256": "5291538bfa9f5e48f36ed81ffe1043fec30303c34b3496614bee6dabdfd5e401"
     },
     {
       "path": "mcp/live-help.cjs",
-      "bytes": 11892,
-      "sha256": "c666ac4d36e2068dbd649dc33e36dcab85de4f960054e4d51729fa0dbfa4777d"
+      "bytes": 11893,
+      "sha256": "e64df5b7acfff298446b7ac9dc065bef3e10909d707f503d0a24908efa38eb92"
     },
     {
       "path": "mcp/server.cjs",
-      "bytes": 42757,
-      "sha256": "e48bf1a67bc71c742b580b671cea9dcded0a512b2fc588d2680a76930ffdcb8a"
+      "bytes": 43786,
+      "sha256": "2de3beb8ab236684e15ba64549a70af0d9fe8e091e0534a15613f3b7299da885"
     },
     {
       "path": "README.md",
-      "bytes": 14944,
-      "sha256": "4fcd56298d8a716a096e2e575bd7f907d2613cd1f812ad8650f04a06af1b92dc"
+      "bytes": 15373,
+      "sha256": "b8f33606fc677cbb850288bfa6dfb72573e62abb49309c91df3ee41e71c943d0"
     },
     {
       "path": "scripts/build_clean_command_guide.py",
@@ -1587,8 +1612,8 @@
     },
     {
       "path": "scripts/build_command_help_guides.cjs",
-      "bytes": 16304,
-      "sha256": "eb1c6756fd1878da092947b03d0c53eb1b277da576ca0e8aff9c96b5908204bd"
+      "bytes": 16651,
+      "sha256": "c8f15f907310d7585395686f733b3e0b193c3eb8b82bebe51aa9f8a22789df04"
     },
     {
       "path": "scripts/build_expanded_command_guides.py",
@@ -1622,8 +1647,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/command-evidence.md",
-      "bytes": 20572,
-      "sha256": "af61843e575cc44ff7ccd3a9d515d89845b9db1cb263d3f0fbd5461d63ec007d"
+      "bytes": 21880,
+      "sha256": "2ad5fa44e3e87f7e142772a4288a3a7d2daa26823f2b4915de9e06a15db425e4"
     },
     {
       "path": "skills/stata-replication-workflow/references/execution-and-results.md",
@@ -1652,18 +1677,18 @@
     },
     {
       "path": "skills/stata-replication-workflow/SKILL.md",
-      "bytes": 8161,
-      "sha256": "6d8f670a403b225cc30d4d75c0e61c82a7bdd020b16f043f741fc35bc445e35e"
+      "bytes": 8367,
+      "sha256": "6b25ac9bca746c7167fb2cbb77d9b3d16a2396f0e8c866b92876338639848a2f"
     },
     {
       "path": "tests/help-sections.test.cjs",
-      "bytes": 12873,
-      "sha256": "79d01db6e297b022bf6f22fc7b62b1a61867abbc5c1db4d534e2756af71412b0"
+      "bytes": 13020,
+      "sha256": "876ec24d4f81b3b2a859bc36167535bf6d1acd7ebab51dfec095ccc69ed52f03"
     },
     {
       "path": "tests/live-help.test.cjs",
-      "bytes": 8376,
-      "sha256": "e64ccfe0c43e3b52fcabee73b1b943e6c6c79e9dff2550064b786aaa8960f47d"
+      "bytes": 8458,
+      "sha256": "355c2577cec90d7d3c203c4cac2680b706757785f34f6101acefbc86e30fd155"
     },
     {
       "path": "tests/optional-evidence.test.cjs",
@@ -1677,8 +1702,8 @@
     },
     {
       "path": "tests/server.test.cjs",
-      "bytes": 35005,
-      "sha256": "a874d4f0c84c8a45771890233c7c1af1b6f70e185fcb434b2666584c9fc2e08f"
+      "bytes": 38343,
+      "sha256": "76be2ec5113fa165f2c6951fbf31f11091a100e8e5147d998f5bd1b853af8176"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
@@ -1699,7 +1724,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.4.0+codex.2026101301"
+      "value": "0.4.0+codex.2026101302"
     },
     {
       "id": "readme.heading",

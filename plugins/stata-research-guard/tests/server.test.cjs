@@ -241,12 +241,12 @@ test("Phase 2 resolves multiple selected commands independently in request order
   assert.equal(jwdidstacked.paper_example_catalog.length, 1);
 });
 
-test("the Stata 18 help and expanded-document indexes cover all 115 commands", async () => {
+test("the help index covers 115 commands and five supplemental topics", async () => {
   assert.equal(COMMAND_SOURCE_CATALOG.commands.length, 115);
   assert.doesNotMatch(JSON.stringify(COMMAND_SOURCE_CATALOG), /full_command_guides/);
-  assert.equal(COMMAND_HELP_INDEX.guides.length, 115);
+  assert.equal(COMMAND_HELP_INDEX.guides.length, 120);
   const counts = Object.groupBy(COMMAND_HELP_INDEX.guides, (row) => row.help_status);
-  assert.equal(counts.available.length, 113);
+  assert.equal(counts.available.length, 118);
   assert.equal(counts.partial, undefined);
   assert.equal(counts.unavailable.length, 2);
   assert.deepEqual(counts.unavailable.map((row) => row.command).sort(), ["jregress", "jwdidstacked"]);
@@ -495,12 +495,63 @@ test("registered multiword Stata spelling normalizes transparently", async () =>
   assert.equal(result.command_evidence[1].help_status, "available");
 });
 
+test("supplemental basic topics and aliases deliver the bundled originals without live lookup", async () => {
+  const commands = ["estimates_save", "post", "macro", "estimates", "estimates_store",
+    "estimates_use", "estimates_restore", "postfile", "postclose", "postutil", "global", "local", "tempfile", "tempname"];
+  const result = await buildCommandEvidence({ request: "Read the selected basic help", selected_commands: commands,
+    help_view: "full", include_paper_catalog: false }, {
+    liveHelpLookup: () => { throw new Error("Bundled basic help must not launch Stata"); },
+  });
+  assert.deepEqual(result.command_evidence.map((row) => row.command), commands);
+  for (const row of result.command_evidence) {
+    assert.equal(row.help_status, "available");
+    assert.equal(row.registry_status, "outside_dictionary");
+    assert.equal(row.command_help.content,
+      fs.readFileSync(path.join(ROOT, "data/command_help_guides", `${row.help_topic}.txt`), "utf8"));
+    assert.equal(row.command_help.source_version, "Stata 18");
+  }
+  const installed = await buildCommandEvidence({ request: "Read the selected installation", selected_commands: ["postfile"],
+    help_source: "installed" }, {
+    liveHelpLookup: () => ({ status: "unavailable", help: null, limitations: ["No installed source"] }),
+  });
+  assert.equal(installed.command_evidence[0].help_status, "unavailable");
+  assert.equal(installed.command_evidence[0].command_help, null);
+});
+
+test("macro aliases retain the source section map and explicit foundation reuse", async () => {
+  const args = { request: "Read selected macro sections", selected_commands: ["local"], include_paper_catalog: false };
+  const catalog = (await buildCommandEvidence(args)).command_evidence[0].command_help;
+  assert.deepEqual(catalog.section_catalog.map((section) => section.id), ["syntax", "description", "remarks"]);
+  const first = (await buildCommandEvidence({ ...args, help_sections: { local: ["syntax"] } })).command_evidence[0].command_help;
+  const next = (await buildCommandEvidence({ ...args, help_sections: { local: ["remarks"] },
+    known_help_foundations: { local: first.foundation_sha256 } })).command_evidence[0].command_help;
+  assert.deepEqual(next.selected_sections.map((section) => section.id), ["remarks"]);
+  const lines = fs.readFileSync(path.join(ROOT, "data/command_help_guides/macro.txt"), "utf8").match(/[^\n]*\n|[^\n]+$/g);
+  assert.equal(next.content, lines.slice(219, 668).join(""));
+});
+
+test("known spaced and underscore topics reach exact help and malformed phase fields explain the call shape", async () => {
+  const lookedUp = [];
+  const result = await buildCommandEvidence({ request: "Read exact help topics",
+    selected_commands: ["graph export", "matrix rownames", "_ms_omit_info"] }, {
+    liveHelpLookup: (topic) => {
+      lookedUp.push(topic);
+      return { status: "available", help: { content: topic }, limitations: [] };
+    },
+  });
+  assert.deepEqual(lookedUp, ["graph_export", "matrix_rownames", "_ms_omit_info"]);
+  assert.deepEqual(result.selected_commands, lookedUp);
+  await assert.rejects(buildCommandEvidence({ request: "Wrong field names", phase: 2, commands: ["estout"] }),
+    /Use request and selected_commands; the phase is inferred/);
+});
+
 test("known spaced estimates commands retain identity and read the correct shared help", async () => {
   const lookedUp = [];
   const result = await buildCommandEvidence(
     {
       request: "Save and restore research estimates",
       selected_commands: ["estimates save", "estimates use", "estimates store", "estimates restore"],
+      help_source: "installed",
     },
     {
       liveHelpLookup: (topic) => {
@@ -543,6 +594,7 @@ test("Stata language tokens retain their labels while using official macro help"
     {
       request: "Check macro language constructs",
       selected_commands: ["global", "local", "tempfile", "tempname"],
+      help_source: "installed",
     },
     {
       liveHelpLookup: (topic) => {
@@ -573,7 +625,7 @@ test("Stata language tokens retain their labels while using official macro help"
 test("posting commands retain their labels and use the documented post help topic", async () => {
   const commands = ["postfile", "postclose", "postutil"];
   const lookedUp = [];
-  const result = await buildCommandEvidence({ request: "Read posting command help", selected_commands: commands }, {
+  const result = await buildCommandEvidence({ request: "Read posting command help", selected_commands: commands, help_source: "installed" }, {
     liveHelpLookup: async (topic) => {
       lookedUp.push(topic);
       return { status: "available", help: { command: topic, content: "official post help" }, limitations: [] };

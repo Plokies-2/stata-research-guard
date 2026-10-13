@@ -2610,6 +2610,36 @@
         "syntax",
         "description"
       ]
+    },
+    {
+      "command": "macro",
+      "content_file": "command_help_guides/macro.txt",
+      "content_sha256": "431f1618ca0282e2d82a694e5dd99764596ceb70167f41ad4a9b2fdc0a3c6c56",
+      "sections": [
+        {
+          "id": "syntax",
+          "title": "Syntax",
+          "start": 1,
+          "end": 195
+        },
+        {
+          "id": "description",
+          "title": "Description and PDF links",
+          "start": 196,
+          "end": 219
+        },
+        {
+          "id": "remarks",
+          "title": "Remarks: macro functions",
+          "start": 220,
+          "end": 668,
+          "read_when": "Read when using extended macro functions, including lists, files, stored-result names, matrices or parsing. Follow the linked help for the selected function."
+        }
+      ],
+      "required_sections": [
+        "syntax",
+        "description"
+      ]
     }
   ]
 }

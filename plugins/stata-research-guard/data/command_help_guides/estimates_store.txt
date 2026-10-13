@@ -1,0 +1,108 @@
+[R] estimates store -- Store and restore estimation results
+                       (View complete PDF manual entry)
+
+
+Syntax
+
+        estimates store name [, nocopy]
+
+        estimates restore name
+
+
+        estimates query
+
+        estimates dir [namelist]
+
+
+        estimates drop namelist
+
+        estimates clear
+
+
+    where namelist is a name, a list of names, _all, or *.
+        _all and * mean the same thing.
+
+    collect is allowed with estimates dir; see prefix.
+
+
+Menu
+
+    Statistics > Postestimation
+
+
+Description
+
+    estimates store name saves the current (active) estimation results under the name name.
+
+    estimates restore name loads the results stored under name into the current (active) estimation results.
+
+    estimates query tells you whether the current (active) estimates have been stored and, if so, the name.
+
+    estimates dir displays a list of the stored estimates.
+
+    estimates drop namelist drops the specified stored estimation results.
+
+    estimates clear drops all stored estimation results.
+
+    estimates clear, estimates drop _all, and estimates drop * do the same thing.  estimates drop and estimates clear do not eliminate the current (active) estimation results.
+
+
+Links to PDF documentation
+
+        Quick start
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Option
+
+    nocopy, used with estimates store, specifies that the current (active) estimation results are to be moved into name rather than copied.  Typing
+
+                . estimates store hold, nocopy
+
+        is the same as typing
+
+                . estimates store hold
+                . ereturn clear
+
+        except that the former is faster.  The nocopy option is sometimes used by programmers.
+
+
+Example
+
+    Setup
+        . sysuse auto
+        . regress mpg weight displ
+
+    Store results
+        . estimates store myreg
+
+        . ... you do other things, including fitting other models ...
+
+    Restore regression results
+        . estimates restore myreg
+
+    For comparison, the same output is shown again
+        . regress
+
+    List stored estimates
+        . estimates dir
+
+    Drop estimates stored as myreg
+        . estimates drop myreg
+
+    After estimates restore myreg, things are once again just as they were, estimationwise, just after you typed regress mpg weight displ.
+
+    estimates store stores results in memory.  When you exit Stata, those stored results vanish.  If you wish to make a permanent copy of your estimation results, see [R] estimates save.
+
+    The purpose of making copies in memory is (1) so that you can quickly switch between them and (2) so that you make tables comparing estimation results.  Concerning the latter, see [R] estimates table, [R] etable, and [R] estimates stats.
+
+
+Stored results
+
+    estimates dir stores the following in r():
+
+                Macros
+                    r(names)   names of stored results

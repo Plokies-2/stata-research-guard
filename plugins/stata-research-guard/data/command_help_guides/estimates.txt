@@ -1,0 +1,163 @@
+[R] estimates -- Save and manipulate estimation results
+                 (View complete PDF manual entry)
+
+
+Syntax
+
+        Command                                  Reference
+        -----------------------------------------------------------------
+        Save and use results from disk
+
+          estimates save filename                [R] estimates save
+          estimates use  filename                [R] estimates save
+
+          estimates describe using filename      [R] estimates describe
+
+          estimates esample: ...                 [R] estimates save
+
+        -----------------------------------------------------------------
+        Store and restore estimates in memory
+
+          estimates store   name                 [R] estimates store
+          estimates restore name                 [R] estimates store
+
+          estimates query                        [R] estimates store
+          estimates dir                          [R] estimates store
+
+          estimates drop    namelist             [R] estimates store
+          estimates clear                        [R] estimates store
+
+        -----------------------------------------------------------------
+        Set titles and notes
+
+          estimates title: text                  [R] estimates title
+          estimates title                        [R] estimates title
+
+          estimates notes: text                  [R] estimates notes
+          estimates notes                        [R] estimates notes
+          estimates notes list ...               [R] estimates notes
+          estimates notes drop ...               [R] estimates notes
+
+        -----------------------------------------------------------------
+        Report
+
+          estimates describe [name]              [R] estimates describe
+          estimates replay   [namelist]          [R] estimates replay
+
+        -----------------------------------------------------------------
+        Tables and statistics
+
+          estimates table [namelist]             [R] estimates table
+          etable                                 [R] etable
+          estimates selected [namelist]          [R] estimates selected
+          estimates stats [namelist]             [R] estimates stats
+          estimates for namelist: ...            [R] estimates for
+
+        -----------------------------------------------------------------
+
+
+Description
+
+    estimates allows you to store and manipulate estimation results:
+
+        o You can save estimation results in a file for use in later sessions.
+
+        o You can store estimation results in memory so that you can
+
+          a. switch among separate estimation results and
+
+          b. form tables combining separate estimation results.
+
+
+Links to PDF documentation
+
+        Remarks and examples
+
+    The above sections are not included in this help file.
+
+
+Remarks
+
+    estimates is for use after you have fit a model, be it with regress, logistic, etc.  You can use estimates after any estimation command, whether it be an official estimation command of Stata or a community-contributed one.
+
+    estimates has three separate but related capabilities:
+
+        1. You can save estimation results in a file on disk so that you can use them later, even in a different Stata session.
+
+        2. You can store up to 300 estimation results in memory so that they are at your fingertips.
+
+        3. You can make tables comparing any results you have stored in memory.
+
+    Remarks are presented under the following headings:
+
+        Saving and using estimation results
+        Storing and restoring estimation results
+        Comparing estimation results
+
+
+Saving and using estimation results
+
+    After you have fit a model, say, with regress, type
+
+        . sysuse auto
+        . regress mpg weight displ foreign
+
+    You can save the results in a file:
+
+        . estimates save basemodel
+
+    Later, say, in a different session, you can reload those results:
+
+        . estimates use basemodel
+
+    The situation is now nearly identical to what it was immediately after you fit the model.  You can replay estimation results:
+
+        . regress
+
+    You can perform tests:
+
+        . test foreign==0
+
+    And you can use any postestimation command or postestimation capability of Stata.  The only difference is that Stata no longer knows what the estimation sample, e(sample) in Stata jargon was.  When you reload the estimation results, you might not
+    even have the original data in memory.  That is okay.  Stata will know to refuse to calculate anything that can be calculated only on the original estimation sample.
+
+    If it is important that you use a postestimation command that can be used only on the original estimation sample, there is a way you can do that.  You use the original data and then use estimates esample:  to tell Stata what the original sample was.
+
+    See [R] estimates save for details.
+
+
+Storing and restoring estimation results
+
+    Storing and restoring estimation results in memory is much like saving them to disk.  You type
+
+        . estimates store base
+
+    to save the current estimation results under the name base, and you type
+
+        . estimates restore base
+
+    to get them back later.  You can find out what you have stored by typing
+
+        . estimates dir
+
+    Saving estimation results to disk is more permanent than storing them in memory, so why would you want merely to store them?  The answer is that, once they are stored, you can use other estimates commands to produce tables and reports from them.
+
+    See [R] estimates store for details about the estimates store and restore commands.
+
+
+Comparing estimation results
+
+    Let's say that you have done the following:
+
+        . sysuse auto
+        . regress mpg weight displ
+        . estimates store base
+        . regress mpg weight displ foreign
+        . estimates store alt
+
+    You can now get a table comparing the coefficients:
+
+        . estimates table base alt
+
+    estimates table can do much more; see [R] estimates table.  etable also produces tables from stored estimates, customizes the tables, and exports to a variety of formats, including Word, PDF, LaTeX, Excel, and HTML; see [R] etable.  Also see [R]
+    estimates stats.  estimates stats works like estimates table but produces model comparisons in terms of BIC and AIC.

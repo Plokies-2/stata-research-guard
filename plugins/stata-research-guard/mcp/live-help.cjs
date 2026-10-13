@@ -260,7 +260,7 @@ async function loadHelp(stata, topic, deadline) {
 
 async function lookupLiveStataHelp(command, { refresh = false } = {}) {
   const deadline = Date.now() + TIMEOUT_MS;
-  if (typeof command !== "string" || !/^[A-Za-z][A-Za-z0-9_]*$/.test(command)) {
+  if (typeof command !== "string" || !/^[A-Za-z_][A-Za-z0-9_]*$/.test(command)) {
     throw new Error(`ABORT invalid_help_topic: ${JSON.stringify(command)}`);
   }
   const stata = discoverStataPath();

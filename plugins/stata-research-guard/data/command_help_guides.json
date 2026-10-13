@@ -3443,6 +3443,131 @@
       "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
       "limitations": [],
       "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "estimates_save",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "estimates_save"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/e/estimates_save.sthlp",
+          "source_sha256": "4ab7750539271ca8ca8ffe801f97df05011936a716ed898053b546ae77c96171"
+        }
+      ],
+      "content_file": "command_help_guides/estimates_save.txt",
+      "content_sha256": "d544c8e7843692958dc86db9c99c9a900ed37c677bbc649bcdd421757ee51c96",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "post",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "post"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/p/post.sthlp",
+          "source_sha256": "e9c5835c3040719504f2d2a8af59af7712dd4a196198563176b2b8ec84080d82"
+        }
+      ],
+      "content_file": "command_help_guides/post.txt",
+      "content_sha256": "44accfb927bac9242d7c278b9957dce342ee70f8e2b061574c0caf02912ffda2",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "macro",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "macro"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/m/macro.sthlp",
+          "source_sha256": "fad1361495bf98aeda376aeb374de1c1ca2a8f45be598a80cd71b12d7343fd2b"
+        }
+      ],
+      "content_file": "command_help_guides/macro.txt",
+      "content_sha256": "431f1618ca0282e2d82a694e5dd99764596ceb70167f41ad4a9b2fdc0a3c6c56",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "estimates",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "estimates"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/e/estimates.sthlp",
+          "source_sha256": "c2d6836dbb39ac56b314d42e3b8a4cdf2eaf544ed02a5f17fb9de264a7567854"
+        }
+      ],
+      "content_file": "command_help_guides/estimates.txt",
+      "content_sha256": "33c0f13bc155bdc0b2d89d649aa40f06dee2aa14cdd2a1bb3162cf9c6e6d36b7",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "related_online_sources": []
+    },
+    {
+      "record_type": "command_help_guide",
+      "command": "estimates_store",
+      "help_status": "available",
+      "authority": "StataCorp official",
+      "source_kind": "installed official Stata help",
+      "source_version": "Stata 18",
+      "source_url": null,
+      "help_topics": [
+        "estimates_store"
+      ],
+      "source_files": [
+        {
+          "source_path": "Stata18/ado/base/e/estimates_store.sthlp",
+          "source_sha256": "eb52f7687663d6f14e9670dabc9c622b4b4f41a43c504754f57448bdc5faf019"
+        }
+      ],
+      "content_file": "command_help_guides/estimates_store.txt",
+      "content_sha256": "0ea301f1d614b7605aa873ac625275e31d759662eec154c79ef4f6806b166634",
+      "content_format": "plain_text",
+      "renderer": "Stata translate with translator(smcl2txt)",
+      "renderer_options": "replace header(off) logo(off) cmdnumber(off) lmargin(0) linesize(255) pagelines(0)",
+      "limitations": [],
+      "related_online_sources": []
     }
   ]
 }

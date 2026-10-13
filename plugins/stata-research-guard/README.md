@@ -30,8 +30,8 @@ Workflow를 설계하거나 재구성할 때는 필요한 표·그림·데이터
 | 자료 | 내용 |
 | --- | --- |
 | Command index | 115개 명령의 이름, family, 단계와 역할 |
-| Command help | Stata가 렌더링한 공식·maintainer 도움말: 113개 available, 2개 unavailable |
-| Live exact help | 사전 밖 exact topic을 선택된 Stata 설치에서 조회 |
+| Command help | Stata가 렌더링한 공식·maintainer 도움말: 기본 topic 5개를 포함해 118개 available, 2개 unavailable |
+| Live exact help | 저장된 도움말이 없는 exact topic 또는 명시한 installed 조회를 선택된 Stata 설치에서 수행 |
 | Expanded documentation | 69개 공식 Stata 18 PDF entry와 1개 저자 보충문서 |
 | Paper example | 166개 원문 코드 블록과 선택 명령의 사용 문맥 |
 | Raw log/artifact | 직접 연결된 12개 원문 실행 기록 또는 산출물 정보 |
@@ -39,6 +39,8 @@ Workflow를 설계하거나 재구성할 때는 필요한 표·그림·데이터
 명령별 블록과 별개로 [workflow 읽기 안내](skills/stata-replication-workflow/references/paper-workflow-reading.md)에서 원문 파일을 직접 따라갈 수 있습니다. 이번에 추가한 *Revealing Stereotypes*의 코드 3개와 README는 학교 단위 재배정부터 분포 그림까지 읽는 선택 자료이며, 전체 코드의 모범 인증이나 자동 선택 기준은 아닙니다.
 
 `jregress`와 `jwdidstacked`는 bundled help가 없습니다. `jregress`의 저자 PDF는 보충 설명이며 누락된 문법 근거를 대신하지 않습니다. `cgmreg`의 공개 help 출처 한계, StataNow 기능과 Stata 18의 차이도 해당 응답에 남깁니다.
+
+`estimates_save`, `post`, `macro`, `estimates`, `estimates_store`는 115개 명령 사전을 늘리지 않고 기존 guide에 연결한 기본 도움말입니다. `estimates use`, `postfile`, `local` 같은 기존 alias도 같은 원문을 사용합니다. 설치 버전의 원문이 필요하면 `help_source: "installed"`를 명시합니다.
 
 ## 필요한 만큼 읽기
 
@@ -68,7 +70,7 @@ Phase 2는 `help_sections`, Phase 3 확장 매뉴얼은 `expanded_sections`로 �
 
 공통 규칙은 기본 응답에 본문을 포함합니다. 이미 읽은 동일 본문이 현재 문맥에 남아 있을 때만 `known_rules_sha256`를 보내 중복을 생략할 수 있습니다. 새 작업이나 압축 후 본문이 없으면 hash를 보내지 않습니다. 서버가 읽기 상태를 추측하거나 다른 작업의 hash만 보고 규칙을 읽었다고 처리하지 않습니다.
 
-사전 밖 명령의 live help는 성공한 설치 시점의 snapshot을 재사용합니다. 이 live 조회는 `refresh_live_help: true`로 다시 읽을 수 있습니다. 등록된 명령은 기본적으로 bundled 문서를 반환하며, Phase 2 `help_source: "installed"`를 명시한 경우만 설치 도움말을 읽습니다. 실패와 partial 응답은 캐시하지 않고, 누락·순환 INCLUDE를 명시합니다. 조회 작업은 대기를 포함해 55초로 제한하고 다른 bundled 요청을 막지 않습니다.
+Live help는 성공한 설치 시점의 snapshot을 재사용합니다. 이 live 조회는 `refresh_live_help: true`로 다시 읽을 수 있습니다. 등록된 명령과 기본 topic 5개는 기본적으로 bundled 문서를 반환하며, Phase 2 `help_source: "installed"`를 명시한 경우만 설치 도움말을 읽습니다. 실패와 partial 응답은 캐시하지 않고, 누락·순환 INCLUDE를 명시합니다. 조회 작업은 대기를 포함해 55초로 제한하고 다른 bundled 요청을 막지 않습니다.
 
 `execution_sources`로 실행 기록에서 확인한 ADO의 경로·hash와 선택 원문 구간을 함께 읽을 수 있습니다. 설치 도움말과 ADO가 서로 다를 수 있으므로 모델이 사용 옵션의 근거를 대조합니다. 파일 hash 일치는 동일성 정보이며 실행 성공이나 문법·연구 결과의 타당성 판정이 아닙니다. `workflow_notes`는 요청한 경우에만 import 후 실제 변수명·32자 제한·원래 이름 매핑, 통제 학습표본, 비교 표본의 관측단위와 해석 안내를 제공합니다. 출력 단계 실패에는 반복문 매크로의 수명·확장된 경로와 완료된 추정을 구분해 읽고, 적절한 저장 결과로 출력만 복구하도록 안내합니다. 기존 호출·기본 응답은 유지하며 자동 rename·rank gate·DID 재구현은 추가하지 않습니다. 입력과 exact ID는 [command-evidence.md](skills/stata-replication-workflow/references/command-evidence.md)를 따릅니다.
 
