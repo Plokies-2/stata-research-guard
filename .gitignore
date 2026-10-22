@@ -5,3 +5,11 @@ tmp/
 Thumbs.db
 *.tmp
 *.bak
+
+# Local execution logs and credentials
+*.log
+*.smcl
+.env
+.env.*
+*.pem
+*.key

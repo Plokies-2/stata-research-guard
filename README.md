@@ -1,108 +1,318 @@
 # Stata Research Guard
 
-연구자가 자료와 표본에서 회귀 사양, 추정치 저장, 표·그림까지 직접 따라갈 수 있는 Stata 코드를 작성하도록 돕는 Codex 플러그인입니다. 명령 사전, 공식·maintainer 도움말, 실제 논문 코드와 독립 검토를 제공합니다. 연구 선택은 사용자와 모델이 합니다.
+<p align="center">
+  <img src="assets/research-owl.png" alt="An owl researcher at a desk directs GPT's small working arms as they create code and a results table" width="360">
+</p>
 
-**0.4.0**은 연구자가 읽기 쉬운 분석 흐름과 원문 근거를 제공하는 배포입니다. 연구 워크플로우는 `stata-replication-workflow` 하나에서 시작하며, 실행·결과 확인 지침은 필요할 때만 읽습니다. 공개 배포는 별도 mcpStata 설치를 요구하지 않습니다. 기존 Stata 실행 환경을 사용하며, 원문 도움말·논문 자료와 현재 문맥에 남아 있는 근거의 재사용 원칙을 유지합니다.
+<p align="center">
+  <img src="https://img.shields.io/badge/version-0.4.0-245B78?style=flat-square" alt="Version 0.4.0">
+  <img src="https://img.shields.io/badge/Codex-plugin-222222?style=flat-square" alt="Codex plugin">
+  <img src="https://img.shields.io/badge/developed_with-Stata_18-1A6B70?style=flat-square" alt="Developed with Stata 18">
+</p>
 
-## 연구 코드 작성 흐름
+<p align="center">
+  <a href="README.md"><img src="https://img.shields.io/badge/Language-English-245B78?style=flat-square" alt="English"></a>
+  <a href="README.ko.md"><img src="https://img.shields.io/badge/Language-%ED%95%9C%EA%B5%AD%EC%96%B4-245B78?style=flat-square" alt="한국어"></a>
+</p>
 
-`stata-replication-workflow`는 실제 파일과 호출 관계를 읽은 뒤 필요한 근거를 확인하고, 코드를 작성·실행해 결과를 읽도록 안내합니다. 새 분석 구역이나 자료·표본·추정·출력 연결을 실질적으로 재구성한 작업은 초안과 자체 확인 뒤 독립된 동료가 한 번 읽습니다. 작은 값·문구·서식 변경이나 동일 흐름의 기계적 추가에는 의무 검토를 붙이지 않습니다. 사용자 요청을 우선하며, 사전·사후 두 차례 검토를 고정하지 않습니다.
+**Stata code researchers can read, revise, and carry forward.**
 
-기존 분석에는 작업 단위마다 유지하는 `.do` 하나를 두고 그 파일을 편집·확장·재실행·필요한 범위에서 리팩터링합니다. 아래 역할은 새 작업의 이름을 고를 때 도움이 될 뿐, 기존 분석을 쪼개거나 결과 갱신마다 새 파일을 만들라는 규칙이 아닙니다.
+Stata Research Guard is a Codex plugin that helps write analysis code researchers can follow from data and sample construction through regression specifications, saved estimates, tables, and figures. It supplies a command index, official and maintainer help, real paper code, and independent peer review. Research choices remain with the user and the model.
 
-중대규모 작성·구조 변경에서는 명령 도움말과 별개로 실제 논문의 자료→표본→추정→표·그림 흐름을 읽습니다. [논문 workflow 읽기](plugins/stata-research-guard/skills/stata-replication-workflow/references/paper-workflow-reading.md)에 따라 모델이 관련 코드셋을 고르고 현재 구현과 비교합니다. 기존 수록본이나 유명 저널을 정답으로 취급하지 않으며 더 적합한 코드가 있으면 바꿉니다. 명령의 자동화 기능을 먼저 활용하고, 지원하지 않는 요구만 수동으로 구현합니다. 동료 검토를 선택했다면 이 비교도 함께 다루며 Python 검증기·점수·추가 감사 단계를 만들지 않습니다.
+[Get started](#get-started) · [Example requests](#example-requests) · [End-to-end execution comparison](#end-to-end-execution-comparison) · [Documentation](#documentation) · [Questions and bug reports](https://github.com/Plokies-2/stata-research-guard/issues)
 
-- `cleaning_data.do`: 자료 불러오기, 병합, 변수·표본 구성과 통합 분석 패널 저장
-- `summary.do`: 기초통계, 결측·표본 설명, 기초 표와 그림
-- `regression.do`: 본 회귀, 추정치 저장, 회귀 표와 그림
-- `robustness.do`: 요청받은 강건성 분석과 산출물
+## AI writes Stata code like this
 
-작은 분석은 한 파일에 둡니다. 명령·outcome·표·그림마다 파일을 만들지 않습니다. 적절한 기존 이름은 유지하고, 별도 파일이 필요하면 독립 입력·interface·실제 재시작 비용 또는 사용자의 명시적 지시처럼 구체적인 이유를 설명합니다. 이 경계는 파일 수를 자동으로 검사하는 규칙이 아닙니다.
+One fresh Codex session built a regression table cell by cell and hid the specifications behind nested macros. Another used Guard to keep the regressions visible and let Stata build the table. Here are the two differences.
 
-기계적인 반복은 짧은 목록을 머리에 직접 적은 얕은 loop로 정리하고, estimator와 서로 다른 연구 사양은 본문에 보이게 둡니다. 이미 이해하는 `foreach`·`forvalues`·블록 `if`·기본 local 확장에는 도움말 조회를 요구하지 않으며, 선택적 조회 실패 때문에 모델 블록을 복사해 늘리지 않습니다. 실제로 불확실한 동작과 loop 안의 연구 명령·출력 인터페이스에는 필요한 근거를 확인합니다. 줄 수 감소나 DRY만으로 helper를 만들지 않으며, 기존 helper도 실제 외부 호출이나 사용자 요구가 필요한지 검토합니다. Native command와 exporter의 기능을 먼저 쓰고 지원되지 않는 후처리만 직접 작성합니다. Native command가 요구하는 좁은 callback을 피하려고 permutation 등의 알고리즘을 수동 재구현하지 않습니다.
+**1. From coefficient-cell bookkeeping to a table command**
 
-짧은 outcome·통제변수 목록과 일반 옵션은 분석 명령이나 바로 둘러싼 반복문에서 읽히게 합니다. 파일 위의 global·local을 찾아가야 하는 편의용 별칭은 줄이며, 두 번 참조했다는 이유만으로 유지하지 않습니다. 실제 공동 설정, 여러 단계가 공유하는 긴 목록, 필요한 반복 변수와 반환값은 목적에 맞게 보존합니다. 동료는 연구자가 변수나 표본을 바꿀 위치를 직접 찾아보고 불필요한 간접 참조와 최소 수정안을 설명합니다.
+Before · keep a coefficient roster, map model numbers to Excel columns, and copy estimates into cells:
 
-Workflow를 설계하거나 재구성할 때는 필요한 표·그림·데이터에서 추정치, 실제 표본, 관측단위와 원자료를 거꾸로 따라 읽고 순방향 코드와 대조합니다. 원하는 계수나 유의성에 맞추는 것이 아니라, 산출물에 필요한 연산과 전달 관계를 파악하는 과정입니다. 표본·집계단위·계수 의미가 달라지는 지점, 중복 계산과 불필요한 후처리를 찾아 구체적인 수정으로 연결하고, 필요한 중간 단계를 유지할 이유도 설명합니다. 수동 처리를 제안하기 전에는 이를 대신할 구체적인 명령 옵션·반환값과 관련 도움말을 확인합니다. 별도 계획 양식이나 자동 검증기를 요구하지 않습니다.
+```stata
+local terms "age grade ttl_exp tenure union 0b.south 1.south 0b.smsa 1.smsa _cons"
+local bcols "B D F"
+local secols "C E G"
 
-## 제공하는 근거
+            matrix b = e(b)
+            matrix V = e(V)
+            local bc : word `spec' of `bcols'
+            local sc : word `spec' of `secols'
+            local row = 3
+            foreach term of local terms {
+                local j = colnumb(b, "`term'")
+                if `j' < . {
+                    putexcel `bc'`row'=(b[1,`j']) `sc'`row'=(sqrt(V[`j',`j']))
+                }
+                local ++row
+            }
+```
 
-논문 원문과 출처를 보존하고, 일부 구체적인 전달 오류에는 별도로 표시한 `editorial_adaptation`을 함께 제공합니다. 수정 내용과 적용 가정을 확인해 현재 연구에 맞게 판단하며, 원문 실행 로그를 수정 예시의 실행 결과로 해석하지 않습니다. 원문·수정 예시 재사용에는 [출처와 라이선스 고지](plugins/stata-research-guard/THIRD_PARTY_NOTICES.md)가 적용됩니다.
+With Guard · restore the three models as `M1`–`M3`, build their combined table, and export it:
 
-| 자료 | 내용 |
+```stata
+estimates table M1 M2 M3, b(%10.6f) se(%10.6f) stats(N r2 ymean) allbaselevels nofvlabel
+putexcel set "tables/`outcome'_`sample'.xlsx", replace open sheet(OLS)
+putexcel A1=("`outcome': `sample' sample")
+putexcel A3=etable
+```
+
+`A3=etable` writes Stata's completed table. It does not extract and lay out every coefficient and standard error by hand.
+
+**2. From macro-expanded specifications to visible regressions**
+
+Before · a third loop selects controls through nested macro expansion:
+
+```stata
+local rhs1 "age grade"
+local rhs2 "age grade ttl_exp tenure"
+local rhs3 "age grade ttl_exp tenure union ib0.south ib0.smsa"
+
+forvalues spec = 1/3 {
+    regress `y' `rhs`spec'' `restriction', vce(robust)
+}
+```
+
+With Guard · the three regression specifications are directly readable:
+
+```stata
+regress `outcome' age grade `restriction', vce(robust)
+regress `outcome' age grade ttl_exp tenure `restriction', vce(robust)
+regress `outcome' age grade ttl_exp tenure union i.south i.smsa `restriction', vce(robust)
+```
+
+These are excerpts, with only the regression commands shown in the second pair. In the full scripts, `y`/`outcome` runs over `wage ln_wage hours`; `restriction` selects the full or married sample, and `spec` indexes models 1–3. Data preparation, means, saves, and formatting are in the [complete before](examples/fresh-session-workflow/before.do) and [complete after](examples/fresh-session-workflow/after.do) scripts.
+
+The authors worked in separate Codex chats with no shared conversation or example code. Both ran the full data-to-export task; see the [task and run conditions](examples/fresh-session-workflow/README.md).
+
+## What it does
+
+| Feature | Use in research |
 | --- | --- |
-| Command index | 115개 명령의 이름, family, 단계와 역할 |
-| Command help | Stata가 렌더링한 공식·maintainer 도움말: 기본 topic 5개를 포함해 118개 available, 2개 unavailable |
-| Live exact help | 저장된 도움말이 없는 exact topic 또는 명시한 installed 조회를 선택된 Stata 설치에서 수행 |
-| Expanded documentation | 69개 공식 Stata 18 PDF entry와 1개 저자 보충문서 |
-| Paper example | 166개 원문 코드 블록과 선택 명령의 사용 문맥 |
-| Raw log/artifact | 직접 연결된 12개 원문 실행 기록 또는 산출물 정보 |
+| **Readable analysis code** | Shows the path from data and sample through estimation, saved results, tables, and figures so researchers can change variables and specifications. |
+| **Commands grounded in source material** | Checks needed syntax, options, and returned results against official and maintainer help and expanded documentation. |
+| **Context from real papers** | Reads a command with the surrounding data and sample preparation, saved estimates, and downstream outputs. |
+| **Execution and result inspection** | Reads actual data, logs, tables, and figures and makes needed corrections. |
+| **Peer review** | When analysis is materially added or restructured, a colleague in a separate context reads the code and results once and suggests concrete improvements. |
 
-명령별 블록과 별개로 [workflow 읽기 안내](plugins/stata-research-guard/skills/stata-replication-workflow/references/paper-workflow-reading.md)에서 원문 파일을 직접 따라갈 수 있습니다. 이번에 추가한 *Revealing Stereotypes*의 코드 3개와 README는 학교 단위 재배정부터 분포 그림까지 읽는 선택 자료이며, 전체 코드의 모범 인증이나 자동 선택 기준은 아닙니다.
+Continue an existing analysis in the same `.do` file and keep mechanical loops shallow. Estimators, samples, fixed effects, and inference methods remain visible in the analysis. The researcher and model assess the evidence retrieved through the tools, separating successful execution from the validity of research conclusions.
 
-`jregress`와 `jwdidstacked`는 bundled help가 없습니다. `jregress`의 저자 PDF는 보충 설명이며 누락된 문법 근거를 대신하지 않습니다. `cgmreg`의 공개 help 출처 한계, StataNow 기능과 Stata 18의 차이도 해당 응답에 남깁니다.
+## Problems this addresses
 
-`estimates_save`, `post`, `macro`, `estimates`, `estimates_store`는 115개 명령 사전을 늘리지 않고 기존 guide에 연결한 기본 도움말입니다. `estimates use`, `postfile`, `local` 같은 기존 alias도 같은 원문을 사용합니다. 설치 버전의 원문이 필요하면 `help_source: "installed"`를 명시합니다.
+The plugin grew out of recurring difficulties while writing and revising real analysis code.
 
-## 필요한 만큼 읽기
+| Difficult code | What to check while writing |
+| --- | --- |
+| Long manual reimplementations of package features | Check supported options and returned results in official or maintainer help first. Use tables made by an exporter and handle only unsupported needs directly. |
+| Short variable lists and options scattered across `local` macros | Put short lists directly in commands or the surrounding loop. Keep macros with clear purposes, such as shared paths, settings, and loop variables. |
+| Regressions and saves hidden inside a helper or `program` | Keep estimation commands, samples, controls, FE, VCE, and output paths visible in the analysis. |
+| Rerunning estimation whenever table or figure export fails | Distinguish completed estimation from failed output and restore saved estimates when appropriate to regenerate only what failed. |
 
-도구는 `get_stata_command_evidence` 하나입니다. 명령이 명확하면 Phase 2로 바로 갑니다.
+## Get started
+
+Install Node.js and a Codex version that supports plugins. In PowerShell, register this public repository and install the plugin:
+
+```powershell
+codex plugin marketplace add Plokies-2/stata-research-guard --ref main
+codex plugin add stata-research-guard@stata-research-guard-team
+```
+
+On Windows, run installation in a regular PowerShell terminal. Use Codex's default user directory (`%USERPROFILE%\.codex`); if you set `CODEX_HOME` separately, choose a short local path outside synced folders to avoid cache-activation and path-length errors.
+
+The marketplace identifier is `stata-research-guard-team`. Start a new Codex chat, check that the plugin is enabled, and ask it to retrieve the official help for `regress` through `get_stata_command_evidence`. A successful help response confirms the MCP connection; installation alone does not. These commands follow the [official Codex CLI documentation](https://learn.chatgpt.com/docs/developer-commands#codex-plugin-marketplace).
+
+Open your research files and request the `stata-replication-workflow` skill.
+
+```text
+$stata-replication-workflow
+Read this project's regression.do and connected data, then continue the analysis.
+Keep the current sample, estimator, fixed effects, and standard-error settings.
+Run it and inspect the sample size and regression table.
+```
+
+**Tools needed:** Codex and Node.js. Running the analysis and looking up installed help use your own Stata installation. The plugin was developed with Stata 18. The model selects an available execution route, such as an existing runner, Stata batch mode, or Python integration. mcpStata is an optional local execution extension, not a dependency of the plugin or skills.
+
+The installation and MCP launcher have been checked on Windows. macOS compatibility still needs implementation and testing.
+
+## Example requests
+
+These are prompts you can send to Codex. Specify variables, files, and outputs for your own project.
+
+**Review older code or an analysis that needs maintenance**
+
+Use `stata-peer-audit` to review existing code before changing it. It reads the analysis and available results as a research colleague, identifies concrete maintenance problems, and suggests corrections without editing the files.
+
+```text
+$stata-peer-audit
+Read this older analysis.do, its connected code, and available data, logs,
+tables, and figures. Identify changes that would make the sample,
+regression specifications, saved results, and output easier to follow
+and maintain. Give concrete file/line findings and reasons.
+Keep the review read-only; preserve the current research choices.
+```
+
+**From scattered source data to paper tables and figures**
+
+```text
+$stata-replication-workflow
+Read the raw-data folder and project README, then continue the analysis.
+Check merge keys and observation units before building the analysis panel.
+Estimate the sample, regression specifications, and standard errors in the README.
+Save estimates as .ster, regression tables as Excel, and figures as PDF.
+Make the code traceable from data to tables and figures, and inspect the actual results.
+```
+
+**Reproduce core results from a paper replication package**
+
+```text
+$stata-replication-workflow
+Find the main regression table and event-study figure in this paper's replication package.
+Trace the raw data, sample, estimation, and output, then reproduce the original specification.
+Check command options and returned results in official or maintainer help.
+Compare the paper's reported values with the actual run.
+Identify anything blocked by data or package versions.
+```
+
+**Recover output when estimation finished but table or figure export failed**
+
+```text
+$stata-replication-workflow
+The run stopped while saving results after the regressions.
+Read the code, log, and saved .ster files to distinguish completed estimates
+from failed output. Reuse valid saved estimates and repair only the failed
+tables and figures. Keep the regression specifications and source data,
+then inspect what was actually saved.
+```
+
+## End-to-end execution comparison
+
+Two independent **Codex chats using GPT-6.1 Sol / medium** received the same natural-language task, with no inherited conversation, existing example, or access to each other's code. The baseline was explicitly told to ignore personal/project `AGENTS.md` coding guidance, skills, and memories, and not to use Guard. The other chat used the current Guard guidance, help, and paper examples. The shared task did not prescribe an exporter or loop structure.
+
+The task covered loading `nlsw88`, common-sample construction, log wage, **three outcomes × two samples × three robust OLS specifications**, and data, codebook, table, figure, and estimate export. Both complete scripts ran in **native Stata batch mode without mcpStata**.
+
+| Measure | Without Guard | With Guard |
+| --- | ---: | ---: |
+| Published script lines | 146 | 118 |
+| Lines excluding codebook construction and formatting | 107 | 91 |
+| Nested loops around regression commands | 3 | 2 |
+| Manual coefficient/SE cell mapping | Yes | None |
+| Regressions / saved `.ster` files | 18 / 18 | 18 / 18 |
+| Full / married sample N | 1,865 / 1,214 | 1,865 / 1,214 |
+| Analysis DTA / codebook XLSX / regression XLSX / PDF | 1 / 1 / 6 / 3 | 1 / 1 / 6 / 3 |
+
+The difference is visible specifications and automatic table construction. Total code was 19.2% shorter; excluding the codebook block, it was 15.0% shorter. We read all 18 pairs of saved estimates: coefficients, robust standard errors, N, and R² matched when displayed to 15 significant digits. The 11 shared analysis variables had identical values; before saves 11 variables, while after retains all 17 source variables plus log wage.
+
+All 12 regression workbooks were read, and both authors inspected their codebooks and rendered PDFs. Before stores full-precision table values and writes base categories as zero; after exports six-decimal values and marks reference categories as `(base)`. Figure bins and styling differ. This is one observed case, not a guarantee about every generated script.
+
+[Full before](examples/fresh-session-workflow/before.do) · [Full after](examples/fresh-session-workflow/after.do) · [Task, counting boundaries, and execution notes](examples/fresh-session-workflow/README.md). The only publication edits add an output-directory argument to before and remove after's personal default path. The table method was kept as independently written.
+
+<details>
+<summary>Run the example</summary>
+
+From the repository root in Stata. These scripts use Stata's bundled data and built-in commands, including Mata's Excel interface; no user-written exporter or Python package is needed.
+
+```stata
+local repo "`c(pwd)'"
+capture mkdir "`repo'/tmp"
+capture mkdir "`repo'/tmp/fresh-before"
+capture mkdir "`repo'/tmp/fresh-after"
+do "`repo'/examples/fresh-session-workflow/before.do" "`repo'/tmp/fresh-before"
+do "`repo'/examples/fresh-session-workflow/after.do" "`repo'/tmp/fresh-after"
+cd "`repo'"
+```
+
+Outputs go into separate folders. Execution was checked with Stata 18 on 2026-10-22.
+
+</details>
+
+<details>
+<summary>What was checked without mcpStata</summary>
+
+In a separate Node process without an mcpStata client or configuration, we checked plugin initialization, tool listing, and bundled-help lookup. Live-help lookup also worked when `STATA_PATH` pointed directly to Stata. The plugin's MCP configuration, launcher, and server code do not reference `MCP_STATA_*` environment variables. The model selects an execution route for the task.
+
+Live help handles Windows TEMP paths containing braces or spaces by passing the do-file relative to its working directory; users do not need to change TEMP. Lookup and rendering were checked with actual Stata in both cases. macOS compatibility has not yet been checked.
+
+</details>
+
+## Evidence available to the model
+
+Original paper material and attribution are preserved. For certain concrete transport errors, the plugin also provides separately marked `editorial_adaptation` examples. Read the changes and assumptions before applying one to your research; an original execution log is not the result of running an adapted example. Reuse of original and adapted material is subject to the [third-party notices](plugins/stata-research-guard/THIRD_PARTY_NOTICES.md).
+
+| Resource | Contents |
+| --- | --- |
+| Command index | Names, families, stages, and roles for 115 commands |
+| Command help | Stata-rendered official and maintainer help: 118 available topics, including 5 base topics; 2 unavailable |
+| Live exact help | Exact topics without bundled help, or explicitly requested installed help, from the selected Stata installation |
+| Expanded documentation | 69 official Stata 18 PDF entries and 1 author supplement |
+| Paper examples | 166 original code blocks with selected-command context |
+| Raw logs/artifacts | 12 directly attached original run logs or artifact records |
+
+Beyond command-specific blocks, the [paper workflow reading guide](plugins/stata-research-guard/skills/stata-replication-workflow/references/paper-workflow-reading.md) helps follow original paper files through the entire analysis.
+
+<details>
+<summary>Use the MCP tool directly</summary>
+
+Call `get_stata_command_evidence` for help and paper examples relevant to a selected command. For example, to read help for `regress`:
 
 ```json
 {"request":"Read the relevant regression syntax","selected_commands":["regress"],"include_paper_catalog":false}
 ```
 
-명령을 정하지 못한 경우만 `request`로 Phase 1 사전을 읽습니다. Help로 해결되지 않는 질문에는 Phase 3의 `expanded_commands`로 긴 문서를, `selected_block_ids`로 논문 블록을 선택합니다. 두 선택은 독립적이며 모든 자료를 확장할 필요는 없습니다.
+See the [command evidence guide](plugins/stata-research-guard/skills/stata-replication-workflow/references/command-evidence.md) for long-help sections, installed-version lookup, and attached paper code and logs.
 
-도움말만 필요하거나 논문 목록을 이미 읽었다면 Phase 2에서 `include_paper_catalog: false`로 목록의 반복 전달을 생략합니다. 여러 명령의 도움말을 함께 읽을 때는 Phase 2·3에서 `deduplicate_help: true`를 사용하면 동일한 본문을 한 번만 전달하고, 나머지 항목의 `content_ref`가 같은 응답 안의 본문을 가리킵니다. 명령별 출처·제약·구획 정보는 유지하며, 옵션을 생략한 기존 호출의 응답은 바뀌지 않습니다. 공통 규칙은 아래의 `known_rules_sha256` 재사용 조건을 따릅니다.
+</details>
 
-원문 24,000자(Unicode 문자)를 초과하는 모든 도움말은 먼저 구획 목록을 제공합니다. 일반 도움말·설치된 live help·확장 매뉴얼에 같은 기준을 적용합니다. 작은 도움말은 전체 본문이 기본입니다. 이 값은 토큰 수나 본문 절단 길이가 아니라 먼저 선택할지 정하는 기준입니다. 모델이 원문 제목과 연구 문맥을 보고 필요한 구획을 선택하며 서버가 관련성을 판단하지 않습니다.
+<details>
+<summary>Execution environment and package installation</summary>
 
-```json
-{
-  "request":"Find current source sections for stored-estimate and Excel output",
-  "selected_commands":["outreg2"],
-  "help_view":"catalog"
-}
-```
+Installing and enabling this plugin means you agree that supported user-written commands and required dependencies may be downloaded when needed from SSC or an official maintainer source and installed in your primary Stata environment's usual shared ado location. Any scope limits you set take precedence. The plugin does not preinstall every command or create an isolated ado environment, and it does not repeatedly ask about installations within this scope. This does not disable Codex's own approval controls.
 
-현재 catalog의 제목과 제공된 `read_when` 안내를 보고 필요한 ID를 선택합니다. 명시한 옵션뿐 아니라 기본 동작·모형·표본·반환값·후속 사용에 필요한 구획도 모델이 판단해야 합니다. `required_sections`는 공통 기초를 함께 붙일 뿐 조건부 필요를 대신 결정하지 않습니다. 이미 현재 ID를 읽었다면 catalog를 다시 요청할 필요가 없으며, 짧은 도움말은 전체 본문을 유지합니다.
+For research tables, choose a documented table/export interface that fits the requested output and preserves the results and inference. Use its supported table features before assembling coefficient and standard-error rows by hand. A missing installation alone is not a reason to change estimation or inference.
 
-Phase 2는 `help_sections`, Phase 3 확장 매뉴얼은 `expanded_sections`로 선택합니다. `help_view: "full"`이면 전체 원문을 명시적으로 요청하고, `catalog`이면 목록을 요청합니다. 현재 검토된 경계가 없는 live help나 source map이 오래된 문서는 원문 전체를 `whole-source` 하나의 선택 단위로 남깁니다. 자동 추정으로 자르거나 조용히 큰 본문으로 돌아가지 않습니다. Catalog는 본문을 읽었다는 증거가 아닙니다.
+Read figures in their research context. Keep concise labels that distinguish variables, specifications, axes, statistics, and groups; put definitions and detailed methods in the paper or README. Use short notes where they prevent a specific misreading, and avoid duplicate titles and oversized text.
 
-공통 규칙은 기본 응답에 본문을 포함합니다. 이미 읽은 동일 본문이 현재 문맥에 남아 있을 때만 `known_rules_sha256`를 보내 중복을 생략할 수 있습니다. 새 작업이나 압축 후 본문이 없으면 hash를 보내지 않습니다. 서버가 읽기 상태를 추측하거나 다른 작업의 hash만 보고 규칙을 읽었다고 처리하지 않습니다.
+Developed with Stata 18. `CODEX_MCP_NODE_PATH` can specify the Node executable and `STATA_PATH` the Stata executable for live help. Analysis can use an existing authorized runner, Stata batch mode, or official Python integration. The plugin does not bundle an execution engine; users without mcpStata can follow the same workflow. An existing mcpStata connection can be used optionally. If no execution route is available, the model can still write and review code and should state what it could not run.
 
-Live help는 성공한 설치 시점의 snapshot을 재사용합니다. 이 live 조회는 `refresh_live_help: true`로 다시 읽을 수 있습니다. 등록된 명령과 기본 topic 5개는 기본적으로 bundled 문서를 반환하며, Phase 2 `help_source: "installed"`를 명시한 경우만 설치 도움말을 읽습니다. 실패와 partial 응답은 캐시하지 않고, 누락·순환 INCLUDE를 명시합니다. 조회 작업은 대기를 포함해 55초로 제한하고 다른 bundled 요청을 막지 않습니다.
+After updating the plugin, refresh Codex and call the tool in a new task. A successful CLI install or file readback alone does not show that the running app loaded the new MCP. If connection still fails in a new task, inspect app startup logs and retry after a restart. This connection check is distinct from writing and running research code.
 
-`execution_sources`로 실행 기록에서 확인한 ADO의 경로·hash와 선택 원문 구간을 함께 읽을 수 있습니다. 설치 도움말과 ADO가 서로 다를 수 있으므로 모델이 사용 옵션의 근거를 대조합니다. 파일 hash 일치는 동일성 정보이며 실행 성공이나 문법·연구 결과의 타당성 판정이 아닙니다. `workflow_notes`는 요청한 경우에만 import 후 실제 변수명·32자 제한·원래 이름 매핑, 통제 학습표본, 비교 표본의 관측단위와 해석 안내를 제공합니다. 출력 단계 실패에는 반복문 매크로의 수명·확장된 경로와 완료된 추정을 구분해 읽고, 적절한 저장 결과로 출력만 복구하도록 안내합니다. 기존 호출·기본 응답은 유지하며 자동 rename·rank gate·DID 재구현은 추가하지 않습니다. 입력과 exact ID는 [command-evidence.md](plugins/stata-research-guard/skills/stata-replication-workflow/references/command-evidence.md)를 따릅니다.
+</details>
 
-선택한 논문 블록은 앞·target·뒤 원문과 연결된 raw log를 유지합니다. 논문의 다른 estimator·표본·중첩 loop는 현재 프로젝트의 지시가 아닙니다. 명령 문법만 확인하는 작업은 예시나 log 없이 도움말로 진행할 수 있습니다. 중대규모 변경의 전체 workflow 읽기는 이 예외와 별개이며, 원문을 읽지 못했다면 완료한 것으로 보고하지 않습니다.
+## Documentation
 
-## 설치와 개발
+| Goal | Read |
+| --- | --- |
+| Start or revise an analysis | [Research workflow](plugins/stata-research-guard/skills/stata-replication-workflow/SKILL.md) |
+| Review code structure and authoring principles | [General rules](plugins/stata-research-guard/skills/stata-replication-workflow/references/general-rules.md) |
+| Follow a paper's full analysis | [Paper workflow reading](plugins/stata-research-guard/skills/stata-replication-workflow/references/paper-workflow-reading.md) |
+| Run Stata and inspect outputs | [Execution and results](plugins/stata-research-guard/skills/stata-replication-workflow/references/execution-and-results.md) |
+| Look up MCP options and reuse original material | [Command evidence](plugins/stata-research-guard/skills/stata-replication-workflow/references/command-evidence.md) |
+| Request a colleague's review of code and results | [Peer audit](plugins/stata-research-guard/skills/stata-peer-audit/SKILL.md) |
+| Check attribution and use conditions | [Third-party notices](plugins/stata-research-guard/THIRD_PARTY_NOTICES.md) |
 
-이 플러그인을 설치하고 활성화하면 지원하는 user-written 명령과 실행에 필요한 의존 패키지를 SSC 또는 공식 maintainer 출처에서 필요할 때 내려받아 주 Stata 환경의 일반 공유 ado 위치에 설치·사용하는 데 동의한 것으로 취급합니다. 사용자가 범위를 제한하면 그 지시를 따릅니다. 명령 전체를 미리 설치하거나 격리된 ado 환경을 만들지 않으며, 이 승인 범위의 설치를 반복 확인하지 않습니다. Codex 자체의 승인 제어를 해제하는 설정은 아닙니다.
+## Contributing
 
-연구 결과표는 결과와 추론을 보존할 수 있으면 `outreg2`를 최우선으로 사용합니다. 특수 DID도 먼저 반환 결과와 관련 옵션을 확인하고, 실제로 충족되지 않는 요구에만 다른 인터페이스를 사용합니다. 명령은 연구 목적에 맞춰 선택하며, 적합한 내장 명령도 검토합니다. 선택한 명령의 미설치 자체는 추정·추론 방식을 바꾸는 이유가 아닙니다.
+We welcome help making this plugin more useful to empirical researchers, especially work on Claude and macOS compatibility.
 
-도표는 연구 맥락 안에서 읽습니다. 변수·사양·축·통계량·집단을 구분하는 짧은 표지만 남기고, 정의와 상세한 방법은 본문이나 README에 둡니다. 구체적인 오독을 막을 때만 짧은 주석을 쓰며 중복 제목과 과대한 글자를 피합니다.
+- **Claude compatibility:** Implement and check how the skills and MCP tools can be connected and installed in Claude Code or a similar environment.
+- **macOS compatibility:** Document Mac Stata paths, the MCP startup script, and installation steps, then test them in a real Mac environment.
 
-Node.js와 Stata 18 환경을 기본으로 사용합니다. `CODEX_MCP_NODE_PATH`로 Node 실행 파일을, `STATA_PATH`로 live help용 Stata 실행 파일을 지정할 수 있습니다. 분석 실행에는 현재 환경에서 허용된 기존 실행 스크립트, Stata 배치 실행 또는 공식 Python 연동 등을 사용합니다. 플러그인은 실행 엔진을 포함하지 않으며 mcpStata가 없는 사용자도 같은 워크플로우로 진행합니다. mcpStata가 이미 연결된 환경에서는 선택적으로 활용할 수 있습니다. 실행 수단 자체가 없으면 가능한 코드 작성·검토를 진행하고 실제 실행하지 못한 범위를 명확히 보고합니다.
+Neither environment has been verified yet. Reproducible bug reports, documentation improvements, and useful research examples are also welcome. Open an [issue](https://github.com/Plokies-2/stata-research-guard/issues) or a [pull request](https://github.com/Plokies-2/stata-research-guard/pulls).
 
-플러그인 갱신 뒤에는 Codex를 새로고침하고 새 작업에서 실제 도구 호출을 확인합니다. CLI 설치 성공이나 파일 readback만으로 실행 중인 앱이 새 MCP를 로드했다고 판단하지 않습니다. 새 작업에서도 초기 연결이 실패하면 앱 로그의 시작 오류를 확인하고, 재시작 후 다시 호출합니다. 연구 코드 작성·실행 확인은 이 연결 확인과 구분합니다.
+<details>
+<summary>Minimal functional checks for development</summary>
 
-- [연구 workflow](plugins/stata-research-guard/skills/stata-replication-workflow/SKILL.md)
-- [공통 작성 원칙](plugins/stata-research-guard/skills/stata-replication-workflow/references/general-rules.md)
-- [실행과 결과 확인](plugins/stata-research-guard/skills/stata-replication-workflow/references/execution-and-results.md)
-- [조회·재사용·선택 구획 사용법](plugins/stata-research-guard/skills/stata-replication-workflow/references/command-evidence.md)
-- [독립 검토](plugins/stata-research-guard/skills/stata-peer-audit/SKILL.md)
-
-변경이 모인 뒤 해당 transport와 bundle을 확인합니다. 예를 들어 서버·live help 변경은 다음 명령으로 검사합니다.
+Check affected tool calls, delivery of original source material, and bundle structure. From the repository root:
 
 ```powershell
+cd plugins/stata-research-guard
 node --test tests/server.test.cjs tests/live-help.test.cjs tests/help-sections.test.cjs tests/optional-evidence.test.cjs tests/plugin_bundle_manifest.test.cjs
 node scripts/verify_plugin_bundle.cjs
 ```
 
-이 검사는 호출·원문 전달·설치 구성을 확인합니다. 일반 테스트 실행이 Stata를 직접 실행해 연구 표의 수치·행 구성을 정답과 비교하지 않도록 과거 runtime fixture는 활성 테스트와 배포 묶음에서 분리했습니다. 코드의 가독성이나 연구 타당성은 실제 코드·로그·표·그림을 읽어 판단하며 자동 점수나 합격 판정으로 바꾸지 않습니다.
+These checks cover calls, source delivery, and installation structure. Older runtime fixtures were separated from active tests and the release bundle so ordinary tests do not run Stata and compare research-table values or rows to a prescribed answer. Read actual code, logs, tables, and figures to judge readability and research validity; do not turn that judgment into an automated score or pass decision.
 
-GitHub 릴리스: 0.4.0. Codex 빌드: 0.4.0+codex.2026101304. Bundle 341개 파일, transport·원문 전달·선택 근거 기능 검사 70개 통과. 이 검사는 호출·전달·무결성을 확인하며 연구 의미나 결과의 타당성을 인증하지 않습니다.
+</details>
+
+## License
+
+The original plugin software is licensed under [MIT](LICENSE). Bundled paper excerpts, Stata documentation, maintainer help, and other third-party material retain their own terms, including any noncommercial restrictions. The MIT license does not relicense that material; see the [third-party notices](plugins/stata-research-guard/THIRD_PARTY_NOTICES.md).
