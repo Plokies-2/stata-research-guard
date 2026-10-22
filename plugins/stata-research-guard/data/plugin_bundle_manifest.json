@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.4.0+codex.2026101304"
+    "version": "0.4.0+codex.2026102201"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
       "bytes": 966,
-      "sha256": "ca3ea0bcd6736ed95146ed820da0782fc49886c72a6701fca109d656426e97e5"
+      "sha256": "eb8e5f091224072942abe26f0ae75b527910bc68fb60f97c0e621979d736e8c1"
     },
     {
       "path": ".mcp.json",
@@ -1657,8 +1657,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rules.md",
-      "bytes": 24282,
-      "sha256": "b90466e1165f8a41330c94d9b6920de9710b182b26d39f58f2af6c2a4d824e5f"
+      "bytes": 24316,
+      "sha256": "93c67d60f54259d1fd2d8abfd46d0e0f0afbb4f4614031a337ac1d7cf74814b3"
     },
     {
       "path": "skills/stata-replication-workflow/references/paper-workflow-reading.md",
@@ -1724,7 +1724,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.4.0+codex.2026101304"
+      "value": "0.4.0+codex.2026102201"
     },
     {
       "id": "readme.heading",
