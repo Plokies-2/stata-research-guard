@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.4.0+codex.2026102201"
+    "version": "0.4.0+codex.2026102202"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
       "bytes": 966,
-      "sha256": "eb8e5f091224072942abe26f0ae75b527910bc68fb60f97c0e621979d736e8c1"
+      "sha256": "78602c072ec8c33913a98f4a564578ad6975c5b965b018ce5f384d802c98403a"
     },
     {
       "path": ".mcp.json",
@@ -17,8 +17,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 33122,
-      "sha256": "295082a6e972bfe8b0e6c29312084739f90220f8aeec9b1775ca58db25bb0773"
+      "bytes": 33427,
+      "sha256": "300af0f8c46c105415938ce0d9ec60770cd017cf0a52722efd27e16413e29605"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -1592,8 +1592,8 @@
     },
     {
       "path": "mcp/live-help.cjs",
-      "bytes": 11893,
-      "sha256": "e64df5b7acfff298446b7ac9dc065bef3e10909d707f503d0a24908efa38eb92"
+      "bytes": 12140,
+      "sha256": "c2597a2353e1e0abbaf74e6f4a3d27806b3fdc636b681af290bc1e684303a39f"
     },
     {
       "path": "mcp/server.cjs",
@@ -1687,8 +1687,8 @@
     },
     {
       "path": "tests/live-help.test.cjs",
-      "bytes": 8458,
-      "sha256": "355c2577cec90d7d3c203c4cac2680b706757785f34f6101acefbc86e30fd155"
+      "bytes": 9779,
+      "sha256": "ddb2aede154dbb88d455bd7034ecf362e4bc5db77f94dac467e2b12f60083cb4"
     },
     {
       "path": "tests/optional-evidence.test.cjs",
@@ -1724,7 +1724,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.4.0+codex.2026102201"
+      "value": "0.4.0+codex.2026102202"
     },
     {
       "id": "readme.heading",
