@@ -6,7 +6,7 @@
 
 처음 설치하거나 전체 분석 비교 예제를 보려면 [공개 저장소의 영어·한국어 README](https://github.com/Plokies-2/stata-research-guard)를 참고합니다. 이 문서는 플러그인 내부의 자료·도구·개발 안내입니다. 기존 코드나 유지보수가 필요한 분석은 `$stata-peer-audit`으로 읽기 전용 검토를 요청할 수 있습니다.
 
-빌드 `0.4.0+codex.2026102901`은 [짧은 코드 비교 예시](skills/stata-replication-workflow/references/code-examples.md)를 추가합니다. 반복과 사양의 구분, 추정 표본의 예측, 덮어써지는 반환값, 작은 수정의 범위를 필요한 상황에서만 읽습니다. 직접 작성한 설명용 예시이며 논문 원문이나 스킬 효과의 측정 결과로 취급하지 않습니다.
+[짧은 코드 비교 예시](skills/stata-replication-workflow/references/code-examples.md)는 사양을 드러내는 반복, native 예측, 반환값과 해당 결과의 연결, 작은 수정의 범위를 설명합니다. 모형별 요약과 의도한 공통 통계량을 구분하면서 요청한 표본 정책을 보존합니다. 구현을 선택할 때 관련 예시를 참고할 수 있습니다.
 
 ## 연구 코드 작성 흐름
 

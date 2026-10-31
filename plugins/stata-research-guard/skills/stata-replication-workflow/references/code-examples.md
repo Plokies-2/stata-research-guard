@@ -54,7 +54,7 @@ The prediction follows the active model, including its factor terms. `if e(sampl
 
 In a real project, keep the new variable's label and codebook definition with the authorized variable change. This fragment illustrates prediction, not a complete data-delivery workflow.
 
-## Keep an intermediate value when returned results will change
+## Keep returned results with their producer and lifetime
 
 Suppose the current regression is for `wage`, and the researcher wants to report its estimation-sample mean after inspecting `hours` in the same sample.
 
@@ -75,7 +75,25 @@ summarize hours if e(sample)
 display "Mean wage in estimation sample: " `wage_mean'
 ```
 
-`wage_mean` is not a redundant alias: it preserves a result across a command that overwrites it. If the mean is consumed immediately, use `r(mean)` directly. If the result must survive the do-file or be combined into a saved-model table, use the relevant documented storage/export interface; a local macro does not persist across sessions. Keep distinct samples distinct rather than replacing each model's sample mean with one full-sample mean.
+`wage_mean` is not a redundant alias: it preserves a result across a command that overwrites it. If the mean is consumed immediately, use `r(mean)` directly. If the result must survive the do-file or be combined into a saved-model table, use the relevant documented storage/export interface; a local macro does not persist across sessions.
+
+Preserving a value's lifetime does not make it belong to another result. Suppose the requested regressions use their own available observations, and the report needs an unweighted outcome mean for each estimation sample. The data are already loaded; adding `tenure` may exclude observations with missing values even though both models use `wage` from the same dataset. Computing a mean after only the last regression and reusing it for both models can therefore mislabel the first model's summary.
+
+**Keep the sample and consumer together:**
+
+```stata
+regress wage age grade, vce(robust)
+summarize wage if e(sample), meanonly
+display "Model 1 estimation-sample mean: " r(mean)
+
+regress wage age grade tenure, vce(robust)
+summarize wage if e(sample), meanonly
+display "Model 2 estimation-sample mean: " r(mean)
+```
+
+The display stands in for the immediate consumer. For a table assembled later, retain each summary with its model through the exporter's documented interface before later commands replace it; changing the storage mechanism alone does not preserve the association. A scalar or macro evaluated during later table assembly is not automatically evaluated in each saved model's original sample. Neither the same outcome nor equal N establishes equal observations, weights or definitions. The same reasoning applies to subgroup summaries, transformations and other sample-dependent results, not just means.
+
+Do not recompute identical quantities or impose model-specific summaries when the requested statistic is explicitly common. If the research design requires a common sample and the relevant inputs and definitions coincide, a shared summary is valid. A descriptive mean for a separate population is also valid when labeled as such. Preserve that choice, and revisit the handoff when a changed model, sample, weighting or definition affects it. These unweighted OLS fragments illustrate the association; other estimators and weighted statistics need their relevant help.
 
 ## Small edits and justified exceptions
 

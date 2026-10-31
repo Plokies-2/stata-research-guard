@@ -180,11 +180,14 @@ test("combined automatic help uses catalogs while explicit full help retains eve
 });
 
 test("aggregate navigation respects deduplication and never leaves an explicit section pointing at a deferred body", async () => {
-  const same = "same source\n".repeat(1600);
-  const different = "other source\n".repeat(1600);
+  const same = "a".repeat(HELP_CHARACTER_THRESHOLD);
+  const different = "b".repeat(HELP_CHARACTER_THRESHOLD);
   const options = { liveHelpLookup: async (command) => ({ status: "available", limitations: [],
     help: { content: command === "gamma" ? different : same, source_kind: "live_installed_help" } }) };
-  const args = { request: "Read shared help", selected_commands: ["alpha", "beta"], include_paper_catalog: false, deduplicate_help: true };
+  // Isolate help payload size from unrelated edits to the prose rules.
+  const rules = fs.readFileSync(path.join(__dirname, "../skills/stata-replication-workflow/references/general-rules.md"), "utf8");
+  const args = { request: "Read shared help", selected_commands: ["alpha", "beta"], include_paper_catalog: false,
+    deduplicate_help: true, known_rules_sha256: hash(rules) };
   const compact = await buildCommandEvidence(args, options);
   assert.equal(compact.response_navigation, undefined);
   assert.equal(compact.command_evidence[1].command_help.content_ref, "#/command_evidence/0/command_help/content");

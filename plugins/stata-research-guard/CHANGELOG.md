@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.0+codex.2026102902 — 2026-10-29
+
+- Keep reported quantities associated with their model or group, effective sample, weighting and definition as well as their returned-state lifetime. Extend the authored comparison to distinguish model-specific summaries from deliberately shared descriptive statistics without forcing a common sample or a particular exporter.
+- Remove the unused custom SMCL-to-Markdown converter; help generation and live lookup continue to use Stata's native translator. Fold the remaining unique authoring details into the general rules and remove the duplicate authoring-conventions reference. No server API, paper material or semantic validation changes.
+
 ## 0.4.0+codex.2026102901 — 2026-10-29
 
 - Add on-demand authored comparisons for visible specifications, native sample-specific predictions, temporary returned results, and bounded edits. State assumptions and exceptions, and distinguish illustrations from original paper code and observed authoring comparisons.
