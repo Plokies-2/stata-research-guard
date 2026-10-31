@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.0+codex.2026102901 — 2026-10-29
+
+- Add on-demand authored comparisons for visible specifications, native sample-specific predictions, temporary returned results, and bounded edits. State assumptions and exceptions, and distinguish illustrations from original paper code and observed authoring comparisons.
+- Keep detailed evidence-reuse controls in their existing reference rather than repeating them in the workflow entrypoint. No server API, research specification, paper corpus, or semantic validation changes.
+
 ## 0.4.0+codex.2026102204 — 2026-10-22
 
 - License original plugin software under MIT while preserving the separate terms and attribution of third-party material. Update installation and internal README guidance to match the current exporter policy and Windows live-help behavior.

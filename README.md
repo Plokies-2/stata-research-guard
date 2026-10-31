@@ -240,6 +240,8 @@ Original paper material and attribution are preserved. For certain concrete tran
 
 Beyond command-specific blocks, the [paper workflow reading guide](plugins/stata-research-guard/skills/stata-replication-workflow/references/paper-workflow-reading.md) helps follow original paper files through the entire analysis.
 
+Build `0.4.0+codex.2026102901` adds [short authoring comparisons](plugins/stata-research-guard/skills/stata-replication-workflow/references/code-examples.md) for visible specifications, native predictions, temporary returned results, and bounded edits. Read only the relevant comparison. These are authored illustrations with explicit assumptions and exceptions, separate from original paper examples and the observed fresh-session comparison above.
+
 <details>
 <summary>Use the MCP tool directly</summary>
 

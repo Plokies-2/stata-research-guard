@@ -238,6 +238,8 @@ cd "`repo'"
 
 명령별 블록과 별개로 [workflow 읽기 안내](plugins/stata-research-guard/skills/stata-replication-workflow/references/paper-workflow-reading.md)에서 논문의 원문 파일을 따라가며 전체 분석 흐름을 읽을 수 있습니다.
 
+빌드 `0.4.0+codex.2026102901`은 [짧은 코드 비교 예시](plugins/stata-research-guard/skills/stata-replication-workflow/references/code-examples.md)를 추가합니다. 사양을 드러내는 반복, native 예측, 덮어써지는 반환값, 작은 수정의 범위 중 필요한 예시만 읽습니다. 가정과 예외를 명시한 설명용 예시이며, 논문 원문이나 위의 실제 작성 비교와 구별합니다.
+
 <details>
 <summary>MCP 도구 직접 사용하기</summary>
 

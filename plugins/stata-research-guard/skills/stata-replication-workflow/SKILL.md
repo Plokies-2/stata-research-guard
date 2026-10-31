@@ -7,6 +7,8 @@ description: Write, revise, execute, and review readable Stata analysis from act
 
 Prioritize code the researcher can comfortably read, inspect, and modify. Help them follow data and sample construction through the visible estimator, specification, stored estimates, and outputs; retain adequate code when a rewrite offers no concrete benefit. Guard supplies evidence; the model and researcher make the research choices.
 
+For a concrete authoring choice, read the relevant comparison in [code-examples.md](references/code-examples.md): mechanical repetition versus distinct specifications, native predictions, temporary returned results, or the scope of a local edit. These authored illustrations explain decisions; they are not paper excerpts, required templates, or substitutes for command help and actual paper reading. Skip them when the choice is already clear.
+
 ## Start with what changes
 
 Read the requested block and its direct caller or output before choosing further reading. Before writing code or adding settings, check whether the active tool's defaults, native capabilities and supported options already meet the request; use what suffices and implement only the unmet part, preserving explicit user choices and required project or template settings. Reuse visible evidence and resolve only the relevant uncertainty. A Stata filename alone does not require a Guard call. Once connectivity is established, do not turn an exempt follow-up into another connection-check or discovery call.
@@ -22,7 +24,7 @@ For a known command needing evidence, the minimum call is:
 {"request":"Read the changed estout output interface","selected_commands":["estout"],"include_paper_catalog":false}
 ```
 
-There is no `phase` or `commands` argument. A new follow-up alone does not invalidate visible unchanged evidence; request only the changed or unresolved interfaces. Use current section IDs directly, `known_rules_sha256` for complete rules still visible, `known_help_foundations` for complete foundations still visible, and `deduplicate_help: true` for identical bodies in a combined request. Read the relevant part of [command-evidence.md](references/command-evidence.md) for these controls, installed-version questions, execution sources, workflow notes, or paper blocks. A catalog or truncated response is not a delivered complete help body; use complete help when material dependencies remain unclear.
+There is no `phase` or `commands` argument. A new follow-up alone does not invalidate visible unchanged evidence. Use [command-evidence.md](references/command-evidence.md) when section selection, explicit evidence reuse, installed-version questions, or paper blocks are needed. A catalog or truncated response is not a complete help body; retrieve the missing material when dependencies remain unclear.
 
 ## Work from the actual project
 
