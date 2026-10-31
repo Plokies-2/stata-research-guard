@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0+codex.2026102204 — 2026-10-22
+
+- License original plugin software under MIT while preserving the separate terms and attribution of third-party material. Update installation and internal README guidance to match the current exporter policy and Windows live-help behavior.
+
 ## 0.4.0+codex.2026102202 — 2026-10-22
 
 - Run live-help do-files relative to their working directory so Windows TEMP paths containing braces do not enter Stata's command-line parser. Keep the user's TEMP settings unchanged and check lookup plus rendering under brace and space paths with actual Stata.

@@ -1,8 +1,8 @@
-# Third-party paper code notices
+# Third-party material notices
 
 Paper excerpts retain their original authorship and source license. Any `editorial_adaptation` is explicitly prepared by Stata Research Guard and lists its changes and assumptions; it is not presented as the authors original code, endorsement, or observed paper results.
 
-The intended distribution of this project is noncommercial. This does not remove rights already granted for MIT, BSD or CC BY source material, or remove NC restrictions from CC BY-NC source material. This notice does not license Stata manuals, maintainer help, third-party ado code or restricted data.
+The original plugin software is licensed under [MIT](LICENSE). Third-party material is outside that grant and retains its original terms. MIT, BSD and CC BY source material keeps the rights granted by its source license; CC BY-NC material keeps its noncommercial restrictions. The plugin's MIT license does not license or relicense Stata manuals, maintainer help, third-party ado code or restricted data.
 
 For CC BY and CC BY-NC material, preserve the attribution, source and license links, existing notices, and indication of modifications. For MIT/BSD material, retain the corresponding copyright, permission, conditions and disclaimer in LICENSES/.
 

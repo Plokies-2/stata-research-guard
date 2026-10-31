@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.4.0+codex.2026102202"
+    "version": "0.4.0+codex.2026102204"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
       "bytes": 966,
-      "sha256": "78602c072ec8c33913a98f4a564578ad6975c5b965b018ce5f384d802c98403a"
+      "sha256": "f3cf2622a9e5fd83282ae60dde030a7a68d85f2ed516771e9d6a6f78e30b58e0"
     },
     {
       "path": ".mcp.json",
@@ -17,8 +17,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 33427,
-      "sha256": "300af0f8c46c105415938ce0d9ec60770cd017cf0a52722efd27e16413e29605"
+      "bytes": 33710,
+      "sha256": "afb12b0b777983beb3900c2510116f66ca2201a7516d310224f2bff3f30299ff"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -171,11 +171,6 @@
       "sha256": "d5ad7c9851616127ee6118d2e22e2b8bccea67cf387289825635a04dcbbd0be8"
     },
     {
-      "path": "data/command_help_guides/estimates.txt",
-      "bytes": 6355,
-      "sha256": "33c0f13bc155bdc0b2d89d649aa40f06dee2aa14cdd2a1bb3162cf9c6e6d36b7"
-    },
-    {
       "path": "data/command_help_guides/estimates_save.txt",
       "bytes": 6165,
       "sha256": "d544c8e7843692958dc86db9c99c9a900ed37c677bbc649bcdd421757ee51c96"
@@ -184,6 +179,11 @@
       "path": "data/command_help_guides/estimates_store.txt",
       "bytes": 2925,
       "sha256": "0ea301f1d614b7605aa873ac625275e31d759662eec154c79ef4f6806b166634"
+    },
+    {
+      "path": "data/command_help_guides/estimates.txt",
+      "bytes": 6355,
+      "sha256": "33c0f13bc155bdc0b2d89d649aa40f06dee2aa14cdd2a1bb3162cf9c6e6d36b7"
     },
     {
       "path": "data/command_help_guides/estout.txt",
@@ -1561,6 +1561,11 @@
       "sha256": "992e30600c18b4174e5ffe5d452084fe7def2b581d165b482fe4cbc59041c8dd"
     },
     {
+      "path": "LICENSE",
+      "bytes": 1079,
+      "sha256": "6ebe0a5e410d0d5a3d54e4ba1884a800c416a258b83e6e674903b666c6fe4248"
+    },
+    {
       "path": "LICENSES/BSD-120068.txt",
       "bytes": 15210,
       "sha256": "4baf439f3c8b1f88797973ad8e8b8b1ba00dbacf2b17e135040b07d19d138eac"
@@ -1602,8 +1607,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 16535,
-      "sha256": "474525cab053aebc094772e2c83a98494e099d79d047e78d9523deaa36384389"
+      "bytes": 17862,
+      "sha256": "cb97b9f164d08f7d39398fa5b970a6941e8fddf556e8df1469ea0353ba882915"
     },
     {
       "path": "scripts/build_clean_command_guide.py",
@@ -1707,8 +1712,8 @@
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
-      "bytes": 12474,
-      "sha256": "e5d6cb665a2900305980f13893f0f73a4453c2754f4d64efce94a2664c86e197"
+      "bytes": 12575,
+      "sha256": "4dfa6cdca0b345aff73f5b987ec11ae587af251fee32c72fe2577ec038600db1"
     }
   ],
   "semantic_anchors": [
@@ -1724,7 +1729,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.4.0+codex.2026102202"
+      "value": "0.4.0+codex.2026102204"
     },
     {
       "id": "readme.heading",
