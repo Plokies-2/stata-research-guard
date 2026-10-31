@@ -8,6 +8,7 @@
   <img src="https://img.shields.io/badge/version-0.4.0-245B78?style=flat-square" alt="Version 0.4.0">
   <img src="https://img.shields.io/badge/Codex-plugin-222222?style=flat-square" alt="Codex plugin">
   <img src="https://img.shields.io/badge/developed_with-Stata_18-1A6B70?style=flat-square" alt="Developed with Stata 18">
+  <a href="https://hub.xerj.org/contributors/Plokies-2"><img src="https://hub.xerj.org/contributors/Plokies-2/badge.svg" alt="XERJ Corpus Hub contributor"></a>
 </p>
 
 <p align="center">
