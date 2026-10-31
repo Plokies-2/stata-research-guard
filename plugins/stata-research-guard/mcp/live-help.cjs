@@ -71,9 +71,12 @@ function runStataBatch(stata, doFile, cwd, marker, deadline) {
       else resolve();
     };
     try {
+      // The working directory already identifies the workspace. Keep its braces
+      // out of Stata's command-line parser by passing the script relative to it.
+      const script = path.isAbsolute(doFile) ? path.relative(cwd, doFile) : doFile;
       child = childProcess.spawn(stata, process.platform === "win32"
-        ? ["/e", "do", doFile]
-        : ["-b", "do", doFile], { cwd, windowsHide: true, stdio: "ignore" });
+        ? ["/e", "do", script]
+        : ["-b", "do", script], { cwd, windowsHide: true, stdio: "ignore" });
     } catch (error) {
       finish(error);
       return;

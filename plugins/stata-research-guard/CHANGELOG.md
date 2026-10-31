@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0+codex.2026102202 — 2026-10-22
+
+- Run live-help do-files relative to their working directory so Windows TEMP paths containing braces do not enter Stata's command-line parser. Keep the user's TEMP settings unchanged and check lookup plus rendering under brace and space paths with actual Stata.
+
 ## 0.4.0+codex.2026101301 — 2026-10-13
 
 - Make `stata-replication-workflow` the single research-workflow entrypoint. Move execution, session-state and result-collection guidance into an on-demand reference; reuse the existing command-evidence and peer guidance instead of repeating detailed controls.

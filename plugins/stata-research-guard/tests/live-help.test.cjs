@@ -137,6 +137,32 @@ test("failed and partial help retries recover; success is cached, refreshed, and
   assert.equal(maximumActive, 1);
 });
 
+test("live help renders under TEMP paths containing braces and spaces", async (t) => {
+  if (process.platform !== "win32") return t.skip("Windows Stata command-line regression");
+  const stata = process.env.STATA_PATH || "C:\\Program Files\\Stata18\\StataMP-64.exe";
+  if (!fs.existsSync(stata)) return t.skip("Stata 18 is unavailable");
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "guard-{temp}-"));
+  const previous = { TEMP: process.env.TEMP, TMP: process.env.TMP, STATA_PATH: process.env.STATA_PATH };
+  t.after(() => {
+    for (const [name, value] of Object.entries(previous)) {
+      if (value === undefined) delete process.env[name];
+      else process.env[name] = value;
+    }
+    fs.rmSync(directory, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+  });
+  process.env.STATA_PATH = stata;
+  for (const name of ["nested{temp}", "nested {temp}"]) {
+    const temp = path.join(directory, name);
+    fs.mkdirSync(temp);
+    process.env.TEMP = temp;
+    process.env.TMP = temp;
+    const result = await lookupLiveStataHelp("anova", { refresh: true });
+    assert.equal(result.status, "available", result.limitations.join("; "));
+    assert.equal(result.help.source_kind, "live_installed_help");
+    assert.match(result.help.content, /Analysis of variance and covariance/i);
+  }
+});
+
 test("the batch runner allows event-loop progress and reports process failure and deadline expiry", async (t) => {
   const directory = workspace(t);
   const marker = path.join(directory, "complete.txt");
