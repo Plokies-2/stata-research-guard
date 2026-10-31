@@ -1,7 +1,7 @@
 {
   "name": "stata-research-guard-team",
   "interface": {
-    "displayName": "Stata Research Guard Team"
+    "displayName": "Stata Research Guard"
   },
   "plugins": [
     {
