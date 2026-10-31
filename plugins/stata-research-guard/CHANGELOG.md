@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0+codex.2026110102 — 2026-11-01
+
+- Preserve user-required checks and workflow order while leaving unspecified implementation choices to a direct, researcher-readable approach. Extend result ownership to data-dependent table and figure notes. These are two small clarifications of existing guidance; no new review stages or validation rules.
+
 ## 0.4.0+codex.2026102902 — 2026-10-29
 
 - Keep reported quantities associated with their model or group, effective sample, weighting and definition as well as their returned-state lifetime. Extend the authored comparison to distinguish model-specific summaries from deliberately shared descriptive statistics without forcing a common sample or a particular exporter.

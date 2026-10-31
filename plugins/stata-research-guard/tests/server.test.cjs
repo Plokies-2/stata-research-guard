@@ -827,7 +827,7 @@ test("a pending live topic does not block bundled evidence and refresh is forwar
   const waiting = new Promise((resolve) => { release = resolve; });
   let refresh;
   const delayed = buildCommandEvidence({ request: "Slow live help", selected_commands: ["anova"], refresh_live_help: true }, { liveHelpLookup: async (_topic, options) => { refresh = options.refresh; await waiting; return { status: "unavailable", help: null, limitations: ["fixture"] }; } });
-  const bundled = await buildCommandEvidence({ request: "Independent bundled request", selected_commands: ["regress"] });
+  const bundled = await buildCommandEvidence({ request: "Independent bundled request", selected_commands: ["regress"], help_view: "full" });
   assert.ok(bundled.command_evidence[0].command_help.content);
   assert.equal(refresh, true);
   release();

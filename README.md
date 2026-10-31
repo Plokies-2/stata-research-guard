@@ -18,6 +18,8 @@
 
 **Stata code researchers can read, revise, and carry forward.**
 
+Current build: `0.4.0+codex.2026110102`. See the [changelog](plugins/stata-research-guard/CHANGELOG.md).
+
 Stata Research Guard is a Codex plugin that helps write analysis code researchers can follow from data and sample construction through regression specifications, saved estimates, tables, and figures. It supplies a command index, official and maintainer help, real paper code, and independent peer review. Research choices remain with the user and the model.
 
 [Get started](#get-started) · [Example requests](#example-requests) · [End-to-end execution comparison](#end-to-end-execution-comparison) · [Documentation](#documentation) · [Questions and bug reports](https://github.com/Plokies-2/stata-research-guard/issues)
