@@ -34,7 +34,7 @@ do "`repo'/examples/fresh-session-workflow/after.do" "`repo'/tmp/fresh-after"
 cd "`repo'"
 ```
 
-기본 제공 데이터와 Mata Excel 인터페이스를 포함한 Stata 내장 명령을 사용합니다. mcpStata, Python, user-written exporter는 필요하지 않습니다. 실행은 Stata 18에서 확인했습니다. before는 출력 폴더의 `outputs/` 아래에, after는 `estimates/`·`tables/`·`figures/`와 출력 폴더 루트에 저장합니다. Excel·자료·추정치·PDF·실행 로그는 공개 저장소에 넣지 않으며, 코드를 실행하면 다시 생성됩니다.
+기본 제공 데이터와 Mata Excel 인터페이스를 포함한 Stata 내장 명령을 사용합니다. Python이나 user-written exporter는 필요하지 않습니다. 실행은 Stata 18에서 확인했습니다. before는 출력 폴더의 `outputs/` 아래에, after는 `estimates/`·`tables/`·`figures/`와 출력 폴더 루트에 저장합니다. Excel·자료·추정치·PDF·실행 로그는 공개 저장소에 넣지 않으며, 코드를 실행하면 다시 생성됩니다.
 
 ## 실제 관찰
 

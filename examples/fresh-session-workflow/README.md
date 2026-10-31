@@ -34,7 +34,7 @@ do "`repo'/examples/fresh-session-workflow/after.do" "`repo'/tmp/fresh-after"
 cd "`repo'"
 ```
 
-Both scripts use Stata's bundled data and built-in commands, including Mata's Excel interface. Neither requires mcpStata, Python, or a user-written exporter. Execution was checked with Stata 18. Before places outputs under its `outputs/` subfolder; after uses `estimates/`, `tables/`, and `figures/`, with data and codebook in its output root. Workbooks, data, estimates, PDFs, and execution logs are not distributed; run the scripts to regenerate them.
+Both scripts use Stata's bundled data and built-in commands, including Mata's Excel interface. Neither requires Python or a user-written exporter. Execution was checked with Stata 18. Before places outputs under its `outputs/` subfolder; after uses `estimates/`, `tables/`, and `figures/`, with data and codebook in its output root. Workbooks, data, estimates, PDFs, and execution logs are not distributed; run the scripts to regenerate them.
 
 ## Observations
 
