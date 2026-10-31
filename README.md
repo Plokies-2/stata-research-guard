@@ -103,7 +103,7 @@ The plugin grew out of recurring difficulties while writing and revising real an
 
 | Difficult code | What to check while writing |
 | --- | --- |
-| Long manual reimplementations of package features | Check supported options and returned results in official or maintainer help first. Use tables made by an exporter and handle only unsupported needs directly. |
+| Manual reimplementations and redundant settings | Check the active tool's defaults, native capabilities and supported options first. Use what already meets the request; add only the unsupported part. Preserve explicit user, project and template requirements and reuse visible evidence. |
 | Short variable lists and options scattered across `local` macros | Put short lists directly in commands or the surrounding loop. Keep macros with clear purposes, such as shared paths, settings, and loop variables. |
 | Regressions and saves hidden inside a helper or `program` | Keep estimation commands, samples, controls, FE, VCE, and output paths visible in the analysis. |
 | Rerunning estimation whenever table or figure export fails | Distinguish completed estimation from failed output and restore saved estimates when appropriate to regenerate only what failed. |

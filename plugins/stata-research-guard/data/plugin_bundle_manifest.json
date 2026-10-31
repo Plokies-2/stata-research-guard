@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.4.0+codex.2026102204"
+    "version": "0.4.0+codex.2026102701"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
       "bytes": 966,
-      "sha256": "f3cf2622a9e5fd83282ae60dde030a7a68d85f2ed516771e9d6a6f78e30b58e0"
+      "sha256": "92f65b1cb59534dae377d59a12caf506a4453d34da59ef6517ebcaec1be428a4"
     },
     {
       "path": ".mcp.json",
@@ -1607,8 +1607,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 17862,
-      "sha256": "cb97b9f164d08f7d39398fa5b970a6941e8fddf556e8df1469ea0353ba882915"
+      "bytes": 18068,
+      "sha256": "29f819137f17a6fd06a712a8851511d17b91710bdf26c4933fe271b050a30b5f"
     },
     {
       "path": "scripts/build_clean_command_guide.py",
@@ -1652,8 +1652,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/command-evidence.md",
-      "bytes": 22776,
-      "sha256": "b483ba92fe48994b5141db4da5f88d9017e7c22332961a76baeff20479b0ca04"
+      "bytes": 23044,
+      "sha256": "86e205064b9ebb0e733e83d7355589f06b40f6c5dc35fbaa0aac810be34e8a11"
     },
     {
       "path": "skills/stata-replication-workflow/references/execution-and-results.md",
@@ -1662,8 +1662,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rules.md",
-      "bytes": 24316,
-      "sha256": "93c67d60f54259d1fd2d8abfd46d0e0f0afbb4f4614031a337ac1d7cf74814b3"
+      "bytes": 24655,
+      "sha256": "9295d88c4b7b7ddba520ae826db5789d1a9eb80d5c33551c5b0a05d85c965f46"
     },
     {
       "path": "skills/stata-replication-workflow/references/paper-workflow-reading.md",
@@ -1682,8 +1682,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/SKILL.md",
-      "bytes": 9710,
-      "sha256": "cb00581dea0651e20337140fd67a83196b92ad42daf2215190fc9c3813441ddf"
+      "bytes": 10055,
+      "sha256": "7e19f2175c0de1e0ec9a5224cde9e777dca7bb40f42a075c93dd4d08512557b5"
     },
     {
       "path": "tests/help-sections.test.cjs",
@@ -1729,7 +1729,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.4.0+codex.2026102204"
+      "value": "0.4.0+codex.2026102701"
     },
     {
       "id": "readme.heading",
