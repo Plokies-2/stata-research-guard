@@ -52,7 +52,7 @@ predict double price_hat if e(sample)
 
 The prediction follows the active model, including its factor terms. `if e(sample)` is substantive: without it, `predict` can also predict for observations excluded from estimation. Do not add this restriction when the user wants out-of-sample predictions. Another estimator can have a different default statistic; consult that estimator's postestimation help. Compute sample-dependent quantities before another model replaces the active results. Loading a `.ster` with `estimates use` does not recover the original `e(sample)`.
 
-In a real project, keep the new variable's label and codebook definition with the authorized variable change. This fragment illustrates prediction, not a complete data-delivery workflow.
+In a real project, keep the new variable's label with the authorized variable change and update its concise definition when the project maintains a codebook; follow [codebook.md](codebook.md) for the initial question and minimal entries. This fragment illustrates prediction, not a complete data-delivery workflow.
 
 ## Keep returned results with their producer and lifetime
 

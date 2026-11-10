@@ -141,4 +141,4 @@ Phase 2 `workflow_notes` returns only explicitly selected prospective authoring 
 }
 ```
 
-These notes do not replace material help sections or inspect user data. Check imported names with Stata, update the existing codebook, and read the estimator's actual sample and results when execution is requested. No automatic alias generator, schema inventory, rank checker, donor reconstruction or expected-output oracle is introduced.
+These notes do not replace material help sections or inspect user data. Check imported names with Stata, update concise entries when the project maintains a codebook (following [codebook.md](codebook.md)), and read the estimator's actual sample and results when execution is requested. No automatic alias generator, schema inventory, rank checker, donor reconstruction or expected-output oracle is introduced.

@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add dedicated minimal codebook guidance based on the five-column Nayeon variable list. Require a creation question before a project's first research run when codebook context is absent, honor prior decisions, allow blank fields and restrict notes to essential definitions. Use plain Excel formatting without blue Office-style headers or decorative table themes; align workflow, peer and command references.
+
 ## 0.4.0+codex.2026110102 — 2026-11-01
 
 - Preserve user-required checks and workflow order while leaving unspecified implementation choices to a direct, researcher-readable approach. Extend result ownership to data-dependent table and figure notes. These are two small clarifications of existing guidance; no new review stages or validation rules.
