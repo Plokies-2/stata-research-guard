@@ -1,7 +1,8 @@
 # Changelog
 
-## Unreleased
+## 0.4.0+codex.2026111701 — 2026-11-17
 
+- Show file-by-file before/after diffs for small text edits. Omit them explicitly for changes totaling 100 or more added/deleted lines or workflow overhauls; explain the reason and link the changed files. Honor explicit full-diff requests and describe generated outputs separately.
 - Add dedicated minimal codebook guidance based on the five-column Nayeon variable list. Require a creation question before a project's first research run when codebook context is absent, honor prior decisions, allow blank fields and restrict notes to essential definitions. Use plain Excel formatting without blue Office-style headers or decorative table themes; align workflow, peer and command references.
 
 ## 0.4.0+codex.2026110102 — 2026-11-01

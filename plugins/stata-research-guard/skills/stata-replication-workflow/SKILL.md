@@ -60,4 +60,14 @@ Place this single reading before an expensive run when the question can be answe
 
 Use fresh context (`fork_turns: "none"`) and a model suited to the judgment, honoring the user's choice. Give the peer the user request, exact files and diff, directly connected definitions/callers/consumers, relevant inputs/outputs and available runtime artifacts, necessary command/paper sources, and paths to `stata-peer-audit` and the general rules. Do not frame the author's preferred implementation as the answer. Include earlier concrete advice and any reason for declining it without substituting that account for reading the sources. Address findings yourself and rerun only affected work. Do not create a review chain or approval system. If delegation is unavailable, complete the supported work and explicitly report the missing independent reading; do not claim it occurred.
 
+## Report edits with a diff
+
+For small text edits, include the actual before/after changes in the final reply, grouped by file with a brief explanation and fenced `diff` blocks (`-` removed, `+` added). Show every changed part with only enough unchanged context to locate it; do not reproduce whole files or invent a before version.
+
+- Small means fewer than 100 added plus deleted lines across all maintained source and document files changed for the current request, with no overhaul. Count a one-line replacement as two lines; exclude unchanged context, pre-existing edits and regenerated outputs.
+- Large means 100 or more added plus deleted lines, or an overhaul that replaces a workflow or reorganizes its connected stages, even below 100 lines. Several local additions within the existing flow are not by themselves an overhaul. This threshold controls reply length only; apply paper-reading and peer-review requirements separately by research meaning.
+- For a large edit, explicitly say the diff was omitted because of its size or overhaul, summarize the changes and link the affected files or commit. Do not silently omit it or present a few excerpts as the complete diff.
+- Describe generated tables, figures, data and logs by their actual updates instead of printing their contents as a text diff. If the before text is unavailable, say so and show only the verified addition or resulting text.
+- An explicit user request for a full diff or a different reporting format takes precedence over these defaults.
+
 Use [readme-contract.md](references/readme-contract.md) only when the authorized task needs a researcher-facing README.

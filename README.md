@@ -18,7 +18,7 @@
 
 **Stata code researchers can read, revise, and carry forward.**
 
-Current build: `0.4.0+codex.2026110102`. See the [changelog](plugins/stata-research-guard/CHANGELOG.md).
+Current build: `0.4.0+codex.2026111701`. See the [changelog](plugins/stata-research-guard/CHANGELOG.md).
 
 Stata Research Guard is a Codex plugin that helps write analysis code researchers can follow from data and sample construction through regression specifications, saved estimates, tables, and figures. It supplies a command index, official and maintainer help, real paper code, and independent peer review. Research choices remain with the user and the model.
 
@@ -99,6 +99,8 @@ The authors worked in separate Codex chats with no shared conversation or exampl
 | **Peer review** | When analysis is materially added or restructured, a colleague in a separate context reads the code and results once and suggests concrete improvements. |
 
 Continue an existing analysis in the same `.do` file and keep mechanical loops shallow. Estimators, samples, fixed effects, and inference methods remain visible in the analysis. The researcher and model assess the evidence retrieved through the tools, separating successful execution from the validity of research conclusions.
+
+Small text edits are reported with file-by-file before/after diffs. At 100 or more added plus deleted lines, or for a workflow overhaul, the reply explains that the diff was omitted and links the changes. Explicit requests for a full diff take precedence; generated outputs are described separately.
 
 ## Problems this addresses
 
