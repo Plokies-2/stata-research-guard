@@ -2,9 +2,11 @@
 
 **English** · [한국어](README.ko.md)
 
-On 2026-10-22, two separate Codex chats using **GPT-6.1 Sol / medium** independently wrote and ran the same task. They inherited no conversation, received no example code, and did not read each other's work. The before chat was explicitly instructed to ignore personal/project `AGENTS.md` coding guidance, skills, and memories, and not to use Guard. The after chat read the current Guard guidance, exact help, and paper examples. The shared task did not specify an exporter, cell layout, loop structure, code length, or graph styling.
+On 2026-10-22, two separate Codex chats using **GPT-6.1 Sol / medium** independently wrote and ran the same task. They inherited no conversation, received no example code, and did not read each other's work. The before chat was explicitly instructed to ignore personal/project `AGENTS.md` coding guidance, skills, and memories, and not to use Guard. The after chat read the Guard guidance available at the time, exact help, and paper examples. The shared task did not specify an exporter, cell layout, loop structure, code length, or graph styling.
 
-[before.do](before.do) and [after.do](after.do) are the complete executed scripts. Each author corrected execution errors and inspected the outputs. Publication adds `args output_dir` and `cd` to before and removes after's personal default working path; no analysis or table command was changed. The published versions were rerun in separate empty folders.
+[before.do](before.do) and [after.do](after.do) contain the complete scripts from the executed comparison. Each author corrected execution errors and inspected the outputs. Publication adds `args output_dir` and `cd` to before and removes after's personal default working path. Those versions were rerun in separate empty folders. On 2026-11-17, after's codebook labels and notes were translated into English; estimation and regression-table commands are unchanged.
+
+[Compare both scripts from model setup through Excel export](../../README.md#see-the-workflow).
 
 ## Shared task
 
@@ -53,4 +55,4 @@ The before script nests sample, outcome, and specification loops, then loops ove
 | Excluding the codebook construction/formatting block | 107 | 91 |
 | Nonblank, excluding that block | 101 | 85 |
 
-The excluded contiguous blocks are before lines 32–70 and after lines 31–57, from the codebook comment through its formatting and following blank line. These are counts of the scripts as written, not a second run with codebook code removed. Total physical lines decreased 19.2%; excluding those blocks, 15.0%. The README excerpts select actual table-construction and regression lines, omitting data preparation, saved-result handling, and formatting; complete definitions and execution order remain in the linked scripts. This is one observed example, not a code-quality score or a guarantee about other tasks.
+The excluded contiguous blocks are before lines 32–70 and after lines 31–57, from the codebook comment through its formatting and following blank line. These are counts of the scripts as written, not a second run with codebook code removed. Total physical lines decreased 19.2%; excluding those blocks, 15.0%. The root README shows both scripts from model setup through regression, estimate storage, and Excel formatting. The full scripts also show data preparation, codebook construction, and PDF figure export. This is one observed example, not a code-quality score or a guarantee about other tasks.

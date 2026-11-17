@@ -1,12 +1,12 @@
 # Stata Research Guard
 
 <p align="center">
-  <img src="assets/research-owl.png" alt="An owl researcher at a desk directs GPT's small working arms as they create code and a results table" width="360">
+  <img src="assets/research-owl.png" alt="An owl researcher at a desk directs GPT's small working arms as they create code and a results table" width="240">
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.4.0-245B78?style=flat-square" alt="Version 0.4.0">
-  <img src="https://img.shields.io/badge/Codex-plugin-222222?style=flat-square" alt="Codex plugin">
+  <a href="https://github.com/Plokies-2/stata-research-guard/releases/latest"><img src="https://img.shields.io/badge/version-0.4.0-245B78?style=flat-square" alt="Version 0.4.0"></a>
+  <img src="https://img.shields.io/badge/AI--assisted-Stata-222222?style=flat-square" alt="AI-assisted Stata">
   <img src="https://img.shields.io/badge/developed_with-Stata_18-1A6B70?style=flat-square" alt="Developed with Stata 18">
   <a href="https://hub.xerj.org/contributors/Plokies-2"><img src="https://hub.xerj.org/contributors/Plokies-2/badge.svg" alt="XERJ Corpus Hub contributor"></a>
 </p>
@@ -20,23 +20,72 @@
 
 Current build: `0.4.0+codex.2026111701`. See the [changelog](plugins/stata-research-guard/CHANGELOG.md).
 
-Stata Research Guard is a Codex plugin that helps write analysis code researchers can follow from data and sample construction through regression specifications, saved estimates, tables, and figures. It supplies a command index, official and maintainer help, real paper code, and independent peer review. Research choices remain with the user and the model.
+Stata Research Guard provides research guidance for AI-assisted Stata: readable analysis code, original command help, real paper code, and independent peer review. It connects data and sample construction to visible regression specifications, saved estimates, tables, and figures. The current installation is a Codex plugin; research choices remain with the user and the model.
 
-[Get started](#get-started) · [Example requests](#example-requests) · [End-to-end execution comparison](#end-to-end-execution-comparison) · [Documentation](#documentation) · [Questions and bug reports](https://github.com/Plokies-2/stata-research-guard/issues)
+[Get started](#get-started) | [Before and after](#see-the-workflow) | [Example requests](#example-requests) | [Release](https://github.com/Plokies-2/stata-research-guard/releases/latest) | [Documentation](#documentation) | [Questions and bug reports](https://github.com/Plokies-2/stata-research-guard/issues)
 
-## AI writes Stata code like this
+## Get started
 
-One fresh Codex session built a regression table cell by cell and hid the specifications behind nested macros. Another used Guard to keep the regressions visible and let Stata build the table. Here are the two differences.
+Install Node.js and a Codex version that supports plugins. In PowerShell, register this public repository and install the plugin:
 
-**1. From coefficient-cell bookkeeping to a table command**
+```powershell
+codex plugin marketplace add Plokies-2/stata-research-guard --ref main
+codex plugin add stata-research-guard@stata-research-guard-team
+```
 
-Before · keep a coefficient roster, map model numbers to Excel columns, and copy estimates into cells:
+<details>
+<summary>Installation paths and connection check</summary>
+
+On Windows, run installation in a regular PowerShell terminal. Use Codex's default user directory (`%USERPROFILE%\.codex`); if you set `CODEX_HOME` separately, choose a short local path outside synced folders to avoid cache-activation and path-length errors.
+
+The marketplace identifier is `stata-research-guard-team`. Start a new Codex chat, check that the plugin is enabled, and ask it to retrieve the official help for `regress` through `get_stata_command_evidence`. A successful help response confirms the MCP connection; installation alone does not. These commands follow the [official Codex CLI documentation](https://learn.chatgpt.com/docs/developer-commands#codex-plugin-marketplace).
+
+</details>
+
+Open your research files and request the `stata-replication-workflow` skill.
+
+```text
+$stata-replication-workflow
+Read this project's regression.do and connected data, then continue the analysis.
+Keep the current sample, estimator, fixed effects, and standard-error settings.
+Run it and inspect the sample size and regression table.
+```
+
+**Tools needed:** Codex and Node.js. Running the analysis and looking up installed help use your own Stata installation. The plugin was developed with Stata 18. The model selects an available execution route, such as an existing runner, Stata batch mode, or Python integration.
+
+The installation and MCP launcher have been checked on Windows. macOS compatibility still needs implementation and testing.
+
+## See the workflow
+
+### [Without Guard](examples/fresh-session-workflow/before.do)
 
 ```stata
+local rhs1 "age grade"
+local rhs2 "age grade ttl_exp tenure"
+local rhs3 "age grade ttl_exp tenure union ib0.south ib0.smsa"
 local terms "age grade ttl_exp tenure union 0b.south 1.south 0b.smsa 1.smsa _cons"
 local bcols "B D F"
 local secols "C E G"
 
+foreach sample in full married {
+    local restriction ""
+    if "`sample'" == "married" local restriction "if married == 1"
+    foreach y in wage ln_wage hours {
+        putexcel set "outputs/reg_`y'_`sample'.xlsx", replace sheet("OLS")
+        putexcel A1=("Outcome: `y'; sample: `sample'") A2=("Term") B2=("(1) Coef.") C2=("Robust SE") D2=("(2) Coef.") E2=("Robust SE") F2=("(3) Coef.") G2=("Robust SE")
+        local row = 3
+        foreach term of local terms {
+            putexcel A`row'=("`term'")
+            local ++row
+        }
+        putexcel A14=("N") A15=("R-squared") A16=("Outcome mean in e(sample)") A18=("OLS; heteroskedasticity-robust standard errors. Blank = term absent from specification.") A19=("0b.south and 0b.smsa are reference categories: coefficient and SE are zero by normalization.")
+        forvalues spec = 1/3 {
+            regress `y' `rhs`spec'' `restriction', vce(robust)
+            local model_N = e(N)
+            local model_R2 = e(r2)
+            quietly summarize `y' if e(sample), meanonly
+            local model_mean = r(mean)
+            estimates save "outputs/`y'_`sample'_m`spec'.ster", replace
             matrix b = e(b)
             matrix V = e(V)
             local bc : word `spec' of `bcols'
@@ -49,44 +98,84 @@ local secols "C E G"
                 }
                 local ++row
             }
-```
-
-With Guard · restore the three models as `M1`–`M3`, build their combined table, and export it:
-
-```stata
-estimates table M1 M2 M3, b(%10.6f) se(%10.6f) stats(N r2 ymean) allbaselevels nofvlabel
-putexcel set "tables/`outcome'_`sample'.xlsx", replace open sheet(OLS)
-putexcel A1=("`outcome': `sample' sample")
-putexcel A3=etable
-```
-
-`A3=etable` writes Stata's completed table. It does not extract and lay out every coefficient and standard error by hand.
-
-**2. From macro-expanded specifications to visible regressions**
-
-Before · a third loop selects controls through nested macro expansion:
-
-```stata
-local rhs1 "age grade"
-local rhs2 "age grade ttl_exp tenure"
-local rhs3 "age grade ttl_exp tenure union ib0.south ib0.smsa"
-
-forvalues spec = 1/3 {
-    regress `y' `rhs`spec'' `restriction', vce(robust)
+            putexcel `bc'14=(`model_N') `bc'15=(`model_R2') `bc'16=(`model_mean')
+            display "MODEL: `y' `sample' m`spec'; N=" e(N) "; R2=" %10.7f e(r2) "; mean=" %10.7f `model_mean'
+        }
+        putexcel A1:G2, bold
+        putexcel B3:G16, nformat("0.000000")
+        putexcel B14:G14, nformat("0")
+        putexcel A18:G19, txtwrap
+        putexcel A1:G1, merge
+        putexcel A18:G18, merge
+        putexcel A19:G19, merge
+        mata: book = xl()
+        mata: book.load_book("outputs/reg_`y'_`sample'.xlsx")
+        mata: book.set_sheet("OLS")
+        mata: book.set_column_width(1,1,32)
+        mata: book.set_column_width(2,7,16)
+        mata: book.set_row_height(18,19,30)
+        mata: book.close_book()
+    }
 }
 ```
 
-With Guard · the three regression specifications are directly readable:
+### [With Guard](examples/fresh-session-workflow/after.do)
 
 ```stata
-regress `outcome' age grade `restriction', vce(robust)
-regress `outcome' age grade ttl_exp tenure `restriction', vce(robust)
-regress `outcome' age grade ttl_exp tenure union i.south i.smsa `restriction', vce(robust)
+* Each model stores its own estimation-sample mean before any result reload.
+program define store_ymean, eclass
+    ereturn scalar ymean = r(mean)
+end
+foreach sample in full married {
+    local restriction ""
+    if "`sample'" == "married" local restriction "if married==1"
+    foreach outcome in wage ln_wage hours {
+        regress `outcome' age grade `restriction', vce(robust)
+        quietly summarize `outcome' if e(sample), meanonly
+        store_ymean
+        estimates save "estimates/`outcome'_`sample'_m1.ster", replace
+
+        regress `outcome' age grade ttl_exp tenure `restriction', vce(robust)
+        quietly summarize `outcome' if e(sample), meanonly
+        store_ymean
+        estimates save "estimates/`outcome'_`sample'_m2.ster", replace
+
+        regress `outcome' age grade ttl_exp tenure union i.south i.smsa `restriction', vce(robust)
+        quietly summarize `outcome' if e(sample), meanonly
+        store_ymean
+        estimates save "estimates/`outcome'_`sample'_m3.ster", replace
+    }
+}
+
+* Native combined table retains coefficient identities and base categories.
+foreach sample in full married {
+    foreach outcome in wage ln_wage hours {
+        estimates use "estimates/`outcome'_`sample'_m1.ster"
+        estimates store M1
+        estimates use "estimates/`outcome'_`sample'_m2.ster"
+        estimates store M2
+        estimates use "estimates/`outcome'_`sample'_m3.ster"
+        estimates store M3
+        estimates table M1 M2 M3, b(%10.6f) se(%10.6f) stats(N r2 ymean) allbaselevels nofvlabel
+        putexcel set "tables/`outcome'_`sample'.xlsx", replace open sheet(OLS)
+        putexcel A1=("`outcome': `sample' sample")
+        putexcel A3=etable
+        putexcel A32=("OLS; robust SE below coefficients. M1: age grade; M2 adds ttl_exp tenure; M3 adds union i.south i.smsa.")
+        putexcel A33=("ymean: dependent-variable mean in each regression sample. Blank: variable absent; base: reference category.")
+        putexcel A1:D33, font("Calibri",11)
+        putexcel A1:D1, bold
+        putexcel A32:D32, merge txtwrap
+        putexcel A33:D33, merge txtwrap
+        putexcel save
+        mata: book.load_book("tables/`outcome'_`sample'.xlsx")
+        mata: book.set_sheet("OLS")
+        mata: book.set_column_width(1,1,20)
+        mata: book.set_column_width(2,4,19)
+        mata: book.set_row_height(32,33,32)
+        estimates drop M1 M2 M3
+    }
+}
 ```
-
-These are excerpts, with only the regression commands shown in the second pair. In the full scripts, `y`/`outcome` runs over `wage ln_wage hours`; `restriction` selects the full or married sample, and `spec` indexes models 1–3. Data preparation, means, saves, and formatting are in the [complete before](examples/fresh-session-workflow/before.do) and [complete after](examples/fresh-session-workflow/after.do) scripts.
-
-The authors worked in separate Codex chats with no shared conversation or example code. Both ran the full data-to-export task; see the [task and run conditions](examples/fresh-session-workflow/README.md).
 
 ## What it does
 
@@ -98,7 +187,7 @@ The authors worked in separate Codex chats with no shared conversation or exampl
 | **Execution and result inspection** | Reads actual data, logs, tables, and figures and makes needed corrections. |
 | **Peer review** | When analysis is materially added or restructured, a colleague in a separate context reads the code and results once and suggests concrete improvements. |
 
-Continue an existing analysis in the same `.do` file and keep mechanical loops shallow. Estimators, samples, fixed effects, and inference methods remain visible in the analysis. The researcher and model assess the evidence retrieved through the tools, separating successful execution from the validity of research conclusions.
+Keep related specifications in the `.do` file that owns their data-to-output workflow. Give an independent workflow its own named file. Keep mechanical loops shallow and make the estimator, sample, fixed effects, and inference visible where they are used. The researcher and model assess the evidence retrieved through the tools, separating successful execution from the validity of research conclusions.
 
 Small text edits are reported with file-by-file before/after diffs. At 100 or more added plus deleted lines, or for a workflow overhaul, the reply explains that the diff was omitted and links the changes. Explicit requests for a full diff take precedence; generated outputs are described separately.
 
@@ -113,31 +202,6 @@ The plugin grew out of recurring difficulties while writing and revising real an
 | Regressions and saves hidden inside a helper or `program` | Keep estimation commands, samples, controls, FE, VCE, and output paths visible in the analysis. |
 | Rerunning estimation whenever table or figure export fails | Distinguish completed estimation from failed output and restore saved estimates when appropriate to regenerate only what failed. |
 
-## Get started
-
-Install Node.js and a Codex version that supports plugins. In PowerShell, register this public repository and install the plugin:
-
-```powershell
-codex plugin marketplace add Plokies-2/stata-research-guard --ref main
-codex plugin add stata-research-guard@stata-research-guard-team
-```
-
-On Windows, run installation in a regular PowerShell terminal. Use Codex's default user directory (`%USERPROFILE%\.codex`); if you set `CODEX_HOME` separately, choose a short local path outside synced folders to avoid cache-activation and path-length errors.
-
-The marketplace identifier is `stata-research-guard-team`. Start a new Codex chat, check that the plugin is enabled, and ask it to retrieve the official help for `regress` through `get_stata_command_evidence`. A successful help response confirms the MCP connection; installation alone does not. These commands follow the [official Codex CLI documentation](https://learn.chatgpt.com/docs/developer-commands#codex-plugin-marketplace).
-
-Open your research files and request the `stata-replication-workflow` skill.
-
-```text
-$stata-replication-workflow
-Read this project's regression.do and connected data, then continue the analysis.
-Keep the current sample, estimator, fixed effects, and standard-error settings.
-Run it and inspect the sample size and regression table.
-```
-
-**Tools needed:** Codex and Node.js. Running the analysis and looking up installed help use your own Stata installation. The plugin was developed with Stata 18. The model selects an available execution route, such as an existing runner, Stata batch mode, or Python integration.
-
-The installation and MCP launcher have been checked on Windows. macOS compatibility still needs implementation and testing.
 
 ## Example requests
 
@@ -191,25 +255,24 @@ then inspect what was actually saved.
 
 ## End-to-end execution comparison
 
-Two independent **Codex chats using GPT-6.1 Sol / medium** received the same natural-language task, with no inherited conversation, existing example, or access to each other's code. The baseline was explicitly told to ignore personal/project `AGENTS.md` coding guidance, skills, and memories, and not to use Guard. The other chat used the current Guard guidance, help, and paper examples. The shared task did not prescribe an exporter or loop structure.
+Two independent **Codex chats using GPT-6.1 Sol / medium** received the same natural-language task, with no inherited conversation, existing example, or access to each other's code. The baseline was explicitly told to ignore personal/project `AGENTS.md` coding guidance, skills, and memories, and not to use Guard. The other chat used the Guard guidance, help, and paper examples available on 22 October 2026. The shared task did not prescribe an exporter or loop structure.
 
 The task covered loading `nlsw88`, common-sample construction, log wage, **three outcomes × two samples × three robust OLS specifications**, and data, codebook, table, figure, and estimate export. Both complete scripts ran in **native Stata batch mode**.
 
 | Measure | Without Guard | With Guard |
 | --- | ---: | ---: |
-| Published script lines | 146 | 118 |
-| Lines excluding codebook construction and formatting | 107 | 91 |
+| Where to read the controls | Numbered macro definitions above the regression loop | Each `regress` command lists its controls |
 | Nested loops around regression commands | 3 | 2 |
-| Manual coefficient/SE cell mapping | Yes | None |
+| Excel table | Writes coefficients and standard errors to individual cells | Exports Stata's combined table with `putexcel A3=etable` |
 | Regressions / saved `.ster` files | 18 / 18 | 18 / 18 |
 | Full / married sample N | 1,865 / 1,214 | 1,865 / 1,214 |
 | Analysis DTA / codebook XLSX / regression XLSX / PDF | 1 / 1 / 6 / 3 | 1 / 1 / 6 / 3 |
 
-The difference is visible specifications and automatic table construction. Total code was 19.2% shorter; excluding the codebook block, it was 15.0% shorter. We read all 18 pairs of saved estimates: coefficients, robust standard errors, N, and R² matched when displayed to 15 significant digits. The 11 shared analysis variables had identical values; before saves 11 variables, while after retains all 17 source variables plus log wage.
+The [code comparison](#see-the-workflow) shows how each model is specified and how its results reach Excel. We read all 18 pairs of saved estimates: coefficients, robust standard errors, N, and R² matched when displayed to 15 significant digits. The 11 shared analysis variables had identical values; before saves 11 variables, while after retains all 17 source variables plus log wage.
 
 All 12 regression workbooks were read, and both authors inspected their codebooks and rendered PDFs. Before stores full-precision table values and writes base categories as zero; after exports six-decimal values and marks reference categories as `(base)`. Figure bins and styling differ. This is one observed case, not a guarantee about every generated script.
 
-[Full before](examples/fresh-session-workflow/before.do) · [Full after](examples/fresh-session-workflow/after.do) · [Task, counting boundaries, and execution notes](examples/fresh-session-workflow/README.md). The only publication edits add an output-directory argument to before and remove after's personal default path. The table method was kept as independently written.
+[Full before](examples/fresh-session-workflow/before.do) · [Full after](examples/fresh-session-workflow/after.do) · [Task and execution notes](examples/fresh-session-workflow/README.md). Publication adds an output-directory argument to before, removes after's personal default path, and translates after's codebook text into English. The estimation and regression-table methods remain as independently written.
 
 <details>
 <summary>Run the example</summary>

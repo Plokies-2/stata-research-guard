@@ -1,12 +1,12 @@
 # Stata Research Guard
 
 <p align="center">
-  <img src="assets/research-owl.png" alt="책상에 앉은 부엉이 연구자가 지휘봉으로 방향을 잡고, GPT의 작은 작업 팔이 코드와 결과표를 만드는 모습" width="360">
+  <img src="assets/research-owl.png" alt="책상에 앉은 부엉이 연구자가 지휘봉으로 방향을 잡고, GPT의 작은 작업 팔이 코드와 결과표를 만드는 모습" width="240">
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.4.0-245B78?style=flat-square" alt="Version 0.4.0">
-  <img src="https://img.shields.io/badge/Codex-plugin-222222?style=flat-square" alt="Codex plugin">
+  <a href="https://github.com/Plokies-2/stata-research-guard/releases/latest"><img src="https://img.shields.io/badge/version-0.4.0-245B78?style=flat-square" alt="Version 0.4.0"></a>
+  <img src="https://img.shields.io/badge/AI--assisted-Stata-222222?style=flat-square" alt="AI-assisted Stata">
   <img src="https://img.shields.io/badge/developed_with-Stata_18-1A6B70?style=flat-square" alt="Developed with Stata 18">
   <a href="https://hub.xerj.org/contributors/Plokies-2"><img src="https://hub.xerj.org/contributors/Plokies-2/badge.svg" alt="XERJ Corpus Hub contributor"></a>
 </p>
@@ -20,23 +20,72 @@
 
 현재 빌드: `0.4.0+codex.2026111701`. [변경 기록](plugins/stata-research-guard/CHANGELOG.md)을 참고하세요.
 
-자료·표본 구성부터 회귀 사양, 추정치 저장, 표·그림까지 연구자가 직접 따라갈 수 있는 Stata 코드를 작성하도록 돕는 Codex 플러그인입니다. 명령 사전, 공식·maintainer 도움말, 실제 논문 코드와 독립 검토를 제공합니다. 연구 선택은 사용자와 모델이 합니다.
+AI와 함께 Stata로 연구할 때 읽기 쉬운 분석 코드, 공식 도움말과 maintainer 도움말, 실제 논문 코드와 독립 검토를 제공합니다. 자료와 표본 구성부터 회귀 사양, 추정치 저장, 표와 그림까지 연구자가 직접 따라갈 수 있게 돕습니다. 현재는 Codex 플러그인으로 설치하며, 연구 선택은 사용자와 모델이 합니다.
 
-[시작하기](#시작하기) · [사용 예시](#사용-예시) · [전체 분석 흐름의 실행 비교](#전체-분석-흐름의-실행-비교) · [문서](#문서) · [문의·버그 제보](https://github.com/Plokies-2/stata-research-guard/issues)
+[시작하기](#시작하기) | [Guard 사용 전후](#실제-실행-미리보기) | [사용 예시](#사용-예시) | [Release](https://github.com/Plokies-2/stata-research-guard/releases/latest) | [문서](#문서) | [문의와 버그 제보](https://github.com/Plokies-2/stata-research-guard/issues)
 
-## AI가 이렇게 짠 Stata 코드, Guard를 쓰면 이렇게 달라집니다
+## 시작하기
 
-새 Codex 세션 하나는 회귀표 셀을 직접 조립하고, 회귀 사양을 중첩 매크로에 담았습니다. Guard를 사용한 별도 세션은 회귀식을 직접 드러내고 표 구성은 Stata에 맡겼습니다. 실제 작성본에서 두 부분을 골랐습니다.
+Node.js와 플러그인을 지원하는 Codex를 설치한 뒤 PowerShell에서 공개 저장소를 등록하고 플러그인을 설치합니다.
 
-**1. 계수마다 셀 주소를 관리하던 표를 명령에 맡깁니다**
+```powershell
+codex plugin marketplace add Plokies-2/stata-research-guard --ref main
+codex plugin add stata-research-guard@stata-research-guard-team
+```
 
-Before · 계수 목록과 모델별 Excel 열을 따로 정하고, 추정치를 셀에 옮깁니다.
+<details>
+<summary>설치 경로와 연결 확인</summary>
+
+Windows에서는 일반 PowerShell에서 설치 명령을 실행합니다. Codex 기본 사용자 폴더(`%USERPROFILE%\.codex`)를 사용하고, `CODEX_HOME`을 따로 지정한다면 캐시 활성화·경로 길이 오류를 피할 수 있도록 동기화되지 않는 짧은 로컬 경로를 사용하세요.
+
+마켓플레이스 식별자는 `stata-research-guard-team`입니다. 새 Codex 채팅을 열어 플러그인이 활성화되어 있는지 확인하고, `get_stata_command_evidence`로 `regress`의 공식 도움말을 읽어달라고 요청합니다. 실제 도움말 응답이 와야 MCP 연결까지 확인한 것이며, 설치 성공만으로 연결을 확인한 것은 아닙니다. 설치 명령은 [공식 Codex CLI 문서](https://learn.chatgpt.com/docs/developer-commands#codex-plugin-marketplace)를 따릅니다.
+
+</details>
+
+연구 파일을 열고 `stata-replication-workflow`로 요청합니다.
+
+```text
+$stata-replication-workflow
+이 프로젝트의 regression.do와 연결된 자료를 읽고 분석을 이어가줘.
+현재 표본·추정 방법·고정효과·표준오차 설정을 유지하고,
+실행한 뒤 표본 수와 회귀표를 확인해줘.
+```
+
+**필요한 도구:** Codex와 Node.js. 실제 분석 실행과 설치 도움말 조회에는 사용자의 Stata 설치를 사용합니다. Stata 18에서 개발했습니다. 실행 수단은 모델이 작업에 맞춰 기존 runner·Stata 배치·Python 연동 등을 고릅니다.
+
+설치와 MCP 실행 스크립트는 Windows에서 확인했습니다. macOS 호환은 구현과 실행 확인이 필요합니다.
+
+## 실제 실행 미리보기
+
+### [Without Guard](examples/fresh-session-workflow/before.do)
 
 ```stata
+local rhs1 "age grade"
+local rhs2 "age grade ttl_exp tenure"
+local rhs3 "age grade ttl_exp tenure union ib0.south ib0.smsa"
 local terms "age grade ttl_exp tenure union 0b.south 1.south 0b.smsa 1.smsa _cons"
 local bcols "B D F"
 local secols "C E G"
 
+foreach sample in full married {
+    local restriction ""
+    if "`sample'" == "married" local restriction "if married == 1"
+    foreach y in wage ln_wage hours {
+        putexcel set "outputs/reg_`y'_`sample'.xlsx", replace sheet("OLS")
+        putexcel A1=("Outcome: `y'; sample: `sample'") A2=("Term") B2=("(1) Coef.") C2=("Robust SE") D2=("(2) Coef.") E2=("Robust SE") F2=("(3) Coef.") G2=("Robust SE")
+        local row = 3
+        foreach term of local terms {
+            putexcel A`row'=("`term'")
+            local ++row
+        }
+        putexcel A14=("N") A15=("R-squared") A16=("Outcome mean in e(sample)") A18=("OLS; heteroskedasticity-robust standard errors. Blank = term absent from specification.") A19=("0b.south and 0b.smsa are reference categories: coefficient and SE are zero by normalization.")
+        forvalues spec = 1/3 {
+            regress `y' `rhs`spec'' `restriction', vce(robust)
+            local model_N = e(N)
+            local model_R2 = e(r2)
+            quietly summarize `y' if e(sample), meanonly
+            local model_mean = r(mean)
+            estimates save "outputs/`y'_`sample'_m`spec'.ster", replace
             matrix b = e(b)
             matrix V = e(V)
             local bc : word `spec' of `bcols'
@@ -49,44 +98,84 @@ local secols "C E G"
                 }
                 local ++row
             }
-```
-
-Guard 적용 후 · 세 모형을 `M1`–`M3`로 다시 불러온 뒤, Stata가 만든 표를 내보냅니다.
-
-```stata
-estimates table M1 M2 M3, b(%10.6f) se(%10.6f) stats(N r2 ymean) allbaselevels nofvlabel
-putexcel set "tables/`outcome'_`sample'.xlsx", replace open sheet(OLS)
-putexcel A1=("`outcome': `sample' sample")
-putexcel A3=etable
-```
-
-`A3=etable`은 Stata가 구성한 표 전체를 쓰는 명령입니다. 계수·표준오차를 하나씩 꺼내 셀에 배치하지 않습니다.
-
-**2. 매크로를 풀어야 읽히던 회귀식을 직접 보여줍니다**
-
-Before · 세 번째 루프에서 중첩 매크로로 설명변수를 고릅니다.
-
-```stata
-local rhs1 "age grade"
-local rhs2 "age grade ttl_exp tenure"
-local rhs3 "age grade ttl_exp tenure union ib0.south ib0.smsa"
-
-forvalues spec = 1/3 {
-    regress `y' `rhs`spec'' `restriction', vce(robust)
+            putexcel `bc'14=(`model_N') `bc'15=(`model_R2') `bc'16=(`model_mean')
+            display "MODEL: `y' `sample' m`spec'; N=" e(N) "; R2=" %10.7f e(r2) "; mean=" %10.7f `model_mean'
+        }
+        putexcel A1:G2, bold
+        putexcel B3:G16, nformat("0.000000")
+        putexcel B14:G14, nformat("0")
+        putexcel A18:G19, txtwrap
+        putexcel A1:G1, merge
+        putexcel A18:G18, merge
+        putexcel A19:G19, merge
+        mata: book = xl()
+        mata: book.load_book("outputs/reg_`y'_`sample'.xlsx")
+        mata: book.set_sheet("OLS")
+        mata: book.set_column_width(1,1,32)
+        mata: book.set_column_width(2,7,16)
+        mata: book.set_row_height(18,19,30)
+        mata: book.close_book()
+    }
 }
 ```
 
-Guard 적용 후 · 세 회귀식의 차이가 그대로 보입니다.
+### [With Guard](examples/fresh-session-workflow/after.do)
 
 ```stata
-regress `outcome' age grade `restriction', vce(robust)
-regress `outcome' age grade ttl_exp tenure `restriction', vce(robust)
-regress `outcome' age grade ttl_exp tenure union i.south i.smsa `restriction', vce(robust)
+* Each model stores its own estimation-sample mean before any result reload.
+program define store_ymean, eclass
+    ereturn scalar ymean = r(mean)
+end
+foreach sample in full married {
+    local restriction ""
+    if "`sample'" == "married" local restriction "if married==1"
+    foreach outcome in wage ln_wage hours {
+        regress `outcome' age grade `restriction', vce(robust)
+        quietly summarize `outcome' if e(sample), meanonly
+        store_ymean
+        estimates save "estimates/`outcome'_`sample'_m1.ster", replace
+
+        regress `outcome' age grade ttl_exp tenure `restriction', vce(robust)
+        quietly summarize `outcome' if e(sample), meanonly
+        store_ymean
+        estimates save "estimates/`outcome'_`sample'_m2.ster", replace
+
+        regress `outcome' age grade ttl_exp tenure union i.south i.smsa `restriction', vce(robust)
+        quietly summarize `outcome' if e(sample), meanonly
+        store_ymean
+        estimates save "estimates/`outcome'_`sample'_m3.ster", replace
+    }
+}
+
+* Native combined table retains coefficient identities and base categories.
+foreach sample in full married {
+    foreach outcome in wage ln_wage hours {
+        estimates use "estimates/`outcome'_`sample'_m1.ster"
+        estimates store M1
+        estimates use "estimates/`outcome'_`sample'_m2.ster"
+        estimates store M2
+        estimates use "estimates/`outcome'_`sample'_m3.ster"
+        estimates store M3
+        estimates table M1 M2 M3, b(%10.6f) se(%10.6f) stats(N r2 ymean) allbaselevels nofvlabel
+        putexcel set "tables/`outcome'_`sample'.xlsx", replace open sheet(OLS)
+        putexcel A1=("`outcome': `sample' sample")
+        putexcel A3=etable
+        putexcel A32=("OLS; robust SE below coefficients. M1: age grade; M2 adds ttl_exp tenure; M3 adds union i.south i.smsa.")
+        putexcel A33=("ymean: dependent-variable mean in each regression sample. Blank: variable absent; base: reference category.")
+        putexcel A1:D33, font("Calibri",11)
+        putexcel A1:D1, bold
+        putexcel A32:D32, merge txtwrap
+        putexcel A33:D33, merge txtwrap
+        putexcel save
+        mata: book.load_book("tables/`outcome'_`sample'.xlsx")
+        mata: book.set_sheet("OLS")
+        mata: book.set_column_width(1,1,20)
+        mata: book.set_column_width(2,4,19)
+        mata: book.set_row_height(32,33,32)
+        estimates drop M1 M2 M3
+    }
+}
 ```
-
-위 코드는 발췌이며, 두 번째 비교에서는 회귀 관련 줄만 보여줍니다. 전체 코드에서 `y`/`outcome`은 `wage ln_wage hours`, `restriction`은 전체·기혼 표본 조건, `spec`은 사양 1–3입니다. 자료 처리·평균 계산·저장·서식을 포함한 [before 전문](examples/fresh-session-workflow/before.do), [after 전문](examples/fresh-session-workflow/after.do)도 공개합니다.
-
-두 작성자는 대화 이력과 예제 코드를 공유하지 않는 별도 Codex 채팅에서 전 과정을 작성·실행했습니다. [동일 과제와 실행 조건](examples/fresh-session-workflow/README.ko.md)에서 확인할 수 있습니다.
 
 ## 핵심 특징
 
@@ -98,7 +187,7 @@ regress `outcome' age grade ttl_exp tenure union i.south i.smsa `restriction', v
 | **실행에서 결과 확인까지** | 실제 데이터·로그·표·그림을 읽고 필요한 수정을 이어갑니다. |
 | **동료 연구자의 검토** | 실질적인 분석을 추가하거나 분석 구조를 바꿀 때는 별도 문맥의 동료가 코드와 결과를 한 번 읽고 구체적인 개선 의견을 제안합니다. |
 
-기존 분석은 같은 `.do` 파일에서 이어가고 기계적인 반복은 얕은 loop로 정리합니다. 추정 방법·표본·고정효과·추론 방식은 코드 본문에서 읽을 수 있게 유지합니다. 연구자와 모델이 도구에서 확인한 근거를 보고 판단하며 실행 성공과 연구 결과의 타당성을 구분합니다.
+입력에서 산출물까지 같은 흐름을 쓰는 사양은 해당 `.do` 파일에 두고, 독립적인 분석은 목적이 드러나는 별도 파일에 둡니다. 기계적인 반복은 얕은 루프로 정리하고, 추정 명령, 표본, 고정효과, 추론 방식은 쓰이는 곳에서 바로 읽을 수 있게 합니다. 연구자와 모델이 도구에서 확인한 근거를 보고 판단하며 실행 성공과 연구 결과의 타당성을 구분합니다.
 
 작은 텍스트 수정은 파일별로 변경 전후 diff를 보여줍니다. 추가 줄과 삭제 줄의 합이 100줄 이상이거나 workflow를 전반적으로 다시 짜는 경우에는 생략 이유와 변경 링크를 안내합니다. 전체 diff를 명시적으로 요청하면 그 요청을 따르며, 생성된 산출물은 갱신 내용을 별도로 설명합니다.
 
@@ -113,31 +202,6 @@ regress `outcome' age grade ttl_exp tenure union i.south i.smsa `restriction', v
 | 회귀와 저장을 helper·`program` 안에 숨겨 연구자가 바꾸기 어려움 | 추정 명령·표본·통제변수·FE·VCE·저장 경로가 분석 본문에서 보이게 둡니다. |
 | 표·그림을 저장하다 실패할 때마다 추정부터 다시 실행 | 완료된 추정과 출력 실패를 구분하고, 적절한 저장 추정치를 복원해 필요한 출력만 다시 만듭니다. |
 
-## 시작하기
-
-Node.js와 플러그인을 지원하는 Codex를 설치한 뒤 PowerShell에서 공개 저장소를 등록하고 플러그인을 설치합니다.
-
-```powershell
-codex plugin marketplace add Plokies-2/stata-research-guard --ref main
-codex plugin add stata-research-guard@stata-research-guard-team
-```
-
-Windows에서는 일반 PowerShell에서 설치 명령을 실행합니다. Codex 기본 사용자 폴더(`%USERPROFILE%\.codex`)를 사용하고, `CODEX_HOME`을 따로 지정한다면 캐시 활성화·경로 길이 오류를 피할 수 있도록 동기화되지 않는 짧은 로컬 경로를 사용하세요.
-
-마켓플레이스 식별자는 `stata-research-guard-team`입니다. 새 Codex 채팅을 열어 플러그인이 활성화되어 있는지 확인하고, `get_stata_command_evidence`로 `regress`의 공식 도움말을 읽어달라고 요청합니다. 실제 도움말 응답이 와야 MCP 연결까지 확인한 것이며, 설치 성공만으로 연결을 확인한 것은 아닙니다. 설치 명령은 [공식 Codex CLI 문서](https://learn.chatgpt.com/docs/developer-commands#codex-plugin-marketplace)를 따릅니다.
-
-연구 파일을 열고 `stata-replication-workflow`로 요청합니다.
-
-```text
-$stata-replication-workflow
-이 프로젝트의 regression.do와 연결된 자료를 읽고 분석을 이어가줘.
-현재 표본·추정 방법·고정효과·표준오차 설정을 유지하고,
-실행한 뒤 표본 수와 회귀표를 확인해줘.
-```
-
-**필요한 도구:** Codex와 Node.js. 실제 분석 실행과 설치 도움말 조회에는 사용자의 Stata 설치를 사용합니다. Stata 18에서 개발했습니다. 실행 수단은 모델이 작업에 맞춰 기존 runner·Stata 배치·Python 연동 등을 고릅니다.
-
-설치와 MCP 실행 스크립트는 Windows에서 확인했습니다. macOS 호환은 구현과 실행 확인이 필요합니다.
 
 ## 사용 예시
 
@@ -189,25 +253,24 @@ $stata-replication-workflow
 
 ## 전체 분석 흐름의 실행 비교
 
-대화 이력을 물려받지 않는 **GPT-6.1 Sol / medium Codex 채팅 두 개**에 동일한 자연어 과제를 전달했습니다. 기존 예제와 서로의 코드는 주지 않았습니다. before에는 비교용이므로 개인·프로젝트 `AGENTS.md`의 코딩 지침, 스킬과 memories를 무시하고 Guard를 사용하지 말라고 명시했습니다. 다른 채팅은 현재 Guard의 지침·도움말·논문 용례를 활용했습니다. 특정 exporter나 루프 구조는 지정하지 않았습니다.
+대화 이력을 물려받지 않는 **GPT-6.1 Sol / medium Codex 채팅 두 개**에 동일한 자연어 과제를 전달했습니다. 기존 예제와 서로의 코드는 주지 않았습니다. before에는 비교용이므로 개인·프로젝트 `AGENTS.md`의 코딩 지침, 스킬과 memories를 무시하고 Guard를 사용하지 말라고 명시했습니다. 다른 채팅은 2026년 10월 22일 당시의 Guard 지침, 도움말, 논문 용례를 활용했습니다. 특정 exporter나 루프 구조는 지정하지 않았습니다.
 
 과제는 `nlsw88` 불러오기 → 공통 표본·로그 임금 생성 → **결과변수 3개 × 표본 2개 × robust OLS 사양 3개** → 자료·코드북·회귀표·그림·추정치 저장입니다. 두 코드 모두 **native Stata 배치 실행**으로 전 과정을 마쳤습니다.
 
 | 비교 항목 | Guard 없이 작성 | Guard 적용 |
 | --- | ---: | ---: |
-| 공개 코드 전체 줄 수 | 146 | 118 |
-| 코드북 작성·서식 블록을 제외한 줄 수 | 107 | 91 |
+| 통제변수를 확인하는 곳 | 회귀 루프 위에 있는 번호별 매크로 정의 | 각 `regress` 추정문에 직접 표시 |
 | 회귀 명령을 감싼 루프 중첩 | 3중 | 2중 |
-| 계수·SE 셀 직접 매핑 | 있음 | 없음 |
+| Excel 회귀표 작성 | 계수와 표준오차를 셀마다 기록 | Stata가 구성한 표를 `putexcel A3=etable`로 출력 |
 | 실행한 회귀 / 저장한 `.ster` | 18 / 18 | 18 / 18 |
 | 전체 / 기혼 표본 수 | 1,865 / 1,214 | 1,865 / 1,214 |
 | 분석 DTA / 코드북 XLSX / 회귀표 XLSX / PDF | 1 / 1 / 6 / 3 | 1 / 1 / 6 / 3 |
 
-차이는 회귀식이 직접 보이고 표 구성을 명령에 맡긴다는 점입니다. 전체 분량은 19.2%, 코드북 블록을 빼면 15.0% 줄었습니다. 저장 추정치 18쌍을 모두 다시 읽었고, 계수·robust 표준오차·N·R²는 유효숫자 15자리 표시에서 일치했습니다. 공통 분석 변수 11개의 값도 같았습니다. before는 변수 11개를 저장하고, after는 원자료 변수 17개와 로그 임금을 보존합니다.
+[위 코드 비교](#실제-실행-미리보기)에서 각 모형의 사양을 어디에서 확인하고 추정 결과를 어떻게 Excel에 쓰는지 볼 수 있습니다. 저장 추정치 18쌍을 모두 다시 읽었고, 계수·robust 표준오차·N·R²는 유효숫자 15자리 표시에서 일치했습니다. 공통 분석 변수 11개의 값도 같았습니다. before는 변수 11개를 저장하고, after는 원자료 변수 17개와 로그 임금을 보존합니다.
 
 회귀표 12개를 모두 읽었고, 각 작성자는 코드북과 렌더링한 PDF를 확인했습니다. before 표는 원래 정밀도의 값과 기준범주의 0을 저장하며, after 표는 소수점 6자리 값과 기준범주 표시 `(base)`를 내보냅니다. 그림 구간과 서식도 다릅니다. 한 과제에서 관찰한 사례이며, 모든 생성 코드가 같은 결과를 낸다는 뜻은 아닙니다.
 
-[before 전문](examples/fresh-session-workflow/before.do) · [after 전문](examples/fresh-session-workflow/after.do) · [동일 과제·줄 수 산정 범위·실행 기록](examples/fresh-session-workflow/README.ko.md). 공개를 위해 before에는 출력 폴더 인자를 추가하고, after에서는 개인 기본 경로만 제거했습니다. 표 작성 방식은 독립 작성본 그대로입니다.
+[before 전문](examples/fresh-session-workflow/before.do), [after 전문](examples/fresh-session-workflow/after.do), [동일 과제와 실행 기록](examples/fresh-session-workflow/README.ko.md). 공개용 before에는 출력 폴더 인자를 추가하고 after의 개인 기본 경로를 제거했으며, after의 코드북 문구를 영어로 옮겼습니다. 추정과 회귀표 작성 방식은 독립 작성본 그대로입니다.
 
 <details>
 <summary>예제 실행하기</summary>
