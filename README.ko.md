@@ -1,12 +1,12 @@
 # Stata Research Guard
 
 <p align="center">
-  <img src="assets/research-owl.png" alt="책상에 앉은 부엉이 연구자가 지휘봉으로 방향을 잡고, GPT의 작은 작업 팔이 코드와 결과표를 만드는 모습" width="360">
+  <img src="assets/research-owl.png" alt="책상에 앉은 부엉이 연구자가 지휘봉으로 방향을 잡고, GPT의 작은 작업 팔이 코드와 결과표를 만드는 모습" width="240">
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.4.0-245B78?style=flat-square" alt="Version 0.4.0">
-  <img src="https://img.shields.io/badge/Codex-plugin-222222?style=flat-square" alt="Codex plugin">
+  <a href="https://github.com/Plokies-2/stata-research-guard/releases/latest"><img src="https://img.shields.io/badge/version-0.4.0-245B78?style=flat-square" alt="Version 0.4.0"></a>
+  <img src="https://img.shields.io/badge/AI--assisted-Stata-222222?style=flat-square" alt="AI-assisted Stata">
   <img src="https://img.shields.io/badge/developed_with-Stata_18-1A6B70?style=flat-square" alt="Developed with Stata 18">
   <a href="https://hub.xerj.org/contributors/Plokies-2"><img src="https://hub.xerj.org/contributors/Plokies-2/badge.svg" alt="XERJ Corpus Hub contributor"></a>
 </p>
@@ -20,11 +20,65 @@
 
 현재 빌드: `0.4.0+codex.2026111701`. [변경 기록](plugins/stata-research-guard/CHANGELOG.md)을 참고하세요.
 
-자료·표본 구성부터 회귀 사양, 추정치 저장, 표·그림까지 연구자가 직접 따라갈 수 있는 Stata 코드를 작성하도록 돕는 Codex 플러그인입니다. 명령 사전, 공식·maintainer 도움말, 실제 논문 코드와 독립 검토를 제공합니다. 연구 선택은 사용자와 모델이 합니다.
+AI와 함께 Stata로 연구할 때 읽기 쉬운 분석 코드, 공식 도움말과 maintainer 도움말, 실제 논문 코드와 독립 검토를 제공합니다. 자료와 표본 구성부터 회귀 사양, 추정치 저장, 표와 그림까지 연구자가 직접 따라갈 수 있게 돕습니다. 현재는 Codex 플러그인으로 설치하며, 연구 선택은 사용자와 모델이 합니다.
 
-[시작하기](#시작하기) · [사용 예시](#사용-예시) · [전체 분석 흐름의 실행 비교](#전체-분석-흐름의-실행-비교) · [문서](#문서) · [문의·버그 제보](https://github.com/Plokies-2/stata-research-guard/issues)
+[시작하기](#시작하기) | [실행 미리보기](#실제-실행-미리보기) | [사용 예시](#사용-예시) | [Release](https://github.com/Plokies-2/stata-research-guard/releases/latest) | [문서](#문서) | [문의와 버그 제보](https://github.com/Plokies-2/stata-research-guard/issues)
+
+## 시작하기
+
+Node.js와 플러그인을 지원하는 Codex를 설치한 뒤 PowerShell에서 공개 저장소를 등록하고 플러그인을 설치합니다.
+
+```powershell
+codex plugin marketplace add Plokies-2/stata-research-guard --ref main
+codex plugin add stata-research-guard@stata-research-guard-team
+```
+
+<details>
+<summary>설치 경로와 연결 확인</summary>
+
+Windows에서는 일반 PowerShell에서 설치 명령을 실행합니다. Codex 기본 사용자 폴더(`%USERPROFILE%\.codex`)를 사용하고, `CODEX_HOME`을 따로 지정한다면 캐시 활성화·경로 길이 오류를 피할 수 있도록 동기화되지 않는 짧은 로컬 경로를 사용하세요.
+
+마켓플레이스 식별자는 `stata-research-guard-team`입니다. 새 Codex 채팅을 열어 플러그인이 활성화되어 있는지 확인하고, `get_stata_command_evidence`로 `regress`의 공식 도움말을 읽어달라고 요청합니다. 실제 도움말 응답이 와야 MCP 연결까지 확인한 것이며, 설치 성공만으로 연결을 확인한 것은 아닙니다. 설치 명령은 [공식 Codex CLI 문서](https://learn.chatgpt.com/docs/developer-commands#codex-plugin-marketplace)를 따릅니다.
+
+</details>
+
+연구 파일을 열고 `stata-replication-workflow`로 요청합니다.
+
+```text
+$stata-replication-workflow
+이 프로젝트의 regression.do와 연결된 자료를 읽고 분석을 이어가줘.
+현재 표본·추정 방법·고정효과·표준오차 설정을 유지하고,
+실행한 뒤 표본 수와 회귀표를 확인해줘.
+```
+
+**필요한 도구:** Codex와 Node.js. 실제 분석 실행과 설치 도움말 조회에는 사용자의 Stata 설치를 사용합니다. Stata 18에서 개발했습니다. 실행 수단은 모델이 작업에 맞춰 기존 runner·Stata 배치·Python 연동 등을 고릅니다.
+
+설치와 MCP 실행 스크립트는 Windows에서 확인했습니다. macOS 호환은 구현과 실행 확인이 필요합니다.
+
+## 실제 실행 미리보기
+
+[![공개 예제의 Stata 코드, 실제 Excel 회귀표, PDF 그림을 순서대로 보여주는 데모](assets/workflow-demo.gif)](examples/fresh-session-workflow/README.ko.md)
+
+코드, 저장된 Excel 회귀표, PDF 그림을 순서대로 보여줍니다. 2026년 10월 22일 `nlsw88` 실행본의 실제 산출물이며, 채팅 화면 녹화는 아닙니다. [코드와 실행 방법](examples/fresh-session-workflow/README.ko.md), [정지된 회귀표 미리보기](assets/workflow-demo.png)를 함께 볼 수 있습니다.
+
+## 핵심 특징
+
+| 특징 | 연구에서 하는 일 |
+| --- | --- |
+| **읽기 쉬운 분석 코드** | 자료 → 표본 → 추정 → 저장 → 표·그림의 흐름을 드러내고 연구자가 변수와 사양을 직접 바꾸기 쉽게 작성합니다. |
+| **원문에 근거한 명령 사용** | 공식·maintainer 도움말과 확장 문서에서 필요한 문법·옵션·반환값을 확인합니다. |
+| **실제 논문의 앞뒤 문맥** | 명령 한 줄과 함께 자료·표본 구성, 추정치 저장과 후속 출력 코드를 읽습니다. |
+| **실행에서 결과 확인까지** | 실제 데이터·로그·표·그림을 읽고 필요한 수정을 이어갑니다. |
+| **동료 연구자의 검토** | 실질적인 분석을 추가하거나 분석 구조를 바꿀 때는 별도 문맥의 동료가 코드와 결과를 한 번 읽고 구체적인 개선 의견을 제안합니다. |
+
+기존 분석은 같은 `.do` 파일에서 이어가고 기계적인 반복은 얕은 loop로 정리합니다. 추정 방법·표본·고정효과·추론 방식은 코드 본문에서 읽을 수 있게 유지합니다. 연구자와 모델이 도구에서 확인한 근거를 보고 판단하며 실행 성공과 연구 결과의 타당성을 구분합니다.
+
+작은 텍스트 수정은 파일별로 변경 전후 diff를 보여줍니다. 추가 줄과 삭제 줄의 합이 100줄 이상이거나 workflow를 전반적으로 다시 짜는 경우에는 생략 이유와 변경 링크를 안내합니다. 전체 diff를 명시적으로 요청하면 그 요청을 따르며, 생성된 산출물은 갱신 내용을 별도로 설명합니다.
 
 ## AI가 이렇게 짠 Stata 코드, Guard를 쓰면 이렇게 달라집니다
+
+<details>
+<summary>두 가지 변경 전후 코드 비교 보기</summary>
 
 새 Codex 세션 하나는 회귀표 셀을 직접 조립하고, 회귀 사양을 중첩 매크로에 담았습니다. Guard를 사용한 별도 세션은 회귀식을 직접 드러내고 표 구성은 Stata에 맡겼습니다. 실제 작성본에서 두 부분을 골랐습니다.
 
@@ -88,19 +142,7 @@ regress `outcome' age grade ttl_exp tenure union i.south i.smsa `restriction', v
 
 두 작성자는 대화 이력과 예제 코드를 공유하지 않는 별도 Codex 채팅에서 전 과정을 작성·실행했습니다. [동일 과제와 실행 조건](examples/fresh-session-workflow/README.ko.md)에서 확인할 수 있습니다.
 
-## 핵심 특징
-
-| 특징 | 연구에서 하는 일 |
-| --- | --- |
-| **읽기 쉬운 분석 코드** | 자료 → 표본 → 추정 → 저장 → 표·그림의 흐름을 드러내고 연구자가 변수와 사양을 직접 바꾸기 쉽게 작성합니다. |
-| **원문에 근거한 명령 사용** | 공식·maintainer 도움말과 확장 문서에서 필요한 문법·옵션·반환값을 확인합니다. |
-| **실제 논문의 앞뒤 문맥** | 명령 한 줄과 함께 자료·표본 구성, 추정치 저장과 후속 출력 코드를 읽습니다. |
-| **실행에서 결과 확인까지** | 실제 데이터·로그·표·그림을 읽고 필요한 수정을 이어갑니다. |
-| **동료 연구자의 검토** | 실질적인 분석을 추가하거나 분석 구조를 바꿀 때는 별도 문맥의 동료가 코드와 결과를 한 번 읽고 구체적인 개선 의견을 제안합니다. |
-
-기존 분석은 같은 `.do` 파일에서 이어가고 기계적인 반복은 얕은 loop로 정리합니다. 추정 방법·표본·고정효과·추론 방식은 코드 본문에서 읽을 수 있게 유지합니다. 연구자와 모델이 도구에서 확인한 근거를 보고 판단하며 실행 성공과 연구 결과의 타당성을 구분합니다.
-
-작은 텍스트 수정은 파일별로 변경 전후 diff를 보여줍니다. 추가 줄과 삭제 줄의 합이 100줄 이상이거나 workflow를 전반적으로 다시 짜는 경우에는 생략 이유와 변경 링크를 안내합니다. 전체 diff를 명시적으로 요청하면 그 요청을 따르며, 생성된 산출물은 갱신 내용을 별도로 설명합니다.
+</details>
 
 ## 우리가 겨냥한 문제
 
@@ -113,31 +155,6 @@ regress `outcome' age grade ttl_exp tenure union i.south i.smsa `restriction', v
 | 회귀와 저장을 helper·`program` 안에 숨겨 연구자가 바꾸기 어려움 | 추정 명령·표본·통제변수·FE·VCE·저장 경로가 분석 본문에서 보이게 둡니다. |
 | 표·그림을 저장하다 실패할 때마다 추정부터 다시 실행 | 완료된 추정과 출력 실패를 구분하고, 적절한 저장 추정치를 복원해 필요한 출력만 다시 만듭니다. |
 
-## 시작하기
-
-Node.js와 플러그인을 지원하는 Codex를 설치한 뒤 PowerShell에서 공개 저장소를 등록하고 플러그인을 설치합니다.
-
-```powershell
-codex plugin marketplace add Plokies-2/stata-research-guard --ref main
-codex plugin add stata-research-guard@stata-research-guard-team
-```
-
-Windows에서는 일반 PowerShell에서 설치 명령을 실행합니다. Codex 기본 사용자 폴더(`%USERPROFILE%\.codex`)를 사용하고, `CODEX_HOME`을 따로 지정한다면 캐시 활성화·경로 길이 오류를 피할 수 있도록 동기화되지 않는 짧은 로컬 경로를 사용하세요.
-
-마켓플레이스 식별자는 `stata-research-guard-team`입니다. 새 Codex 채팅을 열어 플러그인이 활성화되어 있는지 확인하고, `get_stata_command_evidence`로 `regress`의 공식 도움말을 읽어달라고 요청합니다. 실제 도움말 응답이 와야 MCP 연결까지 확인한 것이며, 설치 성공만으로 연결을 확인한 것은 아닙니다. 설치 명령은 [공식 Codex CLI 문서](https://learn.chatgpt.com/docs/developer-commands#codex-plugin-marketplace)를 따릅니다.
-
-연구 파일을 열고 `stata-replication-workflow`로 요청합니다.
-
-```text
-$stata-replication-workflow
-이 프로젝트의 regression.do와 연결된 자료를 읽고 분석을 이어가줘.
-현재 표본·추정 방법·고정효과·표준오차 설정을 유지하고,
-실행한 뒤 표본 수와 회귀표를 확인해줘.
-```
-
-**필요한 도구:** Codex와 Node.js. 실제 분석 실행과 설치 도움말 조회에는 사용자의 Stata 설치를 사용합니다. Stata 18에서 개발했습니다. 실행 수단은 모델이 작업에 맞춰 기존 runner·Stata 배치·Python 연동 등을 고릅니다.
-
-설치와 MCP 실행 스크립트는 Windows에서 확인했습니다. macOS 호환은 구현과 실행 확인이 필요합니다.
 
 ## 사용 예시
 
@@ -207,7 +224,7 @@ $stata-replication-workflow
 
 회귀표 12개를 모두 읽었고, 각 작성자는 코드북과 렌더링한 PDF를 확인했습니다. before 표는 원래 정밀도의 값과 기준범주의 0을 저장하며, after 표는 소수점 6자리 값과 기준범주 표시 `(base)`를 내보냅니다. 그림 구간과 서식도 다릅니다. 한 과제에서 관찰한 사례이며, 모든 생성 코드가 같은 결과를 낸다는 뜻은 아닙니다.
 
-[before 전문](examples/fresh-session-workflow/before.do) · [after 전문](examples/fresh-session-workflow/after.do) · [동일 과제·줄 수 산정 범위·실행 기록](examples/fresh-session-workflow/README.ko.md). 공개를 위해 before에는 출력 폴더 인자를 추가하고, after에서는 개인 기본 경로만 제거했습니다. 표 작성 방식은 독립 작성본 그대로입니다.
+[before 전문](examples/fresh-session-workflow/before.do), [after 전문](examples/fresh-session-workflow/after.do), [동일 과제와 실행 기록](examples/fresh-session-workflow/README.ko.md). 공개용 before에는 출력 폴더 인자를 추가하고 after의 개인 기본 경로를 제거했으며, after의 코드북 문구를 영어로 옮겼습니다. 추정과 회귀표 작성 방식은 독립 작성본 그대로입니다.
 
 <details>
 <summary>예제 실행하기</summary>

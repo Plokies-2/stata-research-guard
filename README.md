@@ -1,12 +1,12 @@
 # Stata Research Guard
 
 <p align="center">
-  <img src="assets/research-owl.png" alt="An owl researcher at a desk directs GPT's small working arms as they create code and a results table" width="360">
+  <img src="assets/research-owl.png" alt="An owl researcher at a desk directs GPT's small working arms as they create code and a results table" width="240">
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.4.0-245B78?style=flat-square" alt="Version 0.4.0">
-  <img src="https://img.shields.io/badge/Codex-plugin-222222?style=flat-square" alt="Codex plugin">
+  <a href="https://github.com/Plokies-2/stata-research-guard/releases/latest"><img src="https://img.shields.io/badge/version-0.4.0-245B78?style=flat-square" alt="Version 0.4.0"></a>
+  <img src="https://img.shields.io/badge/AI--assisted-Stata-222222?style=flat-square" alt="AI-assisted Stata">
   <img src="https://img.shields.io/badge/developed_with-Stata_18-1A6B70?style=flat-square" alt="Developed with Stata 18">
   <a href="https://hub.xerj.org/contributors/Plokies-2"><img src="https://hub.xerj.org/contributors/Plokies-2/badge.svg" alt="XERJ Corpus Hub contributor"></a>
 </p>
@@ -20,11 +20,65 @@
 
 Current build: `0.4.0+codex.2026111701`. See the [changelog](plugins/stata-research-guard/CHANGELOG.md).
 
-Stata Research Guard is a Codex plugin that helps write analysis code researchers can follow from data and sample construction through regression specifications, saved estimates, tables, and figures. It supplies a command index, official and maintainer help, real paper code, and independent peer review. Research choices remain with the user and the model.
+Stata Research Guard provides research guidance for AI-assisted Stata: readable analysis code, original command help, real paper code, and independent peer review. It connects data and sample construction to visible regression specifications, saved estimates, tables, and figures. The current installation is a Codex plugin; research choices remain with the user and the model.
 
-[Get started](#get-started) · [Example requests](#example-requests) · [End-to-end execution comparison](#end-to-end-execution-comparison) · [Documentation](#documentation) · [Questions and bug reports](https://github.com/Plokies-2/stata-research-guard/issues)
+[Get started](#get-started) | [Demo](#see-the-workflow) | [Example requests](#example-requests) | [Release](https://github.com/Plokies-2/stata-research-guard/releases/latest) | [Documentation](#documentation) | [Questions and bug reports](https://github.com/Plokies-2/stata-research-guard/issues)
+
+## Get started
+
+Install Node.js and a Codex version that supports plugins. In PowerShell, register this public repository and install the plugin:
+
+```powershell
+codex plugin marketplace add Plokies-2/stata-research-guard --ref main
+codex plugin add stata-research-guard@stata-research-guard-team
+```
+
+<details>
+<summary>Installation paths and connection check</summary>
+
+On Windows, run installation in a regular PowerShell terminal. Use Codex's default user directory (`%USERPROFILE%\.codex`); if you set `CODEX_HOME` separately, choose a short local path outside synced folders to avoid cache-activation and path-length errors.
+
+The marketplace identifier is `stata-research-guard-team`. Start a new Codex chat, check that the plugin is enabled, and ask it to retrieve the official help for `regress` through `get_stata_command_evidence`. A successful help response confirms the MCP connection; installation alone does not. These commands follow the [official Codex CLI documentation](https://learn.chatgpt.com/docs/developer-commands#codex-plugin-marketplace).
+
+</details>
+
+Open your research files and request the `stata-replication-workflow` skill.
+
+```text
+$stata-replication-workflow
+Read this project's regression.do and connected data, then continue the analysis.
+Keep the current sample, estimator, fixed effects, and standard-error settings.
+Run it and inspect the sample size and regression table.
+```
+
+**Tools needed:** Codex and Node.js. Running the analysis and looking up installed help use your own Stata installation. The plugin was developed with Stata 18. The model selects an available execution route, such as an existing runner, Stata batch mode, or Python integration.
+
+The installation and MCP launcher have been checked on Windows. macOS compatibility still needs implementation and testing.
+
+## See the workflow
+
+[![Animated preview of the published Stata code, actual Excel regression table, and exported PDF figure](assets/workflow-demo.gif)](examples/fresh-session-workflow/README.md)
+
+Code, saved Excel table, then exported PDF. These are actual outputs from the `nlsw88` example executed on 22 October 2026, presented as an animated preview rather than a chat recording. See the [code and run instructions](examples/fresh-session-workflow/README.md) or the [static table preview](assets/workflow-demo.png).
+
+## What it does
+
+| Feature | Use in research |
+| --- | --- |
+| **Readable analysis code** | Shows the path from data and sample through estimation, saved results, tables, and figures so researchers can change variables and specifications. |
+| **Commands grounded in source material** | Checks needed syntax, options, and returned results against official and maintainer help and expanded documentation. |
+| **Context from real papers** | Reads a command with the surrounding data and sample preparation, saved estimates, and downstream outputs. |
+| **Execution and result inspection** | Reads actual data, logs, tables, and figures and makes needed corrections. |
+| **Peer review** | When analysis is materially added or restructured, a colleague in a separate context reads the code and results once and suggests concrete improvements. |
+
+Continue an existing analysis in the same `.do` file and keep mechanical loops shallow. Estimators, samples, fixed effects, and inference methods remain visible in the analysis. The researcher and model assess the evidence retrieved through the tools, separating successful execution from the validity of research conclusions.
+
+Small text edits are reported with file-by-file before/after diffs. At 100 or more added plus deleted lines, or for a workflow overhaul, the reply explains that the diff was omitted and links the changes. Explicit requests for a full diff take precedence; generated outputs are described separately.
 
 ## AI writes Stata code like this
+
+<details>
+<summary>Show the two before/after code comparisons</summary>
 
 One fresh Codex session built a regression table cell by cell and hid the specifications behind nested macros. Another used Guard to keep the regressions visible and let Stata build the table. Here are the two differences.
 
@@ -88,19 +142,7 @@ These are excerpts, with only the regression commands shown in the second pair. 
 
 The authors worked in separate Codex chats with no shared conversation or example code. Both ran the full data-to-export task; see the [task and run conditions](examples/fresh-session-workflow/README.md).
 
-## What it does
-
-| Feature | Use in research |
-| --- | --- |
-| **Readable analysis code** | Shows the path from data and sample through estimation, saved results, tables, and figures so researchers can change variables and specifications. |
-| **Commands grounded in source material** | Checks needed syntax, options, and returned results against official and maintainer help and expanded documentation. |
-| **Context from real papers** | Reads a command with the surrounding data and sample preparation, saved estimates, and downstream outputs. |
-| **Execution and result inspection** | Reads actual data, logs, tables, and figures and makes needed corrections. |
-| **Peer review** | When analysis is materially added or restructured, a colleague in a separate context reads the code and results once and suggests concrete improvements. |
-
-Continue an existing analysis in the same `.do` file and keep mechanical loops shallow. Estimators, samples, fixed effects, and inference methods remain visible in the analysis. The researcher and model assess the evidence retrieved through the tools, separating successful execution from the validity of research conclusions.
-
-Small text edits are reported with file-by-file before/after diffs. At 100 or more added plus deleted lines, or for a workflow overhaul, the reply explains that the diff was omitted and links the changes. Explicit requests for a full diff take precedence; generated outputs are described separately.
+</details>
 
 ## Problems this addresses
 
@@ -113,31 +155,6 @@ The plugin grew out of recurring difficulties while writing and revising real an
 | Regressions and saves hidden inside a helper or `program` | Keep estimation commands, samples, controls, FE, VCE, and output paths visible in the analysis. |
 | Rerunning estimation whenever table or figure export fails | Distinguish completed estimation from failed output and restore saved estimates when appropriate to regenerate only what failed. |
 
-## Get started
-
-Install Node.js and a Codex version that supports plugins. In PowerShell, register this public repository and install the plugin:
-
-```powershell
-codex plugin marketplace add Plokies-2/stata-research-guard --ref main
-codex plugin add stata-research-guard@stata-research-guard-team
-```
-
-On Windows, run installation in a regular PowerShell terminal. Use Codex's default user directory (`%USERPROFILE%\.codex`); if you set `CODEX_HOME` separately, choose a short local path outside synced folders to avoid cache-activation and path-length errors.
-
-The marketplace identifier is `stata-research-guard-team`. Start a new Codex chat, check that the plugin is enabled, and ask it to retrieve the official help for `regress` through `get_stata_command_evidence`. A successful help response confirms the MCP connection; installation alone does not. These commands follow the [official Codex CLI documentation](https://learn.chatgpt.com/docs/developer-commands#codex-plugin-marketplace).
-
-Open your research files and request the `stata-replication-workflow` skill.
-
-```text
-$stata-replication-workflow
-Read this project's regression.do and connected data, then continue the analysis.
-Keep the current sample, estimator, fixed effects, and standard-error settings.
-Run it and inspect the sample size and regression table.
-```
-
-**Tools needed:** Codex and Node.js. Running the analysis and looking up installed help use your own Stata installation. The plugin was developed with Stata 18. The model selects an available execution route, such as an existing runner, Stata batch mode, or Python integration.
-
-The installation and MCP launcher have been checked on Windows. macOS compatibility still needs implementation and testing.
 
 ## Example requests
 
@@ -209,7 +226,7 @@ The difference is visible specifications and automatic table construction. Total
 
 All 12 regression workbooks were read, and both authors inspected their codebooks and rendered PDFs. Before stores full-precision table values and writes base categories as zero; after exports six-decimal values and marks reference categories as `(base)`. Figure bins and styling differ. This is one observed case, not a guarantee about every generated script.
 
-[Full before](examples/fresh-session-workflow/before.do) · [Full after](examples/fresh-session-workflow/after.do) · [Task, counting boundaries, and execution notes](examples/fresh-session-workflow/README.md). The only publication edits add an output-directory argument to before and remove after's personal default path. The table method was kept as independently written.
+[Full before](examples/fresh-session-workflow/before.do) · [Full after](examples/fresh-session-workflow/after.do) · [Task, counting boundaries, and execution notes](examples/fresh-session-workflow/README.md). Publication adds an output-directory argument to before, removes after's personal default path, and translates after's codebook text into English. The estimation and regression-table methods remain as independently written.
 
 <details>
 <summary>Run the example</summary>

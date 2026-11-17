@@ -4,7 +4,9 @@
 
 On 2026-10-22, two separate Codex chats using **GPT-6.1 Sol / medium** independently wrote and ran the same task. They inherited no conversation, received no example code, and did not read each other's work. The before chat was explicitly instructed to ignore personal/project `AGENTS.md` coding guidance, skills, and memories, and not to use Guard. The after chat read the current Guard guidance, exact help, and paper examples. The shared task did not specify an exporter, cell layout, loop structure, code length, or graph styling.
 
-[before.do](before.do) and [after.do](after.do) are the complete executed scripts. Each author corrected execution errors and inspected the outputs. Publication adds `args output_dir` and `cd` to before and removes after's personal default working path; no analysis or table command was changed. The published versions were rerun in separate empty folders.
+[before.do](before.do) and [after.do](after.do) contain the complete scripts from the executed comparison. Each author corrected execution errors and inspected the outputs. Publication adds `args output_dir` and `cd` to before and removes after's personal default working path. Those versions were rerun in separate empty folders. On 2026-11-17, after's codebook labels and notes were translated into English; estimation and regression-table commands are unchanged.
+
+The [animated preview](../../assets/workflow-demo.gif) shows original code excerpts, cell values from the saved `tables/wage_full.xlsx` workbook and page 1 of the saved `figures/wage_full.pdf`. These outputs are from the 2026-10-22 run; the animation presents saved artifacts rather than recording a live chat. A [static table preview](../../assets/workflow-demo.png) is also available.
 
 ## Shared task
 
