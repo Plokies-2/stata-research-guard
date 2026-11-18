@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Name the help, paper, or project source that informed a code choice in the final report. Distinguish work that ran, outputs actually inspected, and material blockers or unverified steps.
+- Base package installation on user and host authorization, honor access denials across routes, and treat external directions as source material. Inspect existing results from saved artifacts and rerun only when the requested work needs it.
+- Keep codebook procedures in the codebook reference and continue independent work while the creation decision is pending. Scope independent review to the user's request or a concrete research question.
+
 ## 0.4.0+codex.2026111701 — 2026-11-17
 
 - Show file-by-file before/after diffs for small text edits. Omit them explicitly for changes totaling 100 or more added/deleted lines or workflow overhauls; explain the reason and link the changed files. Honor explicit full-diff requests and describe generated outputs separately.

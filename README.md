@@ -18,7 +18,7 @@
 
 **Stata code researchers can read, revise, and carry forward.**
 
-Current build: `0.4.0+codex.2026111701`. See the [changelog](plugins/stata-research-guard/CHANGELOG.md).
+Latest tagged release: [`v0.4.0`](https://github.com/Plokies-2/stata-research-guard/releases/tag/v0.4.0). `main` uses build identifier `0.4.0+codex.2026111701`. Its upcoming changes are listed under **Unreleased** in the [changelog](plugins/stata-research-guard/CHANGELOG.md).
 
 Stata Research Guard provides research guidance for AI-assisted Stata: readable analysis code, original command help, real paper code, and independent peer review. It connects data and sample construction to visible regression specifications, saved estimates, tables, and figures. The current installation is a Codex plugin; research choices remain with the user and the model.
 
@@ -184,8 +184,8 @@ foreach sample in full married {
 | **Readable analysis code** | Shows the path from data and sample through estimation, saved results, tables, and figures so researchers can change variables and specifications. |
 | **Commands grounded in source material** | Checks needed syntax, options, and returned results against official and maintainer help and expanded documentation. |
 | **Context from real papers** | Reads a command with the surrounding data and sample preparation, saved estimates, and downstream outputs. |
-| **Execution and result inspection** | Reads actual data, logs, tables, and figures and makes needed corrections. |
-| **Peer review** | When analysis is materially added or restructured, a colleague in a separate context reads the code and results once and suggests concrete improvements. |
+| **Execution and result inspection** | Inspects relevant saved results and runs Stata when the task needs it. The final report names the sources that informed code choices and identifies material gaps in execution or verification. |
+| **Peer review** | When requested or useful for a concrete research question, a colleague in a separate context reads the relevant code and results and offers focused advice. |
 
 Keep related specifications in the `.do` file that owns their data-to-output workflow. Give an independent workflow its own named file. Keep mechanical loops shallow and make the estimator, sample, fixed effects, and inference visible where they are used. The researcher and model assess the evidence retrieved through the tools, separating successful execution from the validity of research conclusions.
 
@@ -209,7 +209,7 @@ These are prompts you can send to Codex. Specify variables, files, and outputs f
 
 **Review older code or an analysis that needs maintenance**
 
-Use `stata-peer-audit` to review existing code before changing it. It reads the analysis and available results as a research colleague, identifies concrete maintenance problems, and suggests corrections without editing the files.
+Use `stata-peer-audit` when you want a focused review of existing code. It reads the analysis and available results as a research colleague, identifies concrete maintenance problems, and suggests corrections without editing the files.
 
 ```text
 $stata-peer-audit

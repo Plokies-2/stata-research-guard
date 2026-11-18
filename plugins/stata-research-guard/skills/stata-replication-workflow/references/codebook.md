@@ -5,7 +5,7 @@ Read this reference before creating or updating a project codebook, regardless o
 ## Establish whether a codebook is wanted
 
 - On the first research run in a project, check the current conversation, relevant project instructions and existing documentation for a codebook, a designated workbook, or a prior decision to create, maintain or skip one. Use the relevant known locations; do not scan the whole project to invent an inventory.
-- If there is no codebook context, **you must ask whether to create one before the first run**: "이 프로젝트의 Excel 코드북도 만들까요?" Wait for the answer before creating a workbook or adding codebook-generation code. Neither variable changes nor a general request to run the analysis implies consent. If the answer is pending, independent source reading and code preparation may continue.
+- If the project has neither a codebook nor a prior decision, **ask once before the first research run**: "이 프로젝트의 Excel 코드북도 만들까요?" Continue authorized work that can proceed while the answer is pending, including analysis runs. Wait for the answer before creating a workbook or adding codebook-generation code.
 - Honor an existing decision across follow-ups and sessions when it is available in context or project documentation. An existing codebook is context for maintaining it; do not ask again for each variable change. If the user declines, continue the research without a codebook and do not report its absence as a defect. Do not add a tracking file, approval flag or new configuration system for this decision.
 - Once creation or maintenance is established, update the same workbook alongside substantive variable changes. Unchanged mentions, verbatim moves, formatting edits and unchanged-file reruns do not require codebook changes.
 

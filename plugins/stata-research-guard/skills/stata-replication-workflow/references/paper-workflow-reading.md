@@ -22,7 +22,7 @@ Try to complete the work through documented automation: bulk syntax, options, re
 
 ## Make the comparison actionable
 
-Explain in ordinary prose, with original file/section locations, what the paper does, why the technique helps or does not help the current source, and the smallest useful change or reason to retain the current code. A short comparison near the implementation discussion is sufficient; do not generate an audit form or an obligatory standalone report. Do not merely say the code "matches a top journal".
+Include the paper's original file or section and the implementation decision it informed in the workflow's [final source report](../SKILL.md#report-results-sources-and-edits). If the comparison supports retaining the current code, explain that decision there.
 
 Keep current user choices, material sample/specification/output contracts, and official/maintainer command semantics authoritative. A paper's locals, manual interactions, estimator wrappers, TeX exports, output-specific files, or old software conventions are not permissions to overwrite those choices. Equally, do not reject a necessary callback or research-specific operation simply because a preferred example lacks it. A paper may contain mistakes; recognize and decline them without claiming a full replication or causal assessment.
 

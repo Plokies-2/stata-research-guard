@@ -1,12 +1,12 @@
 # Stata Execution and Results
 
-Read this reference when executing analysis or inspecting runtime results. Comment, label, spacing and other interface-preserving edits do not need an execution setup merely because the file is Stata code.
+Read this reference when executing analysis or inspecting runtime results. For inspection of an existing result, start with the relevant saved artifact and set up a runtime only if the request needs execution or live state.
 
 ## Choose the available interface
 
 Use the project's existing authorized runner, a local Stata batch executable, official Python integration, or a callable runtime connection. This plugin provides command evidence and research guidance; it does not include a Stata execution engine or require mcpStata. If mcpStata is available, it can supply sessions, data, logs and results within this same workflow; do not load a second coordinating skill.
 
-Check the selected route's actual availability, not just installed files, and briefly state it. Honor explicit execution-tool restrictions. Before retrying or switching routes, resolve any attempt that may still be running. If no route is available, continue authoring and source review where command evidence permits, and report the unexecuted work without claiming runtime success.
+Check the selected route's actual availability, not just installed files, and briefly state it. Honor explicit execution-tool restrictions and apply an access denial for the same action across tools and routes. Recover connection failures or timeouts through an authorized route. Before retrying or switching routes, resolve any attempt that may still be running. If no route is available, continue authoring and source review where command evidence permits, and report the unexecuted work without claiming runtime success.
 
 ## Keep code and state understandable
 
@@ -18,7 +18,7 @@ Record the input path, relevant observation/variable counts, Stata version, pane
 
 ## Run and inspect the affected work
 
-Run a coherent requested block or saved `.do` rather than splitting it into many tiny execution calls. Reuse preparation and suitable stored estimates; a full master rerun is appropriate for structural changes or an explicit reproduction request. Keep package installation separate from estimation under the general rules' standing authorization; refresh the affected runtime state when needed, then return to the analysis.
+When a run is needed, run a coherent block or saved `.do`. Reuse preparation and suitable stored estimates; a full master rerun is appropriate for structural changes or an explicit reproduction request. Keep package installation separate from estimation under the user's applicable authorization and host approval rules; refresh the affected runtime state when needed, then return to the analysis.
 
 Read actual logs, errors, relevant `e()`/`r()` results, raw matrices and coefficient names, samples, omitted terms, estimates, tables and exported figures. Request only the additional state needed for the current question; do not repeat a result query when the completed execution response already supplies it. Apply the general rules' output and file-lifecycle guidance, including the actual generated files. Save the requested specifications and exports in the maintained `.do` workflow.
 
