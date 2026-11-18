@@ -7,8 +7,8 @@
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
-      "bytes": 966,
-      "sha256": "6301d4100853055ffac176ee9b6541e5aa7dc0b808ff1576bd6b1f872a7ef7cb"
+      "bytes": 988,
+      "sha256": "3bfe482661933a787225339d545140a370d57b970b9f4495cda37d6f355979cc"
     },
     {
       "path": ".mcp.json",
@@ -17,8 +17,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 36006,
-      "sha256": "9c3ac6f09585a6c1afb775547f5023624f0a38b04d0a79183103720ea4633927"
+      "bytes": 36655,
+      "sha256": "49bdf8e0ceb348a6bd62f6885f45d32c1e8f9c51261cabd825cd47b75ba246aa"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -1557,8 +1557,8 @@
     },
     {
       "path": "INSTRUCTIONS.md",
-      "bytes": 1298,
-      "sha256": "2e7ea1a8341b9e0e90f7d6822a3582bf3027a640e862d8676f6338408429612f"
+      "bytes": 897,
+      "sha256": "520b369c83931267ffb42acae9b579945ccaefe91a10ece45fb27eb9b72d799d"
     },
     {
       "path": "LICENSE",
@@ -1632,8 +1632,8 @@
     },
     {
       "path": "skills/stata-peer-audit/SKILL.md",
-      "bytes": 7770,
-      "sha256": "34a0ffd447cff150ee9f4cd07386fd25e6fc914ce40137abbca5a95c57abfd08"
+      "bytes": 7424,
+      "sha256": "a2111437132c587ee7d373da89d31f6c3531be4ed7be5759ae7f2be1238c2216"
     },
     {
       "path": "skills/stata-replication-workflow/agents/openai.yaml",
@@ -1647,28 +1647,28 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/codebook.md",
-      "bytes": 5946,
-      "sha256": "5a438a8871d72dbaaaed6b3759cdf78d23f9d8ee6a12d00dad9a4a9910b747b2"
+      "bytes": 5880,
+      "sha256": "b189ba402bbce5bc3e227425df2be2ac07e39200ead410e00a733b573fd30f0e"
     },
     {
       "path": "skills/stata-replication-workflow/references/command-evidence.md",
-      "bytes": 23115,
-      "sha256": "43cfa4340dae8ff9377f8f8365c6665844ddb6082b9443d30dd6d13a8457c36a"
+      "bytes": 23367,
+      "sha256": "b588b0c3ef0d6f85ca99c24d8a5560f0049d42460b8c732b66b06b7cff595076"
     },
     {
       "path": "skills/stata-replication-workflow/references/execution-and-results.md",
-      "bytes": 4625,
-      "sha256": "5a27ab3f0b2d7e7a35ff5c01b30ee346aaba1f4c1d9f081e0891d1072943fa36"
+      "bytes": 4757,
+      "sha256": "60df56addb621929926b65cc54c0443b8a7d78ded3dd2484b4c4828e2693d358"
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rules.md",
-      "bytes": 26257,
-      "sha256": "ca3f4c354d0866594c34778ab0f99a47212cc9f8b062f1db64b1eb6b74499ecd"
+      "bytes": 25325,
+      "sha256": "aee636f7e96c0e344270fe93ce6910819ac419827250bfee01e68285f0ee396a"
     },
     {
       "path": "skills/stata-replication-workflow/references/paper-workflow-reading.md",
-      "bytes": 11435,
-      "sha256": "fa383c6e498f17e5030d81255bd177d1f65ab27ee2c4d59e8216ac3936bfce1d"
+      "bytes": 11292,
+      "sha256": "4df482f60dacbff222da7fbbb62bc3dcaf86ada0d042889a1de9833b721dcca1"
     },
     {
       "path": "skills/stata-replication-workflow/references/readme-contract.md",
@@ -1682,8 +1682,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/SKILL.md",
-      "bytes": 12125,
-      "sha256": "3ea89777dcb56f7442246624f32009a7c7099e27c9cc23a529ff7c3fc8515e72"
+      "bytes": 11503,
+      "sha256": "92171b16543e6bca90aa8316d79c8003e3df55140ed26c0536191e4abe3ade01"
     },
     {
       "path": "tests/help-sections.test.cjs",

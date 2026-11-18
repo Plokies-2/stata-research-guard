@@ -9,7 +9,7 @@
   "interface": {
     "displayName": "Stata Research Guard",
     "shortDescription": "Readable Stata, original help, concrete peer advice.",
-    "longDescription": "Write researcher-readable Stata from actual project evidence, original command help and relevant paper workflows. Keep analysis choices visible and obtain one independent reading for substantial analysis changes.",
+    "longDescription": "Write researcher-readable Stata from actual project evidence, original command help and relevant paper workflows. Keep analysis choices visible and use independent peer advice when requested or useful for a concrete research question.",
     "developerName": "song7",
     "category": "Developer Tools",
     "capabilities": [
