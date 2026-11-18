@@ -5,7 +5,9 @@ description: Write, revise, execute, and review readable Stata analysis from act
 
 # Stata Research Workflow
 
-Prioritize code the researcher can comfortably read, inspect, and modify. Help them follow data and sample construction through the visible estimator, specification, stored estimates, and outputs; retain adequate code when a rewrite offers no concrete benefit. Guard supplies evidence; the model and researcher make the research choices.
+**The highest implementation priority is for a researcher to read the code from top to bottom and see what actually runs.** Simplicity serves that goal. Take the lines needed to show the path from source data and sample construction to estimates and saved outputs. At each consequential command, show the actual inputs, conditions, and options in the command or immediately nearby. Keep an explicit step or specification when it makes that path easier to follow. Ignore line and character counts as measures of simplicity. Guard supplies evidence. The model and researcher make the research choices.
+
+Protect source data and comparison baselines in the files themselves. Read existing results from saved data, estimates, and outputs. Write new runs to a separate destination when a baseline must be kept, and overwrite only authorized outputs. Keep historical execution paths out of the maintained analysis.
 
 For a concrete authoring choice, read the relevant comparison in [code-examples.md](references/code-examples.md): mechanical repetition versus distinct specifications, native predictions, result ownership and lifetime, or the scope of a local edit. These authored illustrations explain decisions; they are not paper excerpts, required templates, or substitutes for command help and actual paper reading. Skip them when the choice is already clear.
 
@@ -28,15 +30,17 @@ There is no `phase` or `commands` argument. A new follow-up alone does not inval
 
 ## Work from the actual project
 
-Read applicable project instructions and any relevant current handoff, then inspect the requested files and their direct inputs, callers, and outputs. Preserve the user's scope, research specification, baseline data, and output contracts. Keep one maintained `.do` per research work unit: locate its existing file and edit, extend, rerun, or refactor that same file. A changed option, specification, output, or follow-up request is not a new work unit. Follow the general rules for the narrow reasons to create another file; do not create a replacement workflow by default.
+Read applicable project instructions and any relevant current handoff. Preserve the user's scope, research specification, baseline data, and output contracts.
+
+**Before adding a branch or argument to an existing `.do`, reassess the work unit.** Read the real inputs and trace the saved outputs back from their callers or consumers. Keep one maintained `.do` for each coherent workflow. Related variants that extend the same data-to-output flow stay in its existing file. An independent maintained analysis or stage with its own input-to-output flow belongs in a purpose-named file. The project folder, a shared panel, and a common estimator are insufficient reasons to combine them. Use [workflow-taxonomy.md](references/workflow-taxonomy.md) for the decision and an example of a short master.
+
+**Delete obsolete code in the same edit.** Check direct callers and output consumers, then remove superseded or unused blocks in scope, including commented-out alternatives and their unused arguments or helpers. Run one-off exploration in the work area with a temporary driver if needed. At completion, integrate only the code needed to reproduce maintained outputs and delete the remaining scratch code created for the task. Preserve required reproducers, baselines and research records, including unfavorable results. See [general-rules.md](references/general-rules.md) for the cleanup boundary.
 
 Before a project's first research run, ask once whether to create an Excel codebook if no existing codebook, designated workbook or prior decision is available. Continue authorized work that can proceed while the answer is pending. Follow [codebook.md](references/codebook.md) for creation, maintenance and formatting.
 
 Comments state the current operation and research rationale; keep private revision or meeting history in Git or requested documentation. Retain substantive data/event dates and necessary source citations.
 
 For workflow design or restructuring, reconcile the forward data flow with a backward reading from the affected output's meaning, sample, and source transformations. Use what this reveals to choose a useful correction or retain adequate code; a path listing or cosmetic master-file change is not the purpose of a research refactor.
-
-Apply the stage and naming guidance in the general rules. Consult [workflow-taxonomy.md](references/workflow-taxonomy.md) when deciding file boundaries, including whether an independent input, interface, or restart need justifies another file.
 
 ## Read actual paper workflows for substantial work
 

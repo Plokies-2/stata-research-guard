@@ -1,6 +1,10 @@
 # Workflow Boundaries
 
-Apply the general rules' one-maintained-`.do`-per-work-unit boundary. Continue changes and refactoring in that file. The stage roles below help recognize genuinely distinct work units; they are not a recipe for splitting an existing analysis or creating a new file for each follow-up. A project with several established stages may use a short master:
+Before adding a branch or argument, read the existing workflow and the proposed workflow from their actual inputs to the saved outputs and downstream consumers. A variation that feeds the same maintained analysis belongs with that analysis. A maintained task with a distinct purpose and its own input-to-output flow belongs in a named `.do`. Workflows can read the same panel and use the same estimator while serving different purposes. A different output filename alone is insufficient to establish a distinct workflow. Keep a small coherent analysis together.
+
+A short master can call established stages in execution order. Each stage shows its own data, research choices, and outputs.
+
+Common stage roles include the following.
 
 | Stage | Keep together |
 | --- | --- |
@@ -9,12 +13,17 @@ Apply the general rules' one-maintained-`.do`-per-work-unit boundary. Continue c
 | `regression.do` | Main specifications, immediate estimate storage, and their regression tables, postestimation, and figures. |
 | `robustness.do` | Requested alternative samples/specifications, placebo or permutation work, and their outputs. |
 
-These are roles and preferred new names, not mandatory files. Keep a small coherent analysis in one `.do`; preserve existing adequate names and contracts. Do not create empty stages or add robustness analyses the user did not request.
+Preserve adequate existing names and contracts. Create only the stages the work actually needs.
 
 Within a stage, use short labeled sections. Estimation and the code that consumes its saved results should be easy to find together. Splitting estimation, estimate storage, tables, and plots into separate modules usually hides that relationship. Separate outcomes or specifications usually belong in visible blocks or shallow loops, not separate files.
 
-Before adding a file, apply the new-file exceptions in the general rules. A revised specification or export is normally another edit or section in the same file. Reuse a durable dataset or `.ster` when rerunning downstream work; do not add runtime modes or option plumbing merely to skip completed stages.
+For a one-off comparison or hypothesis check, use temporary code in the work area. If the work ends without a maintained consumer, remove the temporary code after recording the requested results. If the analysis is adopted, retain the smallest readable code path that reproduces it. Reuse a durable dataset or `.ster` when rerunning downstream work.
 
-When using a good project as a reference, adopt its readable data and estimate flow. Its exact globals, formatter, filenames, controls, sample rules, and visual formatting are not a template for every project.
+## Choose a reference that fits the workflow
 
-This file-ownership default is a researcher workflow preference, not an OpenAI requirement for a single file. It follows OpenAI's [skill guidance](https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra): state a focused decision boundary instead of prescribing an elaborate recipe. Keep file ownership stable while leaving implementation choices within the file to the model; do not turn this preference into a file-count checker or a demand to merge independent work units.
+Choose by the input and output that justify the boundary in the current work. Consider what can be reused after preparation, which analyses need their own data or estimates, and who consumes each result. Start with any relevant example below or find another through [paper workflow reading](paper-workflow-reading.md). Open the original files for the relevant path. The bundled [source archive index](../../../data/source_archive/index.json) maps original paths to full-file snapshots where available. Use the relevant file boundary and keep the current project's research and output choices.
+
+- **Short master with several established stages.** A project master can call `build_analysis_panel.do` for the reusable panel, `build_summary.do` for descriptives, `run_regressions.do` for the main estimates and their tables, and `draft_figures_tables.do` for separate manuscript exhibits. Use this shape when those stages already have distinct responsibilities.
+- **A compact preparation-to-analysis handoff.** In *Democracy and Aid Donorship*, the master calls `Prepare data.do` and `Analyse data.do` under `corpus/packages/120068/`. The preparation file saves `new_donors_MAIN.dta`. The analysis file reads it and keeps the related OLS and IV specifications and Table 2 export together. Consider this layout when a reusable dataset feeds one coherent analysis. [Replication package V2](https://doi.org/10.3886/E120068V2)
+- **Different source data and grouped research outputs.** In *Vulnerability and Clientelism*, `0. Master.do` under `corpus/packages/173341/dofiles/` calls survey cleaning and variable construction, followed by `3. Voting_Analysis_Cleaning.do`, which combines survey and electoral data into `voting_data.dta`. `4. Main_Tables.do` reads the household data for Table 2 and the electoral data for Table 4. `5. Appendix_Tables.do` reuses these prepared datasets for appendix analyses. Consider separating source-specific preparation and grouping downstream work by purpose. [Replication package V1](https://doi.org/10.3886/E173341V1)
+- **One prepared panel feeding distinct estimations.** In *Managers' Productivity and Recruitment in the Public Sector*, `script_dataforregressions.do` under `corpus/packages/191751/` saves `DataForRegressionsADP.dta`. `script_recruitment_regressions.do` reads it for the Table 2 regressions, while `script_recruitment_figures.do` reads it for a separate event-time specification and exports Figure 4. This boundary makes sense when a figure requires its own estimation. For a figure based on the same estimate as a table, reuse that estimate and keep the handoff clear. [Replication package V1](https://doi.org/10.3886/E191751V1)

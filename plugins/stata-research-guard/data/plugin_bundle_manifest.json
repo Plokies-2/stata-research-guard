@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.4.1+codex.2026111901"
+    "version": "0.4.1+codex.2026111902"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
       "bytes": 988,
-      "sha256": "8d31f598c074c508f1662fde10f111bbccf038d16a31ba576d89eae7601b1a85"
+      "sha256": "2416da2b10e2bc0396cabae81dec0752c5f0edeb7ff0966ba6c1693d651c93aa"
     },
     {
       "path": ".mcp.json",
@@ -17,8 +17,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 36682,
-      "sha256": "8ca570ed4715709e3e628405b399ba6536d1ec95ba55859666c4bb92c3fdfcc9"
+      "bytes": 37232,
+      "sha256": "1ff459687f0245e2d1de70605de55a67b55ffd85588a8f0a6365b66e3a4d980d"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -1662,8 +1662,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rules.md",
-      "bytes": 25325,
-      "sha256": "aee636f7e96c0e344270fe93ce6910819ac419827250bfee01e68285f0ee396a"
+      "bytes": 26428,
+      "sha256": "9b3979fe6289abb7dfd76c6b62340fc54b9615a137c89d00888d6f053b4e297d"
     },
     {
       "path": "skills/stata-replication-workflow/references/paper-workflow-reading.md",
@@ -1677,13 +1677,13 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/workflow-taxonomy.md",
-      "bytes": 2533,
-      "sha256": "4a708187ec6e3050dbce1c3003775ed704fd043f150e68f7ad187862f7f8734d"
+      "bytes": 4831,
+      "sha256": "4818573c0e78ca158b8c98b9820e5e9e1543653b9f666836f3d61def94d971af"
     },
     {
       "path": "skills/stata-replication-workflow/SKILL.md",
-      "bytes": 11503,
-      "sha256": "92171b16543e6bca90aa8316d79c8003e3df55140ed26c0536191e4abe3ade01"
+      "bytes": 12647,
+      "sha256": "dfce58be9f6659073548d5d72dd81b114e805050a8adaa00dea11d057f098e81"
     },
     {
       "path": "tests/help-sections.test.cjs",
@@ -1729,7 +1729,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.4.1+codex.2026111901"
+      "value": "0.4.1+codex.2026111902"
     },
     {
       "id": "readme.heading",

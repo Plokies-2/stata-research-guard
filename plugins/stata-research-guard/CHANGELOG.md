@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Make top-to-bottom readability and visible research choices the primary authoring goal. Keep consequential inputs, sample restrictions, transformations, and estimator options close to where they are used.
+- Reassess file boundaries from actual inputs and outputs before adding a branch. Use connected replication workflows as alternatives when choosing how to organize a project.
+- Remove obsolete execution paths and disposable exploration code. Preserve source files and comparison baselines through explicit output destinations.
+
 ## 0.4.1+codex.2026111901 — 2026-11-19
 
 - Name the help, paper, or project source that informed a code choice in the final report. Distinguish work that ran, outputs actually inspected, and material blockers or unverified steps.
