@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Plokies-2/stata-research-guard/releases/latest"><img src="https://img.shields.io/badge/version-0.4.0-245B78?style=flat-square" alt="Version 0.4.0"></a>
+  <a href="https://github.com/Plokies-2/stata-research-guard/releases/latest"><img src="https://img.shields.io/badge/version-0.4.1-245B78?style=flat-square" alt="Version 0.4.1"></a>
   <img src="https://img.shields.io/badge/AI--assisted-Stata-222222?style=flat-square" alt="AI-assisted Stata">
   <img src="https://img.shields.io/badge/developed_with-Stata_18-1A6B70?style=flat-square" alt="Developed with Stata 18">
   <a href="https://hub.xerj.org/contributors/Plokies-2"><img src="https://hub.xerj.org/contributors/Plokies-2/badge.svg" alt="XERJ Corpus Hub contributor"></a>
@@ -18,7 +18,7 @@
 
 **Stata code researchers can read, revise, and carry forward.**
 
-Latest tagged release: [`v0.4.0`](https://github.com/Plokies-2/stata-research-guard/releases/tag/v0.4.0). `main` uses build identifier `0.4.0+codex.2026111701`. Its upcoming changes are listed under **Unreleased** in the [changelog](plugins/stata-research-guard/CHANGELOG.md).
+Latest release: [`v0.4.1`](https://github.com/Plokies-2/stata-research-guard/releases/tag/v0.4.1+codex.2026111901) (build `0.4.1+codex.2026111901`). See the [changelog](plugins/stata-research-guard/CHANGELOG.md).
 
 Stata Research Guard provides research guidance for AI-assisted Stata: readable analysis code, original command help, real paper code, and independent peer review. It connects data and sample construction to visible regression specifications, saved estimates, tables, and figures. The current installation is a Codex plugin; research choices remain with the user and the model.
 

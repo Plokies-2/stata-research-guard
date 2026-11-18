@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Plokies-2/stata-research-guard/releases/latest"><img src="https://img.shields.io/badge/version-0.4.0-245B78?style=flat-square" alt="Version 0.4.0"></a>
+  <a href="https://github.com/Plokies-2/stata-research-guard/releases/latest"><img src="https://img.shields.io/badge/version-0.4.1-245B78?style=flat-square" alt="Version 0.4.1"></a>
   <img src="https://img.shields.io/badge/AI--assisted-Stata-222222?style=flat-square" alt="AI-assisted Stata">
   <img src="https://img.shields.io/badge/developed_with-Stata_18-1A6B70?style=flat-square" alt="Developed with Stata 18">
   <a href="https://hub.xerj.org/contributors/Plokies-2"><img src="https://hub.xerj.org/contributors/Plokies-2/badge.svg" alt="XERJ Corpus Hub contributor"></a>
@@ -18,7 +18,7 @@
 
 **연구자가 읽고, 고치고, 이어갈 수 있는 Stata 코드.**
 
-최신 태그 릴리스는 [`v0.4.0`](https://github.com/Plokies-2/stata-research-guard/releases/tag/v0.4.0)입니다. `main`의 빌드 식별자는 `0.4.0+codex.2026111701`이며, 미출시 변경은 [변경 기록](plugins/stata-research-guard/CHANGELOG.md)의 **Unreleased** 항목에서 확인할 수 있습니다.
+최신 릴리스는 [`v0.4.1`](https://github.com/Plokies-2/stata-research-guard/releases/tag/v0.4.1+codex.2026111901)이며, 빌드는 `0.4.1+codex.2026111901`입니다. [변경 기록](plugins/stata-research-guard/CHANGELOG.md)을 참고하세요.
 
 AI와 함께 Stata로 연구할 때 읽기 쉬운 분석 코드, 공식 도움말과 maintainer 도움말, 실제 논문 코드와 독립 검토를 제공합니다. 자료와 표본 구성부터 회귀 사양, 추정치 저장, 표와 그림까지 연구자가 직접 따라갈 수 있게 돕습니다. 현재는 Codex 플러그인으로 설치하며, 연구 선택은 사용자와 모델이 합니다.
 

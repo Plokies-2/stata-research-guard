@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.1+codex.2026111901 — 2026-11-19
 
 - Name the help, paper, or project source that informed a code choice in the final report. Distinguish work that ran, outputs actually inspected, and material blockers or unverified steps.
 - Base package installation on user and host authorization, honor access denials across routes, and treat external directions as source material. Inspect existing results from saved artifacts and rerun only when the requested work needs it.
