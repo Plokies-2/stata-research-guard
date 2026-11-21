@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.4.1+codex.2026112101"
+    "version": "0.4.1+codex.2026112102"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
-      "bytes": 988,
-      "sha256": "41f775f16d4c35d876319390251bffd702f8c5a7671642152662283ef75fc9fa"
+      "bytes": 1021,
+      "sha256": "b0867b43ef140ffbe9a7717b8fb98e4b9b86d3f5fc9106c2d903f5f8eb532a5d"
     },
     {
       "path": ".mcp.json",
@@ -17,8 +17,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 37385,
-      "sha256": "421869b5ead3f019a3be52e601bea851d1597483ff0d263426be827fad0d86af"
+      "bytes": 37547,
+      "sha256": "b67553603e634d237f02cdbb983f1f79391a666aba8db6eae80f201d15a62d8b"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -1556,6 +1556,16 @@
       "sha256": "c0f7dce811845291698eac6e503b7eacfae4fad70b313c747388b19a18b2d5ef"
     },
     {
+      "path": "hooks/hooks.json",
+      "bytes": 599,
+      "sha256": "cfbc9872b1b8e3071f500c74d85a8cc046a594d2069b40ba881129e2a3e49676"
+    },
+    {
+      "path": "hooks/stata-diff.cjs",
+      "bytes": 2754,
+      "sha256": "cbe2925ece05e0b35a6ae83f4ba4aef5697f789e8d99ab04709cae212433e5f4"
+    },
+    {
       "path": "INSTRUCTIONS.md",
       "bytes": 897,
       "sha256": "520b369c83931267ffb42acae9b579945ccaefe91a10ece45fb27eb9b72d799d"
@@ -1729,7 +1739,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.4.1+codex.2026112101"
+      "value": "0.4.1+codex.2026112102"
     },
     {
       "id": "readme.heading",

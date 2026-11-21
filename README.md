@@ -20,7 +20,7 @@
 
 Latest release: [`v0.4.1`](https://github.com/Plokies-2/stata-research-guard/releases/tag/v0.4.1+codex.2026111901) (build `0.4.1+codex.2026111901`). See the [changelog](plugins/stata-research-guard/CHANGELOG.md).
 
-The `main` branch currently serves build `0.4.1+codex.2026112101` with [updated authoring and reporting guidance](plugins/stata-research-guard/CHANGELOG.md#unreleased).
+The `main` branch currently serves build `0.4.1+codex.2026112102` with [updated authoring and reporting guidance](plugins/stata-research-guard/CHANGELOG.md#unreleased).
 
 Stata Research Guard provides research guidance for AI-assisted Stata: readable analysis code, original command help, real paper code, and independent peer review. It connects data and sample construction to visible regression specifications, saved estimates, tables, and figures. The current installation is a Codex plugin; research choices remain with the user and the model.
 
@@ -41,6 +41,8 @@ codex plugin add stata-research-guard@stata-research-guard-team
 On Windows, run installation in a regular PowerShell terminal. Use Codex's default user directory (`%USERPROFILE%\.codex`); if you set `CODEX_HOME` separately, choose a short local path outside synced folders to avoid cache-activation and path-length errors.
 
 The marketplace identifier is `stata-research-guard-team`. Start a new Codex chat, check that the plugin is enabled, and ask it to retrieve the official help for `regress` through `get_stata_command_evidence`. A successful help response confirms the MCP connection; installation alone does not. These commands follow the [official Codex CLI documentation](https://learn.chatgpt.com/docs/developer-commands#codex-plugin-marketplace).
+
+To enable the bundled diff reminders, review and trust the plugin's `PostToolUse` and `Stop` hooks in **Settings → Hooks** or with `/hooks` in the CLI. They use Node.js on `PATH` and react to successful `.do` edits made with Codex's `apply_patch` tool. When diff blocks appear to be missing, the stop hook asks Codex to review the reply once. [Codex hook trust](https://learn.chatgpt.com/docs/hooks#review-and-trust-hooks)
 
 </details>
 

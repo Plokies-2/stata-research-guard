@@ -1,6 +1,6 @@
 {
   "name": "stata-research-guard",
-  "version": "0.4.1+codex.2026112101",
+  "version": "0.4.1+codex.2026112102",
   "description": "Researcher-readable Stata with original command evidence and concrete independent review.",
   "author": {
     "name": "song7"
@@ -20,5 +20,6 @@
       "Use $stata-replication-workflow to work from the actual research project, preserve its requirements, and write Stata a researcher can follow."
     ]
   },
-  "mcpServers": "./.mcp.json"
+  "mcpServers": "./.mcp.json",
+  "hooks": "./hooks/hooks.json"
 }

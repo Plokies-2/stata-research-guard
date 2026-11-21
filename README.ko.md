@@ -20,7 +20,7 @@
 
 최신 릴리스는 [`v0.4.1`](https://github.com/Plokies-2/stata-research-guard/releases/tag/v0.4.1+codex.2026111901)이며, 빌드는 `0.4.1+codex.2026111901`입니다. [변경 기록](plugins/stata-research-guard/CHANGELOG.md)을 참고하세요.
 
-`main` 브랜치의 현재 빌드는 `0.4.1+codex.2026112101`이며, [코드 작성 및 변경 보고 지침](plugins/stata-research-guard/CHANGELOG.md#unreleased)이 반영돼 있습니다.
+`main` 브랜치의 현재 빌드는 `0.4.1+codex.2026112102`이며, [코드 작성 및 변경 보고 지침](plugins/stata-research-guard/CHANGELOG.md#unreleased)이 반영돼 있습니다.
 
 AI와 함께 Stata로 연구할 때 읽기 쉬운 분석 코드, 공식 도움말과 maintainer 도움말, 실제 논문 코드와 독립 검토를 제공합니다. 자료와 표본 구성부터 회귀 사양, 추정치 저장, 표와 그림까지 연구자가 직접 따라갈 수 있게 돕습니다. 현재는 Codex 플러그인으로 설치하며, 연구 선택은 사용자와 모델이 합니다.
 
@@ -41,6 +41,8 @@ codex plugin add stata-research-guard@stata-research-guard-team
 Windows에서는 일반 PowerShell에서 설치 명령을 실행합니다. Codex 기본 사용자 폴더(`%USERPROFILE%\.codex`)를 사용하고, `CODEX_HOME`을 따로 지정한다면 캐시 활성화·경로 길이 오류를 피할 수 있도록 동기화되지 않는 짧은 로컬 경로를 사용하세요.
 
 마켓플레이스 식별자는 `stata-research-guard-team`입니다. 새 Codex 채팅을 열어 플러그인이 활성화되어 있는지 확인하고, `get_stata_command_evidence`로 `regress`의 공식 도움말을 읽어달라고 요청합니다. 실제 도움말 응답이 와야 MCP 연결까지 확인한 것이며, 설치 성공만으로 연결을 확인한 것은 아닙니다. 설치 명령은 [공식 Codex CLI 문서](https://learn.chatgpt.com/docs/developer-commands#codex-plugin-marketplace)를 따릅니다.
+
+`.do` 변경 보고 훅을 사용하려면 **Settings → Hooks** 또는 CLI의 `/hooks`에서 플러그인의 `PostToolUse`와 `Stop`을 검토하고 신뢰하세요. 훅은 `PATH`의 Node.js로 실행되며, Codex가 `apply_patch`로 `.do` 파일을 수정했을 때 작동합니다. 답변에서 diff 블록이 빠진 것으로 보이면 Codex에 한 번 더 검토를 요청합니다. [Codex 훅 승인 문서](https://learn.chatgpt.com/docs/hooks#review-and-trust-hooks)
 
 </details>
 

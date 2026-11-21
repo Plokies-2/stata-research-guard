@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Bundle opt-in Codex hooks that remind the model after an `apply_patch` edit to a `.do` file and request one final review when expected diff blocks are missing.
 - Show before/after diffs for each changed `.do` file after small Stata edits. Summarize accompanying non-Stata changes and show their diffs on request.
 - Make top-to-bottom readability and visible research choices the primary authoring goal. Keep consequential inputs, sample restrictions, transformations, and estimator options close to where they are used.
 - Reassess file boundaries from actual inputs and outputs before adding a branch. Use connected replication workflows as alternatives when choosing how to organize a project.
