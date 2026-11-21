@@ -20,7 +20,7 @@
 
 Latest release: [`v0.4.1`](https://github.com/Plokies-2/stata-research-guard/releases/tag/v0.4.1+codex.2026111901) (build `0.4.1+codex.2026111901`). See the [changelog](plugins/stata-research-guard/CHANGELOG.md).
 
-The `main` branch currently serves build `0.4.1+codex.2026111902` with [updated authoring guidance](plugins/stata-research-guard/CHANGELOG.md#unreleased).
+The `main` branch currently serves build `0.4.1+codex.2026112101` with [updated authoring and reporting guidance](plugins/stata-research-guard/CHANGELOG.md#unreleased).
 
 Stata Research Guard provides research guidance for AI-assisted Stata: readable analysis code, original command help, real paper code, and independent peer review. It connects data and sample construction to visible regression specifications, saved estimates, tables, and figures. The current installation is a Codex plugin; research choices remain with the user and the model.
 

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Show before/after diffs for each changed `.do` file after small Stata edits. Summarize accompanying non-Stata changes and show their diffs on request.
 - Make top-to-bottom readability and visible research choices the primary authoring goal. Keep consequential inputs, sample restrictions, transformations, and estimator options close to where they are used.
 - Reassess file boundaries from actual inputs and outputs before adding a branch. Use connected replication workflows as alternatives when choosing how to organize a project.
 - Remove obsolete execution paths and disposable exploration code. Preserve source files and comparison baselines through explicit output destinations.
