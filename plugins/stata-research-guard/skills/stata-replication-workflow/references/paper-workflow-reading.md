@@ -1,18 +1,18 @@
 # Reading Paper Workflows
 
-For substantial Stata authoring or restructuring, learn from an actual connected research workflow before deciding the implementation. This is a reading and reasoning obligation, not a prescribed code structure or an automatic check. Command syntax may already be settled and this reading may still change the design.
+Use this reference when the user requests a paper comparison or when an example can inform a concrete implementation choice that the active project leaves open. A paper can help with a stage boundary, a reusable analysis dataset, or a handoff from stored results to exhibits even when command syntax is settled.
 
 ## Choose a useful source, not a canonical answer
 
 Start from the current research problem: what data and sample feed which estimates and outputs, and what implementation choice needs improvement? Consider a direct documented-command approach before treating a paper's manual implementation as the starting point. Inspect plausible original-code alternatives for that question. Prefer a source whose relevant flow you can understand and whose technique addresses the current problem; explain the choice briefly. A familiar or bundled package can be the best fit, but its presence here, journal prestige, downloads, or code frequency do not establish that. Look beyond the existing collection when its examples are indirect, awkward, incomplete, or mismatched. Do not force a new search merely to replace a source that already fits and has been critically read.
 
-One well-chosen connected workflow can suffice. A second source is useful when it offers a concrete competing technique or resolves a gap; no fixed paper quota, exhaustive survey, best-paper ranking, or permanent winner is needed. Different stages can benefit from different papers. A maintainer guide can explain an implementation choice, but it does not replace the actual paper workflow reading requested here.
+Start with one well-chosen workflow. Add a source when it offers a concrete competing technique or resolves a gap. Use maintainer help for command behavior and original paper files for the example's implementation.
 
 ## Follow the code through the result
 
 Read the README or available entry instructions and the active entrypoint to understand the overall project and which branches produce the relevant results. Then follow the original source through inputs, transformations and sample construction, estimation, stored/returned results, and the final table or figure. Read shared definitions, callbacks, and upstream/downstream files when they affect that path. A master file, filename list, command occurrence, search hit, or this document alone is insufficient.
 
-Use the same backward reading as for the current project: trace a relevant output to the estimate, sample, and upstream transformations that supply it. Reconcile that with the forward path to distinguish needed research work from avoidable reconstruction. The paper's reported numerical result is not a target for the current analysis.
+If the question concerns an output, start from the relevant table or figure and follow the estimate, sample, and transformations that supply it. Compare the design of that path with the current project's research question and requirements.
 
 "Whole workflow" means the connected analysis needed to understand the current work, not every unrelated outcome, appendix, bundled ado, or dataset in a repository. Follow substantive dependencies to their source rather than cutting fixed-size windows. If a specification differs between branches, read the difference. When the task changes several distinct paths, cover those paths rather than using one convenient regression as a proxy for all of them. Read available raw logs and artifacts when useful; never run a paper just to supply missing logs.
 
@@ -32,7 +32,7 @@ The writing model reads the sources itself. When a peer is used under the workfl
 
 Use accessible original package files already present, including the selected full-file snapshots in this plugin's `data/source_archive/index.json` (relative to the plugin root). Resolve the original path to `archive_path` and actually open the `.source` file: it contains original text, not a workflow summary. An optional `editorial_note` points to a separately attributed correction or conditional illustration; read its assumptions rather than treating it as the authors' original code. The index is navigation, not proof of reading or a list of recommended winners. Some papers have only individual files bundled, so trace missing dependencies in the original package before calling the path understood.
 
-Otherwise use the authors' or journal's replication repository and retain the source URL/DOI, version, and original paths. Fetch only necessary code and documentation; do not collect datasets or full archives when individual code files suffice. Follow the user's browser and login instructions when authenticated access is needed; never embed account-specific details in this public skill. Another suitable accessible paper is preferable to pretending an unavailable source was read. If no suitable connected source is available, disclose that limitation and continue independent work without claiming that the required reading or final workflow comparison occurred. Do not create a server gate or silently substitute a synthetic example.
+Otherwise use the authors' or journal's replication repository and retain the source URL/DOI, version, and original paths. Fetch only the code and documentation needed to answer the question. Follow the user's browser and login instructions for authenticated access. If the requested example is unavailable, describe the gap and continue work supported by the available evidence.
 
 ## Concrete starting points, open to replacement
 
