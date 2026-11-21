@@ -112,7 +112,7 @@ Live help는 작업 폴더 기준의 상대경로로 do-file을 실행하므로 
 변경이 모인 뒤 해당 transport와 bundle을 확인합니다. 예를 들어 서버·live help 변경은 다음 명령으로 검사합니다.
 
 ```powershell
-node --test tests/server.test.cjs tests/live-help.test.cjs tests/help-sections.test.cjs tests/optional-evidence.test.cjs tests/plugin_bundle_manifest.test.cjs
+node --test tests/server.test.cjs tests/live-help.test.cjs tests/help-sections.test.cjs tests/optional-evidence.test.cjs tests/plugin_bundle_manifest.test.cjs tests/stata-diff.test.cjs
 node scripts/verify_plugin_bundle.cjs
 ```
 

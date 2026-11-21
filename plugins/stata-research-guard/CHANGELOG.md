@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Bundle opt-in Codex hooks that remind the model after an `apply_patch` edit to a `.do` file and request one final review when expected diff blocks are missing.
+- Bundle opt-in Codex hooks for successful `.do` changes from direct `apply_patch`, shell-invoked patches, and patches made inside Code Mode. The `Stop` hook also reads completed file changes in the current turn when a tool notification is missing, and requests one final review when diff blocks appear to be missing.
 - Show before/after diffs for each changed `.do` file after small Stata edits. Summarize accompanying non-Stata changes and show their diffs on request.
 - Make top-to-bottom readability and visible research choices the primary authoring goal. Keep consequential inputs, sample restrictions, transformations, and estimator options close to where they are used.
 - Reassess file boundaries from actual inputs and outputs before adding a branch. Use connected replication workflows as alternatives when choosing how to organize a project.
