@@ -62,3 +62,20 @@ test("an exec callback and the transcript count the same file only once", (t) =>
   assert.equal(result.hookSpecificOutput.hookEventName, "PostToolUse");
   assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: goodReply }), {});
 });
+
+test("scratch .do edits are silent in patch callbacks and transcript recovery", (t) => {
+  const { dir, run, writeTranscript } = fixture(t);
+  const scratch = path.join(dir, "work", "TMP", "simulation.do");
+  const patch = { hook_event_name: "PostToolUse", tool_name: "apply_patch",
+    tool_response: `Success. Updated the following files:\nM ${scratch}\n` };
+  writeTranscript([{ type: "task_started", turn_id: "turn" }, fileChange(scratch)]);
+  assert.deepEqual(run(patch), {});
+  assert.deepEqual(run({ hook_event_name: "PostToolUse", tool_name: "exec",
+    tool_input: { code: "await tools.apply_patch(patch)" } }), {});
+  assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: "Research summary." }), {});
+
+  const maintained = path.join(dir, "work", "vehicle_registration", "model.do");
+  writeTranscript([{ type: "task_started", turn_id: "turn" }, fileChange(scratch), fileChange(maintained)]);
+  assert.equal(run({ hook_event_name: "Stop", last_assistant_message: "Changed model.do." }).decision, "block");
+  assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: goodReply }), {});
+});

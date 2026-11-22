@@ -59,6 +59,14 @@ function successfulPatchFiles(response) {
   return [...output[1].matchAll(/^[AMD] (.+\.do)[ \t]*\r?$/gim)].map((match) => match[1]);
 }
 
+function isMaintainedDo(file, cwd) {
+  const relative = path.relative(cwd, file);
+  const outsideProject = relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative);
+  const dirs = path.dirname(outsideProject ? file : relative).toLowerCase().split(/[\\/]/);
+  // Some research projects keep their maintained analysis under work/.
+  return /\.do$/i.test(file) && !dirs.some((dir) => ["tmp", "temp", "cache", ".cache", "build", "scratch"].includes(dir));
+}
+
 function handle(event) {
   if (typeof event.session_id !== "string" || typeof event.turn_id !== "string") return {};
   const dataDir = process.env.PLUGIN_DATA || process.env.CLAUDE_PLUGIN_DATA;
@@ -79,6 +87,7 @@ function handle(event) {
     } else if (event.tool_name === "exec" && hasPatch && firstPatch) {
       changedFiles = transcriptFiles(event).map((file) => path.resolve(cwd, file));
     }
+    changedFiles = changedFiles.filter((file) => isMaintainedDo(file, cwd));
     if (changedFiles.length === 0) return {};
 
     if (turnFile) {
@@ -95,7 +104,8 @@ function handle(event) {
   const draft = event.last_assistant_message;
   if (event.stop_hook_active || typeof draft !== "string") return {};
   const changedFiles = new Set([...remembered, ...transcriptFiles(event)]
-    .map((file) => path.resolve(cwd, file)));
+    .map((file) => path.resolve(cwd, file))
+    .filter((file) => isMaintainedDo(file, cwd)));
   if (changedFiles.size === 0) return {};
 
   const fileNames = [...changedFiles].map((file) => file.split(/[\\/]/).pop());

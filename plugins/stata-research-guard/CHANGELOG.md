@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Skip diff reminders for `.do` changes in temporary folders such as `tmp`, `cache`, and `build`. Keep reporting on maintained analysis under `work/`.
 - Use the active project code to settle established workflows. Consult original paper workflows for requested comparisons or unresolved implementation choices. Trace changed outputs through their actual consumers and apply layout defaults when designing a new output.
 - Bundle opt-in Codex hooks for successful `.do` changes from direct `apply_patch`, shell-invoked patches, and patches made inside Code Mode. The `Stop` hook also reads completed file changes in the current turn when a tool notification is missing, and requests one final review when diff blocks appear to be missing.
 - Show before/after diffs for each changed `.do` file after small Stata edits. Summarize accompanying non-Stata changes and show their diffs on request.
