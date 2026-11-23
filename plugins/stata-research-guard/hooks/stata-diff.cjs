@@ -7,6 +7,7 @@ const { createHash } = require("node:crypto");
 const reportRule = [
   "Apply the stata-replication-workflow final-reply rule to the actual maintained changes in this turn.",
   "For a small Stata edit, include the actual before/after changes in a separate fenced diff block for each changed .do file.",
+  "For the 100-line threshold, count added and deleted lines only in maintained .do files.",
   "Summarize accompanying non-Stata files and show their diffs only when the user requests them.",
   "Honor any explicit user format and the existing exception for large edits. Exclude scratch files and changes that were reverted.",
 ].join(" ");

@@ -20,7 +20,7 @@
 
 최신 릴리스는 [`v0.4.1`](https://github.com/Plokies-2/stata-research-guard/releases/tag/v0.4.1+codex.2026111901)이며, 빌드는 `0.4.1+codex.2026111901`입니다. [변경 기록](plugins/stata-research-guard/CHANGELOG.md)을 참고하세요.
 
-`main` 브랜치의 현재 빌드는 `0.4.1+codex.2026112201`이며, [임시 폴더의 `.do` 변경을 diff 알림에서 제외합니다](plugins/stata-research-guard/CHANGELOG.md#unreleased).
+`main` 브랜치의 현재 빌드는 `0.4.1+codex.2026112401`입니다. 미리 정해진 변수 목록과 출력 이름은 사용하는 곳에 나열합니다. diff 알림의 100줄 기준에는 유지 대상 `.do` 파일의 변경만 포함합니다. [변경 기록](plugins/stata-research-guard/CHANGELOG.md#unreleased)을 참고하세요.
 
 AI와 함께 Stata로 연구할 때 읽기 쉬운 분석 코드, 공식 도움말과 maintainer 도움말, 실제 논문 코드와 독립 검토를 제공합니다. 자료와 표본 구성부터 회귀 사양, 추정치 저장, 표와 그림까지 연구자가 직접 따라갈 수 있게 돕습니다. 현재는 Codex 플러그인으로 설치하며, 연구 선택은 사용자와 모델이 합니다.
 
