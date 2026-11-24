@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Ask for a duplicate-implementation review after detected changes to maintained `.do` files. Read each changed region and the 50 lines on either side. Trace directly connected code when needed, identify work the existing code or a supported command can already handle, and verify that removing it preserves the required behavior. If the final reply omits the confirmation, the opt-in Stop hook requests one more pass.
 - List fixed variable groups and output names explicitly. Wrap longer lists near their operations and keep branches for conditions that affect the analysis or depend on the data or execution state.
 - Skip diff reminders for `.do` changes in temporary folders such as `tmp`, `cache`, and `build`. Keep reporting on maintained analysis under `work/`.
 - Use the active project code to settle established workflows. Consult original paper workflows for requested comparisons or unresolved implementation choices. Trace changed outputs through their actual consumers and apply layout defaults when designing a new output.

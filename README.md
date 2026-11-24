@@ -20,7 +20,7 @@
 
 Latest release: [`v0.4.1`](https://github.com/Plokies-2/stata-research-guard/releases/tag/v0.4.1+codex.2026111901) (build `0.4.1+codex.2026111901`). See the [changelog](plugins/stata-research-guard/CHANGELOG.md).
 
-The `main` branch currently serves build `0.4.1+codex.2026112401`. The workflow keeps fixed variable groups and output names visible where they are used. The diff reminder counts only edits to maintained `.do` files toward the 100-line threshold. See the [changelog](plugins/stata-research-guard/CHANGELOG.md#unreleased).
+The `main` branch currently serves build `0.4.1+codex.2026112402` with a duplicate-implementation review for maintained `.do` changes. See the [changelog](plugins/stata-research-guard/CHANGELOG.md#unreleased).
 
 Stata Research Guard provides research guidance for AI-assisted Stata: readable analysis code, original command help, real paper code, and independent peer review. It connects data and sample construction to visible regression specifications, saved estimates, tables, and figures. The current installation is a Codex plugin; research choices remain with the user and the model.
 
@@ -42,7 +42,9 @@ On Windows, run installation in a regular PowerShell terminal. Use Codex's defau
 
 The marketplace identifier is `stata-research-guard-team`. Start a new Codex chat, check that the plugin is enabled, and ask it to retrieve the official help for `regress` through `get_stata_command_evidence`. A successful help response confirms the MCP connection; installation alone does not. These commands follow the [official Codex CLI documentation](https://learn.chatgpt.com/docs/developer-commands#codex-plugin-marketplace).
 
-To enable the bundled diff reminders, review and trust the plugin's `PostToolUse` and `Stop` hooks in **Settings → Hooks** or with `/hooks` in the CLI. Review them again when Codex flags a plugin update. The hooks use Node.js on `PATH` and cover `.do` patches made directly, through the shell, or inside Code Mode when Codex reports a successful patch or records a completed file change. They skip temporary directories such as `tmp`, `cache`, and `build`. If the tool callback is missing, `Stop` checks the current turn's file changes and requests one reply review when diff blocks appear to be missing. On hosts that provide neither record, follow the skill's reporting rule in the reply. [Codex hook trust](https://learn.chatgpt.com/docs/hooks#review-and-trust-hooks)
+To enable the bundled review and diff reminders, review and trust the plugin's `PostToolUse` and `Stop` hooks in **Settings → Hooks** or with `/hooks` in the CLI. Review them again when Codex flags a plugin update. The hooks use Node.js on `PATH` and cover maintained `.do` patches reported by a successful patch callback or a completed file-change record. They skip temporary directories such as `tmp`, `cache`, and `build`. [Codex hook trust](https://learn.chatgpt.com/docs/hooks#review-and-trust-hooks)
+
+After the final edit, the model reads each changed region and the 50 lines on either side. It follows directly connected code as needed to check whether existing code or a documented command already does the same work. If the review confirmation or an expected diff is missing, `Stop` requests one more pass. The model judges duplication and the hook checks for the confirmation. [Review and diff behavior](plugins/stata-research-guard/README.md#설치와-개발)
 
 </details>
 

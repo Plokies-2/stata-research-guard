@@ -12,6 +12,17 @@ const reportRule = [
   "Honor any explicit user format and the existing exception for large edits. Exclude scratch files and changes that were reverted.",
 ].join(" ");
 
+const reviewLines = 50;
+const reviewConfirmation = `수정 코드 주변 ${reviewLines}줄을 읽어 중복 구현을 확인했다.`;
+const reviewRule = [
+  `After the final edit, locate each changed region in the actual diff and read all code in that region and ${reviewLines} lines before and after it, clipped at file boundaries. Merge overlapping ranges. For a deletion, inspect the surviving context or the before version if the whole file was removed.`,
+  "Review every changed operation by its purpose, inputs, effects, and consumers. Ask whether existing code has already done the work, an existing command can do it through its default or a supported option, or the needed choice or value is already known and can be expressed directly.",
+  "Look for overlapping responsibilities throughout the affected flow, from inputs through saved and displayed outputs. Follow directly connected producers and consumers outside the nearby lines when needed. Treat work as potentially redundant even when it uses different syntax, is split across several commands or files, or is added before or after an existing step.",
+  "Identify the concrete step that could be removed or reused and check that doing so preserves the required behavior. Compare the relevant inputs, sample, group definitions, weights, missing-value behavior, execution order, state, side effects, and outputs. Separate operations are justified when they produce distinct required results, apply real conditions, or protect a meaningful invariant.",
+  "Fix any duplicate within the requested scope and reread the affected ranges after the fix. Report what changed or any duplicate that remains. If a range cannot be read, report the range and reason instead of claiming completion. Put this exact sentence on its own line in the final reply only after reading the ranges:",
+  reviewConfirmation,
+].join("\n");
+
 function readOptionalFile(file) {
   if (!file) return "";
   try {
@@ -96,7 +107,7 @@ function handle(event) {
       fs.appendFileSync(turnFile, changedFiles.join("\n") + "\n", "utf8");
     }
     if (!firstPatch) return {};
-    return { hookSpecificOutput: { hookEventName: "PostToolUse", additionalContext: reportRule } };
+    return { hookSpecificOutput: { hookEventName: "PostToolUse", additionalContext: `${reportRule}\n\n${reviewRule}` } };
   }
 
   if (event.hook_event_name !== "Stop") return {};
@@ -109,15 +120,21 @@ function handle(event) {
     .filter((file) => isMaintainedDo(file, cwd)));
   if (changedFiles.size === 0) return {};
 
-  const fileNames = [...changedFiles].map((file) => file.split(/[\\/]/).pop());
-  const diffBlocks = [...draft.matchAll(/^[ \t]*(?:`{3,}|~{3,})diff[ \t]*\r?$/gim)];
-  const labeled = fileNames.every((name) => draft.includes(name) || draft.includes(encodeURIComponent(name)));
-  if (labeled && diffBlocks.length >= changedFiles.size) return {};
+  const reasons = [];
+  if (!draft.split(/\r?\n/).some((line) => line.trim() === reviewConfirmation)) {
+    const files = [...changedFiles].map((file) => `- ${file}`).join("\n");
+    reasons.push(`Before ending, perform the missing duplicate-implementation review of these changed .do files:\n${files}\n\n${reviewRule}`);
+  }
+  if (!process.argv.includes("--review-only")) {
+    const fileNames = [...changedFiles].map((file) => path.basename(file));
+    const diffBlocks = [...draft.matchAll(/^[ \t]*(?:`{3,}|~{3,})diff[ \t]*\r?$/gim)];
+    const labeled = fileNames.every((name) => draft.includes(name) || draft.includes(encodeURIComponent(name)));
+    if (!labeled || diffBlocks.length < changedFiles.size) {
+      reasons.push("Before ending, review the final reply for missing .do file diffs. " + reportRule);
+    }
+  }
 
-  return {
-    decision: "block",
-    reason: "Before ending, review the final reply for missing .do file diffs. " + reportRule,
-  };
+  return reasons.length ? { decision: "block", reason: reasons.join("\n\n") } : {};
 }
 
 const event = JSON.parse(fs.readFileSync(0, "utf8"));

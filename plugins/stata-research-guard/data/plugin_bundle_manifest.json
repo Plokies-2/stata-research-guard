@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.4.1+codex.2026112401"
+    "version": "0.4.1+codex.2026112402"
   },
   "inventory": [
     {
       "path": ".codex-plugin/plugin.json",
       "bytes": 1021,
-      "sha256": "82386498829485175ec90294bede5cca3bb9c5470ffb853a4236533821300205"
+      "sha256": "8e1ee6deadf3dfd1323915bc57c28da1a13e9873c7fe4ee85e17427b51f7db27"
     },
     {
       "path": ".mcp.json",
@@ -17,8 +17,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 38387,
-      "sha256": "014523491b083cbfa677577fdcf69141262714ac62ace847c9e410c3fe64865d"
+      "bytes": 38806,
+      "sha256": "7cb8e8d6a28021e430a55a75deb9f991c354d0adb12fb68f23033617e4ae9e57"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -1562,8 +1562,8 @@
     },
     {
       "path": "hooks/stata-diff.cjs",
-      "bytes": 5709,
-      "sha256": "51b00a5bab536473ea69a62a75aac94a379b7b79513a4cfa472fbdfb46ac5baf"
+      "bytes": 8040,
+      "sha256": "bf6ef84e281ca0894e723a868c7011af9d5094e6b36922eb658c3e8b45fcac04"
     },
     {
       "path": "INSTRUCTIONS.md",
@@ -1617,8 +1617,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 17875,
-      "sha256": "06770e2d20ffb065f2e017f9ad59030e1b2a6c15800a41ac1bf0ed40249fd73b"
+      "bytes": 18569,
+      "sha256": "e95d8f16268b028a929d6a8025f669ea0e46818aea6a2cb86605ae1d16ccfc44"
     },
     {
       "path": "scripts/build_command_help_guides.cjs",
@@ -1722,8 +1722,8 @@
     },
     {
       "path": "tests/stata-diff.test.cjs",
-      "bytes": 4474,
-      "sha256": "4719046c49330778b7dd019c0cef31df24b7f221144156aed082ab07e7a1e9c1"
+      "bytes": 6062,
+      "sha256": "8e2e35a189eecdda6410debe34e29e61671ec3b97de6d91869f5060a7ef22e58"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
@@ -1744,7 +1744,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.4.1+codex.2026112401"
+      "value": "0.4.1+codex.2026112402"
     },
     {
       "id": "readme.heading",
