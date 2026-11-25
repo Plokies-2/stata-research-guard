@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Review scope: read the whole `.do` file when it has 300 lines or fewer, otherwise ±50 lines around each change plus the definitions used. The confirmation line is now `수정 코드 주변과 관련 정의를 읽어 중복 구현을 확인했다.` with ranges; the earlier 50줄 wording still counts.
+- Stop hook in Claude Code also checks a final reply sent only through a tool call (the text inputs of the last tool use).
+- Shell edits through a wildcard or in a folder named by the command (for example `Get-ChildItem code -Filter "1_*.do" | Add-Content`) are detected.
+- `diff 생략:` is accepted only when 200 or more `.do` lines changed or the count is unknown (shell edits). Newly created files need no diff.
+- Without a plugin data folder (manual install) the hooks keep their state in the system temp folder instead of doing nothing.
+- The Guard server reports the Claude Code build in Claude Code; the project-workflow source link no longer breaks when the skill is copied.
 - The edited-region review now scans for literals that repeat an existing global or local, and for variables in sample conditions that nothing downstream uses; the dirty-code examples show both.
 - Fix the Guard tool failing to load in Claude Code: the tool now advertises one top-level `type: "object"` input schema (the union of the three phase shapes, still enforced by the server) instead of a top-level `oneOf`.
 - Default execution is tool-agnostic: run saved `.do` files in Stata batch mode or have the user run them; other Stata tool connections are used only when the user or project names them. Remove mcpStata-specific session and task instructions.

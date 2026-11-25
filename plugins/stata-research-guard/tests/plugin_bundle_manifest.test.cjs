@@ -122,3 +122,17 @@ test("Codex and Claude Code manifests describe the same plugin release", () => {
   assert.deepEqual(marketplace.plugins.map((plugin) => plugin.name), [codex.name]);
   assert.equal(claude.mcpServers.stataResearchGuard.args[0], "${CLAUDE_PLUGIN_ROOT}/mcp/server.cjs");
 });
+
+test("the MCP server reports the build of the host that started it", () => {
+  const init = JSON.stringify({ jsonrpc: "2.0", id: 1, method: "initialize",
+    params: { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "test", version: "1" } } }) + "\n";
+  const version = (host) => {
+    const env = { ...process.env };
+    if (host) env.STATA_GUARD_HOST = host; else delete env.STATA_GUARD_HOST;
+    const output = cp.spawnSync(process.execPath, [path.join(PLUGIN_ROOT, "mcp", "server.cjs")], { input: init, env, encoding: "utf8", timeout: 10000 });
+    return JSON.parse(output.stdout.trim().split("\n")[0]).result.serverInfo.version;
+  };
+  const read = (relative) => JSON.parse(fs.readFileSync(path.join(PLUGIN_ROOT, relative), "utf8")).version;
+  assert.equal(version("claude"), read(".claude-plugin/plugin.json"));
+  assert.equal(version(null), read(".codex-plugin/plugin.json"));
+});

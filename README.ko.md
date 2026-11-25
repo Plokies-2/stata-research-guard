@@ -46,7 +46,7 @@ Windows에서는 일반 PowerShell에서 설치 명령을 실행합니다. Codex
 
 `.do` 변경 검토와 diff 알림을 사용하려면 **Settings → Hooks** 또는 CLI의 `/hooks`에서 플러그인의 `PreToolUse`, `PostToolUse`, `Stop`을 검토하고 신뢰하세요. Codex가 업데이트 후 재검토를 요청하면 다시 확인합니다. 0.5.0 업데이트에서는 Claude Code가 쓰는 `PreToolUse` 항목이 추가되어 재검토를 요청하며, Codex에서는 이 항목이 아무 동작도 하지 않습니다. 훅은 `PATH`의 Node.js로 실행되며, 패치 성공 응답이나 완료된 파일 변경 기록으로 유지 대상 `.do` 변경을 감지합니다. `tmp`, `cache`, `build` 등 임시 폴더의 변경은 제외합니다. [Codex 훅 승인 문서](https://learn.chatgpt.com/docs/hooks#review-and-trust-hooks)
 
-최종 수정 뒤 모델이 각 변경 구간과 앞뒤 50줄을 읽고, 그 구간에서 쓰는 전역변수, local, 변수가 정의된 곳도 찾아 읽습니다. 기존 전역변수에 넣으면 될 변수를 새 전역변수로 만들거나 `collapse`를 두 번 하는 것 같은 예시를 기준으로, 기존 코드나 명령이 같은 일을 처리하는지 판단합니다. 답변 끝에는 읽은 줄 범위를 붙인 확인 문장을 적습니다. 확인 문장이나 범위, 필요한 diff가 빠지면 `Stop`이 한 번 더 검토를 요청합니다. 큰 수정이라 `diff 생략:`을 적은 답변에는 diff를 요구하지 않습니다. [검토와 diff 알림](plugins/stata-research-guard/README.md#설치와-개발)
+최종 수정 뒤 모델이 300줄 이하 파일은 전체를, 그보다 긴 파일은 각 변경 구간과 앞뒤 50줄을 읽고, 그 구간에서 쓰는 전역변수, local, 변수가 정의된 곳도 찾아 읽습니다. 기존 전역변수에 넣으면 될 변수를 새 전역변수로 만들거나 `collapse`를 두 번 하는 것 같은 예시를 기준으로, 기존 코드나 명령이 같은 일을 처리하는지 판단합니다. 답변 끝에는 읽은 줄 범위를 붙인 확인 문장을 적습니다. 확인 문장이나 범위, 필요한 diff가 빠지면 `Stop`이 한 번 더 검토를 요청합니다. 200줄 이상 바꾼 수정에서 `diff 생략:`을 적은 답변과 새로 만든 파일에는 diff를 요구하지 않습니다. [검토와 diff 알림](plugins/stata-research-guard/README.md#설치와-개발)
 
 </details>
 

@@ -7,8 +7,8 @@
   "inventory": [
     {
       "path": ".claude-plugin/plugin.json",
-      "bytes": 561,
-      "sha256": "331a8dd810e9982d9963258ae39094ec6832e7359607c88861716ef4eba66a68"
+      "bytes": 608,
+      "sha256": "88ce2c99e21411d8c210659c6f112766c70dc13805d80d9d9497917c9bf47dac"
     },
     {
       "path": ".codex-plugin/plugin.json",
@@ -22,8 +22,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 42297,
-      "sha256": "4c533fad5be255d31a4e28e73a373d9c4f88e669d8fc0e35b30b9b4d9a366634"
+      "bytes": 43285,
+      "sha256": "aed4b0342572d26d12c79f577deaee9bb1384b7785f4d272cc7ca4c90660722d"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -1567,8 +1567,8 @@
     },
     {
       "path": "hooks/stata-diff.cjs",
-      "bytes": 11961,
-      "sha256": "6e642285d10168e3833fc4be1af96ba66c82c3b094212dfc8606356ef33f987b"
+      "bytes": 17308,
+      "sha256": "0fdfa3c505ed49046cf8a0ae8dd572588f22ce946bb89cffaa29b2027831103a"
     },
     {
       "path": "INSTRUCTIONS.md",
@@ -1617,13 +1617,13 @@
     },
     {
       "path": "mcp/server.cjs",
-      "bytes": 43948,
-      "sha256": "ce6b998a03e420505265e7ae6de4840084a560f5783ab140f58f9ef7e667f6f4"
+      "bytes": 44102,
+      "sha256": "1c575ad52f0219aa893760e8abfe41545bd420f9315e3d603d2c0c475e99a0d4"
     },
     {
       "path": "README.md",
-      "bytes": 19440,
-      "sha256": "516b55d59b117c2163319c76ea4c80b8712f8a625ae3ea06fe90f6ca9887cddd"
+      "bytes": 19506,
+      "sha256": "8fdc44edc37b87319193378619be1e1d4790212144196bf1788e809519d448f8"
     },
     {
       "path": "scripts/build_command_help_guides.cjs",
@@ -1687,8 +1687,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/project-workflows.md",
-      "bytes": 4630,
-      "sha256": "2421de2c93041915cfad1e19c36357533e6f84b5202c95d4fe047db00b43f343"
+      "bytes": 4710,
+      "sha256": "5477df57b965a1abf4185cec9935fcae534da7879c990a056cbf8697e18cdb6f"
     },
     {
       "path": "skills/stata-replication-workflow/references/readme-contract.md",
@@ -1702,8 +1702,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/SKILL.md",
-      "bytes": 19667,
-      "sha256": "7aae501e2b146d64f80751667fbf928073a8de1cd53d53286c22cdbc1cf090cc"
+      "bytes": 19764,
+      "sha256": "dd50d6a1787ac1a36218841bdd8eb8492726758333898b92f8c75eef3730bdc2"
     },
     {
       "path": "tests/doc-links.test.cjs",
@@ -1727,8 +1727,8 @@
     },
     {
       "path": "tests/plugin_bundle_manifest.test.cjs",
-      "bytes": 5392,
-      "sha256": "5cc728f2494123a95bdd8131fb6d9f9440ee565c768b84dd76a0c91d50eac49a"
+      "bytes": 6303,
+      "sha256": "8f39b022b8cde502db923c6dffb97e44c59eba344760525f9f7a1b82f6332ef5"
     },
     {
       "path": "tests/server.test.cjs",
@@ -1737,8 +1737,8 @@
     },
     {
       "path": "tests/stata-diff.test.cjs",
-      "bytes": 10960,
-      "sha256": "16f4d988e10e620cf8ac8128e686da694323ac06bb58a38c7e2e83352277e74f"
+      "bytes": 15519,
+      "sha256": "99715f5893d783ee0a94d8dab3ee18b4f53844789bdfb196a86b3438c05bba03"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",

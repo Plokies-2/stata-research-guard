@@ -12,7 +12,8 @@
   "mcpServers": {
     "stataResearchGuard": {
       "command": "node",
-      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp/server.cjs"]
+      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp/server.cjs"],
+      "env": { "STATA_GUARD_HOST": "claude" }
     }
   }
 }

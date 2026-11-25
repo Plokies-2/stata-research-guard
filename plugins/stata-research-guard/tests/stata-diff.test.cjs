@@ -8,7 +8,8 @@ const path = require("node:path");
 const test = require("node:test");
 
 const script = path.join(__dirname, "..", "hooks", "stata-diff.cjs");
-const reviewConfirmation = "수정 코드 주변 50줄을 읽어 중복 구현을 확인했다.";
+const reviewConfirmation = "수정 코드 주변과 관련 정의를 읽어 중복 구현을 확인했다.";
+const legacyConfirmation = "수정 코드 주변 50줄을 읽어 중복 구현을 확인했다.";
 const diffReply = "Changed model.do.\n```diff\n-* Before\n+* After\n```";
 const confirmedLine = `${reviewConfirmation} (model.do 1-60행, controls 정의 3-5행)`;
 const goodReply = `${diffReply}\n\n${confirmedLine}`;
@@ -73,7 +74,7 @@ test("Stop asks for a fresh local review even when the diff is already present",
   const result = run({ hook_event_name: "Stop", last_assistant_message: diffReply });
   assert.equal(result.decision, "block");
   assert.ok(result.reason.includes(file));
-  assert.match(result.reason, /50 lines before and after/);
+  assert.match(result.reason, /300 lines or fewer/);
   assert.match(result.reason, /stata-replication-workflow edited-region review/);
   assert.match(result.reason, /supported command already does the same work/);
   // The full procedure lives in the skill, so the hook text stays short.
@@ -92,6 +93,8 @@ test("the review confirmation needs the line ranges that were read", (t) => {
   assert.equal(bare.decision, "block");
   assert.match(bare.reason, /ranges you read/);
   assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: goodReply }), {});
+  writeTranscript([{ type: "task_started", turn_id: "turn" }, fileChange(path.join(dir, "model.do"))]);
+  assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: `${diffReply}\n\n${legacyConfirmation} (model.do 1-60행)` }), {});
 });
 
 test("a large edit that states the omitted diff is not asked for diff blocks", (t) => {
@@ -125,12 +128,16 @@ test("scratch .do edits are silent in patch callbacks and transcript recovery", 
   assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: goodReply }), {});
 });
 
-function claudeFixture(t) {
+function claudeFixture(t, { dataDir = true } = {}) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "stata-diff-claude-"));
   t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
   const transcript = path.join(dir, "session.jsonl");
   const env = { ...process.env, CLAUDE_PLUGIN_DATA: path.join(dir, "data") };
   delete env.PLUGIN_DATA;
+  if (!dataDir) {
+    delete env.CLAUDE_PLUGIN_DATA;
+    env.TMPDIR = env.TEMP = env.TMP = dir;
+  }
   const run = (event) => JSON.parse(execFileSync(process.execPath, [script], {
     input: JSON.stringify({ session_id: "session", cwd: dir, transcript_path: transcript, ...event }),
     env,
@@ -148,7 +155,7 @@ test("Claude Code Edit and Write calls on maintained .do files request the revie
   assert.deepEqual(edit("model.do", "Write"), {});
   const blocked = run({ hook_event_name: "Stop", last_assistant_message: "Changed model.do." });
   assert.equal(blocked.decision, "block");
-  assert.match(blocked.reason, /50 lines before and after/);
+  assert.match(blocked.reason, /300 lines or fewer/);
   assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: "Changed model.do." }), {});
 
   edit("model.do");
@@ -192,4 +199,71 @@ test("Claude Code Stop reads the final reply from the transcript when the field 
   ];
   fs.writeFileSync(transcript, lines.map((line) => JSON.stringify(line)).join("\n") + "\n");
   assert.deepEqual(run({ hook_event_name: "Stop" }), {});
+});
+
+test("Claude Code Stop checks a final reply sent only through a tool call", (t) => {
+  const { dir, run, transcript } = claudeFixture(t);
+  const finish = (text) => {
+    run({ hook_event_name: "PostToolUse", tool_name: "Edit", tool_input: { file_path: path.join(dir, "model.do") } });
+    fs.writeFileSync(transcript, [
+      { type: "user", message: { content: "Edit model.do" } },
+      { type: "assistant", message: { content: [{ type: "tool_use", name: "post_message", input: { text } }] } },
+      { type: "user", message: { content: [{ type: "tool_result" }] } },
+    ].map((line) => JSON.stringify(line)).join("\n") + "\n");
+    return run({ hook_event_name: "Stop", last_assistant_message: "" });
+  };
+  assert.equal(finish("Changed model.do.").decision, "block");
+  assert.deepEqual(finish(goodReply), {});
+});
+
+test("Claude Code shell commands that edit .do files through a wildcard in another folder are detected", (t) => {
+  const { dir, run } = claudeFixture(t);
+  // Outside the temp folder, whose name marks scratch work.
+  const other = fs.mkdtempSync(path.join(os.homedir(), "stata-diff-other-"));
+  t.after(() => fs.rmSync(other, { recursive: true, force: true }));
+  const command = `Get-ChildItem "${other}" -Filter "1_*.do" | Add-Content -Value "* note"`;
+  run({ hook_event_name: "PreToolUse", tool_name: "PowerShell", tool_input: { command } });
+  fs.writeFileSync(path.join(other, "1_cleaning.do"), "* note\n");
+  const posted = run({ hook_event_name: "PostToolUse", tool_name: "PowerShell", tool_input: { command } });
+  assert.equal(posted.hookSpecificOutput.hookEventName, "PostToolUse");
+  assert.ok(run({ hook_event_name: "Stop", last_assistant_message: "Done." }).reason.includes("1_cleaning.do"));
+});
+
+test("diff omission is refused below 200 changed lines and new files need no diff", (t) => {
+  const { dir, run } = claudeFixture(t);
+  const file = path.join(dir, "model.do");
+  const omitted = `Rewrote model.do.\n\ndiff 생략: .do 변경 240줄\n\n${confirmedLine}`;
+  const edit = (newString) => run({ hook_event_name: "PostToolUse", tool_name: "Edit",
+    tool_input: { file_path: file, old_string: "* old", new_string: newString } });
+
+  edit("* new");
+  const small = run({ hook_event_name: "Stop", last_assistant_message: omitted });
+  assert.equal(small.decision, "block");
+  assert.match(small.reason, /only 2 \.do lines changed/);
+
+  edit(Array.from({ length: 250 }, (_, i) => `* line ${i}`).join("\n"));
+  assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: omitted }), {});
+
+  run({ hook_event_name: "PostToolUse", tool_name: "Write", tool_input: { file_path: path.join(dir, "new.do"), content: "* new\n" },
+    tool_response: { type: "create" } });
+  assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: `Created new.do.\n\n${confirmedLine}` }), {});
+});
+
+test("without a plugin data folder the hook keeps its state in the temp folder", (t) => {
+  const { dir, run } = claudeFixture(t, { dataDir: false });
+  const posted = run({ hook_event_name: "PostToolUse", tool_name: "Edit", tool_input: { file_path: path.join(dir, "model.do") } });
+  assert.equal(posted.hookSpecificOutput.hookEventName, "PostToolUse");
+  assert.equal(run({ hook_event_name: "Stop", last_assistant_message: "Changed model.do." }).decision, "block");
+});
+
+test("Codex patches count their changed lines before a diff can be omitted", (t) => {
+  const { run } = fixture(t);
+  const patch = (body) => run({ hook_event_name: "PostToolUse", tool_name: "apply_patch",
+    tool_input: `*** Begin Patch\n*** Update File: model.do\n@@\n${body}\n*** End Patch`,
+    tool_response: "Success. Updated the following files:\nM model.do\n" });
+  const omitted = `Rewrote model.do.\n\ndiff 생략: 큰 변경\n\n${confirmedLine}`;
+  patch("-* old\n+* new");
+  assert.match(run({ hook_event_name: "Stop", last_assistant_message: omitted }).reason, /only 2 \.do lines changed/);
+  patch(Array.from({ length: 210 }, (_, i) => `+* line ${i}`).join("\n"));
+  assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: omitted }), {});
 });

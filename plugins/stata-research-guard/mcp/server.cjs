@@ -73,7 +73,8 @@ function groupBy(rows, key) {
   return result;
 }
 
-const pluginMetadata = readJson(path.join(PLUGIN_ROOT, ".codex-plugin", "plugin.json"));
+// Claude Code starts the server with STATA_GUARD_HOST=claude so it reports its own build.
+const pluginMetadata = readJson(path.join(PLUGIN_ROOT, process.env.STATA_GUARD_HOST === "claude" ? ".claude-plugin" : ".codex-plugin", "plugin.json"));
 const registry = readJson(REGISTRY_PATH);
 const commandsByName = new Map(registry.commands.map((row) => [row.command, row]));
 

@@ -68,7 +68,7 @@ Use a subagent that starts from a fresh context, with no inherited conversation,
 
 ## Review the edited region
 
-After the final edit to maintained `.do` files, locate each changed region in the actual diff and read all code in that region and the 50 lines before and after it, clipped at file boundaries. Merge overlapping ranges. For a deletion, inspect the surviving context, or the before version if the whole file was removed. Then find and read where the globals, locals, variables, and saved files used in the changed region are defined, even when the definition is far above or in another do-file; a new macro or variable that duplicates an existing one is usually visible only there.
+After the final edit to maintained `.do` files, locate each changed region in the actual diff. Read the whole file when it has 300 lines or fewer; otherwise read each changed region and the 50 lines before and after it, clipped at file boundaries, and merge overlapping ranges. For a deletion, inspect the surviving context, or the before version if the whole file was removed. Then find and read where the globals, locals, variables, and saved files used in the changed region are defined, even when the definition is far above or in another do-file; a new macro or variable that duplicates an existing one is usually visible only there.
 
 - Review every changed operation by its purpose, inputs, effects, and consumers. Ask whether existing code already does the work, an existing command can do it through its default or a supported option, the needed choice or value is already known and can be written directly, or an existing macro, variable, or saved dataset already holds what the new code builds.
 - Look for overlapping responsibilities through the affected flow, from inputs to saved and displayed outputs. Follow directly connected producers and consumers outside the nearby lines when needed. Work can be redundant even when it uses different syntax, is split across commands or files, or sits before or after an existing step.
@@ -131,7 +131,7 @@ capture drop x                                          // use capture only wher
 merge m:m id using "x.dta"                              // fix the key or use joinby
 ```
 
-Only after reading the ranges, put this line on its own in the final reply, followed by the ranges you actually read, by file and line: `수정 코드 주변 50줄을 읽어 중복 구현을 확인했다. (build_analysis_panel.do 260-380행, controls 정의 12-18행)`
+Only after reading the ranges, put this line on its own in the final reply, followed by the ranges you actually read, by file and line: `수정 코드 주변과 관련 정의를 읽어 중복 구현을 확인했다. (build_analysis_panel.do 260-380행, controls 정의 12-18행)`
 
 ## Report results, sources, and edits
 
@@ -142,8 +142,9 @@ When source material informed code you wrote or revised, name what you actually 
 For small Stata code changes, include the actual before/after changes in the final reply in a separate fenced `diff` block for each changed `.do` file (`-` removed, `+` added). Include the blocks even when the reply also summarizes the changes or links to the files. Show every changed part with only enough unchanged context to locate it; do not reproduce whole files or invent a before version. Briefly describe the role of any accompanying Python preprocessing or other non-Stata files. Include diffs for those files when the user asks for them.
 
 - Count added and deleted lines only in maintained `.do` files changed for the current request. Count a one-line replacement as two lines and omit unchanged context, pre-existing edits, scratch files, and reverted changes.
-- Small means fewer than 200 changed `.do` lines with no overhaul of the Stata workflow. Large means 200 or more changed `.do` lines, or Stata changes that replace a workflow or reorganize its connected Stata stages. Several local additions within the existing flow are not by themselves an overhaul. Choose evidence and peer review based on the research question.
-- For a large edit, put a line starting with `diff 생략:` and the reason (for example, `diff 생략: .do 변경 240줄`), summarize the changes and link the affected files or commit. Do not silently omit it or present a few excerpts as the complete diff.
+- Small means fewer than 200 changed `.do` lines with no overhaul of the Stata workflow. Large means 200 or more changed `.do` lines. A rewrite that replaces a workflow usually creates new files, which need no diff. Choose evidence and peer review based on the research question.
+- A newly created `.do` file needs no diff; name it and summarize its stages.
+- For a large edit (200 or more changed `.do` lines), put a line starting with `diff 생략:` and the reason (for example, `diff 생략: .do 변경 240줄`), summarize the changes and link the affected files or commit. Do not silently omit it or present a few excerpts as the complete diff.
 - Describe generated tables, figures, data and logs by their actual updates instead of printing their contents as a text diff. If the before text is unavailable, say so and show only the verified addition or resulting text.
 - An explicit user request for a full diff or a different reporting format takes precedence over these defaults.
 
