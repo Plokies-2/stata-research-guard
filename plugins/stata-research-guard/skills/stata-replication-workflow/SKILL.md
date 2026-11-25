@@ -66,14 +66,67 @@ Use a subagent that starts from a fresh context, with no inherited conversation,
 
 ## Review the edited region
 
-After the final edit to maintained `.do` files, locate each changed region in the actual diff and read all code in that region and the 50 lines before and after it, clipped at file boundaries. Merge overlapping ranges. For a deletion, inspect the surviving context, or the before version if the whole file was removed.
+After the final edit to maintained `.do` files, locate each changed region in the actual diff and read all code in that region and the 50 lines before and after it, clipped at file boundaries. Merge overlapping ranges. For a deletion, inspect the surviving context, or the before version if the whole file was removed. Then find and read where the globals, locals, variables, and saved files used in the changed region are defined, even when the definition is far above or in another do-file; a new macro or variable that duplicates an existing one is usually visible only there.
 
-- Review every changed operation by its purpose, inputs, effects, and consumers. Ask whether existing code already does the work, an existing command can do it through its default or a supported option, or the needed choice or value is already known and can be written directly.
+- Review every changed operation by its purpose, inputs, effects, and consumers. Ask whether existing code already does the work, an existing command can do it through its default or a supported option, the needed choice or value is already known and can be written directly, or an existing macro, variable, or saved dataset already holds what the new code builds.
 - Look for overlapping responsibilities through the affected flow, from inputs to saved and displayed outputs. Follow directly connected producers and consumers outside the nearby lines when needed. Work can be redundant even when it uses different syntax, is split across commands or files, or sits before or after an existing step.
 - Name the concrete step that could be removed or reused and check that removing it preserves the required behavior: inputs, sample, group definitions, weights, missing values, execution order, state, side effects, and outputs. Separate operations are justified when they produce distinct required results, apply real conditions, or protect a meaningful invariant.
 - Fix duplicates within the requested scope and reread the affected ranges. Report what changed or any duplicate that remains. If a range cannot be read, report the range and reason instead of claiming completion.
 
-Only after reading the ranges, put this exact line on its own in the final reply: `수정 코드 주변 50줄을 읽어 중복 구현을 확인했다.`
+Most dirty code comes from two habits: an `if` where a plain list would do, and a hand-written step where existing code, data, or a Stata command already does the work. The groups below illustrate them; they are not a checklist, so react to any redundancy of the same kind. Simple does not mean few characters: a longer block that shows its inputs where they are used is simpler than a short one that hides them behind macros. Keeping an edit minimal limits its scope; it does not mean keeping duplicated logic inside the flow you are changing.
+
+```stata
+* A. Rebuilding what already exists
+global controls2 "$controls ttl_exp"                    // extend $controls where it is defined
+collapse (mean) `careers', by(bmo_rule female)
+collapse (mean) `careers', by(female)                   // graph bar (mean) ..., over(female) already averages
+gen byte cert_list = year >= list_start if !missing(cert)   // rename the column in the saved data and load it
+use "panel_v2.dta", clear                               // each do-file reads its own variant; use one combined panel
+
+* B. Branching where a list or a block would do
+foreach v of varlist ln_* {
+    if strpos("`v'", "emp") | strpos("`v'", "pay") local use wins_`v'
+}                                                       // local winsorized wins_ln_emp_num wins_ln_pay_real ...
+foreach y in out_share ev_share {
+    if "`y'" == "out_share" { ... }                     // different inputs and denominators: one block each
+}
+foreach spec of local specs {
+    reghdfe `y' ``spec'_rhs' if ``spec'_sample', absorb(``spec'_fe')
+}                                                       // unroll so each block shows sample, treatment, controls, output
+if `a' { if `b' { if `c' { ... } } }                    // keep nesting shallow; split by stage
+
+* C. Machinery nobody needs
+set varabbrev off                                       // drop settings that do not change the result
+gen double a = x * w
+gen double b = a / total                                // gen double share = 100 * x * w / total
+* Generate share variable                               // comments that repeat the code; keep comments that explain a choice
+graph export "fig_unused.pdf"                           // outputs the canonical paper no longer uses: delete their code
+
+* D. Mixing stages
+foreach y of local outcomes {
+    reghdfe `y' treat, absorb(firm year) vce(cluster firm)
+    outreg2 using tmp.txt, replace                      // save .ster here; build tables in another do-file
+}
+
+* E. Doing by hand what Stata does
+foreach v of local vars {
+    preserve
+    collapse (mean) `v', by(group)
+    restore
+}                                                       // one collapse (mean) `vars', by(group)
+forvalues g = 1/50 {
+    summarize y if group == `g', meanonly
+    replace group_mean = r(mean) if group == `g'
+}                                                       // bysort group: egen double group_mean = mean(y)
+gen byte region = 0
+replace region = 1 if inlist(state, 1, 2, 3)            // recode state (1/3 = 1) (4/5 = 2) (else = 0), gen(region)
+merge m:1 id using "firm.dta"
+keep if _merge == 3                                     // merge m:1 id using "firm.dta", assert(match master) keep(match)
+capture drop x                                          // use capture only where failure is expected; let errors stop the run
+merge m:m id using "x.dta"                              // fix the key or use joinby
+```
+
+Only after reading the ranges, put this line on its own in the final reply, followed by the ranges you actually read, by file and line: `수정 코드 주변 50줄을 읽어 중복 구현을 확인했다. (build_analysis_panel.do 260-380행, controls 정의 12-18행)`
 
 ## Report results, sources, and edits
 
@@ -84,8 +137,8 @@ When source material informed code you wrote or revised, name what you actually 
 For small Stata code changes, include the actual before/after changes in the final reply in a separate fenced `diff` block for each changed `.do` file (`-` removed, `+` added). Include the blocks even when the reply also summarizes the changes or links to the files. Show every changed part with only enough unchanged context to locate it; do not reproduce whole files or invent a before version. Briefly describe the role of any accompanying Python preprocessing or other non-Stata files. Include diffs for those files when the user asks for them.
 
 - Count added and deleted lines only in maintained `.do` files changed for the current request. Count a one-line replacement as two lines and omit unchanged context, pre-existing edits, scratch files, and reverted changes.
-- Small means fewer than 100 changed `.do` lines with no overhaul of the Stata workflow. Large means 100 or more changed `.do` lines, or Stata changes that replace a workflow or reorganize its connected Stata stages. Several local additions within the existing flow are not by themselves an overhaul. Choose evidence and peer review based on the research question.
-- For a large edit, explicitly say the diff was omitted because of its size or overhaul, summarize the changes and link the affected files or commit. Do not silently omit it or present a few excerpts as the complete diff.
+- Small means fewer than 200 changed `.do` lines with no overhaul of the Stata workflow. Large means 200 or more changed `.do` lines, or Stata changes that replace a workflow or reorganize its connected Stata stages. Several local additions within the existing flow are not by themselves an overhaul. Choose evidence and peer review based on the research question.
+- For a large edit, put a line starting with `diff 생략:` and the reason (for example, `diff 생략: .do 변경 240줄`), summarize the changes and link the affected files or commit. Do not silently omit it or present a few excerpts as the complete diff.
 - Describe generated tables, figures, data and logs by their actual updates instead of printing their contents as a text diff. If the before text is unavailable, say so and show only the verified addition or resulting text.
 - An explicit user request for a full diff or a different reporting format takes precedence over these defaults.
 

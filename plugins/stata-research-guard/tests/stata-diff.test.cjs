@@ -10,7 +10,8 @@ const test = require("node:test");
 const script = path.join(__dirname, "..", "hooks", "stata-diff.cjs");
 const reviewConfirmation = "수정 코드 주변 50줄을 읽어 중복 구현을 확인했다.";
 const diffReply = "Changed model.do.\n```diff\n-* Before\n+* After\n```";
-const goodReply = `${diffReply}\n\n${reviewConfirmation}`;
+const confirmedLine = `${reviewConfirmation} (model.do 1-60행, controls 정의 3-5행)`;
+const goodReply = `${diffReply}\n\n${confirmedLine}`;
 
 function fixture(t, args = []) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "stata-diff-"));
@@ -76,18 +77,35 @@ test("Stop asks for a fresh local review even when the diff is already present",
   assert.match(result.reason, /stata-replication-workflow edited-region review/);
   assert.match(result.reason, /supported command already does the same work/);
   // The full procedure lives in the skill, so the hook text stays short.
-  assert.ok(result.reason.length < 1000);
+  assert.ok(result.reason.length < 1200);
   assert.ok(result.reason.includes(reviewConfirmation));
+  assert.match(result.reason, /where the macros and variables it uses are defined/);
   assert.doesNotMatch(result.reason, /missing \.do file diffs/);
-  assert.match(run({ hook_event_name: "Stop", last_assistant_message: reviewConfirmation }).reason,
+  assert.match(run({ hook_event_name: "Stop", last_assistant_message: confirmedLine }).reason,
     /missing \.do file diffs/);
+});
+
+test("the review confirmation needs the line ranges that were read", (t) => {
+  const { dir, run, writeTranscript } = fixture(t);
+  writeTranscript([{ type: "task_started", turn_id: "turn" }, fileChange(path.join(dir, "model.do"))]);
+  const bare = run({ hook_event_name: "Stop", last_assistant_message: `${diffReply}\n\n${reviewConfirmation}` });
+  assert.equal(bare.decision, "block");
+  assert.match(bare.reason, /ranges you read/);
+  assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: goodReply }), {});
+});
+
+test("a large edit that states the omitted diff is not asked for diff blocks", (t) => {
+  const { dir, run, writeTranscript } = fixture(t);
+  writeTranscript([{ type: "task_started", turn_id: "turn" }, fileChange(path.join(dir, "model.do"))]);
+  const reply = `Rewrote model.do.\n\ndiff 생략: .do 변경 240줄\n\n${confirmedLine}`;
+  assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: reply }), {});
 });
 
 test("a review-only Stop preserves a separate diff reminder preference", (t) => {
   const { run, writeTranscript } = fixture(t, ["--review-only"]);
   writeTranscript([{ type: "task_started", turn_id: "turn" }, fileChange("model.do")]);
   assert.equal(run({ hook_event_name: "Stop", last_assistant_message: diffReply }).decision, "block");
-  assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: reviewConfirmation }), {});
+  assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: confirmedLine }), {});
 });
 
 test("scratch .do edits are silent in patch callbacks and transcript recovery", (t) => {

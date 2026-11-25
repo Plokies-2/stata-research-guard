@@ -46,7 +46,7 @@ The marketplace identifier is `stata-research-guard-team`. Start a new Codex cha
 
 To enable the bundled review and diff reminders, review and trust the plugin's `PreToolUse`, `PostToolUse`, and `Stop` hooks in **Settings → Hooks** or with `/hooks` in the CLI. Review them again when Codex flags a plugin update, including the 0.5.0 update, which adds the `PreToolUse` entry used by Claude Code. In Codex that entry returns nothing. The hooks use Node.js on `PATH` and cover maintained `.do` patches reported by a successful patch callback or a completed file-change record. They skip temporary directories such as `tmp`, `cache`, and `build`. [Codex hook trust](https://learn.chatgpt.com/docs/hooks#review-and-trust-hooks)
 
-After the final edit, the model reads each changed region and the 50 lines on either side. It follows directly connected code as needed to check whether existing code or a documented command already does the same work. If the review confirmation or an expected diff is missing, `Stop` requests one more pass. The model judges duplication and the hook checks for the confirmation. [Review and diff behavior](plugins/stata-research-guard/README.md#설치와-개발)
+After the final edit, the model reads each changed region and the 50 lines on either side, plus where the macros and variables used there are defined. It checks whether existing code or a documented command already does the same work, using examples such as a new global for what an existing global holds or a second `collapse`. The reply ends with a confirmation line that lists the line ranges read. If that line, its ranges, or an expected diff is missing, `Stop` requests one more pass; a large edit that says `diff 생략:` is not asked for diffs. The model judges duplication and the hook checks for the confirmation. [Review and diff behavior](plugins/stata-research-guard/README.md#설치와-개발)
 
 </details>
 
@@ -217,7 +217,7 @@ foreach sample in full married {
 
 Keep related specifications in the `.do` file that owns their data-to-output workflow. Give an independent workflow its own named file. Keep mechanical loops shallow and make the estimator, sample, fixed effects, and inference visible where they are used. The researcher and model assess the evidence retrieved through the tools, separating successful execution from the validity of research conclusions.
 
-Small text edits are reported with file-by-file before/after diffs. At 100 or more added plus deleted lines, or for a workflow overhaul, the reply explains that the diff was omitted and links the changes. Explicit requests for a full diff take precedence; generated outputs are described separately.
+Small text edits are reported with file-by-file before/after diffs. At 200 or more added plus deleted lines, or for a workflow overhaul, the reply states the omission on a line starting with `diff 생략:` and links the changes. Explicit requests for a full diff take precedence; generated outputs are described separately.
 
 ## Problems this addresses
 

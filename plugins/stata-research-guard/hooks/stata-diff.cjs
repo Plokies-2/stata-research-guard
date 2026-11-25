@@ -7,8 +7,10 @@ const { createHash } = require("node:crypto");
 // The full procedures live in stata-replication-workflow; hooks only point to them.
 const reviewLines = 50;
 const reviewConfirmation = `수정 코드 주변 ${reviewLines}줄을 읽어 중복 구현을 확인했다.`;
-const reviewRule = `Run the stata-replication-workflow edited-region review: read each changed region and the ${reviewLines} lines before and after it, check whether existing code or a supported command already does the same work, and fix duplicates in scope. After the review, end the final reply with this line:\n${reviewConfirmation}`;
-const reportRule = "Show a fenced diff block for each changed .do file, following the stata-replication-workflow final-reply rule.";
+const reviewRule = `Run the stata-replication-workflow edited-region review: read each changed region and the ${reviewLines} lines before and after it, plus where the macros and variables it uses are defined. Check whether existing code or a supported command already does the same work, such as a new global for what an existing global holds, a second collapse, or if/strpos() reclassifying a fixed list, and fix duplicates in scope. After the review, put this line on its own line in the final reply, followed by the ranges you read:\n${reviewConfirmation} (file.do 260-380행, controls 정의 12-18행)`;
+const reportRule = "Show a fenced diff block for each changed .do file, following the stata-replication-workflow final-reply rule. For a large edit, write a line starting with `diff 생략:` instead.";
+// The confirmation counts only with at least one line range after it.
+const confirmedReview = (line) => line.trim().startsWith(reviewConfirmation) && /\d+\s*[-~–]\s*\d+/.test(line.slice(line.indexOf(reviewConfirmation) + reviewConfirmation.length));
 
 function readOptionalFile(file) {
   if (!file) return "";
@@ -110,11 +112,14 @@ function handleCodex(event) {
 
 function stopReview(draft, changedFiles) {
   const reasons = [];
-  if (!draft.split(/\r?\n/).some((line) => line.trim() === reviewConfirmation)) {
+  const lines = draft.split(/\r?\n/);
+  if (!lines.some(confirmedReview)) {
     const files = [...changedFiles].map((file) => `- ${file}`).join("\n");
     reasons.push(`Before ending, perform the missing duplicate-implementation review of these changed .do files:\n${files}\n\n${reviewRule}`);
   }
-  if (!process.argv.includes("--review-only")) {
+  // Large edits omit diffs by rule; the reply says so on a line starting with "diff 생략:".
+  const diffOmitted = lines.some((line) => line.trim().startsWith("diff 생략:"));
+  if (!process.argv.includes("--review-only") && !diffOmitted) {
     const fileNames = [...changedFiles].map((file) => path.basename(file));
     const diffBlocks = [...draft.matchAll(/^[ \t]*(?:`{3,}|~{3,})diff[ \t]*\r?$/gim)];
     const labeled = fileNames.every((name) => draft.includes(name) || draft.includes(encodeURIComponent(name)));

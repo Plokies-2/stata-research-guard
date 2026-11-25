@@ -22,8 +22,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 40359,
-      "sha256": "224c70f741f17b08a305fa019dacc5919c62f8d6183d56828bfd784b78b35b56"
+      "bytes": 41007,
+      "sha256": "5f4adef7537cf2f17b26d50dd40408ad7463257ab37dbda583fe94e5267af084"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -1567,8 +1567,8 @@
     },
     {
       "path": "hooks/stata-diff.cjs",
-      "bytes": 11181,
-      "sha256": "b358907d07906cc6eb10131b01a1c0c66aeea391e0df68c139ee925b998ccc56"
+      "bytes": 11961,
+      "sha256": "6e642285d10168e3833fc4be1af96ba66c82c3b094212dfc8606356ef33f987b"
     },
     {
       "path": "INSTRUCTIONS.md",
@@ -1622,8 +1622,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 19410,
-      "sha256": "654381fb61617fb68eb6e832e6a09e5fa984271729954e7e32490a532f981d62"
+      "bytes": 19493,
+      "sha256": "defb493df264b9d9499637a6f490ff173635992c68f0838331be2e6cad071209"
     },
     {
       "path": "scripts/build_command_help_guides.cjs",
@@ -1667,8 +1667,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/command-evidence.md",
-      "bytes": 22787,
-      "sha256": "0457185267d2907f5ac7d9118e6ffa650180edc8b63de09a0347af69e68cad11"
+      "bytes": 20103,
+      "sha256": "55968e48fefc0b67310cc239848d7026c782f86737e787b296f7e05194eb7754"
     },
     {
       "path": "skills/stata-replication-workflow/references/execution-and-results.md",
@@ -1677,8 +1677,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rules.md",
-      "bytes": 26186,
-      "sha256": "9d8ed0c317410196948f27f9b56898c600c7e17502e38d8b665d1deb2127b5c8"
+      "bytes": 18665,
+      "sha256": "c749db0d64dd6a6a569ce4e52ca66f981f388a0741e451fd8ea53ec759c8f6db"
     },
     {
       "path": "skills/stata-replication-workflow/references/paper-workflow-reading.md",
@@ -1697,8 +1697,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/SKILL.md",
-      "bytes": 14826,
-      "sha256": "9ce32967675bcf26789714190277ccca9bfbc033cf8d1306ef0f298ae9923231"
+      "bytes": 18781,
+      "sha256": "7a2afdefcdb443cf9a328acaa32ef1a6d50af9b37e46b9fc8cf0bd0f72d83ad7"
     },
     {
       "path": "tests/help-sections.test.cjs",
@@ -1727,8 +1727,8 @@
     },
     {
       "path": "tests/stata-diff.test.cjs",
-      "bytes": 9837,
-      "sha256": "9bc177b930174c991a2e7ad08e4abf6eff44cfde736fab32b86c0781548972ce"
+      "bytes": 10960,
+      "sha256": "16f4d988e10e620cf8ac8128e686da694323ac06bb58a38c7e2e83352277e74f"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",

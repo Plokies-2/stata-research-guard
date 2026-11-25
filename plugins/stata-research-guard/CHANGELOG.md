@@ -7,6 +7,10 @@
 - Shorten the tool description and parameter text, and the hook reminders. The edited-region review procedure now lives once in `stata-replication-workflow`.
 - In Claude Code, time shell commands only when they name a `.do` file, so ordinary commands skip the folder scan.
 - Describe the independent-review subagent without a Codex-specific option.
+- Widen the edited-region review: besides the 50 lines around each change, read where the macros, variables, and saved data it uses are defined. Add grouped Stata examples of dirty code drawn from user corrections and common Stata advice: rebuilding what exists, needless branching, unused machinery, mixed stages, and manual work Stata already does.
+- The review confirmation now lists the line ranges read, and the Stop hook asks again when they are missing.
+- Omit diffs from 200 changed `.do` lines (was 100). A reply that states `diff 생략:` is not asked for diff blocks.
+- Trim repeated wording from the general rules and command evidence.
 
 ## 0.5.0 — 2026-11-25
 
