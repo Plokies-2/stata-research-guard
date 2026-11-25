@@ -22,8 +22,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 41399,
-      "sha256": "c5f586afad7627c34e977976c343523d20cc686c15f5ecb1fc54a628ed68fc6c"
+      "bytes": 41638,
+      "sha256": "7d438766b1f457cff654a64688fe89bb9d67a24afd8890e6147a5f3fe77a113d"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -1706,6 +1706,11 @@
       "sha256": "231148c60bbc7c4166b5ab0c03b2f1a12e54e79430ef67af2b43886e81599d10"
     },
     {
+      "path": "tests/doc-links.test.cjs",
+      "bytes": 1151,
+      "sha256": "974c29a547071ec51917e3a33d894dac02224b390225283d521c55a570fc3006"
+    },
+    {
       "path": "tests/help-sections.test.cjs",
       "bytes": 13446,
       "sha256": "2ca4576632e8bc39ae990b389d4b9753c555251a50a830e3065bb697f174b152"
@@ -1722,13 +1727,13 @@
     },
     {
       "path": "tests/plugin_bundle_manifest.test.cjs",
-      "bytes": 5933,
-      "sha256": "de9596544b246d64a2efd3de81818844739a0fc8e4b0e06ec98e35136b05441d"
+      "bytes": 5392,
+      "sha256": "5cc728f2494123a95bdd8131fb6d9f9440ee565c768b84dd76a0c91d50eac49a"
     },
     {
       "path": "tests/server.test.cjs",
-      "bytes": 40590,
-      "sha256": "096d50bda39b174d751cb554906e624bc087003e125b56597240bdf5bcd45cae"
+      "bytes": 33076,
+      "sha256": "5d3a3f476669c9630a62030f9c834785348d8026609055061b50cc0fad43edef"
     },
     {
       "path": "tests/stata-diff.test.cjs",

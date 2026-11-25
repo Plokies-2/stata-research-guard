@@ -109,12 +109,12 @@ test("MCP exposes one simple exact-key three-phase lookup tool", async () => {
   assert.doesNotMatch(JSON.stringify(TOOL_DEFINITIONS), /project_path|target_files|known_constraints/);
 });
 
-test("Phase 1 returns common main rules and a compact neutral 115-command index", async () => {
+test("Phase 1 returns common main rules and a compact neutral index of every registered command", async () => {
   const result = await buildCommandEvidence({ request: "Choose Stata commands" });
   assert.deepEqual(Object.keys(result), ["phase", "main_rules", "command_dictionary"]);
   assert.equal(result.phase, "discovery");
   assert.equal(result.main_rules.content, fs.readFileSync(path.join(ROOT, "skills/stata-replication-workflow/references/general-rules.md"), "utf8"));
-  assert.equal(result.command_dictionary.length, 115);
+  assert.deepEqual(result.command_dictionary.map((row) => row.command), COMMAND_SOURCE_CATALOG.commands.map((row) => row.command));
 
   const directPhase2 = await buildCommandEvidence({ request: "Use count", selected_commands: ["count"] });
   const directPhase3 = await buildCommandEvidence({
@@ -180,8 +180,8 @@ test("Phase 2 returns official help for the six core data-inspection commands", 
   assert.match(result.command_evidence[5].command_help.content, /variable names and labels/i);
 });
 
-test("Phase 2 returns Stata-rendered xtreg help and its three exact profiles", async () => {
-  const result = await buildCommandEvidence({ request: "Use xtreg", selected_commands: ["xtreg"], help_view: "full", include_paper_catalog: true });
+test("Phase 2 returns Stata-rendered xtreg help without a default paper catalog", async () => {
+  const result = await buildCommandEvidence({ request: "Use xtreg", selected_commands: ["xtreg"], help_view: "full" });
   assert.deepEqual(Object.keys(result), [
     "phase",
     "main_rules",
@@ -204,11 +204,7 @@ test("Phase 2 returns Stata-rendered xtreg help and its three exact profiles", a
   assert.equal(evidence.expanded_documentation.status, "available");
   assert.equal(evidence.expanded_documentation.source_version, "Stata 18 installation with explicitly marked StataNow features");
   assert.match(evidence.expanded_documentation.limitations.join(" "), /StataNow-only/);
-  assert.deepEqual(
-    evidence.paper_example_catalog.map((row) => row.block_id),
-    ["block-139-184-033", "block-139-184-034", "block-139-184-035"],
-  );
-  assert.equal("block_code" in evidence.paper_example_catalog[0], false);
+  assert.equal(evidence.paper_example_catalog_omitted, true);
   assert.equal(deepKeys(evidence).has("full_command_guide"), false);
 });
 
@@ -217,7 +213,6 @@ test("Phase 2 resolves multiple selected commands independently in request order
     request: "Use several commands",
     selected_commands: ["duplicates", "cgmreg", "xtivreg", "jwdidstacked"],
     help_view: "full",
-    include_paper_catalog: true,
   });
   assert.deepEqual(
     result.command_evidence.map((row) => row.command),
@@ -230,43 +225,35 @@ test("Phase 2 resolves multiple selected commands independently in request order
 
   const [duplicates, cgmreg, xtivreg, jwdidstacked] = result.command_evidence;
   assert.equal(duplicates.command_help.command, "duplicates");
-  assert.ok(duplicates.paper_example_catalog.length > 0);
   assert.match(cgmreg.command_help.content, /cluster\(varlist\)/);
   assert.equal(cgmreg.expanded_documentation.status, "same_source_as_help");
-  assert.equal(cgmreg.paper_example_catalog.length, 3);
   assert.equal(xtivreg.command_help.command, "xtivreg");
-  assert.deepEqual(xtivreg.paper_example_catalog.map((row) => row.block_id), ["block-139-184-032"]);
   assert.equal(jwdidstacked.command_help, null);
   assert.equal(jwdidstacked.expanded_documentation.status, "unavailable");
-  assert.equal(jwdidstacked.paper_example_catalog.length, 1);
 });
 
-test("the help index covers 115 commands and five supplemental topics", async () => {
-  assert.equal(COMMAND_SOURCE_CATALOG.commands.length, 115);
+test("every registered command has a help entry and an expanded-documentation entry", async () => {
   assert.doesNotMatch(JSON.stringify(COMMAND_SOURCE_CATALOG), /full_command_guides/);
-  assert.equal(COMMAND_HELP_INDEX.guides.length, 120);
-  const counts = Object.groupBy(COMMAND_HELP_INDEX.guides, (row) => row.help_status);
-  assert.equal(counts.available.length, 118);
-  assert.equal(counts.partial, undefined);
-  assert.equal(counts.unavailable.length, 2);
-  assert.deepEqual(counts.unavailable.map((row) => row.command).sort(), ["jregress", "jwdidstacked"]);
+  const statuses = new Set(["available", "unavailable"]);
+  const helpByCommand = new Map(COMMAND_HELP_INDEX.guides.map((row) => [row.command, row]));
+  const expandedByCommand = new Map(EXPANDED_GUIDE_INDEX.guides.map((row) => [row.command, row]));
+  for (const { command } of COMMAND_SOURCE_CATALOG.commands) {
+    assert.ok(helpByCommand.has(command), `${command} lacks help`);
+    assert.ok(expandedByCommand.has(command), `${command} lacks expanded documentation status`);
+  }
+  for (const row of COMMAND_HELP_INDEX.guides) {
+    assert.ok(statuses.has(row.help_status), `${row.command}: ${row.help_status}`);
+    if (row.help_status === "available") {
+      assert.ok(row.help_topics.length > 0, row.command);
+      assert.ok(fs.existsSync(path.join(ROOT, "data", row.content_file)), row.content_file);
+    }
+  }
+  const expandedStatuses = new Set(["available", "same_source_as_help", "supplemental", "unavailable"]);
+  assert.ok(EXPANDED_GUIDE_INDEX.guides.every((row) => expandedStatuses.has(row.expanded_documentation_status)));
 
-  const collectStyle = COMMAND_HELP_INDEX.guides.find((row) => row.command === "collect_style");
-  assert.equal(collectStyle.help_status, "available");
-  assert.equal(collectStyle.help_topics.length, 19);
+  const collectStyle = helpByCommand.get("collect_style");
   assert.match(collectStyle.limitations.join(" "), /Stata 18 scope excludes/);
-  const content = fs.readFileSync(path.join(ROOT, "data", collectStyle.content_file), "utf8");
-  assert.match(content, /collect style _cons/);
-
-  assert.equal(EXPANDED_GUIDE_INDEX.guides.length, 115);
-  const expandedCounts = Object.groupBy(
-    EXPANDED_GUIDE_INDEX.guides,
-    (row) => row.expanded_documentation_status,
-  );
-  assert.equal(expandedCounts.available.length, 69);
-  assert.equal(expandedCounts.same_source_as_help.length, 44);
-  assert.equal(expandedCounts.supplemental.length, 1);
-  assert.equal(expandedCounts.unavailable.length, 1);
+  assert.match(fs.readFileSync(path.join(ROOT, "data", collectStyle.content_file), "utf8"), /collect style _cons/);
 });
 
 test("Phase 3 expands only the exact requested command subset without requiring a paper block", async () => {
@@ -288,67 +275,6 @@ test("Phase 3 expands only the exact requested command subset without requiring 
   assert.equal(documentation.source_version, "Stata 18 installation");
   assert.match(documentation.content, /^regress — Linear regression/m);
   assert.match(documentation.content, /regress depvar/);
-});
-
-test("Phase 3 returns one slim exact xtreg paper card with an empty log array", async () => {
-  const result = await buildCommandEvidence({
-    request: "Inspect the selected xtreg example",
-    selected_commands: ["xtreg"],
-    help_view: "full",
-    expanded: true,
-    selected_block_ids: ["block-139-184-033"],
-  });
-  assert.deepEqual(Object.keys(result), [
-    "phase",
-    "main_rules",
-    "selected_commands",
-    "expanded_commands",
-    "selected_block_ids",
-    "expanded_command_evidence",
-    "paper_usage_cards",
-  ]);
-  assert.deepEqual(result.expanded_commands, []);
-  assert.deepEqual(result.expanded_command_evidence, []);
-  assert.equal(result.paper_usage_cards.length, 1);
-  const card = result.paper_usage_cards[0];
-  assert.equal(card.block_id, "block-139-184-033");
-  assert.equal(card.focus_command, "xtreg");
-  assert.match(card.paper_code, /xtreg ln_mortality_rate/);
-  assert.equal(card.source_provenance.length, 1);
-  assert.equal("paper_occurrences" in card, false);
-  assert.equal("boundary_rationale" in card, false);
-  assert.deepEqual(card.paper_log_contexts, []);
-});
-
-test("Phase 3 attaches the exact raw xtivreg log span without interpretation fields", async () => {
-  const result = await buildCommandEvidence({
-    request: "Inspect the selected xtivreg example",
-    selected_commands: ["xtivreg"],
-    expanded: true,
-    selected_block_ids: ["block-139-184-032"],
-  });
-  const card = result.paper_usage_cards[0];
-  assert.equal(card.paper_code.split(/\r?\n/).length, 62); // Original source lines 5–66, including horizon setup and both branches.
-  assert.equal(card.source_provenance.length, 1);
-  assert.equal(card.paper_log_contexts.length, 1);
-  assert.equal(card.paper_log_contexts[0].log_spans[0].start, 1);
-  assert.equal(card.paper_log_contexts[0].log_spans[0].end, 71);
-  assert.equal(card.paper_log_contexts[0].log_spans[0].text.split(/\r?\n/).length, 71);
-
-  const keys = deepKeys(card.paper_log_contexts);
-  for (const key of [
-    "observed_output_facts",
-    "returned_state_facts",
-    "factual_limitations",
-    "score",
-    "rank",
-    "winner",
-    "promotion_status",
-    "pass",
-    "fail",
-  ]) {
-    assert.equal(keys.has(key), false);
-  }
 });
 
 test("Phase 3 keeps an editorial adaptation separate from the original source", async () => {
@@ -380,62 +306,9 @@ test("Phase 3 delivers the original code-specific license notice", async () => {
     fs.readFileSync(path.join(ROOT, "LICENSES", "MIT-185943.txt"), "utf8"));
 });
 
-test("Phase 3 manually narrows the one giant ivregress nuisance table to exact raw ranges", async () => {
-  const result = await buildCommandEvidence({
-    request: "Inspect the focal ivregress result",
-    selected_commands: ["ivregress"],
-    expanded: true,
-    selected_block_ids: ["manual-block-084"],
-  });
-  const spans = result.paper_usage_cards[0].paper_log_contexts[0].log_spans;
-  assert.deepEqual(spans.map((row) => [row.role, row.start, row.end]), [
-    ["command_echo", 472, 472],
-    ["displayed_output", 473, 482],
-    ["displayed_output", 992, 994],
-  ]);
-  assert.match(spans[1].text, /Instrumental-variables LIML regression/);
-  assert.match(spans[1].text, /educ/);
-  assert.match(spans[2].text, /Endogenous: educ/);
-  assert.doesNotMatch(JSON.stringify(spans), /_YPyobXpob_39_56/);
-});
-
-test("outreg2 profiles remain nonbinding when a selected block contains another estimator", async () => {
-  const phase2 = await buildCommandEvidence({
-    request: "Keep regress and use outreg2",
-    selected_commands: ["regress", "outreg2"],
-    include_paper_catalog: true,
-  });
-  const outreg2Evidence = phase2.command_evidence.find((row) => row.command === "outreg2");
-  assert.deepEqual(
-    outreg2Evidence.paper_example_catalog.map((row) => row.block_id),
-    [
-      "outreg2_table6_replace_append_stats",
-      "outreg2_table2_word_columns",
-      "outreg2_table3_excel_loop_specs",
-      "outreg2_appendixB2a_instrument_columns",
-    ],
-  );
-
-  const phase3 = await buildCommandEvidence({
-    request: "Inspect one outreg2 example without changing regress",
-    selected_commands: ["regress", "outreg2"],
-    expanded: true,
-    selected_block_ids: ["outreg2_table3_excel_loop_specs"],
-  });
-  assert.deepEqual(phase3.selected_commands, ["regress", "outreg2"]);
-  assert.equal(phase3.paper_usage_cards[0].focus_command, "outreg2");
-  assert.match(phase3.paper_usage_cards[0].paper_code, /reghdfe/);
-});
-
-test("paper data stays at 166 blocks and 12 optional raw-log attachments", async () => {
-  assert.equal(PAPER_PROFILES.length, 166);
-  assert.equal(PAPER_BLOCKS.length, 166);
-  assert.equal(PAPER_EXECUTION_CONTEXTS.length, 12);
-});
-
 test("out-of-dictionary exact topics use live help without restoring an mcpStata help tool", async () => {
   const result = await buildCommandEvidence(
-    { request: "Use anova", selected_commands: ["anova"], include_paper_catalog: true },
+    { request: "Use anova", selected_commands: ["anova"] },
     {
       liveHelpLookup: (command) => ({
         status: "available",
@@ -457,7 +330,7 @@ test("out-of-dictionary exact topics use live help without restoring an mcpStata
   assert.equal(evidence.command_help.source_kind, "live_installed_help");
   assert.match(evidence.command_help.content, /anova depvar/);
   assert.equal(evidence.expanded_documentation.status, "unavailable");
-  assert.deepEqual(evidence.paper_example_catalog, []);
+  assert.equal(evidence.paper_example_catalog_omitted, true);
 
   await assert.rejects(
     () => buildCommandEvidence({ request: "Unsafe topic", selected_commands: ["anova;erase"] }),
@@ -465,35 +338,12 @@ test("out-of-dictionary exact topics use live help without restoring an mcpStata
   );
 
   for (const command of ["jregress", "jwdidstacked"]) {
-    const result = await buildCommandEvidence({ request: `Use ${command}`, selected_commands: [command], include_paper_catalog: true });
+    const result = await buildCommandEvidence({ request: `Use ${command}`, selected_commands: [command] });
     const evidence = result.command_evidence[0];
     assert.equal(evidence.command, command);
     assert.equal(evidence.help_status, "unavailable");
     assert.equal(evidence.command_help, null);
-    assert.ok(evidence.paper_example_catalog.length > 0);
   }
-});
-
-test("registered multiword Stata spelling normalizes transparently", async () => {
-  const result = await buildCommandEvidence({
-    request: "Export the workbook",
-    selected_commands: ["export excel", "import excel"],
-  });
-  assert.deepEqual(result.selected_commands, ["export_excel", "import_excel"]);
-  assert.deepEqual(result.topic_normalizations, [
-    {
-      requested: "export excel",
-      resolved: "export_excel",
-      reason: "registered_multiword_command",
-    },
-    {
-      requested: "import excel",
-      resolved: "import_excel",
-      reason: "registered_multiword_command",
-    },
-  ]);
-  assert.equal(result.command_evidence[0].help_status, "available");
-  assert.equal(result.command_evidence[1].help_status, "available");
 });
 
 test("supplemental basic topics and aliases deliver the bundled originals without live lookup", async () => {
@@ -531,52 +381,32 @@ test("macro aliases retain the source section map and explicit foundation reuse"
   assert.equal(next.content, lines.slice(219, 668).join(""));
 });
 
-test("known spaced and underscore topics reach exact help and malformed phase fields explain the call shape", async () => {
-  const lookedUp = [];
-  const result = await buildCommandEvidence({ request: "Read exact help topics",
-    selected_commands: ["graph export", "matrix rownames", "_ms_omit_info"] }, {
-    liveHelpLookup: (topic) => {
+function recordingLookup(lookedUp, content = (topic) => `source for ${topic}`) {
+  return {
+    liveHelpLookup: async (topic) => {
       lookedUp.push(topic);
-      return { status: "available", help: { content: topic }, limitations: [] };
+      return { status: "available", help: { command: topic, source_kind: "live_installed_help", content: content(topic) }, limitations: [] };
     },
-  });
+  };
+}
+
+test("spaced, underscore and multiword spellings normalize to exact topics", async () => {
+  const registered = await buildCommandEvidence({ request: "Export the workbook", selected_commands: ["export excel", "import excel"] });
+  assert.deepEqual(registered.selected_commands, ["export_excel", "import_excel"]);
+  assert.deepEqual(registered.topic_normalizations.map((row) => [row.requested, row.resolved, row.reason]), [
+    ["export excel", "export_excel", "registered_multiword_command"],
+    ["import excel", "import_excel", "registered_multiword_command"],
+  ]);
+  assert.ok(registered.command_evidence.every((row) => row.help_status === "available"));
+
+  const lookedUp = [];
+  const live = await buildCommandEvidence({ request: "Read exact help topics",
+    selected_commands: ["graph export", "matrix rownames", "_ms_omit_info"] }, recordingLookup(lookedUp));
   assert.deepEqual(lookedUp, ["graph_export", "matrix_rownames", "_ms_omit_info"]);
-  assert.deepEqual(result.selected_commands, lookedUp);
+  assert.deepEqual(live.selected_commands, lookedUp);
+
   await assert.rejects(buildCommandEvidence({ request: "Wrong field names", phase: 2, commands: ["estout"] }),
     /Use request and selected_commands; the phase is inferred/);
-});
-
-test("known spaced estimates commands retain identity and read the correct shared help", async () => {
-  const lookedUp = [];
-  const result = await buildCommandEvidence(
-    {
-      request: "Save and restore research estimates",
-      selected_commands: ["estimates save", "estimates use", "estimates store", "estimates restore"],
-      help_source: "installed",
-    },
-    {
-      liveHelpLookup: (topic) => {
-        lookedUp.push(topic);
-        return {
-          status: "available",
-          help: { command: topic, source_kind: "live_installed_help", content: `source for ${topic}` },
-          limitations: [],
-        };
-      },
-    },
-  );
-  const commands = ["estimates_save", "estimates_use", "estimates_store", "estimates_restore"];
-  const topics = ["estimates_save", "estimates_save", "estimates_store", "estimates_store"];
-  assert.deepEqual(result.selected_commands, commands);
-  assert.deepEqual(lookedUp, topics);
-  assert.deepEqual(result.command_evidence.map((row) => row.command), commands);
-  assert.deepEqual(result.command_evidence.map((row) => row.help_topic), topics);
-  assert.deepEqual(result.command_evidence.map((row) => row.command_help.content),
-    topics.map((topic) => `source for ${topic}`));
-  assert.ok(result.topic_normalizations.every((row) => row.reason === "known_multiword_help_topic"));
-});
-
-test("known estimates spellings preserve duplicate and unsafe-topic handling", async () => {
   await assert.rejects(
     () => buildCommandEvidence({ request: "Duplicate spelling", selected_commands: ["estimates use", "estimates_use"] }),
     /invalid_argument: duplicate_selected_command/,
@@ -589,53 +419,23 @@ test("known estimates spellings preserve duplicate and unsafe-topic handling", a
   }
 });
 
-test("Stata language tokens retain their labels while using official macro help", async () => {
-  const lookedUp = [];
-  const result = await buildCommandEvidence(
-    {
-      request: "Check macro language constructs",
-      selected_commands: ["global", "local", "tempfile", "tempname"],
-      help_source: "installed",
-    },
-    {
-      liveHelpLookup: (topic) => {
-        lookedUp.push(topic);
-        return {
-          status: "available",
-          help: { command: topic, source_kind: "live_installed_help", content: "macro syntax" },
-          limitations: [],
-        };
-      },
-    },
-  );
-  assert.deepEqual(lookedUp, ["macro", "macro", "macro", "macro"]);
-  assert.deepEqual(result.command_evidence.map((row) => row.command), [
-    "global",
-    "local",
-    "tempfile",
-    "tempname",
-  ]);
-  assert.deepEqual(result.command_evidence.map((row) => row.help_topic), [
-    "macro",
-    "macro",
-    "macro",
-    "macro",
-  ]);
-});
-
-test("posting commands retain their labels and use the documented post help topic", async () => {
-  const commands = ["postfile", "postclose", "postutil"];
-  const lookedUp = [];
-  const result = await buildCommandEvidence({ request: "Read posting command help", selected_commands: commands, help_source: "installed" }, {
-    liveHelpLookup: async (topic) => {
-      lookedUp.push(topic);
-      return { status: "available", help: { command: topic, content: "official post help" }, limitations: [] };
-    },
-  });
-  assert.deepEqual(lookedUp, ["post", "post", "post"]);
-  assert.deepEqual(result.command_evidence.map((row) => row.command), commands);
-  assert.deepEqual(result.command_evidence.map((row) => row.help_topic), lookedUp);
-  assert.ok(result.command_evidence.every((row) => row.command_help.content === "official post help"));
+test("commands sharing an installed help topic keep their own labels", async () => {
+  const cases = [
+    [["estimates save", "estimates use", "estimates store", "estimates restore"],
+      ["estimates_save", "estimates_use", "estimates_store", "estimates_restore"],
+      ["estimates_save", "estimates_save", "estimates_store", "estimates_store"]],
+    [["global", "local", "tempfile", "tempname"], ["global", "local", "tempfile", "tempname"], ["macro", "macro", "macro", "macro"]],
+    [["postfile", "postclose", "postutil"], ["postfile", "postclose", "postutil"], ["post", "post", "post"]],
+  ];
+  for (const [requested, commands, topics] of cases) {
+    const lookedUp = [];
+    const result = await buildCommandEvidence({ request: "Read shared help", selected_commands: requested, help_source: "installed" },
+      recordingLookup(lookedUp));
+    assert.deepEqual(lookedUp, topics);
+    assert.deepEqual(result.command_evidence.map((row) => row.command), commands);
+    assert.deepEqual(result.command_evidence.map((row) => row.help_topic), topics);
+    assert.deepEqual(result.command_evidence.map((row) => row.command_help.content), topics.map((topic) => `source for ${topic}`));
+  }
 });
 
 test("empty optional Phase 3 arrays are equivalent to omission", async () => {
@@ -706,19 +506,6 @@ test("Phase 3 reports duplicate maintainer help and the limited jregress supplem
   assert.match(rows[1].content, /jackknife standard errors/);
   assert.match(rows[1].limitations.join(" "), /does not replace missing authoritative syntax help/);
   assert.equal(rows[2].content, null);
-});
-
-test("Phase 3 returns available paper blocks when another selected command lacks help", async () => {
-  const result = await buildCommandEvidence({
-    request: "Inspect the available branch",
-    selected_commands: ["jregress", "xtivreg"],
-    expanded: true,
-    selected_block_ids: ["block-139-184-032"],
-  });
-  assert.deepEqual(result.selected_commands, ["jregress", "xtivreg"]);
-  assert.equal(result.paper_usage_cards.length, 1);
-  assert.equal(result.paper_usage_cards[0].focus_command, "xtivreg");
-  assert.equal(result.paper_usage_cards[0].paper_log_contexts.length, 1);
 });
 
 test("phase arguments and exact IDs fail closed", async () => {

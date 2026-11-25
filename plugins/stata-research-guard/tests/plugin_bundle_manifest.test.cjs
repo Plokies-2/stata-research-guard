@@ -79,44 +79,35 @@ test("manifest verification is independent of the current bundle manifest", (t) 
   }
 });
 
-test("one-byte mutation fails the inventory hash check", (t) => {
-  const root = minimalBundle();
-  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
-  writeManifest(root);
-  const target = path.join(root, "README.md");
-  const bytes = fs.readFileSync(target);
-  bytes[0] ^= 1;
-  fs.writeFileSync(target, bytes);
-  const checked = run(["--plugin-root", root]);
-  assert.notEqual(checked.status, 0);
-  const result = JSON.parse(checked.stdout);
-  assert.ok(result.errors.some((error) => error.type === "hash_mismatch" && error.path === "README.md"));
-});
-
-test("plugin version mutation fails metadata and inventory checks", (t) => {
-  const root = minimalBundle();
-  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
-  writeManifest(root);
-  const metadataPath = path.join(root, ".codex-plugin", "plugin.json");
-  const metadata = JSON.parse(fs.readFileSync(metadataPath, "utf8"));
-  metadata.version = "0.0.1-mutated";
-  fs.writeFileSync(metadataPath, `${JSON.stringify(metadata, null, 2)}\n`);
-  const checked = run(["--plugin-root", root]);
-  assert.notEqual(checked.status, 0);
-  const result = JSON.parse(checked.stdout);
-  assert.ok(result.errors.some((error) => error.type === "plugin_version"));
-  assert.ok(result.errors.some((error) => error.path === ".codex-plugin/plugin.json"));
-});
-
-test("an unexpected bundle file fails the exact inventory check", (t) => {
-  const root = minimalBundle();
-  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
-  writeManifest(root);
-  fs.writeFileSync(path.join(root, "unexpected.txt"), "not part of the bundle\n");
-  const checked = run(["--plugin-root", root]);
-  assert.notEqual(checked.status, 0);
-  const result = JSON.parse(checked.stdout);
-  assert.ok(result.errors.some((error) => error.type === "unexpected_file" && error.path === "unexpected.txt"));
+test("byte, version and extra-file mutations each fail verification", (t) => {
+  const mutations = [
+    ["hash_mismatch", "README.md", (root) => {
+      const target = path.join(root, "README.md");
+      const bytes = fs.readFileSync(target);
+      bytes[0] ^= 1;
+      fs.writeFileSync(target, bytes);
+    }],
+    ["plugin_version", ".codex-plugin/plugin.json", (root) => {
+      const metadataPath = path.join(root, ".codex-plugin", "plugin.json");
+      const metadata = JSON.parse(fs.readFileSync(metadataPath, "utf8"));
+      metadata.version = "0.0.1-mutated";
+      fs.writeFileSync(metadataPath, `${JSON.stringify(metadata, null, 2)}\n`);
+    }],
+    ["unexpected_file", "unexpected.txt", (root) => {
+      fs.writeFileSync(path.join(root, "unexpected.txt"), "not part of the bundle\n");
+    }],
+  ];
+  for (const [type, relative, mutate] of mutations) {
+    const root = minimalBundle();
+    t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+    writeManifest(root);
+    mutate(root);
+    const checked = run(["--plugin-root", root]);
+    assert.notEqual(checked.status, 0, type);
+    const result = JSON.parse(checked.stdout);
+    assert.ok(result.errors.some((error) => error.type === type), type);
+    assert.ok(result.errors.some((error) => error.path === relative), relative);
+  }
 });
 
 test("Codex and Claude Code manifests describe the same plugin release", () => {

@@ -13,6 +13,7 @@
 - Trim repeated wording from the general rules and command evidence.
 - Add `project-workflows.md`: four layouts drawn from bundled AEA replication packages (numbered stages, build/analysis, one file per exhibit, nested masters), with order variants and master contents. The skill reads it and offers the user a choice only when starting a project or restructuring a whole one.
 - Paper example catalogs are now opt-in: `include_paper_catalog` defaults to false.
+- Tests: replace count-pinned checks with coverage invariants, merge spelling and manifest-mutation tests, drop paper-block tests beyond opt-in, attribution and license delivery, and check that relative Markdown links resolve (83 → 74).
 
 ## 0.5.0 — 2026-11-25
 
