@@ -339,10 +339,10 @@ cd "`repo'"
 <details>
 <summary>MCP 도구 직접 사용하기</summary>
 
-`get_stata_command_evidence`로 필요한 명령의 도움말과 논문 용례를 조회합니다. 예를 들어 `regress`의 도움말만 읽으려면 다음과 같이 요청합니다.
+`get_stata_command_evidence`로 필요한 명령의 도움말을 조회합니다. 논문 용례는 `"include_paper_catalog":true`를 넣을 때만 함께 옵니다. 예를 들어 `regress`의 도움말을 읽으려면 다음과 같이 요청합니다.
 
 ```json
-{"request":"Read the relevant regression syntax","selected_commands":["regress"],"include_paper_catalog":false}
+{"request":"Read the relevant regression syntax","selected_commands":["regress"]}
 ```
 
 긴 도움말의 구획 선택, 설치 버전 조회, 논문 코드·로그 연결은 [조회 사용법](plugins/stata-research-guard/skills/stata-replication-workflow/references/command-evidence.md)을 참고하세요.

@@ -375,7 +375,7 @@ async function dynamicCommandEvidence(command, liveHelpLookup, args) {
       source_relation_to_help: null,
       limitations: ["Out-of-dictionary exact help topics do not have bundled expanded documentation."],
     },
-    ...(args.include_paper_catalog === false ? { paper_example_catalog_omitted: true } : { paper_example_catalog: [] }),
+    ...(args.include_paper_catalog !== true ? { paper_example_catalog_omitted: true } : { paper_example_catalog: [] }),
   };
 }
 
@@ -388,7 +388,7 @@ async function commandEvidence(command, liveHelpLookup, args) {
     help_status: entry.help_status,
     command_help: commandHelp(command, args),
     expanded_documentation: expandedDocumentationSummary(command),
-    ...(args.include_paper_catalog === false
+    ...(args.include_paper_catalog !== true
       ? { paper_example_catalog_omitted: true }
       : { paper_example_catalog: profilesByCommand.get(command) || [] }),
   };
@@ -422,7 +422,7 @@ async function installedCommandEvidence(command, liveHelpLookup, args) {
       ...expansion,
       source_relation_to_help: "Bundled documentation; its version may differ from the selected installed help and execution source.",
     },
-    ...(args.include_paper_catalog === false
+    ...(args.include_paper_catalog !== true
       ? { paper_example_catalog_omitted: true }
       : { paper_example_catalog: profilesByCommand.get(command) || [] }),
   };
@@ -735,7 +735,7 @@ const TOOL_DEFINITIONS = [
               },
             },
             workflow_notes: { type: "object", minProperties: 1, description: "Exact note IDs: import_delimited input-variable-names; did_multiplegt_dyn control-learning-sample, comparison-sample, effect-interpretation, output-recovery. Omitted by default.", additionalProperties: { type: "array", minItems: 1, uniqueItems: true, items: { type: "string", minLength: 1 } } },
-            include_paper_catalog: { type: "boolean", description: "Default true. False for help-only calls or when the catalog is visible." },
+            include_paper_catalog: { type: "boolean", description: "Default false. True only when choosing per-command paper examples." },
             deduplicate_help: { type: "boolean", description: "True replaces repeated help bodies in this response with content_ref pointers." },
           },
         },

@@ -341,10 +341,10 @@ The [short authoring comparisons](plugins/stata-research-guard/skills/stata-repl
 <details>
 <summary>Use the MCP tool directly</summary>
 
-Call `get_stata_command_evidence` for help and paper examples relevant to a selected command. For example, to read help for `regress`:
+Call `get_stata_command_evidence` for help relevant to a selected command; add `"include_paper_catalog":true` for its paper examples. For example, to read help for `regress`:
 
 ```json
-{"request":"Read the relevant regression syntax","selected_commands":["regress"],"include_paper_catalog":false}
+{"request":"Read the relevant regression syntax","selected_commands":["regress"]}
 ```
 
 See the [command evidence guide](plugins/stata-research-guard/skills/stata-replication-workflow/references/command-evidence.md) for long-help sections, installed-version lookup, and attached paper code and logs.

@@ -11,6 +11,8 @@
 - The review confirmation now lists the line ranges read, and the Stop hook asks again when they are missing.
 - Omit diffs from 200 changed `.do` lines (was 100). A reply that states `diff 생략:` is not asked for diff blocks.
 - Trim repeated wording from the general rules and command evidence.
+- Add `project-workflows.md`: four layouts drawn from bundled AEA replication packages (numbered stages, build/analysis, one file per exhibit, nested masters), with order variants and master contents. The skill reads it and offers the user a choice only when starting a project or restructuring a whole one.
+- Paper example catalogs are now opt-in: `include_paper_catalog` defaults to false.
 
 ## 0.5.0 — 2026-11-25
 

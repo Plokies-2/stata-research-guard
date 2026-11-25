@@ -13,7 +13,7 @@ Common stage roles include the following.
 | `regression.do` | Main specifications, immediate estimate storage, and their regression tables, postestimation, and figures. |
 | `robustness.do` | Requested alternative samples/specifications, placebo or permutation work, and their outputs. |
 
-Preserve adequate existing names and contracts. Create only the stages the work actually needs.
+Preserve adequate existing names and contracts. Create only the stages the work actually needs. For a new project or a whole-project restructure, choose the overall layout with [project-workflows.md](project-workflows.md).
 
 Within a stage, use short labeled sections. Estimation and the code that consumes its saved results should be easy to find together. Splitting estimation, estimate storage, tables, and plots into separate modules usually hides that relationship. Separate outcomes or specifications usually belong in visible blocks or shallow loops, not separate files.
 

@@ -45,16 +45,15 @@ const COMMAND_HELP_INDEX = readJson("command_help_guides.json");
 const EXPANDED_GUIDE_INDEX = readJson("expanded_command_guides.json");
 const COMMAND_SOURCE_CATALOG = readJson("command_source_catalog.json");
 
-test("help-only calls explicitly omit paper catalogs without changing help or rules", async () => {
+test("paper catalogs are opt-in and omitting them leaves help and rules unchanged", async () => {
   const args = { request: "Read outreg2 syntax", selected_commands: ["outreg2"] };
-  const full = await buildCommandEvidence(args);
+  const full = await buildCommandEvidence({ ...args, include_paper_catalog: true });
   const compact = await buildCommandEvidence({ ...args, include_paper_catalog: false });
   const expected = structuredClone(full);
   delete expected.command_evidence[0].paper_example_catalog;
   expected.command_evidence[0].paper_example_catalog_omitted = true;
   assert.deepEqual(compact, expected);
-  assert.deepEqual(await buildCommandEvidence({ ...args, include_paper_catalog: true }), full);
-  assert.deepEqual(await buildCommandEvidence(args), full);
+  assert.deepEqual(await buildCommandEvidence(args), compact);
 });
 
 test("duplicate help references restore the exact default response in both help phases", async () => {
@@ -182,7 +181,7 @@ test("Phase 2 returns official help for the six core data-inspection commands", 
 });
 
 test("Phase 2 returns Stata-rendered xtreg help and its three exact profiles", async () => {
-  const result = await buildCommandEvidence({ request: "Use xtreg", selected_commands: ["xtreg"], help_view: "full" });
+  const result = await buildCommandEvidence({ request: "Use xtreg", selected_commands: ["xtreg"], help_view: "full", include_paper_catalog: true });
   assert.deepEqual(Object.keys(result), [
     "phase",
     "main_rules",
@@ -218,6 +217,7 @@ test("Phase 2 resolves multiple selected commands independently in request order
     request: "Use several commands",
     selected_commands: ["duplicates", "cgmreg", "xtivreg", "jwdidstacked"],
     help_view: "full",
+    include_paper_catalog: true,
   });
   assert.deepEqual(
     result.command_evidence.map((row) => row.command),
@@ -403,6 +403,7 @@ test("outreg2 profiles remain nonbinding when a selected block contains another 
   const phase2 = await buildCommandEvidence({
     request: "Keep regress and use outreg2",
     selected_commands: ["regress", "outreg2"],
+    include_paper_catalog: true,
   });
   const outreg2Evidence = phase2.command_evidence.find((row) => row.command === "outreg2");
   assert.deepEqual(
@@ -434,7 +435,7 @@ test("paper data stays at 166 blocks and 12 optional raw-log attachments", async
 
 test("out-of-dictionary exact topics use live help without restoring an mcpStata help tool", async () => {
   const result = await buildCommandEvidence(
-    { request: "Use anova", selected_commands: ["anova"] },
+    { request: "Use anova", selected_commands: ["anova"], include_paper_catalog: true },
     {
       liveHelpLookup: (command) => ({
         status: "available",
@@ -464,7 +465,7 @@ test("out-of-dictionary exact topics use live help without restoring an mcpStata
   );
 
   for (const command of ["jregress", "jwdidstacked"]) {
-    const result = await buildCommandEvidence({ request: `Use ${command}`, selected_commands: [command] });
+    const result = await buildCommandEvidence({ request: `Use ${command}`, selected_commands: [command], include_paper_catalog: true });
     const evidence = result.command_evidence[0];
     assert.equal(evidence.command, command);
     assert.equal(evidence.help_status, "unavailable");
@@ -853,7 +854,7 @@ test("MCP sends the complete rules once per session and again on include_rules",
 });
 
 test("MCP responses omit provenance and do not count rules toward the help threshold", async () => {
-  const result = await callTool({ request: "Read regress options", selected_commands: ["regress"], include_rules: true });
+  const result = await callTool({ request: "Read regress options", selected_commands: ["regress"], include_rules: true, include_paper_catalog: true });
   assert.equal(typeof result.main_rules.content, "string");
   assert.equal("response_navigation" in result, false);
   assert.equal(typeof result.command_evidence[0].command_help.content, "string");

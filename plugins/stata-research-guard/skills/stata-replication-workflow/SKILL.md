@@ -23,7 +23,7 @@ Read the requested block and its direct caller or output before choosing further
 For a known command needing evidence, the minimum call is:
 
 ```json
-{"request":"Read the changed estout output interface","selected_commands":["estout"],"include_paper_catalog":false}
+{"request":"Read the changed estout output interface","selected_commands":["estout"]}
 ```
 
 There is no `phase` or `commands` argument. A new follow-up alone does not invalidate visible unchanged evidence. Use [command-evidence.md](references/command-evidence.md) when section selection, explicit evidence reuse, installed-version questions, or paper blocks are needed. A catalog or truncated response is not a complete help body; retrieve the missing material when dependencies remain unclear.
@@ -33,6 +33,8 @@ There is no `phase` or `commands` argument. A new follow-up alone does not inval
 Read applicable project instructions and any relevant current handoff. Preserve the user's scope, research specification, baseline data, and output contracts.
 
 **Before adding a branch or argument to an existing `.do`, reassess the work unit.** Read the real inputs and trace the saved outputs back from their callers or consumers. Keep one maintained `.do` for each coherent workflow. Related variants that extend the same data-to-output flow stay in its existing file. An independent maintained analysis or stage with its own input-to-output flow belongs in a purpose-named file. The project folder, a shared panel, and a common estimator are insufficient reasons to combine them. Use [workflow-taxonomy.md](references/workflow-taxonomy.md) for the decision and an example of a short master.
+
+**Offer a workflow choice only for whole-project work.** When starting a project from scratch or restructuring a whole project (new master, folder layout, or several `.do` files merged, split, or renumbered), read [project-workflows.md](references/project-workflows.md) and let the user choose a pattern before creating files. Skip it for partial edits.
 
 **Delete obsolete code in the same edit.** Check direct callers and output consumers, then remove superseded or unused blocks in scope, including commented-out alternatives and their unused arguments or helpers. Run one-off exploration in the work area with a temporary driver if needed. At completion, integrate only the code needed to reproduce maintained outputs and delete the remaining scratch code created for the task. Preserve required reproducers, baselines and research records, including unfavorable results. See [general-rules.md](references/general-rules.md) for the cleanup boundary.
 

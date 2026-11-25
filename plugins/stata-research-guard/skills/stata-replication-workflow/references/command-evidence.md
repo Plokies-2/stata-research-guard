@@ -42,12 +42,12 @@ After compaction or other context loss, or when a response says the rules were s
 
 ## Avoid repeated catalogs and help bodies
 
-For Phase 2 help-only requests, set `include_paper_catalog: false`. Use it also when a current paper catalog is already visible and you only need another help section. The response marks `paper_example_catalog_omitted: true`. Omit the option or set it to `true` when you need to choose paper examples.
+Paper catalogs are off by default; responses mark `paper_example_catalog_omitted: true`. Set `include_paper_catalog: true` only when the user asks for paper examples of a command or a concrete implementation choice needs one.
 
 For multi-command help requests in Phase 2 or 3, use `deduplicate_help: true`. Identical delivered bodies appear once; later entries keep their command, source, limitations and section metadata and replace only `content` with `null` plus a `content_ref` JSON Pointer, such as `#/command_evidence/0/command_help/content`. Read that body in the same response. References never depend on earlier calls, hashes remembered by the server, or unavailable context. Different sections from one source are not merged. Without either option, the existing response is unchanged.
 
 ```json
-{"request":"Read encode and decode syntax","selected_commands":["encode","decode"],"include_paper_catalog":false,"deduplicate_help":true}
+{"request":"Read encode and decode syntax","selected_commands":["encode","decode"],"deduplicate_help":true}
 ```
 
 These controls reduce repeated transport without shortening original help, paper code or logs.
@@ -108,7 +108,6 @@ Installed help can itself differ from the execution ADO. For the exact command, 
   "selected_commands": ["did_multiplegt_dyn"],
   "help_source": "installed",
   "help_view": "catalog",
-  "include_paper_catalog": false,
   "execution_sources": {
     "did_multiplegt_dyn": {"path": "C:/analysis/ado/did_multiplegt_dyn.ado"}
   }
@@ -132,7 +131,6 @@ Phase 2 `workflow_notes` returns only explicitly selected prospective authoring 
   "request": "Read controls and sample-output evidence",
   "selected_commands": ["did_multiplegt_dyn"],
   "help_sections": {"did_multiplegt_dyn": ["parallel-trends-options", "saved-results"]},
-  "include_paper_catalog": false,
   "workflow_notes": {"did_multiplegt_dyn": ["control-learning-sample", "comparison-sample"]}
 }
 ```
