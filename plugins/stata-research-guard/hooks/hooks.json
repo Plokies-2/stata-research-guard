@@ -1,12 +1,24 @@
 {
   "hooks": {
-    "PostToolUse": [
+    "PreToolUse": [
       {
-        "matcher": "^(apply_patch|exec|Bash|exec_command)$",
+        "matcher": "^(Bash|PowerShell)$",
         "hooks": [
           {
             "type": "command",
-            "command": "node -e \"require(require('node:path').join(process.env.PLUGIN_ROOT,'hooks','stata-diff.cjs'))\"",
+            "command": "node -e \"require(require('node:path').join(process.env.PLUGIN_ROOT||process.env.CLAUDE_PLUGIN_ROOT,'hooks','stata-diff.cjs'))\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "^(apply_patch|exec|Bash|exec_command|Edit|Write|MultiEdit|PowerShell)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"require(require('node:path').join(process.env.PLUGIN_ROOT||process.env.CLAUDE_PLUGIN_ROOT,'hooks','stata-diff.cjs'))\"",
             "timeout": 5
           }
         ]
@@ -17,7 +29,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node -e \"require(require('node:path').join(process.env.PLUGIN_ROOT,'hooks','stata-diff.cjs'))\"",
+            "command": "node -e \"require(require('node:path').join(process.env.PLUGIN_ROOT||process.env.CLAUDE_PLUGIN_ROOT,'hooks','stata-diff.cjs'))\"",
             "timeout": 5
           }
         ]

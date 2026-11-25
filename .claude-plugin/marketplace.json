@@ -1,0 +1,14 @@
+{
+  "name": "stata-research-guard-team",
+  "owner": {
+    "name": "Plokies-2"
+  },
+  "plugins": [
+    {
+      "name": "stata-research-guard",
+      "source": "./plugins/stata-research-guard",
+      "description": "Researcher-readable Stata with original command evidence and concrete independent review.",
+      "category": "development"
+    }
+  ]
+}

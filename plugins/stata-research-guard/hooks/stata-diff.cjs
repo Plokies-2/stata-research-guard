@@ -79,8 +79,7 @@ function isMaintainedDo(file, cwd) {
   return /\.do$/i.test(file) && !dirs.some((dir) => ["tmp", "temp", "cache", ".cache", "build", "scratch"].includes(dir));
 }
 
-function handle(event) {
-  if (typeof event.session_id !== "string" || typeof event.turn_id !== "string") return {};
+function handleCodex(event) {
   const dataDir = process.env.PLUGIN_DATA || process.env.CLAUDE_PLUGIN_DATA;
   const turnKey = createHash("sha256")
     .update(JSON.stringify([event.session_id, event.turn_id]))
@@ -119,7 +118,10 @@ function handle(event) {
     .map((file) => path.resolve(cwd, file))
     .filter((file) => isMaintainedDo(file, cwd)));
   if (changedFiles.size === 0) return {};
+  return stopReview(draft, changedFiles);
+}
 
+function stopReview(draft, changedFiles) {
   const reasons = [];
   if (!draft.split(/\r?\n/).some((line) => line.trim() === reviewConfirmation)) {
     const files = [...changedFiles].map((file) => `- ${file}`).join("\n");
@@ -135,6 +137,119 @@ function handle(event) {
   }
 
   return reasons.length ? { decision: "block", reason: reasons.join("\n\n") } : {};
+}
+
+const claudeEditTools = ["Edit", "Write", "MultiEdit"];
+const claudeShellTools = ["Bash", "PowerShell"];
+const skippedSearchDirs = new Set([".git", "node_modules", "tmp", "temp", "cache", ".cache", "build", "scratch", "__pycache__", ".venv"]);
+
+// Shell commands report no changed paths, so compare .do modification times with the time the call started.
+function doFilesModifiedSince(since, cwd, command) {
+  const found = new Set();
+  const deadline = Date.now() + 3000;
+  const stack = [cwd];
+  let visited = 0;
+  while (stack.length && visited < 20000 && Date.now() < deadline) {
+    const dir = stack.pop();
+    let entries;
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+    for (const entry of entries) {
+      visited += 1;
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        if (!skippedSearchDirs.has(entry.name.toLowerCase())) stack.push(full);
+      } else if (/\.do$/i.test(entry.name)) {
+        try {
+          if (fs.statSync(full).mtimeMs >= since) found.add(full);
+        } catch {}
+      }
+    }
+  }
+  // A command can also write a .do file outside cwd by naming it.
+  for (const match of String(command ?? "").matchAll(/[A-Za-z]:[\\/][^"'\r\n<>|*?]*?\.do\b|[^\s"'<>|*?]+\.do\b/g)) {
+    const full = path.resolve(cwd, match[0]);
+    try {
+      if (fs.statSync(full).mtimeMs >= since) found.add(full);
+    } catch {}
+  }
+  return [...found];
+}
+
+// The final reply is the trailing assistant text after the last tool call or user message.
+function lastAssistantText(event) {
+  if (typeof event.last_assistant_message === "string") return event.last_assistant_message;
+  const lines = readOptionalFile(event.transcript_path).split(/\r?\n/);
+  const texts = [];
+  for (let index = lines.length - 1; index >= 0; index -= 1) {
+    if (!lines[index].trim()) continue;
+    let entry;
+    try {
+      entry = JSON.parse(lines[index]);
+    } catch {
+      continue;
+    }
+    if (entry.type === "user") break;
+    if (entry.type !== "assistant") continue;
+    const content = Array.isArray(entry.message?.content) ? entry.message.content : [];
+    if (content.some((part) => part?.type === "tool_use")) break;
+    texts.unshift(content.filter((part) => part?.type === "text").map((part) => part.text).join("\n"));
+  }
+  return texts.length ? texts.join("\n") : null;
+}
+
+// Claude Code has no turn id: changes are remembered per session until the next Stop.
+function handleClaude(event) {
+  const dataDir = process.env.CLAUDE_PLUGIN_DATA || process.env.PLUGIN_DATA;
+  if (!dataDir) return {};
+  const stateDir = path.join(dataDir, "stata-diff-turns");
+  const turnFile = path.join(stateDir, createHash("sha256").update(event.session_id).digest("hex"));
+  const startFile = `${turnFile}.shell-start`;
+  const cwd = event.cwd || process.cwd();
+
+  if (event.hook_event_name === "PreToolUse") {
+    if (!claudeShellTools.includes(event.tool_name)) return {};
+    fs.mkdirSync(stateDir, { recursive: true });
+    fs.writeFileSync(startFile, String(Date.now()), "utf8");
+    return {};
+  }
+
+  if (event.hook_event_name === "PostToolUse") {
+    let changedFiles = [];
+    if (claudeEditTools.includes(event.tool_name) && typeof event.tool_input?.file_path === "string") {
+      changedFiles = [path.resolve(cwd, event.tool_input.file_path)];
+    } else if (claudeShellTools.includes(event.tool_name)) {
+      const since = Number(readOptionalFile(startFile));
+      fs.rmSync(startFile, { force: true });
+      // Allow for coarse file-system timestamps.
+      if (since) changedFiles = doFilesModifiedSince(since - 2000, cwd, event.tool_input?.command);
+    }
+    changedFiles = changedFiles.filter((file) => isMaintainedDo(file, cwd));
+    if (changedFiles.length === 0) return {};
+
+    const firstPatch = !readOptionalFile(turnFile);
+    fs.mkdirSync(stateDir, { recursive: true });
+    fs.appendFileSync(turnFile, changedFiles.join("\n") + "\n", "utf8");
+    if (!firstPatch) return {};
+    return { hookSpecificOutput: { hookEventName: "PostToolUse", additionalContext: `${reportRule}\n\n${reviewRule}` } };
+  }
+
+  if (event.hook_event_name !== "Stop") return {};
+  const remembered = readOptionalFile(turnFile).trimEnd().split("\n").filter(Boolean);
+  if (remembered.length) fs.rmSync(turnFile, { force: true });
+  if (event.stop_hook_active || remembered.length === 0) return {};
+  const draft = lastAssistantText(event);
+  if (typeof draft !== "string") return {};
+  return stopReview(draft, new Set(remembered));
+}
+
+// Codex events carry a turn id; Claude Code events do not.
+function handle(event) {
+  if (typeof event.session_id !== "string") return {};
+  return typeof event.turn_id === "string" ? handleCodex(event) : handleClaude(event);
 }
 
 const event = JSON.parse(fs.readFileSync(0, "utf8"));

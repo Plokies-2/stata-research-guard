@@ -1,0 +1,18 @@
+{
+  "name": "stata-research-guard",
+  "displayName": "Stata Research Guard",
+  "version": "0.5.0+claude.2026112501",
+  "description": "Researcher-readable Stata with original command evidence and concrete independent review.",
+  "author": {
+    "name": "song7"
+  },
+  "repository": "https://github.com/Plokies-2/stata-research-guard",
+  "license": "MIT",
+  "keywords": ["stata", "econometrics", "replication", "research"],
+  "mcpServers": {
+    "stataResearchGuard": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp/server.cjs"]
+    }
+  }
+}

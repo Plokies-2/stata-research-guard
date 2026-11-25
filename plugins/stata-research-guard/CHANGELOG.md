@@ -1,7 +1,11 @@
 # Changelog
 
-## Unreleased
+## 0.5.0 — 2026-11-25
 
+Codex build `0.5.0+codex.2026112501`, Claude Code build `0.5.0+claude.2026112501`.
+
+- Support Claude Code from the same bundle. Add a Claude Code plugin manifest (`.claude-plugin/plugin.json`) that starts the MCP server with `node`, and a repository marketplace (`.claude-plugin/marketplace.json`) under the existing `stata-research-guard-team` identifier.
+- Run the bundled `.do` review and diff hooks in Claude Code. Detect maintained `.do` changes from `Edit`, `Write`, and `MultiEdit`, and from `Bash` or `PowerShell` commands by comparing modification times before and after the command. Codex events keep the existing turn-based handling.
 - Ask for a duplicate-implementation review after detected changes to maintained `.do` files. Read each changed region and the 50 lines on either side. Trace directly connected code when needed, identify work the existing code or a supported command can already handle, and verify that removing it preserves the required behavior. If the final reply omits the confirmation, the opt-in Stop hook requests one more pass.
 - List fixed variable groups and output names explicitly. Wrap longer lists near their operations and keep branches for conditions that affect the analysis or depend on the data or execution state.
 - Skip diff reminders for `.do` changes in temporary folders such as `tmp`, `cache`, and `build`. Keep reporting on maintained analysis under `work/`.

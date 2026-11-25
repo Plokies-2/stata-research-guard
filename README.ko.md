@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Plokies-2/stata-research-guard/releases/latest"><img src="https://img.shields.io/badge/version-0.4.1-245B78?style=flat-square" alt="Version 0.4.1"></a>
+  <a href="https://github.com/Plokies-2/stata-research-guard/releases/latest"><img src="https://img.shields.io/badge/version-0.5.0-245B78?style=flat-square" alt="Version 0.5.0"></a>
   <img src="https://img.shields.io/badge/AI--assisted-Stata-222222?style=flat-square" alt="AI-assisted Stata">
   <img src="https://img.shields.io/badge/developed_with-Stata_18-1A6B70?style=flat-square" alt="Developed with Stata 18">
   <a href="https://hub.xerj.org/contributors/Plokies-2"><img src="https://hub.xerj.org/contributors/Plokies-2/badge.svg" alt="XERJ Corpus Hub contributor"></a>
@@ -18,17 +18,19 @@
 
 **연구자가 읽고, 고치고, 이어갈 수 있는 Stata 코드.**
 
-최신 릴리스는 [`v0.4.1`](https://github.com/Plokies-2/stata-research-guard/releases/tag/v0.4.1+codex.2026111901)이며, 빌드는 `0.4.1+codex.2026111901`입니다. [변경 기록](plugins/stata-research-guard/CHANGELOG.md)을 참고하세요.
+최신 릴리스는 [`v0.5.0`](https://github.com/Plokies-2/stata-research-guard/releases/tag/v0.5.0)입니다. Codex 빌드는 `0.5.0+codex.2026112501`, Claude Code 빌드는 `0.5.0+claude.2026112501`이며, 이번 릴리스부터 Claude Code를 지원합니다. [변경 기록](plugins/stata-research-guard/CHANGELOG.md)을 참고하세요.
 
-`main` 브랜치의 현재 빌드는 `0.4.1+codex.2026112402`입니다. 유지 대상 `.do` 변경에 중복 구현 검토를 추가했습니다. [변경 기록](plugins/stata-research-guard/CHANGELOG.md#unreleased)을 참고하세요.
-
-AI와 함께 Stata로 연구할 때 읽기 쉬운 분석 코드, 공식 도움말과 maintainer 도움말, 실제 논문 코드와 독립 검토를 제공합니다. 자료와 표본 구성부터 회귀 사양, 추정치 저장, 표와 그림까지 연구자가 직접 따라갈 수 있게 돕습니다. 현재는 Codex 플러그인으로 설치하며, 연구 선택은 사용자와 모델이 합니다.
+AI와 함께 Stata로 연구할 때 읽기 쉬운 분석 코드, 공식 도움말과 maintainer 도움말, 실제 논문 코드와 독립 검토를 제공합니다. 자료와 표본 구성부터 회귀 사양, 추정치 저장, 표와 그림까지 연구자가 직접 따라갈 수 있게 돕습니다. 같은 묶음을 Codex 플러그인 또는 Claude Code 플러그인으로 설치하며, 연구 선택은 사용자와 모델이 합니다.
 
 [시작하기](#시작하기) | [Guard 사용 전후](#실제-실행-미리보기) | [사용 예시](#사용-예시) | [Release](https://github.com/Plokies-2/stata-research-guard/releases/latest) | [문서](#문서) | [문의와 버그 제보](https://github.com/Plokies-2/stata-research-guard/issues)
 
 ## 시작하기
 
-Node.js와 플러그인을 지원하는 Codex를 설치한 뒤 PowerShell에서 공개 저장소를 등록하고 플러그인을 설치합니다.
+Node.js와 플러그인을 지원하는 Codex 또는 Claude Code를 설치합니다. 두 환경 모두 `plugins/stata-research-guard`의 같은 스킬, MCP 서버, 훅을 읽습니다.
+
+### Codex
+
+PowerShell에서 공개 저장소를 등록하고 플러그인을 설치합니다.
 
 ```powershell
 codex plugin marketplace add Plokies-2/stata-research-guard --ref main
@@ -48,6 +50,26 @@ Windows에서는 일반 PowerShell에서 설치 명령을 실행합니다. Codex
 
 </details>
 
+### Claude Code
+
+터미널에서 같은 저장소를 Claude Code 마켓플레이스로 등록하고 플러그인을 설치합니다. Claude Code 세션 안에서는 `/plugin marketplace add Plokies-2/stata-research-guard`와 `/plugin install stata-research-guard@stata-research-guard-team`으로 같은 일을 할 수 있습니다.
+
+```powershell
+claude plugin marketplace add Plokies-2/stata-research-guard
+claude plugin install stata-research-guard@stata-research-guard-team
+```
+
+<details>
+<summary>Claude Code의 연결 확인과 훅</summary>
+
+새 Claude Code 세션에서 `get_stata_command_evidence`로 `regress`의 공식 도움말을 읽어달라고 요청합니다. 실제 도움말 응답이 와야 MCP 연결까지 확인한 것입니다. Claude Code용 매니페스트(`.claude-plugin/plugin.json`)는 MCP 서버를 `node`로 바로 시작하며, live help에 특정 Stata 실행 파일을 쓰려면 `STATA_PATH`를 지정합니다.
+
+같은 훅이 Claude Code에서도 동작합니다. `Edit`, `Write`, `MultiEdit` 도구로 고친 유지 대상 `.do` 파일과, `Bash`나 `PowerShell` 명령이 다시 쓴 `.do` 파일(명령 전후 수정 시각 비교)을 감지합니다. 앞뒤 50줄 중복 구현 검토와 파일별 diff 확인도 같습니다. 훅 상태는 플러그인 데이터 폴더에 둡니다. [Claude Code 플러그인 문서](https://code.claude.com/docs/en/plugins)
+
+</details>
+
+### 사용
+
 연구 파일을 열고 `stata-replication-workflow`로 요청합니다.
 
 ```text
@@ -57,7 +79,7 @@ $stata-replication-workflow
 실행한 뒤 표본 수와 회귀표를 확인해줘.
 ```
 
-**필요한 도구:** Codex와 Node.js. 실제 분석 실행과 설치 도움말 조회에는 사용자의 Stata 설치를 사용합니다. Stata 18에서 개발했습니다. 실행 수단은 모델이 작업에 맞춰 기존 runner·Stata 배치·Python 연동 등을 고릅니다.
+**필요한 도구:** Codex 또는 Claude Code와 Node.js. 실제 분석 실행과 설치 도움말 조회에는 사용자의 Stata 설치를 사용합니다. Stata 18에서 개발했습니다. 실행 수단은 모델이 작업에 맞춰 기존 runner·Stata 배치·Python 연동 등을 고릅니다.
 
 설치와 MCP 실행 스크립트는 Windows에서 확인했습니다. macOS 호환은 구현과 실행 확인이 필요합니다.
 
@@ -356,12 +378,12 @@ Stata 18에서 개발했습니다. `CODEX_MCP_NODE_PATH`로 Node 실행 파일�
 
 ## 기여하기
 
-실증 연구자가 더 편하게 쓸 수 있도록 함께 개선할 분을 찾습니다. 특히 Claude와 macOS 호환 작업에 함께해주시면 좋겠습니다.
+실증 연구자가 더 편하게 쓸 수 있도록 함께 개선할 분을 찾습니다. 특히 macOS 호환 작업과 Claude Code 사용 경험 공유에 함께해주시면 좋겠습니다.
 
-- **Claude 환경 호환:** Claude Code 등에서 스킬과 MCP 도구를 사용할 수 있도록 연결·설치 방법을 구현하고 실제 사용 흐름을 확인해주세요.
+- **Claude Code:** v0.5.0부터 Windows에서 지원합니다. 실제 연구 세션에서 겪은 설치, 훅, MCP 문제를 알려주세요.
 - **macOS 호환:** Mac의 Stata 실행 경로와 MCP 시작 스크립트, 설치 안내를 정리하고 실제 환경에서 실행을 확인해주세요.
 
-두 환경의 호환성은 아직 확인되지 않았습니다. 재현 가능한 버그 보고, 문서 개선, 연구에서 유용했던 사용 예시도 환영합니다. [Issue](https://github.com/Plokies-2/stata-research-guard/issues)에서 제안하거나 [Pull Request](https://github.com/Plokies-2/stata-research-guard/pulls)로 참여해주세요.
+macOS 호환성은 아직 확인되지 않았습니다. 재현 가능한 버그 보고, 문서 개선, 연구에서 유용했던 사용 예시도 환영합니다. [Issue](https://github.com/Plokies-2/stata-research-guard/issues)에서 제안하거나 [Pull Request](https://github.com/Plokies-2/stata-research-guard/pulls)로 참여해주세요.
 
 <details>
 <summary>개발 시 최소 기능 검사</summary>
