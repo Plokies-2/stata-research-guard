@@ -13,7 +13,7 @@
  *   - writes data/command_help_guides/<command>.txt and the JSON index
  *
  * Stata execution is intentionally kept outside this script so the generated
- * do-file can be run through the project's normal mcpStata execution path.
+ * do-file can be run through the project's normal Stata batch path.
  */
 
 const crypto = require("node:crypto");

@@ -693,12 +693,10 @@ async function buildCommandEvidence(args, options = {}) {
   return result;
 }
 
-const TOOL_DEFINITIONS = [
-  {
-    name: "get_stata_command_evidence",
-    description: "Original Stata help and paper usage for commands the model selected; not command selection or research judgment. Basic control syntax needs no lookup. Phase 2: help for selected_commands. Phase 3 (expanded: true): longer manuals and exact paper blocks. Long help returns a section catalog; pick help_sections or help_view full. Complete rules come once per session; set include_rules after context loss. Details: command-evidence.md.",
-    inputSchema: {
-      oneOf: [
+// Per-phase shapes document the call; the server enforces them at runtime.
+// Clients such as Claude Code require one top-level object schema, so the
+// tool advertises their union of properties.
+const PHASE_INPUT_SCHEMAS = [
         {
           title: "Phase 1 compact command index",
           type: "object",
@@ -751,7 +749,7 @@ const TOOL_DEFINITIONS = [
           properties: {
             request: { type: "string", minLength: 1, description: "The current question. It does not rank commands." },
             selected_commands: { type: "array", description: "Exact Stata commands chosen by the model.", minItems: 1, items: { type: "string", minLength: 1 } },
-            expanded: { const: true, description: "Request longer documents, paper blocks, or both." },
+            expanded: { type: "boolean", const: true, description: "Phase 3: request longer documents, paper blocks, or both." },
             include_rules: { type: "boolean", description: "Resend the complete rules after context loss." },
             known_help_foundations: { type: "object", minProperties: 1, additionalProperties: { type: "string", pattern: "^[a-f0-9]{64}$" }, description: "Command to foundation_sha256 of expanded foundation text still visible. Omit after context loss." },
             help_view: { type: "string", enum: ["catalog", "full"], description: "catalog for navigation, full for the complete source. Not with section selections." },
@@ -761,8 +759,21 @@ const TOOL_DEFINITIONS = [
             deduplicate_help: { type: "boolean", description: "True replaces repeated bodies in this response with content_ref pointers." },
           },
         },
-      ],
-    },
+];
+
+function advertisedInputSchema(phases) {
+  const properties = {};
+  for (const phase of phases) {
+    for (const [key, schema] of Object.entries(phase.properties)) properties[key] ??= schema;
+  }
+  return { type: "object", additionalProperties: false, required: ["request"], properties };
+}
+
+const TOOL_DEFINITIONS = [
+  {
+    name: "get_stata_command_evidence",
+    description: "Original Stata help and paper usage for commands the model selected; not command selection or research judgment. Basic control syntax needs no lookup. Phase 2: help for selected_commands. Phase 3 (expanded: true): longer manuals and exact paper blocks. Long help returns a section catalog; pick help_sections or help_view full. Complete rules come once per session; set include_rules after context loss. Details: command-evidence.md.",
+    inputSchema: advertisedInputSchema(PHASE_INPUT_SCHEMAS),
   },
 ];
 
@@ -866,6 +877,7 @@ function main() {
 if (require.main === module) main();
 
 module.exports = {
+  PHASE_INPUT_SCHEMAS,
   TOOL_DEFINITIONS,
   buildCommandEvidence,
   dispatch,

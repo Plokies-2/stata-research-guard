@@ -4,7 +4,7 @@ Read this reference when executing analysis or inspecting runtime results. For i
 
 ## Choose the available interface
 
-Use the project's existing authorized runner, a local Stata batch executable, official Python integration, or a callable runtime connection. This plugin provides command evidence and research guidance; it does not include a Stata execution engine or require mcpStata. If mcpStata is available, it can supply sessions, data, logs and results within this same workflow; do not load a second coordinating skill.
+By default, run saved `.do` files through the project's existing runner or a local Stata batch executable (for example `stata-mp -b do file.do` on macOS or Linux, `StataMP-64.exe /e do file.do` on Windows; then read the `.log`), or ask the user to run them and share the log. Use official Python integration or another Stata tool connection only when the user or project instructions name it. This plugin provides command evidence and research guidance; it does not include or require a Stata execution engine.
 
 Check the selected route's actual availability, not just installed files, and briefly state it. Honor explicit execution-tool restrictions and apply an access denial for the same action across tools and routes. Recover connection failures or timeouts through an authorized route. Before retrying or switching routes, resolve any attempt that may still be running. If no route is available, continue authoring and source review where command evidence permits, and report the unexecuted work without claiming runtime success.
 
@@ -12,7 +12,7 @@ Check the selected route's actual availability, not just installed files, and br
 
 Prefer the existing saved `.do` to a long inline tool string, especially with quoting or Windows backslashes. A fragment can use a temporary driver in the project's work area. Initialize the needed paths in that execution or use the existing setup; do not assume globals survived another call. Read authorized input paths directly; a different drive or folder is not a reason to copy the input. Preserve originals and keep output writes within scope.
 
-With a session interface, reuse the existing session unless isolation or parallel engines are needed; mcpStata's usual session is `default`. Resolve an affected running job before structural edits, rebuild through the requested workflow, and reload the resulting data. Recreate a session only when stale data or ado state cannot reliably be cleared or reloaded. Do not restart unrelated research work.
+With an interactive session tool, reuse the existing session unless isolation or parallel engines are needed. Resolve an affected running job before structural edits, rebuild through the requested workflow, and reload the resulting data. Recreate a session only when stale data or ado state cannot reliably be cleared or reloaded. Do not restart unrelated research work.
 
 Record the input path, relevant observation/variable counts, Stata version, panel variables and seed when they matter. Hash only for an actual source-identity or unchanged-input question. If working data changed, use `preserve`/`restore` or reload before an independent specification.
 
@@ -26,6 +26,6 @@ Before a long run, inspect imported variable names and preserve the original-nam
 
 ## Collect background work and recover outputs
 
-Use bounded blocking waits provided by the selected runner instead of rapidly repeating nonblocking status checks. With mcpStata, use `stata_task_status(wait=True)` for the existing task. Continue independent work between waits and resolve the actual task state before retrying. For appended logs, continue from the returned `next_offset` when supported; use keyword/context or tail reads for a concrete warning or failure rather than repeatedly loading the full log. Report meaningful findings, completion, failure or required action under the user's progress schedule.
+Use bounded blocking waits provided by the selected runner instead of rapidly repeating nonblocking status checks. Continue independent work between waits and resolve the actual task state before retrying. For appended logs, continue from the returned `next_offset` when supported; use keyword/context or tail reads for a concrete warning or failure rather than repeatedly loading the full log. Report meaningful findings, completion, failure or required action under the user's progress schedule.
 
 Separate completed estimation from a later collection, formatting, export or process-exit failure. Read the failing command and expanded path, and reuse appropriate stored results to repair affected outputs. Restoring `.ster` does not restore `e(sample)`; do not claim a recovered sample without evidence. Runtime completion does not establish identification. Explain results and limitations in the research context, without pass markers, promotion states or audit certificates.

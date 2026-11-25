@@ -9,6 +9,7 @@ const test = require("node:test");
 const ROOT = path.resolve(__dirname, "..");
 const SERVER_PATH = path.join(ROOT, "mcp", "server.cjs");
 const {
+  PHASE_INPUT_SCHEMAS,
   TOOL_DEFINITIONS,
   buildCommandEvidence,
   dispatch,
@@ -103,10 +104,19 @@ test("compact help controls reject invalid types and unsupported phases", async 
 test("MCP exposes one simple exact-key three-phase lookup tool", async () => {
   assert.equal(TOOL_DEFINITIONS.length, 1);
   assert.equal(TOOL_DEFINITIONS[0].name, "get_stata_command_evidence");
-  assert.equal(TOOL_DEFINITIONS[0].inputSchema.oneOf.length, 3);
-  assert.equal(TOOL_DEFINITIONS[0].inputSchema.oneOf[2].anyOf.length, 2);
+  assert.equal(PHASE_INPUT_SCHEMAS.length, 3);
+  assert.equal(PHASE_INPUT_SCHEMAS[2].anyOf.length, 2);
+  const phaseKeys = new Set(PHASE_INPUT_SCHEMAS.flatMap((phase) => Object.keys(phase.properties)));
+  assert.deepEqual(Object.keys(TOOL_DEFINITIONS[0].inputSchema.properties).sort(), [...phaseKeys].sort());
   assert.equal("outputSchema" in TOOL_DEFINITIONS[0], false);
   assert.doesNotMatch(JSON.stringify(TOOL_DEFINITIONS), /project_path|target_files|known_constraints/);
+});
+
+test("every tool advertises one top-level object schema that Claude Code accepts", () => {
+  for (const tool of TOOL_DEFINITIONS) {
+    assert.equal(tool.inputSchema.type, "object", tool.name);
+    for (const key of ["oneOf", "anyOf", "allOf"]) assert.equal(key in tool.inputSchema, false, `${tool.name} has top-level ${key}`);
+  }
 });
 
 test("Phase 1 returns common main rules and a compact neutral index of every registered command", async () => {
@@ -306,7 +316,7 @@ test("Phase 3 delivers the original code-specific license notice", async () => {
     fs.readFileSync(path.join(ROOT, "LICENSES", "MIT-185943.txt"), "utf8"));
 });
 
-test("out-of-dictionary exact topics use live help without restoring an mcpStata help tool", async () => {
+test("out-of-dictionary exact topics use live help without a separate help tool", async () => {
   const result = await buildCommandEvidence(
     { request: "Use anova", selected_commands: ["anova"] },
     {

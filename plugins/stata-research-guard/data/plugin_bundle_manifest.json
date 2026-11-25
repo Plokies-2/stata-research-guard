@@ -22,8 +22,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 41638,
-      "sha256": "7d438766b1f457cff654a64688fe89bb9d67a24afd8890e6147a5f3fe77a113d"
+      "bytes": 42102,
+      "sha256": "d9ccf1c2f27a8772b42dec874eb2281de5486f99a929efba027c3ef0b4104720"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -1617,8 +1617,8 @@
     },
     {
       "path": "mcp/server.cjs",
-      "bytes": 43365,
-      "sha256": "6224b1e06847df1f0acb708798b0ecc98c68c3ba75e5b02eabd09b4eb7d24811"
+      "bytes": 43948,
+      "sha256": "ce6b998a03e420505265e7ae6de4840084a560f5783ab140f58f9ef7e667f6f4"
     },
     {
       "path": "README.md",
@@ -1627,8 +1627,8 @@
     },
     {
       "path": "scripts/build_command_help_guides.cjs",
-      "bytes": 16651,
-      "sha256": "c8f15f907310d7585395686f733b3e0b193c3eb8b82bebe51aa9f8a22789df04"
+      "bytes": 16644,
+      "sha256": "b268e16828f3480ab8654f49f9e8b8e68d979e5d064294a31cfd4fc9f24c62dd"
     },
     {
       "path": "scripts/build_expanded_command_guides.py",
@@ -1672,8 +1672,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/execution-and-results.md",
-      "bytes": 4757,
-      "sha256": "60df56addb621929926b65cc54c0443b8a7d78ded3dd2484b4c4828e2693d358"
+      "bytes": 4755,
+      "sha256": "4f384e786a8c18ad67bf66a73fe33ec4fc58be6be958387aed94df563e32b1d1"
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rules.md",
@@ -1722,8 +1722,8 @@
     },
     {
       "path": "tests/optional-evidence.test.cjs",
-      "bytes": 12479,
-      "sha256": "5e75466699c6a5b6d1ae74b34399396e67947e815bc806e24591a9dedc4401fc"
+      "bytes": 12470,
+      "sha256": "2e5c49a918bacdd1b0288adb38910e024e51f510b49aac3f7a76e61fa0b3e331"
     },
     {
       "path": "tests/plugin_bundle_manifest.test.cjs",
@@ -1732,8 +1732,8 @@
     },
     {
       "path": "tests/server.test.cjs",
-      "bytes": 33076,
-      "sha256": "5d3a3f476669c9630a62030f9c834785348d8026609055061b50cc0fad43edef"
+      "bytes": 33596,
+      "sha256": "6d646c168b838eeb4e08d886a1a381d271acd14adf2f7512de0c98e2532b3873"
     },
     {
       "path": "tests/stata-diff.test.cjs",

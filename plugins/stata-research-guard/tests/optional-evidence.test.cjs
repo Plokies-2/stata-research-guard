@@ -182,6 +182,6 @@ test("MCP transport delivers mismatched ADO/help raw evidence without an option 
   assert.equal(delivered.execution_source.excerpts[0].content, source.content.split("end\r\n")[0]);
   assert.equal("version_match" in delivered, false);
   assert.equal("option_verdict" in delivered, false);
-  const schema = TOOL_DEFINITIONS[0].inputSchema.oneOf[1].properties;
+  const schema = TOOL_DEFINITIONS[0].inputSchema.properties;
   assert.deepEqual(schema.help_source.enum, ["bundled", "installed"]);
 });
