@@ -105,3 +105,67 @@ test("scratch .do edits are silent in patch callbacks and transcript recovery", 
   assert.equal(run({ hook_event_name: "Stop", last_assistant_message: "Changed model.do." }).decision, "block");
   assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: goodReply }), {});
 });
+
+function claudeFixture(t) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "stata-diff-claude-"));
+  t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+  const transcript = path.join(dir, "session.jsonl");
+  const env = { ...process.env, CLAUDE_PLUGIN_DATA: path.join(dir, "data") };
+  delete env.PLUGIN_DATA;
+  const run = (event) => JSON.parse(execFileSync(process.execPath, [script], {
+    input: JSON.stringify({ session_id: "session", cwd: dir, transcript_path: transcript, ...event }),
+    env,
+  }));
+  return { dir, run, transcript };
+}
+
+test("Claude Code Edit and Write calls on maintained .do files request the review once", (t) => {
+  const { dir, run } = claudeFixture(t);
+  const edit = (file, tool = "Edit") => run({ hook_event_name: "PostToolUse", tool_name: tool,
+    tool_input: { file_path: path.join(dir, file) } });
+  assert.deepEqual(edit("notes.md"), {});
+  assert.deepEqual(edit(path.join("tmp", "scratch.do")), {});
+  assert.equal(edit("model.do").hookSpecificOutput.hookEventName, "PostToolUse");
+  assert.deepEqual(edit("model.do", "Write"), {});
+  const blocked = run({ hook_event_name: "Stop", last_assistant_message: "Changed model.do." });
+  assert.equal(blocked.decision, "block");
+  assert.match(blocked.reason, /50 lines before and after/);
+  assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: "Changed model.do." }), {});
+
+  edit("model.do");
+  assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: goodReply }), {});
+  edit("model.do");
+  assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: "x", stop_hook_active: true }), {});
+});
+
+test("Claude Code shell commands that rewrite a .do file are detected by modification time", (t) => {
+  const { dir, run } = claudeFixture(t);
+  const old = path.join(dir, "old.do");
+  fs.writeFileSync(old, "* untouched\n");
+  const past = new Date(Date.now() - 60 * 60 * 1000);
+  fs.utimesSync(old, past, past);
+  const shell = (hook, command) => run({ hook_event_name: hook, tool_name: "PowerShell", tool_input: { command } });
+
+  assert.deepEqual(shell("PreToolUse", "Get-ChildItem"), {});
+  assert.deepEqual(shell("PostToolUse", "Get-ChildItem"), {});
+
+  assert.deepEqual(shell("PreToolUse", "Set-Content model.do"), {});
+  fs.writeFileSync(path.join(dir, "model.do"), "* new\n");
+  assert.equal(shell("PostToolUse", "Set-Content model.do").hookSpecificOutput.hookEventName, "PostToolUse");
+  const blocked = run({ hook_event_name: "Stop", last_assistant_message: "Changed model.do." });
+  assert.ok(blocked.reason.includes(path.join(dir, "model.do")));
+  assert.ok(!blocked.reason.includes("old.do"));
+});
+
+test("Claude Code Stop reads the final reply from the transcript when the field is absent", (t) => {
+  const { dir, run, transcript } = claudeFixture(t);
+  run({ hook_event_name: "PostToolUse", tool_name: "Edit", tool_input: { file_path: path.join(dir, "model.do") } });
+  const lines = [
+    { type: "user", message: { content: "Edit model.do" } },
+    { type: "assistant", message: { content: [{ type: "tool_use", name: "Edit" }] } },
+    { type: "user", message: { content: [{ type: "tool_result" }] } },
+    { type: "assistant", message: { content: [{ type: "text", text: goodReply }] } },
+  ];
+  fs.writeFileSync(transcript, lines.map((line) => JSON.stringify(line)).join("\n") + "\n");
+  assert.deepEqual(run({ hook_event_name: "Stop" }), {});
+});

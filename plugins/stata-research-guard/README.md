@@ -91,6 +91,15 @@ codex plugin add stata-research-guard@stata-research-guard-team
 
 새 Codex 채팅에서 플러그인을 활성화하고 `get_stata_command_evidence`로 `regress` 도움말을 요청해 실제 연결을 확인합니다. 현재 설치와 MCP 실행 스크립트는 Windows에서 확인했으며 macOS 호환은 기여를 받고 있습니다. 마켓플레이스 식별자 `stata-research-guard-team`은 공개 배포에서도 그대로 사용합니다.
 
+Claude Code에서는 같은 저장소를 마켓플레이스로 등록하고 설치합니다.
+
+```powershell
+claude plugin marketplace add Plokies-2/stata-research-guard
+claude plugin install stata-research-guard@stata-research-guard-team
+```
+
+Claude Code는 `.claude-plugin/plugin.json`을 읽어 MCP 서버를 `node`로 바로 시작하고, `hooks/hooks.json`의 같은 훅을 사용합니다. 훅은 Codex 이벤트(turn id가 있음)와 Claude Code 이벤트를 구분해 처리합니다. Claude Code에서는 `Edit`, `Write`, `MultiEdit`로 고친 `.do` 파일과, `Bash`나 `PowerShell` 명령 전후로 수정 시각이 바뀐 작업 폴더의 `.do` 파일을 감지합니다.
+
 Stop 훅을 활성화하면, 감지된 유지 대상 `.do` 변경의 각 구간과 앞뒤 50줄을 최종 수정 뒤에 읽습니다. 변경한 작업의 입력과 결과를 따라가며 기존 코드나 명령이 같은 일을 처리할 수 있는지 확인합니다. 필요하면 그 입력을 만들거나 결과를 쓰는 코드까지 찾아 읽고, 중복 단계를 없앴을 때 필요한 동작이 유지되는지 확인합니다. 최종 답변에 `수정 코드 주변 50줄을 읽어 중복 구현을 확인했다.`가 빠지면 훅이 한 번 더 검토를 요청합니다. 훅은 확인 문장의 유무를 검사하며, 중복 여부는 코드를 읽은 모델이 판단합니다.
 
 이 플러그인을 설치하고 활성화하면 지원하는 user-written 명령과 실행에 필요한 의존 패키지를 SSC 또는 공식 maintainer 출처에서 필요할 때 내려받아 주 Stata 환경의 일반 공유 ado 위치에 설치·사용하는 데 동의한 것으로 취급합니다. 사용자가 범위를 제한하면 그 지시를 따릅니다. 명령 전체를 미리 설치하거나 격리된 ado 환경을 만들지 않으며, 이 승인 범위의 설치를 반복 확인하지 않습니다. Codex 자체의 승인 제어를 해제하는 설정은 아닙니다.

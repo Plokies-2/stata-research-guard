@@ -2,13 +2,18 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.4.1+codex.2026112402"
+    "version": "0.5.0+codex.2026112501"
   },
   "inventory": [
     {
+      "path": ".claude-plugin/plugin.json",
+      "bytes": 561,
+      "sha256": "331a8dd810e9982d9963258ae39094ec6832e7359607c88861716ef4eba66a68"
+    },
+    {
       "path": ".codex-plugin/plugin.json",
       "bytes": 1021,
-      "sha256": "8e1ee6deadf3dfd1323915bc57c28da1a13e9873c7fe4ee85e17427b51f7db27"
+      "sha256": "7b39edeee9f06e4ea186c0392b4ec17345855c7411d350b8f148982280fd7b97"
     },
     {
       "path": ".mcp.json",
@@ -17,8 +22,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 38806,
-      "sha256": "7cb8e8d6a28021e430a55a75deb9f991c354d0adb12fb68f23033617e4ae9e57"
+      "bytes": 39461,
+      "sha256": "2c16dd741629d53bc25956eea3a25dbf358beaac8958bbdbb7c24368c70f8967"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -1557,13 +1562,13 @@
     },
     {
       "path": "hooks/hooks.json",
-      "bytes": 626,
-      "sha256": "f33c122e996c8e5b2caf2cfda4c0cc5f145f6666fd1a010b1f56e91bb92014bc"
+      "bytes": 1071,
+      "sha256": "749b536caa6c927e3d5738e9992ae8dd166b77fc35533d23039996670039e2df"
     },
     {
       "path": "hooks/stata-diff.cjs",
-      "bytes": 8040,
-      "sha256": "bf6ef84e281ca0894e723a868c7011af9d5094e6b36922eb658c3e8b45fcac04"
+      "bytes": 12794,
+      "sha256": "4e1226b65c6e6d42d67cfad8cf42dc00e7f2583ab5b7647f1f95a40020fac669"
     },
     {
       "path": "INSTRUCTIONS.md",
@@ -1617,8 +1622,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 18569,
-      "sha256": "e95d8f16268b028a929d6a8025f669ea0e46818aea6a2cb86605ae1d16ccfc44"
+      "bytes": 19253,
+      "sha256": "4aa58afcca83a7d2aeb911b20f391f2a107837c19c15de7ec575a15864bdbfcc"
     },
     {
       "path": "scripts/build_command_help_guides.cjs",
@@ -1712,8 +1717,8 @@
     },
     {
       "path": "tests/plugin_bundle_manifest.test.cjs",
-      "bytes": 5073,
-      "sha256": "559c89dc8d78760869c0ca458a751f11cc3cff57a8a3488b1097699669f3d1f0"
+      "bytes": 5933,
+      "sha256": "de9596544b246d64a2efd3de81818844739a0fc8e4b0e06ec98e35136b05441d"
     },
     {
       "path": "tests/server.test.cjs",
@@ -1722,8 +1727,8 @@
     },
     {
       "path": "tests/stata-diff.test.cjs",
-      "bytes": 6062,
-      "sha256": "8e2e35a189eecdda6410debe34e29e61671ec3b97de6d91869f5060a7ef22e58"
+      "bytes": 9475,
+      "sha256": "e820e8151b6a9850e7d60846f302de58908e2114f18efeb8a07935f45754deca"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
@@ -1744,7 +1749,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.4.1+codex.2026112402"
+      "value": "0.5.0+codex.2026112501"
     },
     {
       "id": "readme.heading",

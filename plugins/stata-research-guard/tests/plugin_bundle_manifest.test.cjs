@@ -118,3 +118,16 @@ test("an unexpected bundle file fails the exact inventory check", (t) => {
   const result = JSON.parse(checked.stdout);
   assert.ok(result.errors.some((error) => error.type === "unexpected_file" && error.path === "unexpected.txt"));
 });
+
+test("Codex and Claude Code manifests describe the same plugin release", () => {
+  const readManifest = (relative) => JSON.parse(fs.readFileSync(path.join(PLUGIN_ROOT, relative), "utf8"));
+  const codex = readManifest(".codex-plugin/plugin.json");
+  const claude = readManifest(".claude-plugin/plugin.json");
+  const marketplace = JSON.parse(fs.readFileSync(path.join(PLUGIN_ROOT, "..", "..", ".claude-plugin", "marketplace.json"), "utf8"));
+  const coreVersion = (version) => version.split("+")[0];
+  assert.equal(claude.name, codex.name);
+  assert.equal(claude.description, codex.description);
+  assert.equal(coreVersion(claude.version), coreVersion(codex.version));
+  assert.deepEqual(marketplace.plugins.map((plugin) => plugin.name), [codex.name]);
+  assert.equal(claude.mcpServers.stataResearchGuard.args[0], "${CLAUDE_PLUGIN_ROOT}/mcp/server.cjs");
+});

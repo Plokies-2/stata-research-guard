@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Plokies-2/stata-research-guard/releases/latest"><img src="https://img.shields.io/badge/version-0.4.1-245B78?style=flat-square" alt="Version 0.4.1"></a>
+  <a href="https://github.com/Plokies-2/stata-research-guard/releases/latest"><img src="https://img.shields.io/badge/version-0.5.0-245B78?style=flat-square" alt="Version 0.5.0"></a>
   <img src="https://img.shields.io/badge/AI--assisted-Stata-222222?style=flat-square" alt="AI-assisted Stata">
   <img src="https://img.shields.io/badge/developed_with-Stata_18-1A6B70?style=flat-square" alt="Developed with Stata 18">
   <a href="https://hub.xerj.org/contributors/Plokies-2"><img src="https://hub.xerj.org/contributors/Plokies-2/badge.svg" alt="XERJ Corpus Hub contributor"></a>
@@ -18,17 +18,19 @@
 
 **Stata code researchers can read, revise, and carry forward.**
 
-Latest release: [`v0.4.1`](https://github.com/Plokies-2/stata-research-guard/releases/tag/v0.4.1+codex.2026111901) (build `0.4.1+codex.2026111901`). See the [changelog](plugins/stata-research-guard/CHANGELOG.md).
+Latest release: [`v0.5.0`](https://github.com/Plokies-2/stata-research-guard/releases/tag/v0.5.0) (Codex build `0.5.0+codex.2026112501`, Claude Code build `0.5.0+claude.2026112501`). This release adds Claude Code support. See the [changelog](plugins/stata-research-guard/CHANGELOG.md).
 
-The `main` branch currently serves build `0.4.1+codex.2026112402` with a duplicate-implementation review for maintained `.do` changes. See the [changelog](plugins/stata-research-guard/CHANGELOG.md#unreleased).
-
-Stata Research Guard provides research guidance for AI-assisted Stata: readable analysis code, original command help, real paper code, and independent peer review. It connects data and sample construction to visible regression specifications, saved estimates, tables, and figures. The current installation is a Codex plugin; research choices remain with the user and the model.
+Stata Research Guard provides research guidance for AI-assisted Stata: readable analysis code, original command help, real paper code, and independent peer review. It connects data and sample construction to visible regression specifications, saved estimates, tables, and figures. It installs as a Codex plugin or a Claude Code plugin from the same bundle; research choices remain with the user and the model.
 
 [Get started](#get-started) | [Before and after](#see-the-workflow) | [Example requests](#example-requests) | [Release](https://github.com/Plokies-2/stata-research-guard/releases/latest) | [Documentation](#documentation) | [Questions and bug reports](https://github.com/Plokies-2/stata-research-guard/issues)
 
 ## Get started
 
-Install Node.js and a Codex version that supports plugins. In PowerShell, register this public repository and install the plugin:
+Install Node.js and a Codex or Claude Code version that supports plugins. Both read the same skills, MCP server, and hooks from `plugins/stata-research-guard`.
+
+### Codex
+
+In PowerShell, register this public repository and install the plugin:
 
 ```powershell
 codex plugin marketplace add Plokies-2/stata-research-guard --ref main
@@ -42,11 +44,31 @@ On Windows, run installation in a regular PowerShell terminal. Use Codex's defau
 
 The marketplace identifier is `stata-research-guard-team`. Start a new Codex chat, check that the plugin is enabled, and ask it to retrieve the official help for `regress` through `get_stata_command_evidence`. A successful help response confirms the MCP connection; installation alone does not. These commands follow the [official Codex CLI documentation](https://learn.chatgpt.com/docs/developer-commands#codex-plugin-marketplace).
 
-To enable the bundled review and diff reminders, review and trust the plugin's `PostToolUse` and `Stop` hooks in **Settings → Hooks** or with `/hooks` in the CLI. Review them again when Codex flags a plugin update. The hooks use Node.js on `PATH` and cover maintained `.do` patches reported by a successful patch callback or a completed file-change record. They skip temporary directories such as `tmp`, `cache`, and `build`. [Codex hook trust](https://learn.chatgpt.com/docs/hooks#review-and-trust-hooks)
+To enable the bundled review and diff reminders, review and trust the plugin's `PreToolUse`, `PostToolUse`, and `Stop` hooks in **Settings → Hooks** or with `/hooks` in the CLI. Review them again when Codex flags a plugin update, including the 0.5.0 update, which adds the `PreToolUse` entry used by Claude Code. In Codex that entry returns nothing. The hooks use Node.js on `PATH` and cover maintained `.do` patches reported by a successful patch callback or a completed file-change record. They skip temporary directories such as `tmp`, `cache`, and `build`. [Codex hook trust](https://learn.chatgpt.com/docs/hooks#review-and-trust-hooks)
 
 After the final edit, the model reads each changed region and the 50 lines on either side. It follows directly connected code as needed to check whether existing code or a documented command already does the same work. If the review confirmation or an expected diff is missing, `Stop` requests one more pass. The model judges duplication and the hook checks for the confirmation. [Review and diff behavior](plugins/stata-research-guard/README.md#설치와-개발)
 
 </details>
+
+### Claude Code
+
+In a terminal, register the same repository as a Claude Code marketplace and install the plugin. Inside a Claude Code session, `/plugin marketplace add Plokies-2/stata-research-guard` and `/plugin install stata-research-guard@stata-research-guard-team` do the same.
+
+```powershell
+claude plugin marketplace add Plokies-2/stata-research-guard
+claude plugin install stata-research-guard@stata-research-guard-team
+```
+
+<details>
+<summary>Connection check and hooks in Claude Code</summary>
+
+Start a new Claude Code session and ask it to retrieve the official help for `regress` through `get_stata_command_evidence`. A successful help response confirms the MCP connection. The Claude Code manifest (`.claude-plugin/plugin.json`) starts the MCP server with `node` directly; set `STATA_PATH` if live help should use a specific Stata executable.
+
+The bundled hooks run in Claude Code as well. They detect maintained `.do` changes made with the `Edit`, `Write`, and `MultiEdit` tools, and `.do` files rewritten by `Bash` or `PowerShell` commands (by comparing modification times before and after the command). The same 50-line duplicate-implementation review and per-file diff check apply. Hook state is kept in the plugin data directory. [Claude Code plugins](https://code.claude.com/docs/en/plugins)
+
+</details>
+
+### Use
 
 Open your research files and request the `stata-replication-workflow` skill.
 
@@ -57,7 +79,7 @@ Keep the current sample, estimator, fixed effects, and standard-error settings.
 Run it and inspect the sample size and regression table.
 ```
 
-**Tools needed:** Codex and Node.js. Running the analysis and looking up installed help use your own Stata installation. The plugin was developed with Stata 18. The model selects an available execution route, such as an existing runner, Stata batch mode, or Python integration.
+**Tools needed:** Codex or Claude Code, and Node.js. Running the analysis and looking up installed help use your own Stata installation. The plugin was developed with Stata 18. The model selects an available execution route, such as an existing runner, Stata batch mode, or Python integration.
 
 The installation and MCP launcher have been checked on Windows. macOS compatibility still needs implementation and testing.
 
@@ -358,12 +380,11 @@ After updating the plugin, refresh Codex and call the tool in a new task. A succ
 
 ## Contributing
 
-We welcome help making this plugin more useful to empirical researchers, especially work on Claude and macOS compatibility.
+We welcome help making this plugin more useful to empirical researchers, especially work on macOS compatibility.
 
-- **Claude compatibility:** Implement and check how the skills and MCP tools can be connected and installed in Claude Code or a similar environment.
 - **macOS compatibility:** Document Mac Stata paths, the MCP startup script, and installation steps, then test them in a real Mac environment.
 
-Neither environment has been verified yet. Reproducible bug reports, documentation improvements, and useful research examples are also welcome. Open an [issue](https://github.com/Plokies-2/stata-research-guard/issues) or a [pull request](https://github.com/Plokies-2/stata-research-guard/pulls).
+macOS has not been verified yet. Reproducible bug reports, documentation improvements, and useful research examples are also welcome. Open an [issue](https://github.com/Plokies-2/stata-research-guard/issues) or a [pull request](https://github.com/Plokies-2/stata-research-guard/pulls).
 
 <details>
 <summary>Minimal functional checks for development</summary>
