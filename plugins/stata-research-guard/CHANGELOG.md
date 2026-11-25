@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Send the complete rules once per server session. Later responses mark them unchanged; `include_rules: true` resends them after context loss. Rules no longer count toward the 48000-character help threshold, so the first lookup returns help text. The skill takes the rules from Guard instead of also reading the file.
+- Omit provenance (hashes, source file lists, renderer settings, license texts) from MCP responses. Paper examples keep their title and DOI for citation; the bundle and THIRD_PARTY_NOTICES.md keep the full records.
+- Shorten the tool description and parameter text, and the hook reminders. The edited-region review procedure now lives once in `stata-replication-workflow`.
+- In Claude Code, time shell commands only when they name a `.do` file, so ordinary commands skip the folder scan.
+- Describe the independent-review subagent without a Codex-specific option.
+
 ## 0.5.0 — 2026-11-25
 
 Codex build `0.5.0+codex.2026112501`, Claude Code build `0.5.0+claude.2026112501`.

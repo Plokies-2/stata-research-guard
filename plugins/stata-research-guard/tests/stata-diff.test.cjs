@@ -73,9 +73,10 @@ test("Stop asks for a fresh local review even when the diff is already present",
   assert.equal(result.decision, "block");
   assert.ok(result.reason.includes(file));
   assert.match(result.reason, /50 lines before and after/);
-  assert.match(result.reason, /Review every changed operation/);
-  assert.match(result.reason, /directly connected producers and consumers/);
-  assert.match(result.reason, /preserves the required behavior/);
+  assert.match(result.reason, /stata-replication-workflow edited-region review/);
+  assert.match(result.reason, /supported command already does the same work/);
+  // The full procedure lives in the skill, so the hook text stays short.
+  assert.ok(result.reason.length < 1000);
   assert.ok(result.reason.includes(reviewConfirmation));
   assert.doesNotMatch(result.reason, /missing \.do file diffs/);
   assert.match(run({ hook_event_name: "Stop", last_assistant_message: reviewConfirmation }).reason,
@@ -148,6 +149,11 @@ test("Claude Code shell commands that rewrite a .do file are detected by modific
 
   assert.deepEqual(shell("PreToolUse", "Get-ChildItem"), {});
   assert.deepEqual(shell("PostToolUse", "Get-ChildItem"), {});
+  // Commands that do not name a .do file skip the folder scan.
+  assert.deepEqual(shell("PreToolUse", "python fix.py"), {});
+  fs.writeFileSync(path.join(dir, "unnamed.do"), "* new\n");
+  assert.deepEqual(shell("PostToolUse", "python fix.py"), {});
+  fs.rmSync(path.join(dir, "unnamed.do"));
 
   assert.deepEqual(shell("PreToolUse", "Set-Content model.do"), {});
   fs.writeFileSync(path.join(dir, "model.do"), "* new\n");

@@ -4,24 +4,11 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { createHash } = require("node:crypto");
 
-const reportRule = [
-  "Apply the stata-replication-workflow final-reply rule to the actual maintained changes in this turn.",
-  "For a small Stata edit, include the actual before/after changes in a separate fenced diff block for each changed .do file.",
-  "For the 100-line threshold, count added and deleted lines only in maintained .do files.",
-  "Summarize accompanying non-Stata files and show their diffs only when the user requests them.",
-  "Honor any explicit user format and the existing exception for large edits. Exclude scratch files and changes that were reverted.",
-].join(" ");
-
+// The full procedures live in stata-replication-workflow; hooks only point to them.
 const reviewLines = 50;
 const reviewConfirmation = `수정 코드 주변 ${reviewLines}줄을 읽어 중복 구현을 확인했다.`;
-const reviewRule = [
-  `After the final edit, locate each changed region in the actual diff and read all code in that region and ${reviewLines} lines before and after it, clipped at file boundaries. Merge overlapping ranges. For a deletion, inspect the surviving context or the before version if the whole file was removed.`,
-  "Review every changed operation by its purpose, inputs, effects, and consumers. Ask whether existing code has already done the work, an existing command can do it through its default or a supported option, or the needed choice or value is already known and can be expressed directly.",
-  "Look for overlapping responsibilities throughout the affected flow, from inputs through saved and displayed outputs. Follow directly connected producers and consumers outside the nearby lines when needed. Treat work as potentially redundant even when it uses different syntax, is split across several commands or files, or is added before or after an existing step.",
-  "Identify the concrete step that could be removed or reused and check that doing so preserves the required behavior. Compare the relevant inputs, sample, group definitions, weights, missing-value behavior, execution order, state, side effects, and outputs. Separate operations are justified when they produce distinct required results, apply real conditions, or protect a meaningful invariant.",
-  "Fix any duplicate within the requested scope and reread the affected ranges after the fix. Report what changed or any duplicate that remains. If a range cannot be read, report the range and reason instead of claiming completion. Put this exact sentence on its own line in the final reply only after reading the ranges:",
-  reviewConfirmation,
-].join("\n");
+const reviewRule = `Run the stata-replication-workflow edited-region review: read each changed region and the ${reviewLines} lines before and after it, check whether existing code or a supported command already does the same work, and fix duplicates in scope. After the review, end the final reply with this line:\n${reviewConfirmation}`;
+const reportRule = "Show a fenced diff block for each changed .do file, following the stata-replication-workflow final-reply rule.";
 
 function readOptionalFile(file) {
   if (!file) return "";
@@ -211,7 +198,8 @@ function handleClaude(event) {
   const cwd = event.cwd || process.cwd();
 
   if (event.hook_event_name === "PreToolUse") {
-    if (!claudeShellTools.includes(event.tool_name)) return {};
+    // Scanning the folder costs time on every shell call, so only commands that name a .do file are timed.
+    if (!claudeShellTools.includes(event.tool_name) || !/\.do\b/i.test(String(event.tool_input?.command ?? ""))) return {};
     fs.mkdirSync(stateDir, { recursive: true });
     fs.writeFileSync(startFile, String(Date.now()), "utf8");
     return {};

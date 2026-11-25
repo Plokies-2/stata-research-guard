@@ -833,3 +833,35 @@ test("a pending live topic does not block bundled evidence and refresh is forwar
   release();
   assert.equal((await delayed).command_evidence[0].help_status, "unavailable");
 });
+
+async function callTool(arguments_) {
+  const response = await dispatch({ jsonrpc: "2.0", id: 1, method: "tools/call",
+    params: { name: "get_stata_command_evidence", arguments: arguments_ } });
+  assert.notEqual(response.result.isError, true, response.result.content?.[0]?.text);
+  return JSON.parse(response.result.content[0].text);
+}
+
+test("MCP sends the complete rules once per session and again on include_rules", async () => {
+  const args = { request: "Read count help", selected_commands: ["count"], include_paper_catalog: false };
+  const rules = fs.readFileSync(path.join(ROOT, "skills/stata-replication-workflow/references/general-rules.md"), "utf8");
+  assert.equal((await callTool({ ...args, include_rules: true })).main_rules.content, rules);
+  const later = (await callTool(args)).main_rules;
+  assert.equal(later.unchanged, true);
+  assert.equal("content" in later, false);
+  assert.match(later.note, /include_rules: true/);
+  assert.equal((await callTool({ ...args, include_rules: true })).main_rules.content, rules);
+});
+
+test("MCP responses omit provenance and do not count rules toward the help threshold", async () => {
+  const result = await callTool({ request: "Read regress options", selected_commands: ["regress"], include_rules: true });
+  assert.equal(typeof result.main_rules.content, "string");
+  assert.equal("response_navigation" in result, false);
+  assert.equal(typeof result.command_evidence[0].command_help.content, "string");
+  assert.doesNotMatch(JSON.stringify(result), /"(source_files|content_sha256|source_content_sha256|renderer_options|license_notices|code_license)"/);
+
+  const papers = await callTool({ request: "Read one paper block", selected_commands: ["regress"], expanded: true,
+    selected_block_ids: [result.command_evidence[0].paper_example_catalog[0].block_id] });
+  const provenance = papers.paper_usage_cards[0].source_provenance[0];
+  assert.ok(provenance.title || provenance.article_doi || provenance.repository_doi);
+  assert.doesNotMatch(JSON.stringify(papers), /"(license_notices|paper_code_sha256|source_file_sha256|log_provenance)"/);
+});

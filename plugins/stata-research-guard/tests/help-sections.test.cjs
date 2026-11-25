@@ -150,7 +150,9 @@ test("MCP foundation reuse preserves explicit original sections in both help pha
     const first = (await call(args))[rows][0][key];
     const reused = (await call({ ...args, known_help_foundations: { [command]: first.foundation_sha256 } }))[rows][0][key];
     assert.deepEqual(reused.selected_sections.map((s) => s.id), [sectionId]);
-    const source = fs.readFileSync(path.join(root, first.content_file), "utf8").match(/[^\n]*\n|[^\n]+$/g);
+    // MCP responses omit provenance such as content_file; read it from the direct result.
+    const contentFile = (await buildCommandEvidence(args))[rows][0][key].content_file;
+    const source = fs.readFileSync(path.join(root, contentFile), "utf8").match(/[^\n]*\n|[^\n]+$/g);
     const section = first.selected_sections.find((s) => s.id === sectionId);
     assert.equal(reused.content, source.slice(section.start - 1, section.end).join(""));
     assert.equal(reused.foundation_unchanged, true);

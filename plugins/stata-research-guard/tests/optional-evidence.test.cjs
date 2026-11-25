@@ -147,7 +147,7 @@ test("MCP transport returns the selected output-recovery note unchanged", async 
   assert.equal(response.result.isError, undefined);
   const delivered = JSON.parse(response.result.content[0].text).command_evidence[0];
   assert.deepEqual(delivered.workflow_notes, [{
-    id: "output-recovery", record_type: "authoring_guidance", source_path: "data/command_workflow_notes.json", ...notes.did_multiplegt_dyn["output-recovery"],
+    id: "output-recovery", ...notes.did_multiplegt_dyn["output-recovery"],
   }]);
 });
 

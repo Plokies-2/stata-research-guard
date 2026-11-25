@@ -603,7 +603,8 @@ function finishHelpDelivery(result, rowsKey, helpKey, args, navigationByCommand)
   const originals = rows.map((row) => row[helpKey]);
   if (args.deduplicate_help === true) deduplicateHelp(result, rowsKey, helpKey);
   if (args.help_view === "full" || args.help_view === "catalog") return;
-  const responseCharacters = Array.from(JSON.stringify(result)).length;
+  // Rules arrive once per session, so they do not count against help delivery.
+  const responseCharacters = Array.from(JSON.stringify({ ...result, main_rules: undefined })).length;
   if (responseCharacters <= HELP_RESPONSE_CHARACTER_THRESHOLD) return;
 
   const selections = args.help_sections || args.expanded_sections || {};
@@ -624,7 +625,7 @@ function finishHelpDelivery(result, rowsKey, helpKey, args, navigationByCommand)
     threshold_characters: HELP_RESPONSE_CHARACTER_THRESHOLD,
     response_characters_before: responseCharacters,
     deferred_commands: deferred.map((row) => row.command),
-    note: "Only automatic full-help bodies were deferred to their intact source catalogs. Explicit sections, full-source requests, rules and paper material are not shortened. Select needed sections or help_view full; no help body was read for a deferred command. This is a navigation trigger, not a hard response-size cap.",
+    note: "Automatic full-help bodies were deferred to their catalogs; rules are not counted. Select help_sections or help_view full. No help body was read for a deferred command.",
   };
 }
 
@@ -695,7 +696,7 @@ async function buildCommandEvidence(args, options = {}) {
 const TOOL_DEFINITIONS = [
   {
     name: "get_stata_command_evidence",
-    description: "Stata command evidence, not command selection or research judgment. Familiar basic control syntax (foreach/forvalues, block if/else, ordinary local expansion) needs no lookup; an optional help failure does not prohibit it. Query material research-command interfaces or genuinely unresolved behavior. Call Phase 2 directly for known commands needing evidence; discovery is optional. Help over 24000 Unicode characters returns a section catalog first, including live help and expanded manuals. Combined responses over 48000 characters defer automatic full-help bodies to catalogs; explicit sections and help_view full remain intact. Select exact help_sections in Phase 2 or expanded_sections in Phase 3. Foundation sections accompany selections unless known_help_foundations maps the command to a foundation_sha256 from complete foundation text still visible to the caller; explicitly requested sections always return. help_view full retrieves the complete source, and catalog requests navigation. Paper blocks are unchanged. Rules are included unless known_rules_sha256 matches complete rules still visible to the caller. Omit both reuse acknowledgments in fresh or compacted contexts. Registered commands and the five supplemental basic help topics use bundled documentation unless help_source installed is explicit. refresh_live_help refreshes only selected live snapshots. Optional execution_sources return caller-selected ADO metadata/excerpts; workflow_notes return selected authoring guidance, never semantic verdicts.",
+    description: "Original Stata help and paper usage for commands the model selected; not command selection or research judgment. Basic control syntax needs no lookup. Phase 2: help for selected_commands. Phase 3 (expanded: true): longer manuals and exact paper blocks. Long help returns a section catalog; pick help_sections or help_view full. Complete rules come once per session; set include_rules after context loss. Details: command-evidence.md.",
     inputSchema: {
       oneOf: [
         {
@@ -704,8 +705,8 @@ const TOOL_DEFINITIONS = [
           additionalProperties: false,
           required: ["request"],
           properties: {
-            request: { type: "string", minLength: 1, description: "Describe the current question. Retrieval follows the exact selections below; this text does not rank commands." },
-            known_rules_sha256: { type: "string", pattern: "^[a-f0-9]{64}$", description: "Hash of complete rules still visible in this caller context. Omit after context loss." },
+            request: { type: "string", minLength: 1, description: "The current question. It does not rank commands." },
+            include_rules: { type: "boolean", description: "Resend the complete rules after context loss." },
           },
         },
         {
@@ -714,28 +715,28 @@ const TOOL_DEFINITIONS = [
           additionalProperties: false,
           required: ["request", "selected_commands"],
           properties: {
-            request: { type: "string", minLength: 1, description: "Describe the current question. Retrieval follows the exact selections below; this text does not rank commands." },
-            selected_commands: { type: "array", description: "Exact Stata commands selected by the model. Known commands can be requested without discovery.", minItems: 1, items: { type: "string", minLength: 1 } },
-            known_rules_sha256: { type: "string", pattern: "^[a-f0-9]{64}$", description: "Hash of complete rules still visible in this caller context. Omit after context loss." },
-            known_help_foundations: { type: "object", minProperties: 1, additionalProperties: { type: "string", pattern: "^[a-f0-9]{64}$" }, description: "Map exact selected commands to foundation_sha256 returned with complete foundation text still visible in this context. A matching hash skips only unrequested duplicate foundation sections. Explicit sections and full help always return. Omit after context loss; catalog/source hashes are not reading acknowledgments." },
-            help_view: { type: "string", enum: ["catalog", "full"], description: "Request source navigation or the complete source. Do not combine with section selections." },
-            help_sections: { type: "object", description: "Map each selected command to exact IDs from its current help catalog; common foundation sections also accompany the selection.", minProperties: 1, additionalProperties: { type: "array", minItems: 1, uniqueItems: true, items: { type: "string", minLength: 1 } } },
-            refresh_live_help: { type: "boolean", description: "Refresh a selected live snapshot. Without help_source installed, registered commands and supplemental basic topics keep their bundled source." },
-            help_source: { type: "string", enum: ["bundled", "installed"], description: "Default bundled for registered commands and supplemental basic topics. Installed explicitly requests the active installation's help; it may differ from the execution ADO." },
+            request: { type: "string", minLength: 1, description: "The current question. It does not rank commands." },
+            selected_commands: { type: "array", description: "Exact Stata commands chosen by the model.", minItems: 1, items: { type: "string", minLength: 1 } },
+            include_rules: { type: "boolean", description: "Resend the complete rules after context loss." },
+            known_help_foundations: { type: "object", minProperties: 1, additionalProperties: { type: "string", pattern: "^[a-f0-9]{64}$" }, description: "Command to foundation_sha256 of foundation text still visible; skips only unrequested duplicate foundations. Omit after context loss." },
+            help_view: { type: "string", enum: ["catalog", "full"], description: "catalog for navigation, full for the complete source. Not with section selections." },
+            help_sections: { type: "object", description: "Command to section IDs from its help catalog.", minProperties: 1, additionalProperties: { type: "array", minItems: 1, uniqueItems: true, items: { type: "string", minLength: 1 } } },
+            refresh_live_help: { type: "boolean", description: "Refresh a live help snapshot." },
+            help_source: { type: "string", enum: ["bundled", "installed"], description: "Default bundled; installed reads the active Stata installation's help." },
             execution_sources: {
-              type: "object", minProperties: 1, description: "Map selected commands to caller-confirmed execution ADO files. Omit line_spans for metadata only; exact spans are chosen by the model, not cut automatically.",
+              type: "object", minProperties: 1, description: "Command to a caller-confirmed execution ADO file; line_spans return excerpts.",
               additionalProperties: {
                 type: "object", additionalProperties: false, required: ["path"],
                 properties: {
-                  path: { type: "string", minLength: 1, description: "Absolute path whose filename is the selected command plus .ado." },
-                  expected_sha256: { type: "string", pattern: "^[a-f0-9]{64}$", description: "Optional execution-record file hash. Equality is a byte-identity fact, not a research or syntax verdict." },
+                  path: { type: "string", minLength: 1, description: "Absolute path to <command>.ado." },
+                  expected_sha256: { type: "string", pattern: "^[a-f0-9]{64}$", description: "Optional hash to compare with the file." },
                   line_spans: { type: "array", minItems: 1, items: { type: "object", additionalProperties: false, required: ["start", "end"], properties: { start: { type: "integer", minimum: 1 }, end: { type: "integer", minimum: 1 } } } },
                 },
               },
             },
             workflow_notes: { type: "object", minProperties: 1, description: "Exact note IDs: import_delimited input-variable-names; did_multiplegt_dyn control-learning-sample, comparison-sample, effect-interpretation, output-recovery. Omitted by default.", additionalProperties: { type: "array", minItems: 1, uniqueItems: true, items: { type: "string", minLength: 1 } } },
-            include_paper_catalog: { type: "boolean", description: "Default true. Set false for help-only calls or when the paper catalog is already visible; omitted catalogs are explicitly marked." },
-            deduplicate_help: { type: "boolean", description: "Default false. True replaces identical help bodies with content_ref JSON Pointers to the first body in this response; all command/source metadata remains." },
+            include_paper_catalog: { type: "boolean", description: "Default true. False for help-only calls or when the catalog is visible." },
+            deduplicate_help: { type: "boolean", description: "True replaces repeated help bodies in this response with content_ref pointers." },
           },
         },
         {
@@ -748,16 +749,16 @@ const TOOL_DEFINITIONS = [
             { required: ["selected_block_ids"] },
           ],
           properties: {
-            request: { type: "string", minLength: 1, description: "Describe the current question. Retrieval follows the exact selections below; this text does not rank commands." },
-            selected_commands: { type: "array", description: "Exact Stata commands selected by the model. Known commands can be requested without discovery.", minItems: 1, items: { type: "string", minLength: 1 } },
-            expanded: { const: true, description: "Request selected longer documents, exact paper blocks, or both; a preceding phase call is not required." },
-            known_rules_sha256: { type: "string", pattern: "^[a-f0-9]{64}$", description: "Hash of complete rules still visible in this caller context. Omit after context loss." },
-            known_help_foundations: { type: "object", minProperties: 1, additionalProperties: { type: "string", pattern: "^[a-f0-9]{64}$" }, description: "Map expanded_commands to foundation_sha256 returned with complete expanded-document foundation text still visible in this context. Explicit sections and full help always return. Omit after context loss or when only a catalog was read." },
-            help_view: { type: "string", enum: ["catalog", "full"], description: "Request source navigation or the complete source. Do not combine with section selections." },
-            expanded_sections: { type: "object", description: "Map each expanded command to exact IDs from its current expanded-document catalog.", minProperties: 1, additionalProperties: { type: "array", minItems: 1, uniqueItems: true, items: { type: "string", minLength: 1 } } },
-            expanded_commands: { type: "array", description: "Subset of selected_commands whose longer documents are needed.", items: { type: "string", minLength: 1 } },
-            selected_block_ids: { type: "array", description: "Exact paper block IDs from the selected commands' catalogs. Omit for documentation-only requests.", items: { type: "string", minLength: 1 } },
-            deduplicate_help: { type: "boolean", description: "Default false. True replaces identical expanded help bodies with content_ref JSON Pointers to the first body in this response; all command/source metadata remains." },
+            request: { type: "string", minLength: 1, description: "The current question. It does not rank commands." },
+            selected_commands: { type: "array", description: "Exact Stata commands chosen by the model.", minItems: 1, items: { type: "string", minLength: 1 } },
+            expanded: { const: true, description: "Request longer documents, paper blocks, or both." },
+            include_rules: { type: "boolean", description: "Resend the complete rules after context loss." },
+            known_help_foundations: { type: "object", minProperties: 1, additionalProperties: { type: "string", pattern: "^[a-f0-9]{64}$" }, description: "Command to foundation_sha256 of expanded foundation text still visible. Omit after context loss." },
+            help_view: { type: "string", enum: ["catalog", "full"], description: "catalog for navigation, full for the complete source. Not with section selections." },
+            expanded_sections: { type: "object", description: "Command to section IDs from its expanded catalog.", minProperties: 1, additionalProperties: { type: "array", minItems: 1, uniqueItems: true, items: { type: "string", minLength: 1 } } },
+            expanded_commands: { type: "array", description: "selected_commands that need longer documents.", items: { type: "string", minLength: 1 } },
+            selected_block_ids: { type: "array", description: "Paper block IDs from the selected commands' catalogs.", items: { type: "string", minLength: 1 } },
+            deduplicate_help: { type: "boolean", description: "True replaces repeated bodies in this response with content_ref pointers." },
           },
         },
       ],
@@ -765,8 +766,46 @@ const TOOL_DEFINITIONS = [
   },
 ];
 
+// Provenance stays in the bundled data and THIRD_PARTY_NOTICES.md; the model
+// receives only what it reads or cites.
+const PROVENANCE_KEYS = new Set([
+  "record_type", "source_files", "source_sha256", "content_file", "content_sha256", "source_content_sha256",
+  "renderer", "renderer_options", "source_url", "source_path", "source_file_sha256", "paper_code_sha256",
+  "text_sha256", "source_span_sha256", "source_archive_provenance", "log_provenance", "occurrence_id",
+  "original_path", "article_url", "repository_url", "version", "paper_authors", "code_license", "license_url",
+  "attribution_notice", "license_notices", "third_party_notice", "source_version_markers",
+]);
+
+function withoutProvenance(value) {
+  if (Array.isArray(value)) return value.map(withoutProvenance);
+  if (!value || typeof value !== "object") return value;
+  const result = {};
+  for (const [key, child] of Object.entries(value)) {
+    // Caller-selected ADO metadata is the point of execution_sources.
+    if (key === "execution_source") result[key] = child;
+    else if (!PROVENANCE_KEYS.has(key)) result[key] = withoutProvenance(child);
+  }
+  return result;
+}
+
 function textResult(value) {
-  return { content: [{ type: "text", text: JSON.stringify(value) }] };
+  return { content: [{ type: "text", text: JSON.stringify(withoutProvenance(value)) }] };
+}
+
+// One server process serves one session, so the complete rules are sent once.
+// include_rules resends them after the caller lost its context.
+let deliveredRulesSha256 = null;
+
+async function evidenceForSession(rawArgs) {
+  const { include_rules: includeRules, ...args } = rawArgs;
+  if (includeRules !== undefined && typeof includeRules !== "boolean") throw new Error("include_rules must be a boolean");
+  const reuse = !includeRules && deliveredRulesSha256 && args.known_rules_sha256 === undefined;
+  if (reuse) args.known_rules_sha256 = deliveredRulesSha256;
+  const result = await buildCommandEvidence(args);
+  if (typeof result.main_rules?.content === "string") deliveredRulesSha256 = result.main_rules.sha256;
+  // A host may share one server across conversations, so a caller without the rules can ask again.
+  else if (reuse) result.main_rules.note = "Sent earlier in this session. If they are not in your context, call again with include_rules: true.";
+  return result;
 }
 
 function errorResult(message) {
@@ -796,7 +835,7 @@ async function dispatch(message) {
       return { jsonrpc: "2.0", id: message.id, result: errorResult(`unknown tool: ${name}`) };
     }
     try {
-      return { jsonrpc: "2.0", id: message.id, result: textResult(await buildCommandEvidence(message.params?.arguments || {})) };
+      return { jsonrpc: "2.0", id: message.id, result: textResult(await evidenceForSession(message.params?.arguments || {})) };
     } catch (error) {
       return { jsonrpc: "2.0", id: message.id, result: errorResult(error.message) };
     }

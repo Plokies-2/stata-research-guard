@@ -42,9 +42,9 @@ These examples adapt two useful ideas from specialist assistants: [dbt's output-
 
 ## Complete rules without repetition
 
-By default every response includes `main_rules.content`, its source path, and SHA-256. After reading that complete body, a caller may send `known_rules_sha256` in any phase **only while the complete rules remain visible in its own context**. A matching hash returns `main_rules.unchanged: true` and omits the duplicate body; a mismatch returns current complete rules.
+The first response in a session includes the complete `main_rules.content`. Later responses in the same session return `main_rules.unchanged: true` without the body, so the rules enter the context once. Rules do not count toward the combined help-size threshold.
 
-Omit the hash in a fresh task, after compaction/context loss, or whenever the body is unavailable. Do not copy a hash from memory, a handoff, another agent, or a source listing and call that reading. The server is stateless about what a model has read and does not suppress rules on its own.
+After compaction or other context loss, or when a response says the rules were sent earlier but they are not in your context, send `include_rules: true` once to receive the complete rules again. A subagent with a fresh context reads `general-rules.md` directly, because the server cannot tell which context sent a call.
 
 ## Avoid repeated catalogs and help bodies
 
@@ -56,9 +56,9 @@ For multi-command help requests in Phase 2 or 3, use `deduplicate_help: true`. I
 {"request":"Read encode and decode syntax","selected_commands":["encode","decode"],"include_paper_catalog":false,"deduplicate_help":true}
 ```
 
-Also send `known_rules_sha256` when the complete rules remain visible, using the actual hash from the current rules response. These controls reduce repeated transport without shortening rules, original help, paper code or logs.
+These controls reduce repeated transport without shortening original help, paper code or logs.
 
-Selected-section responses with required foundations also return `foundation_sha256`. After reading the complete foundation text, later Phase 2 or 3 requests may send `known_help_foundations: {"command": "returned foundation_sha256"}` while that text remains visible. A match omits only unrequested duplicate foundation sections, marks `foundation_unchanged: true`, and lists them in `reused_foundation_sections`. Explicitly selected sections still return in full. A changed source or foundation map returns the complete current foundation again. This is separate from `known_rules_sha256`; never use a catalog/source hash or another agent's acknowledgment. Omit the field after context loss. `help_view: "full"` always returns the entire original source.
+Selected-section responses with required foundations also return `foundation_sha256`. After reading the complete foundation text, later Phase 2 or 3 requests may send `known_help_foundations: {"command": "returned foundation_sha256"}` while that text remains visible. A match omits only unrequested duplicate foundation sections, marks `foundation_unchanged: true`, and lists them in `reused_foundation_sections`. Explicitly selected sections still return in full. A changed source or foundation map returns the complete current foundation again. This is separate from the rules; never use a catalog/source hash or another agent's acknowledgment. Omit the field after context loss. `help_view: "full"` always returns the entire original source.
 
 When the combined Phase 2 or 3 response exceeds 48,000 Unicode characters, the server changes only automatic full-help deliveries to intact source catalogs. `response_navigation` identifies the deferred commands; select the needed sections, split the request, or explicitly request full help. Same-response deduplication is considered before this check. Explicit sections, explicit full help, complete rules and paper material are never shortened. This is a navigation trigger, not a hard response cap or evidence that a deferred body was read; a source without reviewed internal boundaries stays one selectable `whole-source`.
 
