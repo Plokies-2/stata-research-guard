@@ -6,7 +6,7 @@ On 2026-10-22, two separate Codex chats using **GPT-6.1 Sol / medium** independe
 
 [before.do](before.do) and [after.do](after.do) contain the complete scripts from the executed comparison. Each author corrected execution errors and inspected the outputs. Publication adds `args output_dir` and `cd` to before and removes after's personal default working path. Those versions were rerun in separate empty folders. On 2026-11-17, after's codebook labels and notes were translated into English; estimation and regression-table commands are unchanged.
 
-[Compare both scripts from model setup through Excel export](../../README.md#see-the-workflow).
+[Compare both scripts from model setup through Excel export](../../README.md#see-the-difference).
 
 ## Shared task
 

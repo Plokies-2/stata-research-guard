@@ -2,7 +2,7 @@
 
 **English** · [한국어](README.ko.md)
 
-This is the earlier, smaller comparison with two specifications. The main README now uses the [fresh-session comparison](../fresh-session-workflow/README.md), which covers three outcomes, two samples, and three specifications. The scripts and observations below describe this original run.
+This is the smaller comparison with two specifications, excerpted at the top of the main README. The larger [fresh-session comparison](../fresh-session-workflow/README.md) covers three outcomes, two samples, and three specifications. The scripts and observations below describe this original run.
 
 On 2026-10-22, two GPT-6 Sol / high authors received the same natural-language task. Each started in a fresh context and an empty folder, with neither the existing example nor the other author's code. Both were instructed not to read or apply personal or project `AGENTS.md` files or memories. The before author was also instructed not to use Guard skills or tools; the after author read the current Guard workflow guidance, command help, and paper examples. The lead author then reviewed and compared both results.
 

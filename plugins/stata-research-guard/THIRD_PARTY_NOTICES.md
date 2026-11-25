@@ -220,6 +220,18 @@ Paper authors: Alberto Alesina; Michela Carlana; Eliana La Ferrara; Paolo Pinott
 Replication source: [10.3886/E197984V1](https://doi.org/10.3886/E197984V1).
 Code license: [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).
 
+### 191661 — Labor Market Effects of Workweek Restrictions: Evidence from the Great Depression
+
+Paper authors: Price Fishback; Chris Vickers; Nicolas L. Ziebarth.
+Replication source: [10.3886/E191661V1](https://doi.org/10.3886/E191661V1).
+Code license: [MIT](https://opensource.org/license/mit).
+
+### 193945 — Location, Location, Location
+
+Paper authors: David Card; Jesse Rothstein; Moises Yi.
+Replication source: [10.3886/E193945V1](https://doi.org/10.3886/E193945V1).
+Code license: [BSD-3-Clause](https://opensource.org/license/bsd-3-clause).
+
 ## Reuse of an editorial adaptation
 
 Keep the source attribution and applicable original license, identify the Stata Research Guard changes, and state any assumptions that affect the statistic or sample. An editorial example is an explanation of a particular implementation choice, not a guarantee of the original paper results or a template that overrides the current research design.

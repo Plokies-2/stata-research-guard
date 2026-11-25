@@ -31,6 +31,11 @@ A common middle form keeps a separate regression panel and splits analysis by pu
 
 Use variant 2 for merge and construction when sources have different observation units. Otherwise construct once after the merge.
 
+Two cases show when a variant needs an argument or a stage needs its own master:
+
+- Variants as arguments: 191661 runs one bunching do-file several times, passing the bandwidths and an output suffix (`do regs_bunching 40 25 5 "" "_check1"`), so each call shows what changed and where its results go.
+- Restricted data in three stages: 193945 prepares public data, estimates inside the secure facility, then builds tables and figures only from disclosed results, each stage with its own master.
+
 ## Master contents
 
 - Reset and version: `clear all`, `version`, `set more off`; `set seed` and `set sortseed` when results depend on randomness.
@@ -41,4 +46,4 @@ Use variant 2 for merge and construction when sources have different observation
 
 ## Sources
 
-Examples are AEA replication packages bundled with this plugin, cited by project ID; see [THIRD_PARTY_NOTICES.md](https://github.com/Plokies-2/stata-research-guard/blob/main/plugins/stata-research-guard/THIRD_PARTY_NOTICES.md) for authors, DOIs, and licenses. The patterns describe structure only. Open the original files through [paper workflow reading](paper-workflow-reading.md) when a concrete choice needs them. Stage order and layout also follow [AEA Data Editor guidance](https://aeadataeditor.github.io/aea-de-guidance/preparing-for-data-deposit) and [Julian Reif's Stata Coding Guide](https://julianreif.com/guide/).
+Examples are AEA replication packages cited by project ID; 191661 and 193945 are not bundled, and the others are bundled with this plugin. For all of them, see [THIRD_PARTY_NOTICES.md](https://github.com/Plokies-2/stata-research-guard/blob/main/plugins/stata-research-guard/THIRD_PARTY_NOTICES.md) for authors, DOIs, and licenses. The patterns describe structure only. Open the original files through [paper workflow reading](paper-workflow-reading.md) when a concrete choice needs them. Stage order and layout also follow [AEA Data Editor guidance](https://aeadataeditor.github.io/aea-de-guidance/preparing-for-data-deposit) and [Julian Reif's Stata Coding Guide](https://julianreif.com/guide/).

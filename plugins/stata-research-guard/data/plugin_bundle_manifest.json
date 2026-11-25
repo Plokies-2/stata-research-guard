@@ -1687,8 +1687,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/project-workflows.md",
-      "bytes": 4710,
-      "sha256": "5477df57b965a1abf4185cec9935fcae534da7879c990a056cbf8697e18cdb6f"
+      "bytes": 5276,
+      "sha256": "a3d8c1c82f99b5694581e5ef1c984006698c9194fc5db252012234a6b6a07231"
     },
     {
       "path": "skills/stata-replication-workflow/references/readme-contract.md",
@@ -1742,8 +1742,8 @@
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
-      "bytes": 12575,
-      "sha256": "4dfa6cdca0b345aff73f5b987ec11ae587af251fee32c72fe2577ec038600db1"
+      "bytes": 13138,
+      "sha256": "348cede430d61274ae6a21d72826d565447140cd99e59a0c9413849b17419d48"
     }
   ],
   "semantic_anchors": [
