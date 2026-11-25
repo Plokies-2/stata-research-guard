@@ -73,6 +73,7 @@ After the final edit to maintained `.do` files, locate each changed region in th
 - Review every changed operation by its purpose, inputs, effects, and consumers. Ask whether existing code already does the work, an existing command can do it through its default or a supported option, the needed choice or value is already known and can be written directly, or an existing macro, variable, or saved dataset already holds what the new code builds.
 - Look for overlapping responsibilities through the affected flow, from inputs to saved and displayed outputs. Follow directly connected producers and consumers outside the nearby lines when needed. Work can be redundant even when it uses different syntax, is split across commands or files, or sits before or after an existing step.
 - Name the concrete step that could be removed or reused and check that removing it preserves the required behavior: inputs, sample, group definitions, weights, missing values, execution order, state, side effects, and outputs. Separate operations are justified when they produce distinct required results, apply real conditions, or protect a meaningful invariant.
+- Scan the changed files for two common misses: a literal that repeats an existing global or local (a path, varlist or value), and a variable in a `keep`, `drop`, `if` or `missing()` condition that no later code uses, which shrinks the sample for nothing. Use the macro; drop the condition unless the restriction is a stated research choice.
 - Fix duplicates within the requested scope and reread the affected ranges. Report what changed or any duplicate that remains. If a range cannot be read, report the range and reason instead of claiming completion.
 
 Most dirty code comes from two habits: an `if` where a plain list would do, and a hand-written step where existing code, data, or a Stata command already does the work. The groups below illustrate them; they are not a checklist, so react to any redundancy of the same kind. Simple does not mean few characters: a longer block that shows its inputs where they are used is simpler than a short one that hides them behind macros. Keeping an edit minimal limits its scope; it does not mean keeping duplicated logic inside the flow you are changing.
@@ -80,6 +81,7 @@ Most dirty code comes from two habits: an `if` where a plain list would do, and 
 ```stata
 * A. Rebuilding what already exists
 global controls2 "$controls ttl_exp"                    // extend $controls where it is defined
+cap mkdir "$root/data/final"                            // $final already names it: cap mkdir "$final"
 collapse (mean) `careers', by(bmo_rule female)
 collapse (mean) `careers', by(female)                   // graph bar (mean) ..., over(female) already averages
 gen byte cert_list = year >= list_start if !missing(cert)   // rename the column in the saved data and load it
@@ -99,6 +101,7 @@ if `a' { if `b' { if `c' { ... } } }                    // keep nesting shallow;
 
 * C. Machinery nobody needs
 set varabbrev off                                       // drop settings that do not change the result
+keep if !missing(ln_wage, age, collgrad)                // collgrad is never used later: it only drops observations
 gen double a = x * w
 gen double b = a / total                                // gen double share = 100 * x * w / total
 * Generate share variable                               // comments that repeat the code; keep comments that explain a choice

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- The edited-region review now scans for literals that repeat an existing global or local, and for variables in sample conditions that nothing downstream uses; the dirty-code examples show both.
 - Fix the Guard tool failing to load in Claude Code: the tool now advertises one top-level `type: "object"` input schema (the union of the three phase shapes, still enforced by the server) instead of a top-level `oneOf`.
 - Default execution is tool-agnostic: run saved `.do` files in Stata batch mode or have the user run them; other Stata tool connections are used only when the user or project names them. Remove mcpStata-specific session and task instructions.
 - Send the complete rules once per server session. Later responses mark them unchanged; `include_rules: true` resends them after context loss. Rules no longer count toward the 48000-character help threshold, so the first lookup returns help text. The skill takes the rules from Guard instead of also reading the file.

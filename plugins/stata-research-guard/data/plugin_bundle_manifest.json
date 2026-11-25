@@ -22,8 +22,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 42102,
-      "sha256": "d9ccf1c2f27a8772b42dec874eb2281de5486f99a929efba027c3ef0b4104720"
+      "bytes": 42297,
+      "sha256": "4c533fad5be255d31a4e28e73a373d9c4f88e669d8fc0e35b30b9b4d9a366634"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -1702,8 +1702,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/SKILL.md",
-      "bytes": 19106,
-      "sha256": "231148c60bbc7c4166b5ab0c03b2f1a12e54e79430ef67af2b43886e81599d10"
+      "bytes": 19667,
+      "sha256": "7aae501e2b146d64f80751667fbf928073a8de1cd53d53286c22cdbc1cf090cc"
     },
     {
       "path": "tests/doc-links.test.cjs",
