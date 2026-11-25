@@ -6,19 +6,19 @@
     </linearGradient>
   </defs>
   <rect width="1280" height="640" fill="url(#bg)"/>
-  <rect x="52" y="60" width="210" height="34" rx="17" fill="#245b6c"/>
-  <text x="157" y="83" fill="#e7f5f7" font-family="Arial, sans-serif" font-size="17" text-anchor="middle">AI-ASSISTED STATA</text>
+  <rect x="52" y="60" width="300" height="34" rx="17" fill="#245b6c"/>
+  <text x="202" y="83" fill="#e7f5f7" font-family="Arial, sans-serif" font-size="17" text-anchor="middle">FOR CODEX AND CLAUDE CODE</text>
   <g fill="#ffffff" font-family="Arial, sans-serif" font-weight="700" font-size="72">
     <text x="52" y="204">Stata</text>
     <text x="52" y="287">Research Guard</text>
   </g>
   <g fill="#d3e3e8" font-family="Arial, sans-serif" font-size="31">
-    <text x="55" y="370">Stata code researchers can read,</text>
-    <text x="55" y="413">revise, and carry forward.</text>
+    <text x="55" y="370">AI-written Stata that reads like</text>
+    <text x="55" y="413">a careful coauthor wrote it.</text>
   </g>
   <rect x="55" y="460" width="670" height="1" fill="#42707d"/>
   <g fill="#a9d6df" font-family="Arial, sans-serif" font-size="22">
-    <text x="55" y="508">Original help   /   Real paper code   /   Peer review</text>
+    <text x="55" y="508">Visible specs   /   Real command help   /   Reviewed edits</text>
   </g>
   <text x="55" y="574" fill="#c3d1d7" font-family="Arial, sans-serif" font-size="20">github.com/Plokies-2/stata-research-guard</text>
   <image href="research-owl.png" x="750" y="90" width="490" height="480" preserveAspectRatio="xMidYMid meet"/>

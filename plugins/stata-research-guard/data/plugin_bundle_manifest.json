@@ -7,13 +7,13 @@
   "inventory": [
     {
       "path": ".claude-plugin/plugin.json",
-      "bytes": 608,
-      "sha256": "88ce2c99e21411d8c210659c6f112766c70dc13805d80d9d9497917c9bf47dac"
+      "bytes": 639,
+      "sha256": "93e0fcc1e56da13c0f52231359fe627937081f814a6a63e95a505637c0cf73e7"
     },
     {
       "path": ".codex-plugin/plugin.json",
-      "bytes": 1021,
-      "sha256": "7b39edeee9f06e4ea186c0392b4ec17345855c7411d350b8f148982280fd7b97"
+      "bytes": 1052,
+      "sha256": "bc8f4743a70430d4aa01d974134f13cbc795c09ee7b0b007f7edf705c70578df"
     },
     {
       "path": ".mcp.json",

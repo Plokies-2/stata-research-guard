@@ -7,7 +7,7 @@
     {
       "name": "stata-research-guard",
       "source": "./plugins/stata-research-guard",
-      "description": "Researcher-readable Stata with original command evidence and concrete independent review.",
+      "description": "AI-written Stata that reads like a careful coauthor wrote it: visible specifications, real command help, reviewed edits.",
       "category": "development"
     }
   ]

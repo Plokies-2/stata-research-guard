@@ -2,7 +2,7 @@
   "name": "stata-research-guard",
   "displayName": "Stata Research Guard",
   "version": "0.5.0+claude.2026112501",
-  "description": "Researcher-readable Stata with original command evidence and concrete independent review.",
+  "description": "AI-written Stata that reads like a careful coauthor wrote it: visible specifications, real command help, reviewed edits.",
   "author": {
     "name": "song7"
   },
