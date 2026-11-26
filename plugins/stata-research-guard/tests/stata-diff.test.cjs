@@ -10,7 +10,7 @@ const test = require("node:test");
 const script = path.join(__dirname, "..", "hooks", "stata-diff.cjs");
 const reviewConfirmation = "수정 코드 주변과 관련 정의를 읽어 중복 구현을 확인했다.";
 const legacyConfirmation = "수정 코드 주변 50줄을 읽어 중복 구현을 확인했다.";
-const diffReply = "Changed model.do.\n```diff\n-* Before\n+* After\n```";
+const diffReply = "Changed model.do.\n```diff\n-* Before\n+* After\n```\nmodel.do: +1 -1 (net 0)";
 const confirmedLine = `${reviewConfirmation} (model.do 1-60행, controls 정의 3-5행)`;
 const goodReply = `${diffReply}\n\n${confirmedLine}`;
 
@@ -100,7 +100,7 @@ test("the review confirmation needs the line ranges that were read", (t) => {
 test("a large edit that states the omitted diff is not asked for diff blocks", (t) => {
   const { dir, run, writeTranscript } = fixture(t);
   writeTranscript([{ type: "task_started", turn_id: "turn" }, fileChange(path.join(dir, "model.do"))]);
-  const reply = `Rewrote model.do.\n\ndiff 생략: .do 변경 240줄\n\n${confirmedLine}`;
+  const reply = `Rewrote model.do.\n\ndiff 생략: .do 변경 240줄\nmodel.do: +200 -40 (net +160)\n\n${confirmedLine}`;
   assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: reply }), {});
 });
 
@@ -288,6 +288,64 @@ test("Claude Code shell commands that edit .do files through a wildcard in anoth
   assert.ok(run({ hook_event_name: "Stop", last_assistant_message: "Done." }).reason.includes("1_cleaning.do"));
 });
 
+test("a Git Bash cd into another folder finds the .do file a script names and counts its lines", { skip: process.platform !== "win32" }, (t) => {
+  const { run } = claudeFixture(t);
+  const other = fs.mkdtempSync(path.join(os.homedir(), "stata-diff-other-"));
+  t.after(() => fs.rmSync(other, { recursive: true, force: true }));
+  const file = path.join(other, "BOK.do");
+  fs.writeFileSync(file, "regress y x\n* b\n");
+  run({ hook_event_name: "PostToolUse", tool_name: "Edit",
+    tool_input: { file_path: file, old_string: "* a", new_string: "* b" } });
+  const bash = `/${other[0].toLowerCase()}${other.slice(2).replace(/\\/g, "/")}`;
+  const command = `cd ${bash} && python - <<'EOF'\np='BOK.do'\nEOF`;
+  const script = () => {
+    run({ hook_event_name: "PreToolUse", tool_name: "Bash", tool_input: { command } });
+    fs.appendFileSync(file, "* c\n");
+    run({ hook_event_name: "PostToolUse", tool_name: "Bash", tool_input: { command } });
+  };
+  const reply = (count) => `Changed BOK.do.\n\`\`\`diff\n-* a\n+* b\n+* c\n\`\`\`\n${count}\n\n${confirmedLine}`;
+  // The Edit counts +1 -1 and the script, measured against the text saved before it ran, +1.
+  script();
+  assert.match(run({ hook_event_name: "Stop", last_assistant_message: reply("BOK.do: +1 -1 (net 0)") }).reason,
+    /BOK\.do: \+2 -1 \(net \+1\), not net 0/);
+  fs.writeFileSync(file, "regress y x\n* b\n");
+  run({ hook_event_name: "PostToolUse", tool_name: "Edit",
+    tool_input: { file_path: file, old_string: "* a", new_string: "* b" } });
+  script();
+  assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: reply("BOK.do: +2 -1 (net +1)") }), {});
+});
+
+test("a shell edit reports only repeats on the lines it changed", (t) => {
+  const { dir, run } = claudeFixture(t);
+  const file = path.join(dir, "model.do");
+  const base = 'local base = subinstr("`y\'", "wins_", "", 1)';
+  fs.writeFileSync(file, `${base}\n${base}\nregress y x\n`);
+  const command = "python fix.py model.do";
+  run({ hook_event_name: "PreToolUse", tool_name: "PowerShell", tool_input: { command } });
+  fs.appendFileSync(file, "quietly summarize y\n");
+  run({ hook_event_name: "PostToolUse", tool_name: "PowerShell", tool_input: { command } });
+  const reason = run({ hook_event_name: "Stop", last_assistant_message: "Changed model.do." }).reason;
+  assert.match(reason, /quietly hides log output/);
+  assert.doesNotMatch(reason, /repeated expression/);
+});
+
+test("Codex measures a shell edit against the text saved before the turn's first shell command", (t) => {
+  const { dir, run } = fixture(t);
+  const file = path.join(dir, "model.do");
+  fs.writeFileSync(file, "regress y x\n* a\n");
+  const command = 'await tools.exec_command({cmd:"python fix.py model.do"})';
+  fs.writeFileSync(path.join(dir, "turn.jsonl"), [
+    { type: "event_msg", payload: { type: "task_started", turn_id: "turn", started_at: Math.floor(Date.now() / 1000) } },
+    { type: "response_item", payload: { type: "custom_tool_call", name: "exec", input: command } },
+  ].map((record) => JSON.stringify(record)).join("\n") + "\n");
+  run({ hook_event_name: "PreToolUse", tool_name: "exec", tool_input: command });
+  fs.writeFileSync(file, "regress y x\n* b\n* c\n");
+  run({ hook_event_name: "PreToolUse", tool_name: "exec", tool_input: command });
+  fs.appendFileSync(file, "* d\n");
+  const reply = `Changed model.do.\n\`\`\`diff\n-* a\n+* b\n+* c\n+* d\n\`\`\`\nmodel.do: +3 -1 (net 0)\n\n${confirmedLine}`;
+  assert.match(run({ hook_event_name: "Stop", last_assistant_message: reply }).reason, /model\.do: \+3 -1 \(net \+2\), not net 0/);
+});
+
 test("diff omission is refused below 200 changed lines and new files need no diff", (t) => {
   const { dir, run } = claudeFixture(t);
   const file = path.join(dir, "model.do");
@@ -301,7 +359,7 @@ test("diff omission is refused below 200 changed lines and new files need no dif
   assert.match(small.reason, /only 2 \.do lines changed/);
 
   edit(Array.from({ length: 250 }, (_, i) => `* line ${i}`).join("\n"));
-  assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: omitted }), {});
+  assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: `${omitted}\nmodel.do: +250 -1 (net +249)` }), {});
 
   run({ hook_event_name: "PostToolUse", tool_name: "Write", tool_input: { file_path: path.join(dir, "new.do"), content: "* new\n" },
     tool_response: { type: "create" } });
@@ -324,5 +382,20 @@ test("Codex patches count their changed lines before a diff can be omitted", (t)
   patch("-* old\n+* new");
   assert.match(run({ hook_event_name: "Stop", last_assistant_message: omitted }).reason, /only 2 \.do lines changed/);
   patch(Array.from({ length: 210 }, (_, i) => `+* line ${i}`).join("\n"));
-  assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: omitted }), {});
+  assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: `${omitted}\nmodel.do: +210 -0 (net +210)` }), {});
+});
+
+test("the net line count must match the counts of this turn's edits", (t) => {
+  const { dir, run } = claudeFixture(t);
+  const file = path.join(dir, "model.do");
+  const edit = () => run({ hook_event_name: "PostToolUse", tool_name: "Edit",
+    tool_input: { file_path: file, old_string: "regress y x\n* a\n* b\n* c", new_string: "regress y x\n* d" } });
+  const reply = (count) => `Changed model.do.\n\`\`\`diff\n-* a\n-* b\n-* c\n+* d\n\`\`\`\n${count}\n\n${confirmedLine}`;
+  edit();
+  const missing = run({ hook_event_name: "Stop", last_assistant_message: reply("") });
+  assert.match(missing.reason, /model\.do: \+1 -3 \(net -2\)/);
+  edit();
+  assert.match(run({ hook_event_name: "Stop", last_assistant_message: reply("model.do: +1 -3 (net +2)") }).reason, /not net 2/);
+  edit();
+  assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: reply("model.do: +1 −3 (net −2)") }), {});
 });

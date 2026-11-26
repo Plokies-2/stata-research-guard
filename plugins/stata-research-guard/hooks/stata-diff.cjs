@@ -8,17 +8,17 @@ const { changedLineNumbers, findRepeats, formatFinding } = require("./stata-repe
 const { alignContinuations } = require("./stata-align.cjs");
 const alignScript = path.join(__dirname, "stata-align.cjs");
 
-// The full procedures live in stata-replication-workflow; hooks only point to them.
+// The full procedures live in stata-replication-workflow references/after-editing.md; hooks only point to them.
 const reviewLines = 50;
 const wholeFileLines = 300;
 const reviewConfirmation = "수정 코드 주변과 관련 정의를 읽어 중복 구현을 확인했다.";
 // Earlier releases asked for this wording; it still counts.
 const legacyConfirmation = `수정 코드 주변 ${reviewLines}줄을 읽어 중복 구현을 확인했다.`;
-const reviewRule = `Run the stata-replication-workflow edited-region review: read the whole file when it has ${wholeFileLines} lines or fewer, otherwise each changed region and the ${reviewLines} lines before and after it, plus where the macros and variables it uses are defined. Check whether existing code or a supported command already does the same work, such as a new global for what an existing global holds, a second collapse, or if/strpos() reclassifying a fixed list, and fix duplicates in scope. After the review, put this line on its own line in the final reply, followed by the ranges you read:\n${reviewConfirmation} (file.do 260-380행, controls 정의 12-18행)`;
+const reviewRule = `Run the stata-replication-workflow edited-region review (references/after-editing.md): read the whole file when it has ${wholeFileLines} lines or fewer, otherwise each changed region and the ${reviewLines} lines before and after it, plus where the macros and variables it uses are defined. Check whether existing code or a supported command already does the same work, such as a new global for what an existing global holds, a second collapse, or if/strpos() reclassifying a fixed list, and fix duplicates in scope. After the review, put this line on its own line in the final reply, followed by the ranges you read:\n${reviewConfirmation} (file.do 260-380행, controls 정의 12-18행)`;
 const maxRepeats = 20;
 const repeatRule = "Define each repeat once and reuse it, or say in the final reply why the copies differ. Outcome groups become one global; a value derived per iteration is computed once; model and output options stay in each command. Check again with node hooks/stata-repeats.cjs <file>.";
 const largeEditLines = 200;
-const reportRule = `Show a fenced diff block for each changed .do file, following the stata-replication-workflow final-reply rule. For an edit of ${largeEditLines} or more changed .do lines, write a line starting with \`diff 생략:\` instead. Newly created files need no diff.`;
+const reportRule = `Show a fenced diff block for each changed .do file, following stata-replication-workflow references/after-editing.md, and under it the line count as \`file.do: +added -removed (net N)\`. For an edit of ${largeEditLines} or more changed .do lines, write a line starting with \`diff 생략:\` instead. Newly created files need no diff.`;
 // The confirmation counts only with at least one line range after it.
 const confirmedReview = (line) => [reviewConfirmation, legacyConfirmation].some((prefix) =>
   line.trim().startsWith(prefix) && /\d+\s*[-~–]\s*\d+/.test(line.slice(line.indexOf(prefix) + prefix.length)));
@@ -54,6 +54,100 @@ function patchLineCount(text) {
 // Lines a patch adds, without the leading +. Repeats are reported only where these lines now sit.
 function patchAddedLines(text) {
   return String(text ?? "").split(/\r?\n/).filter((line) => /^\+/.test(line) && !/^\+\+\+( |$)/.test(line)).map((line) => line.slice(1));
+}
+
+// Added and removed lines for each file section of an apply_patch text, keyed by the path the patch names.
+function patchFileCounts(text) {
+  const counts = new Map();
+  let current = null;
+  for (const line of String(text ?? "").split(/\r?\n/)) {
+    const header = line.match(/^\*\*\* (?:Add|Update|Delete) File: (.+?)\s*$/);
+    if (header) {
+      current = { plus: 0, minus: 0, deleted: line.startsWith("*** Delete") };
+      counts.set(header[1], current);
+    } else if (current && /^\+/.test(line)) current.plus += 1;
+    else if (current && /^-/.test(line)) current.minus += 1;
+  }
+  return counts;
+}
+
+// Added and removed lines between two texts, from their longest common run of lines.
+// added lists the new lines so repeats can be reported where they now sit; counts are null for very large changes.
+function lineChanges(before, after) {
+  const a = before ? before.split(/\r?\n/) : [];
+  const b = after ? after.split(/\r?\n/) : [];
+  let start = 0;
+  while (start < a.length && start < b.length && a[start] === b[start]) start += 1;
+  let endA = a.length;
+  let endB = b.length;
+  while (endA > start && endB > start && a[endA - 1] === b[endB - 1]) {
+    endA -= 1;
+    endB -= 1;
+  }
+  const oldPart = a.slice(start, endA);
+  const newPart = b.slice(start, endB);
+  const width = newPart.length + 1;
+  if (oldPart.length * newPart.length > 4e6) return { plus: null, minus: null, added: newPart };
+  const common = new Uint16Array((oldPart.length + 1) * width);
+  for (let i = oldPart.length - 1; i >= 0; i -= 1) {
+    for (let j = newPart.length - 1; j >= 0; j -= 1) {
+      common[i * width + j] = oldPart[i] === newPart[j] ? common[(i + 1) * width + j + 1] + 1
+        : Math.max(common[(i + 1) * width + j], common[i * width + j + 1]);
+    }
+  }
+  const added = [];
+  let i = 0;
+  let j = 0;
+  while (j < newPart.length) {
+    if (i < oldPart.length && oldPart[i] === newPart[j]) {
+      i += 1;
+      j += 1;
+    } else if (i < oldPart.length && common[(i + 1) * width + j] >= common[i * width + j + 1]) i += 1;
+    else added.push(newPart[j++]);
+  }
+  return { plus: added.length, minus: oldPart.length - (newPart.length - added.length), added };
+}
+
+// Text of the .do files a shell command may write, saved before it runs: the files it names and the
+// .do files directly inside cwd and the folders it names. null marks a named file that does not exist yet.
+const snapshotFiles = 200;
+const snapshotBytes = 2000000;
+function snapshotDoFiles(cwd, command) {
+  const dirs = commandDirectories(cwd, command);
+  const files = new Set(namedDoFiles(cwd, dirs, command));
+  for (const dir of [cwd, ...dirs]) {
+    try {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        if (entry.isFile() && /\.do$/i.test(entry.name)) files.add(path.join(dir, entry.name));
+      }
+    } catch {}
+  }
+  const snapshot = {};
+  for (const file of [...files].slice(0, snapshotFiles)) {
+    try {
+      if (fs.statSync(file).size <= snapshotBytes) snapshot[fileKey(file)] = fs.readFileSync(file, "utf8");
+    } catch {
+      snapshot[fileKey(file)] = null;
+    }
+  }
+  return snapshot;
+}
+
+// Windows paths differ in case and slashes between tools; one key per file.
+function fileKey(file) {
+  const resolved = path.resolve(file);
+  return process.platform === "win32" ? resolved.toLowerCase() : resolved;
+}
+
+// The change a shell command made to one file, measured against the text saved before it ran.
+// Without a saved text the lines are unknown and the whole file is checked.
+function shellChange(file, snapshot) {
+  const before = snapshot?.[fileKey(file)];
+  if (before === undefined) return { file, lines: null, created: false, added: null };
+  const after = readOptionalFile(file);
+  if (before === after) return null;
+  const { plus, minus, added } = lineChanges(before ?? "", after);
+  return { file, lines: plus === null ? null : plus + minus, created: before === null, added, plus, minus };
 }
 
 // A tool input as text, with escaped newlines restored so patch lines can be read.
@@ -155,6 +249,20 @@ function handleCodex(event) {
   const stateDir = path.join(dataDir, "stata-diff-turns");
   const turnFile = path.join(stateDir, turnKey);
   const cwd = event.cwd || process.cwd();
+  const snapshotFile = `${turnFile}.snapshot`;
+
+  // Keep each .do file's text from before the first shell command of the turn that could change it.
+  if (event.hook_event_name === "PreToolUse") {
+    const command = inputText(event.tool_input);
+    if (!/\.do\b/i.test(command)) return {};
+    let saved = {};
+    try {
+      saved = JSON.parse(readOptionalFile(snapshotFile) || "{}");
+    } catch {}
+    fs.mkdirSync(stateDir, { recursive: true });
+    fs.writeFileSync(snapshotFile, JSON.stringify({ ...snapshotDoFiles(event.tool_cwd || cwd, command), ...saved }), "utf8");
+    return {};
+  }
 
   if (event.hook_event_name === "PostToolUse") {
     const firstPatch = !readOptionalFile(turnFile);
@@ -166,8 +274,14 @@ function handleCodex(event) {
       const patch = inputText(event.tool_input);
       const total = patchLineCount(patch);
       const added = patchAddedLines(patch);
-      changes = files.map((change, index) => ({ file: path.resolve(event.tool_cwd || cwd, change.file),
-        lines: index === 0 ? total : (total === null ? null : 0), created: change.created, added }));
+      const sections = [...patchFileCounts(patch)].map(([file, count]) => ({ file: path.resolve(event.tool_cwd || cwd, file), ...count }));
+      changes = files.map((change, index) => {
+        const file = path.resolve(event.tool_cwd || cwd, change.file);
+        // A deleted file's removed lines are not in the patch, so its count stays unknown.
+        const count = sections.find((section) => section.file === file && !section.deleted);
+        return { file, lines: index === 0 ? total : (total === null ? null : 0), created: change.created, added,
+          plus: count ? count.plus : null, minus: count ? count.minus : null };
+      });
     } else if (event.tool_name === "exec" && hasPatch && firstPatch) {
       // Code Mode patches are read from the transcript again at Stop, so only the files are kept here.
       changes = transcriptFiles(event).map((file) => ({ file: path.resolve(cwd, file), lines: null, created: false, added: [] }));
@@ -183,6 +297,11 @@ function handleCodex(event) {
   if (event.hook_event_name !== "Stop") return {};
   const remembered = rememberedChanges(turnFile);
   if (remembered.length) fs.rmSync(turnFile, { force: true });
+  let snapshot = {};
+  try {
+    snapshot = JSON.parse(readOptionalFile(snapshotFile) || "{}");
+  } catch {}
+  fs.rmSync(snapshotFile, { force: true });
   const draft = event.last_assistant_message;
   if (event.stop_hook_active || typeof draft !== "string") return {};
   const calls = turnToolCalls(event);
@@ -191,12 +310,28 @@ function handleCodex(event) {
   const recorded = [...remembered, ...transcriptFiles(event).map((file) => ({ file, lines: null, created: false, added: turnAdded }))]
     .map((change) => ({ ...change, file: path.resolve(cwd, change.file) }));
   const recordedFiles = new Set(recorded.map((change) => change.file));
-  // A shell edit carries no patch text, so its file is checked as a whole.
+  // A shell edit is measured against the text saved before the turn's first shell command;
+  // without one its file is checked as a whole.
   const shellEdits = turnShellEdits(calls, cwd).filter((file) => !recordedFiles.has(file))
-    .map((file) => ({ file, lines: null, created: false, added: null }));
+    .map((file) => shellChange(file, snapshot)).filter(Boolean);
   const changes = [...recorded, ...shellEdits].filter((change) => isMaintainedDo(change.file, cwd));
   if (changes.length === 0) return {};
   return stopReview(draft, changes);
+}
+
+// A per-file total that stays null once any edit of the file could not be counted.
+function sumKnown(previous, change, key) {
+  if ((previous && previous[key] === null) || typeof change[key] !== "number") return null;
+  return (previous?.[key] ?? 0) + change[key];
+}
+
+// The reply's "file.do: +A -R (net N)" line for a file, with N read as a number.
+function statedNet(lines, name) {
+  for (const line of lines) {
+    const match = line.includes(name) && line.match(/\bnet\s*([+\-−]?)\s*(\d+)/i);
+    if (match) return (match[1] === "-" || match[1] === "−" ? -1 : 1) * Number(match[2]);
+  }
+  return null;
 }
 
 function stopReview(draft, changes) {
@@ -211,6 +346,8 @@ function stopReview(draft, changes) {
       created: previous ? previous.created : Boolean(change.created),
       // null means the edit text is unknown (a shell edit), so the whole file is checked.
       added: (previous && previous.added === null) || !Array.isArray(change.added) ? null : [...(previous?.added ?? []), ...change.added],
+      plus: sumKnown(previous, change, "plus"),
+      minus: sumKnown(previous, change, "minus"),
     });
   }
   if (!lines.some(confirmedReview)) {
@@ -225,7 +362,7 @@ function stopReview(draft, changes) {
   if (repeats.length) {
     const shown = repeats.slice(0, maxRepeats).map((line) => `- ${line}`).join("\n");
     const more = repeats.length > maxRepeats ? `\n- ... ${repeats.length - maxRepeats} more` : "";
-    reasons.push(`The changed .do files write the same code more than once:\n${shown}${more}\n\n${repeatRule}`);
+    reasons.push(`Lines to fix in the changed .do files:\n${shown}${more}\n\n${repeatRule}`);
   }
   // Only blocks the turn edited are aligned, so untouched code keeps its spacing.
   const unaligned = [...byFile].flatMap(([file, entry]) => {
@@ -255,6 +392,20 @@ function stopReview(draft, changes) {
     } else if (!diffOmitted && needDiff.length && (!labeled || diffBlocks.length < needDiff.length)) {
       reasons.push("Before ending, review the final reply for missing .do file diffs. " + reportRule);
     }
+    // Each changed file gets a "file.do: +A -R (net N)" line; counts known from this turn's edits must match.
+    const netProblems = needDiff.flatMap((file) => {
+      const name = path.basename(file);
+      const { plus, minus } = byFile.get(file);
+      const known = plus !== null && minus !== null;
+      const stated = statedNet(lines, name);
+      if (stated !== null && (!known || stated === plus - minus)) return [];
+      const expected = known ? `${name}: +${plus} -${minus} (net ${plus - minus >= 0 ? "+" : ""}${plus - minus})`
+        : `${name}: count the + and - lines of its diff`;
+      return [stated === null ? `- ${expected}` : `- ${expected}, not net ${stated}`];
+    });
+    if (netProblems.length) {
+      reasons.push(`Under each .do diff, put the file's line count as "file.do: +added -removed (net N)":\n${netProblems.join("\n")}`);
+    }
   }
 
   return reasons.length ? { decision: "block", reason: reasons.join("\n\n") } : {};
@@ -268,7 +419,8 @@ const skippedSearchDirs = new Set([".git", "node_modules", "tmp", "temp", "cache
 function doFilesModifiedSince(since, cwd, command) {
   const found = new Set();
   const deadline = Date.now() + 3000;
-  const stack = [cwd, ...commandDirectories(cwd, command)];
+  const named = commandDirectories(cwd, command);
+  const stack = [cwd, ...named];
   let visited = 0;
   while (stack.length && visited < 20000 && Date.now() < deadline) {
     const dir = stack.pop();
@@ -290,14 +442,27 @@ function doFilesModifiedSince(since, cwd, command) {
       }
     }
   }
-  // A command can also write a .do file outside cwd by naming it.
-  for (const match of String(command ?? "").matchAll(/[A-Za-z]:[\\/][^"'\r\n<>|*?]*?\.do\b|[^\s"'<>|*?]+\.do\b/g)) {
-    const full = path.resolve(cwd, match[0]);
+  for (const full of namedDoFiles(cwd, named, command)) {
     try {
       if (fs.statSync(full).mtimeMs >= since) found.add(full);
     } catch {}
   }
   return [...found];
+}
+
+// A command can write a .do file outside cwd by naming it, relative to cwd or to a folder it changes into.
+function namedDoFiles(cwd, dirs, command) {
+  const files = [];
+  for (const match of String(command ?? "").matchAll(/[A-Za-z]:[\\/][^"'\r\n<>|*?]*?\.do\b|[^\s"'<>|*?=]+\.do\b/g)) {
+    for (const base of [cwd, ...dirs]) files.push(path.resolve(base, nativePath(match[0])));
+  }
+  return files;
+}
+
+// Git Bash writes C:\Users as /c/Users; Node on Windows needs the drive letter.
+function nativePath(token) {
+  const drive = process.platform === "win32" && String(token).match(/^\/([A-Za-z])(?:\/(.*))?$/);
+  return drive ? `${drive[1].toUpperCase()}:/${drive[2] ?? ""}` : token;
 }
 
 // Folders the command names (including the folder of a wildcard such as code/1_*.do) are scanned too,
@@ -308,7 +473,7 @@ function commandDirectories(cwd, command) {
     let token = match[1] ?? match[2] ?? match[3];
     if (/[*?]/.test(token)) token = path.dirname(token);
     if (!token || token === "." || /^-/.test(token)) continue;
-    const full = path.resolve(cwd, token);
+    const full = path.resolve(cwd, nativePath(token));
     const relative = path.relative(cwd, full);
     if (!relative.startsWith("..") && !path.isAbsolute(relative)) continue;
     try {
@@ -367,7 +532,8 @@ function handleClaude(event) {
     // Scanning the folder costs time on every shell call, so only commands that name a .do file are timed.
     if (!claudeShellTools.includes(event.tool_name) || !/\.do\b/i.test(String(event.tool_input?.command ?? ""))) return {};
     fs.mkdirSync(stateDir, { recursive: true });
-    fs.writeFileSync(startFile, String(Date.now()), "utf8");
+    const command = event.tool_input.command;
+    fs.writeFileSync(startFile, JSON.stringify({ since: Date.now(), files: snapshotDoFiles(cwd, command) }), "utf8");
     return {};
   }
 
@@ -376,11 +542,14 @@ function handleClaude(event) {
     if (claudeEditTools.includes(event.tool_name) && typeof event.tool_input?.file_path === "string") {
       changes = [{ file: path.resolve(cwd, event.tool_input.file_path), ...claudeEditSize(event) }];
     } else if (claudeShellTools.includes(event.tool_name)) {
-      const since = Number(readOptionalFile(startFile));
+      let start = {};
+      try {
+        start = JSON.parse(readOptionalFile(startFile) || "{}");
+      } catch {}
       fs.rmSync(startFile, { force: true });
       // Allow for coarse file-system timestamps.
-      if (since) changes = doFilesModifiedSince(since - 2000, cwd, event.tool_input?.command)
-        .map((file) => ({ file, lines: null, created: false }));
+      if (start.since) changes = doFilesModifiedSince(start.since - 2000, cwd, event.tool_input?.command)
+        .map((file) => shellChange(file, start.files)).filter(Boolean);
     }
     changes = changes.filter((change) => isMaintainedDo(change.file, cwd));
     if (changes.length === 0) return {};
@@ -407,14 +576,17 @@ function claudeEditSize(event) {
   if (event.tool_name === "Write") {
     const created = event.tool_response?.type === "create";
     return { lines: created ? lineCount(input.content) : null, created,
-      added: typeof input.content === "string" ? input.content.split(/\r?\n/) : null };
+      added: typeof input.content === "string" ? input.content.split(/\r?\n/) : null,
+      plus: created ? lineCount(input.content) : null, minus: created ? 0 : null };
   }
   const edits = event.tool_name === "MultiEdit" ? input.edits : [input];
   if (!Array.isArray(edits) || !edits.every((edit) => typeof edit?.old_string === "string" && typeof edit?.new_string === "string")) {
-    return { lines: null, created: false };
+    return { lines: null, created: false, plus: null, minus: null };
   }
+  const counts = edits.map((edit) => lineChanges(edit.old_string, edit.new_string));
+  const total = (key) => (counts.some((count) => count[key] === null) ? null : counts.reduce((sum, count) => sum + count[key], 0));
   return { lines: edits.reduce((sum, edit) => sum + lineCount(edit.old_string) + lineCount(edit.new_string), 0), created: false,
-    added: edits.flatMap((edit) => edit.new_string.split(/\r?\n/)) };
+    added: edits.flatMap((edit) => edit.new_string.split(/\r?\n/)), plus: total("plus"), minus: total("minus") };
 }
 
 // Codex events carry a turn id; Claude Code events do not.

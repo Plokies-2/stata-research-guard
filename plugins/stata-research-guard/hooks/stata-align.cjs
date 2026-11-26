@@ -1,6 +1,6 @@
 "use strict";
 
-// Aligns the /// continuation markers of each continued Stata command in one column.
+// Aligns the /// continuation markers of each continued Stata command in one column, at most column 100.
 // Only the spaces before a marker change; the code before it and the marker with its comment stay byte for byte.
 // Blocks it cannot read safely are left alone: files with #delimit, lines with tabs before the marker,
 // comment lines, and lines inside /* */ blocks.
@@ -8,6 +8,9 @@
 // node stata-align.cjs file.do [--lines 10-40,80-90] [--check]
 
 const fs = require("node:fs");
+
+// The /// column never goes past this; longer lines are better split than padded.
+const maxColumn = 100;
 
 // Index of the /// marker outside strings, or -1. A // comment that is not /// also gives -1.
 function markerIndex(line) {
@@ -61,8 +64,11 @@ function alignContinuations(text, ranges = null) {
       return { code: line.slice(0, marker).trimEnd(), rest: line.slice(marker) };
     });
     if (parts.some(({ code }) => code.includes("\t"))) continue;
-    const column = Math.max(...parts.map(({ code }) => code.length)) + 1;
-    const aligned = parts.map(({ code, rest }) => code + " ".repeat(column - code.length) + rest);
+    // Lines longer than the cap keep one space before ///, so one long line does not push the column far right.
+    const fitting = parts.map(({ code }) => code.length).filter((length) => length < maxColumn);
+    if (!fitting.length) continue;
+    const column = Math.max(...fitting) + 1;
+    const aligned = parts.map(({ code, rest }) => code + " ".repeat(Math.max(1, column - code.length)) + rest);
     if (aligned.every((line, offset) => line === lines[block.first + offset])) continue;
     aligned.forEach((line, offset) => { lines[block.first + offset] = line; });
     changed.push([block.first + 1, block.last + 1]);

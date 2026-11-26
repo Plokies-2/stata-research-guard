@@ -36,6 +36,14 @@ test("strings, comments, tabs and #delimit are left alone", () => {
   assert.equal(alignContinuations(markerComment).text, "reg y x /// main\n    z   /// controls\n  , robust\n");
 });
 
+test("a line past column 100 keeps one space and does not push the others", () => {
+  const long = `twoway (connected y x, ${"lcolor(blue) ".repeat(8)})`;
+  const { text } = alignContinuations(`${long} ///\n    xtitle("x") ///\n    ytitle("y")\n`);
+  assert.equal(text, `${long} ///\n    xtitle("x") ///\n    ytitle("y")\n`);
+  const mixed = alignContinuations(`${long} ///\n    xtitle("Years") ///\n    yline(0) ///\n    ytitle("y")\n`).text;
+  assert.equal(mixed, `${long} ///\n    xtitle("Years") ///\n    yline(0)        ///\n    ytitle("y")\n`);
+});
+
 test("Windows line endings are kept", () => {
   const { text } = alignContinuations("a ///\r\n  bbbb ///\r\n  c\r\n");
   assert.equal(text, "a      ///\r\n  bbbb ///\r\n  c\r\n");

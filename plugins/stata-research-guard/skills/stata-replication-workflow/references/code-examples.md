@@ -66,14 +66,16 @@ global outcomes "$financial $employment"
 summarize $outcomes if year == 2019
 foreach y of global outcomes {
     reghdfe `y' ib2019.year##i.treated, absorb(firm year industry#year) vce(cluster firm)
-    estimates store `y'
+    estimates save "$ster_dir/event/`y'.ster", replace
 }
 foreach y of global financial {
-    coefplot `y', keep(2017.year#1.treated 2018.year#1.treated 2020.year#1.treated)
+    estimates use "$ster_dir/event/`y'.ster"
+    coefplot ., keep(2017.year#1.treated 2018.year#1.treated 2020.year#1.treated)
+    graph export "$output_dir/figure/event/`y'.pdf", replace
 }
 ```
 
-Moving `absorb()` into `$main_fe` or the `keep()` list into `$event_terms` would shorten the lines but make the reader leave the command to learn the specification and the plotted range. Each model is stored under its outcome name, so no second name is needed to find it. `y` stays a local because it only lives inside its loop. A group used for a shared y-axis is the same `$financial`, not a second macro. When one figure genuinely needs a different subset, name that subset for its contents and build it from the existing globals.
+Moving `absorb()` into `$main_fe` or the `keep()` list into `$event_terms` would shorten the lines but make the reader leave the command to learn the specification and the plotted range. Each model is saved right after it is fitted and read back by the figure, so the figure can be redrawn without re-estimating, and the outcome name serves as both file name and figure name without a second name to look up. `y` stays a local because it only lives inside its loop. A group used for a shared y-axis is the same `$financial`, not a second macro. When one figure genuinely needs a different subset, name that subset for its contents and build it from the existing globals.
 
 ## Use native predictions while preserving the requested sample
 
