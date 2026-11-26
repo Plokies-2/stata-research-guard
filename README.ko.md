@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Plokies-2/stata-research-guard/releases/latest"><img src="https://img.shields.io/badge/version-0.5.0-245B78?style=flat-square" alt="Version 0.5.0"></a>
+  <a href="https://github.com/Plokies-2/stata-research-guard/releases/latest"><img src="https://img.shields.io/badge/version-0.5.1-245B78?style=flat-square" alt="Version 0.5.1"></a>
   <img src="https://img.shields.io/badge/works_with-Codex_%7C_Claude_Code-222222?style=flat-square" alt="Works with Codex and Claude Code">
   <img src="https://img.shields.io/badge/developed_with-Stata_18-1A6B70?style=flat-square" alt="Developed with Stata 18">
   <a href="https://hub.xerj.org/contributors/Plokies-2"><img src="https://hub.xerj.org/contributors/Plokies-2/badge.svg" alt="XERJ Corpus Hub contributor"></a>
@@ -274,6 +274,8 @@ Stata 18에서 실행을 확인했습니다. 공개본은 원본과 출력 경�
 | | 얻는 것 |
 | --- | --- |
 | 🔍 **수정 구간 검토** | 최종 수정 뒤 에이전트가 300줄 이하 파일은 전체를, 더 긴 파일은 각 변경 구간과 앞뒤 50줄을 다시 읽고, 그 구간에서 쓰는 매크로와 변수가 정의된 곳도 찾아 읽습니다. 기존 전역변수에 넣으면 될 목록을 새 전역변수로 만들거나 `collapse`를 두 번 하는 것처럼 이미 같은 일을 하는 코드가 있는지 보고, 읽은 줄 범위를 적은 확인 문장으로 답을 마칩니다. 그 문장이 없으면 `Stop` 훅이 한 번 더 검토하게 합니다. [자세히](plugins/stata-research-guard/README.md#설치와-개발) |
+| 🔁 **반복 탐지기** | `hooks/stata-repeats.cjs`가 바뀐 `.do`에서 두 번 이상 적힌 코드를 찾습니다. 같은 식으로 다시 계산한 값(`local base = subinstr(...)` 등), 같은 순서로 반복되는 명령, 다른 매크로와 겹치거나 리터럴로 다시 적힌 매크로 값이 대상입니다. 추정이나 그림 명령마다 반복되는 `absorb()`, `vce()`, `keep()`, 축 옵션은 각 명령에 있어야 하므로 잡지 않습니다. 반복문 항목을 `if`나 문자열 일치로 묶음과 대조하는 분기도 찾습니다. `Stop` 훅이 이번 턴에 고친 줄과 관계된 것만 줄 번호와 함께 돌려주면, 에이전트는 반복마다 한 번 정의해 재사용하거나 따로 둬야 하는 이유를 적습니다. `hooks/stata-align.cjs`는 고친 명령의 `///`를 한 열로 맞추며, `///` 앞의 공백만 바꿉니다. Codex에서는 셸이나 Code Mode 명령으로 다시 쓴 `.do` 파일도 찾습니다. |
+| 🏷️ **이름 붙인 global을 끝까지 이어 쓰기 (작성자 취향)** | 결과변수 묶음마다 내용을 드러내는 이름의 `global` 하나를 둡니다(`$employment`, `$pay`, `$financial`). 맨 위에서 한 번 정의하고 추정, 기초통계, 그림, 표에서 계속 불러 쓰므로, 정의를 찾아 위로 올라가지 않아도 이름만 보고 내용을 짐작할 수 있습니다. 통제변수, `absorb()` 고정효과, `vce()`, 표본 조건, `keep()` 범위, 축 옵션처럼 모형과 산출물을 만드는 인자는 각 명령에 그대로 적어, `reghdfe`나 `coefplot`만 봐도 핵심 구현을 알 수 있게 합니다. `local`은 반복문 변수, 반복마다 계산하는 값, tempfile, 보관할 반환 결과에만 씁니다. 작성자의 선호이니 입맛에 맞게 바꿔 쓰세요. [general-rules.md](plugins/stata-research-guard/skills/stata-replication-workflow/references/general-rules.md)의 `Globals for outcome groups`, `Keep what a command does inside the command` 규칙과 [SKILL.md](plugins/stata-research-guard/skills/stata-replication-workflow/SKILL.md), [code-examples.md](plugins/stata-research-guard/skills/stata-replication-workflow/references/code-examples.md)의 관련 예시를 고치면 됩니다. |
 | 🧾 **확인할 수 있는 diff** | 답변마다 유지 대상 `.do`의 파일별 전후 diff를 보여줍니다. 200줄 이상 바꾼 수정이나 작업 흐름 전체 개편은 `diff 생략:` 줄에 생략을 밝히고 변경 사항을 링크합니다. 훅이 수정을 추적해 빠진 diff를 잡아냅니다. |
 | 📚 **Guard MCP: 실제 명령 근거** | `get_stata_command_evidence`가 Stata로 렌더링한 공식·maintainer 도움말, Stata 18 매뉴얼 확장 항목, 출판 논문의 원본 코드 블록을 돌려줍니다. 옵션과 저장 결과를 기억이 아니라 원문에서 가져옵니다. |
 | 🗂️ **AEA 재현 패키지에서 가져온 프로젝트 구성** | 프로젝트를 새로 시작하거나 전체를 재구성할 때, AEA 재현 패키지에서 뽑은 네 가지 구성(번호 붙은 단계, build/analysis, 표·그림마다 파일 하나, 중첩 master) 중 두세 가지를 제안하고 하나를 추천한 뒤, 파일을 만들기 전에 사용자가 고르게 합니다. |

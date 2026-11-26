@@ -19,19 +19,61 @@ foreach outcome in wage hours {
 }
 ```
 
-**More direct for this task:** the outcome is mechanical; the two research specifications remain visible beside their saved estimates.
+**More direct for this task:** the outcome is mechanical; the two research specifications remain visible beside their saved estimates, and each group is named once for what it holds.
 
 ```stata
-foreach outcome in wage hours {
-    regress `outcome' age grade, vce(robust)
+global labor "wage hours"
+global demographics "age grade"
+global work_history "$demographics ttl_exp tenure"
+
+foreach outcome of global labor {
+    regress `outcome' $demographics, vce(robust)
     estimates save "estimates/`outcome'_m1.ster", replace
 
-    regress `outcome' age grade ttl_exp tenure, vce(robust)
+    regress `outcome' $work_history, vce(robust)
     estimates save "estimates/`outcome'_m2.ster", replace
 }
 ```
 
 The loop iterator remains useful. Copying both model blocks once per outcome would add maintenance work without clarifying a research choice. Conversely, do not combine outcomes whose sample restrictions or transformations differ merely because the regression lines look similar. Preserve a real shared configuration or external interface when the project requires it. The robust VCE and common sample here come from the hypothetical request, not from a default recommendation.
+
+## Name each outcome group once and reuse it everywhere
+
+Suppose an event study estimates board, financial and employment outcomes, summarizes them in 2019, and plots each estimate. The prepared panel is loaded.
+
+**Harder to follow:** the same members are retyped for each use, and the figure step keeps its own names for parts of the groups.
+
+```stata
+summarize roa roe leverage emp ln_emp if year == 2019
+foreach y in roa roe leverage emp ln_emp {
+    reghdfe `y' ib2019.year##i.treated, absorb(firm year industry#year) vce(cluster firm)
+    estimates store m_`y'
+}
+local axis_returns "roa roe"
+local axis_emp "emp ln_emp"
+foreach y of local axis_returns {
+    coefplot m_`y', keep(2017.year#1.treated 2018.year#1.treated 2020.year#1.treated)
+}
+```
+
+**Easier to follow:** one block names the outcome groups; every later step reads them by name, so `$financial` says what is estimated, summarized or plotted without scrolling up. The fixed effects, clustering and the exported coefficient range stay in the commands that use them.
+
+```stata
+global financial "roa roe leverage"
+global employment "emp ln_emp"
+global outcomes "$financial $employment"
+
+summarize $outcomes if year == 2019
+foreach y of global outcomes {
+    reghdfe `y' ib2019.year##i.treated, absorb(firm year industry#year) vce(cluster firm)
+    estimates store `y'
+}
+foreach y of global financial {
+    coefplot `y', keep(2017.year#1.treated 2018.year#1.treated 2020.year#1.treated)
+}
+```
+
+Moving `absorb()` into `$main_fe` or the `keep()` list into `$event_terms` would shorten the lines but make the reader leave the command to learn the specification and the plotted range. Each model is stored under its outcome name, so no second name is needed to find it. `y` stays a local because it only lives inside its loop. A group used for a shared y-axis is the same `$financial`, not a second macro. When one figure genuinely needs a different subset, name that subset for its contents and build it from the existing globals.
 
 ## Use native predictions while preserving the requested sample
 

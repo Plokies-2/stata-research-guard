@@ -128,6 +128,65 @@ test("scratch .do edits are silent in patch callbacks and transcript recovery", 
   assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: goodReply }), {});
 });
 
+test("Stop lists repeated code in the changed file even after a confirmed review", (t) => {
+  const { dir, run, writeTranscript } = fixture(t);
+  const file = path.join(dir, "model.do");
+  const base = 'subinstr("`outcome\'", "wins_", "", 1)';
+  fs.writeFileSync(file, `local base = ${base}\nregress y x\nlocal base = ${base}\n`);
+  // A Code Mode turn: the patch text sits in the tool call, the file in a FileChange record.
+  const turn = (added) => fs.writeFileSync(path.join(dir, "turn.jsonl"), [
+    { type: "event_msg", payload: { type: "task_started", turn_id: "turn", started_at: 1 } },
+    { type: "response_item", payload: { type: "custom_tool_call", name: "exec",
+      input: `await tools.apply_patch("*** Begin Patch\\n*** Update File: model.do\\n@@\\n+${added}\\n*** End Patch")` } },
+    { type: "event_msg", payload: fileChange(file) },
+  ].map((record) => JSON.stringify(record)).join("\n") + "\n");
+
+  turn(`local base = ${base}`);
+  const blocked = run({ hook_event_name: "Stop", last_assistant_message: goodReply });
+  assert.equal(blocked.decision, "block");
+  assert.ok(blocked.reason.includes(`model.do lines 1, 3: repeated expression: ${base}`));
+  assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: goodReply, stop_hook_active: true }), {});
+
+  // An edit elsewhere in the file does not bring back a repeat it did not touch.
+  turn("regress y x");
+  assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: goodReply }), {});
+});
+
+test("Codex shell and Code Mode commands that rewrite a .do file are found at Stop", (t) => {
+  const { dir, run } = fixture(t);
+  const old = path.join(dir, "old.do");
+  fs.writeFileSync(old, "* untouched\n");
+  const past = new Date(Date.now() - 60 * 60 * 1000);
+  fs.utimesSync(old, past, past);
+  const records = [
+    { type: "event_msg", payload: { type: "task_started", turn_id: "previous", started_at: 1 } },
+    { type: "event_msg", payload: { type: "task_started", turn_id: "turn", started_at: Math.floor(Date.now() / 1000) } },
+    { type: "response_item", payload: { type: "custom_tool_call", name: "exec",
+      input: 'await tools.exec_command({cmd:"Set-Content model.do -Value x"})' } },
+  ];
+  fs.writeFileSync(path.join(dir, "turn.jsonl"), records.map((record) => JSON.stringify(record)).join("\n") + "\n");
+  fs.writeFileSync(path.join(dir, "model.do"), "* new\n");
+  const blocked = run({ hook_event_name: "Stop", last_assistant_message: "Changed model.do." });
+  assert.ok(blocked.reason.includes(path.join(dir, "model.do")));
+  assert.ok(!blocked.reason.includes("old.do"));
+  assert.deepEqual(run({ hook_event_name: "Stop", last_assistant_message: "Done.", turn_id: "previous" }), {});
+});
+
+test("Stop names the aligner for an edited command whose /// markers are not in one column", (t) => {
+  const { dir, run, writeTranscript } = fixture(t);
+  const file = path.join(dir, "model.do");
+  fs.writeFileSync(file, "summarize a ///\n  bb\nreg y x ///\n    absorb(fid) ///\n    vce(cluster fid)\n");
+  const patch = (body) => run({ hook_event_name: "PostToolUse", tool_name: "apply_patch",
+    tool_input: `*** Begin Patch\n*** Update File: model.do\n@@\n${body}\n*** End Patch`,
+    tool_response: "Success. Updated the following files:\nM model.do\n" });
+  writeTranscript([{ type: "task_started", turn_id: "turn" }]);
+  patch("+    absorb(fid) ///");
+  const blocked = run({ hook_event_name: "Stop", last_assistant_message: goodReply });
+  assert.match(blocked.reason, /stata-align\.cjs" ".*model\.do" --lines 3-4/);
+  // The untouched first command is not mentioned.
+  assert.doesNotMatch(blocked.reason, /--lines 1-/);
+});
+
 function claudeFixture(t, { dataDir = true } = {}) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "stata-diff-claude-"));
   t.after(() => fs.rmSync(dir, { recursive: true, force: true }));

@@ -1,6 +1,19 @@
 # Changelog
 
-## Unreleased
+## 0.5.1 — 2026-11-27
+
+Codex build `0.5.1+codex.2026112701`, Claude Code build `0.5.1+claude.2026112701`.
+
+- Add `hooks/stata-repeats.cjs`, which lists text a `.do` file writes more than once: a value computed again with the same expression of 25 or more literal characters (`local`, `global`, `scalar`, `gen`, `replace`, `egen`), runs of two or more identical commands, and macro values equal to or contained in another macro or written again as a literal. The Stop hook runs it on changed `.do` files and asks the model to define each repeat once or say why the copies differ; the skill runs it directly where hooks do not run.
+- The detector reports only findings on lines edited in the turn (patch lines, Edit text, Code Mode patches read from the transcript); shell edits, whose text is unknown, are checked as whole files. It also lists loop items checked against a group global with `if` or matched with `strpos()`/`strmatch()`/`regexm()`.
+- Add `references/descriptive-outputs.md` for descriptive figures and tables: build the plotted data next to the figure, let the graph command or `separate` do the grouping, draw figures that differ only by a group from one loop or with `by()`, use full option names, set the scheme once, let `ylabel(#5)` choose ticks, and use native table formats. Its examples use `sysuse nlsw88` and were run in Stata.
+- Add `hooks/stata-align.cjs`, which puts the `///` markers of each continued command in one column by changing only the spaces before `///`. It skips files with `#delimit`, code with tabs, comment lines and `/* */` blocks, and `///` inside strings. The Stop hook names the exact command when an edited command is not aligned.
+- In Codex, the Stop hook also finds `.do` files rewritten by shell or Code Mode commands: when a tool call in the turn names a `.do` file, it checks modification times since the turn started.
+- General rules, SKILL.md and code examples: each outcome group gets one `global` with a short name for its contents (`$employment`, `$financial`), defined in one block at the top and used wherever the group is estimated, summarized, plotted or tabulated, so its name tells the reader what it holds. Model and output arguments (controls, `absorb()`, `vce()`, sample conditions, `keep()`, `relocate()`, axis options) stay written in each command, and the detector does not report them. Locals stay for iterators, per-iteration values, tempfiles and kept returned results. Numbered, generic or figure-only group names and locals that copy a global are listed as dirty code. The detector also reports a macro that only holds another macro.
+- SKILL.md dirty-code examples: hand-built axis tick spacing is replaced by `yscale(range())` with `ylabel(#5)`.
+- General rules: plan for name limits (27 characters for `estimates store`, 31 for locals). Store models under the outcome name without a prefix, and for names over 27 characters save a `.ster` named for the outcome and plot it with `estimates use` and `coefplot .`.
+- General rules: do not use `quietly`; estimation, summaries and checks print in the log. A sample condition is not hidden inside a variable-list global.
+- README: Codex skips a hook whose stored trust no longer matches its content; re-trust the hook after updating the plugin.
 
 - Review scope: read the whole `.do` file when it has 300 lines or fewer, otherwise ±50 lines around each change plus the definitions used. The confirmation line is now `수정 코드 주변과 관련 정의를 읽어 중복 구현을 확인했다.` with ranges; the earlier 50줄 wording still counts.
 - Stop hook in Claude Code also checks a final reply sent only through a tool call (the text inputs of the last tool use).

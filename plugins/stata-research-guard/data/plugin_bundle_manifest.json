@@ -2,18 +2,18 @@
   "schema_version": "1.0",
   "plugin": {
     "name": "stata-research-guard",
-    "version": "0.5.0+codex.2026112501"
+    "version": "0.5.1+codex.2026112701"
   },
   "inventory": [
     {
       "path": ".claude-plugin/plugin.json",
       "bytes": 639,
-      "sha256": "93e0fcc1e56da13c0f52231359fe627937081f814a6a63e95a505637c0cf73e7"
+      "sha256": "09a7e02416ba56e2d8ada8c3df536e9db82e390dc94c76001da6dcbecf0481da"
     },
     {
       "path": ".codex-plugin/plugin.json",
       "bytes": 1052,
-      "sha256": "bc8f4743a70430d4aa01d974134f13cbc795c09ee7b0b007f7edf705c70578df"
+      "sha256": "9ad6083c26aafd6f3e044419155660f06bf856a9739cb6de1b40c438d0a49702"
     },
     {
       "path": ".mcp.json",
@@ -22,8 +22,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 43285,
-      "sha256": "aed4b0342572d26d12c79f577deaee9bb1384b7785f4d272cc7ca4c90660722d"
+      "bytes": 46541,
+      "sha256": "8ba77db0f0e6ce934780b255d651d026256cfa77275b534220171baf7de5102f"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -1566,9 +1566,19 @@
       "sha256": "749b536caa6c927e3d5738e9992ae8dd166b77fc35533d23039996670039e2df"
     },
     {
+      "path": "hooks/stata-align.cjs",
+      "bytes": 3960,
+      "sha256": "56c533038a9e7dd543e56fab66704f38e7018b26a2c658be4d434e490310760c"
+    },
+    {
       "path": "hooks/stata-diff.cjs",
-      "bytes": 17308,
-      "sha256": "0fdfa3c505ed49046cf8a0ae8dd572588f22ce946bb89cffaa29b2027831103a"
+      "bytes": 22133,
+      "sha256": "fe9b444c5bd08041eb8d4fee96fce283310a764d270ce7f7a380b0fd36e2bbc3"
+    },
+    {
+      "path": "hooks/stata-repeats.cjs",
+      "bytes": 8248,
+      "sha256": "e1a39c1a2149c4166515f074822e6b783676d870c5a97e3b4b6a82b9a227d0d2"
     },
     {
       "path": "INSTRUCTIONS.md",
@@ -1622,8 +1632,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 19506,
-      "sha256": "8fdc44edc37b87319193378619be1e1d4790212144196bf1788e809519d448f8"
+      "bytes": 22489,
+      "sha256": "b65a20e191d5c1a66d52e14cdd596aeede2336e64473bf0fee28237d501c8cba"
     },
     {
       "path": "scripts/build_command_help_guides.cjs",
@@ -1657,8 +1667,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/references/code-examples.md",
-      "bytes": 8993,
-      "sha256": "6e6b40fda529a2b8e742c41571d433743c73f16290d0f69d12f42918c735b575"
+      "bytes": 11138,
+      "sha256": "db089211971b89051a0014cb0b5365ded61522b8362ec52ee01e5a20aaca6a50"
     },
     {
       "path": "skills/stata-replication-workflow/references/codebook.md",
@@ -1671,14 +1681,19 @@
       "sha256": "c185b4d5730295da177749b794093eedb0e618a145419d3fce64bacc67c9dc03"
     },
     {
+      "path": "skills/stata-replication-workflow/references/descriptive-outputs.md",
+      "bytes": 5006,
+      "sha256": "eee21dc5db3176293b772a766094b2beb0a917023358d5e78c1aa7c04a2eef9d"
+    },
+    {
       "path": "skills/stata-replication-workflow/references/execution-and-results.md",
       "bytes": 4755,
       "sha256": "4f384e786a8c18ad67bf66a73fe33ec4fc58be6be958387aed94df563e32b1d1"
     },
     {
       "path": "skills/stata-replication-workflow/references/general-rules.md",
-      "bytes": 18665,
-      "sha256": "c749db0d64dd6a6a569ce4e52ca66f981f388a0741e451fd8ea53ec759c8f6db"
+      "bytes": 20911,
+      "sha256": "2df29b09df7f7ed8e892b2f8281a6648bb11316e8e5452863aa5ffa6cdf7844a"
     },
     {
       "path": "skills/stata-replication-workflow/references/paper-workflow-reading.md",
@@ -1702,8 +1717,8 @@
     },
     {
       "path": "skills/stata-replication-workflow/SKILL.md",
-      "bytes": 19764,
-      "sha256": "dd50d6a1787ac1a36218841bdd8eb8492726758333898b92f8c75eef3730bdc2"
+      "bytes": 22152,
+      "sha256": "ed46893b7f9416543d445d06e6aba7f6157ab68e9e4d9ce5e6e4c05bf1b3ed6a"
     },
     {
       "path": "tests/doc-links.test.cjs",
@@ -1736,9 +1751,19 @@
       "sha256": "6d646c168b838eeb4e08d886a1a381d271acd14adf2f7512de0c98e2532b3873"
     },
     {
+      "path": "tests/stata-align.test.cjs",
+      "bytes": 2004,
+      "sha256": "3feec8489ef66b32a398237362fbe29837b75786a3e74099547dc7c491c07b32"
+    },
+    {
       "path": "tests/stata-diff.test.cjs",
-      "bytes": 15519,
-      "sha256": "99715f5893d783ee0a94d8dab3ee18b4f53844789bdfb196a86b3438c05bba03"
+      "bytes": 19158,
+      "sha256": "87605b366bb45f1005caec3310f4713a6728d5a278510f8dc8c9d1445034aa91"
+    },
+    {
+      "path": "tests/stata-repeats.test.cjs",
+      "bytes": 5083,
+      "sha256": "cf271b0611884fb3de507a55e06868e65d38eff3300f083be8c0e334cc9e0bfb"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
@@ -1759,7 +1784,7 @@
       "path": ".codex-plugin/plugin.json",
       "kind": "json",
       "selector": "version",
-      "value": "0.5.0+codex.2026112501"
+      "value": "0.5.1+codex.2026112701"
     },
     {
       "id": "readme.heading",

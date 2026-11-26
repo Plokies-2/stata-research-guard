@@ -1,7 +1,7 @@
 {
   "name": "stata-research-guard",
   "displayName": "Stata Research Guard",
-  "version": "0.5.0+claude.2026112501",
+  "version": "0.5.1+claude.2026112701",
   "description": "AI-written Stata that reads like a careful coauthor wrote it: visible specifications, real command help, reviewed edits.",
   "author": {
     "name": "song7"

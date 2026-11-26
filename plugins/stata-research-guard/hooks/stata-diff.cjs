@@ -4,6 +4,9 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 const { createHash } = require("node:crypto");
+const { changedLineNumbers, findRepeats, formatFinding } = require("./stata-repeats.cjs");
+const { alignContinuations } = require("./stata-align.cjs");
+const alignScript = path.join(__dirname, "stata-align.cjs");
 
 // The full procedures live in stata-replication-workflow; hooks only point to them.
 const reviewLines = 50;
@@ -12,6 +15,8 @@ const reviewConfirmation = "수정 코드 주변과 관련 정의를 읽어 중�
 // Earlier releases asked for this wording; it still counts.
 const legacyConfirmation = `수정 코드 주변 ${reviewLines}줄을 읽어 중복 구현을 확인했다.`;
 const reviewRule = `Run the stata-replication-workflow edited-region review: read the whole file when it has ${wholeFileLines} lines or fewer, otherwise each changed region and the ${reviewLines} lines before and after it, plus where the macros and variables it uses are defined. Check whether existing code or a supported command already does the same work, such as a new global for what an existing global holds, a second collapse, or if/strpos() reclassifying a fixed list, and fix duplicates in scope. After the review, put this line on its own line in the final reply, followed by the ranges you read:\n${reviewConfirmation} (file.do 260-380행, controls 정의 12-18행)`;
+const maxRepeats = 20;
+const repeatRule = "Define each repeat once and reuse it, or say in the final reply why the copies differ. Outcome groups become one global; a value derived per iteration is computed once; model and output options stay in each command. Check again with node hooks/stata-repeats.cjs <file>.";
 const largeEditLines = 200;
 const reportRule = `Show a fenced diff block for each changed .do file, following the stata-replication-workflow final-reply rule. For an edit of ${largeEditLines} or more changed .do lines, write a line starting with \`diff 생략:\` instead. Newly created files need no diff.`;
 // The confirmation counts only with at least one line range after it.
@@ -44,6 +49,17 @@ function rememberedChanges(turnFile) {
 function patchLineCount(text) {
   const lines = String(text ?? "").split(/\r?\n/).filter((line) => /^[+-]/.test(line) && !/^(?:\+\+\+|---)( |$)/.test(line));
   return lines.length ? lines.length : null;
+}
+
+// Lines a patch adds, without the leading +. Repeats are reported only where these lines now sit.
+function patchAddedLines(text) {
+  return String(text ?? "").split(/\r?\n/).filter((line) => /^\+/.test(line) && !/^\+\+\+( |$)/.test(line)).map((line) => line.slice(1));
+}
+
+// A tool input as text, with escaped newlines restored so patch lines can be read.
+// Code Mode often passes the patch as a JavaScript string with \n escapes.
+function inputText(input) {
+  return (typeof input === "string" ? input : JSON.stringify(input ?? "")).replace(/\\n/g, "\n");
 }
 
 function readOptionalFile(file) {
@@ -84,6 +100,35 @@ function transcriptFiles(event) {
   return [];
 }
 
+// The current turn's start time and the tool-call inputs that name a .do file.
+function turnToolCalls(event) {
+  if (typeof event.transcript_path !== "string") return null;
+  const inputs = [];
+  for (const line of readOptionalFile(event.transcript_path).split("\n").reverse()) {
+    if (!line.includes('"task_started"') && !line.includes("_call")) continue;
+    let entry;
+    try {
+      entry = JSON.parse(line);
+    } catch {
+      continue;
+    }
+    const payload = entry?.payload ?? {};
+    if (payload.type === "task_started") {
+      return payload.turn_id === event.turn_id ? { startedAt: payload.started_at, inputs } : null;
+    }
+    const input = String(payload.input ?? payload.arguments ?? "");
+    if (entry.type === "response_item" && /_call$/.test(payload.type) && /\.do\b/i.test(input)) inputs.push(input);
+  }
+  return null;
+}
+
+// Shell and Code Mode commands leave no FileChange record, so a turn whose tool calls name a .do file
+// is checked by modification time against the turn's start.
+function turnShellEdits(calls, cwd) {
+  if (!calls || !calls.inputs.length || !calls.startedAt) return [];
+  return doFilesModifiedSince(calls.startedAt * 1000 - 2000, cwd, calls.inputs.join("\n"));
+}
+
 function successfulPatchFiles(response) {
   const content = Array.isArray(response) ? response : response?.content;
   const text = typeof response === "string" ? response
@@ -118,11 +163,14 @@ function handleCodex(event) {
     if (event.tool_name === "apply_patch" || (hasPatch && ["Bash", "exec_command"].includes(event.tool_name))) {
       const files = successfulPatchFiles(event.tool_response);
       // One patch can touch several files; its total is kept on the first so the sum stays right.
-      const total = patchLineCount(typeof event.tool_input === "string" ? event.tool_input : JSON.stringify(event.tool_input ?? "").replace(/\\n/g, "\n"));
+      const patch = inputText(event.tool_input);
+      const total = patchLineCount(patch);
+      const added = patchAddedLines(patch);
       changes = files.map((change, index) => ({ file: path.resolve(event.tool_cwd || cwd, change.file),
-        lines: index === 0 ? total : (total === null ? null : 0), created: change.created }));
+        lines: index === 0 ? total : (total === null ? null : 0), created: change.created, added }));
     } else if (event.tool_name === "exec" && hasPatch && firstPatch) {
-      changes = transcriptFiles(event).map((file) => ({ file: path.resolve(cwd, file), lines: null, created: false }));
+      // Code Mode patches are read from the transcript again at Stop, so only the files are kept here.
+      changes = transcriptFiles(event).map((file) => ({ file: path.resolve(cwd, file), lines: null, created: false, added: [] }));
     }
     changes = changes.filter((change) => isMaintainedDo(change.file, cwd));
     if (changes.length === 0) return {};
@@ -137,9 +185,16 @@ function handleCodex(event) {
   if (remembered.length) fs.rmSync(turnFile, { force: true });
   const draft = event.last_assistant_message;
   if (event.stop_hook_active || typeof draft !== "string") return {};
-  const changes = [...remembered, ...transcriptFiles(event).map((file) => ({ file, lines: null, created: false }))]
-    .map((change) => ({ ...change, file: path.resolve(cwd, change.file) }))
-    .filter((change) => isMaintainedDo(change.file, cwd));
+  const calls = turnToolCalls(event);
+  // Lines added by every patch in this turn, including patches sent from Code Mode.
+  const turnAdded = (calls?.inputs ?? []).filter((input) => /\bapply_patch\b/.test(input)).flatMap((input) => patchAddedLines(inputText(input)));
+  const recorded = [...remembered, ...transcriptFiles(event).map((file) => ({ file, lines: null, created: false, added: turnAdded }))]
+    .map((change) => ({ ...change, file: path.resolve(cwd, change.file) }));
+  const recordedFiles = new Set(recorded.map((change) => change.file));
+  // A shell edit carries no patch text, so its file is checked as a whole.
+  const shellEdits = turnShellEdits(calls, cwd).filter((file) => !recordedFiles.has(file))
+    .map((file) => ({ file, lines: null, created: false, added: null }));
+  const changes = [...recorded, ...shellEdits].filter((change) => isMaintainedDo(change.file, cwd));
   if (changes.length === 0) return {};
   return stopReview(draft, changes);
 }
@@ -154,11 +209,34 @@ function stopReview(draft, changes) {
       lines: previous && (previous.lines === null || change.lines === null) ? null : (previous?.lines ?? 0) + (change.lines ?? 0),
       known: (previous ? previous.known : true) && change.lines !== null && change.lines !== undefined,
       created: previous ? previous.created : Boolean(change.created),
+      // null means the edit text is unknown (a shell edit), so the whole file is checked.
+      added: (previous && previous.added === null) || !Array.isArray(change.added) ? null : [...(previous?.added ?? []), ...change.added],
     });
   }
   if (!lines.some(confirmedReview)) {
     const files = [...byFile.keys()].map((file) => `- ${file}`).join("\n");
     reasons.push(`Before ending, perform the missing duplicate-implementation review of these changed .do files:\n${files}\n\n${reviewRule}`);
+  }
+  const repeats = [...byFile].flatMap(([file, entry]) => {
+    const text = readOptionalFile(file);
+    const changed = entry.added === null ? null : changedLineNumbers(text, entry.added);
+    return findRepeats(text, changed).map((finding) => formatFinding(file, finding));
+  });
+  if (repeats.length) {
+    const shown = repeats.slice(0, maxRepeats).map((line) => `- ${line}`).join("\n");
+    const more = repeats.length > maxRepeats ? `\n- ... ${repeats.length - maxRepeats} more` : "";
+    reasons.push(`The changed .do files write the same code more than once:\n${shown}${more}\n\n${repeatRule}`);
+  }
+  // Only blocks the turn edited are aligned, so untouched code keeps its spacing.
+  const unaligned = [...byFile].flatMap(([file, entry]) => {
+    if (entry.added === null) return [];
+    const changed = [...changedLineNumbers(readOptionalFile(file), entry.added)];
+    if (!changed.length) return [];
+    const blocks = alignContinuations(readOptionalFile(file), changed.map((line) => [line, line])).changed;
+    return blocks.length ? [`node "${alignScript}" "${file}" --lines ${blocks.map(([from, to]) => `${from}-${to}`).join(",")}`] : [];
+  });
+  if (unaligned.length) {
+    reasons.push(`The /// markers of these edited commands are not in one column. Run the aligner, which changes only the spaces before ///, and show the result in the diff:\n${unaligned.join("\n")}`);
   }
   // Large edits omit diffs by rule; the reply says so on a line starting with "diff 생략:".
   // Omission counts only when the changed lines reach the threshold or could not be counted.
@@ -328,13 +406,15 @@ function claudeEditSize(event) {
   const lineCount = (text) => (typeof text === "string" && text.length ? text.split(/\r?\n/).length : 0);
   if (event.tool_name === "Write") {
     const created = event.tool_response?.type === "create";
-    return { lines: created ? lineCount(input.content) : null, created };
+    return { lines: created ? lineCount(input.content) : null, created,
+      added: typeof input.content === "string" ? input.content.split(/\r?\n/) : null };
   }
   const edits = event.tool_name === "MultiEdit" ? input.edits : [input];
   if (!Array.isArray(edits) || !edits.every((edit) => typeof edit?.old_string === "string" && typeof edit?.new_string === "string")) {
     return { lines: null, created: false };
   }
-  return { lines: edits.reduce((sum, edit) => sum + lineCount(edit.old_string) + lineCount(edit.new_string), 0), created: false };
+  return { lines: edits.reduce((sum, edit) => sum + lineCount(edit.old_string) + lineCount(edit.new_string), 0), created: false,
+    added: edits.flatMap((edit) => edit.new_string.split(/\r?\n/)) };
 }
 
 // Codex events carry a turn id; Claude Code events do not.

@@ -5,18 +5,18 @@ description: Write, revise, execute, and review readable Stata analysis from act
 
 # Stata Research Workflow
 
-**The highest implementation priority is for a researcher to read the code from top to bottom and see what actually runs.** Simplicity serves that goal. Take the lines needed to show the path from source data and sample construction to estimates and saved outputs. At each consequential command, show the actual inputs, conditions, and options in the command or immediately nearby. Keep an explicit step or specification when it makes that path easier to follow. Ignore line and character counts as measures of simplicity. Guard supplies evidence. The model and researcher make the research choices.
+**The highest implementation priority is for a researcher to read the code from top to bottom and see what actually runs.** Simplicity serves that goal. Take the lines needed to show the path from source data and sample construction to estimates and saved outputs. At each consequential command, show the actual inputs, conditions, and options in the command itself; only outcome groups come from globals named for their contents (`$financial`). Keep an explicit step or specification when it makes that path easier to follow. Ignore line and character counts as measures of simplicity. Guard supplies evidence. The model and researcher make the research choices.
 
 Protect source data and comparison baselines in the files themselves. Read existing results from saved data, estimates, and outputs. Write new runs to a separate destination when a baseline must be kept, and overwrite only authorized outputs. Keep historical execution paths out of the maintained analysis.
 
-For a concrete authoring choice, read the relevant comparison in [code-examples.md](references/code-examples.md): mechanical repetition versus distinct specifications, native predictions, result ownership and lifetime, or the scope of a local edit. These authored illustrations explain decisions; they are not paper excerpts, required templates, or substitutes for command help and actual paper reading. Skip them when the choice is already clear.
+For a concrete authoring choice, read the relevant comparison in [code-examples.md](references/code-examples.md): mechanical repetition versus distinct specifications, naming outcome groups as globals and reusing them, native predictions, result ownership and lifetime, or the scope of a local edit. These authored illustrations explain decisions; they are not paper excerpts, required templates, or substitutes for command help and actual paper reading. Skip them when the choice is already clear.
 
 ## Start with what changes
 
 Read the requested block and its direct caller or output before choosing further reading. Before writing code or adding settings, check whether the active tool's defaults, native capabilities and supported options already meet the request; use what suffices and implement only the unmet part, preserving explicit user choices and required project or template settings. Reuse visible evidence and resolve only the relevant uncertainty. A Stata filename alone does not require a Guard call. Once connectivity is established, do not turn an exempt follow-up into another connection-check or discovery call.
 
 - For comments, literal labels or spacing, unchanged path interfaces, verbatim relocation, or unchanged-file execution with no semantic issue, make the smallest patch and inspect the affected call or output. This includes display-string or spacing values inside an already-understood option when its syntax and statistical meaning stay unchanged. Preserve call order, macro scope, inputs and stored-result consumers when moving code. Do not load the full general rules, command evidence, paper workflows or peer-review procedure solely for this edit.
-- Use familiar basic control syntax directly: ordinary `foreach`/`forvalues`, block `if`/`else`, braces and local-macro expansion need no help lookup. A failed optional lookup does not ban them. When the variables or output names are known, write the list explicitly. Wrap it with `///` or give it a nearby descriptive name if that makes the command easier to read. Keep fixed groups beside their respective operations and use one shallow loop for genuinely common work. Use `if` for conditions that affect the analysis or depend on data or execution state. Look up a genuinely unresolved behavior and the material research-command interfaces inside the loop, following the boundary in [command-evidence.md](references/command-evidence.md).
+- Use familiar basic control syntax directly: ordinary `foreach`/`forvalues`, block `if`/`else`, braces and local-macro expansion need no help lookup. A failed optional lookup does not ban them. Name each outcome group once as a `global` (`$financial`) and use one shallow loop over it for genuinely common work; model and output arguments stay in each command (see the macro rules in [general-rules.md](references/general-rules.md)). Use `if` for conditions that affect the analysis or depend on data or execution state. Look up a genuinely unresolved behavior and the material research-command interfaces inside the loop, following the boundary in [command-evidence.md](references/command-evidence.md).
 - When research meaning or a command interface changes, identify the changed sample, specification, inference, statistic, option, returned result or consumer. Read [general-rules.md](references/general-rules.md) once per session: take it from the first Guard response when Guard is available, and read the file directly only when it is not. Do not read it again while it remains visible. Resolve research choices from the user's requirements and project evidence. Read command help only for the affected interface or an unresolved semantic question; a label describing a different statistic is not a cosmetic edit.
 - If a small edit reveals a real dependency or semantic problem, expand only to that problem. For display changes, reuse suitable stored results and inspect the affected export.
 
@@ -54,6 +54,8 @@ For a new or changed material command interface, confirm the relevant official o
 
 Use Guard for material command grammar and optional usage context. Frame the help question from the block's purpose and actual consumer. A known command goes directly to its help; discovery and expansion address a remaining question. The command-evidence reference owns lookup, exemptions, and reuse.
 
+When writing or revising a descriptive figure or table (trends, group means, shares, distributions, baseline statistics), read [descriptive-outputs.md](references/descriptive-outputs.md).
+
 For execution or result inspection, use [execution-and-results.md](references/execution-and-results.md). To inspect existing results, read the saved data, logs, estimates, tables or figures relevant to the request. Run the affected work when execution or reproduction is requested or when needed to update an authorized output. Reuse suitable stored estimates.
 
 For a needed run, use an available authorized Stata interface and inspect the affected outputs. If no route is available, continue supported authoring and source review and identify what remains unexecuted. Execution success does not establish research validity.
@@ -74,23 +76,26 @@ After the final edit to maintained `.do` files, locate each changed region in th
 - Look for overlapping responsibilities through the affected flow, from inputs to saved and displayed outputs. Follow directly connected producers and consumers outside the nearby lines when needed. Work can be redundant even when it uses different syntax, is split across commands or files, or sits before or after an existing step.
 - Name the concrete step that could be removed or reused and check that removing it preserves the required behavior: inputs, sample, group definitions, weights, missing values, execution order, state, side effects, and outputs. Separate operations are justified when they produce distinct required results, apply real conditions, or protect a meaningful invariant.
 - Scan the changed files for two common misses: a literal that repeats an existing global or local (a path, varlist or value), and a variable in a `keep`, `drop`, `if` or `missing()` condition that no later code uses, which shrinks the sample for nothing. Use the macro; drop the condition unless the restriction is a stated research choice.
+- Run `node hooks/stata-repeats.cjs <changed .do files>` from the plugin root (the Stop hook runs it where hooks are enabled). Define each listed repeat once and reuse it, or say in the final reply why the copies differ. It compares text only, so the checks above still cover repeats in different syntax.
+- Align the `///` markers of each edited command in one column with `node hooks/stata-align.cjs <file.do> --lines <edited ranges>`; the Stop hook names the command when an edited block is not aligned.
 - Fix duplicates within the requested scope and reread the affected ranges. Report what changed or any duplicate that remains. If a range cannot be read, report the range and reason instead of claiming completion.
 
-Most dirty code comes from two habits: an `if` where a plain list would do, and a hand-written step where existing code, data, or a Stata command already does the work. The groups below illustrate them; they are not a checklist, so react to any redundancy of the same kind. Simple does not mean few characters: a longer block that shows its inputs where they are used is simpler than a short one that hides them behind macros. Keeping an edit minimal limits its scope; it does not mean keeping duplicated logic inside the flow you are changing.
+Most dirty code comes from two habits: an `if` where a plain list would do, and a hand-written step where existing code, data, or a Stata command already does the work. The groups below illustrate them; they are not a checklist, so react to any redundancy of the same kind. Simple does not mean few characters: a block that shows its specification in each command is simpler than a short one that hides it behind macros. An outcome-group global like `$financial` reveals its members; macros for model or output arguments (`` `spec'_rhs ``, `$main_fe`, `$event_axes`) hide what the command does. Keeping an edit minimal limits its scope; it does not mean keeping duplicated logic inside the flow you are changing.
 
 ```stata
 * A. Rebuilding what already exists
-global controls2 "$controls ttl_exp"                    // extend $controls where it is defined
+global financial2 "$financial sales"                    // add the outcome to $financial where it is defined
 cap mkdir "$root/data/final"                            // $final already names it: cap mkdir "$final"
 collapse (mean) `careers', by(bmo_rule female)
 collapse (mean) `careers', by(female)                   // graph bar (mean) ..., over(female) already averages
 gen byte cert_list = year >= list_start if !missing(cert)   // rename the column in the saved data and load it
 use "panel_v2.dta", clear                               // each do-file reads its own variant; use one combined panel
+summarize roa roe tobin_q                               // the group already has a name: summarize $financial
 
 * B. Branching where a list or a block would do
 foreach v of varlist ln_* {
     if strpos("`v'", "emp") | strpos("`v'", "pay") local use wins_`v'
-}                                                       // local winsorized wins_ln_emp_num wins_ln_pay_real ...
+}                                                       // global employment wins_ln_emp_num ...; foreach v of global employment
 foreach y in out_share ev_share {
     if "`y'" == "out_share" { ... }                     // different inputs and denominators: one block each
 }
@@ -101,6 +106,7 @@ if `a' { if `b' { if `c' { ... } } }                    // keep nesting shallow;
 
 * C. Machinery nobody needs
 set varabbrev off                                       // drop settings that do not change the result
+quietly estpost summarize $financial                    // never quietly: let the output reach the log
 keep if !missing(ln_wage, age, collgrad)                // collgrad is never used later: it only drops observations
 gen double a = x * w
 gen double b = a / total                                // gen double share = 100 * x * w / total
@@ -108,17 +114,17 @@ gen double b = a / total                                // gen double share = 10
 graph export "fig_unused.pdf"                           // outputs the canonical paper no longer uses: delete their code
 
 * D. Mixing stages
-foreach y of local outcomes {
+foreach y of global financial {
     reghdfe `y' treat, absorb(firm year) vce(cluster firm)
     outreg2 using tmp.txt, replace                      // save .ster here; build tables in another do-file
 }
 
 * E. Doing by hand what Stata does
-foreach v of local vars {
+foreach v of global pay {
     preserve
     collapse (mean) `v', by(group)
     restore
-}                                                       // one collapse (mean) `vars', by(group)
+}                                                       // one collapse (mean) $pay, by(group)
 forvalues g = 1/50 {
     summarize y if group == `g', meanonly
     replace group_mean = r(mean) if group == `g'
@@ -127,8 +133,20 @@ gen byte region = 0
 replace region = 1 if inlist(state, 1, 2, 3)            // recode state (1/3 = 1) (4/5 = 2) (else = 0), gen(region)
 merge m:1 id using "firm.dta"
 keep if _merge == 3                                     // merge m:1 id using "firm.dta", assert(match master) keep(match)
+local step = 10^floor(log10(`span' / 4))               // hand-built tick spacing: yscale(range(`lo' `hi')) ylabel(#5) picks nice values
 capture drop x                                          // use capture only where failure is expected; let errors stop the run
 merge m:m id using "x.dta"                              // fix the key or use joinby
+
+* F. Outcome groups without one memorable global, and specifications moved out of the command
+local event_axis_vars_emp_n "emp_num_m emp_num_f"      // a figure-only name for part of $employment: use $employment
+local outcomes1 "roa roe tobin_q"                       // numbered names hide members: global financial roa roe tobin_q
+local y_list "$financial"                               // a second name for a global: use $financial itself
+global main_fe "firm year industry#year"
+reghdfe `y' treat, absorb($main_fe) vce(cluster firm)    // the reader must see the FE here: absorb(firm year industry#year)
+global event_axes "xlabel(1 "2015" 2 "2016") xscale(range(.5 2.5))"
+coefplot m_`y', keep($event_coefficients) $event_axes   // write keep(...) and the axis options in the coefplot command
+local base = subinstr("`y'", "wins_", "", 1)            // computed again in each later loop: compute once per outcome and reuse
+estimates store m_`y'                                   // m_ pushes long outcomes past 27 characters: estimates store `y', or save `y'.ster
 ```
 
 Only after reading the ranges, put this line on its own in the final reply, followed by the ranges you actually read, by file and line: `수정 코드 주변과 관련 정의를 읽어 중복 구현을 확인했다. (build_analysis_panel.do 260-380행, controls 정의 12-18행)`
