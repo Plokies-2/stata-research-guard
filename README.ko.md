@@ -26,6 +26,7 @@
 <p align="center">
   <a href="#1분-설치">설치</a> ·
   <a href="#guard-사용-전후">Guard 사용 전후</a> ·
+  <a href="#모든-수정은-diff로-한-줄씩-검사받고-돌아옵니다">diff와 검사</a> ·
   <a href="#guard가-지키는-것">지키는 것</a> ·
   <a href="#써-보기">사용 예시</a> ·
   <a href="#문서">문서</a> ·
@@ -36,7 +37,7 @@
 
 ## 왜 필요한가
 
-AI 코딩 에이전트가 쓴 Stata는 *돌아갑니다*. 하지만 연구자가 확인하고, 고치고, 재현 담당자에게 넘길 수 있는 코드와는 다릅니다. 그냥 두면 에이전트는 흔히 이렇게 씁니다.
+AI 코딩 에이전트가 쓴 Stata는 *돌아는 갑니다*. 하지만 연구자가 확인하고, 고치고, 재현 담당자에게 넘길 수 있는 코드와는 다릅니다. 그냥 두면 에이전트는 흔히 이렇게 씁니다.
 
 - 통제변수를 회귀문에서 멀리 떨어진 숫자 붙은 `local`에 숨겨, 모형 `m3`가 실제로 무엇인지 보이지 않게 합니다.
 - `etable`, `esttab`, `collect`가 이미 해 주는 표를 `putexcel`로 셀마다 다시 조립합니다.
@@ -73,7 +74,7 @@ codex plugin add stata-research-guard@stata-research-guard-team
 
 Windows에서는 일반 PowerShell 터미널에서 설치하세요. Codex 기본 사용자 폴더(`%USERPROFILE%\.codex`)를 쓰고, `CODEX_HOME`을 따로 지정했다면 캐시 활성화와 경로 길이 오류를 피하도록 동기화 폴더 밖의 짧은 로컬 경로를 고르세요. 이 명령은 [Codex CLI 공식 문서](https://learn.chatgpt.com/docs/developer-commands#codex-plugin-marketplace)를 따릅니다.
 
-검토와 diff 알림을 켜려면 **Settings → Hooks** 또는 CLI의 `/hooks`에서 플러그인의 `PreToolUse`, `PostToolUse`, `Stop` 훅을 검토하고 신뢰하세요. Codex가 플러그인 업데이트를 알리면 다시 검토하세요. 0.5.0 업데이트도 여기에 해당하며, Claude Code에서 쓰는 `PreToolUse` 항목이 추가됐습니다. Codex에서 이 항목은 아무것도 반환하지 않습니다. [Codex 훅 신뢰](https://learn.chatgpt.com/docs/hooks#review-and-trust-hooks)
+검토와 diff 알림을 켜려면 **Settings → Hooks** 또는 CLI의 `/hooks`에서 플러그인의 `PreToolUse`, `PostToolUse`, `Stop` 훅을 검토하고 신뢰하세요. 플러그인을 갱신할 때마다 다시 신뢰하세요. 훅 파일이 바뀌어도 Codex는 경고하지 않고, 다시 신뢰할 때까지 훅을 건너뜁니다. 편집 뒤 훅 안내가 오지 않으면 에이전트가 그 사실을 알리고 검사를 직접 돌립니다. `PreToolUse` 항목은 Claude Code에서 쓰며, Codex에서는 아무것도 반환하지 않습니다. [Codex 훅 신뢰](https://learn.chatgpt.com/docs/hooks#review-and-trust-hooks)
 
 플러그인을 업데이트한 뒤에는 Codex를 새로 고치고 새 작업에서 도구를 호출하세요. 그래도 연결되지 않으면 앱 시작 로그를 확인하고 재시작한 뒤 다시 시도하세요.
 
@@ -269,14 +270,61 @@ Stata 18에서 실행을 확인했습니다. 공개본은 원본과 출력 경�
 
 </details>
 
+## 모든 수정은 diff로, 한 줄씩 검사받고 돌아옵니다
+
+에이전트가 `.do` 파일을 고치면, 답변이 오기 전에 `Stop` 훅이 바뀐 줄을 읽습니다. 연구 판단은 하지 않고, 꼼꼼한 공저자라면 남기지 않을 코드를 짚습니다. 아래는 이벤트 스터디 반복문의 첫 초안입니다. 고정효과를 `$main_fe`로 빼고, 회귀를 `quietly`로 감싸고, 같은 저장 이름을 두 반복문에서 다시 계산하고, 추정치를 메모리에만 두고, `///`를 들쭉날쭉하게 남겼습니다. 훅이 돌려보낸 내용을 경로만 줄여 그대로 옮깁니다.
+
+```text
+Lines to fix in the changed .do files:
+- event_study.do lines 6, 10: repeated expression: subinstr("`y'", "wins_", "", 1)
+- event_study.do lines 5: quietly hides log output: quietly reghdfe `y' ib2019.year##i.treated, absorb($main_fe) vce(cluster firm)
+- event_study.do lines 5: model argument hidden in a global: write it in the command: quietly reghdfe `y' ...
+- event_study.do lines 5: estimates kept only in memory: add estimates save after each model: quietly reghdfe `y' ...
+
+The /// markers of these edited commands are not in one column. Run the aligner, which changes only the spaces before ///:
+node hooks/stata-align.cjs event_study.do --lines 11-12
+```
+
+그리고 최종 답변입니다. 바뀐 부분만 담은 diff와 줄 수, 에이전트가 다시 읽은 범위로 끝납니다.
+
+```diff
+ global outcomes "roa roe leverage"
+-global main_fe "firm year industry#year"
+ 
+ foreach y of global outcomes {
+-    quietly reghdfe `y' ib2019.year##i.treated, absorb($main_fe) vce(cluster firm)
+-    local name = subinstr("`y'", "wins_", "", 1)
+-    estimates store `name'
++    reghdfe `y' ib2019.year##i.treated, absorb(firm year industry#year) vce(cluster firm)
++    estimates save "$ster_dir/event_`y'.ster", replace
++    estimates store `y'
+ }
+ foreach y of global outcomes {
+-    local name = subinstr("`y'", "wins_", "", 1)
+-    coefplot `name', keep(2017.year#1.treated 2018.year#1.treated) ///
+-        vertical yline(0) ///
++    coefplot `y', keep(2017.year#1.treated 2018.year#1.treated) ///
++        vertical yline(0)                                       ///
+         xtitle("Year")
+-    graph export "event_`name'.pdf", replace
++    graph export "event_`y'.pdf", replace
+ }
+```
+
+event_study.do: +6 -8 (net -2)
+
+> 수정 코드 주변과 관련 정의를 읽어 중복 구현을 확인했다. (event_study.do 1-13행)
+
+고친 파일로 다시 돌리면 훅은 아무것도 돌려주지 않습니다. 위 두 출력은 배포된 훅을 이 짧은 예제에 실제로 돌린 결과이고, 정렬 도구는 `///` 앞의 공백만 바꿨습니다. 훅은 이번 턴에 고친 줄만 보므로, 건드리지 않은 예전 코드에는 조용합니다.
+
 ## Guard가 지키는 것
 
 | | 얻는 것 |
 | --- | --- |
 | 🔍 **수정 구간 검토** | 최종 수정 뒤 에이전트가 300줄 이하 파일은 전체를, 더 긴 파일은 각 변경 구간과 앞뒤 50줄을 다시 읽고, 그 구간에서 쓰는 매크로와 변수가 정의된 곳도 찾아 읽습니다. 기존 전역변수에 넣으면 될 목록을 새 전역변수로 만들거나 `collapse`를 두 번 하는 것처럼 이미 같은 일을 하는 코드가 있는지 보고, 읽은 줄 범위를 적은 확인 문장으로 답을 마칩니다. 그 문장이 없으면 `Stop` 훅이 한 번 더 검토하게 합니다. [자세히](plugins/stata-research-guard/README.md#설치와-개발) |
-| 🔁 **반복 탐지기** | `hooks/stata-repeats.cjs`가 바뀐 `.do`에서 두 번 이상 적힌 코드를 찾습니다. 같은 식으로 다시 계산한 값(`local base = subinstr(...)` 등), 같은 순서로 반복되는 명령, 다른 매크로와 겹치거나 리터럴로 다시 적힌 매크로 값이 대상입니다. 추정이나 그림 명령마다 반복되는 `absorb()`, `vce()`, `keep()`, 축 옵션은 각 명령에 있어야 하므로 잡지 않습니다. 반복문 항목을 `if`나 문자열 일치로 묶음과 대조하는 분기도 찾습니다. `Stop` 훅이 이번 턴에 고친 줄과 관계된 것만 줄 번호와 함께 돌려주면, 에이전트는 반복마다 한 번 정의해 재사용하거나 따로 둬야 하는 이유를 적습니다. `hooks/stata-align.cjs`는 고친 명령의 `///`를 한 열로 맞추며, `///` 앞의 공백만 바꿉니다. Codex에서는 셸이나 Code Mode 명령으로 다시 쓴 `.do` 파일도 찾습니다. |
+| 🔁 **줄 단위 검사** | 이번 턴에 고친 줄에서 `hooks/stata-repeats.cjs`가 두 번 계산한 값, 반복되는 명령, 다시 적거나 이름만 바꾼 결과변수 목록, `if`로 묶음 소속을 확인하는 분기, `quietly`, global로 뺀 고정효과나 군집, `estimates save` 없이 표나 그림에 쓰는 추정 결과, `e(b)`/`e(V)`를 행렬로 옮긴 저장 결과, 반복문 변수로 이름을 만든 매크로, `use` 안에서 고른 표본, `merge m:m`, `keep if _merge == 3`, 패키지 확인 명령, 너무 깊은 반복문과 `if` 블록을 짚습니다. `hooks/stata-align.cjs`는 `///` 앞의 공백만 바꿔 한 열로 맞춥니다. 명령마다 반복되는 게 맞는 옵션은 건드리지 않습니다. [실제 모습 보기](#모든-수정은-diff로-한-줄씩-검사받고-돌아옵니다) |
 | 🏷️ **이름 붙인 global을 끝까지 이어 쓰기 (작성자 취향)** | 결과변수 묶음마다 내용을 드러내는 이름의 `global` 하나를 둡니다(`$employment`, `$pay`, `$financial`). 맨 위에서 한 번 정의하고 추정, 기초통계, 그림, 표에서 계속 불러 쓰므로, 정의를 찾아 위로 올라가지 않아도 이름만 보고 내용을 짐작할 수 있습니다. 통제변수, `absorb()` 고정효과, `vce()`, 표본 조건, `keep()` 범위, 축 옵션처럼 모형과 산출물을 만드는 인자는 각 명령에 그대로 적어, `reghdfe`나 `coefplot`만 봐도 핵심 구현을 알 수 있게 합니다. `local`은 반복문 변수, 반복마다 계산하는 값, tempfile, 보관할 반환 결과에만 씁니다. 작성자의 선호이니 입맛에 맞게 바꿔 쓰세요. [general-rules.md](plugins/stata-research-guard/skills/stata-replication-workflow/references/general-rules.md)의 `Globals for outcome groups`, `Keep what a command does inside the command` 규칙과 [SKILL.md](plugins/stata-research-guard/skills/stata-replication-workflow/SKILL.md), [code-examples.md](plugins/stata-research-guard/skills/stata-replication-workflow/references/code-examples.md)의 관련 예시를 고치면 됩니다. |
-| 🧾 **확인할 수 있는 diff** | 답변마다 유지 대상 `.do`의 파일별 전후 diff를 보여줍니다. 200줄 이상 바꾼 수정이나 작업 흐름 전체 개편은 `diff 생략:` 줄에 생략을 밝히고 변경 사항을 링크합니다. 훅이 수정을 추적해 빠진 diff를 잡아냅니다. |
+| 🧾 **확인할 수 있는 diff** | 답변마다 유지 대상 `.do`의 파일별 전후 diff를 보여줍니다. 200줄 이상 바꾼 수정이나 작업 흐름 전체 개편은 `diff 생략:` 줄에 생략을 밝히고 변경 사항을 링크합니다. diff마다 `+추가 -삭제 (net N)` 줄 수를 붙이고, 훅이 수정을 추적해 빠진 diff와 틀린 줄 수를 잡아냅니다. |
 | 📚 **Guard MCP: 실제 명령 근거** | `get_stata_command_evidence`가 Stata로 렌더링한 공식·maintainer 도움말, Stata 18 매뉴얼 확장 항목, 출판 논문의 원본 코드 블록을 돌려줍니다. 옵션과 저장 결과를 기억이 아니라 원문에서 가져옵니다. |
 | 🗂️ **AEA 재현 패키지에서 가져온 프로젝트 구성** | 프로젝트를 새로 시작하거나 전체를 재구성할 때, AEA 재현 패키지에서 뽑은 네 가지 구성(번호 붙은 단계, build/analysis, 표·그림마다 파일 하나, 중첩 master) 중 두세 가지를 제안하고 하나를 추천한 뒤, 파일을 만들기 전에 사용자가 고르게 합니다. |
 | 🧑‍🔬 **독립 동료 검토** | `stata-peer-audit`가 별도의 읽기 전용 문맥에서 동료처럼 코드와 결과를 읽고, 파일을 고치지 않은 채 구체적인 파일·줄 단위 지적을 돌려줍니다. |

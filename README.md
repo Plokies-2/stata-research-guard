@@ -26,6 +26,7 @@
 <p align="center">
   <a href="#install-in-one-minute">Install</a> ·
   <a href="#see-the-difference">Before and after</a> ·
+  <a href="#every-edit-comes-back-as-a-diff-checked-line-by-line">Diffs and checks</a> ·
   <a href="#what-it-guards">What it guards</a> ·
   <a href="#try-it">Example requests</a> ·
   <a href="#documentation">Docs</a> ·
@@ -73,7 +74,7 @@ codex plugin add stata-research-guard@stata-research-guard-team
 
 On Windows, run installation in a regular PowerShell terminal. Use Codex's default user directory (`%USERPROFILE%\.codex`); if you set `CODEX_HOME` separately, choose a short local path outside synced folders to avoid cache-activation and path-length errors. These commands follow the [official Codex CLI documentation](https://learn.chatgpt.com/docs/developer-commands#codex-plugin-marketplace).
 
-To enable the review and diff reminders, review and trust the plugin's `PreToolUse`, `PostToolUse`, and `Stop` hooks in **Settings → Hooks** or with `/hooks` in the CLI. Review them again when Codex flags a plugin update, including the 0.5.0 update, which adds the `PreToolUse` entry used by Claude Code; in Codex that entry returns nothing. [Codex hook trust](https://learn.chatgpt.com/docs/hooks#review-and-trust-hooks)
+To enable the review and diff reminders, review and trust the plugin's `PreToolUse`, `PostToolUse`, and `Stop` hooks in **Settings → Hooks** or with `/hooks` in the CLI. Trust them again after every plugin update: Codex does not warn when the hook files change, it skips them until they are trusted again. If an edit brings no hook reminder, the agent says so and runs the checks itself. The `PreToolUse` entry is used by Claude Code; in Codex it returns nothing. [Codex hook trust](https://learn.chatgpt.com/docs/hooks#review-and-trust-hooks)
 
 After updating the plugin, refresh Codex and call the tool in a new task. If the connection still fails, inspect app startup logs and retry after a restart.
 
@@ -269,14 +270,61 @@ Execution was checked with Stata 18. The published scripts differ from the origi
 
 </details>
 
+## Every edit comes back as a diff, checked line by line
+
+When the agent edits a `.do` file, a `Stop` hook reads the lines it changed before the reply reaches you. It does not judge your research; it points at code a careful coauthor would not leave behind. Here the agent's first draft of an event-study loop moved the fixed effects into `$main_fe`, wrapped the regression in `quietly`, computed the same stored-estimate name in two loops, kept the estimates only in memory, and left the `///` markers ragged. This is what the hook sent back, unedited except for shortened paths:
+
+```text
+Lines to fix in the changed .do files:
+- event_study.do lines 6, 10: repeated expression: subinstr("`y'", "wins_", "", 1)
+- event_study.do lines 5: quietly hides log output: quietly reghdfe `y' ib2019.year##i.treated, absorb($main_fe) vce(cluster firm)
+- event_study.do lines 5: model argument hidden in a global: write it in the command: quietly reghdfe `y' ...
+- event_study.do lines 5: estimates kept only in memory: add estimates save after each model: quietly reghdfe `y' ...
+
+The /// markers of these edited commands are not in one column. Run the aligner, which changes only the spaces before ///:
+node hooks/stata-align.cjs event_study.do --lines 11-12
+```
+
+And this is the final reply: a diff of exactly what changed, its line count, and the ranges the agent reread.
+
+```diff
+ global outcomes "roa roe leverage"
+-global main_fe "firm year industry#year"
+ 
+ foreach y of global outcomes {
+-    quietly reghdfe `y' ib2019.year##i.treated, absorb($main_fe) vce(cluster firm)
+-    local name = subinstr("`y'", "wins_", "", 1)
+-    estimates store `name'
++    reghdfe `y' ib2019.year##i.treated, absorb(firm year industry#year) vce(cluster firm)
++    estimates save "$ster_dir/event_`y'.ster", replace
++    estimates store `y'
+ }
+ foreach y of global outcomes {
+-    local name = subinstr("`y'", "wins_", "", 1)
+-    coefplot `name', keep(2017.year#1.treated 2018.year#1.treated) ///
+-        vertical yline(0) ///
++    coefplot `y', keep(2017.year#1.treated 2018.year#1.treated) ///
++        vertical yline(0)                                       ///
+         xtitle("Year")
+-    graph export "event_`name'.pdf", replace
++    graph export "event_`y'.pdf", replace
+ }
+```
+
+event_study.do: +6 -8 (net -2)
+
+> 수정 코드 주변과 관련 정의를 읽어 중복 구현을 확인했다. (event_study.do 1-13행)
+
+Run on the fixed file, the hook returns nothing. Both outputs above come from running the shipped hooks on this short example; the aligner changed only the spaces before `///`. The hook reports only lines edited in the current turn, so old code you did not touch stays quiet.
+
 ## What it guards
 
 | | What you get |
 | --- | --- |
 | 🔍 **Edited-region review** | After the final edit, the agent rereads the whole file (300 lines or fewer) or each changed region with 50 lines on either side, plus where the macros and variables used there are defined. It looks for code that already does the same work, such as a new global for what an existing global holds or a second `collapse`, and ends with a line listing the ranges it read. If that line is missing, a `Stop` hook sends it back for one more pass. [Details](plugins/stata-research-guard/README.md#설치와-개발) |
-| 🔁 **Repeat detector** | `hooks/stata-repeats.cjs` lists what a changed `.do` writes more than once: a value computed again with the same expression (such as `local base = subinstr(...)`), the same run of commands, or a macro value that repeats another macro or is retyped as a literal. Options repeated across estimation or figure commands (`absorb()`, `vce()`, `keep()`, axes) are not listed; they stay in each command. It also flags loop items checked against a group with `if` or a string match. The `Stop` hook hands back only findings on lines edited in the turn, with line numbers; the agent defines each repeat once or says why the copies differ. `hooks/stata-align.cjs` lines up the `///` markers of each edited command in one column, changing only the spaces before `///`. In Codex it also catches `.do` files rewritten by shell or Code Mode commands. |
+| 🔁 **Line-level checks** | On lines edited in the turn, `hooks/stata-repeats.cjs` flags values computed twice, repeated command runs, retyped or renamed outcome lists, `if` lookups of group membership, `quietly`, fixed effects or clustering moved into globals, models kept for tables or figures without `estimates save`, saved models copied into `e(b)`/`e(V)` matrices, macros named from a loop item, samples chosen inside `use`, `merge m:m`, `keep if _merge == 3`, package probes, and loops or `if` blocks nested too deep. `hooks/stata-align.cjs` lines up `///` markers by changing only the spaces before them. Options that legitimately repeat across commands are left alone. [See it in action](#every-edit-comes-back-as-a-diff-checked-line-by-line) |
 | 🏷️ **Named globals, reused throughout (house style)** | Each outcome group gets one `global` named for what it holds (`$employment`, `$pay`, `$financial`), defined once at the top and reused wherever the group is estimated, summarized, plotted, or tabulated, so the name tells you what is inside without scrolling up. The arguments that build the model and the output (controls, `absorb()` fixed effects, `vce()`, sample conditions, `keep()` ranges, axis options) stay written in each command, so reading `reghdfe` or `coefplot` shows the core implementation. Locals are kept for loop iterators, per-iteration values, tempfiles, and saved returned results. This is the author's preference; change it to your taste in the `Globals for outcome groups` and `Keep what a command does inside the command` rules of [general-rules.md](plugins/stata-research-guard/skills/stata-replication-workflow/references/general-rules.md) and the matching examples in [SKILL.md](plugins/stata-research-guard/skills/stata-replication-workflow/SKILL.md) and [code-examples.md](plugins/stata-research-guard/skills/stata-replication-workflow/references/code-examples.md). |
-| 🧾 **Diffs you can check** | Each reply shows file-by-file before/after diffs for maintained `.do` files. Edits of 200+ changed lines or whole-workflow overhauls state the omission on a `diff 생략:` line and link the changes instead. Hooks track the edits so a missing diff gets flagged. |
+| 🧾 **Diffs you can check** | Each reply shows file-by-file before/after diffs for maintained `.do` files. Edits of 200+ changed lines or whole-workflow overhauls state the omission on a `diff 생략:` line and link the changes instead. Each diff carries its `+added -removed (net N)` line count; hooks track the edits so a missing diff or a wrong count gets flagged. |
 | 📚 **Guard MCP: real command evidence** | `get_stata_command_evidence` returns Stata-rendered official and maintainer help, expanded Stata 18 manual entries, and original code blocks from published papers, so options and stored results come from the source, not from memory. |
 | 🗂️ **Project layouts from AEA replication packages** | When you start or restructure a whole project, the agent offers two or three of four layouts drawn from AEA replication packages (numbered stages, build/analysis, one file per exhibit, nested masters), recommends one, and lets you choose before creating files. |
 | 🧑‍🔬 **Independent peer review** | `stata-peer-audit` reads your code and results in a separate, read-only context, like a colleague, and returns concrete file/line findings without editing anything. |

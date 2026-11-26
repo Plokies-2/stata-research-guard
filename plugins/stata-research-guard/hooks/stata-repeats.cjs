@@ -2,7 +2,11 @@
 
 // Finds text that a .do file writes more than once: a value computed again with the same expression,
 // runs of identical commands, and macro values that repeat another macro or appear again as literals.
-// It also lists loops that look up an item's group with if or a string match instead of looping over the group.
+// It also lists loops that look up an item's group with if or a string match instead of looping over the group,
+// commands run under quietly, patterns the general rules forbid (model arguments in globals, merge m:m,
+// keep if _merge == 3, installation probes, if inside a variable-list global), a third nested loop,
+// an if block nested inside another, models kept for output without estimates save, a sample chosen inside use,
+// macros named from a loop item, and saved models copied into matrices.
 // Options repeated across estimation or output commands are left alone: they belong in each command.
 // It reports locations only; whether to share one definition is the author's call.
 
@@ -148,10 +152,72 @@ function membershipBranches(lines) {
     .map(({ line, text }) => ({ kind: "membership looked up with if", text, lines: [line] }));
 }
 
+// quietly hides estimation and summary output from the log.
+function quietlyCommands(lines) {
+  return lines.filter(({ text }) => /^(?:qui|quie|quiet|quietl|quietly)\b/.test(text))
+    .map(({ line, text }) => ({ kind: "quietly hides log output", text, lines: [line] }));
+}
+
+// Patterns the general rules forbid outright, each recognizable from one command.
+const forbidden = [
+  [/\b(?:absorb|a|vce|relocate)\(\s*\$\w+/, "model argument hidden in a global: write it in the command"],
+  [/\bmerge\s+m:m\b/, "merge m:m: fix the key or use joinby"],
+  [/^keep\s+if\s+_merge\s*==\s*3\b/, "keep if _merge == 3: use merge's keep(match) and assert()"],
+  [/^(?:(?:cap|capt|captu|captur|capture|qui\w*|noi\w*)\s+)*(?:which|findfile|confirm\s+command|ado\s+dir)\b/, "installation probe: do not test for packages"],
+  [/^(?:global|gl)\s+\w+\s+.*\bif\b/, "sample condition hidden in a variable-list global"],
+  [/^use\b.*\bif\b.*\busing\b/, "sample chosen inside use: use the file, then keep if and keep"],
+  [/^(?:local|loc|global|gl)\s+[\w`']*`\w+'/, "macro named from a loop item: compute the value where it is used, name files by the variable"],
+  [/^mat(?:r|ri|rix)?\s+[\w`']+\s*=\s*e\((?:b|V)\)/, "saved model copied into a matrix: estimates use, then estimates store for a combined output"],];
+
+// One finding per pattern, listing every line where it appears.
+function forbiddenCommands(lines) {
+  return forbidden.flatMap(([pattern, kind]) => {
+    const hits = lines.filter(({ text }) => pattern.test(text));
+    return hits.length ? [{ kind, text: hits[0].text, lines: hits.map(({ line }) => line) }] : [];
+  });
+}
+
+// Stata blocks open with { at the end of a command and close with } on its own line.
+// Reports a third nested loop and an if block opened inside another if block.
+function deepNesting(lines) {
+  const findings = [];
+  const stack = [];
+  for (const { line, text } of lines) {
+    if (/^\}/.test(text)) stack.pop();
+    if (!/\{$/.test(text)) continue;
+    // Prefixes such as quietly or capture do not change what the block is.
+    const command = text.replace(/^(?:(?:qui\w*|cap\w*|noi\w*)\s+)+/, "");
+    const kind = /^(?:foreach|forvalues|forval|while)\b/.test(command) ? "loop" : /^(?:if|else)\b/.test(command) ? "if" : "other";
+    if (kind === "loop" && stack.filter((block) => block === "loop").length === 2) {
+      findings.push({ kind: "third nested loop", text, lines: [line] });
+    }
+    if (kind === "if" && stack.includes("if")) findings.push({ kind: "if block nested inside another if block", text, lines: [line] });
+    stack.push(kind);
+  }
+  return findings;
+}
+
+// Models whose results are kept for a table or figure but never written to a .ster file.
+const prefixes = String.raw`^(?:(?:cap\w*|qui\w*|noi\w*|xi|svy|by\w*\s[^:]*|eststo(?:\s+\w+)?)\s*:?\s+)*`;
+const estimation = new RegExp(prefixes + String.raw`(?:reg|regr|regre|regres|regress|reghdfe|areg|xtreg|ivreg2|ivregress|ivreghdfe|` +
+  String.raw`logit|logistic|probit|mlogit|ologit|oprobit|tobit|poisson|nbreg|ppmlhdfe|qreg|xtlogit|xtprobit|xtpoisson|` +
+  String.raw`didregress|xtdidregress|csdid|jwdid|sdid|rdrobust)\b`);
+const keepsResults = /^(?:est\w*\s+sto\w*|eststo|esttab|estout|outreg2?|coefplot|etable|collect)\b/;
+const savesResults = /^(?:(?:qui\w*|cap\w*|noi\w*)\s+)*est\w*\s+sav\w*\b/;
+
+function unsavedEstimates(lines) {
+  if (lines.some(({ text }) => savesResults.test(text)) || !lines.some(({ text }) => keepsResults.test(text))) return [];
+  const fitted = lines.filter(({ text }) => estimation.test(text));
+  return fitted.length ? [{ kind: "estimates kept only in memory: add estimates save after each model",
+    text: fitted[0].text, lines: fitted.map(({ line }) => line) }] : [];
+}
+
 // changed: physical line numbers edited in this turn, or null to report every finding.
 function findRepeats(text, changed = null) {
   const lines = logicalLines(text);
-  const findings = [...repeatedGroups(lines), ...repeatedRuns(lines), ...repeatedMacroValues(lines), ...membershipBranches(lines)];
+  const findings = [...repeatedGroups(lines), ...repeatedRuns(lines), ...repeatedMacroValues(lines),
+    ...membershipBranches(lines), ...quietlyCommands(lines), ...forbiddenCommands(lines), ...deepNesting(lines),
+    ...unsavedEstimates(lines)];
   if (!changed) return findings;
   const endOf = new Map(lines.map(({ line, end }) => [line, end]));
   const touched = (from, to) => [...changed].some((line) => line >= from && line <= to);

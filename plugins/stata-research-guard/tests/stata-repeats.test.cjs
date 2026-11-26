@@ -2,7 +2,11 @@
 
 const assert = require("node:assert/strict");
 const test = require("node:test");
-const { changedLineNumbers, findRepeats, logicalLines } = require("../hooks/stata-repeats.cjs");
+const { changedLineNumbers, findRepeats: findAll, logicalLines } = require("../hooks/stata-repeats.cjs");
+
+const unsaved = "estimates kept only in memory: add estimates save after each model";
+// Most fixtures fit models without saving them; that check has its own test below.
+const findRepeats = (...args) => findAll(...args).filter((finding) => finding.kind !== unsaved);
 
 // Repeats a user found by hand in an event-study do-file.
 const eventStudy = String.raw`local event_axis_vars_emp_n "emp_num_m emp_num_f gender_emp_gap"
@@ -42,7 +46,7 @@ test("comments, a single loop body and macro reuse are not repeats", () => {
 global event_fe fid year industry_id2019#year region_id2019#year
 /* absorb(fid year industry_id2019#year region_id2019#year) */
 foreach y in roa roe {
-    reghdfe ${"`"}y' treat, absorb($event_fe) vce(cluster fid) // absorb(fid year industry_id2019#year region_id2019#year)
+    reghdfe ${"`"}y' treat, absorb(fid year) vce(cluster fid) // absorb(fid year industry_id2019#year region_id2019#year)
     coefplot, keep($event_coefficients_for_figures)
     coefplot, keep($event_coefficients_for_figures)
 }
@@ -86,6 +90,85 @@ if "${"`"}sample'" == "kospi" keep if market == 1
 `;
   const findings = findRepeats(text).filter((finding) => finding.kind === "membership looked up with if");
   assert.deepEqual(findings.map((finding) => finding.lines), [[2], [4]]);
+});
+
+test("commands and blocks under quietly are reported", () => {
+  const text = "quietly regress y x\nqui {\n    summarize y\n}\nregress y x\ncapture quietly drop z\n";
+  assert.deepEqual(findRepeats(text).filter((finding) => finding.kind === "quietly hides log output")
+    .map((finding) => finding.lines), [[1], [2]]);
+});
+
+test("patterns the rules forbid are reported, and allowed look-alikes are not", () => {
+  const text = String.raw`reghdfe y x, absorb($main_fe) vce($cluster)
+reghdfe y x, a(firm year) vce(cluster firm)
+merge m:m id using "x.dta"
+merge m:1 id using "x.dta", keep(match)
+keep if _merge == 3
+capture which reghdfe
+global summary "roa roe if sample == 1"
+global finance "roa roe if_rate"
+estout m1 using t.tex, order($summary_variables) keep($outcomes)
+coefplot m1, relocate($positions)
+`;
+  const lines = findRepeats(text).flatMap((finding) => finding.lines).sort((a, b) => a - b);
+  assert.deepEqual(lines, [1, 3, 5, 6, 7, 10]);
+});
+
+test("loading, naming and plotting shortcuts the rules forbid are reported", () => {
+  const text = String.raw`use id year roa if sample == 1 using "panel.dta", clear
+use "panel.dta", clear
+keep if sample == 1
+local min_${"`"}y' = r(min)
+local ++number
+local ${"`"}spec'_df = e(df_r)
+matrix main_b = e(b)
+mat main_V = e(V)
+matrix list e(b)
+_natscale 0 1 5
+`;
+  // Each pattern is one finding that lists all of its lines.
+  assert.deepEqual(findRepeats(text).map((finding) => finding.lines), [[1], [4, 6], [7, 8]]);
+});
+
+test("a third nested loop and an if inside an if are reported", () => {
+  const text = String.raw`foreach a in 1 2 {
+    capture noisily foreach b in 1 2 {
+        foreach c in 1 2 {
+            display "{hline}"
+        }
+    }
+}
+if 1 {
+    foreach a in 1 2 {
+        if 2 {
+            display 1
+        }
+    }
+}
+if 1 {
+    display 1
+}
+else {
+    display 2
+}
+`;
+  assert.deepEqual(findRepeats(text).map((finding) => [finding.kind, finding.lines[0]]),
+    [["third nested loop", 3], ["if block nested inside another if block", 10]]);
+});
+
+test("models kept for output without estimates save are reported", () => {
+  const text = String.raw`foreach y of global outcomes {
+    capture noisily reghdfe ${"`"}y' treat, absorb(fid year) vce(cluster fid)
+    estimates store ${"`"}y'
+}
+eststo m1: reg wage age
+by foreign: regress price mpg
+`;
+  assert.deepEqual(findAll(text).filter((finding) => finding.kind === unsaved).map((finding) => finding.lines), [[2, 5, 6]]);
+  const saved = text.replace("estimates store", "est save \"$ster_dir/`y'.ster\", replace\n    estimates store");
+  assert.deepEqual(findAll(saved).filter((finding) => finding.kind === unsaved), []);
+  // A model shown only in the log keeps nothing for later output.
+  assert.deepEqual(findAll("regress wage age\ndisplay _b[age]\n"), []);
 });
 
 test("with changed lines, only repeats that touch them are reported", () => {
