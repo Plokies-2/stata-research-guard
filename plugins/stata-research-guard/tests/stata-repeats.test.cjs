@@ -165,8 +165,36 @@ eststo m1: reg wage age
 by foreign: regress price mpg
 `;
   assert.deepEqual(findAll(text).filter((finding) => finding.kind === unsaved).map((finding) => finding.lines), [[2, 5, 6]]);
-  const saved = text.replace("estimates store", "est save \"$ster_dir/`y'.ster\", replace\n    estimates store");
-  assert.deepEqual(findAll(saved).filter((finding) => finding.kind === unsaved), []);
+  // Saving the loop model leaves the two later models unsaved.
+  const savedLoop = text.replace("estimates store", "est save \"$ster_dir/`y'.ster\", replace\n    estimates store");
+  assert.deepEqual(findAll(savedLoop).filter((finding) => finding.kind === unsaved).map((finding) => finding.lines), [[6, 7]]);
+  const savedAll = String.raw`regress y x1
+estimates store m1
+estimates save "m1.ster", replace
+regress y x1 x2
+estimates save "m2.ster", replace
+esttab m1
+`;
+  assert.deepEqual(findAll(savedAll).filter((finding) => finding.kind === unsaved), []);
+  // A closing loop that restores and saves each stored model covers all of them.
+  const savedAtEnd = String.raw`eststo m1: regress y x1
+eststo m2: regress y x1 x2
+foreach m in m1 m2 {
+    estimates restore ${"`"}m'
+    estimates save "${"`"}m'.ster", replace
+}
+`;
+  assert.deepEqual(findAll(savedAtEnd).filter((finding) => finding.kind === unsaved), []);
+  const oneOfThree = String.raw`regress y x1
+estimates store m1
+estimates save "m1.ster", replace
+regress y x1 x2
+estimates store m2
+regress y x1 x2 x3
+estimates store m3
+esttab m1 m2 m3
+`;
+  assert.deepEqual(findAll(oneOfThree).filter((finding) => finding.kind === unsaved).map((finding) => finding.lines), [[4, 6]]);
   // A model shown only in the log keeps nothing for later output.
   assert.deepEqual(findAll("regress wage age\ndisplay _b[age]\n"), []);
 });

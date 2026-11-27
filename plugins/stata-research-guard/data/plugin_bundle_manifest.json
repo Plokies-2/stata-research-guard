@@ -22,8 +22,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 51004,
-      "sha256": "f149d8edebdb5f3c4737de7f27bc94e52f423d29f4caa2191dad455b5da0b884"
+      "bytes": 51143,
+      "sha256": "bab6bb172548abeab13ba60d34752e150e16f90a3c90901f2989a3e412b5c069"
     },
     {
       "path": "data/command_help_guides/acreg.txt",
@@ -1577,8 +1577,8 @@
     },
     {
       "path": "hooks/stata-repeats.cjs",
-      "bytes": 12461,
-      "sha256": "42b58c44611d00d41b555767a580113ea00faa5166f8ccb2d7ad33f912768ef0"
+      "bytes": 13002,
+      "sha256": "7e78c0272d7452216ee2ee5fb45a568f9550832f616679086da34e9d9663c5e0"
     },
     {
       "path": "INSTRUCTIONS.md",
@@ -1767,8 +1767,8 @@
     },
     {
       "path": "tests/stata-repeats.test.cjs",
-      "bytes": 8145,
-      "sha256": "e997ee64a3552d2c33afaafbe88bd44ffca0c1c11cd7f131735f8e4e83f2fa23"
+      "bytes": 9179,
+      "sha256": "3601cd46c110b38d311e7848efc9bb91f5b4cf87ff1cd5da9ee42257fe1e952f"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",

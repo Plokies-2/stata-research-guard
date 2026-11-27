@@ -197,19 +197,36 @@ function deepNesting(lines) {
   return findings;
 }
 
-// Models whose results are kept for a table or figure but never written to a .ster file.
+// Models whose results are kept for a table or figure but never written to a .ster file. A save covers the
+// model fitted before it; a save after estimates restore covers every stored model, as in a closing save loop.
 const prefixes = String.raw`^(?:(?:cap\w*|qui\w*|noi\w*|xi|svy|by\w*\s[^:]*|eststo(?:\s+\w+)?)\s*:?\s+)*`;
 const estimation = new RegExp(prefixes + String.raw`(?:reg|regr|regre|regres|regress|reghdfe|areg|xtreg|ivreg2|ivregress|ivreghdfe|` +
   String.raw`logit|logistic|probit|mlogit|ologit|oprobit|tobit|poisson|nbreg|ppmlhdfe|qreg|xtlogit|xtprobit|xtpoisson|` +
   String.raw`didregress|xtdidregress|csdid|jwdid|sdid|rdrobust)\b`);
 const keepsResults = /^(?:est\w*\s+sto\w*|eststo|esttab|estout|outreg2?|coefplot|etable|collect)\b/;
 const savesResults = /^(?:(?:qui\w*|cap\w*|noi\w*)\s+)*est\w*\s+sav\w*\b/;
+const restoresResults = /^(?:(?:qui\w*|cap\w*|noi\w*)\s+)*est\w*\s+res\w*\b/;
 
 function unsavedEstimates(lines) {
-  if (lines.some(({ text }) => savesResults.test(text)) || !lines.some(({ text }) => keepsResults.test(text))) return [];
-  const fitted = lines.filter(({ text }) => estimation.test(text));
-  return fitted.length ? [{ kind: "estimates kept only in memory: add estimates save after each model",
-    text: fitted[0].text, lines: fitted.map(({ line }) => line) }] : [];
+  if (!lines.some(({ text }) => keepsResults.test(text))) return [];
+  let unsaved = [];
+  let current = null;
+  let restored = false;
+  for (const model of lines) {
+    if (estimation.test(model.text)) {
+      if (current) unsaved.push(current);
+      current = model;
+      restored = false;
+    } else if (restoresResults.test(model.text)) {
+      restored = true;
+    } else if (savesResults.test(model.text)) {
+      if (restored) unsaved = [];
+      current = null;
+    }
+  }
+  if (current) unsaved.push(current);
+  return unsaved.length ? [{ kind: "estimates kept only in memory: add estimates save after each model",
+    text: unsaved[0].text, lines: unsaved.map(({ line }) => line) }] : [];
 }
 
 // changed: physical line numbers edited in this turn, or null to report every finding.
